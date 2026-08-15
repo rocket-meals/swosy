@@ -1,5 +1,24 @@
-// This file can not have any imports. See app.config.ts as it will transpile this file to  JavaScript
+// This file is evaluated in two contexts: by Expo when it builds the app
+// config (see app.config.ts) and inside the app bundle itself, so it may only
+// import modules that are safe in both - no Node built-ins.
 import { ServerHelper } from 'repo-depkit-common';
+// Settings that are deliberately identical in every app of this monorepo (iOS
+// deployment target, Android SDK levels, OTA setup) live in
+// repo-depkit-common/appconfig, together with the named building blocks each
+// app composes its own privacy manifest from.
+import {
+	EXPO_OWNER,
+	PrivacyAccessedApi,
+	PrivacyCollectedData,
+	getExpoBuildPropertiesPlugin,
+	getExpoSplashScreenPlugin,
+	getExpoUpdatesPlugin,
+	getMealPhotoImagePickerPlugin,
+	getPrivacyManifests,
+	getRuntimeVersion,
+	getUpdatesConfig,
+	getWebConfig,
+} from 'repo-depkit-common/appconfig/expoAppConfig';
 import {ImageSourcePropType} from "react-native";
 
 export { EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID, EXPO_APPLE_TEAM_ID, EXPO_APPLE_TEAM_TYPE } from 'repo-depkit-common';
@@ -39,10 +58,6 @@ export enum ConfigCustomerEnum {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	// 204: Expo SDK 57 migration (React Native 0.86, React 19.2)
-	// 205: native build fixes for the SDK 57 migration (expo-modules-core 57.0.11,
-	//      react-native-leaflet-view without jcenter())
-	// 206: drop expo-edge-speech, its expo-av dependency cannot build on SDK 57
 	return 206;
 }
 
@@ -51,7 +66,10 @@ export function getMajorVersion() {
 }
 
 export function getVersionPatch() {
-        return 11;
+        // 12: shared Expo app config moved to repo-depkit-common/appconfig
+        // 13: privacy manifest declared per app from named building blocks
+        // 14: content rights declared as "third-party content, rights held"
+        return 14;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
@@ -200,6 +218,26 @@ export function getGeneratedAssetsPath(): string {
 	return `./assets/generated/${customer}`;
 }
 
+// Apple privacy manifest of THIS app (required for App Review). Rocket Meals
+// talks to a canteen backend, so location, messages, photos, other user content
+// and the account email leave the device.
+const ROCKET_MEALS_PRIVACY = {
+	collectedDataTypes: [
+		PrivacyCollectedData.PreciseLocation,
+		PrivacyCollectedData.EmailsOrTextMessages,
+		PrivacyCollectedData.PhotosOrVideos,
+		PrivacyCollectedData.OtherUserContent,
+		PrivacyCollectedData.EmailAddress,
+	],
+	// Required-reason APIs of the React Native/Expo runtime itself.
+	accessedApiTypes: [
+		PrivacyAccessedApi.UserDefaults,
+		PrivacyAccessedApi.SystemBootTime,
+		PrivacyAccessedApi.DiskSpace,
+		PrivacyAccessedApi.FileTimestamp,
+	],
+};
+
 export function getFinalConfig(config?: any, licenses?: unknown[]) {
 	const customerConfig: CustomerConfig = getCustomerConfig();
 	const generatedPath = getGeneratedAssetsPath();
@@ -213,11 +251,7 @@ export function getFinalConfig(config?: any, licenses?: unknown[]) {
 			notification: {
 				icon: `${generatedPath}/notification-icon.png`,
 			},
-			updates: {
-				enabled: true,
-				url: 'https://u.expo.dev/' + customerConfig.easUpdateId,
-				fallbackToCacheTimeout: 10 * 1000,
-			},
+			updates: getUpdatesConfig(customerConfig.easUpdateId),
 			scheme: customerConfig.appScheme,
 			userInterfaceStyle: 'automatic',
 			splash: {
@@ -241,58 +275,7 @@ export function getFinalConfig(config?: any, licenses?: unknown[]) {
 				entitlements: {
 					'com.apple.developer.applesignin': ['Default'],
 				},
-				privacyManifests: {
-					NSPrivacyCollectedDataTypes: [
-						{
-							NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypePreciseLocation',
-							NSPrivacyCollectedDataTypeLinked: false,
-							NSPrivacyCollectedDataTypeTracking: false,
-							NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeProductPersonalization', 'NSPrivacyCollectedDataTypePurposeAppFunctionality', 'NSPrivacyCollectedDataTypePurposeOther'],
-						},
-						{
-							NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeEmailsOrTextMessages',
-							NSPrivacyCollectedDataTypeLinked: true,
-							NSPrivacyCollectedDataTypeTracking: false,
-							NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeProductPersonalization', 'NSPrivacyCollectedDataTypePurposeAppFunctionality'],
-						},
-						{
-							NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypePhotosorVideos',
-							NSPrivacyCollectedDataTypeLinked: true,
-							NSPrivacyCollectedDataTypeTracking: false,
-							NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
-						},
-						{
-							NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeOtherUserContent',
-							NSPrivacyCollectedDataTypeLinked: true,
-							NSPrivacyCollectedDataTypeTracking: false,
-							NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
-						},
-						{
-							NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeEmailAddress',
-							NSPrivacyCollectedDataTypeLinked: true,
-							NSPrivacyCollectedDataTypeTracking: false,
-							NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
-						},
-					],
-					NSPrivacyAccessedAPITypes: [
-						{
-							NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
-							NSPrivacyAccessedAPITypeReasons: ['CA92.1'],
-						},
-						{
-							NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategorySystemBootTime',
-							NSPrivacyAccessedAPITypeReasons: ['8FFB.1'],
-						},
-						{
-							NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryDiskSpace',
-							NSPrivacyAccessedAPITypeReasons: ['85F4.1'],
-						},
-						{
-							NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryFileTimestamp',
-							NSPrivacyAccessedAPITypeReasons: ['DDA9.1'],
-						},
-					],
-				},
+				privacyManifests: getPrivacyManifests(ROCKET_MEALS_PRIVACY),
 			},
 			android: {
 				adaptiveIcon: {
@@ -303,11 +286,7 @@ export function getFinalConfig(config?: any, licenses?: unknown[]) {
 				blockedPermissions: ['android.permission.READ_MEDIA_IMAGES', 'android.permission.READ_MEDIA_VIDEO'],
 				versionCode: getBuildNumber(),
 			},
-			web: {
-				bundler: 'metro',
-				output: 'static',
-				favicon: `${generatedPath}/favicon.png`,
-			},
+			web: getWebConfig(`${generatedPath}/favicon.png`),
 			plugins: [
 				'expo-router',
 				'expo-secure-store',
@@ -322,15 +301,7 @@ export function getFinalConfig(config?: any, licenses?: unknown[]) {
 						recordAudioAndroid: false,
 					},
 				],
-				[
-					'expo-splash-screen',
-					{
-						image: `${generatedPath}/splash-icon.png`,
-						imageWidth: 200,
-						resizeMode: 'contain',
-						backgroundColor: '#ffffff',
-					},
-				],
+				getExpoSplashScreenPlugin({ image: `${generatedPath}/splash-icon.png`, backgroundColor: '#ffffff' }),
 				[
 					'react-native-nfc-manager',
 					{
@@ -338,30 +309,9 @@ export function getFinalConfig(config?: any, licenses?: unknown[]) {
 						includeNdefEntitlement: false,
 					},
 				],
-				['expo-updates', { username: 'jack5496' }],
-				[
-					'expo-image-picker',
-					{
-						photosPermission: 'This app needs access to your photo library to capture and manage meal photos as part of the core digital meal plan functionality. Photos are essential for documenting meals in our canteen and restaurant management system.',
-						cameraPermission: 'This app needs camera access to take photos of meals for the digital meal plan management system. Camera functionality is core to documenting and tracking meals in canteens and restaurants.',
-						'//': 'Disables the microphone permission',
-						microphonePermission: false,
-					},
-				],
-				[
-					'expo-build-properties',
-					{
-						android: {
-							compileSdkVersion: 36,
-							targetSdkVersion: 36,
-							buildToolsVersion: '36.0.0',
-						},
-						ios: {
-							// Expo SDK 57 requires at least iOS 16.4
-							deploymentTarget: '16.4',
-						},
-					},
-				],
+				getExpoUpdatesPlugin(),
+				getMealPhotoImagePickerPlugin(),
+				getExpoBuildPropertiesPlugin(),
 				'expo-localization',
 				'expo-asset',
 				'expo-font',
@@ -379,14 +329,8 @@ export function getFinalConfig(config?: any, licenses?: unknown[]) {
 				},
 				licenses: licenses ?? [],
 			},
-			owner: 'baumgartner-software',
-			runtimeVersion: {
-				// Production builds are tied to the app version, but Expo Go only
-				// loads updates whose runtime version has the exposdk:<version>
-				// form. The PR preview workflow publishes an additional update
-				// with EXPO_GO_PREVIEW=true so PRs can be tested in Expo Go.
-				policy: process.env.EXPO_GO_PREVIEW === 'true' ? 'sdkVersion' : 'appVersion',
-			},
+			owner: EXPO_OWNER,
+			runtimeVersion: getRuntimeVersion(),
 		},
 	};
 }

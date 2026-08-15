@@ -16,7 +16,6 @@ export function getBuildNumber() {
 	// the patch segment, so patch-only OTA updates never matched the installed
 	// binary. getVersion() now pins the patch segment to 0 — this build picks
 	// up the stable runtime version plus the update-on-start loader.
-	// 22: Expo SDK 57 migration (React Native 0.86, React 19.2)
 	return 22;
 }
 
@@ -36,7 +35,9 @@ export function getVersionPatch() {
 	//     snapshot instead of stopping the task); weather saved on activities
 	// 11: settings: whole-database export/import (Datensicherung group,
 	//     shared SettingsListSqliteBackup from common-ui)
-	return 11;
+	// 12: shared Expo app config moved to repo-depkit-common/appconfig
+	// 13: privacy manifest declared per app from named building blocks
+	return 13;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

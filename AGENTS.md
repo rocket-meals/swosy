@@ -52,6 +52,13 @@ Bei React-Dateien sollen **Styles, Export und Logik in derselben Datei** bleiben
 - Expo plugins contain native code. A changed native layer requires a new binary build, so the build number stored in `getBuildNumber()` in `config.ts` must be bumped by at least 1.
 - Example: if `getBuildNumber()` currently returns `7`, change it to `8`.
 
+## Expo app config: shared settings live in `repo-depkit-common/appconfig`
+
+- Settings that must be **identical in every app** — the iOS deployment target, the Android SDK levels, the OTA/`expo-updates` setup, the `runtimeVersion` policy, the Apple privacy manifest boilerplate — belong in `packages/common/appconfig/expoAppConfig.ts` and are consumed from each `app.config.ts` (and from `apps/frontend/app/config.ts`).
+- **Never inline one of these values into a single app.** Raising the iOS deployment target after an Expo SDK upgrade, for example, is one edit in `IOS_DEPLOYMENT_TARGET` — not four.
+- The module must stay free of Node built-ins (`fs`, `path`): it is also bundled into the app through `apps/frontend/app/config.ts`. Node-only config code belongs next to `packages/common/licenses/collectLicenses.ts`.
+- It lives in `repo-depkit-common` rather than `repo-depkit-common-ui` on purpose: every app already depends on `repo-depkit-common`, while depending on the UI package would autolink its native modules (e.g. `expo-location`) into apps that do not use them.
+
 ## New Expo apps: Required build number setup
 
 - **Every new Expo app** (e.g. a new folder under `apps/`) **must** have a `config.ts` file with a `getBuildNumber()` function that returns an integer (start at `1`).
