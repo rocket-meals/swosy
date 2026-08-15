@@ -28,7 +28,7 @@ describe('loadStoreMetadataModule', () => {
       // Identical for every tenant
       expect(entry.apple?.ageRatingDeclaration?.messagingAndChat).toBe(false);
       expect(entry.apple?.ageRatingDeclaration?.userGeneratedContent).toBe(false);
-      expect(entry.apple?.contentRightsDeclaration).toBe('DOES_NOT_USE_THIRD_PARTY_CONTENT');
+      expect(entry.apple?.contentRightsDeclaration).toBe('USES_THIRD_PARTY_CONTENT');
       expect(entry.apple?.secondaryCategoryId).toBeNull();
     }
 

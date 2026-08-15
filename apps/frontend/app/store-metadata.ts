@@ -27,7 +27,14 @@ function tenantStoreMetadata(config: CustomerConfig): StoreAppMetadata {
 			primaryCategoryId: 'FOOD_AND_DRINK',
 			// Explicitly no secondary category - keeps all tenants identical.
 			secondaryCategoryId: null,
-			contentRightsDeclaration: 'DOES_NOT_USE_THIRD_PARTY_CONTENT',
+			// "Ja, diese App hat die erforderlichen Rechte an den Inhalten von
+			// Drittanbietern": every tenant displays menu, price and image data supplied
+			// by the canteen operator, so the app does show third-party content and the
+			// operator grants the rights to it. This matches what App Store Connect
+			// already stores for SWOSY - Apple refuses to change the declaration back
+			// (409 ENTITY_ERROR.ATTRIBUTE.INVALID.INVALID_STATE on PATCH /apps/<id>),
+			// and a drifting value would block every automated review submission.
+			contentRightsDeclaration: 'USES_THIRD_PARTY_CONTENT',
 			// Every tenant web app serves its privacy policy as a public wiki page - the
 			// same url is used for the Google SSO consent screen (apps/backend/SSO_GOOGLE.md).
 			privacyPolicyUrl: AppLinks.getPublicWikiUrl(config.baseUrl, WikiCustomIds.PRIVACY_POLICY),
