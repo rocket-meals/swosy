@@ -363,6 +363,54 @@ export function CategoryValueRow({
 		);
 	}
 
+	return (
+		<CategoryValueInputRow
+			category={category}
+			value={value}
+			onChange={onChange}
+			groupPosition={groupPosition}
+			nativeID={nativeID}
+			leftIcon={leftIcon}
+			selectedEnumImage={selectedEnumImage}
+			onOpenEnumModal={handleOpenEnumModal}
+		/>
+	);
+}
+
+/**
+ * The editable input row for one (non-computed) category - one settings-list
+ * form component per category type. Split out of `CategoryValueRow` so the
+ * per-type value coercions stay readable in one place.
+ */
+function CategoryValueInputRow({
+	category,
+	value,
+	onChange,
+	groupPosition,
+	nativeID,
+	leftIcon,
+	selectedEnumImage,
+	onOpenEnumModal,
+}: Readonly<{
+	category: GameCategory;
+	value: GameCategoryValue | undefined;
+	onChange: (value: GameCategoryValue) => void;
+	groupPosition: GroupPosition;
+	nativeID: string;
+	leftIcon: React.ReactNode;
+	selectedEnumImage: string | null;
+	onOpenEnumModal: () => void;
+}>) {
+	const stringValue = typeof value === 'string' ? value : '';
+	const numberValue = typeof value === 'number' ? value : undefined;
+	const booleanValue = typeof value === 'boolean' ? value : null;
+	const enumIconBgColor = selectedEnumImage ? '#ffffff' : PRIMARY_COLOR;
+	// Both text-ish inputs clear the value when the input is emptied; only the
+	// time input stores the trimmed text.
+	const saveTextValue = (next: string) => onChange(next.trim() === '' ? null : next);
+	const saveTrimmedValue = (next: string) => onChange(next.trim() === '' ? null : next.trim());
+	const checkTimeValue = (next: string) => ({ isValid: next.trim() === '' || parseTimeToMinutes(next.trim()) != null, value: next });
+
 	switch (category.type) {
 		case 'enum':
 			return (
@@ -371,9 +419,9 @@ export function CategoryValueRow({
 					label={category.name}
 					value={formatCategoryValue(category, value)}
 					leftIcon={leftIcon}
-					iconBgColor={selectedEnumImage ? '#ffffff' : PRIMARY_COLOR}
+					iconBgColor={enumIconBgColor}
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
-					handleFunction={handleOpenEnumModal}
+					handleFunction={onOpenEnumModal}
 					groupPosition={groupPosition}
 				/>
 			);
@@ -386,7 +434,7 @@ export function CategoryValueRow({
 					label={category.name}
 					leftIcon={leftIcon}
 					iconBgColor={PRIMARY_COLOR}
-					value={typeof value === 'boolean' ? value : null}
+					value={booleanValue}
 					labelTrue="Ja"
 					labelFalse="Nein"
 					labelUnset={EMPTY_CATEGORY_VALUE_LABEL}
@@ -404,7 +452,7 @@ export function CategoryValueRow({
 					iconBgColor={PRIMARY_COLOR}
 					modalTitle={category.name}
 					placeholder="z.B. 3"
-					initialValue={typeof value === 'number' ? value : undefined}
+					initialValue={numberValue}
 					onSave={(next) => onChange(next)}
 					allowDisable
 					disableLabel="Leeren"
@@ -425,7 +473,7 @@ export function CategoryValueRow({
 					suffix=" min"
 					min={0}
 					max={100000}
-					initialValue={typeof value === 'number' ? value : undefined}
+					initialValue={numberValue}
 					onSave={(next) => onChange(next)}
 					allowDisable
 					disableLabel="Leeren"
@@ -441,7 +489,7 @@ export function CategoryValueRow({
 					label={category.name}
 					leftIcon={leftIcon}
 					iconBgColor={PRIMARY_COLOR}
-					value={typeof value === 'string' ? isoDateToDisplay(value) : ''}
+					value={stringValue === '' ? '' : isoDateToDisplay(stringValue)}
 					saveLabel="Übernehmen"
 					onChange={(_id, next) => onChange(displayDateToIso(next))}
 					onError={() => undefined}
@@ -460,12 +508,12 @@ export function CategoryValueRow({
 					placeholder="HH:MM"
 					keyboardType="numbers-and-punctuation"
 					saveLabel="Übernehmen"
-					initialValue={typeof value === 'string' ? value : ''}
+					initialValue={stringValue}
 					// An empty input clears the value again; anything else has to
 					// be a real HH:MM time before it can be saved.
-					checkTextInput={(next) => ({ isValid: next.trim() === '' || parseTimeToMinutes(next.trim()) != null, value: next })}
+					checkTextInput={checkTimeValue}
 					suggestions={[{ key: 'now', value: timeFromTimestamp(Date.now()), label: `Jetzt (${timeFromTimestamp(Date.now())})` }]}
-					onSave={(next) => onChange(next.trim() === '' ? null : next.trim())}
+					onSave={saveTrimmedValue}
 					groupPosition={groupPosition}
 				/>
 			);
@@ -480,11 +528,11 @@ export function CategoryValueRow({
 					modalTitle={category.name}
 					placeholder="Text eingeben"
 					saveLabel="Übernehmen"
-					initialValue={typeof value === 'string' ? value : ''}
+					initialValue={stringValue}
 					multiline
 					numberOfLines={3}
 					textAlignVertical="top"
-					onSave={(next) => onChange(next.trim() === '' ? null : next)}
+					onSave={saveTextValue}
 					groupPosition={groupPosition}
 				/>
 			);

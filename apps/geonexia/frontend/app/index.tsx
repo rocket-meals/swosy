@@ -3474,6 +3474,67 @@ function handleMapMeasurePoint(
  * otherwise records it as the last accepted GPS point (matching the original
  * inline behaviour) and returns false.
  */
+/**
+ * Visual-only position update while the recording is paused: the player marker
+ * follows both real GPS and joystick movement, but no route points are
+ * recorded and no hex tiles are marked. Real GPS is ignored once the user
+ * overrode the position with the joystick (same rule as during recording), so
+ * GPS cannot snap the marker back while the user navigates virtually.
+ */
+function applyPausedLocationUpdate(
+	point: RoutePoint,
+	fromJoystick: boolean,
+	refs: {
+		movedPlayerManuallyRef: React.MutableRefObject<boolean>;
+		debugPlayerPositionRef: React.MutableRefObject<{ lat: number; lng: number } | null>;
+		mapRef: React.MutableRefObject<MyMapHandle | null>;
+		lastAcceptedGpsPointRef: React.MutableRefObject<RoutePoint | null>;
+		centerMapOnPosition: (position: { lat: number; lng: number }) => void;
+	},
+): void {
+	const { movedPlayerManuallyRef, debugPlayerPositionRef, mapRef, lastAcceptedGpsPointRef, centerMapOnPosition } = refs;
+	if (!fromJoystick && movedPlayerManuallyRef.current) return;
+
+	debugPlayerPositionRef.current = { lat: point.lat, lng: point.lng };
+	mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
+	centerMapOnPosition({ lat: point.lat, lng: point.lng });
+	// Advance the accepted-point ref for real GPS so the speed filter works
+	// correctly on the first GPS point recorded after resume.
+	if (!fromJoystick) {
+		lastAcceptedGpsPointRef.current = point;
+	}
+}
+
+/**
+ * Rebuild and push the hex tile + walk path GeoJSON for the current viewport,
+ * so freshly visited tiles show their new level right away.
+ */
+function refreshHexTilesForViewport(refs: {
+	debugViewportRef: React.MutableRefObject<DebugViewportInfo | null>;
+	mapRef: React.MutableRefObject<MyMapHandle | null>;
+	h3ResolutionRef: React.MutableRefObject<number>;
+	showGridAlwaysRef: React.MutableRefObject<boolean>;
+	h3MinZoomRef: React.MutableRefObject<number>;
+	refreshSearchHighlight: (viewportCells: string[]) => void;
+}): void {
+	const { debugViewportRef, mapRef, h3ResolutionRef, showGridAlwaysRef, h3MinZoomRef, refreshSearchHighlight } = refs;
+	const vp = debugViewportRef.current;
+	if (!vp || !mapRef.current) return;
+
+	let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
+	try {
+		geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records, h3MinZoomRef.current);
+	} catch (err) {
+		console.warn('[RecordScreen] buildH3GeoJson failed during location update:', err);
+	}
+	debugViewportRef.current = { ...vp, tileCount: geoJson.features.length };
+	const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
+	const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges, store.getState().hexTiles.walkedEdgesRedLine);
+	mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
+	mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+	refreshSearchHighlight(viewportCells);
+}
+
 function maybeFilterGpsPoint(
 	fromJoystick: boolean,
 	point: RoutePoint,
@@ -5391,25 +5452,13 @@ export default function RecordScreen() {
 
 	const handleLocationUpdate = useCallback((point: RoutePoint, fromJoystick = false) => {
 		if (isPausedRef.current) {
-			// During pause: update the visual player position but do NOT record GPS points
-			// or mark hex tiles. Both real GPS and joystick movement are allowed so the
-			// player marker stays live while the run is paused.
-			//
-			// For real GPS: skip if the user already overrode the position with the
-			// joystick before pausing – this mirrors the active-recording behaviour and
-			// prevents GPS from snapping the marker back while the user navigates
-			// virtually during the pause.
-			const shouldUpdate = fromJoystick || !movedPlayerManuallyRef.current;
-			if (shouldUpdate) {
-				debugPlayerPositionRef.current = { lat: point.lat, lng: point.lng };
-				mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
-				centerMapOnPosition({ lat: point.lat, lng: point.lng });
-				// Advance the accepted-point ref for real GPS so the speed filter works
-				// correctly on the first GPS point recorded after resume.
-				if (!fromJoystick) {
-					lastAcceptedGpsPointRef.current = point;
-				}
-			}
+			applyPausedLocationUpdate(point, fromJoystick, {
+				movedPlayerManuallyRef,
+				debugPlayerPositionRef,
+				mapRef,
+				lastAcceptedGpsPointRef,
+				centerMapOnPosition,
+			});
 			return;
 		}
 
@@ -5469,21 +5518,14 @@ export default function RecordScreen() {
 		}
 
 		// Refresh hex GeoJSON to show updated tile levels (includes the just-dispatched visit)
-		const vp = debugViewportRef.current;
-		if (vp && mapRef.current) {
-			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
-			try {
-				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records, h3MinZoomRef.current);
-			} catch (err) {
-				console.warn('[RecordScreen] buildH3GeoJson failed during location update:', err);
-			}
-			debugViewportRef.current = { ...vp, tileCount: geoJson.features.length };
-			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges, store.getState().hexTiles.walkedEdgesRedLine);
-			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
-			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
-			refreshSearchHighlight(viewportCells);
-		}
+		refreshHexTilesForViewport({
+			debugViewportRef,
+			mapRef,
+			h3ResolutionRef,
+			showGridAlwaysRef,
+			h3MinZoomRef,
+			refreshSearchHighlight,
+		});
 
 		// ── Periodically persist a recording snapshot for crash recovery ──
 		persistRecordingSnapshotIfDue({

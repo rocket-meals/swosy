@@ -342,6 +342,28 @@ async function attemptSubmission(bundleId: string, releaseNotes: string, credent
   console.log(`\n🎉 App Store Version ${version} (Build ${buildId}) wurde erfolgreich zur Review eingereicht.`);
 }
 
+/**
+ * Whether a blocked submission is worth retrying: only while Apple is still
+ * processing a freshly uploaded build (its version may become submittable once
+ * the build turns VALID), or while the initial grace period is still running.
+ */
+async function shouldRetryBlockedSubmission(
+  error: SkipSubmission,
+  bundleId: string,
+  credentials: Credentials,
+  deadlines: { deadline: number; graceDeadline: number },
+): Promise<boolean> {
+  if (!error.retryWhileProcessing || Date.now() >= deadlines.deadline) return false;
+
+  const token = createAppStoreConnectToken(credentials.keyId, credentials.issuerId, credentials.privateKeyPath);
+  const appId = await findAppId(token, bundleId);
+  const processing = await hasProcessingBuild(token, appId);
+  if (processing) {
+    console.log('⏳ Apple verarbeitet gerade einen hochgeladenen Build ...');
+  }
+  return processing || Date.now() < deadlines.graceDeadline;
+}
+
 async function main(): Promise<void> {
   const bundleId = readRequiredEnv('IOS_BUNDLE_ID');
   const releaseNotes = readRequiredEnv('IOS_RELEASE_NOTES');
@@ -369,17 +391,7 @@ async function main(): Promise<void> {
         throw error;
       }
 
-      let retry = false;
-      if (error.retryWhileProcessing && Date.now() < deadline) {
-        const token = createAppStoreConnectToken(credentials.keyId, credentials.issuerId, credentials.privateKeyPath);
-        const appId = await findAppId(token, bundleId);
-        const processing = await hasProcessingBuild(token, appId);
-        if (processing) {
-          console.log('⏳ Apple verarbeitet gerade einen hochgeladenen Build ...');
-        }
-        retry = processing || Date.now() < graceDeadline;
-      }
-
+      const retry = await shouldRetryBlockedSubmission(error, bundleId, credentials, { deadline, graceDeadline });
       if (!retry) {
         console.log(`\n⏭️ Keine Einreichung durchgeführt: ${sanitizeForLog(error.message)}`);
         return;

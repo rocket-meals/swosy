@@ -106,6 +106,33 @@ function StatTile({ value, label, color }: Readonly<{ value: number; label: stri
 	);
 }
 
+/** The most recently finished match, or `null` when nothing was archived yet. */
+function mostRecentEntry(entries: GameHistoryEntry[]): GameHistoryEntry | null {
+	let latest: GameHistoryEntry | null = null;
+	for (const entry of entries) {
+		if (!latest || entry.endedAt > latest.endedAt) latest = entry;
+	}
+	return latest;
+}
+
+/** Label and value of the "Weiter geht's" row: the running match, or the last archived one. */
+function describeLastMatchRow(params: {
+	hasRunningMatch: boolean;
+	latestEntry: GameHistoryEntry | null;
+	runningGameName: string | undefined;
+	runningPlayerCount: number;
+}): { label: string; value: string } {
+	const { hasRunningMatch, latestEntry, runningGameName, runningPlayerCount } = params;
+	if (hasRunningMatch) {
+		return {
+			label: 'Aktive Partie fortsetzen',
+			value: `${runningGameName ?? 'Partie'} läuft · ${countLabel(runningPlayerCount, 'Spieler', 'Spieler')}`,
+		};
+	}
+	const value = latestEntry ? `${formatDate(latestEntry.endedAt)} · ${countLabel(latestEntry.players.length, 'Spieler', 'Spieler')}` : '';
+	return { label: 'Letzte Partie ansehen', value };
+}
+
 // ─── Start screen ─────────────────────────────────────────────────────────────
 
 export default function StartScreen() {
@@ -126,13 +153,7 @@ export default function StartScreen() {
 
 	// Most recently finished match, for the "zuletzt gespielte Partie" entry
 	// when nothing is running.
-	const latestEntry = useMemo<GameHistoryEntry | null>(() => {
-		let latest: GameHistoryEntry | null = null;
-		for (const entry of historyEntries) {
-			if (!latest || entry.endedAt > latest.endedAt) latest = entry;
-		}
-		return latest;
-	}, [historyEntries]);
+	const latestEntry = useMemo(() => mostRecentEntry(historyEntries), [historyEntries]);
 
 	// The game to offer "Neue Partie starten" for: the one being played right
 	// now, otherwise the one of the most recent archived match.
@@ -193,16 +214,12 @@ export default function StartScreen() {
 	const matchRowCount = (lastPlayedGameType ? 1 : 0) + (hasRunningMatch || latestEntry ? 1 : 0);
 	const showLastMatchRow = hasRunningMatch || latestEntry != null;
 
-	let lastMatchRowLabel = 'Letzte Partie ansehen';
-	let lastMatchRowValue = latestEntry
-		? `${formatDate(latestEntry.endedAt)} · ${countLabel(latestEntry.players.length, 'Spieler', 'Spieler')}`
-		: '';
-	if (hasRunningMatch) {
-		lastMatchRowLabel = 'Aktive Partie fortsetzen';
-		lastMatchRowValue = `${lastPlayedGameType ? lastPlayedGameType.name : 'Partie'} läuft · ${
-			activeGame.players.length === 1 ? '1 Spieler' : `${activeGame.players.length} Spieler`
-		}`;
-	}
+	const { label: lastMatchRowLabel, value: lastMatchRowValue } = describeLastMatchRow({
+		hasRunningMatch,
+		latestEntry,
+		runningGameName: lastPlayedGameType?.name,
+		runningPlayerCount: activeGame.players.length,
+	});
 
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>

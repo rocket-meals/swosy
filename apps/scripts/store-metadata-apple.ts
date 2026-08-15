@@ -147,22 +147,74 @@ export function planApplePush(current: ApplePullResult, metadata: AppleAppMetada
   return { current, targetAppInfo, ageRatingChanges, categoryChanges, contentRightsChanges, localizationChanges, missingFields };
 }
 
+/**
+ * Unanswered age rating questions the ground truth cannot fill mean the
+ * metadata is incomplete - a real push (and therefore the pre-submit sync)
+ * must fail so this gets fixed instead of a version silently reaching App
+ * Review with open questions. A dry run only warns.
+ */
+function reportMissingAgeRatingFields(missingFields: string[], dryRun: boolean): void {
+  if (missingFields.length === 0) return;
+  const message =
+    `Apple: ${missingFields.length} Altersfreigabe-Frage(n) sind weder in App Store Connect beantwortet noch in der Ground Truth gesetzt: ` +
+    `${missingFields.join(', ')}. Bitte die Felder in der store-metadata.ts ergänzen (oder in App Store Connect beantworten und per "store-metadata pull" übernehmen).`;
+  if (!dryRun) throw new Error(message);
+  console.log(`   ⚠️ ${message}`);
+}
+
+/** PATCH the age rating declaration of the editable AppInfo. */
+async function pushAgeRatingChanges(
+  token: string,
+  targetAppInfo: NonNullable<ApplePushPlan['targetAppInfo']>,
+  ageRatingChanges: AttributeChange[],
+  dryRun: boolean,
+): Promise<void> {
+  if (ageRatingChanges.length === 0) return;
+  console.log(`   📝 Apple Altersfreigabe (${ageRatingChanges.length} Änderungen):\n${formatChanges(ageRatingChanges, '      ')}`);
+  if (!targetAppInfo.ageRatingDeclarationId) {
+    throw new Error('Apple: AppInfo hat keine ageRatingDeclaration-Relationship - bitte in App Store Connect prüfen.');
+  }
+  if (dryRun) return;
+  await ascRequest(token, 'PATCH', `/ageRatingDeclarations/${targetAppInfo.ageRatingDeclarationId}`, {
+    data: {
+      type: 'ageRatingDeclarations',
+      id: targetAppInfo.ageRatingDeclarationId,
+      attributes: changesToAttributeObject(ageRatingChanges),
+    },
+  });
+}
+
+/** PATCH the primary/secondary category relationships of the editable AppInfo. */
+async function pushCategoryChanges(
+  token: string,
+  targetAppInfo: NonNullable<ApplePushPlan['targetAppInfo']>,
+  categoryChanges: AttributeChange[],
+  dryRun: boolean,
+): Promise<void> {
+  if (categoryChanges.length === 0) return;
+  console.log(`   📝 Apple Kategorien:\n${formatChanges(categoryChanges, '      ')}`);
+  if (dryRun) return;
+  const relationships: Record<string, { data: { type: string; id: string } | null }> = {};
+  for (const change of categoryChanges) {
+    const relationship = change.key === 'primaryCategoryId' ? 'primaryCategory' : 'secondaryCategory';
+    // change.to is typed `unknown`; a category id is always a string (or a
+    // number in hand-written ground truth). Anything else would stringify
+    // to "[object Object]" and is treated as "clear the category" instead.
+    const categoryId = typeof change.to === 'string' || typeof change.to === 'number' ? String(change.to) : undefined;
+    relationships[relationship] = { data: categoryId ? { type: 'appCategories', id: categoryId } : null };
+  }
+  await ascRequest(token, 'PATCH', `/appInfos/${targetAppInfo.appInfoId}`, {
+    data: { type: 'appInfos', id: targetAppInfo.appInfoId, relationships },
+  });
+}
+
 export async function applyApplePush(token: string, plan: ApplePushPlan, dryRun: boolean): Promise<boolean> {
   const { current, targetAppInfo, ageRatingChanges, categoryChanges, contentRightsChanges, localizationChanges, missingFields } = plan;
 
   // Unanswered questions the ground truth cannot fill mean the metadata is incomplete -
   // a real push (and therefore the pre-submit sync) must fail so this gets fixed instead
   // of a version silently reaching App Review with open questions.
-  if (missingFields.length > 0) {
-    const message =
-      `Apple: ${missingFields.length} Altersfreigabe-Frage(n) sind weder in App Store Connect beantwortet noch in der Ground Truth gesetzt: ` +
-      `${missingFields.join(', ')}. Bitte die Felder in der store-metadata.ts ergänzen (oder in App Store Connect beantworten und per "store-metadata pull" übernehmen).`;
-    if (dryRun) {
-      console.log(`   ⚠️ ${message}`);
-    } else {
-      throw new Error(message);
-    }
-  }
+  reportMissingAgeRatingFields(missingFields, dryRun);
 
   const hasChanges = ageRatingChanges.length > 0 || categoryChanges.length > 0 || contentRightsChanges.length > 0 || localizationChanges.length > 0;
   if (!hasChanges) {
@@ -178,38 +230,9 @@ export async function applyApplePush(token: string, plan: ApplePushPlan, dryRun:
     );
   }
 
-  if (ageRatingChanges.length > 0 && targetAppInfo) {
-    console.log(`   📝 Apple Altersfreigabe (${ageRatingChanges.length} Änderungen):\n${formatChanges(ageRatingChanges, '      ')}`);
-    if (!targetAppInfo.ageRatingDeclarationId) {
-      throw new Error('Apple: AppInfo hat keine ageRatingDeclaration-Relationship - bitte in App Store Connect prüfen.');
-    }
-    if (!dryRun) {
-      await ascRequest(token, 'PATCH', `/ageRatingDeclarations/${targetAppInfo.ageRatingDeclarationId}`, {
-        data: {
-          type: 'ageRatingDeclarations',
-          id: targetAppInfo.ageRatingDeclarationId,
-          attributes: changesToAttributeObject(ageRatingChanges),
-        },
-      });
-    }
-  }
-
-  if (categoryChanges.length > 0 && targetAppInfo) {
-    console.log(`   📝 Apple Kategorien:\n${formatChanges(categoryChanges, '      ')}`);
-    if (!dryRun) {
-      const relationships: Record<string, { data: { type: string; id: string } | null }> = {};
-      for (const change of categoryChanges) {
-        const relationship = change.key === 'primaryCategoryId' ? 'primaryCategory' : 'secondaryCategory';
-        // change.to is typed `unknown`; a category id is always a string (or a
-        // number in hand-written ground truth). Anything else would stringify
-        // to "[object Object]" and is treated as "clear the category" instead.
-        const categoryId = typeof change.to === 'string' || typeof change.to === 'number' ? String(change.to) : undefined;
-        relationships[relationship] = { data: categoryId ? { type: 'appCategories', id: categoryId } : null };
-      }
-      await ascRequest(token, 'PATCH', `/appInfos/${targetAppInfo.appInfoId}`, {
-        data: { type: 'appInfos', id: targetAppInfo.appInfoId, relationships },
-      });
-    }
+  if (targetAppInfo) {
+    await pushAgeRatingChanges(token, targetAppInfo, ageRatingChanges, dryRun);
+    await pushCategoryChanges(token, targetAppInfo, categoryChanges, dryRun);
   }
 
   for (const { localizationId, locale, changes } of localizationChanges) {

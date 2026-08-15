@@ -117,6 +117,38 @@ export function parseSharedMatchValue(value: unknown): GameHistoryEntry | null {
 	return value as unknown as GameHistoryEntry;
 }
 
+/** The bundle's `games` entries, or `null` if any of them is malformed. */
+function parseBundleGames(value: unknown): SharedGame[] | null {
+	if (!Array.isArray(value)) return null;
+	const games: SharedGame[] = [];
+	for (const raw of value) {
+		const preset = parseGamePresetValue(raw);
+		if (!preset) return null;
+		const id = isRecord(raw) && typeof raw.id === 'string' ? raw.id : undefined;
+		games.push({ ...preset, id });
+	}
+	return games;
+}
+
+/** The bundle's `friends` entries, or `null` if any of them is malformed. */
+function parseBundleFriends(value: unknown): Friend[] | null {
+	if (!Array.isArray(value)) return null;
+	if (value.length === 0) return [];
+	return parseFriendsValue(value);
+}
+
+/** The bundle's `matches` entries, or `null` if any of them is malformed. */
+function parseBundleMatches(value: unknown): GameHistoryEntry[] | null {
+	if (!Array.isArray(value)) return null;
+	const matches: GameHistoryEntry[] = [];
+	for (const raw of value) {
+		const match = parseSharedMatchValue(raw);
+		if (!match) return null;
+		matches.push(match);
+	}
+	return matches;
+}
+
 function parseShareBundleValue(value: unknown): ShareBundle | null {
 	if (!isRecord(value)) return null;
 	if (value.type !== SHARE_BUNDLE_TYPE) return null;
@@ -125,36 +157,20 @@ function parseShareBundleValue(value: unknown): ShareBundle | null {
 	const bundle: ShareBundle = { type: SHARE_BUNDLE_TYPE, version: 1 };
 
 	if (value.games !== undefined) {
-		if (!Array.isArray(value.games)) return null;
-		const games: SharedGame[] = [];
-		for (const raw of value.games) {
-			const preset = parseGamePresetValue(raw);
-			if (!preset) return null;
-			const id = isRecord(raw) && typeof raw.id === 'string' ? raw.id : undefined;
-			games.push({ ...preset, id });
-		}
+		const games = parseBundleGames(value.games);
+		if (!games) return null;
 		bundle.games = games;
 	}
 
 	if (value.friends !== undefined) {
-		if (!Array.isArray(value.friends)) return null;
-		if (value.friends.length > 0) {
-			const friends = parseFriendsValue(value.friends);
-			if (!friends) return null;
-			bundle.friends = friends;
-		} else {
-			bundle.friends = [];
-		}
+		const friends = parseBundleFriends(value.friends);
+		if (!friends) return null;
+		bundle.friends = friends;
 	}
 
 	if (value.matches !== undefined) {
-		if (!Array.isArray(value.matches)) return null;
-		const matches: GameHistoryEntry[] = [];
-		for (const raw of value.matches) {
-			const match = parseSharedMatchValue(raw);
-			if (!match) return null;
-			matches.push(match);
-		}
+		const matches = parseBundleMatches(value.matches);
+		if (!matches) return null;
 		bundle.matches = matches;
 	}
 
@@ -176,41 +192,43 @@ export function decodeShareText(text: string): ShareBundle | null {
 	if (trimmed.startsWith(SHARE_STRING_PREFIX)) {
 		const json = CompressionHelper.decompressFromBase64(trimmed.slice(SHARE_STRING_PREFIX.length));
 		if (json === null) return null;
-		try {
-			return parseShareBundleValue(JSON.parse(json));
-		} catch {
-			return null;
-		}
+		const parsedJson = parseJsonOrNull(json);
+		return parsedJson === null ? null : parseShareBundleValue(parsedJson);
 	}
 
-	let parsed: unknown;
+	const parsed = parseJsonOrNull(trimmed);
+	if (parsed === null) return null;
+
+	return parseShareBundleValue(parsed) ?? parseLegacyShareValue(parsed);
+}
+
+/** `JSON.parse` that reports malformed input as `null` instead of throwing. */
+function parseJsonOrNull(text: string): unknown {
 	try {
-		parsed = JSON.parse(trimmed);
+		return JSON.parse(text) as unknown;
 	} catch {
 		return null;
 	}
+}
 
-	const bundle = parseShareBundleValue(parsed);
-	if (bundle) return bundle;
-
-	// Legacy: a bare friends array ("Freunde exportieren" of older versions).
+/**
+ * The export formats from before the envelope existed: a bare `Friend[]`, a
+ * single `GamePreset`, or an array of presets. Wrapped into an equivalent
+ * bundle so callers only ever see one shape.
+ */
+function parseLegacyShareValue(parsed: unknown): ShareBundle | null {
 	const friends = parseFriendsValue(parsed);
 	if (friends) return { type: SHARE_BUNDLE_TYPE, version: 1, friends };
 
-	// Legacy: a single game preset ("Spiel exportieren" of older versions).
 	const preset = parseGamePresetValue(parsed);
 	if (preset) return { type: SHARE_BUNDLE_TYPE, version: 1, games: [preset] };
 
-	// Legacy: an array of game presets ("Alle Spiele exportieren" of older versions).
-	if (Array.isArray(parsed) && parsed.length > 0) {
-		const games: SharedGame[] = [];
-		for (const raw of parsed) {
-			const parsedPreset = parseGamePresetValue(raw);
-			if (!parsedPreset) return null;
-			games.push(parsedPreset);
-		}
-		return { type: SHARE_BUNDLE_TYPE, version: 1, games };
+	if (!Array.isArray(parsed) || parsed.length === 0) return null;
+	const games: SharedGame[] = [];
+	for (const raw of parsed) {
+		const parsedPreset = parseGamePresetValue(raw);
+		if (!parsedPreset) return null;
+		games.push(parsedPreset);
 	}
-
-	return null;
+	return { type: SHARE_BUNDLE_TYPE, version: 1, games };
 }

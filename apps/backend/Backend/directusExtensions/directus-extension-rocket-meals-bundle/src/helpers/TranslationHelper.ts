@@ -366,52 +366,74 @@ export class TranslationHelper {
 
     for (const existingTranslationsCandidate of existingTranslationsCandidates) {
       const existingTranslations = existingTranslationsCandidate || [];
-      if (existingTranslations.length === 0) {
+      if (!TranslationHelper._candidateMatchesSourceName(existingTranslations, parsedSourceName)) {
+        // Empty candidate, or a different source text -> this candidate does not fit
         continue;
       }
-
-      // The source translation of the candidate
-      const existingSourceLanguageCode = TranslationHelper._resolveSourceLanguageCodeForTranslations(existingTranslations, TranslationHelper.DefaultLanguage);
-      const existingSourceTranslation = existingTranslations.find(translation => translation.languages_code === existingSourceLanguageCode);
-      if (!existingSourceTranslation || existingSourceTranslation.name !== parsedSourceName) {
-        // Different source text -> this candidate does not fit
-        continue;
-      }
-
-      const coveredLanguageCodes = new Set<string>();
-      for (const parsedEntry of parsedCreateList) {
-        const languagesCodeObject = parsedEntry[FIELD_TRANSLATION_LANGUAGE_CODE] as Record<string, string> | undefined;
-        const languageCode = languagesCodeObject?.[FIELD_LANGUAGE_ID];
-        if (languageCode) {
-          coveredLanguageCodes.add(languageCode);
-        }
-      }
-
-      // Copy all languages of the candidate which the parser did not provide
-      const createList: NewTranslationForCreation[] = [...parsedCreateList];
-      for (const existingTranslation of existingTranslations) {
-        const languageCode = existingTranslation.languages_code;
-        if (!languageCode || typeof languageCode !== 'string' || coveredLanguageCodes.has(languageCode)) {
-          continue;
-        }
-        const reusedFields: Record<string, any> = {};
-        for (const fieldToReuse of fieldsToReuse) {
-          reusedFields[fieldToReuse] = existingTranslation[fieldToReuse] ?? null;
-        }
-        createList.push({
-          ...reusedFields,
-          be_source_for_translations: false,
-          let_be_translated: false, // reused translation, do not machine-translate again
-          [FIELD_TRANSLATION_LANGUAGE_CODE]: {
-            [FIELD_LANGUAGE_ID]: languageCode,
-          },
-        });
-        coveredLanguageCodes.add(languageCode);
-      }
-      return createList;
+      return TranslationHelper._mergeReusableTranslations(parsedCreateList, existingTranslations, fieldsToReuse);
     }
 
     return parsedCreateList;
+  }
+
+  /**
+   * Whether the candidate's own source translation (e.g. German) has exactly the
+   * source name the parser produced - only then may its translations be reused.
+   */
+  static _candidateMatchesSourceName(existingTranslations: ExistingTranslation[], parsedSourceName: string): boolean {
+    if (existingTranslations.length === 0) {
+      return false;
+    }
+    const existingSourceLanguageCode = TranslationHelper._resolveSourceLanguageCodeForTranslations(existingTranslations, TranslationHelper.DefaultLanguage);
+    const existingSourceTranslation = existingTranslations.find(translation => translation.languages_code === existingSourceLanguageCode);
+    return !!existingSourceTranslation && existingSourceTranslation.name === parsedSourceName;
+  }
+
+  /** The language codes the parsed create list already covers. */
+  static _getCoveredLanguageCodes(parsedCreateList: NewTranslationForCreation[]): Set<string> {
+    const coveredLanguageCodes = new Set<string>();
+    for (const parsedEntry of parsedCreateList) {
+      const languagesCodeObject = parsedEntry[FIELD_TRANSLATION_LANGUAGE_CODE] as Record<string, string> | undefined;
+      const languageCode = languagesCodeObject?.[FIELD_LANGUAGE_ID];
+      if (languageCode) {
+        coveredLanguageCodes.add(languageCode);
+      }
+    }
+    return coveredLanguageCodes;
+  }
+
+  /**
+   * The parsed create list plus every language of the matching candidate the
+   * parser did not provide, copied with `let_be_translated: false` so the
+   * auto-translation hook does not machine-translate the same text again.
+   */
+  static _mergeReusableTranslations(
+    parsedCreateList: NewTranslationForCreation[],
+    existingTranslations: ExistingTranslation[],
+    fieldsToReuse: string[]
+  ): NewTranslationForCreation[] {
+    const coveredLanguageCodes = TranslationHelper._getCoveredLanguageCodes(parsedCreateList);
+    const createList: NewTranslationForCreation[] = [...parsedCreateList];
+    for (const existingTranslation of existingTranslations) {
+      const languageCode = existingTranslation.languages_code;
+      if (!languageCode || typeof languageCode !== 'string' || coveredLanguageCodes.has(languageCode)) {
+        continue;
+      }
+      const reusedFields: Record<string, any> = {};
+      for (const fieldToReuse of fieldsToReuse) {
+        reusedFields[fieldToReuse] = existingTranslation[fieldToReuse] ?? null;
+      }
+      createList.push({
+        ...reusedFields,
+        be_source_for_translations: false,
+        let_be_translated: false, // reused translation, do not machine-translate again
+        [FIELD_TRANSLATION_LANGUAGE_CODE]: {
+          [FIELD_LANGUAGE_ID]: languageCode,
+        },
+      });
+      coveredLanguageCodes.add(languageCode);
+    }
+    return createList;
   }
 
   /**

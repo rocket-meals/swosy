@@ -171,6 +171,24 @@ async function handleGoogle(options: CliOptions, googleToken: string, entry: Sto
   console.log('');
 }
 
+/** Message of an unknown thrown value, for the log line and the failure summary. */
+function describeSyncError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+/**
+ * One store's sync step for one app. A failure is collected in `failures`
+ * instead of aborting the run, so the remaining apps/stores are still synced.
+ */
+async function runSyncStep(label: string, failures: string[], step: () => Promise<void>): Promise<void> {
+  try {
+    await step();
+  } catch (error) {
+    failures.push(`${label}: ${describeSyncError(error)}`);
+    console.error(`   ❌ ${describeSyncError(error)}\n`);
+  }
+}
+
 async function main(): Promise<void> {
   const options = parseCliOptions(process.argv.slice(2));
   const metadata = filterStoreMetadata(loadStoreMetadataModule(options.modulePath), options.appFilter);
@@ -187,20 +205,10 @@ async function main(): Promise<void> {
   for (const entry of metadata) {
     console.log(`===== ${entry.displayName} =====`);
     if (appleToken && entry.apple) {
-      try {
-        await handleApple(options, appleToken, entry);
-      } catch (error) {
-        failures.push(`${entry.displayName} (Apple): ${error instanceof Error ? error.message : String(error)}`);
-        console.error(`   ❌ ${error instanceof Error ? error.message : error}\n`);
-      }
+      await runSyncStep(`${entry.displayName} (Apple)`, failures, () => handleApple(options, appleToken, entry));
     }
     if (googleToken && entry.google) {
-      try {
-        await handleGoogle(options, googleToken, entry);
-      } catch (error) {
-        failures.push(`${entry.displayName} (Google): ${error instanceof Error ? error.message : String(error)}`);
-        console.error(`   ❌ ${error instanceof Error ? error.message : error}\n`);
-      }
+      await runSyncStep(`${entry.displayName} (Google)`, failures, () => handleGoogle(options, googleToken, entry));
     }
   }
 

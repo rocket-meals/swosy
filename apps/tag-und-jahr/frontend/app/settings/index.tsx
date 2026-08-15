@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { Canteen, fetchCanteensAsync, fetchTodaysMealsAsync, Meal } from '../../helpers/foodApi';
-import { FOOD_SERVERS, FoodServerKey, getFoodServer } from '../../helpers/foodServers';
+import { FOOD_SERVERS, FoodServer, FoodServerKey, getFoodServer } from '../../helpers/foodServers';
 import { loadFoodWidgetSettingsAsync, saveFoodWidgetSettingsAsync } from '../../helpers/foodWidgetSettings';
 import { CLOCK_COLORS } from '../../helpers/clockDesign';
 import { ClockSettings, DEFAULT_CLOCK_SETTINGS, loadClockSettingsAsync, saveClockSettingsAsync } from '../../helpers/clockSettings';
@@ -9,6 +9,39 @@ import { syncFoodWidgetTimelineAsync, syncWidgetTimeline } from '../../helpers/w
 import { ClockWidgetPreview, FoodWidgetPreview } from '../../components/WidgetPreview';
 
 const MEAL_COUNT_OPTIONS = [2, 4, 6, 8];
+
+/** Confirmation shown after the food widget was refreshed. */
+function describeFoodSyncStatus(mealCount: number, canteenAlias: string): string {
+	if (mealCount === 0) return `Gespeichert - heute keine Speisen für ${canteenAlias}.`;
+	return `Gespeichert - ${mealCount} Speisen für ${canteenAlias} ans Widget übergeben.`;
+}
+
+/**
+ * Fetch today's meals, persist the food widget settings and hand the meals to
+ * the widget timeline. Returns `null` as soon as `isCancelled` reports the
+ * effect was superseded, so a stale configuration is never announced or saved.
+ */
+async function loadAndSyncFoodWidget(params: {
+	server: FoodServer;
+	canteenId: string;
+	canteenAlias: string;
+	mealCount: number;
+	isCancelled: () => boolean;
+	onMealsLoaded: (meals: Meal[]) => void;
+}): Promise<{ status: string } | { error: string } | null> {
+	const { server, canteenId, canteenAlias, mealCount, isCancelled, onMealsLoaded } = params;
+	try {
+		const todaysMeals = await fetchTodaysMealsAsync(server.serverUrl, canteenId);
+		if (isCancelled()) return null;
+		onMealsLoaded(todaysMeals);
+		const settings = { serverKey: server.key, canteenId, canteenAlias, mealCount };
+		await saveFoodWidgetSettingsAsync(settings);
+		await syncFoodWidgetTimelineAsync(settings, todaysMeals);
+		return isCancelled() ? null : { status: describeFoodSyncStatus(todaysMeals.length, canteenAlias) };
+	} catch (err) {
+		return isCancelled() ? null : { error: `Speisen konnten nicht geladen werden: ${(err as Error).message}` };
+	}
+}
 
 // Experimental playground. Everything auto-saves: changing an option persists
 // it immediately and refreshes the matching home screen widget - there is no
@@ -98,33 +131,25 @@ export default function Settings() {
 		let cancelled = false;
 		setBusy(true);
 		setError(null);
-		(async () => {
-			try {
-				const todaysMeals = await fetchTodaysMealsAsync(server.serverUrl, canteenId);
-				if (cancelled) {
-					return;
-				}
-				setMeals(todaysMeals);
-				const settings = { serverKey: server.key, canteenId, canteenAlias, mealCount };
-				storedCanteenAliasRef.current = canteenAlias;
-				await saveFoodWidgetSettingsAsync(settings);
-				await syncFoodWidgetTimelineAsync(settings, todaysMeals);
-				if (!cancelled) {
-					setStatus(
-						todaysMeals.length === 0
-							? `Gespeichert - heute keine Speisen für ${canteenAlias}.`
-							: `Gespeichert - ${todaysMeals.length} Speisen für ${canteenAlias} ans Widget übergeben.`
-					);
-				}
-			} catch (err) {
-				if (!cancelled) {
-					setError(`Speisen konnten nicht geladen werden: ${(err as Error).message}`);
-				}
-			} finally {
-				if (!cancelled) {
-					setBusy(false);
-				}
+		void (async () => {
+			const result = await loadAndSyncFoodWidget({
+				server,
+				canteenId,
+				canteenAlias,
+				mealCount,
+				isCancelled: () => cancelled,
+				onMealsLoaded: (loadedMeals) => {
+					setMeals(loadedMeals);
+					storedCanteenAliasRef.current = canteenAlias;
+				},
+			});
+			if (!result) return;
+			if ('error' in result) {
+				setError(result.error);
+			} else {
+				setStatus(result.status);
 			}
+			setBusy(false);
 		})();
 		return () => {
 			cancelled = true;

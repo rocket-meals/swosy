@@ -62,44 +62,32 @@ export function buildImportPlan(
 ): ImportPlan {
 	const { localGameTypes, localFriends, mode } = params;
 
-	const games: GameImportResolution[] = [];
-	if (mode !== 'friends') {
-		for (const game of bundle.games ?? []) {
-			const localGameType = localGameTypes.find((candidate) => normalizeName(candidate.name) === normalizeName(game.name));
-			if (!localGameType) {
-				games.push({ kind: 'create', game });
-				continue;
-			}
-			const importedVersion = game.version ?? 1;
-			const localVersion = localGameType.version ?? 1;
-			if (importedVersion === localVersion) {
-				games.push({ kind: 'existing', game, localGameType });
-			} else {
-				games.push({ kind: 'versionConflict', game, localGameType, importedVersion, localVersion });
-			}
-		}
-	}
-
-	const friends: FriendImportResolution[] = [];
-	if (mode !== 'games') {
-		for (const friend of bundle.friends ?? []) {
-			const byId = localFriends.find((candidate) => candidate.id === friend.id);
-			if (byId) {
-				friends.push({ kind: 'existing', friend, localFriend: byId });
-				continue;
-			}
-			const byName = localFriends.find((candidate) => normalizeName(candidate.name) === normalizeName(friend.name));
-			if (byName) {
-				friends.push({ kind: 'nameConflict', friend, localFriend: byName });
-			} else {
-				friends.push({ kind: 'new', friend });
-			}
-		}
-	}
-
+	const games = mode === 'friends' ? [] : (bundle.games ?? []).map((game) => resolveGameImport(game, localGameTypes));
+	const friends = mode === 'games' ? [] : (bundle.friends ?? []).map((friend) => resolveFriendImport(friend, localFriends));
 	const matches = mode === 'all' ? bundle.matches ?? [] : [];
 
 	return { games, friends, matches };
+}
+
+/** How one shared Spiel relates to the local ones: new, same version, or a version conflict. */
+function resolveGameImport(game: SharedGame, localGameTypes: GameType[]): GameImportResolution {
+	const localGameType = localGameTypes.find((candidate) => normalizeName(candidate.name) === normalizeName(game.name));
+	if (!localGameType) return { kind: 'create', game };
+
+	const importedVersion = game.version ?? 1;
+	const localVersion = localGameType.version ?? 1;
+	if (importedVersion === localVersion) return { kind: 'existing', game, localGameType };
+	return { kind: 'versionConflict', game, localGameType, importedVersion, localVersion };
+}
+
+/** How one shared Freund relates to the local ones: same id, same name, or new. */
+function resolveFriendImport(friend: Friend, localFriends: Friend[]): FriendImportResolution {
+	const byId = localFriends.find((candidate) => candidate.id === friend.id);
+	if (byId) return { kind: 'existing', friend, localFriend: byId };
+
+	const byName = localFriends.find((candidate) => normalizeName(candidate.name) === normalizeName(friend.name));
+	if (byName) return { kind: 'nameConflict', friend, localFriend: byName };
+	return { kind: 'new', friend };
 }
 
 /**

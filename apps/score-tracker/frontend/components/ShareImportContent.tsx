@@ -36,6 +36,84 @@ function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bot
 	return 'middle';
 }
 
+/** Imported/updated Spiele plus the map from shared game id to local game id. */
+type GameImportResult = { gameIdMap: Record<string, string>; created: number; updated: number };
+
+/** Freunde to store plus the map from shared friend id to local friend id. */
+type FriendImportResult = { friendIdMap: Record<string, string>; friendsToImport: Friend[]; linked: number };
+
+/** Create the new Spiele and apply the chosen resolution to the conflicting ones. */
+function applyGameImports(
+	games: ImportPlan['games'],
+	gameChoices: Record<number, GameConflictChoice>,
+	dispatch: AppDispatch,
+): GameImportResult {
+	const gameIdMap: Record<string, string> = {};
+	let created = 0;
+	let updated = 0;
+	games.forEach((resolution, index) => {
+		if (resolution.kind === 'create') {
+			const action = dispatch(addGameTypeFromPreset(resolution.game));
+			created++;
+			if (resolution.game.id) gameIdMap[resolution.game.id] = action.payload.id;
+			return;
+		}
+		if (resolution.kind === 'versionConflict' && (gameChoices[index] ?? 'keepLocal') === 'updateLocal') {
+			dispatch(updateGameTypeFromPreset({ gameTypeId: resolution.localGameType.id, preset: resolution.game }));
+			updated++;
+		}
+		if (resolution.game.id) gameIdMap[resolution.game.id] = resolution.localGameType.id;
+	});
+	return { gameIdMap, created, updated };
+}
+
+/** The Freunde to store and how each shared friend id maps onto a local one. */
+function resolveFriendImports(
+	friends: ImportPlan['friends'],
+	friendChoices: Record<number, FriendConflictChoice>,
+	localFriends: Friend[],
+): FriendImportResult {
+	const friendIdMap: Record<string, string> = {};
+	const friendsToImport: Friend[] = [];
+	let linked = 0;
+	friends.forEach((resolution, index) => {
+		if (resolution.kind === 'existing' || resolution.kind === 'new') {
+			friendsToImport.push(resolution.friend);
+			friendIdMap[resolution.friend.id] = resolution.friend.id;
+			return;
+		}
+		const choice = friendChoices[index] ?? 'samePerson';
+		if (choice === 'samePerson') {
+			friendIdMap[resolution.friend.id] = resolution.localFriend.id;
+			linked++;
+			return;
+		}
+		const friend = choice === 'newPerson' ? resolution.friend : { ...resolution.friend, name: dedupedFriendName(resolution.friend.name, localFriends) };
+		friendsToImport.push(friend);
+		friendIdMap[resolution.friend.id] = resolution.friend.id;
+	});
+	return { friendIdMap, friendsToImport, linked };
+}
+
+/** "Importiert: 2 Partien · 1 Spiel (1 neu) · 3 Freunde (2 übernommen)." */
+function buildImportSummary(plan: ImportPlan, games: GameImportResult, friends: FriendImportResult): string {
+	const parts: string[] = [];
+	if (plan.matches.length > 0) parts.push(countLabel(plan.matches.length, 'Partie', 'Partien'));
+	if (plan.games.length > 0) {
+		const details: string[] = [];
+		if (games.created > 0) details.push(`${games.created} neu`);
+		if (games.updated > 0) details.push(`${games.updated} aktualisiert`);
+		parts.push(`${countLabel(plan.games.length, 'Spiel', 'Spiele')}${detailSuffix(details)}`);
+	}
+	if (plan.friends.length > 0) {
+		const details: string[] = [];
+		if (friends.friendsToImport.length > 0) details.push(`${friends.friendsToImport.length} übernommen`);
+		if (friends.linked > 0) details.push(`${friends.linked} verknüpft`);
+		parts.push(`${countLabel(plan.friends.length, 'Freund', 'Freunde')}${detailSuffix(details)}`);
+	}
+	return `Importiert: ${parts.join(' · ')}.`;
+}
+
 /** What the paste field accepts on this surface - shown as the intro hint. */
 function importHint(mode: ImportMode): string {
 	switch (mode) {
@@ -129,75 +207,19 @@ export default function ShareImportContent({ mode, onClose }: Readonly<{ mode: I
 		if (!plan) return;
 
 		// Spiele first: matches need to know which local game they belong to.
-		const gameIdMap: Record<string, string> = {};
-		let gamesCreated = 0;
-		let gamesUpdated = 0;
-		plan.games.forEach((resolution, index) => {
-			if (resolution.kind === 'create') {
-				const action = dispatch(addGameTypeFromPreset(resolution.game));
-				gamesCreated++;
-				if (resolution.game.id) gameIdMap[resolution.game.id] = action.payload.id;
-				return;
-			}
-			if (resolution.kind === 'versionConflict' && (gameChoices[index] ?? 'keepLocal') === 'updateLocal') {
-				dispatch(updateGameTypeFromPreset({ gameTypeId: resolution.localGameType.id, preset: resolution.game }));
-				gamesUpdated++;
-			}
-			if (resolution.game.id) gameIdMap[resolution.game.id] = resolution.localGameType.id;
-		});
-
-		// Freunde: merge/add per resolution and remember which local id each
-		// imported id ended up as, so the match participants stay linked.
-		const friendIdMap: Record<string, string> = {};
-		const friendsToImport: Friend[] = [];
-		let friendsLinked = 0;
-		plan.friends.forEach((resolution, index) => {
-			if (resolution.kind === 'existing') {
-				friendsToImport.push(resolution.friend);
-				friendIdMap[resolution.friend.id] = resolution.friend.id;
-				return;
-			}
-			if (resolution.kind === 'new') {
-				friendsToImport.push(resolution.friend);
-				friendIdMap[resolution.friend.id] = resolution.friend.id;
-				return;
-			}
-			const choice = friendChoices[index] ?? 'samePerson';
-			if (choice === 'samePerson') {
-				friendIdMap[resolution.friend.id] = resolution.localFriend.id;
-				friendsLinked++;
-			} else if (choice === 'newPerson') {
-				friendsToImport.push(resolution.friend);
-				friendIdMap[resolution.friend.id] = resolution.friend.id;
-			} else {
-				friendsToImport.push({ ...resolution.friend, name: dedupedFriendName(resolution.friend.name, localFriends) });
-				friendIdMap[resolution.friend.id] = resolution.friend.id;
-			}
-		});
-		if (friendsToImport.length > 0) dispatch(importFriends(friendsToImport));
+		const gameResult = applyGameImports(plan.games, gameChoices, dispatch);
+		// Freunde next: their local ids keep the match participants linked.
+		const friendResult = resolveFriendImports(plan.friends, friendChoices, localFriends);
+		if (friendResult.friendsToImport.length > 0) dispatch(importFriends(friendResult.friendsToImport));
 
 		// Partien last, with all references remapped. `archiveGame` upserts by
 		// id, so importing the same Partie again updates it instead of
 		// duplicating it.
 		for (const match of plan.matches) {
-			dispatch(archiveGame(remapSharedMatch(match, { gameIdMap, friendIdMap })));
+			dispatch(archiveGame(remapSharedMatch(match, { gameIdMap: gameResult.gameIdMap, friendIdMap: friendResult.friendIdMap })));
 		}
 
-		const parts: string[] = [];
-		if (plan.matches.length > 0) parts.push(countLabel(plan.matches.length, 'Partie', 'Partien'));
-		if (plan.games.length > 0) {
-			const details: string[] = [];
-			if (gamesCreated > 0) details.push(`${gamesCreated} neu`);
-			if (gamesUpdated > 0) details.push(`${gamesUpdated} aktualisiert`);
-			parts.push(`${countLabel(plan.games.length, 'Spiel', 'Spiele')}${detailSuffix(details)}`);
-		}
-		if (plan.friends.length > 0) {
-			const details: string[] = [];
-			if (friendsToImport.length > 0) details.push(`${friendsToImport.length} übernommen`);
-			if (friendsLinked > 0) details.push(`${friendsLinked} verknüpft`);
-			parts.push(`${countLabel(plan.friends.length, 'Freund', 'Freunde')}${detailSuffix(details)}`);
-		}
-		setSummary(`Importiert: ${parts.join(' · ')}.`);
+		setSummary(buildImportSummary(plan, gameResult, friendResult));
 	}, [plan, gameChoices, friendChoices, localFriends, dispatch]);
 
 	// ─── Done state ───────────────────────────────────────────────────────────

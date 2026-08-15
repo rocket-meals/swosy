@@ -211,6 +211,75 @@ function FriendRankingContent({ mode }: Readonly<{ mode: 'matches' | 'wins' }>) 
 	);
 }
 
+/** The weekday with the most matches, or `null` when nothing was played yet. */
+function favoriteWeekdayOf(entries: GameHistoryEntry[]): { name: string; count: number } | null {
+	const counts = weekdayCounts(entries);
+	let bestIndex = 0;
+	for (let i = 1; i < 7; i++) {
+		if (counts[i] > counts[bestIndex]) bestIndex = i;
+	}
+	return counts[bestIndex] > 0 ? { name: WEEKDAY_NAMES[bestIndex], count: counts[bestIndex] } : null;
+}
+
+/** The friend who took part in the most matches, or `null` when there is none. */
+function mostActiveFriendIdOf(entries: GameHistoryEntry[]): string | null {
+	let best: { id: string; count: number } | null = null;
+	for (const [friendId, count] of friendMatchCounts(entries)) {
+		if (!best || count > best.count) best = { id: friendId, count };
+	}
+	return best?.id ?? null;
+}
+
+/** The "Rekorde" rows, skipping every record that has no data yet. */
+function buildRecordRows(
+	records: {
+		recordLongest: GameHistoryEntry | null;
+		recordRounds: GameHistoryEntry | null;
+		recordPlayers: GameHistoryEntry | null;
+		recordDay: { dayIndex: number; count: number } | null;
+	},
+	gameTypeName: (entry: GameHistoryEntry) => string | undefined,
+): { key: string; icon: string; label: string; value: string }[] {
+	const { recordLongest, recordRounds, recordPlayers, recordDay } = records;
+	const rows: { key: string; icon: string; label: string; value: string }[] = [];
+	if (recordLongest?.durationMinutes != null) {
+		const name = gameTypeName(recordLongest);
+		rows.push({
+			key: 'longest',
+			icon: 'timer-outline',
+			label: 'Längste Partie',
+			value: `${formatDuration(recordLongest.durationMinutes)}${dotSuffix(name)}`,
+		});
+	}
+	if (recordRounds && recordRounds.roundsCount > 0) {
+		const name = gameTypeName(recordRounds);
+		rows.push({
+			key: 'rounds',
+			icon: 'repeat-outline',
+			label: 'Meiste Runden in einer Partie',
+			value: `${recordRounds.roundsCount} Runden${dotSuffix(name)}`,
+		});
+	}
+	if (recordPlayers && recordPlayers.players.length > 0) {
+		const name = gameTypeName(recordPlayers);
+		rows.push({
+			key: 'players',
+			icon: 'people-outline',
+			label: 'Größte Runde',
+			value: `${recordPlayers.players.length} Spieler${dotSuffix(name)}`,
+		});
+	}
+	if (recordDay) {
+		rows.push({
+			key: 'day',
+			icon: 'calendar-outline',
+			label: 'Aktivster Tag',
+			value: `${formatMatchCount(recordDay.count)} am ${formatDayIndex(recordDay.dayIndex)}`,
+		});
+	}
+	return rows;
+}
+
 // ─── Statistics screen ────────────────────────────────────────────────────────
 
 export default function StatsScreen() {
@@ -231,14 +300,7 @@ export default function StatsScreen() {
 	const streaks = useMemo(() => computeStreaks(entries, new Date()), [entries]);
 	const activeDaysLastYear = useMemo(() => buildYearActivityGrid(entries, new Date()).activeDayCount, [entries]);
 
-	const favoriteWeekday = useMemo(() => {
-		const counts = weekdayCounts(entries);
-		let bestIndex = 0;
-		for (let i = 1; i < 7; i++) {
-			if (counts[i] > counts[bestIndex]) bestIndex = i;
-		}
-		return counts[bestIndex] > 0 ? { name: WEEKDAY_NAMES[bestIndex], count: counts[bestIndex] } : null;
-	}, [entries]);
+	const favoriteWeekday = useMemo(() => favoriteWeekdayOf(entries), [entries]);
 
 	// ── Match duration boxplot (all games or one picked game) ──
 	const selectedGameType = selectedGameTypeId ? gameTypes.find((gameType) => gameType.id === selectedGameTypeId) : undefined;
@@ -249,13 +311,7 @@ export default function StatsScreen() {
 	const durationStats = useMemo(() => computeBoxplotStats(durations), [durations]);
 
 	// ── Play time per person ──
-	const mostActiveFriendId = useMemo(() => {
-		let best: { id: string; count: number } | null = null;
-		for (const [friendId, count] of friendMatchCounts(entries)) {
-			if (!best || count > best.count) best = { id: friendId, count };
-		}
-		return best?.id ?? null;
-	}, [entries]);
+	const mostActiveFriendId = useMemo(() => mostActiveFriendIdOf(entries), [entries]);
 	const effectiveFriendId = selectedFriendId ?? mostActiveFriendId;
 	const selectedFriend = effectiveFriendId ? friends.find((friend) => friend.id === effectiveFriendId) : undefined;
 	const friendEntries = useMemo(
@@ -275,45 +331,10 @@ export default function StatsScreen() {
 	const recordRounds = useMemo(() => mostRoundsMatch(entries), [entries]);
 	const recordPlayers = useMemo(() => largestMatch(entries), [entries]);
 	const recordDay = useMemo(() => busiestDay(entries), [entries]);
-	const recordRows = useMemo(() => {
-		const rows: { key: string; icon: string; label: string; value: string }[] = [];
-		if (recordLongest?.durationMinutes != null) {
-			const name = gameTypeName(recordLongest);
-			rows.push({
-				key: 'longest',
-				icon: 'timer-outline',
-				label: 'Längste Partie',
-				value: `${formatDuration(recordLongest.durationMinutes)}${dotSuffix(name)}`,
-			});
-		}
-		if (recordRounds && recordRounds.roundsCount > 0) {
-			const name = gameTypeName(recordRounds);
-			rows.push({
-				key: 'rounds',
-				icon: 'repeat-outline',
-				label: 'Meiste Runden in einer Partie',
-				value: `${recordRounds.roundsCount} Runden${dotSuffix(name)}`,
-			});
-		}
-		if (recordPlayers && recordPlayers.players.length > 0) {
-			const name = gameTypeName(recordPlayers);
-			rows.push({
-				key: 'players',
-				icon: 'people-outline',
-				label: 'Größte Runde',
-				value: `${recordPlayers.players.length} Spieler${dotSuffix(name)}`,
-			});
-		}
-		if (recordDay) {
-			rows.push({
-				key: 'day',
-				icon: 'calendar-outline',
-				label: 'Aktivster Tag',
-				value: `${formatMatchCount(recordDay.count)} am ${formatDayIndex(recordDay.dayIndex)}`,
-			});
-		}
-		return rows;
-	}, [recordLongest, recordRounds, recordPlayers, recordDay, gameTypeName]);
+	const recordRows = useMemo(
+		() => buildRecordRows({ recordLongest, recordRounds, recordPlayers, recordDay }, gameTypeName),
+		[recordLongest, recordRounds, recordPlayers, recordDay, gameTypeName],
+	);
 
 	// ── Modals ──
 	const handleOpenYearOverview = useCallback(() => {

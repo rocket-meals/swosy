@@ -105,6 +105,55 @@ function minutesFromValue(values: GameCategoryValues, categoryId: string | null)
 	return typeof value === 'string' ? parseTimeToMinutes(value) : null;
 }
 
+/** Start, end and duration as the legacy categories recorded them. */
+type LegacyTimeRange = { startedAt: number | null; endTimestamp: number | null; durationMinutes: number | null };
+
+/**
+ * Read start/end/duration out of the legacy category values, anchored on
+ * `isoDay`. An end before the start is read as "crossed midnight".
+ */
+function readLegacyTimeRange(resolved: GameCategoryValues, legacy: LegacyTimeCategoryIds, isoDay: string): LegacyTimeRange {
+	const startMinutes = minutesFromValue(resolved, legacy.startTimeId);
+	const endMinutes = minutesFromValue(resolved, legacy.endTimeId);
+	const durationMinutes = legacy.durationId != null && typeof resolved[legacy.durationId] === 'number' ? (resolved[legacy.durationId] as number) : null;
+
+	const startedAt = startMinutes != null ? timestampAt(isoDay, startMinutes) : null;
+	let endTimestamp = endMinutes != null ? timestampAt(isoDay, endMinutes) : null;
+	if (startedAt != null && endTimestamp != null && endTimestamp < startedAt) {
+		endTimestamp += DAY_MS;
+	}
+	return { startedAt, endTimestamp, durationMinutes };
+}
+
+/** Derive whichever of start/end/duration is missing from the two that are known. */
+function completeTimeRange(range: LegacyTimeRange): LegacyTimeRange {
+	let { startedAt, endTimestamp } = range;
+	let { durationMinutes } = range;
+	if (durationMinutes == null && startedAt != null && endTimestamp != null) {
+		durationMinutes = Math.round((endTimestamp - startedAt) / MINUTE_MS);
+	}
+	if (startedAt == null && endTimestamp != null && durationMinutes != null) {
+		startedAt = endTimestamp - durationMinutes * MINUTE_MS;
+	}
+	if (endTimestamp == null && startedAt != null && durationMinutes != null) {
+		endTimestamp = startedAt + durationMinutes * MINUTE_MS;
+	}
+	return { startedAt, endTimestamp, durationMinutes };
+}
+
+/**
+ * The entry's category values without the migrated time categories: keeping
+ * them around as orphaned values would only resurface as duplicates if a
+ * category with the same id were ever re-created.
+ */
+function withoutLegacyTimeValues(values: GameCategoryValues | undefined, legacy: LegacyTimeCategoryIds): GameCategoryValues {
+	const categoryValues = { ...values };
+	for (const key of [legacy.startTimeId, legacy.endTimeId, legacy.durationId]) {
+		if (key) delete categoryValues[key];
+	}
+	return categoryValues;
+}
+
 /**
  * Derive the built-in times of one archived match from its legacy category
  * values. The day comes from the day category when recorded, otherwise from
@@ -123,27 +172,11 @@ export function migrateHistoryEntry(
 	const recordedDay = legacy.dateId ? resolved[legacy.dateId] : null;
 	const isoDay = typeof recordedDay === 'string' && ISO_DATE_REGEX.test(recordedDay) ? recordedDay : isoDayOf(entry.endedAt);
 
-	const startMinutes = minutesFromValue(resolved, legacy.startTimeId);
-	const endMinutes = minutesFromValue(resolved, legacy.endTimeId);
-	const recordedDuration = legacy.durationId != null && typeof resolved[legacy.durationId] === 'number' ? (resolved[legacy.durationId] as number) : null;
-
-	let startedAt = startMinutes != null ? timestampAt(isoDay, startMinutes) : null;
-	let endTimestamp = endMinutes != null ? timestampAt(isoDay, endMinutes) : null;
-	if (startedAt != null && endTimestamp != null && endTimestamp < startedAt) {
-		endTimestamp += DAY_MS;
-	}
-
+	const { startedAt: recordedStart, endTimestamp, durationMinutes: recordedDuration } = completeTimeRange(
+		readLegacyTimeRange(resolved, legacy, isoDay),
+	);
+	let startedAt = recordedStart;
 	let durationMinutes = recordedDuration;
-	if (durationMinutes == null && startedAt != null && endTimestamp != null) {
-		durationMinutes = Math.round((endTimestamp - startedAt) / MINUTE_MS);
-	}
-	// A recorded duration can fill in whichever end of the range is missing.
-	if (startedAt == null && endTimestamp != null && durationMinutes != null) {
-		startedAt = endTimestamp - durationMinutes * MINUTE_MS;
-	}
-	if (endTimestamp == null && startedAt != null && durationMinutes != null) {
-		endTimestamp = startedAt + durationMinutes * MINUTE_MS;
-	}
 
 	if (startedAt == null && endTimestamp == null && durationMinutes == null) return entry;
 
@@ -162,13 +195,7 @@ export function migrateHistoryEntry(
 		durationMinutes = Math.round((endedAt - startedAt) / MINUTE_MS);
 	}
 
-	// The migrated values move into the built-in fields; keeping them around as
-	// orphaned category values would only resurface as duplicates if a category
-	// with the same id were ever re-created.
-	const categoryValues = { ...entry.categoryValues };
-	for (const key of [legacy.startTimeId, legacy.endTimeId, legacy.durationId]) {
-		if (key) delete categoryValues[key];
-	}
+	const categoryValues = withoutLegacyTimeValues(entry.categoryValues, legacy);
 
 	return {
 		...entry,

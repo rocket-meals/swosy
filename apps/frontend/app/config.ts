@@ -69,7 +69,8 @@ export function getVersionPatch() {
         // 12: shared Expo app config moved to repo-depkit-common/appconfig
         // 13: privacy manifest declared per app from named building blocks
         // 14: content rights declared as "third-party content, rights held"
-        return 14;
+        // 15: SonarCloud clean-up (map message origin check, login debug panel)
+        return 15;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -10,6 +10,7 @@ import {
   FoodWithBasicData
 } from './FoodParserInterface';
 import {TranslationHelper} from '../helpers/TranslationHelper';
+import {ItemsServiceHelper} from '../helpers/ItemsServiceHelper';
 import {CollectionNames, DatabaseTypes, DateHelper, DeepCopyHelper, DirectusItemStatus, LanguageCodes} from 'repo-depkit-common';
 import {MarkingParserInterface, MarkingsTypeForParser} from './MarkingParserInterface';
 import {ListHelper} from '../helpers/ListHelper';
@@ -1268,9 +1269,35 @@ export class ParseSchedule {
 
     const foodoffersTranslationsHelper = this.context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.FoodoffersTranslations>(CollectionNames.FOODOFFERS_TRANSLATIONS);
 
-    // Find one existing foodoffer per source name whose source translation matches
+    const dictSourceNameToFoodofferId = await this.resolveFoodofferIdsBySourceName(foodoffersTranslationsHelper, Array.from(sourceNames));
+
+    const foodofferIds = Array.from(new Set(Object.values(dictSourceNameToFoodofferId)));
+    if (foodofferIds.length === 0) {
+      return {};
+    }
+
+    const dictFoodofferIdToTranslations = await this.resolveTranslationsByFoodofferId(foodoffersTranslationsHelper, foodofferIds);
+
+    const dictSourceNameToTranslations: Record<string, DatabaseTypes.FoodoffersTranslations[]> = {};
+    for (const [sourceName, foodofferId] of Object.entries(dictSourceNameToFoodofferId)) {
+      const translations = dictFoodofferIdToTranslations[foodofferId];
+      if (translations && translations.length > 0) {
+        dictSourceNameToTranslations[sourceName] = translations;
+      }
+    }
+    return dictSourceNameToTranslations;
+  }
+
+  /**
+   * One existing foodoffer id per source name: the first foodoffer whose source
+   * (German) translation carries exactly that name. Queried in chunks so the
+   * `_in` filter stays within a sane size.
+   */
+  private async resolveFoodofferIdsBySourceName(
+    foodoffersTranslationsHelper: ItemsServiceHelper<DatabaseTypes.FoodoffersTranslations>,
+    sourceNameList: string[],
+  ): Promise<Record<string, string>> {
     const dictSourceNameToFoodofferId: Record<string, string> = {};
-    const sourceNameList = Array.from(sourceNames);
     for (let i = 0; i < sourceNameList.length; i += ParseSchedule.TRANSLATION_LOOKUP_CHUNK_SIZE) {
       const chunk = sourceNameList.slice(i, i + ParseSchedule.TRANSLATION_LOOKUP_CHUNK_SIZE);
       const sourceTranslationRows = await foodoffersTranslationsHelper.readByQuery({
@@ -1291,13 +1318,14 @@ export class ParseSchedule {
         }
       }
     }
+    return dictSourceNameToFoodofferId;
+  }
 
-    const foodofferIds = Array.from(new Set(Object.values(dictSourceNameToFoodofferId)));
-    if (foodofferIds.length === 0) {
-      return {};
-    }
-
-    // Fetch the complete translation sets of those foodoffers
+  /** The complete translation sets of the given foodoffers, grouped by foodoffer id. */
+  private async resolveTranslationsByFoodofferId(
+    foodoffersTranslationsHelper: ItemsServiceHelper<DatabaseTypes.FoodoffersTranslations>,
+    foodofferIds: string[],
+  ): Promise<Record<string, DatabaseTypes.FoodoffersTranslations[]>> {
     const dictFoodofferIdToTranslations: Record<string, DatabaseTypes.FoodoffersTranslations[]> = {};
     for (let i = 0; i < foodofferIds.length; i += ParseSchedule.TRANSLATION_LOOKUP_CHUNK_SIZE) {
       const chunk = foodofferIds.slice(i, i + ParseSchedule.TRANSLATION_LOOKUP_CHUNK_SIZE);
@@ -1314,15 +1342,7 @@ export class ParseSchedule {
         dictFoodofferIdToTranslations[foodofferId].push(translationRow);
       }
     }
-
-    const dictSourceNameToTranslations: Record<string, DatabaseTypes.FoodoffersTranslations[]> = {};
-    for (const [sourceName, foodofferId] of Object.entries(dictSourceNameToFoodofferId)) {
-      const translations = dictFoodofferIdToTranslations[foodofferId];
-      if (translations && translations.length > 0) {
-        dictSourceNameToTranslations[sourceName] = translations;
-      }
-    }
-    return dictSourceNameToTranslations;
+    return dictFoodofferIdToTranslations;
   }
 
   /**

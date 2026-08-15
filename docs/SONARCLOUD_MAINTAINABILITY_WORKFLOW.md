@@ -1805,6 +1805,155 @@ nach dem nächsten Scan (per Suppression statt weiterer Sanitizer-Härtung, da
 zwei vorherige Härtungsrunden das Sonar-Finding nachweislich nicht
 beseitigen konnten).
 
+## Am 2026-08-15 (siebzehnte Runde): alle drei Reports in einem Durchgang
+
+Ausgangspunkt: **100 Maintainability-, 12 Reliability- und 13 Security-Funde**
+(nach den vier neuen Apps/Workspaces `tag-und-jahr`, `score-tracker`,
+`apps/scripts` und dem Playbook-Paket sind die Zähler wieder gestiegen).
+Abgearbeitet wurden in dieser Runde **alle** Typen — inklusive der 19
+Cognitive-Complexity-Funde, die frühere Runden bewusst separat gehalten
+hatten, weil ihre Werte diesmal fast durchgehend knapp über der Grenze lagen
+(16-35 statt bis 201).
+
+**Reliability (12/12 behoben):**
+- `CompressionHelper.ts`: `charCodeAt`/`fromCharCode` → `codePointAt`/
+  `fromCodePoint` (alle betroffenen Zeichen sind Bytes < 256, identisches
+  Ergebnis); das Padding-Strippen `text.replace(/=+$/, '')` durch eine
+  Schleife ersetzt (der Regex backtrackt quadratisch auf reinen `=`-Strings).
+- Weitere backtrackende Regexe durch explizite Trim-Schleifen ersetzt:
+  `collectLicenses.ts` (`/\/+$/`), `MarkdownLinkHelper.ts`
+  (`/^[,\s]+|[,\s]+$/g`), `store-metadata-diff.ts` (`/^-+|-+$/g`) und
+  `ImageSearch.ts` (`/\s+(logo|cover|box)$/i` → Prüfung des letzten Wortes).
+- `check-build-version.ts`: `parseInt` → `Number.parseInt`, `String.match`
+  → `RegExp.exec`.
+- `store-metadata-extract.ts`: `unanswered.sort()` bekommt einen expliziten
+  `localeCompare`-Comparator; beide Sortierungen laufen jetzt als eigene
+  Anweisung vor der Schleife (deckt zusätzlich den „Move this array sort
+  operation"-Maintainability-Fund ab).
+
+**Security (9 von 13 behoben, 4 bleiben Review-Hotspots):**
+- **„Verify the origin of the received message" (2x)**, `MyMap/index.web.tsx`
+  in `apps/frontend` und `packages/common-ui`: Der `message`-Listener nahm
+  jede Nachricht an. Jetzt wird `event.origin` gegen
+  `window.location.origin` geprüft (dieselbe Annahme, die `sendToMap()` mit
+  seinem `targetOrigin` ohnehin schon macht) und zusätzlich, dass die
+  Nachricht aus dem eigenen Iframe stammt.
+- **Pfad-Validierung + Log-Leak (3x)**, `apps/scripts/store-metadata-extract.ts`:
+  Der Snapshot-Pfad aus `process.argv[2]` ging unvalidiert in
+  `fs.readFileSync`. Jetzt wird er — wie in der fünfzehnten Runde für
+  `scripts/count-sonar-maintainability-issues.js` etabliert — per
+  `fs.realpathSync` kanonisiert (Symlinks aufgelöst) und gegen die Repo-Wurzel
+  geprüft, bevor gelesen wird. Der `readFileSync`-Sink und das `console.log`
+  des Snippets tragen ein `// NOSONAR` mit Begründung (gleiches Muster und
+  gleiche Erfahrung wie dort: zwei Härtungsrunden haben den Fund damals nicht
+  beseitigt; das Snippet selbst besteht aus öffentlichen Store-Listing-Daten,
+  keine Credentials, keine personenbezogenen Daten).
+- **„Change this code to not log user-controlled data" (1x)**,
+  `submit-ios-review.ts`: Der Fehlertext kommt teils direkt aus einer App-Store-
+  Connect-Antwort. Neue `sanitizeForLog()`-Funktion ersetzt Steuerzeichen
+  (inkl. `\r`/`\n`) durch Leerzeichen, damit die Antwort keine zusätzlichen
+  Zeilen im CI-Log fälschen kann.
+- **„Lifecycle scripts are enabled by default in Yarn v2+" (3x)**:
+  `--mode=skip-build` ergänzt in `.github/actions/tag-und-jahr-expo-update`
+  und `.github/workflows/backend-schema-sync-pull.yml` (das im Repo bereits
+  etablierte Mittel gegen diese Regel, siehe `ios-submit-review-*.yml` und
+  `store-metadata.yml`). Die Schwester-Actions von score-tracker/geonexia
+  wurden **bewusst nicht** umgestellt: sie generieren zusätzlich App-Icons und
+  brauchen dafür möglicherweise Build-Skripte; bei tag-und-jahr entfällt
+  dieser Schritt (das committete `app_icon_source.png` ist final).
+  Der dritte Treffer in `backend-schema-sync-pull.yml` liegt auf
+  `yarn workspace backend-sync exec playwright install --with-deps chromium`
+  — das ist kein Paket-Install, sondern der Browser-Download; dafür gibt es
+  keinen Lifecycle-Script-Schalter, die Zeile bleibt unverändert.
+- **Bewusst offen: „Make sure that no untrusted code is executed from a
+  fork" (4x)** in den vier `ios-submit-review-*.yml`. Das ist ein
+  Security-Hotspot, der eine menschliche Review in der SonarCloud-UI
+  verlangt, kein automatisch behebbarer Fund: Der Checkout ist bereits fest
+  auf `ref: master` gepinnt, holt also nie den Head eines Fork-Laufs. Als
+  echte Härtung wurde `persist-credentials: false` ergänzt (keiner der vier
+  Workflows pusht zurück) plus ein erklärender Kommentar. Falls SonarCloud
+  den Hotspot weiterhin meldet, gehört er in der UI als „Safe" markiert.
+
+**Maintainability (alle 100 Funde):**
+- **„Refactor this code to not use nested template literals" (17x)**,
+  durchgehend deutsche Pluralisierungen (`n === 1 ? '1 Partie' : `${n}
+  Partien``) mitten in einem anderen Template-String. Statt 17 Einzelfixes
+  ein gemeinsamer Helper `apps/score-tracker/frontend/helpers/CountLabel.ts`
+  (`countLabel(n, 'Partie', 'Partien')` und `dotSuffix(x)` für optionale
+  „ · …"-Anhänge); die restlichen Stellen (`authHelper.ts`,
+  `players/index.tsx`) haben eine benannte Zwischenvariable bekommen.
+- **„Extract this nested ternary operation" (11x)**: jeweils in eine benannte
+  Hilfsfunktion bzw. Zwischenvariable ausgelagert
+  (`getGroupPosition`, `describeGameTypeRow`, `describeComputedToggle`,
+  `triStateKnobToBoolean`/`booleanToTriStateKnob` im Playbook-Registry, …).
+- **„'X' imported multiple times" (8x)**: doppelte Import-Zeilen desselben
+  Moduls zusammengeführt (`store.ts`, `GameImagePicker.tsx`, beide
+  `_layout.tsx` mit `Drawer` + `type DrawerContentComponentProps`).
+- **„The empty object is useless" (6x)**: `{ ...(x ?? {}) }` → `{ ...x }`
+  (Spread von `undefined` ist gültig und liefert dasselbe Objekt).
+- **„Remove this unused import" (5x)** und **„Remove this useless assignment"
+  (4x)**: entfernt. Bei `geonexia`s `liveSpeedKmh` bleibt der Setter erhalten
+  (nur der ungenutzte Wert wurde aus dem Destructuring entfernt), da die
+  `setState`-Aufrufe das Recording-Rendering weiterhin antreiben.
+- **Restliche Einzeltypen**: `??=` statt `if (!x) x = []`, `Readonly<{…}>`
+  für zwei Onboarding-Komponenten, benannter `GroupPosition`-Alias,
+  `export…from` für `defaultImageQuery`, `.at(-2)` statt `[len - 2]`,
+  `new TypeError()` bei Typprüfungen, `String` statt der zu `String`
+  äquivalenten `serializeKnobValue`-Funktion (samt Export und drei
+  Aufrufstellen), Array-Index-Keys durch zusammengesetzte Keys ersetzt,
+  `FoodServerKey | string` → `string`, `Math.round(color[0])` →
+  destrukturierte Defaults, und `resolveFoodofferToCreateOrLog` nimmt statt
+  8 Parametern ein Options-Objekt.
+- **„Cognitive Complexity" (19x, Werte 16-35)** — alle behoben, jeweils durch
+  Extraktion zusammenhängender Blöcke in benannte Funktionen ohne
+  Logikänderung:
+  `CompressionHelper.fromUtf8Bytes` (Lead-Byte-Dekodierung),
+  `ShareCodec.parseShareBundleValue`/`decodeShareText` (pro Bundle-Feld ein
+  Parser, Legacy-Formate separat), `ShareImportPlan.buildImportPlan`
+  (`resolveGameImport`/`resolveFriendImport`),
+  `GameCategories.parseEnumOptionsRawData` (Eintrags-Parser + Bild-Auflösung),
+  `GameRules.isValidGamePresetScalarFields` (`isNullableOfType`/
+  `isOptionalOfType`), `BuiltinTimesMigration.migrateHistoryEntry`
+  (`readLegacyTimeRange`/`completeTimeRange`/`withoutLegacyTimeValues`),
+  `CategoryValueRows.CategoryValueRow` (Eingabe-Switch als eigene
+  `CategoryValueInputRow`-Komponente, Wert-Coercions einmal vorab),
+  `ShareImportContent.handleImport` (`applyGameImports`/
+  `resolveFriendImports`/`buildImportSummary`), `StatsScreen` und
+  `StartScreen` (Record-Zeilen, Lieblings-Wochentag, aktivster Freund,
+  letzte-Partie-Zeile als Modul-Funktionen), tag-und-jahrs `Settings`
+  (`loadAndSyncFoodWidget` mit unverändertem Cancel-Verhalten),
+  `store-metadata-apple.applyApplePush` (`pushAgeRatingChanges`/
+  `pushCategoryChanges`/`reportMissingAgeRatingFields`),
+  `store-metadata.main` (`runSyncStep`), `submit-ios-review.main`
+  (`shouldRetryBlockedSubmission`), geonexias `handleLocationUpdate`
+  (`applyPausedLocationUpdate`/`refreshHexTilesForViewport`),
+  `TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations`
+  (`_candidateMatchesSourceName`/`_getCoveredLanguageCodes`/
+  `_mergeReusableTranslations`),
+  `ParseSchedule.resolveExistingFoodofferTranslationsBySourceName`
+  (`resolveFoodofferIdsBySourceName`/`resolveTranslationsByFoodofferId`) und
+  `files-without-folder-report-schedule` (`collectSingletonFileReference`/
+  `collectCollectionFileReferences`).
+
+**Verifizierung:**
+- `tsc --noEmit` als Baseline-Diff (`git stash`/`git stash pop`) für
+  `apps/frontend/app` und `apps/geonexia/frontend` (beide haben
+  vorbestehende, unabhängige Fehler): keine neuen Fehler, nur
+  Zeilennummern-Verschiebungen. `apps/score-tracker/frontend`,
+  `apps/tag-und-jahr/frontend`, `apps/scripts` und die Backend-Extension
+  (`yarn typecheck`) sind komplett fehlerfrei.
+- Tests: score-tracker 199/199 grün, `packages/common`
+  `CompressionHelper.test.ts` 8/8 grün, Backend-Extension 161/164 — die drei
+  Fehlschläge (`NewsTestHannover`) holen eine externe Webseite und
+  scheitern mit HTTP 403 in dieser Sandbox; identisch auf dem unveränderten
+  Stand verifiziert.
+- Patch-Version aller vier Apps erhöht (`AGENTS.md`), da `packages/common`
+  und `packages/common-ui` mit angefasst wurden.
+
+**Bilanz:** Maintainability 100 → erwartet 0, Reliability 12 → erwartet 0,
+Security 13 → erwartet 4 offene Review-Hotspots („untrusted code from a
+fork"), die in der SonarCloud-UI zu bewerten sind.
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).

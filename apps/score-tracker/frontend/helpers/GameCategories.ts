@@ -598,34 +598,62 @@ export function parseEnumOptionsRawData(value: string, currentOptions?: GameCate
 
 	const options: GameCategoryOption[] = [];
 	for (const entry of parsed) {
-		if (typeof entry === 'string') {
-			if (entry.trim() === '') return null;
-			options.push({ id: generateId(), label: entry.trim(), imageBase64: null });
-			continue;
-		}
-		if (typeof entry !== 'object' || entry === null) return null;
-		const { [ENUM_OPTIONS_RAW_DATA_COMMENT_KEY]: _comment, ...raw } = entry as Record<string, unknown>;
-		if (Object.keys(raw).length === 0) continue;
-		if (typeof raw.label !== 'string' || raw.label.trim() === '') return null;
-		const id = raw.id;
-		if (id !== undefined && (typeof id !== 'string' || id === '')) return null;
-		const image = raw.imageBase64;
-		if (image !== undefined && image !== null && typeof image !== 'string') return null;
-		const keepId = typeof id === 'string' && id !== NEW_ENUM_OPTION_ID;
-		const finalId = keepId ? (id as string) : generateId();
-		let imageBase64: string | null;
-		if (image !== undefined) {
-			imageBase64 = image === '' || image === null ? null : image;
-		} else {
-			imageBase64 = (keepId ? currentOptions?.find((option) => option.id === finalId)?.imageBase64 : null) ?? null;
-		}
-		options.push({ id: finalId, label: raw.label.trim(), imageBase64 });
+		const option = parseEnumOptionRawEntry(entry, currentOptions);
+		if (option === null) return null;
+		if (option !== COMMENT_ONLY_ENTRY) options.push(option);
 	}
 	if (options.length === 0) return null;
 
 	const ids = options.map((option) => option.id);
 	if (new Set(ids).size !== ids.length) return null;
 	return options;
+}
+
+/** Marker for a raw-data entry that carried nothing but a `"//"` comment. */
+const COMMENT_ONLY_ENTRY = Symbol('comment-only enum option entry');
+
+/**
+ * One entry of the enum raw data: the option it describes, `COMMENT_ONLY_ENTRY`
+ * for a pure comment entry, or `null` when the entry is unusable (which aborts
+ * the whole import).
+ */
+function parseEnumOptionRawEntry(
+	entry: unknown,
+	currentOptions: GameCategoryOption[] | undefined,
+): GameCategoryOption | typeof COMMENT_ONLY_ENTRY | null {
+	if (typeof entry === 'string') {
+		if (entry.trim() === '') return null;
+		return { id: generateId(), label: entry.trim(), imageBase64: null };
+	}
+	if (typeof entry !== 'object' || entry === null) return null;
+
+	const { [ENUM_OPTIONS_RAW_DATA_COMMENT_KEY]: _comment, ...raw } = entry as Record<string, unknown>;
+	if (Object.keys(raw).length === 0) return COMMENT_ONLY_ENTRY;
+	if (typeof raw.label !== 'string' || raw.label.trim() === '') return null;
+
+	const id = raw.id;
+	if (id !== undefined && (typeof id !== 'string' || id === '')) return null;
+	const image = raw.imageBase64;
+	if (image !== undefined && image !== null && typeof image !== 'string') return null;
+
+	const keepId = typeof id === 'string' && id !== NEW_ENUM_OPTION_ID;
+	const finalId = keepId ? (id as string) : generateId();
+	return { id: finalId, label: raw.label.trim(), imageBase64: resolveRawEntryImage(image, keepId ? finalId : null, currentOptions) };
+}
+
+/**
+ * The picture of a raw-data entry: an explicit `imageBase64` wins (an empty
+ * string or `null` clears it), a missing field inherits whatever is stored on
+ * the option with that id today.
+ */
+function resolveRawEntryImage(
+	image: unknown,
+	keptId: string | null,
+	currentOptions: GameCategoryOption[] | undefined,
+): string | null {
+	if (image !== undefined) return image === '' || image === null ? null : (image as string);
+	if (keptId === null) return null;
+	return currentOptions?.find((option) => option.id === keptId)?.imageBase64 ?? null;
 }
 
 /**

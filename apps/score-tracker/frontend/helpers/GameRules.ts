@@ -498,14 +498,23 @@ function isValidGamePresetScalarFields(
 } {
 	if (typeof v.name !== 'string' || v.name.trim() === '') return false;
 	if (typeof v.icon !== 'string' || v.icon === '') return false;
-	if (v.imageUrl !== undefined && v.imageUrl !== null && typeof v.imageUrl !== 'string') return false;
 	if (v.scoringMode !== 'highWins' && v.scoringMode !== 'lowWins') return false;
-	if (v.maxRounds !== undefined && v.maxRounds !== null && typeof v.maxRounds !== 'number') return false;
-	if (v.maxScore !== undefined && v.maxScore !== null && typeof v.maxScore !== 'number') return false;
-	if (v.version !== undefined && typeof v.version !== 'number') return false;
-	if (v.startingPlayerMode !== undefined && !STARTING_PLAYER_MODES.includes(v.startingPlayerMode as StartingPlayerMode)) return false;
-	if (v.trackScores !== undefined && typeof v.trackScores !== 'boolean') return false;
-	return true;
+	if (!isNullableOfType(v.imageUrl, 'string')) return false;
+	if (!isNullableOfType(v.maxRounds, 'number')) return false;
+	if (!isNullableOfType(v.maxScore, 'number')) return false;
+	if (!isOptionalOfType(v.version, 'number')) return false;
+	if (!isOptionalOfType(v.trackScores, 'boolean')) return false;
+	return v.startingPlayerMode === undefined || STARTING_PLAYER_MODES.includes(v.startingPlayerMode as StartingPlayerMode);
+}
+
+/** An optional field that may also be explicitly `null` (absent, null, or the given type). */
+function isNullableOfType(value: unknown, expected: 'string' | 'number'): boolean {
+	return value === undefined || value === null || typeof value === expected;
+}
+
+/** An optional field that may not be `null` (absent, or the given type). */
+function isOptionalOfType(value: unknown, expected: 'number' | 'boolean'): boolean {
+	return value === undefined || typeof value === expected;
 }
 
 /** Strip the instance-specific id/createdAt so a game type can be shared/re-imported as a template. */

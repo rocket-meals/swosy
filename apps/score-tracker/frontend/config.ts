@@ -37,7 +37,8 @@ export function getVersionPatch() {
 	//    version display from the JS bundle (OTA patch bumps visible)
 	// 6: shared Expo app config moved to repo-depkit-common/appconfig
 	// 7: privacy manifest declared per app from named building blocks
-	return 7;
+	// 8: SonarCloud clean-up (count labels, import plan and share codec split)
+	return 8;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

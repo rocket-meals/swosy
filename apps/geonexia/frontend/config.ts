@@ -37,7 +37,8 @@ export function getVersionPatch() {
 	//     shared SettingsListSqliteBackup from common-ui)
 	// 12: shared Expo app config moved to repo-depkit-common/appconfig
 	// 13: privacy manifest declared per app from named building blocks
-	return 13;
+	// 14: SonarCloud clean-up (recording location update split into helpers)
+	return 14;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

@@ -1,5 +1,6 @@
 import { CollectionNames, CronHelper, DatabaseTypes, MailAdresses } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
+import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
 import { MyDefineHook } from '../helpers/MyDefineHook';
 
 const HOOK_NAME = 'files-without-folder-report-schedule';
@@ -51,37 +52,60 @@ async function findReferencedFileIds(candidateFileIds: string[], myDatabaseHelpe
     const collectionHelper = myDatabaseHelper.getItemsServiceHelper<SpecificCollection>(collectionName as CollectionNames);
 
     if (collectionObj.singleton) {
-      const item = await collectionHelper.readSingleton();
-      const value = item?.[fileIdField];
-      if (value) {
-        const fileId = getFileIdFromRelationValue(value);
-        if (candidateIdSet.has(fileId)) {
-          referencedFileIds.add(fileId);
-        }
-      }
-      continue;
-    }
-
-    for (const candidateIdChunk of candidateIdChunks) {
-      const remainingIdsInChunk = candidateIdChunk.filter(id => !referencedFileIds.has(id));
-      if (remainingIdsInChunk.length === 0) {
-        continue;
-      }
-      const items = await collectionHelper.readByQuery({
-        filter: { [fileIdField]: { _in: remainingIdsInChunk } },
-        fields: [fileIdField],
-        limit: -1,
-      });
-      for (const item of items) {
-        const value = item[fileIdField];
-        if (value) {
-          referencedFileIds.add(getFileIdFromRelationValue(value));
-        }
-      }
+      await collectSingletonFileReference(collectionHelper, fileIdField, candidateIdSet, referencedFileIds);
+    } else {
+      await collectCollectionFileReferences(collectionHelper, fileIdField, candidateIdChunks, referencedFileIds);
     }
   }
 
   return referencedFileIds;
+}
+
+/** Adds the file the singleton references, if it is one of the candidates. */
+async function collectSingletonFileReference(
+  collectionHelper: ItemsServiceHelper<SpecificCollection>,
+  fileIdField: string,
+  candidateIdSet: Set<string>,
+  referencedFileIds: Set<string>,
+): Promise<void> {
+  const item = await collectionHelper.readSingleton();
+  const value = item?.[fileIdField];
+  if (!value) {
+    return;
+  }
+  const fileId = getFileIdFromRelationValue(value);
+  if (candidateIdSet.has(fileId)) {
+    referencedFileIds.add(fileId);
+  }
+}
+
+/**
+ * Adds every candidate file id the collection references, queried chunk by
+ * chunk and skipping ids another relation already accounted for.
+ */
+async function collectCollectionFileReferences(
+  collectionHelper: ItemsServiceHelper<SpecificCollection>,
+  fileIdField: string,
+  candidateIdChunks: string[][],
+  referencedFileIds: Set<string>,
+): Promise<void> {
+  for (const candidateIdChunk of candidateIdChunks) {
+    const remainingIdsInChunk = candidateIdChunk.filter(id => !referencedFileIds.has(id));
+    if (remainingIdsInChunk.length === 0) {
+      continue;
+    }
+    const items = await collectionHelper.readByQuery({
+      filter: { [fileIdField]: { _in: remainingIdsInChunk } },
+      fields: [fileIdField],
+      limit: -1,
+    });
+    for (const item of items) {
+      const value = item[fileIdField];
+      if (value) {
+        referencedFileIds.add(getFileIdFromRelationValue(value));
+      }
+    }
+  }
 }
 
 export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ schedule }, apiContext) => {
