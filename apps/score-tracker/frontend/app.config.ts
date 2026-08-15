@@ -6,11 +6,13 @@ require('repo-depkit-common/appconfig/registerTsNode.js').registerTsNode();
 
 const { getBuildNumber, getVersion } = require('./config.ts');
 const { collectLicenses } = require('repo-depkit-common/licenses/collectLicenses.ts');
-// Settings that are deliberately identical in every app of this monorepo
-// (iOS deployment target, Android SDK levels, OTA setup, privacy manifest
-// boilerplate) live in repo-depkit-common/appconfig.
+// Settings that are deliberately identical in every app of this monorepo (iOS
+// deployment target, Android SDK levels, OTA setup) live in
+// repo-depkit-common/appconfig, together with the named building blocks each
+// app composes its own privacy manifest from.
 const {
 	EXPO_OWNER,
+	PrivacyAccessedApi,
 	getExpoBuildPropertiesPlugin,
 	getExpoSplashScreenPlugin,
 	getExpoUpdatesPlugin,
@@ -21,6 +23,18 @@ const {
 } = require('repo-depkit-common/appconfig/expoAppConfig.ts');
 
 const EAS_PROJECT_ID = '7ea1e999-21dd-41ec-96b3-fc8aa7ad9993';
+
+// Apple privacy manifest of THIS app (required for App Review). Punktlandung
+// stores everything locally - no collected data types at all.
+const SCORE_TRACKER_PRIVACY = {
+	// Required-reason APIs of the React Native/Expo runtime itself.
+	accessedApiTypes: [
+		PrivacyAccessedApi.UserDefaults,
+		PrivacyAccessedApi.SystemBootTime,
+		PrivacyAccessedApi.DiskSpace,
+		PrivacyAccessedApi.FileTimestamp,
+	],
+};
 
 module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 	const buildNumber = getBuildNumber();
@@ -41,10 +55,7 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 			config: {
 				usesNonExemptEncryption: false,
 			},
-			// Apple privacy manifest (required for App Review): the app collects
-			// no data off-device - everything is stored locally, so no collected
-			// data types are declared.
-			privacyManifests: getPrivacyManifests(),
+			privacyManifests: getPrivacyManifests(SCORE_TRACKER_PRIVACY),
 		},
 		android: {
 			adaptiveIcon: {

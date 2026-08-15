@@ -2,12 +2,14 @@
 // config (see app.config.ts) and inside the app bundle itself, so it may only
 // import modules that are safe in both - no Node built-ins.
 import { ServerHelper } from 'repo-depkit-common';
-// Settings that are deliberately identical in every app of this monorepo
-// (iOS deployment target, Android SDK levels, OTA setup, privacy manifest
-// boilerplate) live in repo-depkit-common/appconfig.
+// Settings that are deliberately identical in every app of this monorepo (iOS
+// deployment target, Android SDK levels, OTA setup) live in
+// repo-depkit-common/appconfig, together with the named building blocks each
+// app composes its own privacy manifest from.
 import {
 	EXPO_OWNER,
-	PRIVACY_COLLECTED_DATA_TYPES_ACCOUNT_BASED,
+	PrivacyAccessedApi,
+	PrivacyCollectedData,
 	getExpoBuildPropertiesPlugin,
 	getExpoSplashScreenPlugin,
 	getExpoUpdatesPlugin,
@@ -65,7 +67,8 @@ export function getMajorVersion() {
 
 export function getVersionPatch() {
         // 12: shared Expo app config moved to repo-depkit-common/appconfig
-        return 12;
+        // 13: privacy manifest declared per app from named building blocks
+        return 13;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
@@ -214,6 +217,26 @@ export function getGeneratedAssetsPath(): string {
 	return `./assets/generated/${customer}`;
 }
 
+// Apple privacy manifest of THIS app (required for App Review). Rocket Meals
+// talks to a canteen backend, so location, messages, photos, other user content
+// and the account email leave the device.
+const ROCKET_MEALS_PRIVACY = {
+	collectedDataTypes: [
+		PrivacyCollectedData.PreciseLocation,
+		PrivacyCollectedData.EmailsOrTextMessages,
+		PrivacyCollectedData.PhotosOrVideos,
+		PrivacyCollectedData.OtherUserContent,
+		PrivacyCollectedData.EmailAddress,
+	],
+	// Required-reason APIs of the React Native/Expo runtime itself.
+	accessedApiTypes: [
+		PrivacyAccessedApi.UserDefaults,
+		PrivacyAccessedApi.SystemBootTime,
+		PrivacyAccessedApi.DiskSpace,
+		PrivacyAccessedApi.FileTimestamp,
+	],
+};
+
 export function getFinalConfig(config?: any, licenses?: unknown[]) {
 	const customerConfig: CustomerConfig = getCustomerConfig();
 	const generatedPath = getGeneratedAssetsPath();
@@ -251,7 +274,7 @@ export function getFinalConfig(config?: any, licenses?: unknown[]) {
 				entitlements: {
 					'com.apple.developer.applesignin': ['Default'],
 				},
-				privacyManifests: getPrivacyManifests(PRIVACY_COLLECTED_DATA_TYPES_ACCOUNT_BASED),
+				privacyManifests: getPrivacyManifests(ROCKET_MEALS_PRIVACY),
 			},
 			android: {
 				adaptiveIcon: {

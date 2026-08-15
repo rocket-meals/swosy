@@ -36,7 +36,8 @@ export function getVersionPatch() {
 	// 11: settings: whole-database export/import (Datensicherung group,
 	//     shared SettingsListSqliteBackup from common-ui)
 	// 12: shared Expo app config moved to repo-depkit-common/appconfig
-	return 12;
+	// 13: privacy manifest declared per app from named building blocks
+	return 13;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

@@ -2,11 +2,17 @@
  * Shared Expo app config building blocks for every app in this monorepo
  * (apps/frontend, apps/geonexia, apps/score-tracker, apps/tag-und-jahr).
  *
- * Everything in here is knowledge that is deliberately identical across all
- * apps - the iOS deployment target, the Android SDK levels, the OTA/update
- * setup, the Apple privacy manifest boilerplate. Keeping one copy means a
- * bump (e.g. the next Expo SDK raising the iOS minimum) is a single edit
- * instead of four, and the apps cannot silently drift apart.
+ * Two kinds of things live here:
+ *
+ * 1. Values that are deliberately identical across all apps - the iOS
+ *    deployment target, the Android SDK levels, the OTA/update setup. Keeping
+ *    one copy means a bump (e.g. the next Expo SDK raising the iOS minimum) is
+ *    a single edit instead of four, and the apps cannot silently drift apart.
+ * 2. Named building blocks that each app composes itself, above all the Apple
+ *    privacy manifest (PrivacyAccessedApi / PrivacyCollectedData). Those must
+ *    NOT be shared as a ready-made list: what an app declares to Apple is a
+ *    statement about that app, so every app spells its own list out in its own
+ *    config and only the Apple reason codes are shared knowledge.
  *
  * Usage from an app's app.config.ts (Node context, ts-node registered):
  *
@@ -164,38 +170,43 @@ export type PrivacyAccessedApiType = {
 };
 
 /**
- * Required-reason APIs used by the React Native/Expo SDK internals themselves
- * (UserDefaults, boot time, disk space, file timestamps). Every app hits these
- * regardless of its own features, so the list is shared.
+ * Catalog of required-reason APIs, one named entry per Apple category with the
+ * reason code that applies here. These are building blocks, not an app's
+ * declaration: every app picks the entries it actually needs (see
+ * getPrivacyManifests). The four below are hit by the React Native/Expo runtime
+ * itself, which is why every app currently lists all of them.
  */
-export const PRIVACY_ACCESSED_API_TYPES_EXPO_RUNTIME: PrivacyAccessedApiType[] = [
-	{
+export const PrivacyAccessedApi = {
+	/** CA92.1: reading/writing the app's own user defaults. */
+	UserDefaults: {
 		NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
 		NSPrivacyAccessedAPITypeReasons: ['CA92.1'],
 	},
-	{
+	/** 8FFB.1: measuring elapsed time inside the app. */
+	SystemBootTime: {
 		NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategorySystemBootTime',
 		NSPrivacyAccessedAPITypeReasons: ['8FFB.1'],
 	},
-	{
+	/** 85F4.1: writing/deleting files only when enough space is available. */
+	DiskSpace: {
 		NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryDiskSpace',
 		NSPrivacyAccessedAPITypeReasons: ['85F4.1'],
 	},
-	{
+	/** DDA9.1: timestamps of files the app itself created. */
+	FileTimestamp: {
 		NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryFileTimestamp',
 		NSPrivacyAccessedAPITypeReasons: ['DDA9.1'],
 	},
-];
+} satisfies Record<string, PrivacyAccessedApiType>;
 
 /**
- * Data an account-based app collects on behalf of its backend: location,
- * messages, photos, other user content and the account's email address
- * (apps/frontend, apps/geonexia). Apps that keep everything on the device
- * (apps/score-tracker, apps/tag-und-jahr) collect nothing and pass no
- * collected data types at all.
+ * Catalog of collected data types, one named entry per Apple data type with the
+ * linking/tracking flags and purposes that apply here. Again building blocks:
+ * an app that keeps everything on the device declares none of them.
  */
-export const PRIVACY_COLLECTED_DATA_TYPES_ACCOUNT_BASED: PrivacyCollectedDataType[] = [
-	{
+export const PrivacyCollectedData = {
+	/** Location of the device, not linked to the user's identity. */
+	PreciseLocation: {
 		NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypePreciseLocation',
 		NSPrivacyCollectedDataTypeLinked: false,
 		NSPrivacyCollectedDataTypeTracking: false,
@@ -205,7 +216,8 @@ export const PRIVACY_COLLECTED_DATA_TYPES_ACCOUNT_BASED: PrivacyCollectedDataTyp
 			'NSPrivacyCollectedDataTypePurposeOther',
 		],
 	},
-	{
+	/** Messages users send through the app, linked to their account. */
+	EmailsOrTextMessages: {
 		NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeEmailsOrTextMessages',
 		NSPrivacyCollectedDataTypeLinked: true,
 		NSPrivacyCollectedDataTypeTracking: false,
@@ -214,34 +226,45 @@ export const PRIVACY_COLLECTED_DATA_TYPES_ACCOUNT_BASED: PrivacyCollectedDataTyp
 			'NSPrivacyCollectedDataTypePurposeAppFunctionality',
 		],
 	},
-	{
+	/** Photos users upload, linked to their account. */
+	PhotosOrVideos: {
 		NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypePhotosorVideos',
 		NSPrivacyCollectedDataTypeLinked: true,
 		NSPrivacyCollectedDataTypeTracking: false,
 		NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
 	},
-	{
+	/** Any other user-generated content, linked to their account. */
+	OtherUserContent: {
 		NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeOtherUserContent',
 		NSPrivacyCollectedDataTypeLinked: true,
 		NSPrivacyCollectedDataTypeTracking: false,
 		NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
 	},
-	{
+	/** The account's email address. */
+	EmailAddress: {
 		NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeEmailAddress',
 		NSPrivacyCollectedDataTypeLinked: true,
 		NSPrivacyCollectedDataTypeTracking: false,
 		NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
 	},
-];
+} satisfies Record<string, PrivacyCollectedDataType>;
 
 /**
- * The `ios.privacyManifests` section (required for App Review). Pass the data
- * types the app collects - apps that store everything locally pass nothing.
- * The accessed-API reasons are always the shared Expo runtime ones.
+ * An app's own privacy declaration, composed from the catalogs above. Each app
+ * spells its list out in its own config so a reviewer sees at a glance what
+ * that app declares - nothing is inherited from another app.
  */
-export function getPrivacyManifests(collectedDataTypes: PrivacyCollectedDataType[] = []) {
+export type AppPrivacyManifest = {
+	/** Required-reason APIs the app uses, e.g. [PrivacyAccessedApi.SystemBootTime]. */
+	accessedApiTypes: PrivacyAccessedApiType[];
+	/** Data the app sends off-device. Omit for apps that keep everything local. */
+	collectedDataTypes?: PrivacyCollectedDataType[];
+};
+
+/** The `ios.privacyManifests` section (required for App Review). */
+export function getPrivacyManifests(privacy: AppPrivacyManifest) {
 	return {
-		NSPrivacyCollectedDataTypes: collectedDataTypes,
-		NSPrivacyAccessedAPITypes: PRIVACY_ACCESSED_API_TYPES_EXPO_RUNTIME,
+		NSPrivacyCollectedDataTypes: privacy.collectedDataTypes ?? [],
+		NSPrivacyAccessedAPITypes: privacy.accessedApiTypes,
 	};
 }

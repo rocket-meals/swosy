@@ -36,7 +36,8 @@ export function getVersionPatch() {
 	// 5: settings: whole-database export/import (Datensicherung group);
 	//    version display from the JS bundle (OTA patch bumps visible)
 	// 6: shared Expo app config moved to repo-depkit-common/appconfig
-	return 6;
+	// 7: privacy manifest declared per app from named building blocks
+	return 7;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

@@ -6,11 +6,13 @@ require('repo-depkit-common/appconfig/registerTsNode.js').registerTsNode();
 
 const { getBuildNumber, getVersion } = require('./config.ts');
 const { collectLicenses } = require('repo-depkit-common/licenses/collectLicenses.ts');
-// Settings that are deliberately identical in every app of this monorepo
-// (iOS deployment target, Android SDK levels, OTA setup, privacy manifest
-// boilerplate) live in repo-depkit-common/appconfig.
+// Settings that are deliberately identical in every app of this monorepo (iOS
+// deployment target, Android SDK levels, OTA setup) live in
+// repo-depkit-common/appconfig, together with the named building blocks each
+// app composes its own privacy manifest from.
 const {
 	EXPO_OWNER,
+	PrivacyAccessedApi,
 	getExpoBuildPropertiesPlugin,
 	getExpoSplashScreenPlugin,
 	getExpoUpdatesPlugin,
@@ -23,6 +25,18 @@ const {
 // Created by the first tag-und-jahr-expo-update CI run (eas init), see
 // https://expo.dev/accounts/baumgartner-software/projects/tag-und-jahr
 const EAS_PROJECT_ID = '354220f2-0d5a-46a0-bf47-15d8433432a9';
+
+// Apple privacy manifest of THIS app (required for App Review). Tag und Jahr
+// runs entirely on the device - no collected data types at all.
+const TAG_UND_JAHR_PRIVACY = {
+	// Required-reason APIs of the React Native/Expo runtime itself.
+	accessedApiTypes: [
+		PrivacyAccessedApi.UserDefaults,
+		PrivacyAccessedApi.SystemBootTime,
+		PrivacyAccessedApi.DiskSpace,
+		PrivacyAccessedApi.FileTimestamp,
+	],
+};
 
 module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 	const buildNumber = getBuildNumber();
@@ -43,10 +57,7 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 			config: {
 				usesNonExemptEncryption: false,
 			},
-			// Apple privacy manifest (required for App Review): the app collects
-			// no data off-device - everything happens locally, so no collected
-			// data types are declared.
-			privacyManifests: getPrivacyManifests(),
+			privacyManifests: getPrivacyManifests(TAG_UND_JAHR_PRIVACY),
 		},
 		android: {
 			adaptiveIcon: {

@@ -31,7 +31,8 @@ export function getVersionPatch() {
 	// Never decrease the visible patch version.
 	// 1: expo-updates runtime version pinned to patch 0 (getVersion)
 	// 2: shared Expo app config moved to repo-depkit-common/appconfig
-	return 2;
+	// 3: privacy manifest declared per app from named building blocks
+	return 3;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
