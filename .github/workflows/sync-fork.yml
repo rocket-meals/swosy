@@ -4,10 +4,12 @@ permissions:
   contents: write
 
 on:
-  # Run daily at 00:00 UTC as a safety net for syncs that could not be
-  # detected immediately (see the note on [skip ci] at the push trigger).
+  # Run daily at 13:00 UTC (15:00 CEST / 14:00 CET) as a safety net for syncs
+  # that could not be detected immediately (see the note on [skip ci] at the
+  # push trigger). Midday on purpose: a nightly run would collide with work
+  # still being pushed to the upstream repository until ~02:00 local time.
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 13 * * *'
 
   # Allow manual triggering
   workflow_dispatch:
