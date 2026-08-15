@@ -264,7 +264,8 @@ export const handleNativeLogin = async (loginUrl: string, redirectUrl: string, c
 			preferEphemeralSession: preferInkognitoMode,
 		});
 
-		addLoginLog(`Auth-Session Ergebnis: ${result?.type}${'url' in (result ?? {}) ? `, url=${(result as { url?: string }).url}` : ''}`);
+		const resultUrlSuffix = 'url' in (result ?? {}) ? `, url=${(result as { url?: string }).url}` : '';
+		addLoginLog(`Auth-Session Ergebnis: ${result?.type}${resultUrlSuffix}`);
 
 		if (result?.type === 'success' && result.url) {
 			tryHandleRedirect(result.url, 'Auth-Session-Ergebnis');

@@ -42,7 +42,8 @@ const CollapsibleView: React.FC<CollapsibleViewProps> = ({ collapsed, children, 
 		contentHeightRef.current = event.nativeEvent.layout.height;
 	};
 
-	const wrapperStyle = animating ? { height: animatedHeight, overflow: 'hidden' as const } : collapsed ? styles.collapsed : undefined;
+	const collapsedStyle = collapsed ? styles.collapsed : undefined;
+	const wrapperStyle = animating ? { height: animatedHeight, overflow: 'hidden' as const } : collapsedStyle;
 
 	return (
 		<Animated.View

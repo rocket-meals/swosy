@@ -49,7 +49,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: "📦 Install dependencies"
-        run: yarn install --immutable
+        run: yarn install --immutable --mode=skip-build
 
       - name: "🎭 Install Playwright browser (for type download)"
         run: yarn workspace backend-sync exec playwright install --with-deps chromium

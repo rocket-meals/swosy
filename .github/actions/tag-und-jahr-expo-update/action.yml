@@ -44,7 +44,7 @@ runs:
         token: ${{ inputs.EXPO_TOKEN }}
 
     - name: "📦 Install dependencies"
-      run: yarn install --immutable
+      run: yarn install --immutable --mode=skip-build
       shell: bash
 
     # Unlike Score Tracker there is no icon generation step: the committed

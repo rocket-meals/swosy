@@ -200,7 +200,11 @@ export async function applyApplePush(token: string, plan: ApplePushPlan, dryRun:
       const relationships: Record<string, { data: { type: string; id: string } | null }> = {};
       for (const change of categoryChanges) {
         const relationship = change.key === 'primaryCategoryId' ? 'primaryCategory' : 'secondaryCategory';
-        relationships[relationship] = { data: change.to ? { type: 'appCategories', id: String(change.to) } : null };
+        // change.to is typed `unknown`; a category id is always a string (or a
+        // number in hand-written ground truth). Anything else would stringify
+        // to "[object Object]" and is treated as "clear the category" instead.
+        const categoryId = typeof change.to === 'string' || typeof change.to === 'number' ? String(change.to) : undefined;
+        relationships[relationship] = { data: categoryId ? { type: 'appCategories', id: categoryId } : null };
       }
       await ascRequest(token, 'PATCH', `/appInfos/${targetAppInfo.appInfoId}`, {
         data: { type: 'appInfos', id: targetAppInfo.appInfoId, relationships },

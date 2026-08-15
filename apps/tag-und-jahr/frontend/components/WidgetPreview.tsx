@@ -65,7 +65,7 @@ export function FoodWidgetPreview({ size, meals, mealsPerPage }: Readonly<{ size
 		<View style={[styles.canvas, { width: size, height: size, backgroundColor: FOOD_BACKGROUND_DARK }]}>
 			<View style={{ width: size, flexDirection: 'row', flexWrap: 'wrap', gap: spacing }}>
 				{cells.map((meal, index) => (
-					<View key={`cell-${index}`} style={{ width: cellSize, height: cellSize, backgroundColor: PLACEHOLDER_DARK }}>
+					<View key={`cell-${index}-${meal?.name ?? 'empty'}`} style={{ width: cellSize, height: cellSize, backgroundColor: PLACEHOLDER_DARK }}>
 						{meal?.imageUrl ? <Image source={{ uri: meal.imageUrl }} style={styles.cellImage} resizeMode="cover" /> : null}
 						{meal && !meal.imageUrl ? <Text style={styles.cellFallback}>🍴</Text> : null}
 					</View>

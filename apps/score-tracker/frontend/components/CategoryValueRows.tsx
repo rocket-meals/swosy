@@ -54,7 +54,10 @@ export function categoryTypeIcon(type: GameCategoryType): React.ReactNode {
 	}
 }
 
-function groupPositionFor(index: number, total: number): 'top' | 'middle' | 'bottom' | 'single' {
+/** Where a row sits inside its settings group - drives the rounded corners. */
+type GroupPosition = 'top' | 'middle' | 'bottom' | 'single';
+
+function groupPositionFor(index: number, total: number): GroupPosition {
 	if (total === 1) return 'single';
 	if (index === 0) return 'top';
 	if (index === total - 1) return 'bottom';
@@ -94,7 +97,7 @@ export function EnumOptionsRawDataRow({
 }: Readonly<{
 	gameTypeId: string;
 	category: GameCategory;
-	groupPosition: 'top' | 'middle' | 'bottom' | 'single';
+	groupPosition: GroupPosition;
 }>) {
 	const dispatch = useDispatch<AppDispatch>();
 	const { theme } = useTheme();
@@ -292,7 +295,7 @@ export function CategoryValueRow({
 	value: GameCategoryValue | undefined;
 	allCategories: GameCategory[];
 	onChange: (value: GameCategoryValue) => void;
-	groupPosition: 'top' | 'middle' | 'bottom' | 'single';
+	groupPosition: GroupPosition;
 	/** Game type owning the categories - lets the enum picker add new options in place. */
 	gameTypeId?: string;
 	/** Render the recorded value without any way to change it (viewing a finished match). */

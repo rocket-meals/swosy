@@ -36,6 +36,7 @@ import {
 import { ComponentIds } from '../../constants/ComponentIds';
 import GameTypeIcon from '../../components/GameTypeIcon';
 import YearActivityGrid, { YearActivityGridWeekdayHeader } from '../../components/YearActivityGrid';
+import { countLabel, dotSuffix } from '../../helpers/CountLabel';
 
 const PRIMARY_COLOR = '#2563eb';
 const SUCCESS_COLOR = '#16a34a';
@@ -142,7 +143,7 @@ function TopGamesContent() {
 				<SettingsList
 					key={row.gameType.id}
 					label={`${index + 1}. ${row.gameType.name}`}
-					value={`${formatMatchCount(row.count)}${row.minutes > 0 ? ` · ${formatDuration(row.minutes)}` : ''}`}
+					value={`${formatMatchCount(row.count)}${dotSuffix(row.minutes > 0 ? formatDuration(row.minutes) : null)}`}
 					stackedValue
 					leftIconComponent={
 						<View style={styles.gameIconWrapper}>
@@ -194,7 +195,7 @@ function FriendRankingContent({ mode }: Readonly<{ mode: 'matches' | 'wins' }>) 
 				<SettingsList
 					key={row.friend.id}
 					label={`${index + 1}. ${row.friend.name}`}
-					value={mode === 'matches' ? formatMatchCount(row.count) : row.count === 1 ? '1 Sieg' : `${row.count} Siege`}
+					value={mode === 'matches' ? formatMatchCount(row.count) : countLabel(row.count, 'Sieg', 'Siege')}
 					leftIcon={<Ionicons name={mode === 'matches' ? 'people-outline' : 'trophy-outline'} size={20} color="#ffffff" />}
 					iconBgColor={row.friend.color}
 					groupPosition={getGroupPosition(index, rows.length)}
@@ -282,7 +283,7 @@ export default function StatsScreen() {
 				key: 'longest',
 				icon: 'timer-outline',
 				label: 'Längste Partie',
-				value: `${formatDuration(recordLongest.durationMinutes)}${name ? ` · ${name}` : ''}`,
+				value: `${formatDuration(recordLongest.durationMinutes)}${dotSuffix(name)}`,
 			});
 		}
 		if (recordRounds && recordRounds.roundsCount > 0) {
@@ -291,7 +292,7 @@ export default function StatsScreen() {
 				key: 'rounds',
 				icon: 'repeat-outline',
 				label: 'Meiste Runden in einer Partie',
-				value: `${recordRounds.roundsCount} Runden${name ? ` · ${name}` : ''}`,
+				value: `${recordRounds.roundsCount} Runden${dotSuffix(name)}`,
 			});
 		}
 		if (recordPlayers && recordPlayers.players.length > 0) {
@@ -300,7 +301,7 @@ export default function StatsScreen() {
 				key: 'players',
 				icon: 'people-outline',
 				label: 'Größte Runde',
-				value: `${recordPlayers.players.length} Spieler${name ? ` · ${name}` : ''}`,
+				value: `${recordPlayers.players.length} Spieler${dotSuffix(name)}`,
 			});
 		}
 		if (recordDay) {
@@ -461,9 +462,7 @@ export default function StatsScreen() {
 				<SettingsList
 					nativeID={ComponentIds.STATS_SCREEN_STREAK_ROW}
 					label="Serie"
-					value={`Aktuell ${streaks.current === 1 ? '1 Tag' : `${streaks.current} Tage`} in Folge · Rekord: ${
-						streaks.longest === 1 ? '1 Tag' : `${streaks.longest} Tage`
-					}`}
+					value={`Aktuell ${countLabel(streaks.current, 'Tag', 'Tage')} in Folge · Rekord: ${countLabel(streaks.longest, 'Tag', 'Tage')}`}
 					stackedValue
 					leftIcon={<Ionicons name="flame-outline" size={20} color="#ffffff" />}
 					iconBgColor={TOOLS_COLOR}

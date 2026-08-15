@@ -42,9 +42,12 @@ export function formatChanges(changes: AttributeChange[], indent = '   '): strin
 
 // Turns a display name like "Studi|Futter" into a safe file name like "studi-futter".
 export function slugifyDisplayName(displayName: string): string {
-  const slug = displayName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  return slug || 'app';
+  const dashed = displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  // Trimming the dashes without a regex: `/^-+|-+$/g` has super-linear runtime
+  // due to backtracking on dash-only input.
+  let start = 0;
+  let end = dashed.length;
+  while (start < end && dashed[start] === '-') start++;
+  while (end > start && dashed[end - 1] === '-') end--;
+  return dashed.slice(start, end) || 'app';
 }

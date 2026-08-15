@@ -1132,7 +1132,16 @@ export class ParseSchedule {
 
     const foodoffersToCreate: Partial<DatabaseTypes.Foodoffers>[] = [];
     for (const [index, foodofferForParser] of foodofferListForParser.entries()) {
-      const foodOfferToCreate = await this.resolveFoodofferToCreateOrLog(foodofferForParser, index, amountOfRawMealOffers, dictCanteenExternalIdentifierToCanteen, dictMarkingExternalIdentifierToMarking, dictFoodsFound, helperObject, dictSourceNameToExistingFoodofferTranslations);
+      const foodOfferToCreate = await this.resolveFoodofferToCreateOrLog({
+        foodofferForParser,
+        index,
+        amountOfRawMealOffers,
+        dictCanteenExternalIdentifierToCanteen,
+        dictMarkingExternalIdentifierToMarking,
+        dictFoodsFound,
+        helperObject,
+        dictSourceNameToExistingFoodofferTranslations,
+      });
       if (foodOfferToCreate) {
         foodoffersToCreate.push(foodOfferToCreate);
       }
@@ -1321,16 +1330,26 @@ export class ParseSchedule {
    * skip/error notice and returns null if the canteen/food could not be resolved or the
    * food is archived.
    */
-  async resolveFoodofferToCreateOrLog(
-    foodofferForParser: FoodoffersTypeForParser,
-    index: number,
-    amountOfRawMealOffers: number,
-    dictCanteenExternalIdentifierToCanteen: Record<string, DatabaseTypes.Canteens | null>,
-    dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>,
-    dictFoodsFound: Record<string, DatabaseTypes.Foods | null>,
-    helperObject: FoodCreationHelperObject,
-    dictSourceNameToExistingFoodofferTranslations?: Record<string, DatabaseTypes.FoodoffersTranslations[]>,
-  ): Promise<Partial<DatabaseTypes.Foodoffers> | null> {
+  async resolveFoodofferToCreateOrLog(params: {
+    foodofferForParser: FoodoffersTypeForParser;
+    index: number;
+    amountOfRawMealOffers: number;
+    dictCanteenExternalIdentifierToCanteen: Record<string, DatabaseTypes.Canteens | null>;
+    dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>;
+    dictFoodsFound: Record<string, DatabaseTypes.Foods | null>;
+    helperObject: FoodCreationHelperObject;
+    dictSourceNameToExistingFoodofferTranslations?: Record<string, DatabaseTypes.FoodoffersTranslations[]>;
+  }): Promise<Partial<DatabaseTypes.Foodoffers> | null> {
+    const {
+      foodofferForParser,
+      index,
+      amountOfRawMealOffers,
+      dictCanteenExternalIdentifierToCanteen,
+      dictMarkingExternalIdentifierToMarking,
+      dictFoodsFound,
+      helperObject,
+      dictSourceNameToExistingFoodofferTranslations,
+    } = params;
     const canteen = dictCanteenExternalIdentifierToCanteen[foodofferForParser.canteen_external_identifier];
     const canteenFound = !!canteen;
 

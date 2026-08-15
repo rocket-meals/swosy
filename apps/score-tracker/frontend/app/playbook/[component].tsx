@@ -13,7 +13,6 @@ import {
 	SettingsListTextInput,
 	buildPlaybookProps,
 	getPlaybookEntry,
-	serializeKnobValue,
 	useTheme,
 } from 'repo-depkit-common-ui';
 
@@ -53,7 +52,7 @@ export default function PlaybookComponentScreen() {
 	}
 
 	const setKnob = (knobName: string, value: KnobValue) => {
-		router.setParams({ [knobName]: serializeKnobValue(value) });
+		router.setParams({ [knobName]: String(value) });
 	};
 
 	const { componentProps, knobValues, variantName } = buildPlaybookProps(entry, params, setKnob);

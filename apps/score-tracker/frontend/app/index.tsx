@@ -14,6 +14,7 @@ import { generateId } from '../helpers/RandomHelper';
 import { ComponentIds } from '../constants/ComponentIds';
 import GameTypeIcon from '../components/GameTypeIcon';
 import ShareImportContent from '../components/ShareImportContent';
+import { countLabel } from '../helpers/CountLabel';
 
 const PRIMARY_COLOR = '#2563eb';
 const SUCCESS_COLOR = '#16a34a';
@@ -194,7 +195,7 @@ export default function StartScreen() {
 
 	let lastMatchRowLabel = 'Letzte Partie ansehen';
 	let lastMatchRowValue = latestEntry
-		? `${formatDate(latestEntry.endedAt)} · ${latestEntry.players.length === 1 ? '1 Spieler' : `${latestEntry.players.length} Spieler`}`
+		? `${formatDate(latestEntry.endedAt)} · ${countLabel(latestEntry.players.length, 'Spieler', 'Spieler')}`
 		: '';
 	if (hasRunningMatch) {
 		lastMatchRowLabel = 'Aktive Partie fortsetzen';

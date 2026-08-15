@@ -343,8 +343,11 @@ export function parseKnobValue(knob: KnobDefinition, raw: string | undefined): K
 		return knob.defaultValue;
 	}
 	switch (knob.type) {
-		case 'boolean':
-			return raw === 'true' ? true : raw === 'false' ? false : knob.defaultValue;
+		case 'boolean': {
+			if (raw === 'true') return true;
+			if (raw === 'false') return false;
+			return knob.defaultValue;
+		}
 		case 'number': {
 			const parsed = Number.parseFloat(raw);
 			return Number.isNaN(parsed) ? knob.defaultValue : parsed;
@@ -354,10 +357,6 @@ export function parseKnobValue(knob: KnobDefinition, raw: string | undefined): K
 		case 'text':
 			return raw;
 	}
-}
-
-export function serializeKnobValue(value: KnobValue): string {
-	return String(value);
 }
 
 /**

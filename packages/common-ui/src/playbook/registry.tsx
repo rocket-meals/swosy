@@ -78,6 +78,22 @@ interface PlaybookEntryRuntime {
 
 export type PlaybookEntry = PlaybookEntryData & PlaybookEntryRuntime;
 
+/**
+ * Map a three-valued knob string (e.g. `'yes' | 'no' | 'unset'`) onto the
+ * `true | false | null` tri-state the component prop expects.
+ */
+function triStateKnobToBoolean(state: KnobValue | undefined, trueValue: string, falseValue: string): boolean | null {
+	if (state === trueValue) return true;
+	if (state === falseValue) return false;
+	return null;
+}
+
+/** Inverse of `triStateKnobToBoolean`: the knob string for a tri-state value. */
+function booleanToTriStateKnob(next: boolean | null, trueValue: string, falseValue: string): string {
+	if (next === null) return 'unset';
+	return next ? trueValue : falseValue;
+}
+
 /** Icon that follows the current theme, for use in variant props. */
 const ThemedIcon: React.FC<{ name: React.ComponentProps<typeof MaterialCommunityIcons>['name'] }> = ({ name }) => {
 	const { theme } = useTheme();
@@ -136,8 +152,8 @@ const runtimeByName: Record<string, PlaybookEntryRuntime> = {
 	SettingsListTriState: {
 		component: SettingsListTriState,
 		bindProps: (values, setKnob) => ({
-			value: values.state === 'yes' ? true : values.state === 'no' ? false : null,
-			onChange: (next: boolean | null) => setKnob('state', next === null ? 'unset' : next ? 'yes' : 'no'),
+			value: triStateKnobToBoolean(values.state, 'yes', 'no'),
+			onChange: (next: boolean | null) => setKnob('state', booleanToTriStateKnob(next, 'yes', 'no')),
 		}),
 	},
 	SettingsListGroupTitle: {
@@ -197,7 +213,7 @@ const runtimeByName: Record<string, PlaybookEntryRuntime> = {
 	SettingsListLikeDislikeFast: {
 		component: SettingsListLikeDislikeFast,
 		bindProps: (values, setKnob) => ({
-			like: values.state === 'like' ? true : values.state === 'dislike' ? false : null,
+			like: triStateKnobToBoolean(values.state, 'like', 'dislike'),
 			onPressLike: () => setKnob('state', values.state === 'like' ? 'unset' : 'like'),
 			onPressDislike: () => setKnob('state', values.state === 'dislike' ? 'unset' : 'dislike'),
 		}),

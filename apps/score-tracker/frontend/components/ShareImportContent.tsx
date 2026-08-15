@@ -14,6 +14,7 @@ import { decodeShareText } from '../helpers/ShareCodec';
 import type { FriendConflictChoice, GameConflictChoice, ImportMode, ImportPlan } from '../helpers/ShareImportPlan';
 import { buildImportPlan, dedupedFriendName, remapSharedMatch } from '../helpers/ShareImportPlan';
 import { ComponentIds } from '../constants/ComponentIds';
+import { countLabel } from '../helpers/CountLabel';
 
 const PRIMARY_COLOR = '#2563eb';
 const SUCCESS_COLOR = '#16a34a';
@@ -21,6 +22,11 @@ const WARNING_COLOR = '#f59e0b';
 
 function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+/** Optional " (a, b)" breakdown appended to a count in the import summary. */
+function detailSuffix(details: string[]): string {
+	return details.length > 0 ? ` (${details.join(', ')})` : '';
 }
 
 function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bottom' | 'single' {
@@ -178,18 +184,18 @@ export default function ShareImportContent({ mode, onClose }: Readonly<{ mode: I
 		}
 
 		const parts: string[] = [];
-		if (plan.matches.length > 0) parts.push(plan.matches.length === 1 ? '1 Partie' : `${plan.matches.length} Partien`);
+		if (plan.matches.length > 0) parts.push(countLabel(plan.matches.length, 'Partie', 'Partien'));
 		if (plan.games.length > 0) {
 			const details: string[] = [];
 			if (gamesCreated > 0) details.push(`${gamesCreated} neu`);
 			if (gamesUpdated > 0) details.push(`${gamesUpdated} aktualisiert`);
-			parts.push(`${plan.games.length === 1 ? '1 Spiel' : `${plan.games.length} Spiele`}${details.length > 0 ? ` (${details.join(', ')})` : ''}`);
+			parts.push(`${countLabel(plan.games.length, 'Spiel', 'Spiele')}${detailSuffix(details)}`);
 		}
 		if (plan.friends.length > 0) {
 			const details: string[] = [];
 			if (friendsToImport.length > 0) details.push(`${friendsToImport.length} übernommen`);
 			if (friendsLinked > 0) details.push(`${friendsLinked} verknüpft`);
-			parts.push(`${plan.friends.length === 1 ? '1 Freund' : `${plan.friends.length} Freunde`}${details.length > 0 ? ` (${details.join(', ')})` : ''}`);
+			parts.push(`${countLabel(plan.friends.length, 'Freund', 'Freunde')}${detailSuffix(details)}`);
 		}
 		setSummary(`Importiert: ${parts.join(' · ')}.`);
 	}, [plan, gameChoices, friendChoices, localFriends, dispatch]);
@@ -262,9 +268,7 @@ export default function ShareImportContent({ mode, onClose }: Readonly<{ mode: I
 						<SettingsList
 							key={match.id}
 							label={`Partie vom ${formatDate(match.endedAt)}`}
-							value={`${match.players.length === 1 ? '1 Spieler' : `${match.players.length} Spieler`} · ${
-								match.roundsCount === 1 ? '1 Runde' : `${match.roundsCount} Runden`
-							}`}
+							value={`${countLabel(match.players.length, 'Spieler', 'Spieler')} · ${countLabel(match.roundsCount, 'Runde', 'Runden')}`}
 							stackedValue
 							leftIcon={<Ionicons name="calendar-outline" size={20} color="#ffffff" />}
 							iconBgColor={PRIMARY_COLOR}

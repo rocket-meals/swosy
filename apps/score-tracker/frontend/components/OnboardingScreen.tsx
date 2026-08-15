@@ -99,13 +99,13 @@ function StepBackdrop({
 	width,
 	height,
 	isDark,
-}: {
+}: Readonly<{
 	step: OnboardingStep;
 	index: number;
 	width: number;
 	height: number;
 	isDark: boolean;
-}) {
+}>) {
 	// SVG gradient ids are document-global on web, so they must be unique per step.
 	const idA = `onboarding-blob-a-${index}`;
 	const idB = `onboarding-blob-b-${index}`;
@@ -141,12 +141,12 @@ function FloatingIcon({
 	width,
 	height,
 	isDark,
-}: {
+}: Readonly<{
 	item: (typeof FLOATING_DECOR)[number];
 	width: number;
 	height: number;
 	isDark: boolean;
-}) {
+}>) {
 	const anim = useRef(new Animated.Value(0)).current;
 
 	useEffect(() => {

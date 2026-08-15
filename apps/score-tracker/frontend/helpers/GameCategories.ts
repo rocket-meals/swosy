@@ -222,7 +222,7 @@ export function isComputedCategory(category: GameCategory): boolean {
  * sorting, so derived durations behave like any other value.
  */
 export function resolveCategoryValues(categories: GameCategory[], values: GameCategoryValues | undefined): GameCategoryValues {
-	const resolved: GameCategoryValues = { ...(values ?? {}) };
+	const resolved: GameCategoryValues = { ...values };
 	for (const category of categories) {
 		if (isComputedCategory(category)) {
 			resolved[category.id] = computeDurationValue(category, resolved, categories);

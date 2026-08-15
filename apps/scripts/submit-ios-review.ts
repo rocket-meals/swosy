@@ -35,6 +35,18 @@ class SkipSubmission extends Error {
   }
 }
 
+// Error messages can carry text straight from an App Store Connect response, so
+// strip line breaks and other control characters before logging them: they would
+// otherwise let the response forge extra lines in the CI log.
+function sanitizeForLog(message: string): string {
+  let sanitized = '';
+  for (const char of message) {
+    const code = char.codePointAt(0) as number;
+    sanitized += code < 0x20 || code === 0x7f ? ' ' : char;
+  }
+  return sanitized;
+}
+
 // In manual mode blocked submissions are real errors (the user explicitly asked for a
 // submission), in auto mode they are expected and just end the run gracefully.
 function submissionBlocked(message: string, retryWhileProcessing = false): Error {
@@ -369,7 +381,7 @@ async function main(): Promise<void> {
       }
 
       if (!retry) {
-        console.log(`\n⏭️ Keine Einreichung durchgeführt: ${error.message}`);
+        console.log(`\n⏭️ Keine Einreichung durchgeführt: ${sanitizeForLog(error.message)}`);
         return;
       }
 

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { DimensionValue, Image, Linking, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { DimensionValue, Image, Linking, Text, View, useWindowDimensions } from 'react-native';
 import RenderHtml, { CustomBlockRenderer, HTMLContentModel, HTMLElementModel } from 'react-native-render-html';
 import { MarkdownBlockNode, parseMarkdownToBlocks } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';

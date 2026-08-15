@@ -16,6 +16,19 @@ export type ResolvedLocationHref = {
 	coordinates: { latitude: number; longitude: number } | null;
 };
 
+/**
+ * Trim commas and whitespace from both ends without a regex: the equivalent
+ * `/^[,\s]+|[,\s]+$/g` has super-linear runtime due to backtracking.
+ */
+function trimCommasAndWhitespace(value: string): string {
+	const isTrimmable = (char: string) => char === ',' || char.trim() === '';
+	let start = 0;
+	let end = value.length;
+	while (start < end && isTrimmable(value[start] as string)) start++;
+	while (end > start && isTrimmable(value[end - 1] as string)) end--;
+	return value.slice(start, end);
+}
+
 function getGoogleMapsUrl(latitude: number, longitude: number): string {
 	return `https://www.google.com/maps?q=${latitude},${longitude}`;
 }
@@ -80,7 +93,7 @@ export function resolveLocationHref(href: string | null | undefined): ResolvedLo
 	}
 
 	if (coordinatePayload) {
-		const fallbackQuery = coordinatePayload.replace(/^[,\s]+|[,\s]+$/g, '');
+		const fallbackQuery = trimCommasAndWhitespace(coordinatePayload);
 		if (fallbackQuery) {
 			return {
 				resolvedHref: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fallbackQuery)}`,

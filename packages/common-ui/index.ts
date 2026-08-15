@@ -205,7 +205,6 @@ export {
 	getPlaybookPath,
 	getDefaultKnobValues,
 	parseKnobValue,
-	serializeKnobValue,
 	resolveKnobValues,
 } from './src/playbook/registryData';
 export type { PlaybookEntryData, KnobDefinition, KnobType, KnobValue } from './src/playbook/registryData';

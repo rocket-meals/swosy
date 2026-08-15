@@ -7,8 +7,8 @@ type EasBuildListEntry = {
 
 // Extracts the build number from config.ts (see getBuildNumber() there).
 export function extractLocalBuildNumber(configContent: string): number | null {
-  const match = configContent.match(/function\s+getBuildNumber\s*\(\)[^{]*\{[\s\S]*?return\s+(\d+)/);
-  return match ? parseInt(match[1], 10) : null;
+  const match = /function\s+getBuildNumber\s*\(\)[^{]*\{[\s\S]*?return\s+(\d+)/.exec(configContent);
+  return match ? Number.parseInt(match[1], 10) : null;
 }
 
 // The list from `eas build:list --json` is sorted newest first; the first entry
@@ -20,7 +20,7 @@ export function extractOnlineBuildNumber(buildList: unknown): number | null {
     if (version === null || version === undefined) {
       continue;
     }
-    const parsed = parseInt(String(version), 10);
+    const parsed = Number.parseInt(String(version), 10);
     if (Number.isInteger(parsed)) {
       return parsed;
     }
@@ -75,14 +75,14 @@ function runCompare(): void {
   const build = shouldBuild(localBuildNumber, onlineBuildNumber);
 
   console.log(`Local build number:  ${localBuildNumber}`);
-  console.log(`Online build number: ${onlineBuildNumber === null ? 'not found' : onlineBuildNumber}`);
+  console.log(`Online build number: ${onlineBuildNumber ?? 'not found'}`);
   console.log(build ? '✅ New build required' : '🚫 No new build required');
 
   fs.appendFileSync(
     githubOutput,
     `should-build=${build}\n` +
       `local-build-number=${localBuildNumber}\n` +
-      `online-build-number=${onlineBuildNumber === null ? '' : onlineBuildNumber}\n`
+      `online-build-number=${onlineBuildNumber ?? ''}\n`
   );
 }
 

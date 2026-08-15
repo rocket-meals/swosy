@@ -36,6 +36,7 @@ import { logDebug } from '../../helpers/DebugLogger';
 import ShareImportContent from '../../components/ShareImportContent';
 import ShareExportContent from '../../components/ShareExportContent';
 import GameTypeIcon from '../../components/GameTypeIcon';
+import { countLabel } from '../../helpers/CountLabel';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -68,12 +69,14 @@ function ExportFriendsRow({
 	// Share the friends in the common export format (see helpers/ShareCodec) -
 	// offered via the export modal (clipboard or share sheet).
 	const handleExport = useCallback(() => {
+		// A single friend is named outright, several are only counted.
+		const exportedFriendsLabel = friends.length === 1 ? `„${friends[0].name}“` : countLabel(friends.length, 'Freund', 'Freunde');
 		showExportModal({
 			title: label,
 			children: (
 				<ShareExportContent
 					text={encodeShareBundle(buildFriendsShareBundle(friends))}
-					info={`Der Export enthält ${friends.length === 1 ? `„${friends[0].name}“` : `${friends.length} Freunde`} als Text. Ein anderer Spieler kann ihn im Spieler-Bereich über „Freunde importieren“ einfügen.`}
+					info={`Der Export enthält ${exportedFriendsLabel} als Text. Ein anderer Spieler kann ihn im Spieler-Bereich über „Freunde importieren“ einfügen.`}
 				/>
 			),
 		});

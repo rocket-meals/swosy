@@ -158,6 +158,20 @@ async function fetchText(url: string, signal?: AbortSignal): Promise<string> {
 }
 
 /**
+ * Drop a trailing "Logo"/"Cover"/"Box" from the search term. Done without a
+ * regex: `/\s+(logo|cover|box)$/i` has super-linear runtime due to backtracking
+ * on long whitespace runs.
+ */
+function stripImageSearchSuffix(query: string): string {
+	const trimmed = query.trim();
+	const lastSpace = Math.max(trimmed.lastIndexOf(' '), trimmed.lastIndexOf('\t'), trimmed.lastIndexOf('\n'));
+	if (lastSpace === -1) return trimmed;
+	const lastWord = trimmed.slice(lastSpace + 1).toLowerCase();
+	if (lastWord !== 'logo' && lastWord !== 'cover' && lastWord !== 'box') return trimmed;
+	return trimmed.slice(0, lastSpace).trim();
+}
+
+/**
  * BoardGameGeek's XML API: search for the game, then read the box art of the
  * best matches. Two round trips, but it is the only keyless source that
  * actually knows board games. Parsed with narrow regexes rather than a full XML
@@ -165,7 +179,7 @@ async function fetchText(url: string, signal?: AbortSignal): Promise<string> {
  */
 async function searchBoardGameGeek(query: string, limit: number, signal?: AbortSignal): Promise<ImageSearchResult[]> {
 	// The stored search term usually ends in "Logo"; BGG only knows game titles.
-	const title = query.replace(/\s+(logo|cover|box)$/i, '').trim();
+	const title = stripImageSearchSuffix(query);
 	if (title === '') return [];
 
 	const searchXml = await fetchText(

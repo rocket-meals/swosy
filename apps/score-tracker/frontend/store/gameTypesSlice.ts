@@ -278,7 +278,7 @@ const gameTypesSlice = createSlice({
 			reducer(state, action: PayloadAction<{ gameTypeId: string; categoryId: string; option: GameCategoryOption }>) {
 				const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
 				if (!category) return;
-				if (!category.options) category.options = [];
+				category.options ??= [];
 				category.options.push(action.payload.option);
 			},
 			prepare(params: { gameTypeId: string; categoryId: string; label: string }) {

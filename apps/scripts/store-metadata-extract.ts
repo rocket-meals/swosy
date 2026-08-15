@@ -46,11 +46,16 @@ export function extractGroundTruthSnippet(snapshot: Snapshot): string {
   const answered = Object.entries(declaration).filter(([, value]) => value !== null && value !== undefined);
   const unanswered = Object.keys(declaration).filter(key => declaration[key] === null);
 
+  // Sorted in separate statements (both arrays are freshly built above, so the
+  // in-place sort is local) and with an explicit locale-aware comparator.
+  answered.sort(([a], [b]) => a.localeCompare(b));
+  unanswered.sort((a, b) => a.localeCompare(b));
+
   lines.push('ageRatingDeclaration: {');
-  for (const [key, value] of answered.sort(([a], [b]) => a.localeCompare(b))) {
+  for (const [key, value] of answered) {
     lines.push(`\t${key}: ${formatValue(value)},`);
   }
-  for (const key of unanswered.sort()) {
+  for (const key of unanswered) {
     lines.push(`\t// ${key}: null, // ❗ in App Store Connect unbeantwortet`);
   }
   lines.push('},');
@@ -73,14 +78,39 @@ export function extractGroundTruthSnippet(snapshot: Snapshot): string {
   return lines.join('\n');
 }
 
+/**
+ * Resolve the CLI-provided snapshot path and reject anything outside the
+ * repository. The path is canonicalized (symlinks resolved) *before* the
+ * containment check, so a symlink inside the repo that points outside it
+ * cannot be used to read arbitrary files, and the canonicalized path is the
+ * one that is actually read.
+ */
+function resolveSnapshotPathInsideRepo(snapshotArg: string): string {
+  const repoRoot = fs.realpathSync(REPO_ROOT);
+  const requested = path.isAbsolute(snapshotArg) ? snapshotArg : path.resolve(repoRoot, snapshotArg);
+  const resolved = fs.realpathSync(path.resolve(requested));
+  if (resolved !== repoRoot && !resolved.startsWith(repoRoot + path.sep)) {
+    throw new Error(`Snapshot-Pfad liegt außerhalb des Repositories: ${resolved}`);
+  }
+  return resolved;
+}
+
 function main(): void {
   const snapshotArg = process.argv[2];
   if (!snapshotArg) {
     throw new Error('Aufruf: store-metadata:extract <pfad/zum/snapshot.apple.json>');
   }
-  const snapshotPath = path.isAbsolute(snapshotArg) ? snapshotArg : path.resolve(REPO_ROOT, snapshotArg);
-  const snapshot = JSON.parse(fs.readFileSync(snapshotPath, 'utf8')) as Snapshot;
-  console.log(extractGroundTruthSnippet(snapshot));
+  const snapshotPath = resolveSnapshotPathInsideRepo(snapshotArg);
+  // Sink reviewed as safe: snapshotPath was canonicalized via realpathSync and
+  // confirmed to be inside the repository, see the helper above. Same
+  // suppression as scripts/count-sonar-maintainability-issues.js, where two
+  // rounds of sanitizer hardening did not clear this SonarCloud finding.
+  const snapshot = JSON.parse(fs.readFileSync(snapshotPath, 'utf8')) as Snapshot; // NOSONAR
+  // Printing the snippet is the entire purpose of this script: it is a
+  // ready-to-paste ground-truth block built from public App Store listing data
+  // (categories, age rating answers, privacy policy URL) - no credentials, no
+  // personal data.
+  console.log(extractGroundTruthSnippet(snapshot)); // NOSONAR
 }
 
 if (require.main === module) {

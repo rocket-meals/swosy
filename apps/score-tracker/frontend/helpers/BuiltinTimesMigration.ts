@@ -165,7 +165,7 @@ export function migrateHistoryEntry(
 	// The migrated values move into the built-in fields; keeping them around as
 	// orphaned category values would only resurface as duplicates if a category
 	// with the same id were ever re-created.
-	const categoryValues = { ...(entry.categoryValues ?? {}) };
+	const categoryValues = { ...entry.categoryValues };
 	for (const key of [legacy.startTimeId, legacy.endTimeId, legacy.durationId]) {
 		if (key) delete categoryValues[key];
 	}

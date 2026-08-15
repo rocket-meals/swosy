@@ -63,7 +63,7 @@ const FoodWidgetLayout = (props: FoodWidgetProps, environment: WidgetEnvironment
 		<ZStack modifiers={[frame({ maxWidth: 9999, maxHeight: 9999 }), containerBackground(backgroundColor, 'widget')]}>
 			<VStack spacing={spacing}>
 				{gridRows.map((row, rowIndex) => (
-					<HStack key={`row-${rowIndex}`} spacing={spacing}>
+					<HStack key={`row-${rowIndex}-${row.map((meal) => meal?.name ?? '').join('|')}`} spacing={spacing}>
 						{row.map((meal, cellIndex) => (
 							<ZStack
 								key={`cell-${rowIndex}-${cellIndex}`}

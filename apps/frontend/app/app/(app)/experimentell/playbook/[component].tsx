@@ -14,7 +14,6 @@ import {
 	SettingsListTextInput,
 	buildPlaybookProps,
 	getPlaybookEntry,
-	serializeKnobValue,
 } from 'repo-depkit-common-ui';
 
 type GroupPosition = 'single' | 'top' | 'bottom' | 'middle';
@@ -53,7 +52,7 @@ const PlaybookComponentScreen = () => {
 	}
 
 	const setKnob = (knobName: string, value: KnobValue) => {
-		router.setParams({ [knobName]: serializeKnobValue(value) });
+		router.setParams({ [knobName]: String(value) });
 	};
 
 	const { componentProps, knobValues, variantName } = buildPlaybookProps(entry, params, setKnob);

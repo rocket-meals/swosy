@@ -31,10 +31,15 @@ jobs:
     # Post-CI trigger only reacts to successful CI runs; manual runs always go.
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     steps:
+      # Always the upstream master branch, never the head of the run that
+      # triggered this workflow: a workflow_run event may originate from a fork,
+      # and this job holds the App Store Connect secrets. The checkout token is
+      # not persisted either - nothing here pushes back to the repository.
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4
         with:
           ref: master
+          persist-credentials: false
 
       # While getMajorVersion() in the app's config.ts is below 1 the app is still in
       # development - automated runs must not submit it to App Review. A manual

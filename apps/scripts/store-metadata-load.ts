@@ -17,7 +17,7 @@ export function loadStoreMetadataModule(modulePath: string): StoreAppMetadata[] 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const loaded = require(absolutePath) as { getStoreMetadata?: () => StoreAppMetadata[] };
   if (typeof loaded.getStoreMetadata !== 'function') {
-    throw new Error(`${absolutePath} exportiert keine Funktion getStoreMetadata(): StoreAppMetadata[]`);
+    throw new TypeError(`${absolutePath} exportiert keine Funktion getStoreMetadata(): StoreAppMetadata[]`);
   }
 
   const metadata = loaded.getStoreMetadata();

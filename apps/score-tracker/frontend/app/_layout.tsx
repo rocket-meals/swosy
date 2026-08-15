@@ -1,11 +1,10 @@
 import 'setimmediate';
 import React, { useEffect } from 'react';
-import { Drawer } from 'expo-router/drawer';
+import { Drawer, type DrawerContentComponentProps } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, ToastProvider, useTheme } from 'repo-depkit-common-ui';
-import { DrawerContentComponentProps } from 'expo-router/drawer';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, type ColorValue } from 'react-native';
 import { Provider, useSelector } from 'react-redux';

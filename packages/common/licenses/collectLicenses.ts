@@ -102,7 +102,7 @@ function collectDirectDependencyNames(appDir: string): Set<string> {
 			continue;
 		}
 
-		const declared = { ...(pkg.peerDependencies ?? {}), ...(pkg.dependencies ?? {}) };
+		const declared = { ...pkg.peerDependencies, ...pkg.dependencies };
 		for (const [name, range] of Object.entries(declared)) {
 			if (typeof range === 'string' && range.startsWith(WORKSPACE_PROTOCOL)) {
 				const workspaceDir = findInstalledPackageDir(name, dir);
@@ -146,11 +146,18 @@ function findLicenseFileName(packageDir: string): string | undefined {
 	}
 }
 
+/** Trailing-slash strip without a regex: `/\/+$/` backtracks quadratically on slash-only input. */
+function stripTrailingSlashes(value: string): string {
+	let end = value.length;
+	while (end > 0 && value[end - 1] === '/') end--;
+	return value.slice(0, end);
+}
+
 function buildLicenseUrl(repositoryUrl: string | undefined, repositoryDirectory: string | undefined, licenseFileName: string | undefined): string | undefined {
 	if (!repositoryUrl || !licenseFileName || !repositoryUrl.startsWith('https://github.com/')) {
 		return repositoryUrl;
 	}
-	const directoryPrefix = repositoryDirectory ? `${repositoryDirectory.replace(/\/+$/, '')}/` : '';
+	const directoryPrefix = repositoryDirectory ? `${stripTrailingSlashes(repositoryDirectory)}/` : '';
 	return `${repositoryUrl}/blob/HEAD/${directoryPrefix}${licenseFileName}`;
 }
 

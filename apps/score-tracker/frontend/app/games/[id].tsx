@@ -18,7 +18,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import {
 	renameGameType,
-	setGameTypeIcon,
 	setGameTypeImageUrl,
 	setGameTypeScoringMode,
 	setGameTypeMaxRounds,
@@ -35,7 +34,7 @@ import { archiveGame } from '../../store/gameHistorySlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import type { GameHistoryEntry, GameHistoryPlayerEntry } from '../../helpers/GameHistoryStorage';
 import { buildHistoryEntry, hasRecordedResults } from '../../helpers/GameHistoryStorage';
-import type { ScoringMode, GameType } from '../../helpers/GameTypesStorage';
+import type { ScoringMode } from '../../helpers/GameTypesStorage';
 import type { StartingPlayerMode } from '../../helpers/GameRules';
 import { gameTypeToPreset, parseGamePreset, STARTING_PLAYER_MODES, ROTATE_PLAYER_ORDER_RULE } from '../../helpers/GameRules';
 import { buildGamesShareBundle, encodeShareBundle } from '../../helpers/ShareCodec';
@@ -61,6 +60,7 @@ import ShareExportContent from '../../components/ShareExportContent';
 import { findImageUrlForGameName } from '../../helpers/ImageSearch';
 import { describeImageSize, isInlineImage } from '../../helpers/GameImageUpload';
 import MatchFilterSort from '../../components/MatchFilterSort';
+import { countLabel } from '../../helpers/CountLabel';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -87,7 +87,7 @@ function describeSortAndFilters(categories: GameCategory[], sort: MatchSort, fil
 	const arrow = sort.direction === 'asc' ? '↑' : '↓';
 	const activeFilters = Object.keys(filters).length;
 	if (activeFilters === 0) return `${sortName} ${arrow}`;
-	return `${sortName} ${arrow} · ${activeFilters === 1 ? '1 Filter aktiv' : `${activeFilters} Filter aktiv`}`;
+	return `${sortName} ${arrow} · ${countLabel(activeFilters, 'Filter aktiv', 'Filter aktiv')}`;
 }
 
 /**

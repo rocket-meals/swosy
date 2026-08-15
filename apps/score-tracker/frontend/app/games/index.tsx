@@ -13,7 +13,7 @@ import { DateHelper } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 import { router, useNavigation } from 'expo-router';
 import { addGameType, addGameTypeFromPreset } from '../../store/gameTypesSlice';
-import { setGamesSortMode } from '../../store/appSettingsSlice';
+import { setGamesSortMode, type GamesSortMode } from '../../store/appSettingsSlice';
 import { resetScores, setGameType } from '../../store/gameSlice';
 import { archiveGame } from '../../store/gameHistorySlice';
 import type { AppDispatch, RootState } from '../../store/store';
@@ -25,6 +25,7 @@ import { ComponentIds } from '../../constants/ComponentIds';
 import GameTypeIcon from '../../components/GameTypeIcon';
 import ShareImportContent from '../../components/ShareImportContent';
 import ShareExportContent from '../../components/ShareExportContent';
+import { countLabel } from '../../helpers/CountLabel';
 
 const PRIMARY_COLOR = '#2563eb';
 const SUCCESS_COLOR = '#16a34a';
@@ -34,6 +35,16 @@ function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bot
 	if (index === 0) return 'top';
 	if (index === total - 1) return 'bottom';
 	return 'middle';
+}
+
+/**
+ * Subtitle of one game row: the last-played date when the list is sorted by
+ * date, the number of matches otherwise.
+ */
+function describeGameTypeRow(sortMode: GamesSortMode, lastPlayed: number | undefined, count: number): string {
+	if (sortMode !== 'lastPlayed') return countLabel(count, 'Partie', 'Partien');
+	if (!lastPlayed) return 'Noch keine Partie';
+	return `Zuletzt gespielt: ${DateHelper.getHumanReadableDate(new Date(lastPlayed), false)}`;
 }
 
 // All actions on the games list (create, import/export, sorting) live in the
@@ -203,7 +214,7 @@ export default function GamesScreen() {
 			children: (
 				<ShareExportContent
 					text={encodeShareBundle(buildGamesShareBundle(gameTypes))}
-					info={`Der Export enthält ${gameTypes.length === 1 ? '1 Spiel' : `${gameTypes.length} Spiele`} als Vorlagen. Ein anderer Spieler kann sie im Spiele-Bereich über „Spiel importieren“ einfügen.`}
+					info={`Der Export enthält ${countLabel(gameTypes.length, 'Spiel', 'Spiele')} als Vorlagen. Ein anderer Spieler kann sie im Spiele-Bereich über „Spiel importieren“ einfügen.`}
 				/>
 			),
 		});
@@ -276,14 +287,7 @@ export default function GamesScreen() {
 				// The row's subtitle mirrors the active sort: last-played date when
 				// sorting by date, match count otherwise.
 				const lastPlayed = lastPlayedAt[gameType.id];
-				const value =
-					gamesSortMode === 'lastPlayed'
-						? lastPlayed
-							? `Zuletzt gespielt: ${DateHelper.getHumanReadableDate(new Date(lastPlayed), false)}`
-							: 'Noch keine Partie'
-						: count === 1
-							? '1 Partie'
-							: `${count} Partien`;
+				const value = describeGameTypeRow(gamesSortMode, lastPlayed, count);
 				return (
 					<SettingsList
 						key={gameType.id}

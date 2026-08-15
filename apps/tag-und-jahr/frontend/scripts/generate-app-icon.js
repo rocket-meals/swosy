@@ -75,9 +75,10 @@ for (let y = 0; y < SIZE; y++) {
 		color = blend(color, DAY_DOT_RING, circleCoverage(x, y, dotCx, dotCy, DOT_RING_RADIUS));
 		color = blend(color, DAY_DOT, circleCoverage(x, y, dotCx, dotCy, DOT_RADIUS));
 		const offset = rowStart + 1 + x * 4;
-		raw[offset] = Math.round(color[0]);
-		raw[offset + 1] = Math.round(color[1]);
-		raw[offset + 2] = Math.round(color[2]);
+		const [red = 0, green = 0, blue = 0] = color;
+		raw[offset] = Math.round(red);
+		raw[offset + 1] = Math.round(green);
+		raw[offset + 2] = Math.round(blue);
 		raw[offset + 3] = 255;
 	}
 }

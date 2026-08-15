@@ -46,7 +46,6 @@ import {
 	goToNextRound,
 	reopenMatch,
 	resetScores,
-	resetAll,
 } from '../../store/gameSlice';
 import { addFriendFromPlayer } from '../../store/friendsSlice';
 import { addGameType } from '../../store/gameTypesSlice';
@@ -71,6 +70,7 @@ import { computeNextStartingPlayerIndex } from '../../helpers/GameRules';
 import type { GameCategory } from '../../helpers/GameCategories';
 import { categoriesForScope, formatDuration, resolveCategoryValues, summarizeCategoryValues } from '../../helpers/GameCategories';
 import { durationMinutesBetween, formatTimestampAsDateTime, parseDateTimeInput } from '../../helpers/MatchTimes';
+import { countLabel } from '../../helpers/CountLabel';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -428,7 +428,7 @@ function PlayerMatchInfoSection({
 				<SettingsList
 					nativeID={`${ComponentIds.GAME_PLAYER_INFO_TOTAL_PREFIX}${player.id}`}
 					label="Gesamtpunkte"
-					value={`${total} Punkte · ${scoredRounds === 1 ? '1 gewertete Runde' : `${scoredRounds} gewertete Runden`}`}
+					value={`${total} Punkte · ${countLabel(scoredRounds, 'gewertete Runde', 'gewertete Runden')}`}
 					leftIcon={<Ionicons name="podium-outline" size={20} color="#ffffff" />}
 					iconBgColor="#6b7280"
 					groupPosition="top"
@@ -1367,11 +1367,9 @@ export default function GameScreen() {
 	const endedAt = useSelector((state: RootState) => state.game.endedAt);
 	const status = useSelector((state: RootState) => state.game.status);
 	const currentRoundIndex = useSelector((state: RootState) => state.game.currentRoundIndex);
-	const friends = useSelector((state: RootState) => state.friends.friends);
 	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
 	const gameTypeId = useSelector((state: RootState) => state.game.gameTypeId);
 	const playerOrderState = useSelector((state: RootState) => state.game.playerOrderState);
-	const categoryValues = useSelector((state: RootState) => state.game.categoryValues);
 	const playerCategoryValues = useSelector((state: RootState) => state.game.playerCategoryValues);
 	const columnsPortrait = useSelector((state: RootState) => state.appSettings.columnsPortrait);
 	const columnsLandscape = useSelector((state: RootState) => state.appSettings.columnsLandscape);
@@ -1386,7 +1384,6 @@ export default function GameScreen() {
 	const navigation = useNavigation();
 
 	const [isEditingPlayers, setIsEditingPlayers] = useState(false);
-	const toggleEditingPlayers = useCallback(() => setIsEditingPlayers(v => !v), []);
 
 	// Leaving the setup phase always drops back into the scoreboard view.
 	const prevStatusRef = useRef(status);

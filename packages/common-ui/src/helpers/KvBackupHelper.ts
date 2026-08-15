@@ -58,7 +58,7 @@ export function parseKvBackupJson(json: string): KvBackupFile {
 	}
 	for (const [key, value] of Object.entries(candidate.entries)) {
 		if (typeof value !== 'string') {
-			throw new Error(`Backup entry "${key}" is not a string value`);
+			throw new TypeError(`Backup entry "${key}" is not a string value`);
 		}
 	}
 	return {

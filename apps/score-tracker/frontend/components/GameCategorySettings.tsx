@@ -27,7 +27,7 @@ import {
 import { ImagePickerUnavailableError, describeImageSize, pickGameImageAsDataUri } from '../helpers/GameImageUpload';
 import type { PickImageSource } from '../helpers/GameImageUpload';
 import type { AppDispatch, RootState } from '../store/store';
-import type { GameCategory, GameCategoryScope, GameCategoryType } from '../helpers/GameCategories';
+import type { GameCategory, GameCategoryComputedDuration, GameCategoryScope, GameCategoryType } from '../helpers/GameCategories';
 import {
 	GAME_CATEGORY_SCOPES,
 	GAME_CATEGORY_SCOPE_LABELS,
@@ -52,6 +52,13 @@ function groupPositionFor(index: number, total: number): 'top' | 'middle' | 'bot
 	if (index === 0) return 'top';
 	if (index === total - 1) return 'bottom';
 	return 'middle';
+}
+
+/** Subtitle of the "automatically computed" row of a duration category. */
+function describeComputedToggle(computed: GameCategoryComputedDuration | null, candidateCount: number): string {
+	if (computed) return 'Dauer ergibt sich aus zwei Kategorien';
+	if (candidateCount < 2) return 'Benötigt zwei Kategorien vom Typ Uhrzeit/Datum/Zahl';
+	return 'Dauer aus Start und Ende berechnen';
 }
 
 /** Short "Auswahl · Spieler" summary shown on a category row. */
@@ -329,13 +336,7 @@ function ComputedDurationEditor({
 			<SettingsList
 				nativeID={ComponentIds.GAME_CATEGORY_COMPUTED_TOGGLE}
 				label={computed ? 'Berechnung entfernen' : 'Automatisch berechnen'}
-				value={
-					computed
-						? 'Dauer ergibt sich aus zwei Kategorien'
-						: candidates.length < 2
-							? 'Benötigt zwei Kategorien vom Typ Uhrzeit/Datum/Zahl'
-							: 'Dauer aus Start und Ende berechnen'
-				}
+				value={describeComputedToggle(computed, candidates.length)}
 				stackedValue
 				leftIcon={<Ionicons name={computed ? 'close-circle-outline' : 'calculator-outline'} size={20} color="#ffffff" />}
 				iconBgColor={computed ? DANGER_COLOR : PRIMARY_COLOR}

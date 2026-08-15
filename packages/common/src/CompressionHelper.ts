@@ -48,30 +48,28 @@ function toUtf8Bytes(input: string): number[] {
   return bytes;
 }
 
+/**
+ * Decode a UTF-8 lead byte into the code point bits it carries and the number
+ * of continuation bytes that follow it. Returns `null` for invalid lead bytes.
+ */
+function decodeUtf8LeadByte(byte: number): { codePoint: number; extra: number } | null {
+  if (byte < 0x80) return { codePoint: byte, extra: 0 };
+  if ((byte & 0xe0) === 0xc0) return { codePoint: byte & 0x1f, extra: 1 };
+  if ((byte & 0xf0) === 0xe0) return { codePoint: byte & 0x0f, extra: 2 };
+  if ((byte & 0xf8) === 0xf0) return { codePoint: byte & 0x07, extra: 3 };
+  return null;
+}
+
 function fromUtf8Bytes(bytes: string): string | null {
   const parts: string[] = [];
   for (let i = 0; i < bytes.length; ) {
-    const byte = bytes.charCodeAt(i);
-    let codePoint: number;
-    let extra: number;
-    if (byte < 0x80) {
-      codePoint = byte;
-      extra = 0;
-    } else if ((byte & 0xe0) === 0xc0) {
-      codePoint = byte & 0x1f;
-      extra = 1;
-    } else if ((byte & 0xf0) === 0xe0) {
-      codePoint = byte & 0x0f;
-      extra = 2;
-    } else if ((byte & 0xf8) === 0xf0) {
-      codePoint = byte & 0x07;
-      extra = 3;
-    } else {
-      return null;
-    }
+    const lead = decodeUtf8LeadByte(bytes.codePointAt(i) as number);
+    if (lead === null) return null;
+    const { extra } = lead;
+    let codePoint = lead.codePoint;
     if (i + extra >= bytes.length) return null;
     for (let j = 1; j <= extra; j++) {
-      const continuation = bytes.charCodeAt(i + j);
+      const continuation = bytes.codePointAt(i + j) as number;
       if ((continuation & 0xc0) !== 0x80) return null;
       codePoint = (codePoint << 6) | (continuation & 0x3f);
     }
@@ -150,7 +148,11 @@ function bytesToBase64(bytes: number[]): string {
 }
 
 function base64ToBytes(text: string): number[] | null {
-  const stripped = text.replace(/=+$/, '');
+  // Strip the trailing '=' padding without a regex: `/=+$/` backtracks
+  // quadratically on inputs that consist mostly of '=' characters.
+  let end = text.length;
+  while (end > 0 && text[end - 1] === '=') end--;
+  const stripped = text.slice(0, end);
   const bytes: number[] = [];
   let buffer = 0;
   let bits = 0;
@@ -186,14 +188,14 @@ export class CompressionHelper {
     let emitted = 0;
 
     const emit = (sequence: string) => {
-      const code = sequence.length === 1 ? sequence.charCodeAt(0) : (dict.get(sequence) as number);
+      const code = sequence.length === 1 ? (sequence.codePointAt(0) as number) : (dict.get(sequence) as number);
       writer.write(code, codeWidthFor(dictSizeAtCode(emitted)));
       emitted++;
     };
 
     let current = '';
     for (const byte of bytes) {
-      const char = String.fromCharCode(byte);
+      const char = String.fromCodePoint(byte);
       const extended = current + char;
       if (extended.length === 1 || dict.has(extended)) {
         current = extended;
@@ -233,7 +235,7 @@ export class CompressionHelper {
       const code = reader.read(codeWidthFor(dictSizeAtCode(index)));
       let entry: string;
       if (code < INITIAL_DICT_SIZE) {
-        entry = String.fromCharCode(code);
+        entry = String.fromCodePoint(code);
       } else if (code < dictSize) {
         entry = dict[code - INITIAL_DICT_SIZE] as string;
       } else if (code === dictSize && previous !== null) {

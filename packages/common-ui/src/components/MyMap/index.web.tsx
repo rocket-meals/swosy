@@ -103,6 +103,11 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 
 		useEffect(() => {
 			const handler = (event: MessageEvent) => {
+				// The map html is a bundled, same-origin asset and sendToMap() already
+				// posts to it with window.location.origin as target origin, so anything
+				// from another origin or another frame is not ours.
+				if (event.origin !== window.location.origin) return;
+				if (iframeRef.current && event.source !== iframeRef.current.contentWindow) return;
 				try {
 					const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
 					// When the map signals it is ready and we need to auto-center, send the queued location.

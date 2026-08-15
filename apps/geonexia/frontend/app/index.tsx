@@ -4335,7 +4335,9 @@ export default function RecordScreen() {
 	const [isRecording, setIsRecording] = useState(false);
 	const [elapsedSeconds, setElapsedSeconds] = useState(0);
 	const [liveDistanceKm, setLiveDistanceKm] = useState(0);
-	const [liveSpeedKmh, setLiveSpeedKmh] = useState<number | null>(null);
+	// Only the setter is used: the live speed is not rendered anywhere (yet), but
+	// updating it keeps the recording screen re-rendering while a track is running.
+	const [, setLiveSpeedKmh] = useState<number | null>(null);
 
 	// Measure mode (debug only): collect waypoints by tapping the map
 	const [isMeasureMode, setIsMeasureMode] = useState(false);
@@ -5432,9 +5434,9 @@ export default function RecordScreen() {
 		trackVisitedHexCells(point, h3ResolutionRef, lastCellRef, visitedHexIdsRef, orderedHexTilesRef, lastRedLineCellRef, dispatch);
 
 		// If heading mode is active, rotate the map smoothly to face movement direction.
-		if (isHeadingModeRef.current && next.length >= 2) {
-			const prev = next[next.length - 2];
-			const bearing = computeBearing(prev.lat, prev.lng, point.lat, point.lng);
+		const previousPoint = isHeadingModeRef.current ? next.at(-2) : undefined;
+		if (previousPoint) {
+			const bearing = computeBearing(previousPoint.lat, previousPoint.lng, point.lat, point.lng);
 			mapRef.current?.sendToMap({ bearing, easeAnimation: true, easeDuration: 500 });
 		}
 

@@ -17,10 +17,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setGameTypeIcon, setGameTypeImageUrl } from '../store/gameTypesSlice';
 import type { AppDispatch, RootState } from '../store/store';
 import type { ImageSearchResult } from '../helpers/ImageSearch';
-import { defaultImageQuery, isGoogleImageSearchConfigured, searchImages } from '../helpers/ImageSearch';
-import { MAX_IMAGE_SIZE } from '../helpers/GameImageUpload';
+import { isGoogleImageSearchConfigured, searchImages } from '../helpers/ImageSearch';
 import { GAME_TYPE_ICONS } from '../helpers/GameTypesStorage';
-import { ImagePickerUnavailableError, describeImageSize, isInlineImage, pickGameImageAsDataUri } from '../helpers/GameImageUpload';
+import { ImagePickerUnavailableError, MAX_IMAGE_SIZE, describeImageSize, isInlineImage, pickGameImageAsDataUri } from '../helpers/GameImageUpload';
 import { ComponentIds } from '../constants/ComponentIds';
 
 // The sheet's keyboard tracking only sees BottomSheetTextInput; web has no
@@ -335,7 +334,7 @@ export function GameImagePickerContent({
 	);
 }
 
-export { defaultImageQuery };
+export { defaultImageQuery } from '../helpers/ImageSearch';
 
 const styles = StyleSheet.create({
 	content: {

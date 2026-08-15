@@ -28,6 +28,8 @@ export const FOOD_SERVERS: FoodServer[] = [
 	},
 ];
 
-export function getFoodServer(key: FoodServerKey | string | undefined): FoodServer | undefined {
+// `key` is a plain string on purpose: it also accepts persisted values that no
+// longer match a known FoodServerKey (returns undefined for those).
+export function getFoodServer(key: string | undefined): FoodServer | undefined {
 	return FOOD_SERVERS.find((server) => server.key === key);
 }

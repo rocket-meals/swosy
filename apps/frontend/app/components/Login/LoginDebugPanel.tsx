@@ -10,6 +10,13 @@ import { getSelectedLoginBrowserStrategy, LOGIN_BROWSER_STRATEGY_LABELS, LoginBr
 import { clearLoginLog, getLoginLogEntries, getLoginLogText, subscribeLoginLog } from '@/helper/loginDebug';
 import { useAppSelector } from '@/redux/hooks';
 
+/** Position of the item at `index` inside a settings group of `total` items. */
+const getGroupPosition = (index: number, total: number): 'top' | 'bottom' | 'middle' => {
+	if (index === 0) return 'top';
+	if (index === total - 1) return 'bottom';
+	return 'middle';
+};
+
 // Debug panel to diagnose the native SSO login on real devices: lets the user
 // switch between the browser strategies in helper/authHelper.ts and shows the
 // login debug log with a copy button, so failing devices can report what
@@ -60,7 +67,7 @@ const LoginDebugPanel: React.FC = () => {
 							isSelected={selectedStrategy === strategy}
 							selectionColor={primaryColor || theme.screen.text}
 							onPress={() => onSelectStrategy(strategy)}
-							groupPosition={index === 0 ? 'top' : index === strategies.length - 1 ? 'bottom' : 'middle'}
+							groupPosition={getGroupPosition(index, strategies.length)}
 							showSeparator={index < strategies.length - 1}
 						/>
 					))}
@@ -71,7 +78,7 @@ const LoginDebugPanel: React.FC = () => {
 								<Text style={[styles.logText, { color: theme.screen.text }]}>Noch keine Einträge - starte einen Login.</Text>
 							) : (
 								logEntries.map((entry, index) => (
-									<Text key={index} style={[styles.logText, { color: theme.screen.text }]} selectable>
+									<Text key={`${index}-${entry}`} style={[styles.logText, { color: theme.screen.text }]} selectable>
 										{entry}
 									</Text>
 								))

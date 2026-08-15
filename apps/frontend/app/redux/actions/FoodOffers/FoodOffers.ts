@@ -197,7 +197,7 @@ export const fetchFoodOffersDetailsById = async (id: string, languageCode?: stri
 				fields: '*, translations.*, markings.*,food.*,food.feedbacks.*,food.translations.*,food.food_category.*,food.food_category.translations.*,foodoffer_category.*,foodoffer_category.translations.*,attribute_values.*, attribute_values.food_attribute.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*',
 				limit: -1,
 				deep: {
-					...(buildFoodofferTranslationsDeepFilter(languageCode) || {}),
+					...buildFoodofferTranslationsDeepFilter(languageCode),
 					food: {
 						feedbacks: {
 							_filter: {

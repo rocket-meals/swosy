@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { AvatarConfig } from 'repo-depkit-common-ui';
-import type { Player, Round, GameState, GameStatus } from '../helpers/GameStorage';
+import type { Player, Round, GameState } from '../helpers/GameStorage';
 import { PLAYER_COLORS } from '../helpers/GameStorage';
 import type { Friend } from '../helpers/FriendsStorage';
 import type { GameHistoryEntry } from '../helpers/GameHistoryStorage';
@@ -315,7 +315,7 @@ const gameSlice = createSlice({
 				startedAt: entry.startedAt,
 				endedAt: entry.endedAt,
 				durationMinutes: entry.durationMinutes,
-				categoryValues: { ...(entry.categoryValues ?? {}) },
+				categoryValues: { ...entry.categoryValues },
 				playerCategoryValues,
 			};
 		},
