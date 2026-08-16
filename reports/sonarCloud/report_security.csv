@@ -1,6 +1,2 @@
 Key,Message,Component,Line
-"AZ_ny-3VHB_X69K27h4s","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-tag-und-jahr.yml",43
-"AZ_CQBsm7LyVx862mpi1","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-geonexia.yml",43
-"AZ_CQBtZ7LyVx862mpi2","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-rocket-meals.yml",39
-"AZ_CQBt67LyVx862mpi3","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-score-tracker.yml",43
-"AZ-trod0dnmC--q0OpVj","Lifecycle scripts are enabled by default in Yarn v2+.","rocket-meals_rocket-meals:.github/workflows/backend-schema-sync-pull.yml",55
+"AaAKwCcaTV2yRQvmOccl","Verify the origin of the received message.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.web.tsx",154

@@ -1,5 +1,1 @@
 Key,Message,Component,Line
-"AaAFsGJwH6sOtJrGpsjP","Refactor this function to not always return the same value.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/files-without-folder-report-schedule/index.ts",30
-"AaAFsHKQH6sOtJrGpsjQ","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4401
-"AaAFsF27H6sOtJrGpsjO","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.web.tsx",105
-"AZ_rjWWpiiRzAXeKHrKM","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/app/settings/index.tsx",50
