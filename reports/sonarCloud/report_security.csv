@@ -1,14 +1,6 @@
 Key,Message,Component,Line
-"AZ_ny-5mHB_X69K27h4t","Lifecycle scripts are enabled by default in Yarn v2+.","rocket-meals_rocket-meals:.github/actions/tag-und-jahr-expo-update/action.yml",47
-"AZ_ny-3VHB_X69K27h4s","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-tag-und-jahr.yml",39
-"AZ_ImTrLkMhpq5gU48_J","LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.","rocket-meals_rocket-meals:apps/scripts/store-metadata-extract.ts",82
-"AZ_ImTrLkMhpq5gU48_L","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/scripts/store-metadata-extract.ts",82
-"AZ_ImTrLkMhpq5gU48_K","Change this code to prevent confidential data from leaking in logs.","rocket-meals_rocket-meals:apps/scripts/store-metadata-extract.ts",83
-"AZ_HfXtT4OT8cE4gH-ec","Change this code to not log user-controlled data.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",372
-"AZ_CQBsm7LyVx862mpi1","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-geonexia.yml",39
-"AZ_CQBtZ7LyVx862mpi2","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-rocket-meals.yml",35
-"AZ_CQBt67LyVx862mpi3","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-score-tracker.yml",39
+"AZ_ny-3VHB_X69K27h4s","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-tag-und-jahr.yml",43
+"AZ_CQBsm7LyVx862mpi1","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-geonexia.yml",43
+"AZ_CQBtZ7LyVx862mpi2","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-rocket-meals.yml",39
+"AZ_CQBt67LyVx862mpi3","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-score-tracker.yml",43
 "AZ-trod0dnmC--q0OpVj","Lifecycle scripts are enabled by default in Yarn v2+.","rocket-meals_rocket-meals:.github/workflows/backend-schema-sync-pull.yml",55
-"AZ-trod0dnmC--q0OpVi","Lifecycle scripts are enabled by default in Yarn v2+.","rocket-meals_rocket-meals:.github/workflows/backend-schema-sync-pull.yml",52
-"AZ__r8FHNaBIcnzu0hp-","Verify the origin of the received message.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.web.tsx",141
-"AZ__r8uTNaBIcnzu0hp_","Verify the origin of the received message.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.web.tsx",43
