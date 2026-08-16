@@ -1,0 +1,105 @@
+name: "Stage repository changes"
+description: >-
+  Captures the working-tree changes of a job as a git patch and uploads it as an
+  artifact instead of pushing to the branch. A single publish job at the end of
+  the workflow applies all staged patches and pushes them in one commit, so
+  parallel jobs never race each other on the same ref.
+
+inputs:
+  name:
+    description: >-
+      Unique slug for this set of changes, e.g. "data-clumps" or
+      "readme-android-preview-frontend". Becomes part of the artifact name, so it
+      must be unique within the workflow run.
+    required: true
+  paths:
+    description: >-
+      Whitespace/newline separated list of paths to stage. Everything outside
+      these paths is ignored, so build leftovers never end up in the commit.
+    required: true
+  description:
+    description: >-
+      Human readable summary of the change, listed in the body of the final
+      commit. Defaults to the value of `name`.
+    required: false
+    default: ''
+
+runs:
+  using: "composite"
+  steps:
+    - name: "📦 Build patch"
+      id: patch
+      shell: bash
+      env:
+        STAGE_NAME: ${{ inputs.name }}
+        STAGE_PATHS: ${{ inputs.paths }}
+        STAGE_DESCRIPTION: ${{ inputs.description }}
+      run: |
+        set -euo pipefail
+
+        name="$STAGE_NAME"
+        summary="${STAGE_DESCRIPTION:-}"
+        [ -n "$summary" ] || summary="$name"
+
+        # The name ends up in an artifact name and a file name, so keep it to
+        # characters that are legal on every runner OS.
+        case "$name" in
+          ''|*[!A-Za-z0-9._-]*)
+            echo "::error::stage-changes: name '$name' must be non-empty and only contain [A-Za-z0-9._-]"
+            exit 1
+            ;;
+        esac
+
+        # A path that neither exists on disk nor is tracked would make `git add`
+        # fail with "pathspec did not match any files". Jobs legitimately produce
+        # only a subset of their declared paths (a badge but no report, say), so
+        # skip those instead of failing the build.
+        paths=()
+        while read -r path; do
+          [ -n "$path" ] || continue
+          if [ -e "$path" ] || git ls-files --error-unmatch -- "$path" >/dev/null 2>&1; then
+            paths+=("$path")
+          else
+            echo "Path '$path' does not exist and is not tracked, skipping."
+          fi
+        done <<< "$(printf '%s' "$STAGE_PATHS" | tr ' \t' '\n\n')"
+
+        if [ ${#paths[@]} -eq 0 ]; then
+          echo "No existing paths to stage for '$name'."
+          echo "has-changes=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        # Stage into the index so the diff covers added and deleted files too.
+        # -f because report output directories are frequently gitignored.
+        git add -A -f -- "${paths[@]}"
+
+        if git diff --cached --quiet; then
+          echo "No changes for '$name', nothing to stage."
+          echo "has-changes=false" >> "$GITHUB_OUTPUT"
+          git reset -q
+          exit 0
+        fi
+
+        mkdir -p .ci-staged
+        # --binary keeps PNG screenshots and other non-text output intact.
+        git diff --cached --binary > ".ci-staged/${name}.patch"
+        printf '%s\n' "$summary" > ".ci-staged/${name}.txt"
+
+        echo "Staged changes for '$name':"
+        git diff --cached --stat
+
+        # Restore the index so later steps in the same job are not surprised by
+        # a fully staged working tree.
+        git reset -q
+
+        echo "has-changes=true" >> "$GITHUB_OUTPUT"
+
+    - name: "📤 Upload staged changes"
+      if: steps.patch.outputs.has-changes == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ci-staged-changes-${{ inputs.name }}
+        path: .ci-staged/
+        retention-days: 1
+        if-no-files-found: error

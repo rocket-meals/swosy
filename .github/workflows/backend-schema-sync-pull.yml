@@ -65,17 +65,36 @@ jobs:
           fi
           yarn workspace backend-sync sync:pull-from-test-system
 
-      - name: "🤖 Configure Git"
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: "💾 Stage schema changes"
+        uses: ./.github/actions/stage-changes
+        with:
+          name: backend-schema
+          paths: |
+            data/directus-sync-data
+            packages/common/src/databaseTypes
+          description: "pull database schema from test system"
 
-      - name: "📤 Commit and push schema changes"
-        run: |
-          git add data/directus-sync-data packages/common/src/databaseTypes
-          if git diff --cached --quiet; then
-            echo "ℹ️ No schema changes detected, nothing to commit."
-          else
-            git commit -m "${{ github.event.inputs.commit_message || 'chore: pull database schema from test system [skip ci]' }}"
-            git push origin HEAD:${{ github.ref_name }}
-          fi
+  # Single writer to the branch: the job above only uploads its changes as a
+  # patch artifact, this job applies it and pushes it with a rebase-retry.
+  publish-staged-changes:
+    name: "📤 Publish Staged Changes"
+    runs-on: ubuntu-latest
+    needs: [sync]
+    if: always()
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      # fetch-depth: 0 is required - `git apply --3way` needs the blobs the
+      # staged patches were built against.
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: "📤 Apply and push all staged changes"
+        uses: ./.github/actions/publish-staged-changes
+        with:
+          branch: ${{ github.ref_name }}
+          commit-message: "${{ github.event.inputs.commit_message || 'chore: pull database schema from test system [skip ci]' }}"

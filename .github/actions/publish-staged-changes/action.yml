@@ -1,0 +1,186 @@
+name: "Publish staged changes"
+description: >-
+  Collects every patch staged by `stage-changes` during this workflow run,
+  applies them onto the target branch, and pushes them as a single commit. This
+  is the only place in the workflow that writes to the branch, which removes the
+  race between parallel jobs that used to cause "cannot lock ref" push failures.
+  The calling job must check out `branch` with `fetch-depth: 0` and a token that
+  is allowed to push.
+
+inputs:
+  branch:
+    description: "Branch to push to. Defaults to the branch the run was triggered on."
+    required: false
+    default: ${{ github.ref_name }}
+  commit-message:
+    description: "Subject line of the single commit."
+    required: false
+    default: "chore: update generated files [skip ci]"
+  max-attempts:
+    description: "How often the push is retried when the branch moved underneath us."
+    required: false
+    default: '6'
+
+outputs:
+  pushed:
+    description: "'true' when a commit was pushed, 'false' when there was nothing to publish."
+    value: ${{ steps.publish.outputs.pushed }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "🔍 Look for staged changes"
+      id: check
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const artifacts = await github.paginate(
+            github.rest.actions.listWorkflowRunArtifacts,
+            { owner: context.repo.owner, repo: context.repo.repo, run_id: context.runId, per_page: 100 },
+          );
+          const staged = artifacts.filter(a => a.name.startsWith('ci-staged-changes-') && !a.expired);
+          if (staged.length === 0) {
+            core.info('No staged changes in this run, nothing to publish.');
+          } else {
+            core.info(`Found ${staged.length} staged change artifact(s): ${staged.map(a => a.name).join(', ')}`);
+          }
+          core.setOutput('has-staged', staged.length > 0 ? 'true' : 'false');
+
+    - name: "📥 Download staged changes"
+      if: steps.check.outputs.has-staged == 'true'
+      uses: actions/download-artifact@v4
+      with:
+        pattern: ci-staged-changes-*
+        merge-multiple: true
+        # Outside the repository, so `git clean` during patching cannot eat it.
+        path: ${{ runner.temp }}/ci-staged
+
+    - name: "📤 Apply patches and push"
+      id: publish
+      if: steps.check.outputs.has-staged == 'true'
+      shell: bash
+      env:
+        STAGED_DIR: ${{ runner.temp }}/ci-staged
+        TARGET_BRANCH: ${{ inputs.branch }}
+        COMMIT_MESSAGE: ${{ inputs.commit-message }}
+        MAX_ATTEMPTS: ${{ inputs.max-attempts }}
+      run: |
+        set -euo pipefail
+
+        shopt -s nullglob
+        patches=("$STAGED_DIR"/*.patch)
+        shopt -u nullglob
+
+        if [ ${#patches[@]} -eq 0 ]; then
+          echo "No patch files downloaded, nothing to publish."
+          echo "pushed=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+
+        # `git apply --3way` resolves the patches against the blobs they were
+        # built from, so the full history has to be present.
+        if [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
+          echo "Repository is shallow, fetching full history for 3-way merges..."
+          git fetch --unshallow origin "$TARGET_BRANCH"
+        fi
+
+        base="$(git rev-parse HEAD)"
+        summaries=()
+        failed=()
+
+        # Each patch is committed on its own so a conflicting patch can be rolled
+        # back with `git reset --hard` without losing the ones already applied.
+        # The temporary commits are squashed into one at the end.
+        for patch in $(printf '%s\n' "${patches[@]}" | sort); do
+          name="$(basename "$patch" .patch)"
+          summary="$name"
+          if [ -f "${patch%.patch}.txt" ]; then
+            summary="$(head -n 1 "${patch%.patch}.txt")"
+          fi
+
+          echo "::group::Applying $name"
+          if git apply --reverse --check "$patch" >/dev/null 2>&1; then
+            echo "Patch '$name' is already contained in the branch, skipping."
+            echo "::endgroup::"
+            continue
+          fi
+
+          if git apply --3way --whitespace=nowarn "$patch"; then
+            git add -A
+            if git diff --cached --quiet; then
+              echo "Patch '$name' is already contained in the branch, skipping."
+              echo "::endgroup::"
+              continue
+            fi
+            git commit -q -m "staged: $name"
+            summaries+=("$summary")
+            echo "Applied '$name'."
+          else
+            # Roll back to the last good state; untracked leftovers of the failed
+            # patch are removed, everything already committed survives.
+            git reset --hard -q HEAD
+            git clean -fdq
+            failed+=("$name")
+            echo "::error::Could not apply staged patch '$name' - it conflicts with the current state of $TARGET_BRANCH."
+          fi
+          echo "::endgroup::"
+        done
+
+        if [ "$(git rev-parse HEAD)" = "$base" ]; then
+          echo "Nothing to commit after applying patches."
+          echo "pushed=false" >> "$GITHUB_OUTPUT"
+          if [ ${#failed[@]} -gt 0 ]; then
+            echo "::error::All staged patches failed to apply: ${failed[*]}"
+            exit 1
+          fi
+          exit 0
+        fi
+
+        # Squash the per-patch commits into the single commit we publish.
+        body="$(printf -- '- %s\n' "${summaries[@]}")"
+        git reset --soft -q "$base"
+        git commit -q -m "$COMMIT_MESSAGE" -m "$body"
+
+        echo "Publishing:"
+        git --no-pager show --stat --oneline HEAD | head -n 40 || true
+
+        attempts="$MAX_ATTEMPTS"
+        delay=2
+        for attempt in $(seq 1 "$attempts"); do
+          if git push origin "HEAD:refs/heads/${TARGET_BRANCH}"; then
+            echo "Pushed on attempt $attempt."
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
+            if [ ${#failed[@]} -gt 0 ]; then
+              echo "::error::Pushed, but these staged patches were dropped because they conflicted: ${failed[*]}"
+              exit 1
+            fi
+            exit 0
+          fi
+
+          if [ "$attempt" -eq "$attempts" ]; then
+            break
+          fi
+
+
+          # The branch moved between our fetch and our push. Rebase our single
+          # commit on top of the new tip and try again. The jitter keeps two
+          # colliding runs from retrying in lockstep forever.
+          jitter=$(( RANDOM % 4 ))
+          echo "Push attempt $attempt failed, retrying in $(( delay + jitter ))s..."
+          sleep $(( delay + jitter ))
+          delay=$(( delay * 2 ))
+
+          git fetch origin "$TARGET_BRANCH"
+          if ! git rebase "origin/${TARGET_BRANCH}"; then
+            git rebase --abort || true
+            echo "::error::Our commit conflicts with new commits on $TARGET_BRANCH and cannot be rebased automatically."
+            exit 1
+          fi
+        done
+
+        echo "pushed=false" >> "$GITHUB_OUTPUT"
+        echo "::error::Could not push to $TARGET_BRANCH after $attempts attempts."
+        exit 1
