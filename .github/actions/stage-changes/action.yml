@@ -43,9 +43,11 @@ runs:
 
         # The name ends up in an artifact name and a file name, so keep it to
         # characters that are legal on every runner OS.
+        # '.' and '..' pass the character check but would resolve to a parent
+        # directory when the name is used as a path component below.
         case "$name" in
-          ''|*[!A-Za-z0-9._-]*)
-            echo "::error::stage-changes: name '$name' must be non-empty and only contain [A-Za-z0-9._-]"
+          ''|.|..|*[!A-Za-z0-9._-]*)
+            echo "::error::stage-changes: name '$name' must be non-empty, not '.' or '..', and only contain [A-Za-z0-9._-]"
             exit 1
             ;;
         esac
@@ -81,10 +83,17 @@ runs:
           exit 0
         fi
 
-        mkdir -p .ci-staged
+        # Outside the repository, so `git clean` cannot eat it and the patch
+        # never shows up in a later `git add` of the same job. The directory is
+        # per-stage so a job that stages twice does not upload the other stage's
+        # patch as well. Not a dotted directory: upload-artifact treats every
+        # file below a hidden directory as hidden and would skip all of them.
+        stage_dir="${RUNNER_TEMP}/ci-staged/${name}"
+        rm -rf "$stage_dir"
+        mkdir -p "$stage_dir"
         # --binary keeps PNG screenshots and other non-text output intact.
-        git diff --cached --binary > ".ci-staged/${name}.patch"
-        printf '%s\n' "$summary" > ".ci-staged/${name}.txt"
+        git diff --cached --binary > "${stage_dir}/${name}.patch"
+        printf '%s\n' "$summary" > "${stage_dir}/${name}.txt"
 
         echo "Staged changes for '$name':"
         git diff --cached --stat
@@ -100,6 +109,6 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: ci-staged-changes-${{ inputs.name }}
-        path: .ci-staged/
+        path: ${{ runner.temp }}/ci-staged/${{ inputs.name }}/
         retention-days: 1
         if-no-files-found: error
