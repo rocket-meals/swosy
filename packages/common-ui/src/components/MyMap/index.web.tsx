@@ -101,11 +101,9 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 			})();
 		}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-		// The map html is a bundled, same-origin asset and sendToMap() already posts to it
-		// with window.location.origin as target origin, so anything from another origin or
-		// another frame is not ours.
+		// Second half of the sender check: even within our own origin, only our own map
+		// iframe may talk to us. The origin check itself stays inline in the listener below.
 		const isMessageFromMapIframe = useCallback((event: MessageEvent) => {
-			if (event.origin !== window.location.origin) return false;
 			return !iframeRef.current || event.source === iframeRef.current.contentWindow;
 		}, []);
 
@@ -140,6 +138,13 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 
 		useEffect(() => {
 			const handler = (event: MessageEvent) => {
+				// The map html is a bundled, same-origin asset and sendToMap() already posts
+				// to it with window.location.origin as target origin, so anything from another
+				// origin or another frame is not ours. The origin check is deliberately kept
+				// inline here (and not folded into the helper): it belongs right at the
+				// listener, both for readers and for static analysis - matching the sibling
+				// implementation in apps/frontend/app/components/MyMap/index.web.tsx.
+				if (event.origin !== window.location.origin) return;
 				if (!isMessageFromMapIframe(event)) return;
 				try {
 					const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;

@@ -72,7 +72,8 @@ export function getVersionPatch() {
         // 15: SonarCloud clean-up (map message origin check, login debug panel)
         // 16: SonarCloud/data-clumps clean-up (shared redirect button, license and
         //     Google service account types)
-        return 16;
+        // 17: MyMap (web): message origin check kept inline at the listener
+        return 17;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

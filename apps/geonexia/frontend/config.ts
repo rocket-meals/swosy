@@ -40,7 +40,8 @@ export function getVersionPatch() {
 	// 14: SonarCloud clean-up (recording location update split into helpers)
 	// 15: SonarCloud/data-clumps clean-up (live speed kept in a ref, shared
 	//     modal/license/sqlite settings types)
-	return 15;
+	// 16: MyMap (web): message origin check kept inline at the listener
+	return 16;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
