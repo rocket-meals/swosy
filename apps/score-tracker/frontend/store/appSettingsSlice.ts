@@ -1,13 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { ColumnsCount, GamesSortMode } from '../helpers/AppSettingsStorage';
+import type { AppSettingsBase, ColumnsCount, GamesSortMode } from '../helpers/AppSettingsStorage';
 export type { ColumnsCount, GamesSortMode };
 
 // ─── State type ───────────────────────────────────────────────────────────────
 
-export type AppSettingsSliceState = {
-	columnsPortrait: ColumnsCount;
-	columnsLandscape: ColumnsCount;
-	gamesSortMode: GamesSortMode;
+export type AppSettingsSliceState = AppSettingsBase & {
 	/**
 	 * Whether the first-launch onboarding was completed (or skipped).
 	 * `undefined` until the persisted settings are hydrated - the onboarding

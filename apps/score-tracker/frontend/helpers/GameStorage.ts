@@ -45,8 +45,33 @@ export type Round = {
  */
 export type GameStatus = 'setup' | 'active' | 'finished';
 
-export type GameState = {
+/**
+ * What a match records apart from its participants and their scores. The match
+ * currently being played (`GameState`) and the archived match
+ * (`GameHistoryEntry` in GameHistoryStorage) carry exactly these fields and only
+ * differ in which of them are guaranteed to be set, so each of the two types
+ * re-declares just the fields it can promise.
+ */
+export type MatchRecordBase = {
+	/** When the match was started - stamped automatically by `startGame` (see helpers/MatchTimes). */
+	startedAt?: number;
+	/** When the match ended - set once it is archived / viewed as finished. */
+	endedAt?: number;
+	/** Minutes between `startedAt` and `endedAt`, stored at archive time (see helpers/MatchTimes). */
+	durationMinutes?: number;
+	/** Set when the match is played as a specific game (see GameTypesStorage). */
+	gameTypeId?: string;
+	/** Values of the game type's match-scope categories (see GameCategories), keyed by category id. */
+	categoryValues?: GameCategoryValues;
+	/** Values of the game type's player-scope categories, keyed by player id and then category id. */
+	playerCategoryValues?: Record<string, GameCategoryValues>;
+	/** The match's rounds. */
+	rounds?: Round[];
+};
+
+export type GameState = MatchRecordBase & {
 	players: Player[];
+	/** Always present while a match is loaded (unlike on an archived entry). */
 	rounds: Round[];
 	status: GameStatus;
 	currentRoundIndex: number;
@@ -56,23 +81,8 @@ export type GameState = {
 	 * and played on updates its own entry instead of piling up copies.
 	 */
 	matchId?: string;
-	/** Set when the current match is played as a specific game (see GameTypesStorage). */
-	gameTypeId?: string;
 	/** Numeric state carried between rounds for a `startingPlayerMode: 'custom'` rule (see GameRules). */
 	playerOrderState?: number;
-	/** When the match was started - stamped automatically by `startGame` (see helpers/MatchTimes). */
-	startedAt?: number;
-	/** When the match ended - only set while `status` is `finished` (viewing an archived match). */
-	endedAt?: number;
-	/**
-	 * Minutes between `startedAt` and `endedAt`, stored when the match is
-	 * archived - only set while `status` is `finished` (see helpers/MatchTimes).
-	 */
-	durationMinutes?: number;
-	/** Values of the game type's match-scope categories (see GameCategories), keyed by category id. */
-	categoryValues?: GameCategoryValues;
-	/** Values of the game type's player-scope categories, keyed by player id and then category id. */
-	playerCategoryValues?: Record<string, GameCategoryValues>;
 };
 
 // ─── Storage access ───────────────────────────────────────────────────────────

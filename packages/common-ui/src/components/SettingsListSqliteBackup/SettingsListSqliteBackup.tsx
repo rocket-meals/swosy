@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import SettingsList from '../SettingsList';
+import type { SqliteSettingsGroupBaseProps } from '../SettingsList/formFieldTypes';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import { DEFAULT_DB_NAME } from '../../helpers/SqliteKeyValueStorage';
 import { createKvBackupJson, parseKvBackupJson, restoreKvBackup } from '../../helpers/KvBackupHelper';
@@ -56,14 +57,9 @@ const DEFAULT_TEXTS: Required<SettingsListSqliteBackupTexts> = {
 	ok: 'OK',
 };
 
-export interface SettingsListSqliteBackupProps {
-	/** Which named kv database to back up/restore. Defaults to the shared app db. */
-	dbName?: string;
+export interface SettingsListSqliteBackupProps extends SqliteSettingsGroupBaseProps {
 	/** Used as the export filename base, e.g. 'score-tracker' -> score-tracker-backup-2026-08-14.json. */
 	appName: string;
-	iconBgColor: string;
-	iconColor: string;
-	textColor: string;
 	texts?: SettingsListSqliteBackupTexts;
 	exportNativeID?: string;
 	importNativeID?: string;

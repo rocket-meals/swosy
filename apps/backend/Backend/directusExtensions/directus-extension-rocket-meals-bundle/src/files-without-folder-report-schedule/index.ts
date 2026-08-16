@@ -29,10 +29,18 @@ function chunkArray<T>(items: T[], chunkSize: number): T[][] {
  */
 async function findReferencedFileIds(candidateFileIds: string[], myDatabaseHelper: MyDatabaseHelper): Promise<Set<string>> {
   const referencedFileIds = new Set<string>();
-  if (candidateFileIds.length === 0) {
-    return referencedFileIds;
+  if (candidateFileIds.length > 0) {
+    await collectReferencedFileIds(candidateFileIds, myDatabaseHelper, referencedFileIds);
   }
+  return referencedFileIds;
+}
 
+/** Walks every directus_files relation of the schema and collects the referenced candidate ids into `referencedFileIds`. */
+async function collectReferencedFileIds(
+  candidateFileIds: string[],
+  myDatabaseHelper: MyDatabaseHelper,
+  referencedFileIds: Set<string>,
+): Promise<void> {
   const schema = await myDatabaseHelper.getSchema();
   const candidateIdSet = new Set(candidateFileIds);
   const candidateIdChunks = chunkArray(candidateFileIds, CANDIDATE_ID_CHUNK_SIZE);
@@ -57,8 +65,6 @@ async function findReferencedFileIds(candidateFileIds: string[], myDatabaseHelpe
       await collectCollectionFileReferences(collectionHelper, fileIdField, candidateIdChunks, referencedFileIds);
     }
   }
-
-  return referencedFileIds;
 }
 
 /** Adds the file the singleton references, if it is one of the candidates. */

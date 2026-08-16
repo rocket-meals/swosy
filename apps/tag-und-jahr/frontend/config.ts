@@ -1,12 +1,9 @@
 import { ImageSourcePropType } from 'react-native';
+import type { CustomerConfigBase } from 'repo-depkit-common/appconfig/expoAppConfig';
 
-export type CustomerConfig = {
-	projectName: string;
-	appleAppId?: string;
-	images: {
-		company_logo_source_get_for_react_native: () => ImageSourcePropType;
-	};
-};
+// Shared shape (see repo-depkit-common/appconfig/expoAppConfig.ts) bound to
+// react-native's image source type.
+export type CustomerConfig = CustomerConfigBase<ImageSourcePropType>;
 
 // DO NOT CHANGE THE NAME OF THIS FUNCTION: getBuildNumber
 // The workflow action check-build-number-online will use this function to determine the build number
@@ -33,7 +30,9 @@ export function getVersionPatch() {
 	// 2: shared Expo app config moved to repo-depkit-common/appconfig
 	// 3: privacy manifest declared per app from named building blocks
 	// 4: SonarCloud clean-up (widget settings sync split into helpers)
-	return 4;
+	// 5: SonarCloud/data-clumps clean-up (settings screen split into panels,
+	//    shared customer config type)
+	return 5;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

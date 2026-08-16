@@ -4396,9 +4396,10 @@ export default function RecordScreen() {
 	const [isRecording, setIsRecording] = useState(false);
 	const [elapsedSeconds, setElapsedSeconds] = useState(0);
 	const [liveDistanceKm, setLiveDistanceKm] = useState(0);
-	// Only the setter is used: the live speed is not rendered anywhere (yet), but
-	// updating it keeps the recording screen re-rendering while a track is running.
-	const [, setLiveSpeedKmh] = useState<number | null>(null);
+	// The live speed is not rendered anywhere (yet), so it is kept in a ref instead of
+	// state: the re-render while a track is running already comes from setLiveDistanceKm(),
+	// which is updated in the same code paths.
+	const liveSpeedKmhRef = useRef<number | null>(null);
 
 	// Measure mode (debug only): collect waypoints by tapping the map
 	const [isMeasureMode, setIsMeasureMode] = useState(false);
@@ -5505,7 +5506,7 @@ export default function RecordScreen() {
 		});
 
 		if (point.speed != null && point.speed >= 0) {
-			setLiveSpeedKmh(point.speed * 3.6);
+			liveSpeedKmhRef.current = point.speed * 3.6;
 		}
 
 		sendRouteToMap(next);
@@ -5680,7 +5681,7 @@ export default function RecordScreen() {
 			setIsPaused(false);
 			setElapsedSeconds(0);
 			setLiveDistanceKm(0);
-			setLiveSpeedKmh(null);
+			liveSpeedKmhRef.current = null;
 			lastAnnouncedKmRef.current = 0;
 			paceHintStateRef.current = 'on_target';
 			// Initialise to now so the first pace-hint announcement is delayed by

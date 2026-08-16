@@ -6,10 +6,18 @@ export type ColumnsCount = 1 | 2;
 /** Sort order of the games list (games screen). */
 export type GamesSortMode = 'lastPlayed' | 'name' | 'matchCount';
 
-export type AppSettingsState = {
+/**
+ * The app settings that are stored and mirrored into redux unchanged. Only the
+ * onboarding flag differs between disk and store (see AppSettingsSliceState),
+ * so it is added on top instead of being repeated in both places.
+ */
+export type AppSettingsBase = {
 	columnsPortrait: ColumnsCount;
 	columnsLandscape: ColumnsCount;
 	gamesSortMode: GamesSortMode;
+};
+
+export type AppSettingsState = AppSettingsBase & {
 	/** Whether the first-launch onboarding was completed (or skipped). */
 	onboardingCompleted: boolean;
 };

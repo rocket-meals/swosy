@@ -1,7 +1,6 @@
 import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 import type { PlayerIdentity } from './PlayerIdentity';
-import type { GameCategoryValues } from './GameCategories';
-import type { GameState, Round } from './GameStorage';
+import type { GameState, MatchRecordBase } from './GameStorage';
 import { durationMinutesBetween } from './MatchTimes';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -13,29 +12,20 @@ export type GameHistoryPlayerEntry = PlayerIdentity & {
 	friendId?: string;
 };
 
-export type GameHistoryEntry = {
+/**
+ * An archived match: the shared match record (see `MatchRecordBase` in GameStorage)
+ * plus everything the history list itself needs. `endedAt` is always set here - an
+ * entry only exists once the match ended. `rounds` stays optional: it is kept so an
+ * archived match can be re-opened and played on (see `loadMatch` in the game slice),
+ * but entries archived before re-opening existed only carry `finalScores`.
+ */
+export type GameHistoryEntry = MatchRecordBase & {
 	id: string;
-	/** When the match was started - stamped by `startGame`. Absent on entries from before start tracking existed. */
-	startedAt?: number;
 	endedAt: number;
-	/** Minutes between `startedAt` and `endedAt`, stored at archive time (see helpers/MatchTimes). */
-	durationMinutes?: number;
 	roundsCount: number;
 	players: GameHistoryPlayerEntry[];
 	/** Final total score per player, keyed by `GameHistoryPlayerEntry.playerId`. */
 	finalScores: Record<string, number>;
-	/** Present when the match was played as a specific game (see GameTypesStorage). */
-	gameTypeId?: string;
-	/** Recorded match-scope category values (see GameCategories), keyed by category id. */
-	categoryValues?: GameCategoryValues;
-	/** Recorded player-scope category values, keyed by `GameHistoryPlayerEntry.playerId` and then category id. */
-	playerCategoryValues?: Record<string, GameCategoryValues>;
-	/**
-	 * The match's rounds, kept so an archived match can be re-opened and played
-	 * on (see `loadMatch` in the game slice). Absent on entries archived before
-	 * re-opening existed - those only carry `finalScores`.
-	 */
-	rounds?: Round[];
 };
 
 export type GameHistoryState = {

@@ -30,13 +30,10 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-export type LicenseEntry = {
-	name: string;
-	version: string;
-	license: string;
-	repository?: string;
-	licenseUrl?: string;
-};
+// The entry type itself is runtime-safe and therefore declared next to the other shared
+// types, so repo-depkit-common-ui can reuse it without pulling this Node-only module in.
+export type { LicenseEntry } from '../src/LicenseEntry';
+import type { LicenseEntry } from '../src/LicenseEntry';
 
 type PackageJsonRepository = string | { url?: string; directory?: string };
 

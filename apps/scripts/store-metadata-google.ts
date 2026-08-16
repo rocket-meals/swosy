@@ -1,6 +1,7 @@
 import * as crypto from 'node:crypto';
 import * as fs from 'node:fs';
-import type { GooglePlayAppMetadata } from 'repo-depkit-common';
+import type { GooglePlayAppMetadata, GooglePlayListing, GoogleServiceAccountKey } from 'repo-depkit-common';
+import { GOOGLE_OAUTH_TOKEN_URL } from 'repo-depkit-common';
 import { base64url } from './base64url';
 import { AttributeChange, computeAttributeChanges, formatChanges } from './store-metadata-diff';
 
@@ -17,23 +18,27 @@ import { AttributeChange, computeAttributeChanges, formatChanges } from './store
 // and default language are fully automatable and handled here.
 
 const API_BASE = 'https://androidpublisher.googleapis.com/androidpublisher/v3';
-const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const SCOPE = 'https://www.googleapis.com/auth/androidpublisher';
 
-type ServiceAccount = { client_email: string; private_key: string; token_uri?: string };
-
-function readServiceAccount(): ServiceAccount {
+function readServiceAccount(): GoogleServiceAccountKey {
   const path = process.env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_PATH;
   const content = process.env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON;
   const json = content ?? (path ? fs.readFileSync(path, 'utf8') : undefined);
   if (!json) {
     throw new Error('Weder GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_PATH noch GOOGLE_PLAY_SERVICE_ACCOUNT_JSON ist gesetzt.');
   }
-  const account = JSON.parse(json) as ServiceAccount;
+  const account = JSON.parse(json) as Partial<GoogleServiceAccountKey>;
   if (!account.client_email || !account.private_key) {
     throw new Error('Service-Account-JSON enthält kein client_email/private_key.');
   }
-  return account;
+  // token_uri may be missing in hand-written keys - fall back to the well-known endpoint,
+  // so the rest of the file can rely on it being set.
+  return {
+    ...account,
+    client_email: account.client_email,
+    private_key: account.private_key,
+    token_uri: account.token_uri ?? GOOGLE_OAUTH_TOKEN_URL,
+  };
 }
 
 export function hasGooglePlayCredentials(): boolean {
@@ -44,12 +49,12 @@ export async function createGooglePlayAccessToken(): Promise<string> {
   const account = readServiceAccount();
   const now = Math.floor(Date.now() / 1000);
   const header = { alg: 'RS256', typ: 'JWT' };
-  const payload = { iss: account.client_email, scope: SCOPE, aud: account.token_uri ?? TOKEN_URL, iat: now, exp: now + 3600 };
+  const payload = { iss: account.client_email, scope: SCOPE, aud: account.token_uri, iat: now, exp: now + 3600 };
   const unsigned = `${base64url(JSON.stringify(header))}.${base64url(JSON.stringify(payload))}`;
   const signature = crypto.sign('sha256', Buffer.from(unsigned), account.private_key);
   const assertion = `${unsigned}.${base64url(signature)}`;
 
-  const response = await fetch(account.token_uri ?? TOKEN_URL, {
+  const response = await fetch(account.token_uri, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion }),
@@ -77,12 +82,9 @@ async function googleRequest(accessToken: string, method: string, path: string, 
   return text ? JSON.parse(text) : {};
 }
 
-export type GooglePlayListingSnapshot = {
+/** A store listing as returned by the Play API - the shared listing fields plus its language. */
+export type GooglePlayListingSnapshot = GooglePlayListing & {
   language: string;
-  title?: string;
-  shortDescription?: string;
-  fullDescription?: string;
-  video?: string;
 };
 
 export type GooglePullResult = {

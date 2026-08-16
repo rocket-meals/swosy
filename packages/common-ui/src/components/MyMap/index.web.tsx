@@ -101,42 +101,50 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 			})();
 		}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+		// The map html is a bundled, same-origin asset and sendToMap() already posts to it
+		// with window.location.origin as target origin, so anything from another origin or
+		// another frame is not ours.
+		const isMessageFromMapIframe = useCallback((event: MessageEvent) => {
+			if (event.origin !== window.location.origin) return false;
+			return !iframeRef.current || event.source === iframeRef.current.contentWindow;
+		}, []);
+
+		// Apply the initial color map once the style is fully loaded.
+		// mapStyleKey takes priority: use its definition's colorMap; otherwise fall back to the colorMap prop.
+		const applyInitialColorMap = useCallback(() => {
+			const currentStyleKey = mapStyleKeyRef.current;
+			if (!currentStyleKey) {
+				if (colorMapRef.current) {
+					sendToMap({ colorMap: colorMapRef.current });
+				}
+				return;
+			}
+			const def = MAP_STYLE_DEFINITIONS[currentStyleKey];
+			if (def?.colorMap) {
+				sendToMap({ colorMap: def.colorMap });
+			}
+		}, [sendToMap]);
+
+		// The map signalled that it is ready: hide the loading overlay, send the queued
+		// auto-center location (only when no initialCenter was given) and apply the colors.
+		const handleMapMounted = useCallback(() => {
+			mapReadyRef.current = true;
+			const shouldAutoCenter = !initialCenter && centerAtUserLocationIfNoInitialPosition !== false;
+			if (shouldAutoCenter && locationForInitRef.current && !initCenterSentRef.current) {
+				initCenterSentRef.current = true;
+				sendToMap({ mapCenterPosition: locationForInitRef.current, animate: false });
+			}
+			setOverlayVisible(false);
+			applyInitialColorMap();
+		}, [applyInitialColorMap, sendToMap, initialCenter, centerAtUserLocationIfNoInitialPosition]);
+
 		useEffect(() => {
 			const handler = (event: MessageEvent) => {
-				// The map html is a bundled, same-origin asset and sendToMap() already
-				// posts to it with window.location.origin as target origin, so anything
-				// from another origin or another frame is not ours.
-				if (event.origin !== window.location.origin) return;
-				if (iframeRef.current && event.source !== iframeRef.current.contentWindow) return;
+				if (!isMessageFromMapIframe(event)) return;
 				try {
 					const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-					// When the map signals it is ready and we need to auto-center, send the queued location.
-					if (
-						data.tag === 'MapComponentMounted' &&
-						!initialCenter &&
-						centerAtUserLocationIfNoInitialPosition !== false
-					) {
-						mapReadyRef.current = true;
-						if (locationForInitRef.current && !initCenterSentRef.current) {
-							initCenterSentRef.current = true;
-							sendToMap({ mapCenterPosition: locationForInitRef.current, animate: false });
-						}
-					}
-					// Hide the loading overlay when the map is ready.
 					if (data.tag === 'MapComponentMounted') {
-						mapReadyRef.current = true;
-						setOverlayVisible(false);
-						// Apply the initial color map once the style is fully loaded.
-						// mapStyleKey takes priority: use its definition's colorMap; otherwise fall back to the colorMap prop.
-						const currentStyleKey = mapStyleKeyRef.current;
-						if (currentStyleKey) {
-							const def = MAP_STYLE_DEFINITIONS[currentStyleKey];
-							if (def?.colorMap) {
-								sendToMap({ colorMap: def.colorMap });
-							}
-						} else if (colorMapRef.current) {
-							sendToMap({ colorMap: colorMapRef.current });
-						}
+						handleMapMounted();
 					}
 					onMessage(data);
 				} catch {
@@ -145,7 +153,7 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 			};
 			window.addEventListener('message', handler);
 			return () => window.removeEventListener('message', handler);
-		}, [onMessage, sendToMap, initialCenter, centerAtUserLocationIfNoInitialPosition]);
+		}, [onMessage, handleMapMounted, isMessageFromMapIframe]);
 
 		const handleIframeLoad = useCallback(() => {
 			if (!injectScript) return;

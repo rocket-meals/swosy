@@ -28,3 +28,13 @@ export type TextInputAppearanceProps = {
 	inputStyle?: object;
 	autoFocus?: boolean;
 };
+
+/** Shared props of the self-contained SQLite settings groups (SettingsListSqliteStorage and
+ * SettingsListSqliteBackup): which named kv database they act on, plus the row colors. */
+export type SqliteSettingsGroupBaseProps = {
+	/** Which named expo-sqlite database to act on. Defaults to the shared app db. */
+	dbName?: string;
+	iconBgColor: string;
+	iconColor: string;
+	textColor: string;
+};

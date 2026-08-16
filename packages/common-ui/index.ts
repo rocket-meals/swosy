@@ -179,7 +179,7 @@ export type { CustomMarkdownProps, MarkdownLinkKind, MarkdownLinkRenderProps, Ma
 export { resolveLocationHref, parseCoordinatesFromUri, UriScheme } from './src/components/CustomMarkdown/MarkdownLinkHelper';
 export type { ResolvedLocationHref } from './src/components/CustomMarkdown/MarkdownLinkHelper';
 export { default as MarkdownRedirectButton } from './src/components/CustomMarkdown/MarkdownRedirectButton';
-export type { MarkdownRedirectButtonProps } from './src/components/CustomMarkdown/MarkdownRedirectButton';
+export type { MarkdownRedirectButtonProps, RedirectButtonBaseProps } from './src/components/CustomMarkdown/MarkdownRedirectButton';
 export { default as CollapsibleView } from './src/components/Collapsible/CollapsibleView';
 export type { CollapsibleViewProps } from './src/components/Collapsible/CollapsibleView';
 export { default as CollapsibleSection } from './src/components/Collapsible/CollapsibleSection';

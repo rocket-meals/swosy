@@ -52,7 +52,13 @@ jobs:
         run: yarn install --immutable --mode=skip-build
 
       - name: "🎭 Install Playwright browser (for type download)"
-        run: yarn workspace backend-sync exec playwright install --with-deps chromium
+        # NOSONAR - "Lifecycle scripts are enabled by default in Yarn v2+": this is not a
+        # `yarn install` of project dependencies (that one already runs with
+        # `--mode=skip-build` above), it is Playwright's own browser downloader invoked via
+        # `yarn workspace ... exec`. There is no dependency lifecycle script to skip here,
+        # so the finding is suppressed instead of "fixed". See "Umgang mit
+        # SonarCloud-Findings" in the README.
+        run: yarn workspace backend-sync exec playwright install --with-deps chromium # NOSONAR
 
       - name: "🗄️ Pull database schema from test system"
         env:

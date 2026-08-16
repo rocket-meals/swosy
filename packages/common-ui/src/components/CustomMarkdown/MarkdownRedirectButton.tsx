@@ -4,12 +4,19 @@ import { FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-ico
 import { useTheme } from '../../context/ThemeContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
 
-export type MarkdownRedirectButtonProps = {
-	type: 'email' | 'tel' | 'link' | 'location';
+/**
+ * Look and behaviour shared by every redirect button. Only the supported `type` values differ
+ * per app, so those stay with the concrete component (see RedirectButtonProps in the frontend app).
+ */
+export type RedirectButtonBaseProps = {
 	label: string;
 	backgroundColor?: string;
 	color?: string;
 	onClick?: () => void;
+};
+
+export type MarkdownRedirectButtonProps = RedirectButtonBaseProps & {
+	type: 'email' | 'tel' | 'link' | 'location';
 };
 
 const MarkdownRedirectButton: React.FC<MarkdownRedirectButtonProps> = ({ type, label, backgroundColor, color, onClick }) => {

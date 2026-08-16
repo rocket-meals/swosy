@@ -268,3 +268,23 @@ export function getPrivacyManifests(privacy: AppPrivacyManifest) {
 		NSPrivacyAccessedAPITypes: privacy.accessedApiTypes,
 	};
 }
+
+/**
+ * Branding an app exposes to its own UI (logo) and to the store tooling (Apple-ID).
+ *
+ * The image source type is a type parameter on purpose: the concrete
+ * `ImageSourcePropType` lives in react-native, and this module is also loaded in
+ * Node (app.config.ts) and by the backend, so it must stay free of react-native
+ * imports. Each app declares
+ * `export type CustomerConfig = CustomerConfigBase<ImageSourcePropType>;`
+ * in its own config.ts and adds the fields that are specific to it.
+ */
+export type CustomerConfigBase<TImageSource> = {
+	/** User-facing brand name - matches `name` in app.config.ts. */
+	projectName: string;
+	/** App Store Connect Apple-ID (App-Informationen -> Apple-ID), needed for non-interactive `eas submit`. */
+	appleAppId?: string;
+	images: {
+		company_logo_source_get_for_react_native: () => TImageSource;
+	};
+};

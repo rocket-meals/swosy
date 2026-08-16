@@ -36,7 +36,13 @@ jobs:
       # and this job holds the App Store Connect secrets. The checkout token is
       # not persisted either - nothing here pushes back to the repository.
       - name: "🔄 Checkout Repository"
-        uses: actions/checkout@v4
+        # NOSONAR - "Make sure that no untrusted code is executed from a fork": already
+        # mitigated and therefore suppressed instead of "fixed". The checkout is pinned to
+        # `ref: master` of the upstream repository, so the head of the triggering (possibly
+        # forked) workflow_run is never checked out, and `persist-credentials: false` keeps
+        # the checkout token out of the workspace. See "Umgang mit SonarCloud-Findings" in
+        # the README.
+        uses: actions/checkout@v4 # NOSONAR
         with:
           ref: master
           persist-credentials: false

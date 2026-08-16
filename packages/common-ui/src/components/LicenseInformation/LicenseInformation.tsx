@@ -3,18 +3,14 @@ import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import CollapsibleView from '../Collapsible/CollapsibleView';
+import type { LicenseEntry } from 'repo-depkit-common';
 
 /**
- * A single entry of the auto-collected open-source license list
- * (see packages/common/licenses/collectLicenses.ts).
+ * A single entry of the auto-collected open-source license list. Same shape the collector
+ * writes (see packages/common/licenses/collectLicenses.ts), kept under the component's own
+ * name because that is what consumers import.
  */
-export type LicensePackageInfo = {
-	name: string;
-	version: string;
-	license: string;
-	repository?: string;
-	licenseUrl?: string;
-};
+export type LicensePackageInfo = LicenseEntry;
 
 export type LicenseInformationProps = {
 	packages: LicensePackageInfo[];

@@ -180,94 +180,147 @@ export default function Settings() {
 			</Text>
 
 			{previewKind === 'clock' ? (
-				<>
-					<Text style={styles.sectionTitle}>Jahresbeginn (oben)</Text>
-					<View style={styles.chipRow}>
-						<Chip
-							label="Frühling (21.03.)"
-							selected={clockSettings.yearStart === 'spring'}
-							onPress={() => updateClockSettings({ yearStart: 'spring' })}
-						/>
-						<Chip
-							label="Neujahr (01.01.)"
-							selected={clockSettings.yearStart === 'newyear'}
-							onPress={() => updateClockSettings({ yearStart: 'newyear' })}
-						/>
-					</View>
-
-					<Text style={styles.sectionTitle}>Tagesanzeige</Text>
-					<View style={styles.chipRow}>
-						<Chip
-							label="Tagesfortschritt"
-							selected={clockSettings.dayDisplay === 'progress'}
-							onPress={() => updateClockSettings({ dayDisplay: 'progress' })}
-						/>
-						<Chip
-							label="Sonne & Mond"
-							selected={clockSettings.dayDisplay === 'sunmoon'}
-							onPress={() => updateClockSettings({ dayDisplay: 'sunmoon' })}
-						/>
-					</View>
-					{clockSettings.dayDisplay === 'sunmoon' ? (
-						<Text style={styles.hint}>
-							Sonne und Mond wandern über den Horizont: Sonne von 06:00 (links) bis 18:00 (rechts), der Mond übernimmt die Nacht.
-							Darüber Himmel, darunter Erde.
-						</Text>
-					) : null}
-				</>
+				<ClockSettingsPanel clockSettings={clockSettings} onUpdateClockSettings={updateClockSettings} />
 			) : (
-				<>
-					<Text style={styles.sectionTitle}>Server</Text>
-					<View style={styles.chipRow}>
-						{FOOD_SERVERS.map((server) => (
-							<Chip
-								key={server.key}
-								label={server.label}
-								selected={server.key === serverKey}
-								onPress={() => {
-									setServerKey(server.key);
-									setCanteenId(null);
-									setMeals(null);
-									setStatus(null);
-								}}
-							/>
-						))}
-					</View>
-
-					<Text style={styles.sectionTitle}>Mensa</Text>
-					{canteensLoading ? <ActivityIndicator color={CLOCK_COLORS.yearDisc} /> : null}
-					{!canteensLoading && serverKey == null ? <Text style={styles.hint}>Zuerst einen Server wählen.</Text> : null}
-					<View style={styles.chipRow}>
-						{canteens.map((canteen) => (
-							<Chip
-								key={canteen.id}
-								label={canteen.alias}
-								selected={canteen.id === canteenId}
-								onPress={() => {
-									setCanteenId(canteen.id);
-									setStatus(null);
-								}}
-							/>
-						))}
-					</View>
-
-					<Text style={styles.sectionTitle}>Bilder pro Seite</Text>
-					<View style={styles.chipRow}>
-						{MEAL_COUNT_OPTIONS.map((count) => (
-							<Chip key={count} label={`${count}`} selected={count === mealCount} onPress={() => setMealCount(count)} />
-						))}
-					</View>
-
-					{busy ? <ActivityIndicator style={styles.busyIndicator} color={CLOCK_COLORS.dayDot} /> : null}
-					{status ? <Text style={styles.status}>{status}</Text> : null}
-					{error ? <Text style={styles.error}>{error}</Text> : null}
-
-					<Text style={styles.hint}>
-						Widget hinzufügen: Home-Bildschirm lange drücken → Bearbeiten → Widget hinzufügen → „Tag und Jahr" → „Speisen heute".
-					</Text>
-				</>
+				<FoodSettingsPanel
+					serverKey={serverKey}
+					canteens={canteens}
+					canteensLoading={canteensLoading}
+					canteenId={canteenId}
+					mealCount={mealCount}
+					busy={busy}
+					status={status}
+					error={error}
+					onSelectServer={(nextServerKey) => {
+						setServerKey(nextServerKey);
+						setCanteenId(null);
+						setMeals(null);
+						setStatus(null);
+					}}
+					onSelectCanteen={(nextCanteenId) => {
+						setCanteenId(nextCanteenId);
+						setStatus(null);
+					}}
+					onSelectMealCount={setMealCount}
+				/>
 			)}
 		</ScrollView>
+	);
+}
+
+/** Display options of the clock widget. */
+function ClockSettingsPanel({
+	clockSettings,
+	onUpdateClockSettings,
+}: Readonly<{ clockSettings: ClockSettings; onUpdateClockSettings: (update: Partial<ClockSettings>) => void }>) {
+	return (
+		<>
+			<Text style={styles.sectionTitle}>Jahresbeginn (oben)</Text>
+			<View style={styles.chipRow}>
+				<Chip
+					label="Frühling (21.03.)"
+					selected={clockSettings.yearStart === 'spring'}
+					onPress={() => onUpdateClockSettings({ yearStart: 'spring' })}
+				/>
+				<Chip
+					label="Neujahr (01.01.)"
+					selected={clockSettings.yearStart === 'newyear'}
+					onPress={() => onUpdateClockSettings({ yearStart: 'newyear' })}
+				/>
+			</View>
+
+			<Text style={styles.sectionTitle}>Tagesanzeige</Text>
+			<View style={styles.chipRow}>
+				<Chip
+					label="Tagesfortschritt"
+					selected={clockSettings.dayDisplay === 'progress'}
+					onPress={() => onUpdateClockSettings({ dayDisplay: 'progress' })}
+				/>
+				<Chip
+					label="Sonne & Mond"
+					selected={clockSettings.dayDisplay === 'sunmoon'}
+					onPress={() => onUpdateClockSettings({ dayDisplay: 'sunmoon' })}
+				/>
+			</View>
+			{clockSettings.dayDisplay === 'sunmoon' ? (
+				<Text style={styles.hint}>
+					Sonne und Mond wandern über den Horizont: Sonne von 06:00 (links) bis 18:00 (rechts), der Mond übernimmt die Nacht.
+					Darüber Himmel, darunter Erde.
+				</Text>
+			) : null}
+		</>
+	);
+}
+
+/** Server, canteen and page size of the food widget, plus its load/save feedback. */
+function FoodSettingsPanel({
+	serverKey,
+	canteens,
+	canteensLoading,
+	canteenId,
+	mealCount,
+	busy,
+	status,
+	error,
+	onSelectServer,
+	onSelectCanteen,
+	onSelectMealCount,
+}: Readonly<{
+	serverKey: FoodServerKey | null;
+	canteens: Canteen[];
+	canteensLoading: boolean;
+	canteenId: string | null;
+	mealCount: number;
+	busy: boolean;
+	status: string | null;
+	error: string | null;
+	onSelectServer: (serverKey: FoodServerKey) => void;
+	onSelectCanteen: (canteenId: string) => void;
+	onSelectMealCount: (mealCount: number) => void;
+}>) {
+	return (
+		<>
+			<Text style={styles.sectionTitle}>Server</Text>
+			<View style={styles.chipRow}>
+				{FOOD_SERVERS.map((server) => (
+					<Chip
+						key={server.key}
+						label={server.label}
+						selected={server.key === serverKey}
+						onPress={() => onSelectServer(server.key)}
+					/>
+				))}
+			</View>
+
+			<Text style={styles.sectionTitle}>Mensa</Text>
+			{canteensLoading ? <ActivityIndicator color={CLOCK_COLORS.yearDisc} /> : null}
+			{!canteensLoading && serverKey == null ? <Text style={styles.hint}>Zuerst einen Server wählen.</Text> : null}
+			<View style={styles.chipRow}>
+				{canteens.map((canteen) => (
+					<Chip
+						key={canteen.id}
+						label={canteen.alias}
+						selected={canteen.id === canteenId}
+						onPress={() => onSelectCanteen(canteen.id)}
+					/>
+				))}
+			</View>
+
+			<Text style={styles.sectionTitle}>Bilder pro Seite</Text>
+			<View style={styles.chipRow}>
+				{MEAL_COUNT_OPTIONS.map((count) => (
+					<Chip key={count} label={`${count}`} selected={count === mealCount} onPress={() => onSelectMealCount(count)} />
+				))}
+			</View>
+
+			{busy ? <ActivityIndicator style={styles.busyIndicator} color={CLOCK_COLORS.dayDot} /> : null}
+			{status ? <Text style={styles.status}>{status}</Text> : null}
+			{error ? <Text style={styles.error}>{error}</Text> : null}
+
+			<Text style={styles.hint}>
+				Widget hinzufügen: Home-Bildschirm lange drücken → Bearbeiten → Widget hinzufügen → „Tag und Jahr" → „Speisen heute".
+			</Text>
+		</>
 	);
 }
 

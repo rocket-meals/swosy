@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import SettingsList from '../SettingsList';
+import type { SqliteSettingsGroupBaseProps } from '../SettingsList/formFieldTypes';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import { DEFAULT_DB_NAME, getStorageUsage, clearStorage } from '../../helpers/SqliteKeyValueStorage';
 import type { SqliteStorageKeyUsage } from '../../helpers/SqliteKeyValueStorage';
@@ -31,12 +32,7 @@ const DEFAULT_TEXTS: Required<SettingsListSqliteStorageTexts> = {
 	confirmClear: 'Löschen',
 };
 
-export interface SettingsListSqliteStorageProps {
-	/** Which named expo-sqlite database to report on/clear. Defaults to the shared app db. */
-	dbName?: string;
-	iconBgColor: string;
-	iconColor: string;
-	textColor: string;
+export interface SettingsListSqliteStorageProps extends SqliteSettingsGroupBaseProps {
 	texts?: SettingsListSqliteStorageTexts;
 	/** Bump this to force a re-read of storage usage, e.g. after an external migration ran. */
 	refreshSignal?: number;

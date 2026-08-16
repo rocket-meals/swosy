@@ -133,6 +133,44 @@ Die App-Version setzt sich aus `Major.BuildNumber.Patch` zusammen (siehe `getMaj
 
 Bei nativen Änderungen (z.&nbsp;B. Expo-Plugins) muss zusätzlich die Build-Nummer (`getBuildNumber()`) erhöht werden — Details dazu in der `AGENTS.md`.
 
+## 🛡️ Umgang mit SonarCloud-Findings
+
+Die SonarCloud-Reports liegen unter `reports/sonarCloud/` (`report_security.csv`, `report_reliability.csv`,
+`report_maintainability.csv` sowie die zusammengefasste `issue.md`) und werden bei jedem CI-Lauf neu erzeugt.
+Der Ablauf zum Abarbeiten der Maintainability-Issues steht in `docs/SONARCLOUD_MAINTAINABILITY_WORKFLOW.md`.
+
+**Grundsatz:** Ein Finding wird zuerst *wirklich behoben*. Erst wenn das nicht sinnvoll möglich ist, wird es
+unterdrückt.
+
+**Security-Findings dürfen für Sonar auskommentiert werden — aber nur mit Begründung.** Viele
+Security-Hotspots sind im Kontext dieses Repos bereits abgesichert (Sonar kann die Absicherung nur nicht
+sehen) oder lassen sich nicht beheben, ohne die Funktion kaputtzumachen. In solchen Fällen ist es
+ausdrücklich erwünscht, das Finding mit `NOSONAR` zu markieren, statt Code zu verbiegen. Bedingungen:
+
+1. **`NOSONAR` steht in genau der Zeile, die Sonar meldet** — sonst greift die Unterdrückung nicht.
+2. **Direkt darüber (oder dahinter) steht eine Begründung im Klartext:** welches Finding gemeint ist,
+   *warum* es hier nicht zutrifft bzw. wodurch das Risiko bereits abgedeckt ist. Ein nacktes `NOSONAR`
+   ohne Begründung ist nicht zulässig.
+3. **Kein `NOSONAR` für echte Lücken.** Es unterdrückt die Meldung, nicht das Problem — im Zweifel wird
+   behoben, nicht unterdrückt.
+
+Beispiele im Repo:
+
+```yaml
+# .github/workflows/ios-submit-review-*.yml
+- name: "🔄 Checkout Repository"
+  # NOSONAR - "Make sure that no untrusted code is executed from a fork": already
+  # mitigated ... `ref: master` ... `persist-credentials: false` ...
+  uses: actions/checkout@v4 # NOSONAR
+```
+
+```ts
+// packages/common/src/MathHelper.ts
+return Math.random(); // NOSONAR - not security-sensitive (see class comment above)
+```
+
+Dieselbe Regel gilt sinngemäß für Reliability- und Maintainability-Findings.
+
 ## ⏰ Update und Env-Generierung
 
 Das Skript `scripts/update-and-generate-env.sh` führt folgende Schritte aus:
