@@ -60,17 +60,35 @@ jobs:
           name: accessibility-reports
           path: reports/accessibility/
 
-      - name: "💾 Commit reports"
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git pull --rebase --autostash origin ${{ github.ref_name }}
-          git add -f reports/accessibility/
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "chore: update accessibility reports [skip ci]"
-            git push
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: "💾 Stage reports"
+        uses: ./.github/actions/stage-changes
+        with:
+          name: accessibility-report
+          paths: reports/accessibility
+          description: "update accessibility reports"
+
+  # Single writer to the branch: the job above only uploads its reports as a
+  # patch artifact, this job applies it and pushes it with a rebase-retry so a
+  # concurrent CI push cannot make it fail.
+  publish-staged-changes:
+    name: "📤 Publish Staged Changes"
+    runs-on: ubuntu-latest
+    needs: [accessibility-audit]
+    if: always() && github.repository == 'rocket-meals/rocket-meals'
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      # fetch-depth: 0 is required - `git apply --3way` needs the blobs the
+      # staged patches were built against.
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: "📤 Apply and push all staged changes"
+        uses: ./.github/actions/publish-staged-changes
+        with:
+          branch: ${{ github.ref_name }}
+          commit-message: "chore: update accessibility reports [skip ci]"

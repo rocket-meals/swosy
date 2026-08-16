@@ -155,22 +155,18 @@ runs:
       env:
         EXPO_TOKEN: ${{ inputs.EXPO_TOKEN }}
 
-    - name: "💾 Commit EAS config changes"
-      run: |
-        git config --global user.name 'Rocket Meals'
-        git config --global user.email 'nils@baumgartner-software.de'
-        git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-        if ! git diff --quiet; then
-          git add -A && git commit -m "chore: update geonexia EAS config [skip ci]"
-          for i in 1 2 3 4 5; do
-            git pull --rebase origin "$(git rev-parse --abbrev-ref HEAD)" && git push && break
-            echo "Push attempt $i failed, retrying..."
-            sleep 5
-          done
-        fi
-      shell: bash
-      env:
-        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+    # The EAS config is not pushed from here - it is staged as a patch and
+    # published together with everything else by the workflow's single
+    # publish job, so parallel jobs cannot race on the branch.
+    - name: "💾 Stage EAS config changes"
+      uses: ./.github/actions/stage-changes
+      with:
+        name: eas-config-geonexia
+        paths: |
+          apps/geonexia/frontend/app.config.ts
+          apps/geonexia/frontend/app.json
+          apps/geonexia/frontend/eas.json
+        description: "update geonexia EAS config"
 
     - name: "🚀 Publish OTA update"
       run: |

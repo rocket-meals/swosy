@@ -1,5 +1,5 @@
 name: 'Build Directus Backend'
-description: 'Build Directus extension and push updated dist'
+description: 'Build Directus extension and stage the updated dist for the publish job'
 inputs:
   EXPO_TOKEN:
     description: 'Expo token for dependency install'
@@ -36,18 +36,15 @@ runs:
           echo "dist_changed=false" >> $GITHUB_ENV
         fi
       shell: bash
-    - name: Commit and push changes if dist changed
+    # The dist is not pushed from here - it is staged as a patch and published
+    # together with everything else by the workflow's single publish job.
+    - name: Stage dist changes
       if: steps.repo_check.outputs.is_main_repo == 'true' && env.dist_changed == 'true'
-      run: |
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "actions@github.com"
-        git stash --include-untracked
-        git pull --rebase
-        git stash pop
-        git add -f apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/dist
-        git commit -m "Update dist after backend build"
-        git push
-      shell: bash
+      uses: ./.github/actions/stage-changes
+      with:
+        name: backend-dist
+        paths: apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/dist
+        description: "update dist after backend build"
     - name: Upload Dist Artifact
       if: steps.repo_check.outputs.is_main_repo == 'true' && env.dist_changed == 'true'
       uses: actions/upload-artifact@v4
