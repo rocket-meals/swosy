@@ -854,22 +854,23 @@ const Index = () => {
 	);
 
 	const getDirectusUploadId = async (value: any, folderId?: string | null) => {
+		// Only web reads the bytes upfront - on native the local uri is handed to the upload
+		// helper as is, `fetch` cannot read `file://`/`data:` uris there.
+		if (!isWeb) {
+			const nativeFileData = { name: value.name, type: value.type, buffer: value.image, edit: true };
+			return uploadToDirectusFromMobile(nativeFileData, folderId);
+		}
+
 		const response = await fetch(value.image);
 		const arrayBuffer = await response.arrayBuffer();
 		const buffer = MyBuffer.from(arrayBuffer);
 		const fileData = {
 			name: value.name,
 			type: value.type,
-			buffer: isWeb ? buffer : value.image,
+			buffer,
 			edit: true,
 		};
-		let fileId;
-		if (isWeb) {
-			fileId = await uploadToDirectus(fileData, folderId);
-		} else {
-			fileId = await uploadToDirectusFromMobile(fileData, folderId);
-		}
-		return fileId;
+		return uploadToDirectus(fileData, folderId);
 	};
 
 	const handleAddToQueue = () => {

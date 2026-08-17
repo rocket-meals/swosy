@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Text, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -15,6 +15,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { isWeb, settingsListSectionGap } from '@/constants/Constants';
 import { ServerAPI } from '@/redux/actions';
 import { CollectionHelper } from '@/helper/collectionHelper';
+import { buildDirectusUploadFormData } from '@/helper/fileUploadHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import { CollectionNames } from 'repo-depkit-common';
@@ -147,51 +148,6 @@ async function resizeImageIfTooLarge(uri: string, width: number, height: number,
 	return resizedImage.uri;
 }
 
-/**
- * Builds the FormData payload for an image upload, using the platform-specific
- * way of turning a local file uri into a file/blob part.
- */
-async function buildImageFormData(finalUri: string, fileName: string, storage: string): Promise<FormData> {
-	const formData = new FormData();
-
-	if (Platform.OS === 'web') {
-		const blob: Blob = await new Promise((resolve, reject) => {
-			const xhr = new XMLHttpRequest();
-			xhr.onload = function () {
-				resolve(xhr.response);
-			};
-			xhr.onerror = function (e) {
-				console.log(e);
-				reject(new TypeError('Network request failed'));
-			};
-			xhr.responseType = 'blob';
-			xhr.open('GET', finalUri, true);
-			xhr.send(null);
-		});
-
-		if (storage) {
-			formData.append('folder', storage);
-		}
-		formData.append('image', blob, fileName);
-	} else {
-		const uriParts = finalUri.split('.');
-		const fileType = uriParts.at(-1);
-		const fileExtension = `.${fileType}`;
-		const file: any = {
-			uri: finalUri,
-			name: fileName + fileExtension,
-			type: `image/${fileType}`,
-		};
-
-		if (storage) {
-			formData.append('folder', storage);
-		}
-		formData.append('image', file, fileName);
-	}
-
-	return formData;
-}
-
 const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps> = ({ field, collection, itemId, onUpdated, onClose }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -259,11 +215,14 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 				setLoading(prev => ({ ...prev, camera: useCamera, image: !useCamera }));
 
 				const fileName = `${collection}_${itemId}`;
-				const formData = await buildImageFormData(finalUri, fileName, storage);
+				const formData = await buildDirectusUploadFormData({
+					uri: finalUri,
+					fileName,
+					folderId: storage,
+					title: fileName,
+				});
 
 				const client = ServerAPI.getClient();
-				formData.append('title', fileName);
-
 				const resultFileUpload = await client.request(uploadFiles(formData));
 				const fileId = resultFileUpload.id;
 

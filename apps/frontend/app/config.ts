@@ -73,8 +73,9 @@ export function getVersionPatch() {
         // 16: SonarCloud/data-clumps clean-up (shared redirect button, license and
         //     Google service account types)
         // 17: MyMap (web): message origin check kept inline at the listener
-        // 18: food info modal titled "Speise Info" instead of "Beschreibung"
-        return 18;
+        // 18: image and file uploads fixed for Expo SDK 57 (expo/fetch form parts)
+        // 19: food info modal titled "Speise Info"; app version shown in the drawer
+        return 19;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
