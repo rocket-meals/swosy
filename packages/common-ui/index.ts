@@ -42,8 +42,8 @@ export { borderRadiusContainer, horizontalScreenPadding } from './src/constants/
 export { CommonUiComponentIds } from './src/constants/ComponentIds';
 
 // Components
-export { default as LicenseInformation } from './src/components/LicenseInformation';
-export type { LicenseInformationProps, LicensePackageInfo } from './src/components/LicenseInformation';
+export { default as LicenseInformation, LICENSE_INFORMATION_FALLBACK_TEXTS } from './src/components/LicenseInformation';
+export type { LicenseInformationProps, LicenseInformationTexts, LicensePackageInfo } from './src/components/LicenseInformation';
 export { getLicensesFromExtra } from './src/components/LicenseInformation';
 
 export { default as SettingsList } from './src/components/SettingsList';
@@ -149,14 +149,17 @@ export type { ScreenHeaderProps } from './src/components/ScreenHeader';
 export { default as CardWithText } from './src/components/CardWithText';
 export type { CardWithTextProps } from './src/components/CardWithText';
 
-export { default as WeatherPreview } from './src/components/WeatherPreview';
-export type { WeatherPreviewProps } from './src/components/WeatherPreview';
+export { default as WeatherPreview, WEATHER_PREVIEW_FALLBACK_TEXTS } from './src/components/WeatherPreview';
+export type { WeatherPreviewProps, WeatherPreviewTexts } from './src/components/WeatherPreview';
 
 export { default as SettingsListLeftRight } from './src/components/SettingsListLeftRight';
 export type { SettingsListLeftRightProps, SettingsListLeftRightItem } from './src/components/SettingsListLeftRight';
 
-export { default as SettingsListMyMapThemeSelection } from './src/components/SettingsListMyMapThemeSelection';
-export type { SettingsListMyMapThemeSelectionProps } from './src/components/SettingsListMyMapThemeSelection';
+export { default as SettingsListMyMapThemeSelection, MAP_THEME_SELECTION_FALLBACK_TEXTS } from './src/components/SettingsListMyMapThemeSelection';
+export type {
+	SettingsListMyMapThemeSelectionProps,
+	SettingsListMyMapThemeSelectionTexts,
+} from './src/components/SettingsListMyMapThemeSelection';
 
 export { default as MyAvatar, STYLE_MAP } from './src/components/MyAvatar';
 export { AvatarStyle, AvatarSize } from './src/components/MyAvatar';

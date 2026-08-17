@@ -42,7 +42,8 @@ export function getVersionPatch() {
 	//     modal/license/sqlite settings types)
 	// 16: MyMap (web): message origin check kept inline at the listener
 	// 17: app version shown at the bottom of the drawer
-	return 17;
+	// 18: shared translation keys/catalogue moved to repo-depkit-common
+	return 18;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

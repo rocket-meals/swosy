@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { configureStore } from '@/redux/store';
-import translations from '@/locales/translations.json';
+import { translationResources } from '@/locales/translationResources';
 import { CHANGE_LANGUAGE, SET_FUN_LANGUAGE_MODE, SET_PIRATE_LANGUAGE } from '@/redux/Types/types';
-import { StringHelper, MathHelper } from 'repo-depkit-common';
+import { StringHelper, MathHelper, type TranslationLanguage } from 'repo-depkit-common';
 import { LanguageCode } from '@/constants/SettingData';
 
 const changeLanguage = (language: LanguageCode) => ({
@@ -136,7 +136,7 @@ export const useLanguage = () => {
 
 	const translate = useMemo(() => {
 		return (key: string) => {
-			const text = (translations as any)[key]?.[language] || key;
+			const text = translationResources[key]?.[language as TranslationLanguage] || key;
 			let result = text;
 			if (pirateLanguage) {
 				result = applyPirateTransformation(result);

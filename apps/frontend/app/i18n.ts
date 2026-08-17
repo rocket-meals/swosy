@@ -2,19 +2,12 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
 import { sqliteKeyValueStorage } from '@/redux/storage/sqliteStorage';
-import translations from './locales/translations.json';
+import { toI18nextResources } from 'repo-depkit-common';
+import { translationResources } from './locales/translationResources';
 import { LanguageCode } from '@/constants/SettingData';
 
-// Preprocess translations to create a structure compatible with i18next
-const formattedTranslations: any = {};
-Object.keys(translations).forEach(key => {
-	Object.entries(translations[key as keyof typeof translations]).forEach(([lang, value]) => {
-		if (!formattedTranslations[lang]) {
-			formattedTranslations[lang] = {};
-		}
-		formattedTranslations[lang][key] = value;
-	});
-});
+// The catalogue is stored key-first ({ key: { lang: text } }); i18next wants it language-first.
+const formattedTranslations = toI18nextResources(translationResources);
 
 // Language detector
 const languageDetector = {

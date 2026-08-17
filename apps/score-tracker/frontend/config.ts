@@ -39,7 +39,8 @@ export function getVersionPatch() {
 	//    config types)
 	// 10: MyMap (web): message origin check kept inline at the listener
 	// 11: app version shown at the bottom of the drawer
-	return 11;
+	// 12: shared translation keys/catalogue moved to repo-depkit-common
+	return 12;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

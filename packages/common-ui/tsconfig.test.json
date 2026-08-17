@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["ES2022", "DOM"],
+		"module": "CommonJS",
+		"moduleResolution": "node",
+		"jsx": "react-jsx",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"types": ["jest", "node"]
+	},
+	"include": ["src"]
+}

@@ -9,7 +9,8 @@ import styles from './styles';
 import { FontAwesome } from '@expo/vector-icons';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { EventTypes } from './types';
-import { courseTimetableDescriptionEmpty } from '@/constants/translationConstants';
+import { resolveTranslation, type TranslationLanguage } from 'repo-depkit-common';
+import { translationResources } from '@/locales/translationResources';
 import RedirectButton from '@/components/RedirectButton';
 import useToast from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -34,7 +35,12 @@ const TimetableScreen = () => {
 	const [timeTableData, setTimeTableData] = useState(() => TimeTableData(theme).map(item => ({ ...item })));
 	const course_timetable_area_color = appSettings?.course_timetable_area_color ? appSettings?.course_timetable_area_color : primaryColor;
 	const contrastColor = myContrastColor(course_timetable_area_color, theme, mode === 'dark');
-	const { text, label, link } = extractTextAndLink(courseTimetableDescriptionEmpty[language as keyof typeof courseTimetableDescriptionEmpty] || courseTimetableDescriptionEmpty.en);
+	const courseTimetableDescriptionEmpty = resolveTranslation({
+		resources: translationResources,
+		key: TranslationKeys.courseTimetableDescriptionEmpty,
+		language: language as TranslationLanguage,
+	}) ?? '';
+	const { text, label, link } = extractTextAndLink(courseTimetableDescriptionEmpty);
 
 	const openSheet = useCallback(() => {
 		showScrollViewModal({

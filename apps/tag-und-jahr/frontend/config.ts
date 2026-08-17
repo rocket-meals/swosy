@@ -33,7 +33,8 @@ export function getVersionPatch() {
 	// 5: SonarCloud/data-clumps clean-up (settings screen split into panels,
 	//    shared customer config type)
 	// 6: app version shown at the bottom of the drawer
-	return 6;
+	// 7: shared translation keys/catalogue moved to repo-depkit-common
+	return 7;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

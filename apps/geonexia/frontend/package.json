@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
+    "test": "jest",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
@@ -16,7 +17,14 @@
     "moduleNameMapper": {
       "expo-modules-core/src/web/index\\.web": "<rootDir>/emptyModule.js",
       "expo-modules-core/src/uuid/uuid\\.web": "<rootDir>/emptyModule.js"
-    }
+    },
+    "setupFiles": [
+      "./jest.setup.js"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|standard-navigation|@sentry/react-native|native-base|react-redux|@dicebear))",
+      "/node_modules/react-native-reanimated/plugin/"
+    ]
   },
   "dependencies": {
     "@babel/runtime": "^7.26.0",
@@ -71,9 +79,12 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@react-native/jest-preset": "0.86.2",
+    "@types/jest": "^29.5.12",
     "@types/node": "^24.9.1",
     "@types/react": "~19.2.0",
     "@types/react-native": "^0.73.0",
+    "jest": "^29.2.1",
+    "jest-expo": "~57.0.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },

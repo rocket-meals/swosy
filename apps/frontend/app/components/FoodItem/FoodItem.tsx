@@ -9,13 +9,13 @@ import { FoodItemProps } from './types';
 import { excerpt, getImageUrl, getpreviousFeedback, numToOneDecimal, showFormatedPrice, showPrice } from '@/constants/HelperFunctions';
 import { getDescriptionFromTranslation, getFoodOfferName } from '@/helper/resourceHelper';
 import { applyFunModeTransformation, applyPirateTransformation } from '@/hooks/useLanguage';
-import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
+import { DatabaseTypes, RatingHelper, type TranslationLanguage } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { SET_MARKING_DETAILS } from '@/redux/Types/types';
 import { createSelector } from 'reselect';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
-import translations from '@/locales/translations.json';
+import { translationResources } from '@/locales/translationResources';
 import { TranslationKeys } from '@/locales/keys';
 import useToast from '@/hooks/useToast';
 import { handleFoodRating } from '@/helper/feedback';
@@ -75,7 +75,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     // Fallback translate function if language prop is provided, to avoid useLanguage hook subscription
     const translate = useCallback((key: string) => {
         if (language) {
-            return (translations as any)[key]?.[language] || key;
+            return translationResources[key]?.[language as TranslationLanguage] || key;
         }
         // Fallback to hook if language not provided (should not happen in optimized path)
         return key; 
