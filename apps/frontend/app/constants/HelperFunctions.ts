@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 import Server from './ServerUrl';
 import { DatabaseTypes, NumberHelper, StringHelper } from 'repo-depkit-common';
 import { ServerAPI } from '@/redux/actions';
+import { buildDirectusUploadFormData } from '@/helper/fileUploadHelper';
 import { configureStore } from '@/redux/store';
 import { PriceGroupKey } from '@/app/(app)/settings/types';
 
@@ -96,11 +97,13 @@ export const uploadToDirectus = async (image: any, folderId?: string | null) => 
 
 		const blob = new Blob([image.buffer], { type: image.type || '' });
 
+		// Directus only applies the payload fields it has already read when it reaches the
+		// file part, so the file has to be appended last.
 		const formData = new FormData();
-		formData.append('file', blob, image.name);
 		formData.append('filename_download', image.name);
 		if (folderId) formData.append('folder', folderId);
 		formData.append('type', image.type);
+		formData.append('file', blob, image.name);
 
 		const uploadResponse = await fetch(`${Server.ServerUrl}/files`, {
 			method: 'POST',
@@ -130,15 +133,13 @@ export const uploadToDirectusFromMobile = async (image: any, folderId?: string |
 	try {
 		const token = await ServerAPI.getClient().getToken();
 
-		const formData = new FormData();
-		formData.append('file', {
+		// image.buffer is the local uri of the picked file (or a data uri for a signature).
+		const formData = await buildDirectusUploadFormData({
 			uri: image.buffer,
-			name: image.name || 'signature.png',
-			type: image.type || 'image/png',
-		} as any);
-		formData.append('filename_download', image.name);
-		if (folderId) formData.append('folder', folderId);
-		formData.append('type', image.type);
+			fileName: image.name || 'signature.png',
+			folderId,
+			mimeType: image.type || 'image/png',
+		});
 
 		const uploadResponse = await fetch(`${Server.ServerUrl}/files`, {
 			method: 'POST',
