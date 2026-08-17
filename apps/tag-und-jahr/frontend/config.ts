@@ -32,7 +32,8 @@ export function getVersionPatch() {
 	// 4: SonarCloud clean-up (widget settings sync split into helpers)
 	// 5: SonarCloud/data-clumps clean-up (settings screen split into panels,
 	//    shared customer config type)
-	return 5;
+	// 6: app version shown at the bottom of the drawer
+	return 6;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

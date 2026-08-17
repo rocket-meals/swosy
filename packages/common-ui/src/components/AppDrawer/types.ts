@@ -23,4 +23,11 @@ export interface AppDrawerProps {
 	activeKey?: string;
 	primaryColor?: string;
 	footerContent?: React.ReactNode;
+	/**
+	 * App version shown at the very bottom of the drawer, below the bottom items
+	 * and the footer content. Pass the same value the settings screen shows
+	 * (`getVersionInternalForAppsettingsScreen()`), so users can verify which OTA
+	 * update they are running without opening the settings screen.
+	 */
+	version?: string;
 }

@@ -38,7 +38,8 @@ export function getVersionPatch() {
 	// 9: data-clumps clean-up (shared app settings, match record and customer
 	//    config types)
 	// 10: MyMap (web): message origin check kept inline at the listener
-	return 10;
+	// 11: app version shown at the bottom of the drawer
+	return 11;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

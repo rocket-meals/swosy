@@ -14,6 +14,7 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 	activeKey,
 	primaryColor,
 	footerContent,
+	version,
 }) => {
 	const { theme, isDark } = useTheme();
 	const resolvedPrimaryColor = primaryColor ?? theme.primary;
@@ -113,8 +114,13 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 						) : null}
 					</View>
 				</View>
-				{footerContent ? (
-					<View style={styles.footer}>{footerContent}</View>
+				{footerContent || version ? (
+					<View>
+						{footerContent ? <View style={styles.footer}>{footerContent}</View> : null}
+						{version ? (
+							<Text style={[styles.version, { color: theme.inactiveText }]}>{`v${version}`}</Text>
+						) : null}
+					</View>
 				) : null}
 			</ScrollView>
 		</SafeAreaView>
@@ -213,5 +219,13 @@ const styles = StyleSheet.create({
 		flexWrap: 'wrap',
 		marginTop: 10,
 		paddingHorizontal: 15,
+	},
+	version: {
+		width: '100%',
+		marginTop: 10,
+		paddingHorizontal: 15,
+		fontSize: 12,
+		opacity: 0.6,
+		textAlign: 'center',
 	},
 });

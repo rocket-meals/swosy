@@ -26,7 +26,7 @@ import { loadAppSettings } from '../helpers/AppSettingsStorage';
 import { loadDebugState } from '../helpers/DebugStorage';
 import { installGlobalDebugErrorHandler } from '../helpers/DebugLogger';
 import type { RootState } from '../store/store';
-import { getAppIconInsideExpoLocalSaved, getCustomerConfig } from '../config';
+import { getAppIconInsideExpoLocalSaved, getCustomerConfig, getVersionInternalForAppsettingsScreen } from '../config';
 import { ComponentIds } from '../constants/ComponentIds';
 import ExpoUpdateLoader from '../components/ExpoUpdateLoader';
 import OnboardingScreen from '../components/OnboardingScreen';
@@ -285,6 +285,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			primaryColor={PRIMARY_COLOR}
 			onLogoPress={() => props.navigation.navigate('index')}
 			footerContent={footerContent}
+			version={getVersionInternalForAppsettingsScreen()}
 		/>
 	);
 }

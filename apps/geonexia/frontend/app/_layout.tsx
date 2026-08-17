@@ -40,7 +40,7 @@ import { loadHexTileFeatureCache, mergeHexTileFeatureCache, type HexTileFeatureC
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { isAvailable as isH3Available } from '../helpers/H3Helper';
 import type { RootState } from '../store/store';
-import { getAppIconInsideExpoLocalSaved } from '../config';
+import { getAppIconInsideExpoLocalSaved, getVersionInternalForAppsettingsScreen } from '../config';
 import ExpoUpdateLoader from '../components/ExpoUpdateLoader';
 import { useExpoUpdateForegroundCheck } from '../hooks/useExpoUpdateForegroundCheck';
 
@@ -406,6 +406,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			primaryColor="#2563eb"
 			onLogoPress={() => props.navigation.navigate('index')}
 			footerContent={footerContent}
+			version={getVersionInternalForAppsettingsScreen()}
 		/>
 	);
 }
