@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import * as Updates from 'expo-updates';
+import { areExpoUpdatesAvailable } from 'repo-depkit-common-ui';
 import { logDebug } from '../helpers/DebugLogger';
-import { areExpoUpdatesAvailable } from '../helpers/ExpoUpdatesHelper';
 
 const IS_SMARTPHONE = Platform.OS === 'ios' || Platform.OS === 'android';
 

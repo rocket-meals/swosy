@@ -4,7 +4,8 @@ import * as Updates from 'expo-updates';
 
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import usePlatformHelper from '@/helper/platformHelper';
-import { areExpoUpdatesAvailable, isExpoUpdatesUnavailableError } from '@/helper/DeviceRuntimeHelper';
+import { isExpoUpdatesUnavailableError } from 'repo-depkit-common-ui';
+import { areExpoUpdatesAvailable } from '@/helper/DeviceRuntimeHelper';
 import { useTheme } from '@/hooks/useTheme';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';

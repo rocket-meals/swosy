@@ -8,7 +8,8 @@ import { TranslationKeys } from '@/locales/keys';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { areExpoUpdatesAvailable, isExpoUpdatesUnavailableError } from '@/helper/DeviceRuntimeHelper';
+import { isExpoUpdatesUnavailableError } from 'repo-depkit-common-ui';
+import { areExpoUpdatesAvailable } from '@/helper/DeviceRuntimeHelper';
 
 interface ExpoUpdateCheckerProps {
 	children?: ReactNode;

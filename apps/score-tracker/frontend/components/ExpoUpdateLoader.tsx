@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Updates from 'expo-updates';
+import { areExpoUpdatesAvailable } from 'repo-depkit-common-ui';
 import { getCompanyLogoLocalSaved } from '../config';
-import { areExpoUpdatesAvailable } from '../helpers/ExpoUpdatesHelper';
 
 interface ExpoUpdateLoaderProps {
 	children?: React.ReactNode;

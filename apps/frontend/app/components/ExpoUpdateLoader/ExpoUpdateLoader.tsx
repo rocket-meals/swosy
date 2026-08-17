@@ -4,7 +4,8 @@ import * as Updates from 'expo-updates';
 import usePlatformHelper from '@/helper/platformHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
-import { areExpoUpdatesAvailable, isExpoUpdatesUnavailableError } from '@/helper/DeviceRuntimeHelper';
+import { isExpoUpdatesUnavailableError } from 'repo-depkit-common-ui';
+import { areExpoUpdatesAvailable } from '@/helper/DeviceRuntimeHelper';
 import { getCompanyLogoLocalSaved } from '@/config';
 
 interface ExpoUpdateLoaderProps {

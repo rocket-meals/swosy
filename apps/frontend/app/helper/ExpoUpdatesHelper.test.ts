@@ -1,3 +1,10 @@
+// The guard itself lives in repo-depkit-common-ui (shared with geonexia and
+// score-tracker), but that package has no jest setup of its own - so it is
+// covered here. Its barrel re-exports UI components (WebView, bottom-sheet, ...)
+// which cannot be loaded in the jest environment, so the barrel is replaced by
+// the real implementation of just this helper, addressed by path.
+jest.mock('repo-depkit-common-ui', () => require('../../../../packages/common-ui/src/helpers/ExpoUpdatesHelper'));
+
 // expo-updates reports itself as enabled here so the assertions below prove the
 // development-runtime gate, not a missing updates configuration.
 jest.mock('expo-updates', () => ({ isEnabled: true }));
@@ -8,7 +15,8 @@ jest.mock('@/constants/UrlHelper', () => ({
 	},
 }));
 
-import { areExpoUpdatesAvailable, isExpoUpdatesUnavailableError } from './DeviceRuntimeHelper';
+import { isExpoUpdatesUnavailableError } from '../../../../packages/common-ui/src/helpers/ExpoUpdatesHelper';
+import { areExpoUpdatesAvailable } from './DeviceRuntimeHelper';
 
 describe('areExpoUpdatesAvailable', () => {
 	it('is false while running in a development runtime (__DEV__)', () => {
