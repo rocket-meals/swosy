@@ -24,6 +24,7 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import { AppDrawer, DrawerItem, DrawerItemBaseFields } from 'repo-depkit-common-ui';
+import { getVersionInternalForAppsettingsScreen } from '@/config';
 import useCustomerConfig from '@/hooks/useCustomerConfig';
 
 export const iconLibraries: Record<string, any> = {
@@ -371,6 +372,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 			activeKey={activeKey}
 			primaryColor={projectColor}
 			footerContent={footerContent}
+			version={getVersionInternalForAppsettingsScreen()}
 		/>
 	);
 };

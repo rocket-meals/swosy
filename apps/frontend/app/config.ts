@@ -74,7 +74,8 @@ export function getVersionPatch() {
         //     Google service account types)
         // 17: MyMap (web): message origin check kept inline at the listener
         // 18: image and file uploads fixed for Expo SDK 57 (expo/fetch form parts)
-        return 18;
+        // 19: food info modal titled "Speise Info"; app version shown in the drawer
+        return 19;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

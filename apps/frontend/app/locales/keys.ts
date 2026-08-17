@@ -130,6 +130,7 @@ export enum TranslationKeys {
 	description = 'description',
 	information = 'information',
 	no_data_currently_calculating = 'no_data_currently_calculating',
+	food_info = 'food_info',
 	food_data = 'food_data',
 	food_feedbacks = 'food_feedbacks',
 	to_the_forum = 'to_the_forum',
