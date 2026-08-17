@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import * as Updates from 'expo-updates';
+import { areExpoUpdatesAvailable } from 'repo-depkit-common-ui';
 import { isRecordingActive } from '../helpers/RecordingActivityTracker';
 
 const IS_SMARTPHONE = Platform.OS === 'ios' || Platform.OS === 'android';
@@ -22,7 +23,7 @@ export function useExpoUpdateForegroundCheck() {
 	const appState = useRef<AppStateStatus>(AppState.currentState);
 
 	useEffect(() => {
-		if (!IS_SMARTPHONE) return;
+		if (!IS_SMARTPHONE || !areExpoUpdatesAvailable()) return;
 
 		const subscription = AppState.addEventListener('change', (nextState) => {
 			if (appState.current.match(/inactive|background/) && nextState === 'active' && !isRecordingActive()) {

@@ -8,7 +8,8 @@ import { TranslationKeys } from '@/locales/keys';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { isInExpoGo } from '@/helper/DeviceRuntimeHelper';
+import { isExpoUpdatesUnavailableError } from 'repo-depkit-common-ui';
+import { areExpoUpdatesAvailable } from '@/helper/DeviceRuntimeHelper';
 
 interface ExpoUpdateCheckerProps {
 	children?: ReactNode;
@@ -36,7 +37,7 @@ const ExpoUpdateChecker: React.FC<ExpoUpdateCheckerProps> = ({ children }) => {
 
 	const checkForUpdates = useCallback(async (showUpToDate = false) => {
 		if (!isSmartPhone()) return;
-		if (isInExpoGo()) return;
+		if (!areExpoUpdatesAvailable()) return;
 		try {
 			const update = await Updates.checkForUpdateAsync();
 			if (update.isAvailable) {
@@ -51,7 +52,11 @@ const ExpoUpdateChecker: React.FC<ExpoUpdateCheckerProps> = ({ children }) => {
 				setModalVisible(true);
 			}
 		} catch (e) {
-			console.error('Error while checking updates', e);
+			if (isExpoUpdatesUnavailableError(e)) {
+				console.info('Skipping update check: OTA updates are unavailable in this runtime', e);
+			} else {
+				console.error('Error while checking updates', e);
+			}
 		}
 	}, [isSmartPhone]);
 
@@ -74,7 +79,11 @@ const ExpoUpdateChecker: React.FC<ExpoUpdateCheckerProps> = ({ children }) => {
 			await Updates.fetchUpdateAsync();
 			await Updates.reloadAsync();
 		} catch (e) {
-			console.error('Error while applying updates', e);
+			if (isExpoUpdatesUnavailableError(e)) {
+				console.info('Skipping update install: OTA updates are unavailable in this runtime', e);
+			} else {
+				console.error('Error while applying updates', e);
+			}
 		}
 	};
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Updates from 'expo-updates';
+import { areExpoUpdatesAvailable } from 'repo-depkit-common-ui';
 import { getCompanyLogoLocalSaved } from '../config';
 
 interface ExpoUpdateLoaderProps {
@@ -20,7 +21,7 @@ function createTimeoutPromise(ms: number): Promise<null> {
  * published code instead of only picking it up on the next-next launch (which
  * is all expo-updates' native default gives you). Mirrors the score-tracker
  * ExpoUpdateLoader; web and Expo Go/dev builds skip the check entirely (no
- * update channel there) via the try/catch below.
+ * update channel there) via areExpoUpdatesAvailable().
  */
 const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 	const [loading, setLoading] = useState<boolean>(IS_SMARTPHONE);
@@ -30,7 +31,7 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 
 	useEffect(() => {
 		async function loadUpdates() {
-			if (!IS_SMARTPHONE) {
+			if (!IS_SMARTPHONE || !areExpoUpdatesAvailable()) {
 				setLoading(false);
 				return;
 			}

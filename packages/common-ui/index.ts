@@ -35,6 +35,7 @@ export type { KvBackupFile } from './src/helpers/KvBackupHelper';
 export { saveJsonToFile, pickJsonFromFile, buildJsonExportFilename } from './src/helpers/JsonFileTransferHelper';
 export type { SaveJsonResult } from './src/helpers/JsonFileTransferHelper';
 export { getUtf8ByteLength, formatBytes } from './src/helpers/ByteSizeHelper';
+export { areExpoUpdatesAvailable, isExpoUpdatesUnavailableError } from './src/helpers/ExpoUpdatesHelper';
 export { MyBuffer } from './src/helpers/MyBuffer';
 
 // Constants

@@ -4,7 +4,8 @@ import * as Updates from 'expo-updates';
 
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import usePlatformHelper from '@/helper/platformHelper';
-import { isInExpoGo } from '@/helper/DeviceRuntimeHelper';
+import { isExpoUpdatesUnavailableError } from 'repo-depkit-common-ui';
+import { areExpoUpdatesAvailable } from '@/helper/DeviceRuntimeHelper';
 import { useTheme } from '@/hooks/useTheme';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -109,7 +110,11 @@ const useAppForegroundUpdateCheckModal = () => {
                         );
                         await Updates.reloadAsync();
                 } catch (error) {
-                        console.error('Error while fetching Expo updates', error);
+                        if (isExpoUpdatesUnavailableError(error)) {
+                                console.info('Update-Download übersprungen: OTA-Updates in dieser Runtime nicht verfügbar.', error);
+                        } else {
+                                console.error('Error while fetching Expo updates', error);
+                        }
                         showStatusModal(
                                 {
                                         title: 'Update-Download fehlgeschlagen',
@@ -146,11 +151,11 @@ const useAppForegroundUpdateCheckModal = () => {
                         });
                         return false;
                 }
-                if (isInExpoGo()) {
-                        console.info('Update-Check blockiert: Expo Go wird nicht unterstützt.');
+                if (!areExpoUpdatesAvailable()) {
+                        console.info('Update-Check blockiert: Diese Runtime unterstützt keine OTA-Updates.');
                         showStatusModal({
                                 title: 'Update-Check',
-                                message: 'Expo Go wird nicht unterstützt.',
+                                message: 'Expo Go und Development Builds werden nicht unterstützt.',
                                 allowClose: true,
                         });
                         return false;
@@ -176,7 +181,11 @@ const useAppForegroundUpdateCheckModal = () => {
                         }
                         return update.isAvailable;
                 } catch (error) {
-                        console.error('Error while checking Expo updates', error);
+                        if (isExpoUpdatesUnavailableError(error)) {
+                                console.info('Update-Check übersprungen: OTA-Updates in dieser Runtime nicht verfügbar.', error);
+                        } else {
+                                console.error('Error while checking Expo updates', error);
+                        }
                         showStatusModal({
                                 title: 'Update-Check fehlgeschlagen',
                                 message: 'Es gab ein Problem bei der Update-Prüfung.',

@@ -4,7 +4,8 @@ import * as Updates from 'expo-updates';
 import usePlatformHelper from '@/helper/platformHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
-import { isInExpoGo } from '@/helper/DeviceRuntimeHelper';
+import { isExpoUpdatesUnavailableError } from 'repo-depkit-common-ui';
+import { areExpoUpdatesAvailable } from '@/helper/DeviceRuntimeHelper';
 import { getCompanyLogoLocalSaved } from '@/config';
 
 interface ExpoUpdateLoaderProps {
@@ -27,7 +28,7 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 
 	useEffect(() => {
 		async function loadUpdates() {
-			if (!isSmartPhone() || isInExpoGo()) {
+			if (!isSmartPhone() || !areExpoUpdatesAvailable()) {
 				setLoading(false);
 				return;
 			}
@@ -60,7 +61,11 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 					await Updates.reloadAsync();
 				}
 			} catch (e) {
-				console.error('Error while applying updates', e);
+				if (isExpoUpdatesUnavailableError(e)) {
+					console.info('Skipping update check: OTA updates are unavailable in this runtime', e);
+				} else {
+					console.error('Error while applying updates', e);
+				}
 			} finally {
 				setLoading(false);
 			}
