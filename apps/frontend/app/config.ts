@@ -73,7 +73,8 @@ export function getVersionPatch() {
         // 16: SonarCloud/data-clumps clean-up (shared redirect button, license and
         //     Google service account types)
         // 17: MyMap (web): message origin check kept inline at the listener
-        return 17;
+        // 18: food info modal titled "Speise Info" instead of "Beschreibung"
+        return 18;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

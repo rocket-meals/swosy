@@ -1339,6 +1339,16 @@
     "tr": "Veri bulunamadı veya şu anda hesaplanıyor.",
     "zh": "未找到数据或当前正在计算。"
   },
+  "food_info": {
+    "de": "Speise Info",
+    "en": "Food Info",
+    "ar": "معلومات الطعام",
+    "es": "Información del plato",
+    "fr": "Info sur le plat",
+    "ru": "Информация о блюде",
+    "tr": "Yemek Bilgisi",
+    "zh": "菜品信息"
+  },
   "food_data": {
     "de": "Speisedaten",
     "en": "Food Data",

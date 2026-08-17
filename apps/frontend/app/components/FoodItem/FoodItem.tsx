@@ -306,7 +306,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       if (!foodDescription) return;
       showScrollViewModal(
         {
-          title: translate(TranslationKeys.description),
+          title: translate(TranslationKeys.food_info),
           children: (
             <View style={{ gap: 20 }}>
               <MyMarkdownProjectColored content={foodDescription} textColor={theme.screen.text} />
