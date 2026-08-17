@@ -45,14 +45,22 @@ const resolveDateValueField = (value: any, fieldType: string): Record<string, an
     return { value_date: formattedDate };
 };
 
+// Only web reads the bytes upfront - on native the local uri is handed to the upload helper
+// as is, `fetch` cannot read `file://`/`data:` uris there.
+const uploadLocalFile = async (value: any, folderId: string | null) => {
+    if (!isWeb) {
+        return uploadToDirectusFromMobile({ name: value.name, type: value.type, buffer: value.image, edit: true }, folderId);
+    }
+    const response = await fetch(value.image);
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = MyBuffer.from(arrayBuffer);
+    return uploadToDirectus({ name: value.name, type: value.type, buffer, edit: true }, folderId);
+};
+
 const resolveImageValueField = async (value: any, fieldId: string, imageFolderId: string | null): Promise<Record<string, any>> => {
     if (value?.name) {
         try {
-            const response = await fetch(value.image);
-            const arrayBuffer = await response.arrayBuffer();
-            const buffer = MyBuffer.from(arrayBuffer);
-            const fileData = { name: value.name, type: value.type, buffer: isWeb ? buffer : value.image, edit: true };
-            const fileId = isWeb ? await uploadToDirectus(fileData, imageFolderId) : await uploadToDirectusFromMobile(fileData, imageFolderId);
+            const fileId = await uploadLocalFile(value, imageFolderId);
             return { value_image: fileId };
         } catch (uploadError) {
             console.error('Queue sync: image upload failed for field', fieldId, uploadError);
@@ -70,15 +78,7 @@ const resolveFilesValueField = async (value: any, fieldId: string, filesFolderId
         try {
             const newFiles = value.filter((file: any) => !file?.edit);
             if (newFiles.length > 0) {
-                const uploadedIds = await Promise.all(
-                    newFiles.map(async (file: any) => {
-                        const response = await fetch(file.image);
-                        const arrayBuffer = await response.arrayBuffer();
-                        const buffer = MyBuffer.from(arrayBuffer);
-                        const fileData = { name: file.name, type: file.type, buffer: isWeb ? buffer : file.image, edit: true };
-                        return isWeb ? uploadToDirectus(fileData, filesFolderId) : uploadToDirectusFromMobile(fileData, filesFolderId);
-                    })
-                );
+                const uploadedIds = await Promise.all(newFiles.map((file: any) => uploadLocalFile(file, filesFolderId)));
                 return {
                     value_files: {
                         create: uploadedIds.filter(Boolean).map((fileId: any) => ({ directus_files_id: fileId })),
