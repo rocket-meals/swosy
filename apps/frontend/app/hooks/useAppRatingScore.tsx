@@ -12,6 +12,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import useDebugMode from '@/hooks/useDebugMode';
 import { getVersion } from '@/config';
+import { AppRatingPromptSources, trackNativeReviewPromptRequested } from '@/helper/AppUsageEventHelper';
 
 const SCORE_THRESHOLD = 100;
 
@@ -79,7 +80,7 @@ children: (
 <Text style={[styles.debugInfo, { color: theme.screen.text }]}>
 {'[Debug] Rating not available natively - showing modal'}
 </Text>
-<RateAppSettingsItem debug />
+<RateAppSettingsItem debug ratingPromptSource={AppRatingPromptSources.DEBUG_RATING_MODAL} />
 </View>
 ),
 });
@@ -124,6 +125,12 @@ return;
 try {
 const isAvailable = await StoreReview.isAvailableAsync();
 if (isAvailable) {
+// Reported directly before the dialog is shown - and only then - so the
+// amount of prompts can be compared against the ratings the stores receive.
+void trackNativeReviewPromptRequested({
+source: AppRatingPromptSources.SCORE_THRESHOLD,
+score: currentScore,
+});
 await StoreReview.requestReview();
 dispatch({ type: SET_APP_RATING_DATA, payload: {
 score: 0,

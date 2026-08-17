@@ -6,6 +6,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import useNativeQuickRateApp from '@/hooks/useNativeQuickRateApp';
+import { AppRatingPromptSources } from '@/helper/AppUsageEventHelper';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
 import DebugView from '@/components/DebugView';
 import styles from '@/app/(app)/collectible-event/styles';
@@ -21,7 +22,7 @@ const useCollectibleEventCongratulationsModal = () => {
 
 		const handleClose = () => {
 			if (!wasAskedSnapshot) {
-				requestNativeReview();
+				requestNativeReview(AppRatingPromptSources.COLLECTIBLE_EVENT_CONGRATULATIONS);
 			}
 		};
 
@@ -51,7 +52,7 @@ const useCollectibleEventCongratulationsModal = () => {
 							{translate(TranslationKeys.collectible_event_rate_app_prompt)}
 						</Text>
 
-						<RateAppSettingsItem />
+						<RateAppSettingsItem ratingPromptSource={AppRatingPromptSources.COLLECTIBLE_EVENT_CONGRATULATIONS} />
 
 						<DebugView title="Rating Debug">
 							<Text style={{ color: theme.inactiveText, fontSize: 13 }}>
