@@ -4,17 +4,17 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 1 | 1 |
+| 🔒 Security | 0 | 0 |
 | 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 0 | 0 |
+| 🔧 Maintainability | 1 | 1 |
 
 **Total issues:** 1
 
 ---
 
-## 🔒 Security (1/1)
+## 🔧 Maintainability (1/1)
 
-- **Verify the origin of the received message.**
-  packages/common-ui/src/components/MyMap/index.web.tsx:154
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/components/MyMap/index.web.tsx#L154
+- **Move this component definition out of the parent component and pass data as props.**
+  apps/tag-und-jahr/frontend/app/_layout.tsx:31
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/tag-und-jahr/frontend/app/_layout.tsx#L31
 
