@@ -8,6 +8,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
+import { AppRatingPromptSources } from '@/helper/AppUsageEventHelper';
 import SettingsList from '@/components/SettingsList/SettingsList';
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 
@@ -38,7 +39,7 @@ const RateApp = () => {
 		>
 			<View style={styles.content}>
 				<Text style={[styles.heading, { color: theme.screen.text }]}>{translate(TranslationKeys.rate_app)}</Text>
-				<RateAppSettingsItem debug />
+				<RateAppSettingsItem debug ratingPromptSource={AppRatingPromptSources.DEBUG_EXPERIMENTAL_RATE_APP_SCREEN} />
 				<SettingsListGroupTitle title="Weitere Informationen" />
 				<SettingsList
 					label="hasAction()"

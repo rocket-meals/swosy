@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "markdown-it": "^14.1.0",
-    "moment-timezone": "^0.5.48"
+    "moment-timezone": "^0.5.48",
+    "short-unique-id": "^5.2.2"
   },
   "scripts": {
     "test": "jest"

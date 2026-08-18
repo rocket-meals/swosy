@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import * as StoreReview from 'expo-store-review';
 
 import { getValue, setValue } from '@/constants/AsyncStorageHelper';
+import { AppRatingPromptSource, trackNativeReviewPromptRequested } from '@/helper/AppUsageEventHelper';
 
 const ASYNC_STORAGE_KEY_WAS_ASKED_FOR_RATING = 'wasAskedForRating';
 
@@ -28,7 +29,7 @@ const useNativeQuickRateApp = () => {
 			.finally(() => setIsLoading(false));
 	}, []);
 
-	const requestNativeReview = useCallback(async (): Promise<boolean> => {
+	const requestNativeReview = useCallback(async (source: AppRatingPromptSource): Promise<boolean> => {
 		if (Platform.OS === 'web') {
 			return false;
 		}
@@ -40,6 +41,9 @@ const useNativeQuickRateApp = () => {
 		try {
 			const isAvailable = await StoreReview.isAvailableAsync();
 			if (isAvailable) {
+				// Reported directly before the dialog is shown - and only then - so the
+				// amount of prompts can be compared against the ratings the stores receive.
+				void trackNativeReviewPromptRequested({ source });
 				await StoreReview.requestReview();
 				setWasAskedForRating(true);
 				await setValue(ASYNC_STORAGE_KEY_WAS_ASKED_FOR_RATING, true);

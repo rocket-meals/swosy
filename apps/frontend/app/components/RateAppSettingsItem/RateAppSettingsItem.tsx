@@ -12,6 +12,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import useNativeQuickRateApp from '@/hooks/useNativeQuickRateApp';
+import { AppRatingPromptSource, AppRatingPromptSources } from '@/helper/AppUsageEventHelper';
 
 const RATE_APP_ICON_BACKGROUND = '#F7D21F';
 
@@ -20,6 +21,8 @@ type RateAppSettingsItemProps = {
 	showSeparator?: boolean;
 	onLog?: (message: string) => void;
 	debug?: boolean;
+	/** Reported with the app usage event when the native review dialog is requested. */
+	ratingPromptSource?: AppRatingPromptSource;
 };
 
 type StoreTarget = 'ios' | 'android';
@@ -34,6 +37,7 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 	showSeparator = false,
 	onLog,
 	debug = false,
+	ratingPromptSource = AppRatingPromptSources.RATE_APP_ITEM,
 }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
@@ -75,7 +79,7 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 				return;
 			}
 			addLog('Requesting native review dialog');
-			const shown = await requestNativeReview();
+			const shown = await requestNativeReview(ratingPromptSource);
 			if (shown) {
 				addLog('Native review dialog shown');
 				return;
@@ -85,7 +89,7 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 				openStore(storeUrl, store);
 			}
 		},
-		[addLog, openStore, requestNativeReview, wasAskedForRating]
+		[addLog, openStore, ratingPromptSource, requestNativeReview, wasAskedForRating]
 	);
 
 	const showDebugLogsModal = useCallback(() => {

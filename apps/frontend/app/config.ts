@@ -75,7 +75,8 @@ export function getVersionPatch() {
         // 17: MyMap (web): message origin check kept inline at the listener
         // 18: image and file uploads fixed for Expo SDK 57 (expo/fetch form parts)
         // 19: food info modal titled "Speise Info"; app version shown in the drawer
-        return 19;
+        // 20: app usage event reported before the native rating prompt
+        return 20;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
