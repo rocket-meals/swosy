@@ -20,5 +20,5 @@ export function randomDieValue(sides: number): number {
 
 /** Unique-enough id for locally stored records: creation time plus a random suffix. */
 export function generateId(): string {
-	return Date.now().toString(36) + UuidHelper.randomId(ID_SUFFIX_LENGTH, UuidHelper.ALPHANUMERIC_LOWERCASE);
+	return Date.now().toString(36) + UuidHelper.randomIdLowerCase(ID_SUFFIX_LENGTH);
 }

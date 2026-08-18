@@ -15,7 +15,7 @@ import {MyDatabaseHelperInterface} from './MyDatabaseHelperInterface';
 import {EnvVariableHelper} from './EnvVariableHelper';
 import ms from 'ms';
 import jwt from 'jsonwebtoken';
-import {SecureTokenHelper} from './SecureTokenHelper';
+import {NanoidHelper} from './NanoidHelper';
 import {DirectusFieldsServiceHelper} from "./DirectusFieldsServiceHelper";
 import {UserHelper} from "./UserHelper";
 import {DevicesServiceHelper} from "./DevicesServiceHelper";
@@ -64,7 +64,7 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
       return undefined;
     }
 
-    const refreshToken = SecureTokenHelper.generateSessionToken();
+    const refreshToken = await NanoidHelper.getNanoid(64);
     const msRefreshTokenTTL: number = ms(String(EnvVariableHelper.getRefreshTTL())) || 0;
     const refreshTokenExpiration = new Date(Date.now() + msRefreshTokenTTL);
 
