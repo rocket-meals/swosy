@@ -3,7 +3,7 @@ import ms from 'ms';
 import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
 import { StringHelper } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
-import { NanoidHelper } from '../helpers/NanoidHelper';
+import { SecureTokenHelper } from '../helpers/SecureTokenHelper';
 import { AccountabilityHelper } from '../helpers/AccountabilityHelper';
 
 const SCHEDULE_NAME = 'redirect_with_token';
@@ -272,7 +272,7 @@ async function tryRedirectWithSessionToken(req: any, res: any, redirect: any, da
   /**
    * Start of copy: https://github.com/directus/directus/blob/main/api/src/services/authentication.ts Login
    */
-  const refreshToken = await NanoidHelper.getNanoid(64);
+  const refreshToken = SecureTokenHelper.generateSessionToken();
   const msRefreshTokenTTL: number = ms(String(env['REFRESH_TOKEN_TTL'])) || 0;
   const refreshTokenExpiration = new Date(Date.now() + msRefreshTokenTTL);
 

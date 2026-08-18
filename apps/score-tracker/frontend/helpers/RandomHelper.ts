@@ -1,11 +1,11 @@
 // Central place for randomness: every part of the app gets dice rolls and local ids
 // from this one function, so if the underlying RNG ever needs to change, this is the
-// only place to touch. Delegates to the repo-wide MathHelper.random() (repo-depkit-common)
-// rather than calling Math.random() directly here.
+// only place to touch. Delegates to the repo-wide MathHelper/UuidHelper
+// (repo-depkit-common) rather than hand-rolling anything here.
 
-import { MathHelper } from 'repo-depkit-common';
+import { MathHelper, UuidHelper } from 'repo-depkit-common';
 
-const ID_ALPHABET = 'abcdefghijklmnopqrstuvwxyz0123456789';
+const ID_SUFFIX_LENGTH = 6;
 
 /** Single source of randomness for the whole app - swap the implementation here only. */
 function randomFloat(): number {
@@ -20,9 +20,5 @@ export function randomDieValue(sides: number): number {
 
 /** Unique-enough id for locally stored records: creation time plus a random suffix. */
 export function generateId(): string {
-	let suffix = '';
-	for (let i = 0; i < 6; i++) {
-		suffix += ID_ALPHABET[Math.floor(randomFloat() * ID_ALPHABET.length)];
-	}
-	return Date.now().toString(36) + suffix;
+	return Date.now().toString(36) + UuidHelper.randomId(ID_SUFFIX_LENGTH, UuidHelper.ALPHANUMERIC_LOWERCASE);
 }

@@ -6,12 +6,22 @@ import { MathHelper } from './MathHelper';
 // in React Native, on the web and in node.
 //
 // The ids are unique enough to group or address local records; they are NOT
-// suitable for tokens, secrets or anything else security-sensitive.
+// suitable for tokens, secrets or anything else security-sensitive. Math.random()
+// is a predictable PRNG: anything an attacker must not be able to guess belongs
+// in node:crypto (`crypto.randomBytes`) instead.
 export class UuidHelper {
 	private static readonly HEX_DIGITS = '0123456789abcdef';
 
+	/** Digits and lower/upper case letters - the alphabet nanoid-style short ids use. */
+	static readonly ALPHANUMERIC = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+	/** Digits and lower case letters only, for ids that end up in urls or file names. */
+	static readonly ALPHANUMERIC_LOWERCASE = '0123456789abcdefghijklmnopqrstuvwxyz';
+
+	// charAt (not [index]) so the helper also compiles for consumers that enable
+	// noUncheckedIndexedAccess, where indexing a string yields `string | undefined`.
 	private static randomHexDigit(): string {
-		return UuidHelper.HEX_DIGITS[Math.floor(MathHelper.random() * 16)];
+		return UuidHelper.HEX_DIGITS.charAt(Math.floor(MathHelper.random() * 16));
 	}
 
 	/**
@@ -29,11 +39,32 @@ export class UuidHelper {
 				uuid += '4'; // version 4
 			} else if (position === 19) {
 				// variant: one of 8, 9, a, b
-				uuid += UuidHelper.HEX_DIGITS[8 + Math.floor(MathHelper.random() * 4)];
+				uuid += UuidHelper.HEX_DIGITS.charAt(8 + Math.floor(MathHelper.random() * 4));
 			} else {
 				uuid += UuidHelper.randomHexDigit();
 			}
 		}
 		return uuid;
+	}
+
+	/**
+	 * Short random id of the given length, in the style of nanoid.
+	 *
+	 * @param length Number of characters, must be at least 1
+	 * @param alphabet Characters to pick from, defaults to digits and letters
+	 * @returns Random id consisting of exactly `length` characters
+	 */
+	static randomId(length: number, alphabet: string = UuidHelper.ALPHANUMERIC): string {
+		if (!Number.isInteger(length) || length < 1) {
+			throw new Error(`UuidHelper.randomId: length must be a positive integer, got ${length}`);
+		}
+		if (alphabet.length < 2) {
+			throw new Error('UuidHelper.randomId: alphabet needs at least two characters');
+		}
+		let id = '';
+		for (let position = 0; position < length; position++) {
+			id += alphabet.charAt(Math.floor(MathHelper.random() * alphabet.length));
+		}
+		return id;
 	}
 }

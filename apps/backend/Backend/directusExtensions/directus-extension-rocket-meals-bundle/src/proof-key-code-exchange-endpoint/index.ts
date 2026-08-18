@@ -7,7 +7,7 @@ import { RedirectWhitelistHelper } from '../helpers/RedirectWhitelistHelper';
 import { ApiContext } from '../helpers/ApiContext'; // Use Node.js crypto module for secure comparisons
 import { createKv, KvLocal, KvRedis } from '@directus/memory';
 import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
-import { NanoidHelper } from '../helpers/NanoidHelper';
+import { SecureTokenHelper } from '../helpers/SecureTokenHelper';
 
 const env = process.env;
 const PUBLIC_URL = env.PUBLIC_URL || ''; // e.g. http://rocket-meals.de/rocket-meals/api or empty string
@@ -191,7 +191,7 @@ async function generateRefreshToken(directus_session_token: string, accountabili
   /**
    * Start of copy: https://github.com/directus/directus/blob/main/api/src/services/authentication.ts Login
    */
-  const refreshToken = await NanoidHelper.getNanoid(64);
+  const refreshToken = SecureTokenHelper.generateSessionToken();
   const msRefreshTokenTTL: number = ms(String(EnvVariableHelper.getRefreshTTL())) || 0;
   const refreshTokenExpiration = new Date(Date.now() + msRefreshTokenTTL);
 
