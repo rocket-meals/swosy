@@ -1,5 +1,5 @@
-import * as Crypto from 'expo-crypto';
 import { Platform } from 'react-native';
+import { UuidHelper } from 'repo-depkit-common';
 
 import { getVersion, getVersionInternalForAppsettingsScreen } from '@/config';
 import { AppUsageEvents } from '@/redux/actions/AppUsageEvents/AppUsageEvents';
@@ -57,8 +57,6 @@ let sessionId: string | null = null;
 let sequenceNumber = 0;
 let collectionHelper: AppUsageEvents | null = null;
 
-const createFallbackSessionId = () => `session-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-
 const padTwoDigits = (value: number) => String(value).padStart(2, '0');
 
 /**
@@ -72,18 +70,12 @@ const getLocalTimestamp = (date: Date) =>
 	`T${padTwoDigits(date.getHours())}:${padTwoDigits(date.getMinutes())}:${padTwoDigits(date.getSeconds())}`;
 
 /**
- * Random id shared by all events of the current app start. `Crypto.randomUUID`
- * needs a secure context on web, so a non-cryptographic id is used as fallback -
- * the id only groups events, it is never used for anything security relevant.
+ * Random id shared by all events of the current app start. It only groups the
+ * events of one session and is never used for anything security relevant.
  */
 export const getAppUsageSessionId = () => {
 	if (!sessionId) {
-		try {
-			sessionId = Crypto.randomUUID();
-		} catch (error) {
-			console.log('AppUsageEventHelper: could not create a random session id', error);
-			sessionId = createFallbackSessionId();
-		}
+		sessionId = UuidHelper.randomUUID();
 	}
 	return sessionId;
 };

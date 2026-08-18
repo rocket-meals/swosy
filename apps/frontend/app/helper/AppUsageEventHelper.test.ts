@@ -8,8 +8,8 @@ jest.mock('@/redux/actions/AppUsageEvents/AppUsageEvents', () => ({
 	})),
 }));
 
-jest.mock('expo-crypto', () => ({
-	randomUUID: jest.fn(() => 'test-session-uuid'),
+jest.mock('repo-depkit-common', () => ({
+	UuidHelper: { randomUUID: jest.fn(() => 'test-session-uuid') },
 }));
 
 jest.mock('@/config', () => ({
