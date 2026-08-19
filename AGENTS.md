@@ -80,18 +80,25 @@ Auch das Directus-Backend schickt Texte an Nutzer — Push-Nachrichten, generier
   - `BackendTranslationKeys.ts` — erbt per Spread von `CommonTranslationKeys`; hier stehen nur Keys, die keine App je anzeigen würde.
   - `backendTranslations.ts` — die Texte dazu, in **allen** Sprachen aus `ALL_TRANSLATION_LANGUAGES`. Ein Key, den `commonTranslations` schon hat, darf hier **nicht** noch einmal stehen — der Test schlägt sonst fehl.
   - `BackendTranslator.ts` — löst Key + Sprache zu einem Text auf.
-- **Die Sprache kommt aus `profiles.language`.** Das Feld ist eine Relation auf die Directus-Collection `languages` und enthält daher einen vollen Locale-Code (`de-DE`); der Katalog ist auf den Kurzcode (`de`) geschlüsselt. `BackendTranslator.resolveLanguage` normalisiert beides und akzeptiert auch eine bereits aufgelöste `languages`-Relation.
-- **Default ist Deutsch** (`BACKEND_DEFAULT_TRANSLATION_LANGUAGE`), genau wie in den Apps, deren `settingsReducer` auf `'de'` startet. Kein Profil, keine Sprache gesetzt oder eine Sprache ohne Katalog-Texte → Deutsch.
-- Aufruf:
+  - `BackendLanguageResolver.ts` — bestimmt, welche Sprache ein Nutzer überhaupt bekommt.
+- **Die Sprache kommt aus `profiles.language`, gematcht gegen die `languages`-Collection.** Der Server geht dabei vor wie die App: die App nimmt die Locales des Geräts und wählt die erste, für die sie Texte hat; der Server nimmt den Profilwert und wählt die passendste Zeile aus `languages`. Reihenfolge in `BackendLanguageResolver._findBestMatchingCode`: exakter Code (case-insensitiv) → gleiche Basissprache (`de` ↔ `de-DE`) → Deutsch → Englisch → erste Zeile der Tabelle.
+- **Beide Schreibweisen werden akzeptiert** — der reine Language-Key (`"de-DE"`) genau wie das aufgelöste Relations-Objekt (`{ code: "de-DE" }`), je nachdem ob der Aufrufer die Relation mitgeladen hat. Genau wie in der App.
+- **Das Ergebnis hat zwei Felder, weil zwei verschiedene Lookups daran hängen:**
+  - `languageCode` — der volle `languages.code`, mit dem *Inhalte aus der Datenbank* (Speisenamen, News) in den `*_translations`-Tabellen gefunden werden.
+  - `translationLanguage` — der Kurzcode, auf den der *Textkatalog* geschlüsselt ist. Dazu gibt es `translate`, schon an die Sprache gebunden.
+- **Default ist Deutsch** (`BACKEND_DEFAULT_TRANSLATION_LANGUAGE`), genau wie in den Apps, deren `settingsReducer` auf `'de'` startet. Kein Profil, keine Sprache gesetzt, Sprache nicht in der Tabelle oder Tabelle nicht lesbar → Deutsch.
+- Aufruf mit Datenbank (ein Resolver pro Lauf, er cacht die `languages`-Tabelle):
   ```ts
-  const translate = BackendTranslator.getTranslatorForProfile(profile);
-  translate(BackendTranslationKeys.tomorrow);                              // 'Morgen' / 'Tomorrow' / …
-  translate(BackendTranslationKeys.notification_foodoffer_body, { date, food });
+  const languageResolver = new BackendLanguageResolver(myDatabaseHelper);
+  const language = await languageResolver.resolveForProfile(profile);
+  language.translate(BackendTranslationKeys.tomorrow);                    // 'Morgen' / 'Tomorrow' / …
+  language.translate(BackendTranslationKeys.notification_foodoffer_body, { date, food });
+  TranslationHelper.getTranslation(food.translations, language.languageCode ?? '', 'name');
   ```
   Für einen einzelnen Text ohne Nutzerbezug (z. B. das deutsche Formular-PDF) reicht `BackendTranslator.translate(key)`.
-- **Achtung, zwei verschiedene Übersetzungen:** `helpers/TranslationHelper.ts` übersetzt *Inhalte aus der Datenbank* (Speisenamen, News) und arbeitet mit dem vollen Locale-Code der `languages`-Collection. `helpers/translations/` übersetzt *Texte des Servers selbst*. Nicht vermischen.
-- Datum und Uhrzeit in einer Nutzersprache: `BackendTranslator.formatDate(date, language)`. Die `DateHelper.getHumanReadable*`-Funktionen sind fest auf `de-DE` und damit nur für interne Reports gedacht.
-- Durchgesetzt durch `src/helpers/translations/__tests__/BackendTranslations.test.ts` (jeder Key in jeder Sprache) und `src/food-notify-schedule-hook/__tests__/NotifyScheduleTranslations.test.ts`.
+- **Achtung, zwei verschiedene Übersetzungen:** `helpers/TranslationHelper.ts` übersetzt *Inhalte aus der Datenbank* und arbeitet mit `languageCode`. `helpers/translations/` übersetzt *Texte des Servers selbst* und arbeitet mit `translationLanguage`. Nicht vermischen.
+- Datum und Uhrzeit in einer Nutzersprache: `BackendTranslator.formatDate(date, language.translationLanguage)`. Die `DateHelper.getHumanReadable*`-Funktionen sind fest auf `de-DE` und damit nur für interne Reports gedacht.
+- Durchgesetzt durch `src/helpers/translations/__tests__/BackendTranslations.test.ts` (jeder Key in jeder Sprache), `BackendLanguageResolver.test.ts` (das Matching) und `src/food-notify-schedule-hook/__tests__/NotifyScheduleTranslations.test.ts`.
 
 ## Tests für `packages/common` und `packages/common-ui`
 

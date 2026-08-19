@@ -5,6 +5,7 @@ import {
 	findInvalidKeyDeclarations,
 	findMissingTranslations,
 	findOrphanedTranslationKeys,
+	findSuspectedApostropheTruncations,
 	formatTranslationValidationReport,
 	validateTranslations,
 } from '../translations/TranslationValidationHelper';
@@ -151,5 +152,45 @@ describe('validateTranslations', () => {
 	it('groups the languages of one key onto a single report line', () => {
 		const report = validateTranslations({ keys: ['save'], resources: {}, languages: LANGUAGES });
 		expect(formatTranslationValidationReport(report)).toContain('save: de, en');
+	});
+});
+
+describe('findSuspectedApostropheTruncations', () => {
+	const FRENCH = [TranslationLanguage.FR];
+
+	it('finds nothing in intact texts', () => {
+		expect(
+			findSuspectedApostropheTruncations({
+				resources: { today: { fr: "Aujourd'hui" }, copy_url: { fr: "Copier l'URL" } },
+				languages: FRENCH,
+			}),
+		).toEqual([]);
+	});
+
+	it('finds a text that stops at an elided word', () => {
+		const truncated = findSuspectedApostropheTruncations({
+			resources: { today: { fr: 'Aujourd' }, until: { fr: 'jusqu' }, i_like_that: { fr: 'J' } },
+			languages: FRENCH,
+		});
+		expect(truncated.map((entry) => entry.key).sort()).toEqual(['i_like_that', 'today', 'until']);
+	});
+
+	it('does not flag a short word that simply is the whole text', () => {
+		expect(
+			findSuspectedApostropheTruncations({
+				resources: { no: { fr: 'Non' }, month: { fr: 'Mois' }, year: { fr: 'An' } },
+				languages: FRENCH,
+			}),
+		).toEqual([]);
+	});
+
+	it('skips ignored keys and empty texts', () => {
+		expect(
+			findSuspectedApostropheTruncations({
+				resources: { today: { fr: 'Aujourd' }, blank: { fr: '   ' } },
+				languages: FRENCH,
+				ignoredKeys: ['today'],
+			}),
+		).toEqual([]);
 	});
 });

@@ -36,7 +36,8 @@ export function getVersionPatch() {
 	// 7: UuidHelper added to the shared repo-depkit-common package
 	// 8: shared translation keys/catalogue moved to repo-depkit-common
 	// 9: repaired French texts in the shared translation catalogue
-	return 9;
+	// 10: apostrophe-truncation check added to the shared translation validation
+	return 10;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

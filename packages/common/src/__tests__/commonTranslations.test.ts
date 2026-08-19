@@ -15,6 +15,7 @@ import { createTranslator, toI18nextResources } from '../translations/Translatio
 import { ALL_TRANSLATION_LANGUAGES, TranslationLanguage } from '../translations/TranslationLanguage';
 import {
 	findInvalidKeyDeclarations,
+	findSuspectedApostropheTruncations,
 	formatTranslationValidationReport,
 	validateTranslations,
 } from '../translations/TranslationValidationHelper';
@@ -49,6 +50,12 @@ describe('commonTranslations', () => {
 		});
 		expect(formatTranslationValidationReport(report)).toBe('No translation problems found.');
 		expect(report.isValid).toBe(true);
+	});
+
+	it('contains no text cut off at an apostrophe', () => {
+		// A converter once read the texts as single-quoted strings and stopped at the first
+		// unescaped apostrophe, leaving French fragments like "Aujourd" and "jusqu".
+		expect(findSuspectedApostropheTruncations({ resources: commonTranslations })).toEqual([]);
 	});
 
 	it('contains no text that is only whitespace or a leftover placeholder', () => {

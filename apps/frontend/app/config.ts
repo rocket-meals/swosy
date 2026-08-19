@@ -78,7 +78,8 @@ export function getVersionPatch() {
         // 20: app usage event reported before the native rating prompt
         // 21: shared translation keys/catalogue moved to repo-depkit-common
         // 22: shared translation catalogue now also serves the backend; French texts repaired
-        return 22;
+        // 23: 20 French texts repaired that were cut off at an apostrophe
+        return 23;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
