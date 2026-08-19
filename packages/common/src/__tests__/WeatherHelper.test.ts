@@ -50,6 +50,11 @@ describe('mapWmoCodeToWeatherCondition', () => {
 });
 
 describe('buildOpenMeteoUrl', () => {
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  // "Now" is pinned: passing a computed past time and letting the function read the clock itself
+  // makes the elapsed span a millisecond longer than intended, which rounds up to an extra day.
+  const NOW = Date.UTC(2026, 7, 24, 12, 0, 0);
+
   it('requests the current weather when no time is given', () => {
     const url = buildOpenMeteoUrl(52.28, 8.02);
     expect(url).toContain('https://api.open-meteo.com/v1/forecast');
@@ -60,15 +65,32 @@ describe('buildOpenMeteoUrl', () => {
   });
 
   it('requests hourly data covering the requested past time', () => {
-    const twoDaysAgo = Date.now() - 2 * 24 * 60 * 60 * 1000;
-    const url = buildOpenMeteoUrl(52.28, 8.02, twoDaysAgo);
+    const url = buildOpenMeteoUrl(52.28, 8.02, NOW - 2 * DAY_MS, NOW);
     expect(url).toContain('hourly=temperature_2m%2Cweather_code%2Cwind_speed_10m');
     expect(url).toContain('past_days=2');
   });
 
+  it('rounds a partial day up so the requested time is still covered', () => {
+    const url = buildOpenMeteoUrl(52.28, 8.02, NOW - 2 * DAY_MS - 1, NOW);
+    expect(url).toContain('past_days=3');
+  });
+
+  it('asks for no past days for the current moment or a future time', () => {
+    expect(buildOpenMeteoUrl(52.28, 8.02, NOW, NOW)).toContain('past_days=0');
+    expect(buildOpenMeteoUrl(52.28, 8.02, NOW + DAY_MS, NOW)).toContain('past_days=0');
+  });
+
+  it('still covers the very edge of the supported window', () => {
+    expect(buildOpenMeteoUrl(52.28, 8.02, NOW - 92 * DAY_MS, NOW)).toContain('past_days=92');
+  });
+
   it('returns null for times further back than the supported window', () => {
-    const longAgo = Date.now() - 200 * 24 * 60 * 60 * 1000;
-    expect(buildOpenMeteoUrl(52.28, 8.02, longAgo)).toBeNull();
+    expect(buildOpenMeteoUrl(52.28, 8.02, NOW - 92 * DAY_MS - 1, NOW)).toBeNull();
+    expect(buildOpenMeteoUrl(52.28, 8.02, NOW - 200 * DAY_MS, NOW)).toBeNull();
+  });
+
+  it('falls back to the current clock when no instant is given', () => {
+    expect(buildOpenMeteoUrl(52.28, 8.02, Date.now() - 200 * DAY_MS)).toBeNull();
   });
 });
 

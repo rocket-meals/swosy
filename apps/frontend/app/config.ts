@@ -79,7 +79,8 @@ export function getVersionPatch() {
         // 21: shared translation keys/catalogue moved to repo-depkit-common
         // 22: shared translation catalogue now also serves the backend; French texts repaired
         // 23: 20 French texts repaired that were cut off at an apostrophe
-        return 23;
+        // 24: language codes matched case- and region-insensitively when picking a translation
+        return 24;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

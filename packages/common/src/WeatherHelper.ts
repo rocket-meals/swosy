@@ -84,8 +84,13 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * Build the Open-Meteo request URL for the given coordinate. With `time` set,
  * hourly data (including enough past days to cover the requested time) is
  * requested; without it, only the current weather. Exported for unit tests.
+ *
+ * `nowMs` exists so how far back `time` lies is decided by one fixed instant
+ * rather than by a clock read inside the function: a caller that computed
+ * `time` as "two days ago" and this function reading `Date.now()` a moment
+ * later disagree by a millisecond, which rounds up to a whole extra past day.
  */
-export function buildOpenMeteoUrl(latitude: number, longitude: number, time?: number | Date): string | null {
+export function buildOpenMeteoUrl(latitude: number, longitude: number, time?: number | Date, nowMs: number = Date.now()): string | null {
   const params = new URLSearchParams({
     latitude: String(latitude),
     longitude: String(longitude),
@@ -98,7 +103,7 @@ export function buildOpenMeteoUrl(latitude: number, longitude: number, time?: nu
   }
   const timeMs = typeof time === 'number' ? time : time.getTime();
   if (!Number.isFinite(timeMs)) return null;
-  const daysBack = Math.ceil(Math.max(0, Date.now() - timeMs) / DAY_MS);
+  const daysBack = Math.ceil(Math.max(0, nowMs - timeMs) / DAY_MS);
   if (daysBack > MAX_PAST_DAYS) return null;
   params.set('hourly', 'temperature_2m,weather_code,wind_speed_10m');
   params.set('past_days', String(daysBack));

@@ -17,7 +17,7 @@
  * accepted, exactly like in the app.
  */
 
-import { DatabaseTypes, normalizeTranslationLanguage, TranslationLanguage, type Translator } from 'repo-depkit-common';
+import { DatabaseTypes, isSameBaseLanguage, isSameLanguageCode, normalizeTranslationLanguage, TranslationLanguage, type Translator } from 'repo-depkit-common';
 
 import { BackendTranslationKeys } from './BackendTranslationKeys';
 import { BACKEND_DEFAULT_TRANSLATION_LANGUAGE, BackendLanguageSource, BackendTranslator, ProfileWithLanguage } from './BackendTranslator';
@@ -115,22 +115,22 @@ export class BackendLanguageResolver {
     }
 
     if (requestedCode) {
-      const exactMatch = availableCodes.find(code => code.toLowerCase() === requestedCode.toLowerCase());
+      // The exact code wins, but only ignoring case: nothing keeps a hand-maintained
+      // `languages.code` or a device locale from arriving as "DE-de".
+      const exactMatch = availableCodes.find(code => isSameLanguageCode(code, requestedCode));
       if (exactMatch) {
         return exactMatch;
       }
 
-      const requestedBaseLanguage = normalizeTranslationLanguage(requestedCode);
-      if (requestedBaseLanguage) {
-        const baseLanguageMatch = availableCodes.find(code => normalizeTranslationLanguage(code) === requestedBaseLanguage);
-        if (baseLanguageMatch) {
-          return baseLanguageMatch;
-        }
+      // Then the same language in any region – the app stores "de", the table has "de-DE".
+      const baseLanguageMatch = availableCodes.find(code => isSameBaseLanguage(code, requestedCode));
+      if (baseLanguageMatch) {
+        return baseLanguageMatch;
       }
     }
 
     for (const fallbackLanguage of [BACKEND_DEFAULT_TRANSLATION_LANGUAGE, TranslationLanguage.EN]) {
-      const fallbackMatch = availableCodes.find(code => normalizeTranslationLanguage(code) === fallbackLanguage);
+      const fallbackMatch = availableCodes.find(code => isSameBaseLanguage(code, fallbackLanguage));
       if (fallbackMatch) {
         return fallbackMatch;
       }

@@ -1,5 +1,5 @@
 import { PrimaryKey } from '@directus/types';
-import { CollectionNames, DatabaseTypes, DeepCopyHelper, LanguageCodes, LanguageCodesType } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, DeepCopyHelper, isSameBaseLanguage, isSameLanguageCode, LanguageCodes, LanguageCodesType } from 'repo-depkit-common';
 
 import { MyDatabaseHelper } from './MyDatabaseHelper';
 
@@ -54,12 +54,33 @@ export class TranslationHelper {
   static readonly DefaultLanguage = TranslationHelper.LANGUAGE_CODE_DE;
   static readonly FallBackLanguage = TranslationHelper.LANGUAGE_CODE_EN;
 
+  /**
+   * The value of `fieldName` in the user's language, falling back to German and then English.
+   *
+   * Matching is case- and region-insensitive: `languages.code` is maintained by hand per customer
+   * and a profile may hold the app's short code (`"de"`) while the translation rows use the full
+   * one (`"de-DE"`). A strict string comparison silently dropped those users to the fallback
+   * language. The exact code still wins over a mere same-language match, so a `"de-DE"` row is
+   * preferred over a `"de-AT"` one.
+   */
   static getTranslation(translationsList: ExistingTranslation[], profileLanguage: string, fieldName: string) {
     translationsList = translationsList || [];
-    let translation = translationsList.find(t => t.languages_code === profileLanguage);
-    let translationDefault = translationsList.find(t => t.languages_code === TranslationHelper.DefaultLanguage);
-    let translationFallBack = translationsList.find(t => t.languages_code === TranslationHelper.FallBackLanguage);
+    let translation = TranslationHelper.findTranslationForLanguage(translationsList, profileLanguage);
+    let translationDefault = TranslationHelper.findTranslationForLanguage(translationsList, TranslationHelper.DefaultLanguage);
+    let translationFallBack = TranslationHelper.findTranslationForLanguage(translationsList, TranslationHelper.FallBackLanguage);
     return translation?.[fieldName] || translationDefault?.[fieldName] || translationFallBack?.[fieldName];
+  }
+
+  /** The translation row for a language code – the exact code if there is one, else same language. */
+  static findTranslationForLanguage(translationsList: ExistingTranslation[], languageCode: string | null | undefined): ExistingTranslation | undefined {
+    if (!languageCode) {
+      return undefined;
+    }
+    const readCode = (translation: ExistingTranslation): string | undefined => {
+      const code = translation?.[FIELD_TRANSLATION_LANGUAGE_CODE];
+      return typeof code === 'string' ? code : (code as DatabaseTypes.Languages | undefined)?.code;
+    };
+    return translationsList.find(t => isSameLanguageCode(readCode(t), languageCode)) ?? translationsList.find(t => isSameBaseLanguage(readCode(t), languageCode));
   }
 
   static hasSignificantTranslationChange<E extends Record<string, any>>(existingTranslation: E, translationFromParsing: Partial<E>): boolean {

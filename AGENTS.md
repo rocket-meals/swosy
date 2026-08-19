@@ -96,7 +96,8 @@ Auch das Directus-Backend schickt Texte an Nutzer — Push-Nachrichten, generier
   TranslationHelper.getTranslation(food.translations, language.languageCode ?? '', 'name');
   ```
   Für einen einzelnen Text ohne Nutzerbezug (z. B. das deutsche Formular-PDF) reicht `BackendTranslator.translate(key)`.
-- **Achtung, zwei verschiedene Übersetzungen:** `helpers/TranslationHelper.ts` übersetzt *Inhalte aus der Datenbank* und arbeitet mit `languageCode`. `helpers/translations/` übersetzt *Texte des Servers selbst* und arbeitet mit `translationLanguage`. Nicht vermischen.
+- **Sprachcodes immer über die geteilten Matcher vergleichen**, nie mit `===`: `isSameLanguageCode(a, b)` (case-insensitiv, Region zählt) und `isSameBaseLanguage(a, b)` (case-insensitiv, Region egal) aus `repo-depkit-common`. `languages.code` wird pro Kunde von Hand gepflegt — `de-DE`, `DE-de` und `de` meinen dasselbe, ein strikter String-Vergleich lässt Nutzer still in die Fallback-Sprache rutschen. Gilt genauso in der App (`helper/resourceHelper.tsx`).
+- **Achtung, zwei verschiedene Übersetzungen:** `helpers/TranslationHelper.ts` übersetzt *Inhalte aus der Datenbank* und arbeitet mit `languageCode`; `getTranslation` matcht dabei erst den exakten Code, dann dieselbe Sprache in einer anderen Region. `helpers/translations/` übersetzt *Texte des Servers selbst* und arbeitet mit `translationLanguage`. Nicht vermischen.
 - Datum und Uhrzeit in einer Nutzersprache: `BackendTranslator.formatDate(date, language.translationLanguage)`. Die `DateHelper.getHumanReadable*`-Funktionen sind fest auf `de-DE` und damit nur für interne Reports gedacht.
 - Durchgesetzt durch `src/helpers/translations/__tests__/BackendTranslations.test.ts` (jeder Key in jeder Sprache), `BackendLanguageResolver.test.ts` (das Matching) und `src/food-notify-schedule-hook/__tests__/NotifyScheduleTranslations.test.ts`.
 

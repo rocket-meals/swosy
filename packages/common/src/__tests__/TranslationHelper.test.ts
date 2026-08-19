@@ -108,6 +108,18 @@ describe('resolveTranslation', () => {
 		).toBe('Save');
 	});
 
+	it('accepts a language in any case and with a region', () => {
+		// A language reaches us from device locales, persisted settings and hand-maintained
+		// database rows; "FR", "fr-FR" and "fr_CA" all mean French.
+		for (const language of ['FR', 'fr-FR', 'fr_CA', 'Fr-ca']) {
+			expect(resolveTranslation({ resources: RESOURCES, key: 'save', language: language as TranslationLanguage })).toBe('Enregistrer');
+		}
+	});
+
+	it('still falls back for a language the catalogue does not cover', () => {
+		expect(resolveTranslation({ resources: RESOURCES, key: 'save', language: 'it-IT' as TranslationLanguage })).toBe('Speichern');
+	});
+
 	it('returns undefined for an unknown key', () => {
 		expect(resolveTranslation({ resources: RESOURCES, key: 'nope', language: TranslationLanguage.DE })).toBeUndefined();
 	});

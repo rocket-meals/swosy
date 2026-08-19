@@ -280,3 +280,48 @@ describe('TranslationHelper Test', () => {
     });
   });
 });
+
+describe('TranslationHelper.getTranslation', () => {
+  const translations = [
+    { id: 1, languages_code: 'DE-de', name: 'Lasagne' },
+    { id: 2, languages_code: 'en-US', name: 'Lasagna' },
+  ];
+
+  it('finds the translation regardless of the casing of the stored code', () => {
+    // `languages.code` is maintained by hand per customer, nothing enforces the casing.
+    expect(TranslationHelper.getTranslation(translations, 'de-DE', 'name')).toBe('Lasagne');
+  });
+
+  it('finds the translation when the profile only holds the short code', () => {
+    // The app works with "en"; the translation rows use the table's "en-US".
+    expect(TranslationHelper.getTranslation(translations, 'en', 'name')).toBe('Lasagna');
+  });
+
+  it('prefers the exact code over another region of the same language', () => {
+    const withRegions = [
+      { id: 1, languages_code: 'de-AT', name: 'Lasagne (AT)' },
+      { id: 2, languages_code: 'de-DE', name: 'Lasagne (DE)' },
+    ];
+    expect(TranslationHelper.getTranslation(withRegions, 'de-DE', 'name')).toBe('Lasagne (DE)');
+  });
+
+  it('takes another region of the same language when the exact code is missing', () => {
+    const onlyAustrian = [{ id: 1, languages_code: 'de-AT', name: 'Lasagne (AT)' }];
+    expect(TranslationHelper.getTranslation(onlyAustrian, 'de-DE', 'name')).toBe('Lasagne (AT)');
+  });
+
+  it('falls back to German and then English', () => {
+    expect(TranslationHelper.getTranslation(translations, 'zh-CN', 'name')).toBe('Lasagne');
+    expect(TranslationHelper.getTranslation([{ id: 2, languages_code: 'en-US', name: 'Lasagna' }], 'zh-CN', 'name')).toBe('Lasagna');
+  });
+
+  it('returns nothing for an empty list or an empty language', () => {
+    expect(TranslationHelper.getTranslation([], 'de-DE', 'name')).toBeUndefined();
+    expect(TranslationHelper.getTranslation(translations, '', 'name')).toBe('Lasagne');
+  });
+
+  it('reads the code out of an expanded languages relation', () => {
+    const expanded = [{ id: 1, languages_code: { code: 'de-DE' } as any, name: 'Lasagne' }];
+    expect(TranslationHelper.getTranslation(expanded, 'de', 'name')).toBe('Lasagne');
+  });
+});

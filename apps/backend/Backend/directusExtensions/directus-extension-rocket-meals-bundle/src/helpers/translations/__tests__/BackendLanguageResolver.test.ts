@@ -47,6 +47,22 @@ describe('BackendLanguageResolver.resolveWithAvailableLanguages', () => {
     expect(BackendLanguageResolver.resolveWithAvailableLanguages('en-GB', GERMAN_AND_ENGLISH).languageCode).toBe(LanguageCodes.EN);
   });
 
+  it('matches a code the table stores in a different case', () => {
+    // `languages.code` is maintained by hand per customer, nothing enforces the casing.
+    const resolved = BackendLanguageResolver.resolveWithAvailableLanguages('de-de', [{ code: 'DE-DE' }, { code: LanguageCodes.EN }]);
+
+    expect(resolved.languageCode).toBe('DE-DE');
+    expect(resolved.translationLanguage).toBe(TranslationLanguage.DE);
+  });
+
+  it('matches a language the apps ship no texts for, and still writes German texts', () => {
+    // Italian content may exist in the database even though the catalogue has no Italian.
+    const resolved = BackendLanguageResolver.resolveWithAvailableLanguages('it', [{ code: 'it-IT' }, { code: LanguageCodes.DE }]);
+
+    expect(resolved.languageCode).toBe('it-IT');
+    expect(resolved.translationLanguage).toBe(TranslationLanguage.DE);
+  });
+
   it('reads the code out of an expanded languages relation', () => {
     expect(BackendLanguageResolver.resolveWithAvailableLanguages({ code: LanguageCodes.EN }, GERMAN_AND_ENGLISH).languageCode).toBe(LanguageCodes.EN);
   });

@@ -46,7 +46,8 @@ export function getVersionPatch() {
 	// 19: shared translation keys/catalogue moved to repo-depkit-common
 	// 20: repaired French texts in the shared translation catalogue
 	// 21: apostrophe-truncation check added to the shared translation validation
-	return 21;
+	// 22: translation lookup accepts a language code in any case and region
+	return 22;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
