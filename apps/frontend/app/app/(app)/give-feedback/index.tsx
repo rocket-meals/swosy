@@ -5,6 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
+import { AppRatingPromptSources } from '@/helper/AppUsageEventHelper';
 import SettingsList from '@/components/SettingsList';
 import { MaterialIcons, Octicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -50,7 +51,7 @@ const GiveFeedback = () => {
 
 				<View style={styles.groupContainer}>
 					<Text style={{ ...styles.description, color: theme.screen.text }}>{translate(TranslationKeys.rueckmeldung_rate_app_description)}</Text>
-					<RateAppSettingsItem />
+					<RateAppSettingsItem ratingPromptSource={AppRatingPromptSources.GIVE_FEEDBACK_SCREEN} />
 				</View>
 
 				<View style={styles.groupContainer}>

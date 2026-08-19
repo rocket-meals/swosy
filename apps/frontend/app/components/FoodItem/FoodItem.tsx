@@ -32,6 +32,7 @@ import Labels from '@/components/Labels';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import MyMarkdownProjectColored from '@/components/MyMarkdownProjectColored';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
+import { AppRatingPromptSources } from '@/helper/AppUsageEventHelper';
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 
 
@@ -310,7 +311,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
           children: (
             <View style={{ gap: 20 }}>
               <MyMarkdownProjectColored content={foodDescription} textColor={theme.screen.text} />
-              <RateAppSettingsItem />
+              <RateAppSettingsItem ratingPromptSource={AppRatingPromptSources.FOOD_ITEM} />
             </View>
           ),
         },

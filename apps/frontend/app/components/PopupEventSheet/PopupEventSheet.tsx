@@ -10,6 +10,7 @@ import { getTextFromTranslation, getTitleFromTranslation } from '@/helper/resour
 import ProjectButton from '../ProjectButton';
 import MyMarkdownProjectColored from '@/components/MyMarkdownProjectColored';
 import { RateAppSettingsItem } from '../RateAppSettingsItem/RateAppSettingsItem';
+import { AppRatingPromptSources } from '@/helper/AppUsageEventHelper';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { getVersion } from '@/config';
@@ -103,7 +104,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, eventData
 			</View>
 			{eventData?.show_app_rating_button ? (
 				<View style={{ width: '100%', marginTop: 20 }}>
-					<RateAppSettingsItem groupPosition="single" showSeparator={false} />
+					<RateAppSettingsItem groupPosition="single" showSeparator={false} ratingPromptSource={AppRatingPromptSources.POPUP_EVENT_SHEET} />
 				</View>
 			) : null}
 			{eventData?.show_on_app_version ? (

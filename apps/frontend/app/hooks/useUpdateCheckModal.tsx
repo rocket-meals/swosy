@@ -8,7 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList';
 import usePlatformHelper from '@/helper/platformHelper';
-import { isInExpoGo } from '@/helper/DeviceRuntimeHelper';
+import { areExpoUpdatesAvailable } from '@/helper/DeviceRuntimeHelper';
 
 type UpdateStep = 'checking' | 'no_update' | 'update_available' | 'downloading' | 'downloaded' | 'reloading' | 'unavailable';
 
@@ -20,7 +20,7 @@ const UpdateCheckModalContent: React.FC = () => {
 	const [step, setStep] = useState<UpdateStep>('checking');
 
 	const runCheck = useCallback(async () => {
-		if (!isSmartPhone() || isInExpoGo()) {
+		if (!isSmartPhone() || !areExpoUpdatesAvailable()) {
 			setStep('unavailable');
 			return;
 		}

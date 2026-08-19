@@ -8,7 +8,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import usePlatformHelper from '@/helper/platformHelper';
-import { isInExpoGo } from '@/helper/DeviceRuntimeHelper';
+import { areExpoUpdatesAvailable } from '@/helper/DeviceRuntimeHelper';
 
 type StepKey =
 	| typeof TranslationKeys.CHECK_FOR_APP_UPDATES
@@ -41,8 +41,8 @@ const ExpoUpdateTest = () => {
                         return false;
                 }
 
-                if (isInExpoGo()) {
-                        appendLog('Skipped: not available inside Expo Go.');
+                if (!areExpoUpdatesAvailable()) {
+                        appendLog('Skipped: OTA updates are not available in Expo Go or development builds.');
                         return false;
                 }
 
