@@ -5,7 +5,7 @@ import { RequestOptions } from '../pdf/PdfGeneratorInterfaces';
 import { DirectusFilesAssetHelper } from '../DirectusFilesAssetHelper';
 import { MarkdownHelper } from '../html/MarkdownHelper';
 import { MyDatabaseTestableHelperInterface } from '../MyDatabaseHelperInterface';
-import { TranslationBackendKeys, TranslationsBackend } from '../TranslationsBackend';
+import { BackendTranslationKeys, BackendTranslator } from '../translations';
 import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon, MathHelper, NumberHelper, StringHelper} from 'repo-depkit-common';
 import { EnvVariableHelper } from '../EnvVariableHelper';
 import { HashHelper } from '../HashHelper';
@@ -393,9 +393,11 @@ export class FormHelper {
 
     const neinBox = value ? emptyBox : checkedBox;
     const jaBox   = value ? checkedBox : emptyBox;
+    const noLabel = BackendTranslator.translate(BackendTranslationKeys.no);
+    const yesLabel = BackendTranslator.translate(BackendTranslationKeys.yes);
     return (
-      `<span style="margin-right:20px;">${neinBox}&nbsp;Nein</span>` +
-      `<span>${jaBox}&nbsp;Ja</span>`
+      `<span style="margin-right:20px;">${neinBox}&nbsp;${noLabel}</span>` +
+      `<span>${jaBox}&nbsp;${yesLabel}</span>`
     );
   }
 
@@ -568,7 +570,7 @@ export class FormHelper {
     let markdownContent = '';
     if (value === true || value === false) {
       markdownContent += FormHelper.getFieldMarkdownNameBold(fieldName);
-      let booleanValueString = value ? TranslationsBackend.getTranslation(TranslationBackendKeys.FORM_VALUE_BOOLEAN_TRUE) : TranslationsBackend.getTranslation(TranslationBackendKeys.FORM_VALUE_BOOLEAN_FALSE);
+      let booleanValueString = BackendTranslator.translate(value ? BackendTranslationKeys.yes : BackendTranslationKeys.no);
       markdownContent += `${booleanValueString}`;
       markdownContent += MarkdownHelper.getMarkdownNewLine();
     }

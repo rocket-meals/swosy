@@ -72,6 +72,27 @@ Das gilt für alle Apps und für `packages/common-ui`.
 - **Katalog immer über `locales/translationResources.ts` lesen**, nie direkt `translations.json` importieren: der direkte Import kennt die gemeinsamen Keys nicht und rendert dann den rohen Key.
 - **Jeder Key braucht in jeder unterstützten Sprache einen nicht-leeren Text.** Durchgesetzt durch `apps/frontend/app/__tests__/translations.test.ts`, `apps/geonexia/frontend/__tests__/translations.test.ts` und `packages/common/src/__tests__/commonTranslations.test.ts`.
 
+## Übersetzungen im Backend: Texte, die der Server an Nutzer schickt
+
+Auch das Directus-Backend schickt Texte an Nutzer — Push-Nachrichten, generierte Dokumente, Meldungen, die in der App landen. Für die gilt dieselbe Regel wie in den Apps: **kein Literal an der Aufrufstelle, sondern ein Key aus dem Katalog.**
+
+- Der Katalog liegt in `apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/translations/`:
+  - `BackendTranslationKeys.ts` — erbt per Spread von `CommonTranslationKeys`; hier stehen nur Keys, die keine App je anzeigen würde.
+  - `backendTranslations.ts` — die Texte dazu, in **allen** Sprachen aus `ALL_TRANSLATION_LANGUAGES`. Ein Key, den `commonTranslations` schon hat, darf hier **nicht** noch einmal stehen — der Test schlägt sonst fehl.
+  - `BackendTranslator.ts` — löst Key + Sprache zu einem Text auf.
+- **Die Sprache kommt aus `profiles.language`.** Das Feld ist eine Relation auf die Directus-Collection `languages` und enthält daher einen vollen Locale-Code (`de-DE`); der Katalog ist auf den Kurzcode (`de`) geschlüsselt. `BackendTranslator.resolveLanguage` normalisiert beides und akzeptiert auch eine bereits aufgelöste `languages`-Relation.
+- **Default ist Deutsch** (`BACKEND_DEFAULT_TRANSLATION_LANGUAGE`), genau wie in den Apps, deren `settingsReducer` auf `'de'` startet. Kein Profil, keine Sprache gesetzt oder eine Sprache ohne Katalog-Texte → Deutsch.
+- Aufruf:
+  ```ts
+  const translate = BackendTranslator.getTranslatorForProfile(profile);
+  translate(BackendTranslationKeys.tomorrow);                              // 'Morgen' / 'Tomorrow' / …
+  translate(BackendTranslationKeys.notification_foodoffer_body, { date, food });
+  ```
+  Für einen einzelnen Text ohne Nutzerbezug (z. B. das deutsche Formular-PDF) reicht `BackendTranslator.translate(key)`.
+- **Achtung, zwei verschiedene Übersetzungen:** `helpers/TranslationHelper.ts` übersetzt *Inhalte aus der Datenbank* (Speisenamen, News) und arbeitet mit dem vollen Locale-Code der `languages`-Collection. `helpers/translations/` übersetzt *Texte des Servers selbst*. Nicht vermischen.
+- Datum und Uhrzeit in einer Nutzersprache: `BackendTranslator.formatDate(date, language)`. Die `DateHelper.getHumanReadable*`-Funktionen sind fest auf `de-DE` und damit nur für interne Reports gedacht.
+- Durchgesetzt durch `src/helpers/translations/__tests__/BackendTranslations.test.ts` (jeder Key in jeder Sprache) und `src/food-notify-schedule-hook/__tests__/NotifyScheduleTranslations.test.ts`.
+
 ## Tests für `packages/common` und `packages/common-ui`
 
 - Beide Pakete haben eine eigene Jest-Suite: `yarn workspace repo-depkit-common test` bzw. `yarn workspace repo-depkit-common-ui test`. Beide laufen in CI (`🧪 Package & App Tests`).
