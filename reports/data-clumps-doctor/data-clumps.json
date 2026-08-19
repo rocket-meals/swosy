@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-08-18T10:14:34.977Z",
+  "report_timestamp": "2026-08-19T18:06:08.260Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,65 +8,65 @@
         "invertedFieldToClasses": {
           "median": 1.5,
           "maximum": 112,
-          "average": 1.5266531713900136,
-          "amountSavedValuesForKeys": 4525,
+          "average": 1.5267558528428093,
+          "amountSavedValuesForKeys": 4565,
           "amountKeys": 30
         },
         "invertedParameterToMethods": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 75,
-          "average": 2.271487039563438,
-          "amountSavedValuesForKeys": 1665,
+          "average": 2.2676630434782608,
+          "amountSavedValuesForKeys": 1669,
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 112,
-          "average": 1.5422631220177232,
-          "amountSavedValuesForKeys": 4525,
+          "average": 1.5422297297297298,
+          "amountSavedValuesForKeys": 4565,
           "amountKeys": 30
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 5055,
-        "detection_time_ms": 99,
+        "ast_generation_time_ms": 4986,
+        "detection_time_ms": 96,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 131.43,
-          "os_memory_free": 14823972864,
-          "os_memory_total": 16766410752,
+          "os_uptime": 206.89,
+          "os_memory_free": 14838415360,
+          "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 0,
-    "amount_files_with_data_clumps": 0,
+    "amount_classes_or_interfaces_with_data_clumps": 4,
+    "amount_files_with_data_clumps": 3,
     "amount_methods_with_data_clumps": 0,
-    "fields_to_fields_data_clump": 0,
+    "fields_to_fields_data_clump": 4,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 0
+    "amount_data_clumps": 4
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "87c50d3618858addabfba6f5408774c12e1ed1a5",
-    "project_commit_hash": "87c50d3618858addabfba6f5408774c12e1ed1a5",
+    "project_version": "41c6a163d3c56a974731428bc6a0006de2140552",
+    "project_commit_hash": "41c6a163d3c56a974731428bc6a0006de2140552",
     "project_tag": null,
-    "project_commit_date": "1787047955",
+    "project_commit_date": "1787162633",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 648,
-    "number_of_classes_or_interfaces": 1395,
-    "number_of_methods": 1509,
-    "number_of_data_fields": 4525,
-    "number_of_method_parameters": 1665
+    "number_of_files": 654,
+    "number_of_classes_or_interfaces": 1413,
+    "number_of_methods": 1511,
+    "number_of_data_fields": 4565,
+    "number_of_method_parameters": 1669
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -90,5 +90,394 @@
       "ignoredVariableNames": []
     }
   },
-  "data_clumps": {}
+  "data_clumps": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts-packages/common/src/LicenseEntry.ts/interface/LicenseEntry-licenserepositorylicenseUrl": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts-packages/common/src/LicenseEntry.ts/interface/LicenseEntry-licenserepositorylicenseUrl",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts",
+      "from_class_or_interface_name": "LicenseInformationTexts",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common/src/LicenseEntry.ts",
+      "to_class_or_interface_key": "packages/common/src/LicenseEntry.ts/interface/LicenseEntry",
+      "to_class_or_interface_name": "LicenseEntry",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts/memberField/license": {
+          "key": "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts/memberField/license",
+          "name": "license",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/LicenseEntry.ts/interface/LicenseEntry/memberField/license",
+            "name": "license",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 2,
+            "endLine": 23,
+            "endColumn": 18
+          }
+        },
+        "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts/memberField/repository": {
+          "key": "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts/memberField/repository",
+          "name": "repository",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/LicenseEntry.ts/interface/LicenseEntry/memberField/repository",
+            "name": "repository",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 2,
+            "endLine": 24,
+            "endColumn": 21
+          }
+        },
+        "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts/memberField/licenseUrl": {
+          "key": "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts/memberField/licenseUrl",
+          "name": "licenseUrl",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/LicenseEntry.ts/interface/LicenseEntry/memberField/licenseUrl",
+            "name": "licenseUrl",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 14,
+              "startColumn": 2,
+              "endLine": 14,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 2,
+            "endLine": 25,
+            "endColumn": 21
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common/src/LicenseEntry.ts-packages/common/src/LicenseEntry.ts/interface/LicenseEntry-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts-licenserepositorylicenseUrl": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common/src/LicenseEntry.ts-packages/common/src/LicenseEntry.ts/interface/LicenseEntry-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts-licenserepositorylicenseUrl",
+      "probability": 1,
+      "from_file_path": "packages/common/src/LicenseEntry.ts",
+      "from_class_or_interface_key": "packages/common/src/LicenseEntry.ts/interface/LicenseEntry",
+      "from_class_or_interface_name": "LicenseEntry",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts",
+      "to_class_or_interface_name": "LicenseInformationTexts",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common/src/LicenseEntry.ts/interface/LicenseEntry/memberField/license": {
+          "key": "packages/common/src/LicenseEntry.ts/interface/LicenseEntry/memberField/license",
+          "name": "license",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts/memberField/license",
+            "name": "license",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 2,
+              "endLine": 23,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 18
+          }
+        },
+        "packages/common/src/LicenseEntry.ts/interface/LicenseEntry/memberField/repository": {
+          "key": "packages/common/src/LicenseEntry.ts/interface/LicenseEntry/memberField/repository",
+          "name": "repository",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts/memberField/repository",
+            "name": "repository",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 2,
+              "endLine": 24,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 22
+          }
+        },
+        "packages/common/src/LicenseEntry.ts/interface/LicenseEntry/memberField/licenseUrl": {
+          "key": "packages/common/src/LicenseEntry.ts/interface/LicenseEntry/memberField/licenseUrl",
+          "name": "licenseUrl",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts/memberField/licenseUrl",
+            "name": "licenseUrl",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 2,
+              "endLine": 25,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 14,
+            "startColumn": 2,
+            "endLine": 14,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common/src/translations/TranslationHelper.ts-packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions-packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions-resourceslanguagefallbackLanguages": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common/src/translations/TranslationHelper.ts-packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions-packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions-resourceslanguagefallbackLanguages",
+      "probability": 1,
+      "from_file_path": "packages/common/src/translations/TranslationHelper.ts",
+      "from_class_or_interface_key": "packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions",
+      "from_class_or_interface_name": "CreateTranslatorOptions",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common/src/translations/TranslationHelper.ts",
+      "to_class_or_interface_key": "packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions",
+      "to_class_or_interface_name": "ResolveTranslationOptions",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions/memberField/resources": {
+          "key": "packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions/memberField/resources",
+          "name": "resources",
+          "type": "import(\"packages/common/src/translations/TranslationTypes\").TranslationResources",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions/memberField/resources",
+            "name": "resources",
+            "type": "import(\"packages/common/src/translations/TranslationTypes\").TranslationResources",
+            "modifiers": [],
+            "position": {
+              "startLine": 82,
+              "startColumn": 2,
+              "endLine": 82,
+              "endColumn": 43
+            }
+          },
+          "position": {
+            "startLine": 111,
+            "startColumn": 2,
+            "endLine": 111,
+            "endColumn": 43
+          }
+        },
+        "packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions/memberField/language": {
+          "key": "packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions/memberField/language",
+          "name": "language",
+          "type": "import(\"packages/common/src/translations/TranslationLanguage\").TranslationLanguage",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions/memberField/language",
+            "name": "language",
+            "type": "import(\"packages/common/src/translations/TranslationLanguage\").TranslationLanguage",
+            "modifiers": [],
+            "position": {
+              "startLine": 84,
+              "startColumn": 2,
+              "endLine": 84,
+              "endColumn": 45
+            }
+          },
+          "position": {
+            "startLine": 112,
+            "startColumn": 2,
+            "endLine": 112,
+            "endColumn": 45
+          }
+        },
+        "packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions/memberField/fallbackLanguages": {
+          "key": "packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions/memberField/fallbackLanguages",
+          "name": "fallbackLanguages",
+          "type": "readonly import(\"packages/common/src/translations/TranslationLanguage\").TranslationLanguage[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions/memberField/fallbackLanguages",
+            "name": "fallbackLanguages",
+            "type": "readonly import(\"packages/common/src/translations/TranslationLanguage\").TranslationLanguage[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 86,
+              "startColumn": 2,
+              "endLine": 86,
+              "endColumn": 66
+            }
+          },
+          "position": {
+            "startLine": 114,
+            "startColumn": 2,
+            "endLine": 114,
+            "endColumn": 66
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common/src/translations/TranslationHelper.ts-packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions-packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions-resourceslanguagefallbackLanguages": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common/src/translations/TranslationHelper.ts-packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions-packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions-resourceslanguagefallbackLanguages",
+      "probability": 1,
+      "from_file_path": "packages/common/src/translations/TranslationHelper.ts",
+      "from_class_or_interface_key": "packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions",
+      "from_class_or_interface_name": "ResolveTranslationOptions",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common/src/translations/TranslationHelper.ts",
+      "to_class_or_interface_key": "packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions",
+      "to_class_or_interface_name": "CreateTranslatorOptions",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions/memberField/resources": {
+          "key": "packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions/memberField/resources",
+          "name": "resources",
+          "type": "import(\"packages/common/src/translations/TranslationTypes\").TranslationResources",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions/memberField/resources",
+            "name": "resources",
+            "type": "import(\"packages/common/src/translations/TranslationTypes\").TranslationResources",
+            "modifiers": [],
+            "position": {
+              "startLine": 111,
+              "startColumn": 2,
+              "endLine": 111,
+              "endColumn": 43
+            }
+          },
+          "position": {
+            "startLine": 82,
+            "startColumn": 2,
+            "endLine": 82,
+            "endColumn": 43
+          }
+        },
+        "packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions/memberField/language": {
+          "key": "packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions/memberField/language",
+          "name": "language",
+          "type": "import(\"packages/common/src/translations/TranslationLanguage\").TranslationLanguage",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions/memberField/language",
+            "name": "language",
+            "type": "import(\"packages/common/src/translations/TranslationLanguage\").TranslationLanguage",
+            "modifiers": [],
+            "position": {
+              "startLine": 112,
+              "startColumn": 2,
+              "endLine": 112,
+              "endColumn": 45
+            }
+          },
+          "position": {
+            "startLine": 84,
+            "startColumn": 2,
+            "endLine": 84,
+            "endColumn": 45
+          }
+        },
+        "packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions/memberField/fallbackLanguages": {
+          "key": "packages/common/src/translations/TranslationHelper.ts/interface/ResolveTranslationOptions/memberField/fallbackLanguages",
+          "name": "fallbackLanguages",
+          "type": "readonly import(\"packages/common/src/translations/TranslationLanguage\").TranslationLanguage[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/translations/TranslationHelper.ts/interface/CreateTranslatorOptions/memberField/fallbackLanguages",
+            "name": "fallbackLanguages",
+            "type": "readonly import(\"packages/common/src/translations/TranslationLanguage\").TranslationLanguage[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 114,
+              "startColumn": 2,
+              "endLine": 114,
+              "endColumn": 66
+            }
+          },
+          "position": {
+            "startLine": 86,
+            "startColumn": 2,
+            "endLine": 86,
+            "endColumn": 66
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 2
+      }
+    }
+  }
 }
