@@ -1,10 +1,36 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { fetchWeatherAtCoordinates, WeatherCondition, WeatherResult } from 'repo-depkit-common';
+import { fetchWeatherAtCoordinates, interpolateTranslation, WeatherCondition, WeatherResult } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';
 
+/**
+ * Every user-facing text of the component.
+ *
+ * The component is translation-agnostic on purpose: the consuming app resolves its own
+ * translation keys and hands the finished strings down, so `repo-depkit-common-ui` never
+ * ships a hardcoded language. `WEATHER_PREVIEW_FALLBACK_TEXTS` covers the playbook and
+ * other non-localised call sites.
+ */
+export interface WeatherPreviewTexts {
+	/** Shown while the forecast is being fetched. */
+	loading: string;
+	/** Shown when no forecast could be fetched. */
+	noDataAvailable: string;
+	/** Label of the retry button in the no-data state. */
+	retry: string;
+	/** Condition label per weather condition, e.g. `{ sunny: 'Sonnig', ... }`. */
+	conditions: Record<WeatherCondition, string>;
+	/**
+	 * Wind line, with `{{speed}}` replaced by the rounded wind speed in km/h,
+	 * e.g. `'Wind {{speed}} km/h'`.
+	 */
+	wind: string;
+}
+
 export interface WeatherPreviewProps {
+	/** User-facing texts. Defaults to the English {@link WEATHER_PREVIEW_FALLBACK_TEXTS}. */
+	texts?: WeatherPreviewTexts;
 	/** Latitude of the GPS coordinate to fetch the weather for. */
 	latitude: number;
 	/** Longitude of the GPS coordinate to fetch the weather for. */
@@ -29,14 +55,24 @@ const CONDITION_ICONS: Record<WeatherCondition, keyof typeof MaterialCommunityIc
 	stormy: 'weather-lightning',
 };
 
-const CONDITION_LABELS: Record<WeatherCondition, string> = {
-	sunny: 'Sunny',
-	partly_cloudy: 'Partly cloudy',
-	cloudy: 'Cloudy',
-	foggy: 'Foggy',
-	rainy: 'Rainy',
-	snowy: 'Snowy',
-	stormy: 'Stormy',
+/**
+ * English fallback so the component renders something sensible without a `texts` prop
+ * (playbook, screenshots, prototypes). Apps must pass their own translated texts.
+ */
+export const WEATHER_PREVIEW_FALLBACK_TEXTS: WeatherPreviewTexts = {
+	loading: 'Loading weather…',
+	noDataAvailable: 'No weather data available',
+	retry: 'Retry',
+	wind: 'Wind {{speed}} km/h',
+	conditions: {
+		sunny: 'Sunny',
+		partly_cloudy: 'Partly cloudy',
+		cloudy: 'Cloudy',
+		foggy: 'Foggy',
+		rainy: 'Rainy',
+		snowy: 'Snowy',
+		stormy: 'Stormy',
+	},
 };
 
 function parseTimeProp(time: number | string | undefined): number | undefined {
@@ -55,7 +91,14 @@ function parseTimeProp(time: number | string | undefined): number | undefined {
  * best-effort: on failure a neutral "no weather data" state with a retry
  * button is shown.
  */
-export default function WeatherPreview({ latitude, longitude, time, accentColor = '#2563eb', nativeID }: Readonly<WeatherPreviewProps>) {
+export default function WeatherPreview({
+	texts = WEATHER_PREVIEW_FALLBACK_TEXTS,
+	latitude,
+	longitude,
+	time,
+	accentColor = '#2563eb',
+	nativeID,
+}: Readonly<WeatherPreviewProps>) {
 	const { theme } = useTheme();
 	const [loading, setLoading] = useState(true);
 	const [weather, setWeather] = useState<WeatherResult | null>(null);
@@ -85,7 +128,7 @@ export default function WeatherPreview({ latitude, longitude, time, accentColor 
 		return (
 			<View nativeID={nativeID} style={[styles.container, { borderColor: theme.screen.placeholder }]}>
 				<ActivityIndicator color={accentColor} />
-				<Text style={[styles.secondaryText, { color: theme.screen.placeholder }]}>Loading weather…</Text>
+				<Text style={[styles.secondaryText, { color: theme.screen.placeholder }]}>{texts.loading}</Text>
 			</View>
 		);
 	}
@@ -94,9 +137,9 @@ export default function WeatherPreview({ latitude, longitude, time, accentColor 
 		return (
 			<View nativeID={nativeID} style={[styles.container, { borderColor: theme.screen.placeholder }]}>
 				<MaterialCommunityIcons name="weather-cloudy-alert" size={28} color={theme.screen.placeholder} />
-				<Text style={[styles.secondaryText, { color: theme.screen.placeholder }]}>No weather data available</Text>
+				<Text style={[styles.secondaryText, { color: theme.screen.placeholder }]}>{texts.noDataAvailable}</Text>
 				<TouchableOpacity onPress={handleRetry} activeOpacity={0.7}>
-					<Text style={[styles.retryText, { color: accentColor }]}>Retry</Text>
+					<Text style={[styles.retryText, { color: accentColor }]}>{texts.retry}</Text>
 				</TouchableOpacity>
 			</View>
 		);
@@ -108,10 +151,10 @@ export default function WeatherPreview({ latitude, longitude, time, accentColor 
 			<Text style={[styles.temperatureText, { color: theme.screen.text }]}>
 				{Math.round(weather.temperatureCelsius * 10) / 10} °C
 			</Text>
-			<Text style={[styles.conditionText, { color: theme.screen.text }]}>{CONDITION_LABELS[weather.condition]}</Text>
+			<Text style={[styles.conditionText, { color: theme.screen.text }]}>{texts.conditions[weather.condition]}</Text>
 			{weather.windSpeedKmh !== null && (
 				<Text style={[styles.secondaryText, { color: theme.screen.placeholder }]}>
-					Wind {Math.round(weather.windSpeedKmh)} km/h
+					{interpolateTranslation(texts.wind, { speed: Math.round(weather.windSpeedKmh) })}
 				</Text>
 			)}
 			<Text style={[styles.secondaryText, { color: theme.screen.placeholder }]}>

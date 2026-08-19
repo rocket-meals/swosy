@@ -1,44 +1,58 @@
 import { getLocales } from 'expo-localization';
 import { useMemo } from 'react';
-import translations from '../locales/translations.json';
+import {
+	createTranslator,
+	resolveTranslationLanguage,
+	TranslationLanguage,
+	type Translator,
+} from 'repo-depkit-common';
+import { SUPPORTED_TRANSLATION_LANGUAGES, translationResources } from '../locales/translationResources';
 import type { GeonexiaTranslationKeys } from '../locales/keys';
 
-type SupportedLanguage = 'de' | 'en';
-
 /** Returns the best-matching supported language based on the device locale. */
-function detectLanguage(): SupportedLanguage {
+function detectLanguage(): TranslationLanguage {
 	try {
-		const locales = getLocales();
-		for (const locale of locales) {
-			const lang = locale.languageCode ?? '';
-			if (lang === 'de') return 'de';
-			if (lang === 'en') return 'en';
-		}
+		return resolveTranslationLanguage({
+			locales: getLocales().map((locale) => locale.languageCode),
+			supportedLanguages: SUPPORTED_TRANSLATION_LANGUAGES,
+			fallbackLanguage: TranslationLanguage.DE,
+		});
 	} catch {
 		// Fallback to German when locale detection fails
+		return TranslationLanguage.DE;
 	}
-	return 'de';
 }
 
-const language: SupportedLanguage = detectLanguage();
+const language: TranslationLanguage = detectLanguage();
 
 /**
- * Returns a `translate` function that resolves a {@link GeonexiaTranslationKeys}
- * key to the localised string for the detected device language.
+ * `translate` resolves a {@link GeonexiaTranslationKeys} key against the merged catalogue
+ * (shared `commonTranslations` + Geonexia's own texts), falling back German → English before
+ * giving up and returning the raw key.
  *
- * The language is resolved once at module load time (device locale does not
- * change while the app is running).
+ * The language is resolved once at module load time (the device locale does not change while
+ * the app is running).
  */
-export function useTranslation() {
-	const translate = useMemo(() => {
-		return (key: GeonexiaTranslationKeys): string => {
-			const entry = (translations as Record<string, Record<string, string>>)[key];
-			if (!entry) return key;
-			return entry[language] ?? entry['de'] ?? key;
-		};
-	}, []);
+const translator: Translator<GeonexiaTranslationKeys> = createTranslator<GeonexiaTranslationKeys>({
+	resources: translationResources,
+	language,
+});
 
+export function useTranslation() {
+	const translate = useMemo(() => translator, []);
 	return { translate, language };
+}
+
+/**
+ * Translate a prefixed, data-driven key (map layer ids, feature classes, ...).
+ *
+ * These keys are built at runtime from server data, so they cannot be checked at compile
+ * time; an unknown value falls back to the raw value instead of showing a prefixed key.
+ */
+function translateWithPrefix(prefix: string, value: string): string {
+	const key = `${prefix}${value}` as GeonexiaTranslationKeys;
+	const translated = translator(key);
+	return translated === key ? value : translated;
 }
 
 /**
@@ -47,10 +61,7 @@ export function useTranslation() {
  * translation is found.
  */
 export function translateLayerId(layerId: string): string {
-	const key = `layer_${layerId}` as GeonexiaTranslationKeys;
-	const entry = (translations as Record<string, Record<string, string>>)[key];
-	if (!entry) return layerId;
-	return entry[language] ?? entry['de'] ?? layerId;
+	return translateWithPrefix('layer_', layerId);
 }
 
 /**
@@ -59,10 +70,7 @@ export function translateLayerId(layerId: string): string {
  * translation is found.
  */
 export function translateClass(cls: string): string {
-	const key = `class_${cls}` as GeonexiaTranslationKeys;
-	const entry = (translations as Record<string, Record<string, string>>)[key];
-	if (!entry) return cls;
-	return entry[language] ?? entry['de'] ?? cls;
+	return translateWithPrefix('class_', cls);
 }
 
 /**
@@ -71,8 +79,5 @@ export function translateClass(cls: string): string {
  * no translation is found.
  */
 export function translateSubclass(subclass: string): string {
-	const key = `subclass_${subclass}` as GeonexiaTranslationKeys;
-	const entry = (translations as Record<string, Record<string, string>>)[key];
-	if (!entry) return subclass;
-	return entry[language] ?? entry['de'] ?? subclass;
+	return translateWithPrefix('subclass_', subclass);
 }

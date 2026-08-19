@@ -12,10 +12,32 @@ import type { LicenseEntry } from 'repo-depkit-common';
  */
 export type LicensePackageInfo = LicenseEntry;
 
+/**
+ * Row labels of the expanded package details.
+ *
+ * The component is translation-agnostic: the app resolves its own translation keys and
+ * passes the finished strings in. {@link LICENSE_INFORMATION_FALLBACK_TEXTS} keeps the
+ * component usable without them.
+ */
+export type LicenseInformationTexts = {
+	license: string;
+	repository: string;
+	licenseUrl: string;
+};
+
+/** English fallback used when an app passes no `texts`. */
+export const LICENSE_INFORMATION_FALLBACK_TEXTS: LicenseInformationTexts = {
+	license: 'License',
+	repository: 'Repository',
+	licenseUrl: 'License URL',
+};
+
 export type LicenseInformationProps = {
 	packages: LicensePackageInfo[];
 	/** Optional accent color for links. Defaults to a blue tone. */
 	linkColor?: string;
+	/** Row labels. Defaults to {@link LICENSE_INFORMATION_FALLBACK_TEXTS}. */
+	texts?: LicenseInformationTexts;
 };
 
 function DetailRow({ label, value, url, linkColor }: Readonly<{ label: string; value: string; url?: string; linkColor: string }>) {
@@ -45,7 +67,11 @@ function DetailRow({ label, value, url, linkColor }: Readonly<{ label: string; v
  * license and repository link. Renders plain views (no own ScrollView) so it
  * can be embedded in a screen or a scrollable modal.
  */
-const LicenseInformation: React.FC<LicenseInformationProps> = ({ packages, linkColor = '#2563eb' }) => {
+const LicenseInformation: React.FC<LicenseInformationProps> = ({
+	packages,
+	linkColor = '#2563eb',
+	texts = LICENSE_INFORMATION_FALLBACK_TEXTS,
+}) => {
 	const { theme } = useTheme();
 	const [expandedName, setExpandedName] = useState<string | null>(null);
 
@@ -72,10 +98,10 @@ const LicenseInformation: React.FC<LicenseInformationProps> = ({ packages, linkC
 						</TouchableOpacity>
 						<CollapsibleView collapsed={!isExpanded}>
 							<View style={styles.details}>
-								<DetailRow label="License" value={pkg.license} linkColor={linkColor} />
-								{pkg.repository ? <DetailRow label="Repository" value={pkg.repository} url={pkg.repository} linkColor={linkColor} /> : null}
+								<DetailRow label={texts.license} value={pkg.license} linkColor={linkColor} />
+								{pkg.repository ? <DetailRow label={texts.repository} value={pkg.repository} url={pkg.repository} linkColor={linkColor} /> : null}
 								{pkg.licenseUrl && pkg.licenseUrl !== pkg.repository ? (
-									<DetailRow label="License URL" value={pkg.licenseUrl} url={pkg.licenseUrl} linkColor={linkColor} />
+									<DetailRow label={texts.licenseUrl} value={pkg.licenseUrl} url={pkg.licenseUrl} linkColor={linkColor} />
 								) : null}
 							</View>
 						</CollapsibleView>

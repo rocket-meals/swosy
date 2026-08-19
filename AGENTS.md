@@ -40,6 +40,44 @@ Bei React-Dateien sollen **Styles, Export und Logik in derselben Datei** bleiben
 - **English names only** for screen folders, component files, and route paths. Do not use German words in file or folder names.
 - **Prefer common-ui components.** When displaying data, always prefer reusing components from `repo-depkit-common-ui` (e.g. `SettingsList`, `SettingsListGroupTitle`, `SettingsListProgress`, `SettingsListBoolean`, etc.) over building custom implementations from scratch.
 
+## Keine hardgecodeten Texte (no hardcoded user-facing strings)
+
+**Jeder Text, den ein Nutzer sieht, kommt aus dem Übersetzungskatalog — nie als Literal im Code.**
+Das gilt für alle Apps und für `packages/common-ui`.
+
+- **In Apps:** immer `translate(TranslationKeys.<key>)` verwenden. Neue Texte brauchen einen Key in `locales/keys.ts` **und** einen Eintrag mit **allen** unterstützten Sprachen in `locales/translations.json` (bzw. in `commonTranslations`, wenn der Text allgemein ist).
+- Das betrifft auch `accessibilityLabel`, `accessibilityHint`, `placeholder`, `title`, `label`, Toast-/Modal-Texte und Fehlermeldungen, die im UI landen.
+- **Ausgenommen** sind nicht-sprachliche Literale: Eigennamen/Marken (`OpenStreetMap`), technische Formathinweise (`DD.MM.YYYY`), Icon-Namen, `testID`/`nativeID`, Log- und Debug-Ausgaben, die nie im UI erscheinen.
+- **In `packages/common-ui`:** Komponenten sind sprach-agnostisch. Sie bekommen ihre Texte über eine `texts`-Prop (Muster: `WeatherPreviewTexts`, `AppDownloadBannerTexts`, `LicenseInformationTexts`, `SettingsListMyMapThemeSelectionTexts`). Die App löst ihre Translation-Keys auf und reicht die fertigen Strings durch. Ein englischer `*_FALLBACK_TEXTS`-Export darf existieren, damit Playbook/Prototypen ohne `texts` funktionieren — er ist kein Ersatz für Übersetzungen.
+- **Durchgesetzt durch Tests:** `packages/common-ui/src/__tests__/noHardcodedTexts.test.ts` scannt alle Komponenten. Ein neuer hardgecodeter Text lässt den Test fehlschlagen. Ausnahmen müssen mit Begründung in die dortige `ALLOWED_LITERALS`-Liste — bitte sparsam.
+
+## Übersetzungen: gemeinsame Keys in `repo-depkit-common`, App-Keys erben davon
+
+- **Allgemeines Vokabular** (Speichern, Abbrechen, Fehler, Wochentage, Monate, …) lebt **einmal** in `packages/common/src/translations/`:
+  - `CommonTranslationKeys.ts` — die gemeinsamen Keys.
+  - `commonTranslations.ts` — die Texte dazu, in **allen** Sprachen aus `ALL_TRANSLATION_LANGUAGES`.
+  - `TranslationHelper.ts` — `createTranslator`, `mergeTranslationResources`, `resolveTranslation`, `interpolateTranslation`, `toI18nextResources`.
+  - `TranslationValidationHelper.ts` — die Prüfungen, die die Tests fahren.
+- **Apps erben davon.** TypeScript-`enum`s können nicht erben, deshalb sind die Keys ein const-Objekt plus gleichnamiger Typ. Eine App erweitert per Spread:
+  ```ts
+  export const TranslationKeys = {
+  	...CommonTranslationKeys,
+  	my_app_specific_key: 'my_app_specific_key',
+  } as const;
+  export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];
+  ```
+  Wert und Typ unter einem Namen zu deklarieren hält `TranslationKeys.save` und `key: TranslationKeys` genauso lauffähig wie vorher mit dem Enum.
+- **Key-Name = Key-Wert** (`save: 'save'`). Nur so bleibt ein Key im Code grepbar; der Test prüft das.
+- **Ein Key gehört nach `packages/common`, wenn er in einer zweiten, fachlich unabhängigen App genauso sinnvoll wäre.** App-spezifische Keys bleiben in der App. Ein Key, der in `CommonTranslationKeys` steht, darf **nicht** noch einmal in der `translations.json` der App stehen — der Test schlägt sonst fehl.
+- **Katalog immer über `locales/translationResources.ts` lesen**, nie direkt `translations.json` importieren: der direkte Import kennt die gemeinsamen Keys nicht und rendert dann den rohen Key.
+- **Jeder Key braucht in jeder unterstützten Sprache einen nicht-leeren Text.** Durchgesetzt durch `apps/frontend/app/__tests__/translations.test.ts`, `apps/geonexia/frontend/__tests__/translations.test.ts` und `packages/common/src/__tests__/commonTranslations.test.ts`.
+
+## Tests für `packages/common` und `packages/common-ui`
+
+- Beide Pakete haben eine eigene Jest-Suite: `yarn workspace repo-depkit-common test` bzw. `yarn workspace repo-depkit-common-ui test`. Beide laufen in CI (`🧪 Package & App Tests`).
+- **Neue Helper in `packages/common` brauchen einen Test** unter `packages/common/src/__tests__/`.
+- `packages/common-ui` testet mit `ts-jest` in Node — also **keine** Renderer-Tests, sondern die reine Logik (Helper, Playbook-Registry, Quellcode-Scans). Module, die `react-native` importieren, gehören nicht in diese Suite.
+
 ## Patch version increment on every change
 
 - **Every push, merge or code change must increment the patch version** (`getVersionPatch()` in the affected app's `config.ts`) by at least 1.

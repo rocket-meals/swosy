@@ -35,18 +35,6 @@
     "de": "Lade Namensvorschläge…",
     "en": "Loading name suggestions…"
   },
-  "save": {
-    "de": "Speichern",
-    "en": "Save"
-  },
-  "cancel": {
-    "de": "Abbrechen",
-    "en": "Cancel"
-  },
-  "error": {
-    "de": "Fehler",
-    "en": "Error"
-  },
   "route_name_save_error": {
     "de": "Der Name der Route konnte nicht gespeichert werden.",
     "en": "The route name could not be saved."
@@ -58,10 +46,6 @@
   "back": {
     "de": "Zurück",
     "en": "Back"
-  },
-  "loading": {
-    "de": "Laden…",
-    "en": "Loading…"
   },
   "loading_map_features": {
     "de": "Lade Karten-Features…",
@@ -99,10 +83,6 @@
     "de": "Möchtest du diese Route wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.",
     "en": "Do you really want to delete this route? This action cannot be undone."
   },
-  "delete": {
-    "de": "Löschen",
-    "en": "Delete"
-  },
   "discard_changes_title": {
     "de": "Änderungen verwerfen?",
     "en": "Discard changes?"
@@ -130,10 +110,6 @@
   "created_at": {
     "de": "Erstellt am",
     "en": "Created on"
-  },
-  "distance": {
-    "de": "Streckenlänge",
-    "en": "Distance"
   },
   "tiles": {
     "de": "Kacheln",
@@ -582,5 +558,9 @@
   "subclass_vineyard": {
     "de": "Weinberg",
     "en": "Vineyard"
+  },
+  "distance": {
+    "de": "Streckenlänge",
+    "en": "Distance"
   }
 }

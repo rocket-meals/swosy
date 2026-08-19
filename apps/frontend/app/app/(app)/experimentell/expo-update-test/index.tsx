@@ -10,7 +10,10 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import usePlatformHelper from '@/helper/platformHelper';
 import { areExpoUpdatesAvailable } from '@/helper/DeviceRuntimeHelper';
 
-type StepKey = TranslationKeys.CHECK_FOR_APP_UPDATES | TranslationKeys.DOWNLOAD_NEW_APP_UPDATE | TranslationKeys.RELOAD_APP;
+type StepKey =
+	| typeof TranslationKeys.CHECK_FOR_APP_UPDATES
+	| typeof TranslationKeys.DOWNLOAD_NEW_APP_UPDATE
+	| typeof TranslationKeys.RELOAD_APP;
 
 interface StepConfig {
         key: StepKey;

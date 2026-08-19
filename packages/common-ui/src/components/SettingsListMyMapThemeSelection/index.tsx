@@ -24,10 +24,67 @@ type MapThemeSelectionState = {
 	mapPreviewZoom?: number;
 };
 
+/**
+ * User-facing texts of the OpenStreetMap consent gate.
+ *
+ * The component is translation-agnostic: an app resolves its own translation keys and passes
+ * the finished strings in. {@link MAP_THEME_SELECTION_FALLBACK_TEXTS} keeps the component
+ * usable without them (playbook, prototypes).
+ */
+export type SettingsListMyMapThemeSelectionTexts = {
+	/** Headline of the consent gate. */
+	consentTitle: string;
+	/**
+	 * Explains which data leaves the device. `{{osm}}` and `{{openFreeMap}}` are replaced by
+	 * the provider names, rendered in bold.
+	 */
+	consentDataNotice: string;
+	/** Note that the consent is stored and can be revoked. */
+	consentRevokeNotice: string;
+	/** Label of the button that grants consent. */
+	consentAccept: string;
+};
+
+/** English fallback used when an app passes no `texts`. */
+export const MAP_THEME_SELECTION_FALLBACK_TEXTS: SettingsListMyMapThemeSelectionTexts = {
+	consentTitle: 'Map display with OpenStreetMap',
+	consentDataNotice:
+		'This map loads map data from {{osm}} (openstreetmap.org) and {{openFreeMap}} (openfreemap.org). Data such as your IP address is transferred to servers of the OpenStreetMap Foundation and Protomaps LLC.',
+	consentRevokeNotice: 'Your consent is stored and can be revoked at any time in the map settings.',
+	consentAccept: 'Load map data (accept)',
+};
+
+const OSM_PROVIDER_NAMES: Record<string, string> = {
+	osm: 'OpenStreetMap',
+	openFreeMap: 'OpenFreeMap',
+};
+
+/**
+ * Renders `consentDataNotice` with the `{{osm}}` / `{{openFreeMap}}` placeholders replaced by
+ * bold provider names. Splitting here rather than in the text keeps the sentence a single
+ * translatable unit while preserving the emphasis on the two brand names.
+ */
+function renderNoticeWithProviderNames(notice: string): React.ReactNode[] {
+	return notice.split(/(\{\{osm\}\}|\{\{openFreeMap\}\})/g).map((part, index) => {
+		const providerKey = /^\{\{(osm|openFreeMap)\}\}$/.exec(part)?.[1];
+		const key = `${index}-${part}`;
+		if (providerKey === undefined) {
+			return <React.Fragment key={key}>{part}</React.Fragment>;
+		}
+		return (
+			<Text key={key} style={{ fontWeight: 'bold' }}>
+				{OSM_PROVIDER_NAMES[providerKey]}
+			</Text>
+		);
+	});
+}
+
 export type SettingsListMyMapThemeSelectionProps = MapThemeSelectionState &
 	Pick<SettingsListItemBaseProps, 'leftIcon' | 'iconBgColor' | 'label'> & {
 		groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
 		modalTitle?: string;
+		/** Consent-gate texts. Defaults to {@link MAP_THEME_SELECTION_FALLBACK_TEXTS}. */
+		texts?: SettingsListMyMapThemeSelectionTexts;
 		nativeID?: string;
 		/** Whether the user has consented to OSM map data loading. Defaults to true (no gate). */
 		osmConsent?: boolean;
@@ -37,24 +94,25 @@ export type SettingsListMyMapThemeSelectionProps = MapThemeSelectionState &
 
 type OsmConsentGateProps = {
 	onConsent: () => void;
+	texts: SettingsListMyMapThemeSelectionTexts;
 };
 
-const OsmConsentGate: React.FC<OsmConsentGateProps> = ({ onConsent }) => {
+const OsmConsentGate: React.FC<OsmConsentGateProps> = ({ onConsent, texts }) => {
 	const { theme } = useTheme();
 	return (
 		<View style={{ paddingHorizontal: 16, paddingVertical: 24, alignItems: 'center' }}>
 			<MaterialCommunityIcons name="map-marker-radius" size={56} color={theme.screen.icon} style={{ marginBottom: 16 }} />
 			<Text style={{ color: theme.screen.text, fontSize: 17, fontWeight: 'bold', textAlign: 'center', marginBottom: 12 }}>
-				Kartenanzeige mit OpenStreetMap
+				{texts.consentTitle}
 			</Text>
 			<Text style={{ color: theme.screen.text, fontSize: 14, textAlign: 'center', marginBottom: 8, lineHeight: 20 }}>
-				Diese Karte lädt Kartendaten von <Text style={{ fontWeight: 'bold' }}>OpenStreetMap</Text> (openstreetmap.org) und <Text style={{ fontWeight: 'bold' }}>OpenFreeMap</Text> (openfreemap.org). Dabei werden Daten wie deine IP-Adresse an Server der OpenStreetMap Foundation und Protomaps LLC übertragen.
+				{renderNoticeWithProviderNames(texts.consentDataNotice)}
 			</Text>
 			<Text style={{ color: theme.screen.text + 'aa', fontSize: 13, textAlign: 'center', marginBottom: 24, lineHeight: 18 }}>
-				Deine Zustimmung wird gespeichert und kann jederzeit in den Karten-Einstellungen widerrufen werden.
+				{texts.consentRevokeNotice}
 			</Text>
 			<SettingsList
-				title="Kartendaten laden (Zustimmen)"
+				title={texts.consentAccept}
 				leftIcon={<MaterialCommunityIcons name="check-circle-outline" size={22} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={onConsent}
@@ -139,6 +197,7 @@ const MapThemeGrid: React.FC<MapThemeGridProps> = ({
 type MapThemeSelectionModalContentProps = MapThemeGridProps & {
 	initialHasConsent: boolean;
 	onOsmConsentChange?: (value: boolean) => void;
+	texts: SettingsListMyMapThemeSelectionTexts;
 };
 
 const MapThemeSelectionModalContent: React.FC<MapThemeSelectionModalContentProps> = ({
@@ -146,6 +205,7 @@ const MapThemeSelectionModalContent: React.FC<MapThemeSelectionModalContentProps
 	selectedMapStyleKey,
 	onMapStyleKeyChange,
 	onOsmConsentChange,
+	texts,
 	accentColor,
 	mapPreviewCenter,
 	mapPreviewZoom,
@@ -159,7 +219,7 @@ const MapThemeSelectionModalContent: React.FC<MapThemeSelectionModalContentProps
 	};
 
 	if (!hasConsent) {
-		return <OsmConsentGate onConsent={handleConsent} />;
+		return <OsmConsentGate onConsent={handleConsent} texts={texts} />;
 	}
 
 	return (
@@ -188,6 +248,7 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 	nativeID,
 	osmConsent = true,
 	onOsmConsentChange,
+	texts = MAP_THEME_SELECTION_FALLBACK_TEXTS,
 }) => {
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
@@ -198,6 +259,7 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 			children: (
 				<MapThemeSelectionModalContent
 					initialHasConsent={osmConsent}
+					texts={texts}
 					selectedMapStyleKey={selectedMapStyleKey}
 					onMapStyleKeyChange={onMapStyleKeyChange}
 					onOsmConsentChange={onOsmConsentChange}
@@ -208,7 +270,7 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 				/>
 			),
 		});
-	}, [showModal, closeModal, selectedMapStyleKey, onMapStyleKeyChange, accentColor, mapPreviewCenter, mapPreviewZoom, modalTitle, osmConsent, onOsmConsentChange]);
+	}, [showModal, closeModal, selectedMapStyleKey, onMapStyleKeyChange, accentColor, mapPreviewCenter, mapPreviewZoom, modalTitle, osmConsent, onOsmConsentChange, texts]);
 
 	return (
 		<SettingsList

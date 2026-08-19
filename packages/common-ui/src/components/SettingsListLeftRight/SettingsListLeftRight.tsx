@@ -22,6 +22,13 @@ export type SettingsListLeftRightProps<T extends string | number> = Pick<
 	onPress?: () => void;
 	/** Optional element rendered between the value text and the right arrow. */
 	extraRightElement?: React.ReactNode;
+	/**
+	 * Accessibility label of the "previous option" arrow. Apps pass their translated text;
+	 * the English default only exists so the button is never unlabelled.
+	 */
+	previousAccessibilityLabel?: string;
+	/** Accessibility label of the "next option" arrow. See {@link previousAccessibilityLabel}. */
+	nextAccessibilityLabel?: string;
 };
 
 const SettingsListLeftRight = <T extends string | number>({
@@ -36,6 +43,8 @@ const SettingsListLeftRight = <T extends string | number>({
 	groupPosition = 'single',
 	onPress,
 	extraRightElement,
+	previousAccessibilityLabel = 'Previous option',
+	nextAccessibilityLabel = 'Next option',
 }: SettingsListLeftRightProps<T>) => {
 	const { theme, isDark } = useTheme();
 	const settingsCtx = useSettingsContext();
@@ -66,7 +75,7 @@ const SettingsListLeftRight = <T extends string | number>({
 			style={styles.arrowButton}
 			hitSlop={8}
 			accessibilityRole="button"
-			accessibilityLabel="Previous option"
+			accessibilityLabel={previousAccessibilityLabel}
 		>
 			<MaterialCommunityIcons
 				name="chevron-left"
@@ -82,7 +91,7 @@ const SettingsListLeftRight = <T extends string | number>({
 			style={styles.arrowButton}
 			hitSlop={8}
 			accessibilityRole="button"
-			accessibilityLabel="Next option"
+			accessibilityLabel={nextAccessibilityLabel}
 		>
 			<MaterialCommunityIcons
 				name="chevron-right"
