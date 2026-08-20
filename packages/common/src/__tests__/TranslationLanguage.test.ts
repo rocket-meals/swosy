@@ -1,6 +1,9 @@
 import {
 	ALL_TRANSLATION_LANGUAGES,
 	DEFAULT_TRANSLATION_LANGUAGE,
+	getBaseLanguageCode,
+	isSameBaseLanguage,
+	isSameLanguageCode,
 	isTranslationLanguage,
 	normalizeTranslationLanguage,
 	resolveTranslationLanguage,
@@ -87,5 +90,54 @@ describe('resolveTranslationLanguage', () => {
 
 	it('falls back to the default language when no fallback is given', () => {
 		expect(resolveTranslationLanguage({ locales: [] })).toBe(DEFAULT_TRANSLATION_LANGUAGE);
+	});
+});
+
+describe('getBaseLanguageCode', () => {
+	it('strips the region and lower-cases', () => {
+		expect(getBaseLanguageCode('de')).toBe('de');
+		expect(getBaseLanguageCode('de-DE')).toBe('de');
+		expect(getBaseLanguageCode('DE_at')).toBe('de');
+		expect(getBaseLanguageCode('  fr-CA  ')).toBe('fr');
+	});
+
+	it('also works for languages the apps ship no texts for', () => {
+		// A customer may add any language to the Directus `languages` collection.
+		expect(getBaseLanguageCode('it-IT')).toBe('it');
+	});
+
+	it('returns undefined for nothing usable', () => {
+		expect(getBaseLanguageCode(undefined)).toBeUndefined();
+		expect(getBaseLanguageCode(null)).toBeUndefined();
+		expect(getBaseLanguageCode('')).toBeUndefined();
+		expect(getBaseLanguageCode('   ')).toBeUndefined();
+	});
+});
+
+describe('isSameLanguageCode', () => {
+	it('ignores case but not the region', () => {
+		expect(isSameLanguageCode('de-DE', 'DE-de')).toBe(true);
+		expect(isSameLanguageCode('de', 'DE')).toBe(true);
+		expect(isSameLanguageCode('de', 'de-DE')).toBe(false);
+		expect(isSameLanguageCode('de-DE', 'de-AT')).toBe(false);
+	});
+
+	it('is false when either side is missing', () => {
+		expect(isSameLanguageCode(undefined, 'de')).toBe(false);
+		expect(isSameLanguageCode('de', null)).toBe(false);
+		expect(isSameLanguageCode('', '')).toBe(false);
+	});
+});
+
+describe('isSameBaseLanguage', () => {
+	it('ignores case and region', () => {
+		expect(isSameBaseLanguage('de', 'de-DE')).toBe(true);
+		expect(isSameBaseLanguage('DE-de', 'de_AT')).toBe(true);
+		expect(isSameBaseLanguage('it-IT', 'it-CH')).toBe(true);
+	});
+
+	it('keeps different languages apart', () => {
+		expect(isSameBaseLanguage('de-DE', 'en-US')).toBe(false);
+		expect(isSameBaseLanguage('de', undefined)).toBe(false);
 	});
 });

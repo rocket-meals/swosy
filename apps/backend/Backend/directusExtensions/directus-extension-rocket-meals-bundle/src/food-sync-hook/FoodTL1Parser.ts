@@ -12,7 +12,7 @@ import {
   FoodWithBasicData
 } from './FoodParserInterface';
 import {FoodTL1ParserGetRawReportInterface} from './FoodTL1Parser_GetRawReportInterface';
-import {TranslationsFromParsingType} from '../helpers/TranslationHelper';
+import {TranslationsFromParsingType} from '../helpers/ContentTranslationHelper';
 import {LanguageCodes, StringHelper} from 'repo-depkit-common';
 import {PriceGroupEnum} from './PriceGroupEnum';
 import {DictHelper} from '../helpers/DictHelper';

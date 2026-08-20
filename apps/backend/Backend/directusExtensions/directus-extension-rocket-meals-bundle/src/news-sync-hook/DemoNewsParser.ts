@@ -1,4 +1,4 @@
-import { TranslationHelper } from '../helpers/TranslationHelper';
+import { ContentTranslationHelper } from '../helpers/ContentTranslationHelper';
 import { NewsParserInterface, NewsTypeForParser } from './NewsParserInterface';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { WorkflowRunLogger } from '../workflows-runs-hook/WorkflowRunJobInterface';
@@ -17,7 +17,7 @@ export class DemoNewsParser implements NewsParserInterface {
         url: 'https://www.pexels.com/de-de/foto/frau-die-im-flur-steht-wahrend-buch-halt-1462630/',
       },
       translations: {
-        [TranslationHelper.LANGUAGE_CODE_DE]: {
+        [ContentTranslationHelper.LANGUAGE_CODE_DE]: {
           title: 'Test News ' + external_identifier,
           content: 'Das ist ein Test News Artikel',
           be_source_for_translations: true,

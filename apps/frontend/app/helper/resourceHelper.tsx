@@ -1,10 +1,22 @@
 import React from 'react';
 import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { DatabaseTypes, StringHelper } from 'repo-depkit-common';
+import { DatabaseTypes, isSameBaseLanguage, StringHelper } from 'repo-depkit-common';
 
 export type TranslationEntry = {
 	languages_code: string;
 	[key: string]: any;
+};
+
+/**
+ * Whether a translation row is the one for `languageCode`.
+ *
+ * Compared case-insensitively and without the region, because `languages.code` is maintained by
+ * hand per customer: the app asks for `de` and the row may be stored as `de-DE`, `DE-de` or
+ * `de-AT`. `languages_code` is a relation, so it arrives as the plain code or as the expanded row.
+ */
+const matchesLanguage = (languages_code: unknown, languageCode: string): boolean => {
+	const code = typeof languages_code === 'string' ? languages_code : (languages_code as DatabaseTypes.Languages | undefined)?.code;
+	return isSameBaseLanguage(code, languageCode);
 };
 
 const getIconComponent = (iconString: string, iconColor: string): React.JSX.Element | null => {
@@ -36,25 +48,25 @@ interface Translation {
 
 const getTextFromTranslation = (translations: Array<Partial<Translation>> | null | undefined, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
-	const translation = translations.find(t => (t.languages_code as string)?.split('-')[0] === languageCode);
+	const translation = translations.find(t => matchesLanguage(t.languages_code, languageCode));
 	return translation?.text || translation?.name || translation?.content || '';
 };
 
 export const getIntroDescriptionTranslation = (translations: Array<any>, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
-	const translation = translations.find(t => t.languages_code?.split('-')[0] === languageCode);
+	const translation = translations.find(t => matchesLanguage(t.languages_code, languageCode));
 	return translation?.intro_description || '';
 };
 
 export const getDetailedDescriptionTranslation = (translations: Array<any>, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
-	const translation = translations.find(t => t.languages_code?.split('-')[0] === languageCode);
+	const translation = translations.find(t => matchesLanguage(t.languages_code, languageCode));
 	return translation?.detailed_description || '';
 };
 
 const getNameFromTranslation = (translations: Array<{ languages_code?: string | DatabaseTypes.Languages | null; name?: string | null }> | null | undefined, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
-	const translation = translations.find(t => (t.languages_code as string)?.split('-')[0] === languageCode);
+	const translation = translations.find(t => matchesLanguage(t.languages_code, languageCode));
 	return translation?.name || '';
 };
 
@@ -69,7 +81,7 @@ const getFoodCategoryName = (categories: DatabaseTypes.FoodsCategories[], catego
 	const cat = typeof category === 'object' ? category : categories.find(c => c.id === category);
 	if (!cat) return '';
 	const translations: DatabaseTypes.FoodsCategoriesTranslations[] = (cat.translations as DatabaseTypes.FoodsCategoriesTranslations[]) || [];
-	const translation = translations.find(t => (t.languages_code as string)?.split('-')[0] === languageCode);
+	const translation = translations.find(t => matchesLanguage(t.languages_code, languageCode));
 	return translation?.name || '';
 };
 
@@ -78,29 +90,29 @@ const getFoodOfferCategoryName = (categories: DatabaseTypes.FoodoffersCategories
 	const cat = typeof category === 'object' ? category : categories.find(c => c.id === category);
 	if (!cat) return '';
 	const translations: DatabaseTypes.FoodoffersCategoriesTranslations[] = (cat.translations as DatabaseTypes.FoodoffersCategoriesTranslations[]) || [];
-	const translation = translations.find(t => (t.languages_code as string)?.split('-')[0] === languageCode);
+	const translation = translations.find(t => matchesLanguage(t.languages_code, languageCode));
 	return translation?.name || '';
 };
 
 export const getFromDescriptionTranslation = (translations: Array<DatabaseTypes.FormFieldsTranslations>, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
-	const translation = translations.find(t => (t.languages_code as string)?.split('-')[0] === languageCode);
+	const translation = translations.find(t => matchesLanguage(t.languages_code, languageCode));
 	return translation?.description || '';
 };
 
 export const getTitleFromTranslation = (translations: Array<Translation | DatabaseTypes.WikisTranslations>, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
-	const translation = translations.find(t => t.languages_code?.toString()?.split('-')[0] === languageCode);
+	const translation = translations.find(t => matchesLanguage(t.languages_code, languageCode));
 	return translation?.title || '';
 };
 
 const getDescriptionFromTranslation = (translations: Array<Translation | DatabaseTypes.MarkingsTranslations>, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
 
-	const prioritizedTranslation = translations.find(t => t.languages_code?.toString()?.split('-')[0] === languageCode && Boolean(t.description));
+	const prioritizedTranslation = translations.find(t => matchesLanguage(t.languages_code, languageCode) && Boolean(t.description));
 
 	// Fall back to any translation matching the language code
-	const fallbackTranslation = translations.find(t => t.languages_code?.toString()?.split('-')[0] === languageCode);
+	const fallbackTranslation = translations.find(t => matchesLanguage(t.languages_code, languageCode));
 
 	const translation = prioritizedTranslation || fallbackTranslation;
 	return translation?.description || '';
@@ -131,9 +143,11 @@ export function getDirectusTranslation(params: any, translations: TranslationEnt
 
         const translationDict = translations.reduce(
                 (acc, translation) => {
-                        acc[translation.languages_code] = translation;
+                        // Lower-cased keys: the requested language and the stored code may differ
+                        // in case ("de" vs "DE-de") and must still find each other.
+                        acc[translation.languages_code?.toLowerCase()] = translation;
 
-                        const [baseLanguageCode] = translation.languages_code?.split?.('-') || [];
+                        const [baseLanguageCode] = translation.languages_code?.toLowerCase()?.split?.('-') || [];
                         if (baseLanguageCode && !acc[baseLanguageCode]) {
                                 acc[baseLanguageCode] = translation;
                         }
@@ -144,8 +158,9 @@ export function getDirectusTranslation(params: any, translations: TranslationEnt
         );
 
 	const getTranslation = (dict: { [key: string]: TranslationEntry }, langCode: string, params?: any) => {
-		const languageKey = langCode?.split('-')[0];
-		const translationEntry = dict[langCode] || dict[languageKey];
+		const requestedCode = langCode?.toLowerCase();
+		const languageKey = requestedCode?.split('-')[0];
+		const translationEntry = dict[requestedCode] || dict[languageKey];
 		if (!translationEntry) return null;
 
 		let translation = translationEntry[field];
@@ -221,7 +236,7 @@ export function getFoodName(food: string | DatabaseTypes.Foods | null | undefine
 export const getNewsTranslationByLanguageCode = (translations: DatabaseTypes.NewsTranslations[], languageCode: string): any => {
         if (!translations || translations.length === 0) return '';
 
-	const translation = translations?.find(item => item.languages_code?.toString().split('-')[0] === languageCode);
+	const translation = translations?.find(item => matchesLanguage(item.languages_code, languageCode));
 
         if (translation) {
                 return {
@@ -254,7 +269,7 @@ export const getCollectibleEventTranslation = (
 export const getBuildingTranslationByLanguageCode = (translations: DatabaseTypes.BuildingsTranslations[], languageCode: string) => {
 	if (!translations || translations.length === 0) return '';
 
-	const translation = translations?.find(item => item.languages_code?.toString().split('-')[0] === languageCode);
+	const translation = translations?.find(item => matchesLanguage(item.languages_code, languageCode));
 
 	if (translation?.content) {
 		return translation?.content || '';
@@ -264,7 +279,7 @@ export const getBuildingTranslationByLanguageCode = (translations: DatabaseTypes
 export const getAppElementTranslation = (translations: DatabaseTypes.AppElementsTranslations[] | any[], languageCode: string): any => {
 	if (!translations || translations.length === 0) return '';
 
-	const translation = translations?.find(item => item.languages_code?.toString().split('-')[0] === languageCode);
+	const translation = translations?.find(item => matchesLanguage(item.languages_code, languageCode));
 
 	if (translation) {
 		return {

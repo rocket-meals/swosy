@@ -1,5 +1,19 @@
+/**
+ * ContentTranslationHelper.ts – the `*_translations` rows of a Directus item.
+ *
+ * This is content: meal names, news, form labels – written by editors or by an import parser,
+ * stored per item in a related translations table and keyed by the full `languages.code`.
+ * This helper reads and writes those rows; it never produces a translation itself.
+ *
+ * The two neighbours it is easy to confuse it with:
+ * - `helpers/translations/` – the **static catalogue** of texts the server itself formulates
+ *   (push notifications, generated documents). Shipped with the code, keyed by a translation key.
+ * - `auto-translation-hook/` – the **machine translation** that fills the rows this helper
+ *   manages, by sending the source text to DeepL.
+ */
+
 import { PrimaryKey } from '@directus/types';
-import { CollectionNames, DatabaseTypes, DeepCopyHelper, LanguageCodes, LanguageCodesType } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, DeepCopyHelper, isSameBaseLanguage, isSameLanguageCode, LanguageCodes, LanguageCodesType } from 'repo-depkit-common';
 
 import { MyDatabaseHelper } from './MyDatabaseHelper';
 
@@ -47,19 +61,40 @@ export type TranslationUpdateConfig<E extends ExistingTranslation> = {
   myDatabaseHelper: MyDatabaseHelper;
 };
 
-export class TranslationHelper {
+export class ContentTranslationHelper {
   static readonly LANGUAGE_CODE_DE: LanguageCodesType = LanguageCodes.DE;
   static readonly LANGUAGE_CODE_EN: LanguageCodesType = LanguageCodes.EN;
 
-  static readonly DefaultLanguage = TranslationHelper.LANGUAGE_CODE_DE;
-  static readonly FallBackLanguage = TranslationHelper.LANGUAGE_CODE_EN;
+  static readonly DefaultLanguage = ContentTranslationHelper.LANGUAGE_CODE_DE;
+  static readonly FallBackLanguage = ContentTranslationHelper.LANGUAGE_CODE_EN;
 
+  /**
+   * The value of `fieldName` in the user's language, falling back to German and then English.
+   *
+   * Matching is case- and region-insensitive: `languages.code` is maintained by hand per customer
+   * and a profile may hold the app's short code (`"de"`) while the translation rows use the full
+   * one (`"de-DE"`). A strict string comparison silently dropped those users to the fallback
+   * language. The exact code still wins over a mere same-language match, so a `"de-DE"` row is
+   * preferred over a `"de-AT"` one.
+   */
   static getTranslation(translationsList: ExistingTranslation[], profileLanguage: string, fieldName: string) {
     translationsList = translationsList || [];
-    let translation = translationsList.find(t => t.languages_code === profileLanguage);
-    let translationDefault = translationsList.find(t => t.languages_code === TranslationHelper.DefaultLanguage);
-    let translationFallBack = translationsList.find(t => t.languages_code === TranslationHelper.FallBackLanguage);
+    let translation = ContentTranslationHelper.findTranslationForLanguage(translationsList, profileLanguage);
+    let translationDefault = ContentTranslationHelper.findTranslationForLanguage(translationsList, ContentTranslationHelper.DefaultLanguage);
+    let translationFallBack = ContentTranslationHelper.findTranslationForLanguage(translationsList, ContentTranslationHelper.FallBackLanguage);
     return translation?.[fieldName] || translationDefault?.[fieldName] || translationFallBack?.[fieldName];
+  }
+
+  /** The translation row for a language code – the exact code if there is one, else same language. */
+  static findTranslationForLanguage(translationsList: ExistingTranslation[], languageCode: string | null | undefined): ExistingTranslation | undefined {
+    if (!languageCode) {
+      return undefined;
+    }
+    const readCode = (translation: ExistingTranslation): string | undefined => {
+      const code = translation?.[FIELD_TRANSLATION_LANGUAGE_CODE];
+      return typeof code === 'string' ? code : (code as DatabaseTypes.Languages | undefined)?.code;
+    };
+    return translationsList.find(t => isSameLanguageCode(readCode(t), languageCode)) ?? translationsList.find(t => isSameBaseLanguage(readCode(t), languageCode));
   }
 
   static hasSignificantTranslationChange<E extends Record<string, any>>(existingTranslation: E, translationFromParsing: Partial<E>): boolean {
@@ -89,7 +124,7 @@ export class TranslationHelper {
     const { translationsFromParsing, items_primary_field_in_translation_table, itemsTablename, myDatabaseHelper } = config;
     const specificItemServiceReader = myDatabaseHelper.getItemsServiceHelper<T>(itemsTablename);
     if (itemWithTranslations) {
-      const { updateObject, updateNeeded } = await TranslationHelper._getUpdateInformationForTranslations({
+      const { updateObject, updateNeeded } = await ContentTranslationHelper._getUpdateInformationForTranslations({
         itemWithTranslations,
         item: itemWithTranslations,
         translationsFromParsing,
@@ -118,7 +153,7 @@ export class TranslationHelper {
 
   static readonly FIELD_FOR_TRANSLATION_FETCHING = 'translations.*';
   static readonly QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING = {
-    fields: ['*', TranslationHelper.FIELD_FOR_TRANSLATION_FETCHING],
+    fields: ['*', ContentTranslationHelper.FIELD_FOR_TRANSLATION_FETCHING],
   };
 
   /**
@@ -143,9 +178,9 @@ export class TranslationHelper {
     const { itemsTablename, myDatabaseHelper } = config;
     const specificItemServiceReader = myDatabaseHelper.getItemsServiceHelper<T>(itemsTablename);
     let itemWithTranslations = await specificItemServiceReader.readOne(item?.id, {
-      ...TranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING,
+      ...ContentTranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING,
     }); // Bottleneck HERE. Takes on average 1.0s
-    return TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched(itemWithTranslations, config);
+    return ContentTranslationHelper.updateItemTranslationsForItemWithTranslationsFetched(itemWithTranslations, config);
   }
 
   static async _getUpdateInformationForTranslations<
@@ -171,8 +206,8 @@ export class TranslationHelper {
     let remaining_translationsFromParsing = DeepCopyHelper.deepCopy(translationsFromParsing); //make a work copy
     /** remaining_translationsFromParsing is an object with the following structure:
          {
-         [TranslationHelper.]: {name ....},
-         [TranslationHelper.]: {....}
+         [ContentTranslationHelper.]: {name ....},
+         [ContentTranslationHelper.]: {....}
          }
          */
     let createTranslations: NewTranslationForCreation[] = [];
@@ -182,10 +217,10 @@ export class TranslationHelper {
     let existingTranslations = itemWithTranslations?.translations || [];
 
     // find the existing language which is source for translations
-    let defaultLanguageCodeForSourceTranslation: LanguageCodesType = TranslationHelper.LANGUAGE_CODE_DE;
-    let usedLanguageCodeForSourceTranslation: LanguageCodesType = TranslationHelper._resolveSourceLanguageCodeForTranslations(existingTranslations, defaultLanguageCodeForSourceTranslation);
+    let defaultLanguageCodeForSourceTranslation: LanguageCodesType = ContentTranslationHelper.LANGUAGE_CODE_DE;
+    let usedLanguageCodeForSourceTranslation: LanguageCodesType = ContentTranslationHelper._resolveSourceLanguageCodeForTranslations(existingTranslations, defaultLanguageCodeForSourceTranslation);
 
-    const { existingTranslationsDifferentFromParsing } = TranslationHelper._collectUpdateTranslationsFromExisting(
+    const { existingTranslationsDifferentFromParsing } = ContentTranslationHelper._collectUpdateTranslationsFromExisting(
       existingTranslations,
       translationsFromParsing,
       usedLanguageCodeForSourceTranslation,
@@ -194,7 +229,7 @@ export class TranslationHelper {
     );
 
     //check remaining translationsFromParsing, then put into createTranslations
-    const newTranslationsFromParsing = TranslationHelper._collectCreateTranslationsFromRemaining({
+    const newTranslationsFromParsing = ContentTranslationHelper._collectCreateTranslationsFromRemaining({
       remaining_translationsFromParsing,
       translationsFromParsing,
       items_primary_field_in_translation_table,
@@ -273,7 +308,7 @@ export class TranslationHelper {
         const translationFromParsingCopy = DeepCopyHelper.deepCopy(translationFromParsing); //make a copy
         delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
 
-        if (TranslationHelper.hasSignificantTranslationChange(existingTranslation, translationFromParsingCopy)) {
+        if (ContentTranslationHelper.hasSignificantTranslationChange(existingTranslation, translationFromParsingCopy)) {
           existingTranslationsDifferentFromParsing = true;
           //console.log("existingTranslation is different from parsing")
           //console.log("existingTranslation: "+JSON.stringify(existingTranslation, null, 2))
@@ -322,7 +357,7 @@ export class TranslationHelper {
         continue;
       }
       createTranslations.push({
-        be_source_for_translations: languageKey === TranslationHelper.LANGUAGE_CODE_DE,
+        be_source_for_translations: languageKey === ContentTranslationHelper.LANGUAGE_CODE_DE,
         let_be_translated: false, // if we have a translation from the parser, we dont need to translate it
         ...translationFromParsing,
         [FIELD_TRANSLATION_LANGUAGE_CODE]: {
@@ -355,7 +390,7 @@ export class TranslationHelper {
     existingTranslationsCandidates: (ExistingTranslation[] | null | undefined)[],
     fieldsToReuse: string[]
   ): NewTranslationForCreation[] {
-    const parsedCreateList = TranslationHelper.getTranslationsCreateListForNewItem(translationsFromParsing);
+    const parsedCreateList = ContentTranslationHelper.getTranslationsCreateListForNewItem(translationsFromParsing);
 
     // The source entry of the new item (be_source_for_translations, e.g. German)
     const parsedSourceEntry = parsedCreateList.find(entry => entry.be_source_for_translations);
@@ -366,11 +401,11 @@ export class TranslationHelper {
 
     for (const existingTranslationsCandidate of existingTranslationsCandidates) {
       const existingTranslations = existingTranslationsCandidate || [];
-      if (!TranslationHelper._candidateMatchesSourceName(existingTranslations, parsedSourceName)) {
+      if (!ContentTranslationHelper._candidateMatchesSourceName(existingTranslations, parsedSourceName)) {
         // Empty candidate, or a different source text -> this candidate does not fit
         continue;
       }
-      return TranslationHelper._mergeReusableTranslations(parsedCreateList, existingTranslations, fieldsToReuse);
+      return ContentTranslationHelper._mergeReusableTranslations(parsedCreateList, existingTranslations, fieldsToReuse);
     }
 
     return parsedCreateList;
@@ -384,7 +419,7 @@ export class TranslationHelper {
     if (existingTranslations.length === 0) {
       return false;
     }
-    const existingSourceLanguageCode = TranslationHelper._resolveSourceLanguageCodeForTranslations(existingTranslations, TranslationHelper.DefaultLanguage);
+    const existingSourceLanguageCode = ContentTranslationHelper._resolveSourceLanguageCodeForTranslations(existingTranslations, ContentTranslationHelper.DefaultLanguage);
     const existingSourceTranslation = existingTranslations.find(translation => translation.languages_code === existingSourceLanguageCode);
     return !!existingSourceTranslation && existingSourceTranslation.name === parsedSourceName;
   }
@@ -412,7 +447,7 @@ export class TranslationHelper {
     existingTranslations: ExistingTranslation[],
     fieldsToReuse: string[]
   ): NewTranslationForCreation[] {
-    const coveredLanguageCodes = TranslationHelper._getCoveredLanguageCodes(parsedCreateList);
+    const coveredLanguageCodes = ContentTranslationHelper._getCoveredLanguageCodes(parsedCreateList);
     const createList: NewTranslationForCreation[] = [...parsedCreateList];
     for (const existingTranslation of existingTranslations) {
       const languageCode = existingTranslation.languages_code;
@@ -464,7 +499,7 @@ export class TranslationHelper {
 
           // be_source_for_translations if language Code is German
           let be_source_for_translations: boolean = false;
-          if (remaining_languageKey === TranslationHelper.LANGUAGE_CODE_DE) {
+          if (remaining_languageKey === ContentTranslationHelper.LANGUAGE_CODE_DE) {
             be_source_for_translations = true;
           }
 

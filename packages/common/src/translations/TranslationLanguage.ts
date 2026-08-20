@@ -62,6 +62,48 @@ export function normalizeTranslationLanguage(locale: string | null | undefined):
 	return isTranslationLanguage(lowerCased) ? lowerCased : undefined;
 }
 
+/**
+ * The base language of a locale identifier, lower-cased: `"de-DE"` -> `"de"`, `"DE"` -> `"de"`.
+ *
+ * Unlike {@link normalizeTranslationLanguage} this does not check whether the language is one the
+ * apps ship texts for, so it also works for the extra languages a customer may have added to the
+ * Directus `languages` collection.
+ */
+export function getBaseLanguageCode(code: string | null | undefined): string | undefined {
+	if (!code) {
+		return undefined;
+	}
+	const separatorIndex = code.search(/[-_]/);
+	const base = separatorIndex === -1 ? code : code.slice(0, separatorIndex);
+	const lowerCased = base.trim().toLowerCase();
+	return lowerCased.length > 0 ? lowerCased : undefined;
+}
+
+/**
+ * Whether two locale identifiers denote the same locale, ignoring case – `"de-DE"` and `"DE-de"`
+ * are the same language to a user, and nothing guarantees the casing of a hand-maintained
+ * `languages.code` or of a locale a device reports.
+ */
+export function isSameLanguageCode(a: string | null | undefined, b: string | null | undefined): boolean {
+	if (!a || !b) {
+		return false;
+	}
+	return a.trim().toLowerCase() === b.trim().toLowerCase();
+}
+
+/**
+ * Whether two locale identifiers denote the same language, ignoring case **and** region –
+ * `"de"`, `"de-DE"` and `"DE_AT"` all match each other.
+ *
+ * This is the comparison to use when picking a translation: a user who chose German should see a
+ * German text even when the row happens to be stored as `"de-AT"`.
+ */
+export function isSameBaseLanguage(a: string | null | undefined, b: string | null | undefined): boolean {
+	const baseA = getBaseLanguageCode(a);
+	const baseB = getBaseLanguageCode(b);
+	return baseA !== undefined && baseA === baseB;
+}
+
 export interface ResolveTranslationLanguageOptions {
 	/** Locale candidates in priority order, e.g. the device locales reported by expo-localization. */
 	readonly locales: readonly (string | null | undefined)[];

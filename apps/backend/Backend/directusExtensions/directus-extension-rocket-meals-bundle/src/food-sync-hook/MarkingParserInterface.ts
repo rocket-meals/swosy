@@ -1,5 +1,5 @@
 import { DatabaseTypes } from 'repo-depkit-common';
-import { TranslationsFromParsingType } from '../helpers/TranslationHelper';
+import { TranslationsFromParsingType } from '../helpers/ContentTranslationHelper';
 
 type MarkingTypeOmitedFields = Omit<DatabaseTypes.Markings, 'id' | 'user_created' | 'user_updated' | 'translations'>;
 export type MarkingsTypeForParser = MarkingTypeOmitedFields & {

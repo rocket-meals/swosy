@@ -1,4 +1,4 @@
-import {TranslationsFromParsingType} from '../helpers/TranslationHelper';
+import {TranslationsFromParsingType} from '../helpers/ContentTranslationHelper';
 import {DatabaseTypes, DateHelper, FoodofferDateType, LanguageCodes, LanguageCodesType} from 'repo-depkit-common';
 import {MarkingsTypeForParser} from './MarkingParserInterface';
 import {HashHelper} from '../helpers/HashHelper';

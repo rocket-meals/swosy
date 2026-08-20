@@ -124,6 +124,66 @@ export function findInvalidKeyDeclarations(keyDeclarations: Readonly<Record<stri
 	return invalid;
 }
 
+/**
+ * Words that only ever appear in front of an apostrophe.
+ *
+ * French elides the vowel of these before a vowel sound – `l'application`, `d'accord`,
+ * `aujourd'hui`. A text that *ends* on one of them is not a short text, it is a truncated one.
+ */
+const ELIDED_WORDS_BEFORE_APOSTROPHE: readonly string[] = [
+	'c',
+	'd',
+	'j',
+	'l',
+	'm',
+	'n',
+	's',
+	't',
+	'qu',
+	'aujourd',
+	'jusqu',
+	'lorsqu',
+	'presqu',
+	'puisqu',
+	'quelqu',
+];
+
+/**
+ * Texts that look cut off at an apostrophe.
+ *
+ * The catalogue was once imported by a converter that read the texts as single-quoted strings
+ * and stopped at the first unescaped `'`, which silently shortened twenty-five French texts to
+ * fragments like `Aujourd`, `Copier l` or `J`. The data is repaired; this check keeps a future
+ * import, spreadsheet round-trip or hand edit from reintroducing it unnoticed.
+ */
+export function findSuspectedApostropheTruncations(options: {
+	readonly resources: TranslationResources;
+	readonly languages?: readonly TranslationLanguage[];
+	readonly ignoredKeys?: readonly string[];
+}): MissingTranslation[] {
+	const languages = options.languages ?? ALL_TRANSLATION_LANGUAGES;
+	const ignoredKeys = toSet(options.ignoredKeys);
+	const truncated: MissingTranslation[] = [];
+
+	for (const key of Object.keys(options.resources)) {
+		if (ignoredKeys.has(key)) {
+			continue;
+		}
+		for (const language of languages) {
+			const text = options.resources[key]?.[language]?.trim();
+			if (text === undefined || text.length === 0) {
+				continue;
+			}
+			const words = text.split(/\s+/);
+			const lastWord = words[words.length - 1] ?? '';
+			if (ELIDED_WORDS_BEFORE_APOSTROPHE.includes(lastWord.toLowerCase())) {
+				truncated.push({ key, language, reason: 'language' });
+			}
+		}
+	}
+	return truncated;
+}
+
 /** Identical texts under several keys – candidates for reusing one shared key. */
 export function findDuplicateTexts(options: {
 	readonly resources: TranslationResources;

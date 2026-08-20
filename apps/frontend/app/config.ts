@@ -77,7 +77,10 @@ export function getVersionPatch() {
         // 19: food info modal titled "Speise Info"; app version shown in the drawer
         // 20: app usage event reported before the native rating prompt
         // 21: shared translation keys/catalogue moved to repo-depkit-common
-        return 21;
+        // 22: shared translation catalogue now also serves the backend; French texts repaired
+        // 23: 20 French texts repaired that were cut off at an apostrophe
+        // 24: language codes matched case- and region-insensitively when picking a translation
+        return 24;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -125,6 +125,53 @@ cd rocket-meals
 yarn install
 ```
 
+## 🗺️ Roadmap
+
+Offene Punkte, die bewusst noch nicht umgesetzt sind. Wird einer davon erledigt, gehört er hier
+raus und in die `AGENTS.md`, falls daraus eine Regel wird.
+
+### Profilsprache online speichern
+
+**Stand heute:** Die Sprachauswahl in der App landet nur lokal — im Redux-State
+(`settings.language`, Default `'de'`) und im i18next-Cache des Geräts. Das Feld
+`profiles.language` im Backend wird von der App **nie** geschrieben.
+
+**Warum das ein Problem ist:** Das Backend verschickt seine Texte (Push-Nachrichten,
+generierte Dokumente, Meldungen) inzwischen in der Sprache aus `profiles.language` — siehe
+`helpers/translations/` in der Directus-Extension. Solange das Feld leer bleibt, greift überall
+der Default Deutsch. Die Server-Seite ist fertig, sie bekommt nur nie eine andere Sprache zu
+sehen. Zusätzlich ist die Sprachwahl nicht geräteübergreifend: Wer auf dem Handy Englisch
+einstellt, sieht im Web wieder Deutsch.
+
+**Was zu tun ist:**
+
+1. **Entscheiden, wohin die Sprache geschrieben wird.** `profiles.language` ist eine Relation auf
+   die Directus-Collection `languages`, die jeder Kunde selbst pflegt. Ein `fr` zu schreiben, das
+   dort nicht angelegt ist, bricht den Insert. Zwei Wege:
+   - die acht App-Sprachen in `languages` garantieren (Migration/Seed) und weiter
+     `profiles.language` benutzen, **oder**
+   - ein eigenes, nicht relationales Feld am Profil (z.&nbsp;B. `app_language`) für genau diesen
+     Zweck anlegen.
+2. **In der App synchronisieren.** `setLanguageMode()` in `apps/frontend/app/hooks/useLanguage.ts`
+   schreibt die Auswahl zusätzlich über `ProfileHelper.updateProfile()` ans Backend — offline
+   tolerant, ein fehlgeschlagener Request darf die lokale Umstellung nicht blockieren.
+3. **Beim Login zurücklesen.** Ist im Profil eine Sprache gesetzt und lokal noch keine bewusst
+   gewählt, gewinnt die Profilsprache — sonst bleibt die Einstellung gerätegebunden.
+4. **Server-Seite prüfen.** `BackendLanguageResolver` matcht den Profilwert bereits gegen die
+   `languages`-Tabelle (exakter Code → gleiche Basissprache → Deutsch → Englisch → erste Zeile)
+   und akzeptiert sowohl den reinen Code als auch das aufgelöste Relations-Objekt. Nach dem Sync
+   nur noch verifizieren, dass echte Profile durch alle Zweige laufen.
+
+### Französische Texte: Ursache dokumentiert, Schutz eingebaut
+
+Beim Import des Katalogs wurden die Texte als einfach gequotete Strings gelesen und am ersten
+unescapten `'` abgeschnitten — dadurch waren 25 französische Texte auf Fragmente wie `Aujourd`,
+`Copier l` oder `J` verkürzt. Die Texte sind repariert, und
+`findSuspectedApostropheTruncations()` in `packages/common` lässt die Test-Suites fehlschlagen,
+falls so etwas wieder in den Katalog gelangt. Offen bleibt: Beim nächsten Import- oder
+Tabellen-Roundtrip die gleiche Klasse Fehler für andere Sprachen mitprüfen (Italienisch und
+Katalanisch elidieren genauso).
+
 ## 🔢 Versionierung
 
 Die App-Version setzt sich aus `Major.BuildNumber.Patch` zusammen (siehe `getMajorVersion()`, `getBuildNumber()` und `getVersionPatch()` in der `config.ts` der jeweiligen App, z.&nbsp;B. `apps/frontend/app/config.ts`).

@@ -12,6 +12,7 @@ import {
 	commonTranslations,
 	createTranslator,
 	findInvalidKeyDeclarations,
+	findSuspectedApostropheTruncations,
 	formatTranslationValidationReport,
 	toI18nextResources,
 	validateTranslations,
@@ -79,6 +80,17 @@ describe('translation catalogue', () => {
 				expect(translationResources[key]?.[language]?.trim()).toBeTruthy();
 			}
 		}
+	});
+
+	it('contains no text cut off at an apostrophe', () => {
+		// A converter once read the texts as single-quoted strings and stopped at the first
+		// unescaped apostrophe, leaving French fragments like "Copier l" and "J".
+		expect(
+			findSuspectedApostropheTruncations({
+				resources: translationResources,
+				languages: SUPPORTED_TRANSLATION_LANGUAGES,
+			}),
+		).toEqual([]);
 	});
 
 	it('resolves every key without falling back to the raw key', () => {

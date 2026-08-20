@@ -1,6 +1,6 @@
 // small jest test
 import {describe, expect, it} from '@jest/globals';
-import {TranslationHelper, TranslationsFromParsingType} from '../TranslationHelper';
+import {ContentTranslationHelper, TranslationsFromParsingType} from '../ContentTranslationHelper';
 import {LanguageCodes, LanguageCodesType} from 'repo-depkit-common';
 import {PrimaryKey} from '@directus/types';
 
@@ -66,7 +66,7 @@ const mockTranslationsFromParsing: TranslationsFromParsingType = {
   },
 };
 
-describe('TranslationHelper Test', () => {
+describe('ContentTranslationHelper Test', () => {
   // should find atleast one meal offer
   it('Objects have significant change for translation', async () => {
     const objectA = {
@@ -75,7 +75,7 @@ describe('TranslationHelper Test', () => {
     const objectB = {
       name: 'Pasta',
     };
-    expect(TranslationHelper.hasSignificantTranslationChange(objectA, objectB)).toBe(true);
+    expect(ContentTranslationHelper.hasSignificantTranslationChange(objectA, objectB)).toBe(true);
   });
 
   // should not find any significant change
@@ -86,7 +86,7 @@ describe('TranslationHelper Test', () => {
     const objectB = {
       name: 'Pizza',
     };
-    expect(TranslationHelper.hasSignificantTranslationChange(objectA, objectB)).toBe(false);
+    expect(ContentTranslationHelper.hasSignificantTranslationChange(objectA, objectB)).toBe(false);
   });
 
   // should not find any significant change but with change at NonSignificantField
@@ -102,12 +102,12 @@ describe('TranslationHelper Test', () => {
       ...objectSameValue,
       id: 'def456',
     };
-    expect(TranslationHelper.hasSignificantTranslationChange(objectA, objectB)).toBe(false);
+    expect(ContentTranslationHelper.hasSignificantTranslationChange(objectA, objectB)).toBe(false);
   });
 
   // Test case that should pass
   it('should detect updates needed when there is a significant change in translations', async () => {
-    const result = await TranslationHelper._getUpdateInformationForTranslations({
+    const result = await ContentTranslationHelper._getUpdateInformationForTranslations({
       itemWithTranslations: mockItemWithTranslations,
       item: mockItemWithTranslations,
       translationsFromParsing: mockTranslationsFromParsing,
@@ -137,7 +137,7 @@ describe('TranslationHelper Test', () => {
       },
     };
 
-    const result = await TranslationHelper._getUpdateInformationForTranslations({
+    const result = await ContentTranslationHelper._getUpdateInformationForTranslations({
       itemWithTranslations: mockItemWithTranslations,
       item: mockItemWithTranslations,
       translationsFromParsing: mockTranslationsWithoutChange,
@@ -183,7 +183,7 @@ describe('TranslationHelper Test', () => {
     ];
 
     it('reuses existing translations when the source name matches', () => {
-      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanOnly, [existingFoodTranslations], ['name']);
+      const createList = ContentTranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanOnly, [existingFoodTranslations], ['name']);
 
       expect(createList).toHaveLength(3);
 
@@ -208,7 +208,7 @@ describe('TranslationHelper Test', () => {
         },
       };
 
-      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsDifferentName, [existingFoodTranslations], ['name']);
+      const createList = ContentTranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsDifferentName, [existingFoodTranslations], ['name']);
 
       // only the parsed translation, remaining languages are left to the auto-translation hook
       expect(createList).toHaveLength(1);
@@ -226,7 +226,7 @@ describe('TranslationHelper Test', () => {
         },
       };
 
-      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanAndEnglish, [existingFoodTranslations], ['name']);
+      const createList = ContentTranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanAndEnglish, [existingFoodTranslations], ['name']);
 
       expect(createList).toHaveLength(3);
       const englishEntry = createList.find(entry => (entry.languages_code as any)?.code === LanguageCodes.EN);
@@ -261,7 +261,7 @@ describe('TranslationHelper Test', () => {
         },
       ];
 
-      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(
+      const createList = ContentTranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(
         parsedTranslationsGermanOnly,
         [nonMatchingFoodTranslations, existingOtherFoodofferTranslations],
         ['name']
@@ -274,9 +274,54 @@ describe('TranslationHelper Test', () => {
     });
 
     it('returns only parsed translations when the related item has no translations', () => {
-      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanOnly, [[]], ['name']);
+      const createList = ContentTranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanOnly, [[]], ['name']);
       expect(createList).toHaveLength(1);
       expect(createList[0]?.name).toBe('Spaghetti Bolognese');
     });
+  });
+});
+
+describe('ContentTranslationHelper.getTranslation', () => {
+  const translations = [
+    { id: 1, languages_code: 'DE-de', name: 'Lasagne' },
+    { id: 2, languages_code: 'en-US', name: 'Lasagna' },
+  ];
+
+  it('finds the translation regardless of the casing of the stored code', () => {
+    // `languages.code` is maintained by hand per customer, nothing enforces the casing.
+    expect(ContentTranslationHelper.getTranslation(translations, 'de-DE', 'name')).toBe('Lasagne');
+  });
+
+  it('finds the translation when the profile only holds the short code', () => {
+    // The app works with "en"; the translation rows use the table's "en-US".
+    expect(ContentTranslationHelper.getTranslation(translations, 'en', 'name')).toBe('Lasagna');
+  });
+
+  it('prefers the exact code over another region of the same language', () => {
+    const withRegions = [
+      { id: 1, languages_code: 'de-AT', name: 'Lasagne (AT)' },
+      { id: 2, languages_code: 'de-DE', name: 'Lasagne (DE)' },
+    ];
+    expect(ContentTranslationHelper.getTranslation(withRegions, 'de-DE', 'name')).toBe('Lasagne (DE)');
+  });
+
+  it('takes another region of the same language when the exact code is missing', () => {
+    const onlyAustrian = [{ id: 1, languages_code: 'de-AT', name: 'Lasagne (AT)' }];
+    expect(ContentTranslationHelper.getTranslation(onlyAustrian, 'de-DE', 'name')).toBe('Lasagne (AT)');
+  });
+
+  it('falls back to German and then English', () => {
+    expect(ContentTranslationHelper.getTranslation(translations, 'zh-CN', 'name')).toBe('Lasagne');
+    expect(ContentTranslationHelper.getTranslation([{ id: 2, languages_code: 'en-US', name: 'Lasagna' }], 'zh-CN', 'name')).toBe('Lasagna');
+  });
+
+  it('returns nothing for an empty list or an empty language', () => {
+    expect(ContentTranslationHelper.getTranslation([], 'de-DE', 'name')).toBeUndefined();
+    expect(ContentTranslationHelper.getTranslation(translations, '', 'name')).toBe('Lasagne');
+  });
+
+  it('reads the code out of an expanded languages relation', () => {
+    const expanded = [{ id: 1, languages_code: { code: 'de-DE' } as any, name: 'Lasagne' }];
+    expect(ContentTranslationHelper.getTranslation(expanded, 'de', 'name')).toBe('Lasagne');
   });
 });

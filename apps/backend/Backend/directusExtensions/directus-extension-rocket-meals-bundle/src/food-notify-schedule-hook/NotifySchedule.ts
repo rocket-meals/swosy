@@ -1,22 +1,27 @@
-import { TranslationHelper } from '../helpers/TranslationHelper';
+import { ContentTranslationHelper } from '../helpers/ContentTranslationHelper';
 import { DatabaseTypes, DateHelper } from 'repo-depkit-common';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { PushNotificationHelper } from '../helpers/PushNotificationHelper';
 import { DevicesServiceHelper } from '../helpers/DevicesServiceHelper';
+import { BackendLanguageResolver, BackendTranslationKeys, BackendTranslator, ResolvedBackendLanguage } from '../helpers/translations';
 
 interface FoodOfferNotificationParams {
   expoPushToken: string;
   foodOffer: DatabaseTypes.Foodoffers;
   foodWithTranslations: DatabaseTypes.Foods;
-  language: string;
+  /** The notified user's language, already matched against the `languages` collection. */
+  language: ResolvedBackendLanguage;
 }
 
 export class NotifySchedule {
   private readonly context: WorkflowRunContext;
+  private readonly languageResolver: BackendLanguageResolver;
 
   constructor(context: WorkflowRunContext) {
     this.context = context;
+    // Reads the `languages` collection once and reuses it for every notified profile.
+    this.languageResolver = new BackendLanguageResolver(context?.myDatabaseHelper);
   }
 
   async notify(aboutMealsInDays = 1): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
@@ -80,7 +85,9 @@ export class NotifySchedule {
     await this.context.logger.appendLog('-- Notify profile: ' + profile_id + ' about food: ' + food_id);
     // Step 3: Get the profile and all devices of the profile
     let profile = await this.context.myDatabaseHelper.getProfilesHelper().readOne(profile_id);
-    let language = profile.language as string;
+    // `profiles.language` may be the plain foreign key or the expanded row; the resolver takes
+    // both and picks the closest language the `languages` collection actually offers.
+    let language = await this.languageResolver.resolveForProfile(profile);
     let profile_canteen_id = profile.canteen;
 
     // Step 3.1: Check if the profile is interested in the canteen
@@ -205,10 +212,13 @@ export class NotifySchedule {
     let project_name = await this.getProjectName();
 
     let foodName = this.getFoodNameTranslation(foodWithTranslations, language);
-    let translationDate = await this.getTranslationDate(language, aboutMealsInDays, date);
+    let translationDate = this.getTranslationDate(language, aboutMealsInDays, date);
     let emojiFood = '🍽';
     let useEmoji = true;
-    let message_body = translationDate + ': ' + foodName;
+    let message_body = language.translate(BackendTranslationKeys.notification_foodoffer_body, {
+      date: translationDate,
+      food: foodName,
+    });
     if (useEmoji) {
       message_body = emojiFood + ' ' + message_body;
     }
@@ -223,18 +233,30 @@ export class NotifySchedule {
     await pushNotificationService.createOne(pushNotificationObj);
   }
 
-  async getTranslationDate(profileLanguage: string, aboutMealsInDays: number, date: Date) {
+  /**
+   * The day the notification is about, worded the way the user would say it: "Morgen" for the
+   * usual one-day-ahead notification, and a date in their own locale for anything further out.
+   */
+  getTranslationDate(profileLanguage: ResolvedBackendLanguage, aboutMealsInDays: number, date: Date) {
     if (aboutMealsInDays === 0) {
-      return 'Heute';
+      return profileLanguage.translate(BackendTranslationKeys.today);
     } else if (aboutMealsInDays === 1) {
-      return 'Morgen';
+      return profileLanguage.translate(BackendTranslationKeys.tomorrow);
     }
 
-    return DateHelper.getHumanReadableDate(date, false);
+    return BackendTranslator.formatDate(date, profileLanguage.translationLanguage);
   }
 
-  getFoodNameTranslation(foodWithTranslations: DatabaseTypes.Foods, profileLanguage: string) {
-    return TranslationHelper.getTranslation(foodWithTranslations?.translations, profileLanguage, 'name') || 'ein Gericht';
+  /**
+   * The meal name from the food's own translations, which are keyed by the full `languages.code`
+   * ("de-DE") rather than by the short code the text catalogue uses - hence `languageCode` here
+   * and `translate` for the placeholder.
+   */
+  getFoodNameTranslation(foodWithTranslations: DatabaseTypes.Foods, profileLanguage: ResolvedBackendLanguage) {
+    return (
+      ContentTranslationHelper.getTranslation(foodWithTranslations?.translations, profileLanguage.languageCode ?? '', 'name') ||
+      profileLanguage.translate(BackendTranslationKeys.notification_foodoffer_unknown_food)
+    );
   }
 
   async getProjectName() {

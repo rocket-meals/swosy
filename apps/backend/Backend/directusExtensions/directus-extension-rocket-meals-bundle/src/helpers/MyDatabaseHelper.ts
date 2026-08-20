@@ -229,6 +229,10 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
     return new ItemsServiceHelper<DatabaseTypes.Profiles>(this, CollectionNames.PROFILES);
   }
 
+  getLanguagesHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Languages>(this, CollectionNames.LANGUAGES);
+  }
+
   getMarkingsHelper() {
     return new ItemsServiceHelper<DatabaseTypes.Markings>(this, CollectionNames.MARKINGS);
   }

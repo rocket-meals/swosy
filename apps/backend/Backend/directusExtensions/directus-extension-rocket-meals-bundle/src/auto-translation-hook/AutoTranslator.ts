@@ -1,17 +1,28 @@
+/**
+ * AutoTranslator.ts – machine translation: source text in, translated text out.
+ *
+ * Backed by DeepL (see {@link DeepLTranslator}), it produces the content translations that
+ * `helpers/ContentTranslationHelper.ts` then stores as `*_translations` rows. Every call costs
+ * API quota, so translating the same text twice is a bug, not just slow.
+ *
+ * Not to be confused with `helpers/translations/BackendTranslator.ts`, which translates nothing:
+ * it looks a shipped, already translated text up by its key.
+ */
+
 import { DeepLTranslator } from './DeepLTranslator';
-import { MyTranslatorInterface, TranslationRequest } from './MyTranslatorInterface';
-import { TranslatorSettings } from './TranslatorSettings';
+import { AutoTranslatorInterface, TranslationRequest } from './AutoTranslatorInterface';
+import { AutoTranslatorSettings } from './AutoTranslatorSettings';
 import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 
-export class Translator {
+export class AutoTranslator {
   private readonly logger: any;
-  translatorSettings: TranslatorSettings;
-  private translatorImplementation: undefined | MyTranslatorInterface;
+  autoTranslatorSettings: AutoTranslatorSettings;
+  private translatorImplementation: undefined | AutoTranslatorInterface;
 
-  constructor(translatorSettings: TranslatorSettings, myDatabaseHelper: MyDatabaseHelper) {
+  constructor(autoTranslatorSettings: AutoTranslatorSettings, myDatabaseHelper: MyDatabaseHelper) {
     this.logger = myDatabaseHelper?.apiContext?.logger;
-    this.translatorSettings = translatorSettings;
+    this.autoTranslatorSettings = autoTranslatorSettings;
   }
 
   async init() {
@@ -97,10 +108,10 @@ export class Translator {
   }
 
   async setSettings(newSettings: any) {
-    await this.translatorSettings.setSettings(newSettings);
+    await this.autoTranslatorSettings.setSettings(newSettings);
   }
 
   async getAuthKey() {
-    return await this.translatorSettings.getAuthKey();
+    return await this.autoTranslatorSettings.getAuthKey();
   }
 }

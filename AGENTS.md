@@ -72,6 +72,49 @@ Das gilt für alle Apps und für `packages/common-ui`.
 - **Katalog immer über `locales/translationResources.ts` lesen**, nie direkt `translations.json` importieren: der direkte Import kennt die gemeinsamen Keys nicht und rendert dann den rohen Key.
 - **Jeder Key braucht in jeder unterstützten Sprache einen nicht-leeren Text.** Durchgesetzt durch `apps/frontend/app/__tests__/translations.test.ts`, `apps/geonexia/frontend/__tests__/translations.test.ts` und `packages/common/src/__tests__/commonTranslations.test.ts`.
 
+## Übersetzungen im Backend: Texte, die der Server an Nutzer schickt
+
+Auch das Directus-Backend schickt Texte an Nutzer — Push-Nachrichten, generierte Dokumente, Meldungen, die in der App landen. Für die gilt dieselbe Regel wie in den Apps: **kein Literal an der Aufrufstelle, sondern ein Key aus dem Katalog.**
+
+- Der Katalog liegt in `apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/translations/`:
+  - `BackendTranslationKeys.ts` — erbt per Spread von `CommonTranslationKeys`; hier stehen nur Keys, die keine App je anzeigen würde.
+  - `backendTranslations.ts` — die Texte dazu, in **allen** Sprachen aus `ALL_TRANSLATION_LANGUAGES`. Ein Key, den `commonTranslations` schon hat, darf hier **nicht** noch einmal stehen — der Test schlägt sonst fehl.
+  - `BackendTranslator.ts` — löst Key + Sprache zu einem Text auf.
+  - `BackendLanguageResolver.ts` — bestimmt, welche Sprache ein Nutzer überhaupt bekommt.
+- **Die Sprache kommt aus `profiles.language`, gematcht gegen die `languages`-Collection.** Der Server geht dabei vor wie die App: die App nimmt die Locales des Geräts und wählt die erste, für die sie Texte hat; der Server nimmt den Profilwert und wählt die passendste Zeile aus `languages`. Reihenfolge in `BackendLanguageResolver._findBestMatchingCode`: exakter Code (case-insensitiv) → gleiche Basissprache (`de` ↔ `de-DE`) → Deutsch → Englisch → erste Zeile der Tabelle.
+- **Beide Schreibweisen werden akzeptiert** — der reine Language-Key (`"de-DE"`) genau wie das aufgelöste Relations-Objekt (`{ code: "de-DE" }`), je nachdem ob der Aufrufer die Relation mitgeladen hat. Genau wie in der App.
+- **Das Ergebnis hat zwei Felder, weil zwei verschiedene Lookups daran hängen:**
+  - `languageCode` — der volle `languages.code`, mit dem *Inhalte aus der Datenbank* (Speisenamen, News) in den `*_translations`-Tabellen gefunden werden.
+  - `translationLanguage` — der Kurzcode, auf den der *Textkatalog* geschlüsselt ist. Dazu gibt es `translate`, schon an die Sprache gebunden.
+- **Default ist Deutsch** (`BACKEND_DEFAULT_TRANSLATION_LANGUAGE`), genau wie in den Apps, deren `settingsReducer` auf `'de'` startet. Kein Profil, keine Sprache gesetzt, Sprache nicht in der Tabelle oder Tabelle nicht lesbar → Deutsch.
+- Aufruf mit Datenbank (ein Resolver pro Lauf, er cacht die `languages`-Tabelle):
+  ```ts
+  const languageResolver = new BackendLanguageResolver(myDatabaseHelper);
+  const language = await languageResolver.resolveForProfile(profile);
+  language.translate(BackendTranslationKeys.tomorrow);                    // 'Morgen' / 'Tomorrow' / …
+  language.translate(BackendTranslationKeys.notification_foodoffer_body, { date, food });
+  ContentTranslationHelper.getTranslation(food.translations, language.languageCode ?? '', 'name');
+  ```
+  Für einen einzelnen Text ohne Nutzerbezug (z. B. das deutsche Formular-PDF) reicht `BackendTranslator.translate(key)`.
+- **Sprachcodes immer über die geteilten Matcher vergleichen**, nie mit `===`: `isSameLanguageCode(a, b)` (case-insensitiv, Region zählt) und `isSameBaseLanguage(a, b)` (case-insensitiv, Region egal) aus `repo-depkit-common`. `languages.code` wird pro Kunde von Hand gepflegt — `de-DE`, `DE-de` und `de` meinen dasselbe, ein strikter String-Vergleich lässt Nutzer still in die Fallback-Sprache rutschen. Gilt genauso in der App (`helper/resourceHelper.tsx`).
+- **Drei Dinge heißen „Übersetzung", verwechsle sie nicht** (Details unten in „Drei Sorten Übersetzung"): `helpers/translations/` (statischer Katalog, arbeitet mit `translationLanguage`), `helpers/ContentTranslationHelper.ts` (DB-Inhalte, arbeitet mit `languageCode`; `getTranslation` matcht erst den exakten Code, dann dieselbe Sprache in einer anderen Region) und `auto-translation-hook/` (DeepL).
+- Datum und Uhrzeit in einer Nutzersprache: `BackendTranslator.formatDate(date, language.translationLanguage)`. Die `DateHelper.getHumanReadable*`-Funktionen sind fest auf `de-DE` und damit nur für interne Reports gedacht.
+- Durchgesetzt durch `src/helpers/translations/__tests__/BackendTranslations.test.ts` (jeder Key in jeder Sprache), `BackendLanguageResolver.test.ts` (das Matching) und `src/food-notify-schedule-hook/__tests__/NotifyScheduleTranslations.test.ts`.
+
+## Drei Sorten Übersetzung im Backend — nicht vermischen
+
+Im Backend heißen drei verschiedene Dinge „Übersetzung". Sie unterscheiden sich danach, **woher der Text kommt**, und tragen das im Namen:
+
+| Ebene | Wo | Woher der Text kommt |
+| --- | --- | --- |
+| **Statischer Katalog** | `helpers/translations/` — `BackendTranslator`, `BackendTranslationKeys` | Von Entwicklern geschrieben, mit dem Code ausgeliefert, per Key nachgeschlagen. Übersetzt zur Laufzeit nichts. |
+| **Inhalte** | `helpers/ContentTranslationHelper.ts` | Von Redaktion oder Import-Parser, liegt als `*_translations`-Zeilen am Item (Speisenamen, News). Der Helper liest und schreibt diese Zeilen. |
+| **Maschinell** | `auto-translation-hook/` — `AutoTranslator`, `CollectionAutoTranslator`, `DeepLTranslator` | Von DeepL erzeugt. Befüllt genau die Zeilen, die `ContentTranslationHelper` verwaltet. Kostet API-Kontingent pro Aufruf. |
+
+- **Präfix-Regel:** `Auto*` heißt maschinell erzeugt, `Content*` heißt aus der Datenbank. Ohne Präfix ist der statische Katalog gemeint — der ist der Normalfall und teilt sich Keys und `translate()` mit den Apps und `repo-depkit-common`.
+- **`Translator` ohne Präfix nicht neu einführen.** Der Name ist dreifach belegt: die DeepL-SDK-Klasse (`deepl-node`), der Typ der `translate`-Funktion aus `repo-depkit-common`, und früher die eigene Klasse — die heißt deshalb jetzt `AutoTranslator`.
+- `BackendLanguageResolver` gehört zu keiner der drei Ebenen, sondern wählt nur die Sprache und liefert beide Formen (`languageCode` für Inhalte, `translationLanguage` für den Katalog).
+
 ## Tests für `packages/common` und `packages/common-ui`
 
 - Beide Pakete haben eine eigene Jest-Suite: `yarn workspace repo-depkit-common test` bzw. `yarn workspace repo-depkit-common-ui test`. Beide laufen in CI (`🧪 Package & App Tests`).

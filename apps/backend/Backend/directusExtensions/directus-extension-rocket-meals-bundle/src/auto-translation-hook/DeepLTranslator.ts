@@ -1,8 +1,8 @@
 import deepl, { SourceLanguageCode, TargetLanguageCode, Translator } from 'deepl-node';
-import { MyTranslatorInterface, TranslationRequest } from './MyTranslatorInterface';
+import { AutoTranslatorInterface, TranslationRequest } from './AutoTranslatorInterface';
 import { ReplaceOptions, StringHelper } from "repo-depkit-common";
 
-export class DeepLTranslator implements MyTranslatorInterface {
+export class DeepLTranslator implements AutoTranslatorInterface {
   private readonly translator: Translator;
 
   constructor(auth_key: string) {

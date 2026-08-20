@@ -17,6 +17,7 @@
 
 import {
 	DEFAULT_TRANSLATION_LANGUAGE,
+	normalizeTranslationLanguage,
 	TranslationLanguage,
 	type TranslationLanguage as TranslationLanguageType,
 } from './TranslationLanguage';
@@ -97,8 +98,12 @@ export function resolveTranslation(options: ResolveTranslationOptions): string |
 	if (entry === undefined) {
 		return undefined;
 	}
+	// The catalogue is keyed by the lower-case short code, but a language reaches us from device
+	// locales, persisted settings and hand-maintained database rows – `"DE"` and `"de-DE"` mean
+	// German just as much as `"de"` does, and must not render as a raw key.
+	const requestedLanguage = normalizeTranslationLanguage(options.language) ?? options.language;
 	const fallbackLanguages = options.fallbackLanguages ?? DEFAULT_FALLBACK_LANGUAGES;
-	for (const language of [options.language, ...fallbackLanguages]) {
+	for (const language of [requestedLanguage, ...fallbackLanguages]) {
 		const text = entry[language];
 		if (text !== undefined && text.length > 0) {
 			return text;

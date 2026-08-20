@@ -44,7 +44,7 @@
     "en": "Check for App Updates",
     "ar": "تحقق من تحديثات التطبيق",
     "es": "Buscar actualizaciones de la aplicación",
-    "fr": "Vérifier les mises à jour de l",
+    "fr": "Vérifier les mises à jour de l'application",
     "ru": "Проверить обновления приложения",
     "tr": "Uygulama güncellemelerini kontrol et",
     "zh": "检查应用更新"
@@ -54,7 +54,7 @@
     "en": "Download New App Update",
     "ar": "تحميل تحديث التطبيق الجديد",
     "es": "Descargar nueva actualización de la aplicación",
-    "fr": "Télécharger la nouvelle mise à jour de l",
+    "fr": "Télécharger la nouvelle mise à jour de l'application",
     "ru": "Скачать новое обновление приложения",
     "tr": "Yeni uygulama güncellemesini indir",
     "zh": "下载新的应用更新"
@@ -84,7 +84,7 @@
     "en": "Sync User Settings",
     "ar": "مزامنة إعدادات المستخدم",
     "es": "Sincronizar configuración de usuario",
-    "fr": "Synchroniser les paramètres de l",
+    "fr": "Synchroniser les paramètres de l'utilisateur",
     "ru": "Синхронизировать настройки пользователя",
     "tr": "Kullanıcı ayarlarını senkronize et",
     "zh": "同步用户设置"
@@ -94,7 +94,7 @@
     "en": "Check User Authentication",
     "ar": "تحقق من مصادقة المستخدم",
     "es": "Verificar autenticación de usuario",
-    "fr": "Vérifier l",
+    "fr": "Vérifier l'authentification de l'utilisateur",
     "ru": "Проверить аутентификацию пользователя",
     "tr": "Kullanıcı kimlik doğrulamasını kontrol et",
     "zh": "检查用户认证"
@@ -264,7 +264,7 @@
     "en": "Developer Homepage",
     "ar": "الصفحة الرئيسية للمطور",
     "es": "Página de inicio del desarrollador",
-    "fr": "Page d",
+    "fr": "Page d'accueil du développeur",
     "ru": "Домашняя страница разработчика",
     "tr": "Geliştirici Ana Sayfası",
     "zh": "开发者主页"
@@ -274,7 +274,7 @@
     "en": "Download or Open the App",
     "ar": "تحميل أو فتح التطبيق",
     "es": "Descargar o abrir la aplicación",
-    "fr": "Télécharger ou ouvrir l",
+    "fr": "Télécharger ou ouvrir l'application",
     "ru": "Скачать или открыть приложение",
     "tr": "Uygulamayı indir veya aç",
     "zh": "下载或打开应用"
@@ -284,7 +284,7 @@
     "en": "Software Homepage",
     "ar": "الصفحة الرئيسية للبرنامج",
     "es": "Página de inicio del software",
-    "fr": "Page d",
+    "fr": "Page d'accueil du logiciel",
     "ru": "Домашняя страница программного обеспечения",
     "tr": "Yazılım Ana Sayfası",
     "zh": "软件主页"
@@ -864,7 +864,7 @@
     "en": "All data saved on the device.",
     "ar": "جميع البيانات المحفوظة على الجهاز.",
     "es": "Todos los datos guardados en el dispositivo.",
-    "fr": "Toutes les données enregistrées sur l",
+    "fr": "Toutes les données enregistrées sur l'appareil.",
     "ru": "Все данные, сохраненные на устройстве.",
     "tr": "Cihazda kaydedilen tüm veriler.",
     "zh": "设备上保存的所有数据。"
@@ -884,7 +884,7 @@
     "en": "You can use a cached version of the app, but some features may not be available.",
     "ar": "يمكنك استخدام نسخة مخبأة من التطبيق ، ولكن قد لا تتوفر بعض الميزات.",
     "es": "Puedes usar una versión almacenada en caché de la aplicación, pero algunas funciones pueden no estar disponibles.",
-    "fr": "Vous pouvez utiliser une version mise en cache de l",
+    "fr": "Vous pouvez utiliser une version mise en cache de l'application, mais certaines fonctionnalités peuvent ne pas être disponibles.",
     "ru": "Вы можете использовать кэшированную версию приложения, но некоторые функции могут быть недоступны.",
     "tr": "Uygulamanın önbelleğe alınmış bir sürümünü kullanabilirsiniz, ancak bazı özellikler mevcut olmayabilir.",
     "zh": "您可以使用缓存版本的应用程序，但某些功能可能无法使用。"
@@ -1034,7 +1034,7 @@
     "en": "We respect your privacy and offer you the option to use the app as anonymously as possible. However, some features such as push notifications, synchronization, and other functions are not available because an account is required for these.",
     "ar": "نحن نحترم خصوصيتك ونوفر لك خيار استخدام التطبيق بأكبر قدر ممكن من الخصوصية. ومع ذلك، فإن بعض الميزات مثل الإشعارات الفورية والمزامنة والوظائف الأخرى غير متاحة لأن هذه الميزات تتطلب حسابًا.",
     "es": "Respetamos tu privacidad y te ofrecemos la opción de usar la aplicación de la manera más anónima posible. Sin embargo, algunas funciones como las notificaciones push, la sincronización y otras funciones no están disponibles porque se requiere una cuenta para estas.",
-    "fr": "Nous respectons votre vie privée et vous offrons la possibilité d",
+    "fr": "Nous respectons votre vie privée et vous offrons la possibilité d'utiliser l'application de la manière la plus anonyme possible. Certaines fonctionnalités comme les notifications push ou la synchronisation ne sont toutefois pas disponibles, car elles nécessitent un compte.",
     "ru": "Мы уважаем вашу конфиденциальность и предлагаем вам возможность использовать приложение как можно более анонимно. Однако некоторые функции, такие как push-уведомления, синхронизация и другие функции, недоступны, поскольку для них требуется учетная запись.",
     "tr": "Gizliliğinize saygı duyuyor ve uygulamayı mümkün olduğunca anonim olarak kullanma seçeneği sunuyoruz. Ancak, push bildirimleri, senkronizasyon ve diğer işlevler gibi bazı özellikler, bu işlevler için bir hesap gerektiğinden kullanılamaz.",
     "zh": "我们尊重您的隐私，并提供尽可能匿名使用应用程序的选项。但是，由于这些功能需要帐户，因此某些功能（如推送通知、同步和其他功能）不可用。"
@@ -1254,7 +1254,7 @@
     "en": "The distance is calculated based on the distance to your selected canteen or, if you explicitly asked, to your device",
     "ar": "يتم حساب المسافة بناءً على المسافة إلى المقصف الذي اخترته أو، إذا طلبت ذلك صراحةً، إلى موقع جهازك.",
     "es": "La distancia se calcula en función de la distancia a tu comedor seleccionado o, si lo pediste explícitamente, a la ubicación de tu dispositivo.",
-    "fr": "La distance est calculée en fonction de la distance à votre cantine sélectionnée ou, si vous avez explicitement demandé, à l",
+    "fr": "La distance est calculée en fonction de la distance à votre cantine sélectionnée ou, si vous l'avez explicitement demandé, à la position de votre appareil.",
     "ru": "Расстояние рассчитывается на основе расстояния до выбранной вами столовой или, если вы специально запросили, до местоположения вашего устройства.",
     "tr": "Mesafe, seçtiğiniz kantine veya açıkça sorduysanız cihazınızın konumuna olan mesafeye göre hesaplanır.",
     "zh": "距离是根据您选择的食堂的距离或，如果您明确要求，根据您设备的位置计算的。"
@@ -1294,7 +1294,7 @@
     "en": "Copy URL",
     "ar": "نسخ URL",
     "es": "Copiar URL",
-    "fr": "Copier l",
+    "fr": "Copier l'URL",
     "ru": "Копировать URL",
     "tr": "URL",
     "zh": "复制 URL"
@@ -1434,7 +1434,7 @@
     "en": "This feature is currently not available. Reason:",
     "ar": "هذه الميزة غير متوفرة حاليا. السبب:",
     "es": "Esta función no está disponible actualmente. Razón:",
-    "fr": "Cette fonctionnalité n",
+    "fr": "Cette fonctionnalité n'est actuellement pas disponible. Raison :",
     "ru": "Эта функция в настоящее время недоступна. Причина:",
     "tr": "Bu özellik şu anda mevcut değil. Sebep:",
     "zh": "此功能目前不可用。原因："
@@ -1564,7 +1564,7 @@
     "en": "This login is only intended for managing persons of the app.",
     "ar": "هذا الدخول مخصص فقط للأشخاص المسؤولين عن إدارة التطبيق.",
     "es": "Este inicio de sesión está destinado únicamente a las personas encargadas de la gestión de la aplicación.",
-    "fr": "Cette connexion est uniquement destinée aux personnes en charge de la gestion de l",
+    "fr": "Cette connexion est uniquement destinée aux personnes en charge de la gestion de l'application.",
     "ru": "Этот вход предназначен только для управляющих лиц приложения.",
     "tr": "Bu giriş, uygulamanın yönetiminden sorumlu kişiler içindir.",
     "zh": "此登录仅适用于应用程序的管理人员。"
@@ -2084,7 +2084,7 @@
     "en": "Opening Hours",
     "ar": "ساعات العمل",
     "es": "Horario de apertura",
-    "fr": "Heures d",
+    "fr": "Heures d'ouverture",
     "ru": "Часы работы",
     "tr": "Açılış Saatleri",
     "zh": "营业时间"
@@ -2154,7 +2154,7 @@
     "en": "The data is based on the information available to us and may differ from the actual values. Subject to change. Further information on the data can be found here:",
     "ar": "تستند البيانات على المعلومات المتاحة لدينا وقد تختلف عن القيم الفعلية. قابل للتغيير. يمكن العثور على مزيد من المعلومات حول البيانات هنا:",
     "es": "Los datos se basan en la información disponible para nosotros y pueden diferir de los valores reales. Sujeto a cambios. Puede encontrar más información sobre los datos aquí:",
-    "fr": "Les données sont basées sur les informations dont nous disposons et peuvent différer des valeurs réelles. Sous réserve de modifications. Vous trouverez plus d",
+    "fr": "Les données sont basées sur les informations dont nous disposons et peuvent différer des valeurs réelles. Sous réserve de modifications. Vous trouverez plus d'informations sur les données ici :",
     "ru": "Данные основаны на информации, доступной нам, и могут отличаться от фактических значений. Подлежит изменению. Дополнительную информацию о данных можно найти здесь:",
     "tr": "Veriler, bize sunulan bilgilere dayanmaktadır ve gerçek değerlerden farklı olabilir. Değişikliklere tabidir. Verilerle ilgili daha fazla bilgi burada bulunabilir:",
     "zh": "数据基于我们掌握的信息，可能与实际值有所不同。如有更改。有关数据的更多信息，请参见此处："
@@ -2444,7 +2444,7 @@
     "en": "Show more information",
     "ar": "عرض المزيد من المعلومات",
     "es": "Mostrar más información",
-    "fr": "Afficher plus d",
+    "fr": "Afficher plus d'informations",
     "ru": "Показать больше информации",
     "tr": "Daha fazla bilgi göster",
     "zh": "显示更多信息"
@@ -4064,7 +4064,7 @@
     "en": "I like that",
     "ar": "أنا أحب ذلك",
     "es": "Me gusta eso",
-    "fr": "J",
+    "fr": "J'aime ça",
     "ru": "Мне это нравится",
     "tr": "Bunu beğendim",
     "zh": "我喜欢那个"
@@ -4074,7 +4074,7 @@
     "en": "I dislike that",
     "ar": "أنا لا أحب ذلك",
     "es": "No me gusta eso",
-    "fr": "Je n",
+    "fr": "Je n'aime pas ça",
     "ru": "Мне это не нравится",
     "tr": "Bunu beğenmedim",
     "zh": "我不喜欢那个"
@@ -4084,7 +4084,7 @@
     "en": "Like Status",
     "ar": "أحب الحالة",
     "es": "Estado de gusto",
-    "fr": "Statut J",
+    "fr": "Statut J'aime",
     "ru": "Статус ",
     "tr": "Beğenme Durumu",
     "zh": "喜欢状态"
