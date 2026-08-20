@@ -6,13 +6,13 @@
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
 | 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 4 | 4 |
+| 🔧 Maintainability | 5 | 5 |
 
-**Total issues:** 4
+**Total issues:** 5
 
 ---
 
-## 🔧 Maintainability (4/4)
+## 🔧 Maintainability (5/5)
 
 - **Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.**
   apps/frontend/app/helper/AppUsageEventHelper.ts:84
@@ -27,6 +27,10 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/tag-und-jahr/frontend/app/_layout.tsx#L31
 
 - **Use `export…from` to re-export `FALLBACK_TRANSLATION_LANGUAGE`.**
-  packages/common/src/translations/TranslationHelper.ts:206
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/translations/TranslationHelper.ts#L206
+  packages/common/src/translations/TranslationHelper.ts:211
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/translations/TranslationHelper.ts#L211
+
+- **`ELIDED_WORDS_BEFORE_APOSTROPHE` should be a `Set`, and use `ELIDED_WORDS_BEFORE_APOSTROPHE.has()` to check existence or non-existence.**
+  packages/common/src/translations/TranslationValidationHelper.ts:133
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/translations/TranslationValidationHelper.ts#L133
 
