@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { load as cheerioLoad } from 'cheerio';
-import { TranslationHelper } from '../../helpers/TranslationHelper';
+import { ContentTranslationHelper } from '../../helpers/ContentTranslationHelper';
 import { NewsParserInterface, NewsTypeForParser } from './../NewsParserInterface';
 import { DatabaseTypes, StringHelper } from 'repo-depkit-common';
 import { WorkflowRunLogger } from '../../workflows-runs-hook/WorkflowRunJobInterface';
@@ -59,7 +59,7 @@ export class StudentenwerkOsnabrueckNewsParser implements NewsParserInterface {
             categories: {}, // Assuming no category data; fill in as needed
           },
           translations: {
-            [TranslationHelper.LANGUAGE_CODE_DE]: {
+            [ContentTranslationHelper.LANGUAGE_CODE_DE]: {
               title: header,
               content: content,
               be_source_for_translations: true,

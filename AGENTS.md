@@ -93,13 +93,27 @@ Auch das Directus-Backend schickt Texte an Nutzer — Push-Nachrichten, generier
   const language = await languageResolver.resolveForProfile(profile);
   language.translate(BackendTranslationKeys.tomorrow);                    // 'Morgen' / 'Tomorrow' / …
   language.translate(BackendTranslationKeys.notification_foodoffer_body, { date, food });
-  TranslationHelper.getTranslation(food.translations, language.languageCode ?? '', 'name');
+  ContentTranslationHelper.getTranslation(food.translations, language.languageCode ?? '', 'name');
   ```
   Für einen einzelnen Text ohne Nutzerbezug (z. B. das deutsche Formular-PDF) reicht `BackendTranslator.translate(key)`.
 - **Sprachcodes immer über die geteilten Matcher vergleichen**, nie mit `===`: `isSameLanguageCode(a, b)` (case-insensitiv, Region zählt) und `isSameBaseLanguage(a, b)` (case-insensitiv, Region egal) aus `repo-depkit-common`. `languages.code` wird pro Kunde von Hand gepflegt — `de-DE`, `DE-de` und `de` meinen dasselbe, ein strikter String-Vergleich lässt Nutzer still in die Fallback-Sprache rutschen. Gilt genauso in der App (`helper/resourceHelper.tsx`).
-- **Achtung, zwei verschiedene Übersetzungen:** `helpers/TranslationHelper.ts` übersetzt *Inhalte aus der Datenbank* und arbeitet mit `languageCode`; `getTranslation` matcht dabei erst den exakten Code, dann dieselbe Sprache in einer anderen Region. `helpers/translations/` übersetzt *Texte des Servers selbst* und arbeitet mit `translationLanguage`. Nicht vermischen.
+- **Drei Dinge heißen „Übersetzung", verwechsle sie nicht** (Details unten in „Drei Sorten Übersetzung"): `helpers/translations/` (statischer Katalog, arbeitet mit `translationLanguage`), `helpers/ContentTranslationHelper.ts` (DB-Inhalte, arbeitet mit `languageCode`; `getTranslation` matcht erst den exakten Code, dann dieselbe Sprache in einer anderen Region) und `auto-translation-hook/` (DeepL).
 - Datum und Uhrzeit in einer Nutzersprache: `BackendTranslator.formatDate(date, language.translationLanguage)`. Die `DateHelper.getHumanReadable*`-Funktionen sind fest auf `de-DE` und damit nur für interne Reports gedacht.
 - Durchgesetzt durch `src/helpers/translations/__tests__/BackendTranslations.test.ts` (jeder Key in jeder Sprache), `BackendLanguageResolver.test.ts` (das Matching) und `src/food-notify-schedule-hook/__tests__/NotifyScheduleTranslations.test.ts`.
+
+## Drei Sorten Übersetzung im Backend — nicht vermischen
+
+Im Backend heißen drei verschiedene Dinge „Übersetzung". Sie unterscheiden sich danach, **woher der Text kommt**, und tragen das im Namen:
+
+| Ebene | Wo | Woher der Text kommt |
+| --- | --- | --- |
+| **Statischer Katalog** | `helpers/translations/` — `BackendTranslator`, `BackendTranslationKeys` | Von Entwicklern geschrieben, mit dem Code ausgeliefert, per Key nachgeschlagen. Übersetzt zur Laufzeit nichts. |
+| **Inhalte** | `helpers/ContentTranslationHelper.ts` | Von Redaktion oder Import-Parser, liegt als `*_translations`-Zeilen am Item (Speisenamen, News). Der Helper liest und schreibt diese Zeilen. |
+| **Maschinell** | `auto-translation-hook/` — `AutoTranslator`, `CollectionAutoTranslator`, `DeepLTranslator` | Von DeepL erzeugt. Befüllt genau die Zeilen, die `ContentTranslationHelper` verwaltet. Kostet API-Kontingent pro Aufruf. |
+
+- **Präfix-Regel:** `Auto*` heißt maschinell erzeugt, `Content*` heißt aus der Datenbank. Ohne Präfix ist der statische Katalog gemeint — der ist der Normalfall und teilt sich Keys und `translate()` mit den Apps und `repo-depkit-common`.
+- **`Translator` ohne Präfix nicht neu einführen.** Der Name ist dreifach belegt: die DeepL-SDK-Klasse (`deepl-node`), der Typ der `translate`-Funktion aus `repo-depkit-common`, und früher die eigene Klasse — die heißt deshalb jetzt `AutoTranslator`.
+- `BackendLanguageResolver` gehört zu keiner der drei Ebenen, sondern wählt nur die Sprache und liefert beide Formen (`languageCode` für Inhalte, `translationLanguage` für den Katalog).
 
 ## Tests für `packages/common` und `packages/common-ui`
 

@@ -1,6 +1,6 @@
-import { Translator } from './Translator';
-import { TranslatorSettings } from './TranslatorSettings';
-import { DirectusCollectionTranslator } from './DirectusCollectionTranslator.js';
+import { AutoTranslator } from './AutoTranslator';
+import { AutoTranslatorSettings } from './AutoTranslatorSettings';
+import { CollectionAutoTranslator } from './CollectionAutoTranslator.js';
 import { EventHelper } from '../helpers/EventHelper';
 import { ApiContext } from '../helpers/ApiContext';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
@@ -12,13 +12,13 @@ export const scheduleNameAutoTranslation = 'auto-translation';
 
 const DEV_MODE = false;
 
-async function getAndInitItemsServiceCreatorAndTranslatorSettingsAndTranslatorAndSchema(myDatabaseHelper: MyDatabaseHelper) {
-  let translatorSettings = new TranslatorSettings(myDatabaseHelper);
-  let translator = new Translator(translatorSettings, myDatabaseHelper);
-  await translator.init();
+async function getAndInitAutoTranslatorWithSettings(myDatabaseHelper: MyDatabaseHelper) {
+  let autoTranslatorSettings = new AutoTranslatorSettings(myDatabaseHelper);
+  let autoTranslator = new AutoTranslator(autoTranslatorSettings, myDatabaseHelper);
+  await autoTranslator.init();
   return {
-    translatorSettings: translatorSettings,
-    translator: translator,
+    autoTranslatorSettings: autoTranslatorSettings,
+    autoTranslator: autoTranslator,
   };
 }
 
@@ -72,14 +72,14 @@ async function handleCreateOrUpdate(tablename: string, payload: any, meta: any, 
     }
   }
   if (payloadContainsTranslations) {
-    let { translatorSettings, translator } = await getAndInitItemsServiceCreatorAndTranslatorSettingsAndTranslatorAndSchema(myDatabaseHelper);
+    let { autoTranslatorSettings, autoTranslator } = await getAndInitAutoTranslatorWithSettings(myDatabaseHelper);
 
-    let autoTranslate = await translatorSettings.isAutoTranslationEnabled();
+    let autoTranslate = await autoTranslatorSettings.isAutoTranslationEnabled();
     if (autoTranslate || DEV_MODE) {
       let modifiedPayload = payload;
       for (let translation_field of translations_fields) {
         let currentItem = await getCurrentItemForTranslation(tablename, meta, translation_field, myDatabaseHelper);
-        modifiedPayload = await DirectusCollectionTranslator.modifyPayloadForTranslation(currentItem, modifiedPayload, translator, translatorSettings, myDatabaseHelper, tablename, translation_field);
+        modifiedPayload = await CollectionAutoTranslator.modifyPayloadForTranslation(currentItem, modifiedPayload, autoTranslator, autoTranslatorSettings, myDatabaseHelper, tablename, translation_field);
       }
 
       return modifiedPayload;
@@ -105,9 +105,9 @@ export default MyDefineHook.defineHookWithAllTablesExisting(scheduleNameAutoTran
     let myDatabaseHelper = new MyDatabaseHelper(apiContext, context);
 
     try {
-      let translatorSettings = new TranslatorSettings(myDatabaseHelper);
-      let translator = new Translator(translatorSettings, myDatabaseHelper);
-      await translator.init();
+      let autoTranslatorSettings = new AutoTranslatorSettings(myDatabaseHelper);
+      let autoTranslator = new AutoTranslator(autoTranslatorSettings, myDatabaseHelper);
+      await autoTranslator.init();
 
       registerCollectionAutoTranslation(filter, apiContext);
     } catch (err: any) {

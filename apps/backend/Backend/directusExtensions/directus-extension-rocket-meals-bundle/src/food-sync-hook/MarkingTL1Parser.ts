@@ -1,6 +1,6 @@
 import { MarkingParserInterface, MarkingsTypeForParser } from './MarkingParserInterface';
 import { CSVExportParser } from './CSVExportParser';
-import { TranslationHelper, TranslationsFromParsingType } from '../helpers/TranslationHelper';
+import { ContentTranslationHelper, TranslationsFromParsingType } from '../helpers/ContentTranslationHelper';
 import { SystemFileHelper } from '../helpers/SystemFileHelper';
 import { MarkingTranslationFields } from './MarkingTranslationFields';
 
@@ -54,13 +54,13 @@ export class MarkingTL1Parser implements MarkingParserInterface {
     if (name) {
       let nameDe = MarkingTL1Parser.getMarkingNameDe(name);
       if (nameDe) {
-        translations[TranslationHelper.LANGUAGE_CODE_DE] = {
+        translations[ContentTranslationHelper.LANGUAGE_CODE_DE] = {
           [MarkingTranslationFields.TRANSLATION_FIELD_NAME]: nameDe,
         };
       }
       let nameEn = MarkingTL1Parser.getMarkingNameEn(name);
       if (nameEn) {
-        translations[TranslationHelper.LANGUAGE_CODE_EN] = {
+        translations[ContentTranslationHelper.LANGUAGE_CODE_EN] = {
           [MarkingTranslationFields.TRANSLATION_FIELD_NAME]: nameEn,
         };
       }

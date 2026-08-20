@@ -12,7 +12,7 @@ import {FileContentReader} from "../FileContentReader";
 import {FetchHelper} from "../../../helpers/FetchHelper";
 import {load} from 'cheerio';
 import {FoodofferDateType, StringHelper} from "repo-depkit-common"
-import {TranslationHelper, TranslationsFromParsingType} from "../../../helpers/TranslationHelper";
+import {ContentTranslationHelper, TranslationsFromParsingType} from "../../../helpers/ContentTranslationHelper";
 import {MarkingTranslationFields} from "../../MarkingTranslationFields";
 
 export type MaxManagerConnectorConfig = {
@@ -550,7 +550,7 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
 
                 if(externalIdentifier.length > 0){
                     let translations: TranslationsFromParsingType = {};
-                    translations[TranslationHelper.LANGUAGE_CODE_DE] = {
+                    translations[ContentTranslationHelper.LANGUAGE_CODE_DE] = {
                         [MarkingTranslationFields.TRANSLATION_FIELD_NAME]: description,
                     };
 

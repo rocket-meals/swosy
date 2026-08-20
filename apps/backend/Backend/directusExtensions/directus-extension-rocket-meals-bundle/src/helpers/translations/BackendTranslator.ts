@@ -1,6 +1,13 @@
 /**
  * BackendTranslator.ts – turns a backend translation key into a text in the user's language.
  *
+ * This is the **static catalogue**: texts written by developers, shipped with the code, looked up
+ * by key. Nothing is translated at runtime here. The two neighbours it is easy to confuse it with:
+ * - `helpers/ContentTranslationHelper.ts` – **content** from the database (meal names, news),
+ *   stored per item in `*_translations` rows.
+ * - `auto-translation-hook/AutoTranslator.ts` – **machine translation** via DeepL, which produces
+ *   those content translations and costs API quota per call.
+ *
  * The backend knows the user's language from `profiles.language`, which is a relation to the
  * Directus `languages` collection and therefore holds a full locale code such as `"de-DE"`.
  * The translation catalogue is keyed by the short code (`"de"`), so every language that reaches

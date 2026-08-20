@@ -2,7 +2,7 @@ import { ItemsService, ItemsServiceCreator, QueryOptions } from './ItemsServiceC
 import type { Filter } from '@directus/types/dist/filter';
 import { ApiContext } from './ApiContext';
 import { Accountability, EventContext, PrimaryKey, Query } from '@directus/types';
-import { TranslationHelper } from './TranslationHelper';
+import { ContentTranslationHelper } from './ContentTranslationHelper';
 import { Knex } from 'knex';
 import { MyDatabaseHelperInterface } from './MyDatabaseHelperInterface';
 import { DeepCopyHelper } from 'repo-depkit-common';
@@ -200,7 +200,7 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     if (customOptions?.withTranslations) {
       query = {
         ...query,
-        ...TranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING,
+        ...ContentTranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING,
       };
     }
 
@@ -252,7 +252,7 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
   async readOneWithTranslations(primary_key: PrimaryKey, query?: Query, opts?: QueryOptions): Promise<T> {
     let queryWithTranslations = {
       ...query,
-      ...TranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING,
+      ...ContentTranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING,
     };
     return await this.readOne(primary_key, queryWithTranslations, opts);
   }
@@ -260,7 +260,7 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
   async readByQueryWithTranslations(query?: Query, opts?: QueryOptions): Promise<T[]> {
     let queryWithTranslations = {
       ...query,
-      ...TranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING,
+      ...ContentTranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING,
     };
     return await this.readByQuery(queryWithTranslations, opts);
   }

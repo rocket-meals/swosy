@@ -1,4 +1,4 @@
-import { TranslationHelper } from '../helpers/TranslationHelper';
+import { ContentTranslationHelper } from '../helpers/ContentTranslationHelper';
 import { DatabaseTypes, DateHelper } from 'repo-depkit-common';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
@@ -254,7 +254,7 @@ export class NotifySchedule {
    */
   getFoodNameTranslation(foodWithTranslations: DatabaseTypes.Foods, profileLanguage: ResolvedBackendLanguage) {
     return (
-      TranslationHelper.getTranslation(foodWithTranslations?.translations, profileLanguage.languageCode ?? '', 'name') ||
+      ContentTranslationHelper.getTranslation(foodWithTranslations?.translations, profileLanguage.languageCode ?? '', 'name') ||
       profileLanguage.translate(BackendTranslationKeys.notification_foodoffer_unknown_food)
     );
   }

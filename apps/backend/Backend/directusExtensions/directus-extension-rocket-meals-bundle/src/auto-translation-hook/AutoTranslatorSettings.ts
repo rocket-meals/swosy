@@ -1,8 +1,12 @@
+/**
+ * AutoTranslatorSettings.ts – API key and the on/off switch for the machine translation.
+ */
+
 import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { AutoTranslationSettingsHelper } from '../helpers/itemServiceHelpers/AutoTranslationSettingsHelper';
 
-export class TranslatorSettings {
+export class AutoTranslatorSettings {
   private readonly apiKey: undefined | string | null;
   private readonly translationSettingsService: AutoTranslationSettingsHelper;
   private readonly myDatabaseHelper: MyDatabaseHelper;

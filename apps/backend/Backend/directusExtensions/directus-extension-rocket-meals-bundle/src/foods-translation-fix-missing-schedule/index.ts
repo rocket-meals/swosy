@@ -4,9 +4,9 @@ import {CollectionNames, DatabaseTypes} from 'repo-depkit-common';
 import {WORKFLOW_RUN_STATE} from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import {WorkflowRunContext} from '../helpers/WorkflowRunContext';
 import {MyDefineHook} from '../helpers/MyDefineHook';
-import {Translator} from '../auto-translation-hook/Translator';
-import {TranslatorSettings} from '../auto-translation-hook/TranslatorSettings';
-import {DirectusCollectionTranslator} from '../auto-translation-hook/DirectusCollectionTranslator';
+import {AutoTranslator} from '../auto-translation-hook/AutoTranslator';
+import {AutoTranslatorSettings} from '../auto-translation-hook/AutoTranslatorSettings';
+import {CollectionAutoTranslator} from '../auto-translation-hook/CollectionAutoTranslator';
 import type {Filter} from '@directus/types';
 
 const SCHEDULE_NAME = 'foods-translation-fix-missing-schedule';
@@ -54,18 +54,18 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
     await context.logger.appendLog('Starting foods translation fix for missing translations');
 
     try {
-      const translatorSettings = new TranslatorSettings(context.myDatabaseHelper);
-      const translator = new Translator(translatorSettings, context.myDatabaseHelper);
-      await translator.init();
+      const autoTranslatorSettings = new AutoTranslatorSettings(context.myDatabaseHelper);
+      const autoTranslator = new AutoTranslator(autoTranslatorSettings, context.myDatabaseHelper);
+      await autoTranslator.init();
 
-      if (!translator.isReady()) {
+      if (!autoTranslator.isReady()) {
         await context.logger.appendLog(
-          'Translator is not ready. Please check that the AUTO_TRANSLATE_API_KEY environment variable is set and valid. Aborting.'
+          'AutoTranslator is not ready. Please check that the AUTO_TRANSLATE_API_KEY environment variable is set and valid. Aborting.'
         );
         return context.logger.getFinalLogWithStateAndParams({state: WORKFLOW_RUN_STATE.FAILED});
       }
 
-      const autoTranslateEnabled = await translatorSettings.isAutoTranslationEnabled();
+      const autoTranslateEnabled = await autoTranslatorSettings.isAutoTranslationEnabled();
       if (!autoTranslateEnabled) {
         await context.logger.appendLog('Auto-translation is not enabled. Aborting.');
         return context.logger.getFinalLogWithStateAndParams({state: WORKFLOW_RUN_STATE.SUCCESS});
@@ -73,7 +73,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
 
       // Run a test translation of a known German phrase into every backend language so we can
       // verify connectivity and detect unsupported languages before doing real work.
-      await this.runTranslationTest(translator, context);
+      await this.runTranslationTest(autoTranslator, context);
 
       const foodsHelper = context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.Foods>(CollectionNames.FOODS);
 
@@ -128,7 +128,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
             'Processing food ' + (processedFoods + 1) + '/' + allFoodsOrdered.length + ' (id=' + food.id + ')…'
           );
           const result = await this.fixTranslationsForFood(
-            food, translator, schemaContext, context, MAX_TRANSLATIONS - totalAttempted
+            food, autoTranslator, schemaContext, context, MAX_TRANSLATIONS - totalAttempted
           );
           totalFixed += result.fixed;
           totalAttempted += result.attempted;
@@ -156,7 +156,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
    * Translates the hard-coded test phrase into every language defined in the backend.
    * This runs before the real work so the log clearly shows which languages work and which don't.
    */
-  private async runTranslationTest(translator: Translator, context: WorkflowRunContext): Promise<void> {
+  private async runTranslationTest(autoTranslator: AutoTranslator, context: WorkflowRunContext): Promise<void> {
     const languagesHelper = context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.Languages>(
       CollectionNames.LANGUAGES
     );
@@ -178,7 +178,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
         continue;
       }
       try {
-        const result = await translator.translate({
+        const result = await autoTranslator.translate({
           text: TEST_SOURCE_TEXT,
           source_language: TEST_SOURCE_LANGUAGE,
           destination_language: languageCode,
@@ -229,12 +229,12 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       sourceLanguageCode: string | undefined;
       fieldsToTranslate: string[];
       fieldLanguagesIdOrCode: string;
-      translator: Translator;
+      autoTranslator: AutoTranslator;
       context: WorkflowRunContext;
       remainingCapacity: number;
     },
   ): Promise<{fixed: boolean; attempted: number} | null> {
-    const {food, sourceTranslation, sourceLanguageCode, fieldsToTranslate, fieldLanguagesIdOrCode, translator, context, remainingCapacity} = ctx;
+    const {food, sourceTranslation, sourceLanguageCode, fieldsToTranslate, fieldLanguagesIdOrCode, autoTranslator, context, remainingCapacity} = ctx;
 
     // Skip source translation.
     if (translation.be_source_for_translations) {
@@ -281,13 +281,13 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
 
     const translateResult = await this.translateFieldsForTranslation({
       food, translation, sourceTranslation, sourceLanguageCode, languageCode,
-      fieldsToAttempt, translator, context, attempted, remainingCapacity,
+      fieldsToAttempt, autoTranslator, context, attempted, remainingCapacity,
     });
     const translatedItem = translateResult.translatedItem;
 
     translatedItem[fieldLanguagesIdOrCode] = {code: languageCode};
-    translatedItem[DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED] = true;
-    translatedItem[DirectusCollectionTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION] = false;
+    translatedItem[CollectionAutoTranslator.FIELD_LET_BE_TRANSLATED] = true;
+    translatedItem[CollectionAutoTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION] = false;
 
     const wasSaved = await this.saveTranslatedItemIfNeeded({
       food, translation, translatedItem, fieldsToTranslate, languageCode, context
@@ -304,7 +304,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
    */
   private async fixTranslationsForFood(
     food: DatabaseTypes.Foods,
-    translator: Translator,
+    autoTranslator: AutoTranslator,
     schemaContext: {schema: any; collectionName: string; translation_field: string},
     context: WorkflowRunContext,
     remainingCapacity: number,
@@ -318,7 +318,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
     await context.logger.appendLog('Food ' + food.id + ': Found ' + translations.length + ' translation(s).');
 
     // Find the source translation.
-    const sourceTranslation = DirectusCollectionTranslator.getSourceTranslationFromTranslations(
+    const sourceTranslation = CollectionAutoTranslator.getSourceTranslationFromTranslations(
       translations, schemaContext
     );
     if (!sourceTranslation) {
@@ -330,7 +330,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       return {fixed: 0, attempted: 0};
     }
 
-    const FIELD_LANGUAGES_ID_OR_CODE = DirectusCollectionTranslator.detectLanguagesIdOrCodeField(sourceTranslation);
+    const FIELD_LANGUAGES_ID_OR_CODE = CollectionAutoTranslator.detectLanguagesIdOrCodeField(sourceTranslation);
     if (!FIELD_LANGUAGES_ID_OR_CODE) {
       await context.logger.appendLog(
         'Food ' + food.id + ': Skipped – could not detect language field on source translation ' +
@@ -339,10 +339,10 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       return {fixed: 0, attempted: 0};
     }
 
-    const sourceLanguageCode = DirectusCollectionTranslator.extractLanguageCode(
+    const sourceLanguageCode = CollectionAutoTranslator.extractLanguageCode(
       (sourceTranslation as any)[FIELD_LANGUAGES_ID_OR_CODE]
     );
-    const fieldsToTranslate = DirectusCollectionTranslator.getFieldsToTranslate(schemaContext);
+    const fieldsToTranslate = CollectionAutoTranslator.getFieldsToTranslate(schemaContext);
 
     // Log source field values once per food.
     await context.logger.appendLog(
@@ -357,7 +357,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
     let attempted = 0;
     const entryCtx = {
       food, sourceTranslation, sourceLanguageCode, fieldsToTranslate,
-      fieldLanguagesIdOrCode: FIELD_LANGUAGES_ID_OR_CODE, translator, context, remainingCapacity,
+      fieldLanguagesIdOrCode: FIELD_LANGUAGES_ID_OR_CODE, autoTranslator, context, remainingCapacity,
     };
 
     for (const translation of translations) {
@@ -390,7 +390,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
     translation: DatabaseTypes.FoodsTranslations,
     context: WorkflowRunContext,
   ): Promise<string | undefined> {
-    const languageField = DirectusCollectionTranslator.detectLanguagesIdOrCodeField(translation);
+    const languageField = CollectionAutoTranslator.detectLanguagesIdOrCodeField(translation);
     if (!languageField) {
       await context.logger.appendLog(
         'Food ' + food.id + ', translation ' + translation.id +
@@ -426,14 +426,14 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
     sourceLanguageCode: string | undefined;
     languageCode: string;
     fieldsToAttempt: string[];
-    translator: Translator;
+    autoTranslator: AutoTranslator;
     context: WorkflowRunContext;
     attempted: number;
     remainingCapacity: number;
   }): Promise<{translatedItem: any; attempted: number}> {
     const {
       food, translation, sourceTranslation, sourceLanguageCode, languageCode,
-      fieldsToAttempt, translator, context, remainingCapacity,
+      fieldsToAttempt, autoTranslator, context, remainingCapacity,
     } = options;
     let {attempted} = options;
     const translatedItem: any = {};
@@ -457,7 +457,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
           'source value="' + String(sourceValue).substring(0, 80) + '"'
         );
 
-        const translatedValue = await translator.translate({
+        const translatedValue = await autoTranslator.translate({
           text: sourceValue,
           source_language: sourceLanguageCode,
           destination_language: languageCode,
@@ -472,7 +472,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
         } else {
           await context.logger.appendLog(
             'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
-            'Field "' + field + '" translator returned null/undefined – ' + getTranslationNullReason(languageCode)
+            'Field "' + field + '" autoTranslator returned null/undefined – ' + getTranslationNullReason(languageCode)
           );
         }
       } catch (err: any) {
@@ -518,7 +518,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
     } else {
       await context.logger.appendLog(
         'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
-        'Nothing to save – translator returned no usable values. translatedItem=' + JSON.stringify(translatedItem)
+        'Nothing to save – autoTranslator returned no usable values. translatedItem=' + JSON.stringify(translatedItem)
       );
       return false;
     }

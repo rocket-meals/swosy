@@ -7,7 +7,7 @@ import { RegisterFunctions } from '@directus/extensions';
 import { ApiContext } from '../helpers/ApiContext';
 import { PrimaryKey } from '@directus/types';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
-import { TranslationHelper } from '../helpers/TranslationHelper';
+import { ContentTranslationHelper } from '../helpers/ContentTranslationHelper';
 import { FormHelper } from '../helpers/form/FormHelper';
 import { MyFileTypes } from '../helpers/FilesServiceHelper';
 import {MyDefineHook} from "../helpers/MyDefineHook";
@@ -441,7 +441,7 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
 
 async function sendFormExtractMail(form: DatabaseTypes.Forms, formExtract: DatabaseTypes.FormExtracts, formSubmission: DatabaseTypes.FormSubmissions, formExtractRelevantInformation: FormExtractRelevantInformation, recipient_emails: string[], myDatabaseHelper: MyDatabaseHelper) {
   console.log('Send mail for form extract');
-  let form_translated_name = TranslationHelper.getTranslation(form.translations, TranslationHelper.LANGUAGE_CODE_DE, 'name');
+  let form_translated_name = ContentTranslationHelper.getTranslation(form.translations, ContentTranslationHelper.LANGUAGE_CODE_DE, 'name');
   let form_alias = form.alias;
   let form_name = form_translated_name || form_alias || 'Form submission';
 

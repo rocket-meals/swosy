@@ -1,7 +1,7 @@
 //import axios from "axios";
 import { CheerioAPI, load as cheerioLoad } from 'cheerio';
 import type { Element as CheerioElement } from 'domhandler';
-import { TranslationHelper } from '../../helpers/TranslationHelper';
+import { ContentTranslationHelper } from '../../helpers/ContentTranslationHelper';
 import { NewsParserInterface, NewsTypeForParser } from './../NewsParserInterface';
 //import undici, {Agent} from 'undici';
 import { DatabaseTypes, DateHelper, StringHelper } from 'repo-depkit-common';
@@ -95,7 +95,7 @@ export class StudentenwerkHannoverNewsParser implements NewsParserInterface {
           categories: categories,
         },
         translations: {
-          [TranslationHelper.LANGUAGE_CODE_DE]: {
+          [ContentTranslationHelper.LANGUAGE_CODE_DE]: {
             title: header,
             content: content,
             be_source_for_translations: true,

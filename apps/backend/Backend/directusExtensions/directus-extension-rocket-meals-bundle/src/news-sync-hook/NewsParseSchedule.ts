@@ -1,5 +1,5 @@
 import { NewsParserInterface, NewsTypeForParser } from './NewsParserInterface';
-import { TranslationHelper } from '../helpers/TranslationHelper';
+import { ContentTranslationHelper } from '../helpers/ContentTranslationHelper';
 import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import { WorkflowResultHash } from '../helpers/itemServiceHelpers/WorkflowsRunHelper';
@@ -70,7 +70,7 @@ export class NewsParseSchedule {
   async updateNewsTranslations(item: DatabaseTypes.News, newsJSON: NewsTypeForParser) {
     let itemService = this.context.myDatabaseHelper.getNewsHelper();
     let itemWithTranslations = await itemService.readOneWithTranslations(item.id);
-    await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched(itemWithTranslations, {
+    await ContentTranslationHelper.updateItemTranslationsForItemWithTranslationsFetched(itemWithTranslations, {
       translationsFromParsing: newsJSON.translations,
       items_primary_field_in_translation_table: 'news_id',
       itemsTablename: CollectionNames.NEWS,

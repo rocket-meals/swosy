@@ -9,7 +9,7 @@ import {
   FoodsInformationTypeForParser,
   FoodWithBasicData
 } from './FoodParserInterface';
-import {TranslationHelper} from '../helpers/TranslationHelper';
+import {ContentTranslationHelper} from '../helpers/ContentTranslationHelper';
 import {ItemsServiceHelper} from '../helpers/ItemsServiceHelper';
 import {CollectionNames, DatabaseTypes, DateHelper, DeepCopyHelper, DirectusItemStatus, LanguageCodes} from 'repo-depkit-common';
 import {MarkingParserInterface, MarkingsTypeForParser} from './MarkingParserInterface';
@@ -822,7 +822,7 @@ export class ParseSchedule {
   }
 
   async updateFoodTranslations(foundFoodWithTranslations: DatabaseTypes.Foods, foodsInformationForParser: FoodsInformationTypeForParser) {
-    await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<DatabaseTypes.Foods, DatabaseTypes.FoodsTranslations>(foundFoodWithTranslations, {
+    await ContentTranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<DatabaseTypes.Foods, DatabaseTypes.FoodsTranslations>(foundFoodWithTranslations, {
       translationsFromParsing: foodsInformationForParser.translations,
       items_primary_field_in_translation_table: 'foods_id',
       itemsTablename: CollectionNames.FOODS,
@@ -1073,7 +1073,7 @@ export class ParseSchedule {
     // same source name.
     const existingFoodTranslations = (food.translations as DatabaseTypes.FoodsTranslations[]) || [];
     const translationsCreate = translationsFromParsing
-      ? TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(
+      ? ContentTranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(
           translationsFromParsing,
           [existingFoodTranslations, existingFoodofferTranslationsForSourceName],
           ['name']
@@ -1303,7 +1303,7 @@ export class ParseSchedule {
       const sourceTranslationRows = await foodoffersTranslationsHelper.readByQuery({
         filter: {
           _and: [
-            { languages_code: { _eq: TranslationHelper.DefaultLanguage } },
+            { languages_code: { _eq: ContentTranslationHelper.DefaultLanguage } },
             { name: { _in: chunk } },
           ],
         },
@@ -1509,7 +1509,7 @@ export class ParseSchedule {
   async updateMarkingTranslations(marking: DatabaseTypes.Markings, markingJSON: MarkingsTypeForParser) {
     let itemService = this.context.myDatabaseHelper.getMarkingsHelper();
     let markingWithTranslations = await itemService.readOneWithTranslations(marking.id);
-    await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<DatabaseTypes.Markings, DatabaseTypes.MarkingsTranslations>(markingWithTranslations, {
+    await ContentTranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<DatabaseTypes.Markings, DatabaseTypes.MarkingsTranslations>(markingWithTranslations, {
       translationsFromParsing: markingJSON.translations,
       items_primary_field_in_translation_table: 'markings_id',
       itemsTablename: CollectionNames.MARKINGS,
