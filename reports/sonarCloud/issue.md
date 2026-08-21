@@ -6,13 +6,25 @@
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
 | 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 5 | 5 |
+| 🔧 Maintainability | 8 | 8 |
 
-**Total issues:** 5
+**Total issues:** 8
 
 ---
 
-## 🔧 Maintainability (5/5)
+## 🔧 Maintainability (8/8)
+
+- **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:158
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L158
+
+- **Move function 'isProtectionActiveFor' to the outer scope.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:57
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L57
+
+- **Move function 'buildForbiddenError' to the outer scope.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:61
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L61
 
 - **Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.**
   apps/frontend/app/helper/AppUsageEventHelper.ts:84
