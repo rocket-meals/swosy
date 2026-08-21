@@ -22,8 +22,17 @@ describe('dashboard protection texts', () => {
     expect(message).toContain('system dashboard');
   });
 
-  it('has a text in every language for both messages', () => {
-    const keys = [BackendTranslationKeys.dashboard_system_edit_forbidden, BackendTranslationKeys.dashboard_system_panel_edit_forbidden];
+  it('explains why a name with the system marker was rejected', () => {
+    const message = BackendTranslator.translate(BackendTranslationKeys.dashboard_system_marker_forbidden, LanguageCodes.DE, {
+      marker: DashboardNameHelper.SYSTEM_NAME_MARKER,
+    });
+
+    expect(message).toContain(DashboardNameHelper.SYSTEM_NAME_MARKER);
+    expect(message).not.toContain('{{marker}}');
+  });
+
+  it('has a text in every language for every message', () => {
+    const keys = [BackendTranslationKeys.dashboard_system_edit_forbidden, BackendTranslationKeys.dashboard_system_panel_edit_forbidden, BackendTranslationKeys.dashboard_system_delete_forbidden, BackendTranslationKeys.dashboard_system_marker_forbidden];
 
     for (const key of keys) {
       for (const language of ALL_TRANSLATION_LANGUAGES) {

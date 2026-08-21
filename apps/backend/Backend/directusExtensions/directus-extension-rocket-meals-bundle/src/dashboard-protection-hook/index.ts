@@ -4,6 +4,7 @@ import { CollectionNames, DashboardNameHelper, DatabaseTypes } from 'repo-depkit
 import { MyDatabaseHelper, MyEventContext } from '../helpers/MyDatabaseHelper';
 import { EventHelper } from '../helpers/EventHelper';
 import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
+import { buildServerDashboardName, buildSystemDashboardName } from '../helpers/DashboardNameRules';
 import { createMyForbiddenError } from '../helpers/MyDirectusError';
 import { HookKeysHelper } from '../helpers/HookKeysHelper';
 import { BackendTranslationKeys, BackendTranslator, ProfileWithLanguage } from '../helpers/translations';
@@ -101,20 +102,16 @@ export default defineHook(async ({ filter }, apiContext) => {
   }
 
   /**
-   * The name a dashboard of this server carries: never the system marker, always the key of this
-   * server - as long as the instance knows which one it is.
+   * Nobody but the ADMIN_EMAIL user may name a dashboard like a shipped one. Renaming is rejected
+   * instead of silently corrected, so the user learns why their name did not stick.
    */
-  function getServerDashboardName(name: string | null | undefined): string {
-    if (DashboardNameHelper.isSystemDashboardName(name)) {
-      apiContext.logger.info(`${HOOK_NAME}: removed the system marker from a dashboard of this server: ${name}`);
+  function assertSystemMarkerIsAllowed(name: string | null | undefined, actingUserInfo: ActingUserInfo) {
+    if (!DashboardNameHelper.isSystemDashboardName(name)) {
+      return;
     }
-    const nameWithoutSystemMarker = DashboardNameHelper.withoutSystemMarker(name);
 
-    const serverKey = EnvVariableHelper.getSyncForCustomer();
-    if (!serverKey) {
-      return nameWithoutSystemMarker;
-    }
-    return DashboardNameHelper.withNameMarker(nameWithoutSystemMarker, serverKey);
+    apiContext.logger.info(`${HOOK_NAME}: blocked a name reserved for system dashboards: ${name}`);
+    throw buildForbiddenError(actingUserInfo, BackendTranslationKeys.dashboard_system_marker_forbidden);
   }
 
   function assertNoSystemDashboards(systemDashboardNames: string[], actingUserInfo: ActingUserInfo) {
@@ -126,11 +123,23 @@ export default defineHook(async ({ filter }, apiContext) => {
     throw buildForbiddenError(actingUserInfo, BackendTranslationKeys.dashboard_system_edit_forbidden);
   }
 
-  async function assertDashboardsAreEditable(dashboardIds: PrimaryKey[], myDatabaseHelper: MyDatabaseHelper, actingUserInfo: ActingUserInfo) {
-    if (dashboardIds.length === 0 || !isProtectionActiveFor(actingUserInfo)) {
+  /**
+   * Deleting a shipped dashboard is reserved for the ADMIN_EMAIL user everywhere, the test system
+   * included: it would come back with the next deploy anyway, and on the way there it takes the
+   * panels of everybody else with it.
+   */
+  async function assertDashboardsAreDeletable(dashboardIds: PrimaryKey[], myDatabaseHelper: MyDatabaseHelper, actingUserInfo: ActingUserInfo) {
+    if (dashboardIds.length === 0 || actingUserInfo.isAdminEmailUser) {
       return;
     }
-    assertNoSystemDashboards(await getSystemDashboardNames(myDatabaseHelper, dashboardIds), actingUserInfo);
+
+    const systemDashboardNames = await getSystemDashboardNames(myDatabaseHelper, dashboardIds);
+    if (systemDashboardNames.length === 0) {
+      return;
+    }
+
+    apiContext.logger.info(`${HOOK_NAME}: blocked deletion of system dashboard(s): ${systemDashboardNames.join(', ')}`);
+    throw buildForbiddenError(actingUserInfo, BackendTranslationKeys.dashboard_system_delete_forbidden);
   }
 
   /**
@@ -166,14 +175,16 @@ export default defineHook(async ({ filter }, apiContext) => {
 
     // Everything the ADMIN_EMAIL user creates is meant to be shipped, so it is marked right away.
     if (actingUserInfo.isAdminEmailUser) {
-      payload.name = DashboardNameHelper.withSystemMarker(payload.name);
+      payload.name = buildSystemDashboardName(payload.name);
       return payload;
     }
 
     // Everybody else creates a dashboard of this server: it gets the key of the server it was
     // created on, and never the system marker - with that marker its owner would lock themselves
-    // out of their own dashboard.
-    payload.name = getServerDashboardName(payload.name);
+    // out of their own dashboard. A system marker is only stripped here, not rejected: a name
+    // like "Mensen [System] (copy)" is what Directus hands over when somebody duplicates a system
+    // dashboard, and that is a legitimate way to start an own dashboard.
+    payload.name = buildServerDashboardName(payload.name, EnvVariableHelper.getSyncForCustomer());
     return payload;
   });
 
@@ -184,20 +195,26 @@ export default defineHook(async ({ filter }, apiContext) => {
 
     const dashboardIds = HookKeysHelper.getKeysFromMeta(meta);
     const isRename = payload.name !== undefined;
-    // Needed for the rename rules below even when the protection does not apply to this user.
-    const systemDashboardNames = isProtectionActiveFor(actingUserInfo) || isRename ? await getSystemDashboardNames(myDatabaseHelper, dashboardIds) : [];
+    // Needed for the rename rules below even when the protection does not apply to this user. The
+    // ADMIN_EMAIL user needs neither, so they do not pay for the query.
+    const needsSystemDashboardNames = !actingUserInfo.isAdminEmailUser && (isProtectionActiveFor(actingUserInfo) || isRename);
+    const systemDashboardNames = needsSystemDashboardNames ? await getSystemDashboardNames(myDatabaseHelper, dashboardIds) : [];
 
     assertNoSystemDashboards(systemDashboardNames, actingUserInfo);
 
     if (isRename) {
-      if (systemDashboardNames.length > 0) {
+      if (actingUserInfo.isAdminEmailUser) {
+        // Whatever the ADMIN_EMAIL user renames becomes a shipped dashboard, so they can turn
+        // "App [Test]" into "App [System]" - and never leave the key of a server behind.
+        payload.name = buildSystemDashboardName(payload.name);
+      } else if (systemDashboardNames.length > 0) {
         // A system dashboard keeps its marker: renaming it into an own dashboard would leave a
         // dashboard behind that looks editable but is still reset with every deploy.
         payload.name = DashboardNameHelper.withSystemMarker(payload.name);
       } else {
-        // ... and the other way round: no dashboard of this server may be renamed into a system
-        // one, and it keeps the key of the server it belongs to.
-        payload.name = getServerDashboardName(payload.name);
+        // ... and the other way round: nobody else may rename a dashboard into a system one.
+        assertSystemMarkerIsAllowed(payload.name, actingUserInfo);
+        payload.name = buildServerDashboardName(payload.name, EnvVariableHelper.getSyncForCustomer());
       }
     }
     return payload;
@@ -207,7 +224,7 @@ export default defineHook(async ({ filter }, apiContext) => {
     const myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     const actingUserInfo = await getActingUserInfo(myDatabaseHelper, eventContext?.accountability);
 
-    await assertDashboardsAreEditable(HookKeysHelper.toPrimaryKeys(input), myDatabaseHelper, actingUserInfo);
+    await assertDashboardsAreDeletable(HookKeysHelper.toPrimaryKeys(input), myDatabaseHelper, actingUserInfo);
     return input;
   });
 
