@@ -37,12 +37,16 @@ System-Dashboard ist.
 
 `Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook`
 
-- `dashboards.update`: **HTTP 403**, wenn ein betroffenes Dashboard ein System-Dashboard ist.
-- `dashboards.delete`: **HTTP 403** für alle außer dem ADMIN_EMAIL-User, **auch auf dem
-  Testsystem**. Ein gelöschtes System-Dashboard käme mit dem nächsten Deploy ohnehin zurück, nimmt
-  auf dem Weg dorthin aber die Panels aller anderen mit.
+Alle Regeln gelten auf **jeder** Instanz, das Testsystem eingeschlossen. Ausgenommen ist nur der
+ADMIN_EMAIL-User.
+
+- `dashboards.update`: **HTTP 403**, wenn ein betroffenes Dashboard ein System-Dashboard ist - egal
+  ob Name, Farbe, Icon oder Notiz geändert werden.
+- `dashboards.delete`: **HTTP 403**. Ein gelöschtes System-Dashboard käme mit dem nächsten Deploy
+  ohnehin zurück, nimmt auf dem Weg dorthin aber die Panels aller anderen mit.
 - `panels.create` / `panels.update` / `panels.delete`: **HTTP 403**, wenn das Panel zu einem
-  System-Dashboard gehört oder in eines verschoben werden soll.
+  System-Dashboard gehört oder in eines verschoben werden soll. Damit sind auch Umbenennen und
+  Verschieben von Panels eines System-Dashboards gesperrt.
 - `dashboards.create` durch den **ADMIN_EMAIL**-User: der Name bekommt den `[System]`-Marker, jeder
   vorhandene Server-Marker wird vorher entfernt. Dupliziert der Admin `App [Test]`, macht Directus
   daraus `App [Test] (copy)` und der Hook `App (copy) [System]`.
@@ -53,33 +57,33 @@ System-Dashboard ist.
 - `dashboards.update` durch den **ADMIN_EMAIL**-User: was er umbenennt, wird zum System-Dashboard.
   `App [Test]` lässt sich damit in `App [System]` umbenennen, und es bleibt nie der Schlüssel eines
   Servers stehen.
-- `dashboards.update` durch alle anderen: ein System-Dashboard behält seinen `[System]`-Marker. Wer
-  ein anderes Dashboard in ein System-Dashboard umbenennen will, bekommt **HTTP 403** mit einer
-  Erklärung - der Marker wird also nicht mehr stillschweigend entfernt.
+- `dashboards.update` durch alle anderen: System-Dashboards sind ohnehin gesperrt (siehe oben). Wer
+  ein eigenes Dashboard in ein System-Dashboard umbenennen will, bekommt **HTTP 403** mit einer
+  Erklärung - der Marker wird also nicht stillschweigend entfernt.
 
 Die Fehlermeldungen stehen als Keys `dashboard_system_edit_forbidden`,
 `dashboard_system_panel_edit_forbidden`, `dashboard_system_delete_forbidden` und
 `dashboard_system_marker_forbidden` im Übersetzungskatalog
 (`helpers/translations/backendTranslations.ts`) und werden in der Sprache des Nutzers
 (`profiles.language`) gerendert. Der Marker wird als `{{marker}}` eingesetzt, damit auch die Texte
-den `SystemDashboardHelper` als einzige Quelle nutzen.
+den `DashboardNameHelper` als einzige Quelle nutzen.
 
 ### Wer darf was
 
-| Instanz      | ADMIN_EMAIL-User | Andere Nutzer                                  |
-| ------------ | ---------------- | ---------------------------------------------- |
-| Testsystem   | alles            | alles, im Rahmen ihrer Directus-Rechte         |
-| Kundenserver | alles            | nur eigene Dashboards, keine System-Dashboards |
+| Instanz                     | ADMIN_EMAIL-User | Andere Nutzer                                                   |
+| --------------------------- | ---------------- | --------------------------------------------------------------- |
+| Testsystem und Kundenserver | alles            | nur eigene Dashboards und deren Panels, keine System-Dashboards |
 
 Gemeint ist ausdrücklich der Benutzer aus der Umgebungsvariable `ADMIN_EMAIL`, nicht jeder Nutzer
 mit Administrator-Rolle. Dieser Bypass ist auch technisch notwendig: Der Deploy-Sync meldet sich mit
 genau diesem Account an - würde er blockiert, würde jeder Container-Start am Push scheitern. Interne
 Aufrufe ohne Accountability (z. B. andere Hooks) sind ebenfalls ausgenommen.
 
-Das Testsystem erkennt der Hook an `SYNC_FOR_CUSTOMER=Test` (`SyncForCustomerEnum.TEST`), so wie
-auch `news-sync-hook`, `housing-sync-hook`, `cashregister-hook` und `washingmachines-sync-hook` ihre
-Datenquelle bestimmen. Jede andere Instanz gilt als Kundenserver - eine fehlende oder unbekannte
-Angabe schützt also, statt den Schutz stillschweigend abzuschalten.
+Der Schlüssel dieses Servers kommt aus `SYNC_FOR_CUSTOMER` (`SyncForCustomerEnum`), so wie auch
+`news-sync-hook`, `housing-sync-hook`, `cashregister-hook` und `washingmachines-sync-hook` ihre
+Datenquelle bestimmen. Er entscheidet nur über die Kennzeichnung neuer Dashboards, nicht über den
+Schutz: Ist er nicht gesetzt, bleibt ein neues Dashboard ohne Marker, geschützt sind
+System-Dashboards trotzdem.
 
 ## Ein neues System-Dashboard ausliefern
 

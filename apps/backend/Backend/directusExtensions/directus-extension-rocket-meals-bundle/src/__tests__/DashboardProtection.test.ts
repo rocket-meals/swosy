@@ -1,8 +1,7 @@
-import { afterEach, describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from '@jest/globals';
 import { ALL_TRANSLATION_LANGUAGES, DashboardNameHelper, LanguageCodes } from 'repo-depkit-common';
 import { BackendTranslationKeys, BackendTranslator } from '../helpers/translations';
 import { createMyForbiddenError } from '../helpers/MyDirectusError';
-import { EnvVariableHelper, SyncForCustomerEnum } from '../helpers/EnvVariableHelper';
 
 describe('dashboard protection texts', () => {
   it('renders the marker into the message instead of restating it', () => {
@@ -54,34 +53,5 @@ describe('MyDirectusError', () => {
     expect(error.status).toBe(403);
     expect(error.message).toBe('Nicht erlaubt');
     expect(error instanceof Error).toBe(true);
-  });
-});
-
-describe('EnvVariableHelper.isTestServer', () => {
-  const originalValue = process.env.SYNC_FOR_CUSTOMER;
-
-  afterEach(() => {
-    if (originalValue === undefined) {
-      delete process.env.SYNC_FOR_CUSTOMER;
-    } else {
-      process.env.SYNC_FOR_CUSTOMER = originalValue;
-    }
-  });
-
-  it('recognizes the test system', () => {
-    process.env.SYNC_FOR_CUSTOMER = SyncForCustomerEnum.TEST;
-    expect(EnvVariableHelper.isTestServer()).toBe(true);
-  });
-
-  it('treats every customer instance as a customer server', () => {
-    for (const value of [SyncForCustomerEnum.OSNABRUECK, SyncForCustomerEnum.HANNOVER, 'irgendwas']) {
-      process.env.SYNC_FOR_CUSTOMER = value;
-      expect(EnvVariableHelper.isTestServer()).toBe(false);
-    }
-  });
-
-  it('treats an unset value as a customer server', () => {
-    delete process.env.SYNC_FOR_CUSTOMER;
-    expect(EnvVariableHelper.isTestServer()).toBe(false);
   });
 });
