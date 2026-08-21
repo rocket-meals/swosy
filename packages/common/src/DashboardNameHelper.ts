@@ -56,6 +56,15 @@ export class DashboardNameHelper {
     return DashboardNameHelper.cleanUpWhitespace((name ?? '').split(marker).join(' '));
   }
 
+  /** Returns the name without the markers of all given keys. */
+  public static withoutNameMarkers(name: string | null | undefined, keys: readonly string[]): string {
+    let cleanedName = name ?? '';
+    for (const key of keys) {
+      cleanedName = DashboardNameHelper.withoutNameMarker(cleanedName, key);
+    }
+    return DashboardNameHelper.cleanUpWhitespace(cleanedName);
+  }
+
   public static isSystemDashboardName(name: string | null | undefined): boolean {
     return DashboardNameHelper.hasNameMarker(name, DashboardNameHelper.SYSTEM_NAME_KEY);
   }

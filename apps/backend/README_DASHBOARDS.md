@@ -37,22 +37,29 @@ System-Dashboard ist.
 
 `Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook`
 
-- `dashboards.update` / `dashboards.delete`: **HTTP 403**, wenn ein betroffenes Dashboard ein
-  System-Dashboard ist.
+- `dashboards.update`: **HTTP 403**, wenn ein betroffenes Dashboard ein System-Dashboard ist.
+- `dashboards.delete`: **HTTP 403** für alle außer dem ADMIN_EMAIL-User, **auch auf dem
+  Testsystem**. Ein gelöschtes System-Dashboard käme mit dem nächsten Deploy ohnehin zurück, nimmt
+  auf dem Weg dorthin aber die Panels aller anderen mit.
 - `panels.create` / `panels.update` / `panels.delete`: **HTTP 403**, wenn das Panel zu einem
   System-Dashboard gehört oder in eines verschoben werden soll.
-- `dashboards.create` durch den **ADMIN_EMAIL**-User: der `[System]`-Marker wird ergänzt, falls er
-  fehlt - neue ausgelieferte Dashboards sind damit von Anfang an gekennzeichnet.
-- `dashboards.create` durch alle anderen Nutzer: ein selbst gesetzter `[System]`-Marker wird
-  entfernt (sonst würde sich der Besitzer aus seinem eigenen Dashboard aussperren) und stattdessen
-  der Schlüssel dieses Servers gesetzt, z. B. `[Osnabrück]` oder `[Test]`.
-- `dashboards.update`: ein System-Dashboard behält seinen `[System]`-Marker auch beim Umbenennen -
-  das gilt ebenso für den ADMIN_EMAIL-User, denn ein ausgeliefertes Dashboard soll nicht
-  versehentlich so aussehen, als dürfte man es bearbeiten, obwohl der Deploy es weiterhin
-  zurücksetzt. Jedes andere Dashboard behält beim Umbenennen den Schlüssel dieses Servers.
+- `dashboards.create` durch den **ADMIN_EMAIL**-User: der Name bekommt den `[System]`-Marker, jeder
+  vorhandene Server-Marker wird vorher entfernt. Dupliziert der Admin `App [Test]`, macht Directus
+  daraus `App [Test] (copy)` und der Hook `App (copy) [System]`.
+- `dashboards.create` durch alle anderen Nutzer: analog mit dem Schlüssel dieses Servers, z. B.
+  `App (copy) [Osnabrück]`. Ein `[System]` im Namen wird hier nur entfernt und nicht abgelehnt -
+  genau so sieht der Name aus, wenn jemand ein System-Dashboard dupliziert, und das ist ein
+  legitimer Weg zu einem eigenen Dashboard.
+- `dashboards.update` durch den **ADMIN_EMAIL**-User: was er umbenennt, wird zum System-Dashboard.
+  `App [Test]` lässt sich damit in `App [System]` umbenennen, und es bleibt nie der Schlüssel eines
+  Servers stehen.
+- `dashboards.update` durch alle anderen: ein System-Dashboard behält seinen `[System]`-Marker. Wer
+  ein anderes Dashboard in ein System-Dashboard umbenennen will, bekommt **HTTP 403** mit einer
+  Erklärung - der Marker wird also nicht mehr stillschweigend entfernt.
 
-Die Fehlermeldungen stehen als Keys `dashboard_system_edit_forbidden` und
-`dashboard_system_panel_edit_forbidden` im Übersetzungskatalog
+Die Fehlermeldungen stehen als Keys `dashboard_system_edit_forbidden`,
+`dashboard_system_panel_edit_forbidden`, `dashboard_system_delete_forbidden` und
+`dashboard_system_marker_forbidden` im Übersetzungskatalog
 (`helpers/translations/backendTranslations.ts`) und werden in der Sprache des Nutzers
 (`profiles.language`) gerendert. Der Marker wird als `{{marker}}` eingesetzt, damit auch die Texte
 den `SystemDashboardHelper` als einzige Quelle nutzen.

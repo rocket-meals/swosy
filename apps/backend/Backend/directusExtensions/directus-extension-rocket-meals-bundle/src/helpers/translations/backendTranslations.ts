@@ -66,4 +66,28 @@ export const backendTranslations: TranslationResources = {
     tr: 'Bu bölme bir sistem panosuna aittir (adında "{{marker}}" ile işaretlenmiştir). Sistem panoları her güncellemede sıfırlanır ve bu nedenle düzenlenemez. Kendi değerlendirmeleriniz için lütfen yeni bir pano oluşturun.',
     zh: '此面板属于系统仪表板（名称中标有"{{marker}}"）。系统仪表板会在每次更新时被重置，因此无法编辑。请为自己的分析新建一个仪表板。',
   },
+
+  /** Rejection of deleting a dashboard that is shipped with Rocket Meals. */
+  dashboard_system_delete_forbidden: {
+    de: 'Dieses Dashboard ist ein System-Dashboard (Kennzeichnung "{{marker}}" im Namen) und darf nicht gelöscht werden. System-Dashboards gehören zum Auslieferungsstand von Rocket Meals und werden bei jedem Update wieder angelegt.',
+    en: 'This dashboard is a system dashboard (marked with "{{marker}}" in its name) and cannot be deleted. System dashboards are part of what Rocket Meals ships and are created again with every update.',
+    ar: 'هذه لوحة معلومات نظام (يُشار إليها بـ "{{marker}}" في الاسم) ولا يمكن حذفها. لوحات معلومات النظام جزء من نسخة Rocket Meals ويُعاد إنشاؤها مع كل تحديث.',
+    es: 'Este panel es un panel del sistema (identificado con "{{marker}}" en el nombre) y no se puede eliminar. Los paneles del sistema forman parte de la entrega de Rocket Meals y se vuelven a crear con cada actualización.',
+    fr: 'Ce tableau de bord est un tableau de bord système (identifié par « {{marker}} » dans son nom) et ne peut pas être supprimé. Les tableaux de bord système font partie de la livraison de Rocket Meals et sont recréés à chaque mise à jour.',
+    ru: 'Это системная панель (обозначена «{{marker}}» в названии), её нельзя удалить. Системные панели входят в поставку Rocket Meals и создаются заново при каждом обновлении.',
+    tr: 'Bu pano bir sistem panosudur (adında "{{marker}}" ile işaretlenmiştir) ve silinemez. Sistem panoları Rocket Meals ile birlikte gelir ve her güncellemede yeniden oluşturulur.',
+    zh: '这是系统仪表板（名称中标有"{{marker}}"），无法删除。系统仪表板属于 Rocket Meals 的交付内容，每次更新都会重新创建。',
+  },
+
+  /** Rejection of a name that would turn a dashboard into a system dashboard. */
+  dashboard_system_marker_forbidden: {
+    de: 'Die Kennzeichnung "{{marker}}" ist den mit Rocket Meals ausgelieferten Dashboards vorbehalten und kann nicht selbst vergeben werden. Bitte wähle einen Namen ohne diese Kennzeichnung - dein Dashboard wird automatisch mit dem Namen dieses Servers gekennzeichnet.',
+    en: 'The marker "{{marker}}" is reserved for the dashboards shipped with Rocket Meals and cannot be set by hand. Please choose a name without it - your dashboard is marked with the name of this server automatically.',
+    ar: 'العلامة "{{marker}}" مخصصة للوحات المعلومات المرفقة مع Rocket Meals ولا يمكن تعيينها يدويًا. يرجى اختيار اسم بدونها - سيتم وسم لوحتك تلقائيًا باسم هذا الخادم.',
+    es: 'La marca "{{marker}}" está reservada a los paneles que se entregan con Rocket Meals y no se puede asignar manualmente. Elige un nombre sin ella: tu panel se marca automáticamente con el nombre de este servidor.',
+    fr: 'Le marquage « {{marker}} » est réservé aux tableaux de bord livrés avec Rocket Meals et ne peut pas être attribué à la main. Veuillez choisir un nom sans ce marquage : votre tableau de bord est automatiquement marqué avec le nom de ce serveur.',
+    ru: 'Обозначение «{{marker}}» зарезервировано за панелями из поставки Rocket Meals и не может быть задано вручную. Пожалуйста, выберите название без него — ваша панель автоматически получит обозначение этого сервера.',
+    tr: '"{{marker}}" işareti Rocket Meals ile birlikte gelen panolara ayrılmıştır ve elle verilemez. Lütfen bu işareti içermeyen bir ad seçin - panonuz otomatik olarak bu sunucunun adıyla işaretlenir.',
+    zh: '标记"{{marker}}"专用于 Rocket Meals 随附的仪表板，不能手动设置。请选择不含该标记的名称——你的仪表板会自动标上本服务器的名称。',
+  },
 };

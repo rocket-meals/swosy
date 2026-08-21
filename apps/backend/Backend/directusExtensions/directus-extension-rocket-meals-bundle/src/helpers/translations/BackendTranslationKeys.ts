@@ -28,6 +28,8 @@ export const BackendTranslationKeys = {
   // Protection of the dashboards shipped with Rocket Meals
   dashboard_system_edit_forbidden: 'dashboard_system_edit_forbidden',
   dashboard_system_panel_edit_forbidden: 'dashboard_system_panel_edit_forbidden',
+  dashboard_system_delete_forbidden: 'dashboard_system_delete_forbidden',
+  dashboard_system_marker_forbidden: 'dashboard_system_marker_forbidden',
 } as const;
 
 export type BackendTranslationKeys = (typeof BackendTranslationKeys)[keyof typeof BackendTranslationKeys];

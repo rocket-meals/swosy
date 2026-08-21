@@ -45,6 +45,18 @@ describe('DashboardNameHelper', () => {
     expect(DashboardNameHelper.withNameMarker(marked, 'Hannover')).toBe(marked);
   });
 
+  it('removes the markers of several keys at once, keeping a "(copy)" in place', () => {
+    expect(DashboardNameHelper.withoutNameMarkers('App [Test] (copy)', ['System', 'Test'])).toBe('App (copy)');
+    expect(DashboardNameHelper.withoutNameMarkers('App [System] (copy)', ['System', 'Test'])).toBe('App (copy)');
+    expect(DashboardNameHelper.withoutNameMarkers('App', ['System', 'Test'])).toBe('App');
+    expect(DashboardNameHelper.withoutNameMarkers(undefined, ['System'])).toBe('');
+  });
+
+  it('moves the marker behind a "(copy)" when a marked name is re-marked', () => {
+    const cleaned = DashboardNameHelper.withoutNameMarkers('App [Test] (copy)', ['System', 'Test']);
+    expect(DashboardNameHelper.withSystemMarker(cleaned)).toBe('App (copy) [System]');
+  });
+
   it('builds the system marker from the system key', () => {
     expect(DashboardNameHelper.SYSTEM_NAME_MARKER).toBe(DashboardNameHelper.buildNameMarker(DashboardNameHelper.SYSTEM_NAME_KEY));
     expect(DashboardNameHelper.SYSTEM_NAME_MARKER).toBe('[System]');
