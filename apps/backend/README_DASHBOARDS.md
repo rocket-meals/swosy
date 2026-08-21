@@ -12,18 +12,23 @@ sind ausgelieferte Dashboards auf Kundenservern schreibgeschützt.
 
 ## Wie ein Dashboard gekennzeichnet ist
 
-Am Suffix im Namen: ausgelieferte Dashboards tragen `(System)`, Dashboards eines Kunden den
-Schlüssel seines Servers - also z. B. `Mensen (System)` und `Auswertung Mensa (Osnabrück)`.
+Am Marker im Namen: ausgelieferte Dashboards tragen `[System]`, jedes andere Dashboard den Schlüssel
+des Servers, auf dem es angelegt wurde - also z. B. `Mensen [System]` und
+`Auswertung Mensa [Osnabrück]`.
 
-Single source of truth ist `SystemDashboardHelper` in
-`packages/common/src/SystemDashboardHelper.ts`:
+Eckige Klammern statt runder, weil Directus beim Duplizieren selbst ein `(copy)` an den Namen hängt:
+`Mensen [System] (copy)` bleibt so eindeutig lesbar. Aus demselben Grund wird der Marker überall im
+Namen gesucht und nicht nur am Ende - eine Kopie eines System-Dashboards muss als solche erkannt
+werden, damit der Hook aus ihr ein Dashboard des Servers machen kann.
+
+Single source of truth ist `DashboardNameHelper` in `packages/common/src/DashboardNameHelper.ts`:
 
 | Member                                                               | Bedeutung                                            |
 | -------------------------------------------------------------------- | ---------------------------------------------------- |
-| `SYSTEM_NAME_KEY` / `SYSTEM_NAME_SUFFIX`                             | Der Schlüssel `System` und der daraus gebaute Marker |
-| `buildNameSuffix(key)`                                               | Baut den Marker für einen beliebigen Schlüssel       |
-| `hasNameSuffix` / `withNameSuffix` / `withoutNameSuffix`             | Prüfen, Ergänzen (idempotent), Entfernen             |
-| `isSystemDashboardName` / `withSystemSuffix` / `withoutSystemSuffix` | Dasselbe, fest auf den Schlüssel `System`            |
+| `SYSTEM_NAME_KEY` / `SYSTEM_NAME_MARKER`                             | Der Schlüssel `System` und der daraus gebaute Marker |
+| `buildNameMarker(key)`                                               | Baut den Marker für einen beliebigen Schlüssel       |
+| `hasNameMarker` / `withNameMarker` / `withoutNameMarker`             | Prüfen, Ergänzen (idempotent), Entfernen             |
+| `isSystemDashboardName` / `withSystemMarker` / `withoutSystemMarker` | Dasselbe, fest auf den Schlüssel `System`            |
 
 Panels haben keinen eigenen Marker - sie sind geschützt, wenn das Dashboard, zu dem sie gehören, ein
 System-Dashboard ist.
@@ -36,14 +41,15 @@ System-Dashboard ist.
   System-Dashboard ist.
 - `panels.create` / `panels.update` / `panels.delete`: **HTTP 403**, wenn das Panel zu einem
   System-Dashboard gehört oder in eines verschoben werden soll.
-- `dashboards.create` durch den **ADMIN_EMAIL**-User: der `(System)`-Marker wird ergänzt, falls er
+- `dashboards.create` durch den **ADMIN_EMAIL**-User: der `[System]`-Marker wird ergänzt, falls er
   fehlt - neue ausgelieferte Dashboards sind damit von Anfang an gekennzeichnet.
-- `dashboards.create` / `dashboards.update` durch andere Nutzer auf einem Kundenserver: ein selbst
-  gesetzter `(System)`-Marker wird entfernt (sonst würde sich der Kunde aus seinem eigenen Dashboard
-  aussperren) und stattdessen der Schlüssel des eigenen Servers gesetzt, z. B. `(Osnabrück)`.
-- Umbenennen eines System-Dashboards: der `(System)`-Marker bleibt erhalten und wird wieder ergänzt.
-  Das gilt auch für den ADMIN_EMAIL-User - ein ausgeliefertes Dashboard soll nicht versehentlich so
-  aussehen, als dürfte man es bearbeiten, obwohl der Deploy es weiterhin zurücksetzt.
+- `dashboards.create` durch alle anderen Nutzer: ein selbst gesetzter `[System]`-Marker wird
+  entfernt (sonst würde sich der Besitzer aus seinem eigenen Dashboard aussperren) und stattdessen
+  der Schlüssel dieses Servers gesetzt, z. B. `[Osnabrück]` oder `[Test]`.
+- `dashboards.update`: ein System-Dashboard behält seinen `[System]`-Marker auch beim Umbenennen -
+  das gilt ebenso für den ADMIN_EMAIL-User, denn ein ausgeliefertes Dashboard soll nicht
+  versehentlich so aussehen, als dürfte man es bearbeiten, obwohl der Deploy es weiterhin
+  zurücksetzt. Jedes andere Dashboard behält beim Umbenennen den Schlüssel dieses Servers.
 
 Die Fehlermeldungen stehen als Keys `dashboard_system_edit_forbidden` und
 `dashboard_system_panel_edit_forbidden` im Übersetzungskatalog

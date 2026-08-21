@@ -41,7 +41,7 @@ export const backendTranslations: TranslationResources = {
 
   /**
    * Rejection of a change to a dashboard that is shipped with Rocket Meals.
-   * `{{marker}}` is the name marker from `SystemDashboardHelper.SYSTEM_NAME_SUFFIX`, so the text
+   * `{{marker}}` is the name marker from `DashboardNameHelper.SYSTEM_NAME_MARKER`, so the text
    * never restates the marker as a literal.
    */
   dashboard_system_edit_forbidden: {
