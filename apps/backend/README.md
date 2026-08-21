@@ -112,6 +112,11 @@ Similar steps can be made for local testing
 - use Directus docks for adding new SSO
   https://docs.directus.io/configuration/config-options/#sso-oauth2-and-openid
 
+## Dashboards (Insights)
+
+Wie System-Dashboards von eigenen Dashboards der Kunden unterschieden werden und wer sie bearbeiten
+darf: siehe "README_DASHBOARDS.md"
+
 ## Contributing - Database Schema
 
 - Read the file at ./Backend/README.md

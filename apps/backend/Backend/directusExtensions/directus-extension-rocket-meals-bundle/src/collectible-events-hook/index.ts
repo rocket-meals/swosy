@@ -1,6 +1,7 @@
 import { COLLECTABLE_AT_FIELDS, CollectionNames, DatabaseTypes } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MyDefineHook } from '../helpers/MyDefineHook';
+import { HookKeysHelper } from '../helpers/HookKeysHelper';
 
 const HOOK_NAME = 'collectible-events-hook';
 
@@ -44,11 +45,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
   filter(CollectionNames.COLLECTIBLE_EVENTS + '.items.update', async (payload, meta) => {
     const isArrayPayload = Array.isArray(payload);
     const payloadArray = normalizePayload(payload);
-    const metaKeysSingle = meta.keys ? [meta.keys as string | number] : [];
-    const keysArray = Array.isArray(meta.keys)
-      ? (meta.keys as (string | number | undefined)[])
-      : metaKeysSingle;
-    const itemIds = keysArray.filter((id): id is string | number => id !== undefined && id !== null);
+    const itemIds = HookKeysHelper.getKeysFromMeta(meta);
 
     const existingItems = itemIds.length > 0 ? await collectibleEventsHelper.readMany(itemIds) : [];
     const existingItemsById = existingItems.reduce<Record<string, DatabaseTypes.CollectibleEvents>>((acc, current) => {
