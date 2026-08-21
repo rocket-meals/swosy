@@ -41,6 +41,12 @@ System-Dashboard ist.
   `(System)`-Marker wird entfernt, damit sich niemand versehentlich aus dem eigenen Dashboard
   aussperrt.
 
+Die Fehlermeldungen stehen als Keys `dashboard_system_edit_forbidden` und
+`dashboard_system_panel_edit_forbidden` im Übersetzungskatalog
+(`helpers/translations/backendTranslations.ts`) und werden in der Sprache des Nutzers
+(`profiles.language`) gerendert. Der Marker wird als `{{marker}}` eingesetzt, damit auch die Texte
+den `SystemDashboardHelper` als einzige Quelle nutzen.
+
 ### Wer darf was
 
 | Instanz      | ADMIN_EMAIL-User | Andere Nutzer                                  |
@@ -53,15 +59,10 @@ mit Administrator-Rolle. Dieser Bypass ist auch technisch notwendig: Der Deploy-
 genau diesem Account an - würde er blockiert, würde jeder Container-Start am Push scheitern. Interne
 Aufrufe ohne Accountability (z. B. andere Hooks) sind ebenfalls ausgenommen.
 
-### Konfiguration
-
-| Variable               | Default | Bedeutung                                                               |
-| ---------------------- | ------- | ----------------------------------------------------------------------- |
-| `DASHBOARD_PROTECTION` | leer    | leer = automatisch (überall an außer auf dem Testsystem), `false` = aus |
-
-Das Testsystem wird über `PUBLIC_URL` erkannt (Abgleich mit `ServerHelper.TEST_SERVER_CONFIG`). Der
-Default ist bewusst "geschützt": Ein auf einem Kundenserver vergessener Eintrag darf nicht dazu
-führen, dass unbemerkt Kundenarbeit verloren geht.
+Das Testsystem erkennt der Hook an `SYNC_FOR_CUSTOMER=Test` (`SyncForCustomerEnum.TEST`), so wie
+auch `news-sync-hook`, `housing-sync-hook`, `cashregister-hook` und `washingmachines-sync-hook` ihre
+Datenquelle bestimmen. Jede andere Instanz gilt als Kundenserver - eine fehlende oder unbekannte
+Angabe schützt also, statt den Schutz stillschweigend abzuschalten.
 
 ## Ein neues System-Dashboard ausliefern
 

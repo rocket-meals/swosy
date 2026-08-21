@@ -1,4 +1,4 @@
-import {CollectibleEventParticipants} from "./types";
+import { CollectibleEventParticipants } from './types';
 
 /**
  * Helper for Account things
@@ -14,8 +14,8 @@ export enum CollectionNames {
   CASHREGISTERS = 'cashregisters',
   CASHREGISTERS_TRANSACTIONS = 'cashregisters_transactions',
   COLLECTIONS_DATES_LAST_UPDATE = 'collections_dates_last_update',
-  COLLECTIBLE_EVENTS = "collectible_events",
-  COLLECTIBLE_EVENT_PARTICIPANTS = "collectible_event_participants",
+  COLLECTIBLE_EVENTS = 'collectible_events',
+  COLLECTIBLE_EVENT_PARTICIPANTS = 'collectible_event_participants',
   BUILDINGS = 'buildings',
   FOODS = 'foods',
   FOODS_TRANSLATIONS = 'foods_translations',
@@ -26,6 +26,8 @@ export enum CollectionNames {
   MAILS = 'mails',
   MAILS_FILES = 'mails_files',
   DIRECTUS_FILES = 'directus_files',
+  DASHBOARDS = 'directus_dashboards',
+  PANELS = 'directus_panels',
   FILES_SHARES = 'files_shares',
   FORMS = 'forms',
   FORM_EXTRACTS = 'form_extracts',
@@ -78,5 +80,5 @@ export const CollectionFieldNames = {
   },
   [CollectionNames.MAILS]: {
     ATTACHMENTS: 'attachments',
-  }
-}
+  },
+};

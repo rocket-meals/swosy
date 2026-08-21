@@ -1,25 +1,38 @@
 import { afterEach, describe, expect, it } from '@jest/globals';
-import { ServerHelper, SystemDashboardHelper } from 'repo-depkit-common';
-import { buildProtectedDashboardMessage, buildProtectedPanelMessage } from '../helpers/DashboardProtectionHelper';
+import { ALL_TRANSLATION_LANGUAGES, SystemDashboardHelper } from 'repo-depkit-common';
+import { BackendTranslationKeys, BackendTranslator } from '../helpers/translations';
 import { createMyForbiddenError } from '../helpers/MyDirectusError';
-import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
+import { EnvVariableHelper, SyncForCustomerEnum } from '../helpers/EnvVariableHelper';
 
-describe('DashboardProtectionHelper', () => {
-  it('names the affected dashboards in the error message', () => {
-    const message = buildProtectedDashboardMessage(['Mensen (System)', 'Speisen (System)']);
-    expect(message).toContain('Mensen (System), Speisen (System)');
-    expect(message).toContain('neues Dashboard');
-  });
+describe('dashboard protection texts', () => {
+  it('renders the marker into the message instead of restating it', () => {
+    const message = BackendTranslator.translate(BackendTranslationKeys.dashboard_system_edit_forbidden, 'de-DE', {
+      marker: SystemDashboardHelper.SYSTEM_NAME_SUFFIX,
+    });
 
-  it('explains the marker in the panel message', () => {
-    const message = buildProtectedPanelMessage(['Mensen (System)']);
-    expect(message).toContain('System-Dashboard');
     expect(message).toContain(SystemDashboardHelper.SYSTEM_NAME_SUFFIX);
+    expect(message).not.toContain('{{marker}}');
   });
 
-  it('builds a message even without known names', () => {
-    expect(buildProtectedDashboardMessage([])).not.toContain('()');
-    expect(buildProtectedPanelMessage([''])).not.toContain('()');
+  it('renders in the language of the user', () => {
+    const message = BackendTranslator.translate(BackendTranslationKeys.dashboard_system_panel_edit_forbidden, 'en-US', {
+      marker: SystemDashboardHelper.SYSTEM_NAME_SUFFIX,
+    });
+
+    expect(message).toContain('system dashboard');
+  });
+
+  it('has a text in every language for both messages', () => {
+    const keys = [BackendTranslationKeys.dashboard_system_edit_forbidden, BackendTranslationKeys.dashboard_system_panel_edit_forbidden];
+
+    for (const key of keys) {
+      for (const language of ALL_TRANSLATION_LANGUAGES) {
+        const message = BackendTranslator.translate(key, language, { marker: SystemDashboardHelper.SYSTEM_NAME_SUFFIX });
+
+        expect(message).not.toBe(key);
+        expect(message).toContain(SystemDashboardHelper.SYSTEM_NAME_SUFFIX);
+      }
+    }
   });
 });
 
@@ -35,56 +48,31 @@ describe('MyDirectusError', () => {
   });
 });
 
-describe('EnvVariableHelper dashboard protection', () => {
-  const originalProtection = process.env.DASHBOARD_PROTECTION;
-  const originalPublicUrl = process.env.PUBLIC_URL;
-
-  const restore = (name: string, value: string | undefined) => {
-    if (value === undefined) {
-      delete process.env[name];
-    } else {
-      process.env[name] = value;
-    }
-  };
+describe('EnvVariableHelper.isTestServer', () => {
+  const originalValue = process.env.SYNC_FOR_CUSTOMER;
 
   afterEach(() => {
-    restore('DASHBOARD_PROTECTION', originalProtection);
-    restore('PUBLIC_URL', originalPublicUrl);
-  });
-
-  it('recognizes the test server by its public url', () => {
-    process.env.PUBLIC_URL = ServerHelper.TEST_SERVER_CONFIG.server_url;
-    expect(EnvVariableHelper.isTestServer()).toBe(true);
-
-    process.env.PUBLIC_URL = `${ServerHelper.TEST_SERVER_CONFIG.server_url}/`;
-    expect(EnvVariableHelper.isTestServer()).toBe(true);
-
-    process.env.PUBLIC_URL = ServerHelper.SWOSY_SERVER_CONFIG.server_url;
-    expect(EnvVariableHelper.isTestServer()).toBe(false);
-
-    delete process.env.PUBLIC_URL;
-    expect(EnvVariableHelper.isTestServer()).toBe(false);
-  });
-
-  it('protects everything but the test server by default', () => {
-    delete process.env.DASHBOARD_PROTECTION;
-
-    process.env.PUBLIC_URL = ServerHelper.SWOSY_SERVER_CONFIG.server_url;
-    expect(EnvVariableHelper.isDashboardProtectionEnabled()).toBe(true);
-
-    process.env.PUBLIC_URL = ServerHelper.TEST_SERVER_CONFIG.server_url;
-    expect(EnvVariableHelper.isDashboardProtectionEnabled()).toBe(false);
-  });
-
-  it('can be overridden by the environment', () => {
-    process.env.PUBLIC_URL = ServerHelper.SWOSY_SERVER_CONFIG.server_url;
-    for (const value of ['false', 'FALSE', '0', 'no', 'off']) {
-      process.env.DASHBOARD_PROTECTION = value;
-      expect(EnvVariableHelper.isDashboardProtectionEnabled()).toBe(false);
+    if (originalValue === undefined) {
+      delete process.env.SYNC_FOR_CUSTOMER;
+    } else {
+      process.env.SYNC_FOR_CUSTOMER = originalValue;
     }
+  });
 
-    process.env.PUBLIC_URL = ServerHelper.TEST_SERVER_CONFIG.server_url;
-    process.env.DASHBOARD_PROTECTION = 'true';
-    expect(EnvVariableHelper.isDashboardProtectionEnabled()).toBe(true);
+  it('recognizes the test system', () => {
+    process.env.SYNC_FOR_CUSTOMER = SyncForCustomerEnum.TEST;
+    expect(EnvVariableHelper.isTestServer()).toBe(true);
+  });
+
+  it('treats every customer instance as a customer server', () => {
+    for (const value of [SyncForCustomerEnum.OSNABRUECK, SyncForCustomerEnum.HANNOVER, 'irgendwas']) {
+      process.env.SYNC_FOR_CUSTOMER = value;
+      expect(EnvVariableHelper.isTestServer()).toBe(false);
+    }
+  });
+
+  it('treats an unset value as a customer server', () => {
+    delete process.env.SYNC_FOR_CUSTOMER;
+    expect(EnvVariableHelper.isTestServer()).toBe(false);
   });
 });

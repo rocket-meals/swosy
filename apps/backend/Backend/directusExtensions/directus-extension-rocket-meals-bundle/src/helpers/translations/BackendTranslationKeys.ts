@@ -24,6 +24,10 @@ export const BackendTranslationKeys = {
   // Push notifications about an upcoming food offer
   notification_foodoffer_body: 'notification_foodoffer_body',
   notification_foodoffer_unknown_food: 'notification_foodoffer_unknown_food',
+
+  // Protection of the dashboards shipped with Rocket Meals
+  dashboard_system_edit_forbidden: 'dashboard_system_edit_forbidden',
+  dashboard_system_panel_edit_forbidden: 'dashboard_system_panel_edit_forbidden',
 } as const;
 
 export type BackendTranslationKeys = (typeof BackendTranslationKeys)[keyof typeof BackendTranslationKeys];

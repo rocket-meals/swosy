@@ -81,11 +81,6 @@ services:
 
       SYNC_FOR_CUSTOMER: "${SYNC_FOR_CUSTOMER}" # For which customer the sync is for
 
-      # Protection of the shipped "(System)" dashboards and their panels: only the ADMIN_EMAIL
-      # user may change them. Empty means automatic - protected everywhere except on the test
-      # system (detected via PUBLIC_URL). "false" switches the protection off explicitly.
-      DASHBOARD_PROTECTION: "${DASHBOARD_PROTECTION}"
-
       FOOD_SYNC_MODE: "${FOOD_SYNC_MODE}"
       FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH: "${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}" # So in directus we know if the host system has a file to sync, but we will use the directus internal file path: /directus/tl1/foodPlan.csv
       FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING: "${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING}"
