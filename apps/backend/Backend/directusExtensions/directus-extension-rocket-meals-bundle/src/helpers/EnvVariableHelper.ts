@@ -1,4 +1,4 @@
-import { DateHelperTimezone, STUDI_FUTTER_APP_STORE_IDS, SWOSY_APP_STORE_IDS } from 'repo-depkit-common';
+import { DateHelperTimezone, ServerHelper, STUDI_FUTTER_APP_STORE_IDS, SWOSY_APP_STORE_IDS } from 'repo-depkit-common';
 
 export enum SyncForCustomerEnum {
   TEST = 'Test',
@@ -106,6 +106,38 @@ export class EnvVariableHelper {
 
   static getAdminPassword() {
     return this.getEnvVariable('ADMIN_PASSWORD');
+  }
+
+  static getPublicUrl(): string | undefined {
+    return this.getEnvVariable('PUBLIC_URL');
+  }
+
+  /**
+   * Whether this instance is the internal test system, on which the shipped dashboards are
+   * authored and everybody with the according rights may edit them.
+   */
+  static isTestServer(): boolean {
+    const publicUrl = this.getPublicUrl();
+    if (!publicUrl) {
+      return false;
+    }
+    const normalize = (url: string) => url.trim().replace(/\/+$/, '').toLowerCase();
+    return normalize(publicUrl) === normalize(ServerHelper.TEST_SERVER_CONFIG.server_url);
+  }
+
+  /**
+   * Whether dashboards shipped with Rocket Meals ("... (System)") are protected against changes
+   * by anyone but the ADMIN_EMAIL user.
+   *
+   * Defaults to enabled on every instance except the test system, so a customer server can never
+   * silently lose the protection. DASHBOARD_PROTECTION overrides the automatic detection.
+   */
+  static isDashboardProtectionEnabled(): boolean {
+    const value = this.getEnvVariable('DASHBOARD_PROTECTION');
+    if (value !== undefined && value !== null && value.trim().length > 0) {
+      return !['false', '0', 'no', 'off'].includes(value.trim().toLowerCase());
+    }
+    return !this.isTestServer();
   }
 
   static getEnvFieldNameForAppStoreConnectPrivateKey(): string {
