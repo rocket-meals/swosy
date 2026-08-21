@@ -12,7 +12,7 @@ export * from './src/DistanceHelper';
 export * from './src/SortingHelper';
 export * from './src/SortingEnums';
 export * from './src/ServerHelper';
-export * from './src/SystemDashboardHelper';
+export * from './src/DashboardNameHelper';
 export * from './src/FormCommonHelper';
 export * from './src/ChatConversationState';
 export * from './src/CronHelper';

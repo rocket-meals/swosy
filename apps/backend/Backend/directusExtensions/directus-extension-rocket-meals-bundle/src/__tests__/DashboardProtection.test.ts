@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from '@jest/globals';
-import { ALL_TRANSLATION_LANGUAGES, LanguageCodes, SystemDashboardHelper } from 'repo-depkit-common';
+import { ALL_TRANSLATION_LANGUAGES, DashboardNameHelper, LanguageCodes } from 'repo-depkit-common';
 import { BackendTranslationKeys, BackendTranslator } from '../helpers/translations';
 import { createMyForbiddenError } from '../helpers/MyDirectusError';
 import { EnvVariableHelper, SyncForCustomerEnum } from '../helpers/EnvVariableHelper';
@@ -7,16 +7,16 @@ import { EnvVariableHelper, SyncForCustomerEnum } from '../helpers/EnvVariableHe
 describe('dashboard protection texts', () => {
   it('renders the marker into the message instead of restating it', () => {
     const message = BackendTranslator.translate(BackendTranslationKeys.dashboard_system_edit_forbidden, LanguageCodes.DE, {
-      marker: SystemDashboardHelper.SYSTEM_NAME_SUFFIX,
+      marker: DashboardNameHelper.SYSTEM_NAME_MARKER,
     });
 
-    expect(message).toContain(SystemDashboardHelper.SYSTEM_NAME_SUFFIX);
+    expect(message).toContain(DashboardNameHelper.SYSTEM_NAME_MARKER);
     expect(message).not.toContain('{{marker}}');
   });
 
   it('renders in the language of the user', () => {
     const message = BackendTranslator.translate(BackendTranslationKeys.dashboard_system_panel_edit_forbidden, LanguageCodes.EN, {
-      marker: SystemDashboardHelper.SYSTEM_NAME_SUFFIX,
+      marker: DashboardNameHelper.SYSTEM_NAME_MARKER,
     });
 
     expect(message).toContain('system dashboard');
@@ -27,10 +27,10 @@ describe('dashboard protection texts', () => {
 
     for (const key of keys) {
       for (const language of ALL_TRANSLATION_LANGUAGES) {
-        const message = BackendTranslator.translate(key, language, { marker: SystemDashboardHelper.SYSTEM_NAME_SUFFIX });
+        const message = BackendTranslator.translate(key, language, { marker: DashboardNameHelper.SYSTEM_NAME_MARKER });
 
         expect(message).not.toBe(key);
-        expect(message).toContain(SystemDashboardHelper.SYSTEM_NAME_SUFFIX);
+        expect(message).toContain(DashboardNameHelper.SYSTEM_NAME_MARKER);
       }
     }
   });

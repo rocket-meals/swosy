@@ -1,6 +1,6 @@
 import { defineHook } from '@directus/extensions-sdk';
 import { Accountability, PrimaryKey } from '@directus/types';
-import { CollectionNames, DatabaseTypes, SystemDashboardHelper } from 'repo-depkit-common';
+import { CollectionNames, DashboardNameHelper, DatabaseTypes } from 'repo-depkit-common';
 import { MyDatabaseHelper, MyEventContext } from '../helpers/MyDatabaseHelper';
 import { EventHelper } from '../helpers/EventHelper';
 import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
@@ -61,7 +61,7 @@ export default defineHook(async ({ filter }, apiContext) => {
   function buildForbiddenError(actingUserInfo: ActingUserInfo, translationKey: BackendTranslationKeys) {
     const profile = typeof actingUserInfo.user?.profile === 'object' ? (actingUserInfo.user.profile as ProfileWithLanguage) : undefined;
     const translate = BackendTranslator.getTranslatorForProfile(profile);
-    return createMyForbiddenError(translate(translationKey, { marker: SystemDashboardHelper.SYSTEM_NAME_SUFFIX }));
+    return createMyForbiddenError(translate(translationKey, { marker: DashboardNameHelper.SYSTEM_NAME_MARKER }));
   }
 
   /** The names of those dashboards among the given ids that are system dashboards. */
@@ -75,7 +75,7 @@ export default defineHook(async ({ filter }, apiContext) => {
         fields: ['id', 'name'],
         limit: -1,
       });
-      return dashboards.map(dashboard => dashboard.name ?? '').filter(name => SystemDashboardHelper.isSystemDashboardName(name));
+      return dashboards.map(dashboard => dashboard.name ?? '').filter(name => DashboardNameHelper.isSystemDashboardName(name));
     } catch (error) {
       // Fail open: a protection feature must never make the backend unusable.
       apiContext.logger.warn(`${HOOK_NAME}: could not read the dashboards: ${error}`);
@@ -101,20 +101,20 @@ export default defineHook(async ({ filter }, apiContext) => {
   }
 
   /**
-   * The name a dashboard of this customer carries: never the system marker, always the key of
-   * their own server - as long as this instance knows which customer it belongs to.
+   * The name a dashboard of this server carries: never the system marker, always the key of this
+   * server - as long as the instance knows which one it is.
    */
-  function getCustomerDashboardName(name: string | null | undefined): string {
-    const nameWithoutSystemMarker = SystemDashboardHelper.withoutSystemSuffix(name);
-    if (nameWithoutSystemMarker !== (name ?? '').trim()) {
-      apiContext.logger.info(`${HOOK_NAME}: removed the system marker from a dashboard of a customer: ${name}`);
+  function getServerDashboardName(name: string | null | undefined): string {
+    if (DashboardNameHelper.isSystemDashboardName(name)) {
+      apiContext.logger.info(`${HOOK_NAME}: removed the system marker from a dashboard of this server: ${name}`);
     }
+    const nameWithoutSystemMarker = DashboardNameHelper.withoutSystemMarker(name);
 
     const serverKey = EnvVariableHelper.getSyncForCustomer();
     if (!serverKey) {
       return nameWithoutSystemMarker;
     }
-    return SystemDashboardHelper.withNameSuffix(nameWithoutSystemMarker, serverKey);
+    return DashboardNameHelper.withNameMarker(nameWithoutSystemMarker, serverKey);
   }
 
   function assertNoSystemDashboards(systemDashboardNames: string[], actingUserInfo: ActingUserInfo) {
@@ -166,16 +166,14 @@ export default defineHook(async ({ filter }, apiContext) => {
 
     // Everything the ADMIN_EMAIL user creates is meant to be shipped, so it is marked right away.
     if (actingUserInfo.isAdminEmailUser) {
-      payload.name = SystemDashboardHelper.withSystemSuffix(payload.name);
+      payload.name = DashboardNameHelper.withSystemMarker(payload.name);
       return payload;
     }
 
-    if (isProtectionActiveFor(actingUserInfo)) {
-      // Nobody else may create a dashboard that looks like a system dashboard - they would lock
-      // themselves out of their own dashboard. It is marked with the key of their own server
-      // instead, so it is visible at a glance whose dashboard it is.
-      payload.name = getCustomerDashboardName(payload.name);
-    }
+    // Everybody else creates a dashboard of this server: it gets the key of the server it was
+    // created on, and never the system marker - with that marker its owner would lock themselves
+    // out of their own dashboard.
+    payload.name = getServerDashboardName(payload.name);
     return payload;
   });
 
@@ -195,11 +193,11 @@ export default defineHook(async ({ filter }, apiContext) => {
       if (systemDashboardNames.length > 0) {
         // A system dashboard keeps its marker: renaming it into an own dashboard would leave a
         // dashboard behind that looks editable but is still reset with every deploy.
-        payload.name = SystemDashboardHelper.withSystemSuffix(payload.name);
-      } else if (isProtectionActiveFor(actingUserInfo)) {
-        // ... and the other way round: an own dashboard may not be renamed into a system one, and
-        // keeps the key of its own server.
-        payload.name = getCustomerDashboardName(payload.name);
+        payload.name = DashboardNameHelper.withSystemMarker(payload.name);
+      } else {
+        // ... and the other way round: no dashboard of this server may be renamed into a system
+        // one, and it keeps the key of the server it belongs to.
+        payload.name = getServerDashboardName(payload.name);
       }
     }
     return payload;
