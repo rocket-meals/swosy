@@ -8,15 +8,11 @@ import { SingleWorkflowRun } from '../workflows-runs-hook/WorkflowRunJobInterfac
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
+import { HookKeysHelper } from '../helpers/HookKeysHelper';
 
 const SCHEDULE_NAME = 'app_reviews_pull';
 
-async function pullAppleReviewsIfConfigured(
-  pullHelper: AppReviewsPullHelper,
-  appleAppId: string | null | undefined,
-  privateKey: string | null | undefined,
-  context: WorkflowRunContext
-): Promise<PulledAppReview[]> {
+async function pullAppleReviewsIfConfigured(pullHelper: AppReviewsPullHelper, appleAppId: string | null | undefined, privateKey: string | null | undefined, context: WorkflowRunContext): Promise<PulledAppReview[]> {
   if (appleAppId && privateKey) {
     return pullHelper.pullAppleReviews(appleAppId, privateKey);
   } else if (appleAppId && !privateKey) {
@@ -27,12 +23,7 @@ async function pullAppleReviewsIfConfigured(
   return [];
 }
 
-async function pullGoogleReviewsIfConfigured(
-  pullHelper: AppReviewsPullHelper,
-  googlePlayPackageName: string | null | undefined,
-  googleServiceAccountKeyJson: string | null | undefined,
-  context: WorkflowRunContext
-): Promise<PulledAppReview[]> {
+async function pullGoogleReviewsIfConfigured(pullHelper: AppReviewsPullHelper, googlePlayPackageName: string | null | undefined, googleServiceAccountKeyJson: string | null | undefined, context: WorkflowRunContext): Promise<PulledAppReview[]> {
   if (googlePlayPackageName && googleServiceAccountKeyJson) {
     return pullHelper.pullGoogleReviews(googlePlayPackageName, googleServiceAccountKeyJson);
   } else if (googlePlayPackageName && !googleServiceAccountKeyJson) {
@@ -45,10 +36,7 @@ async function pullGoogleReviewsIfConfigured(
 
 type ReviewSyncResult = 'created' | 'updated' | 'skipped';
 
-async function syncSingleReview(
-  review: PulledAppReview,
-  appFeedbacksHelper: ReturnType<MyDatabaseHelper['getAppFeedbacksHelper']>
-): Promise<ReviewSyncResult> {
+async function syncSingleReview(review: PulledAppReview, appFeedbacksHelper: ReturnType<MyDatabaseHelper['getAppFeedbacksHelper']>): Promise<ReviewSyncResult> {
   const existing = await appFeedbacksHelper.readByQuery({
     filter: { external_identifier: { _eq: review.external_identifier } },
     limit: 1,
@@ -85,8 +73,12 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
   async runJob(context: WorkflowRunContext): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
     const myDatabaseHelper = context.myDatabaseHelper;
     const logger = {
-      info: async (msg: string) => { await context.logger.appendLog(msg); },
-      error: async (msg: string) => { await context.logger.appendLog('ERROR: ' + msg); },
+      info: async (msg: string) => {
+        await context.logger.appendLog(msg);
+      },
+      error: async (msg: string) => {
+        await context.logger.appendLog('ERROR: ' + msg);
+      },
     };
 
     try {
@@ -154,10 +146,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
     const filterMyDatabaseHelper = new MyDatabaseHelper(apiContext);
     const appFeedbacksHelper = filterMyDatabaseHelper.getAppFeedbacksHelper();
 
-    const metaKeysSingle = meta.keys ? [meta.keys as string] : [];
-    const keysArray: string[] = Array.isArray(meta.keys)
-      ? (meta.keys as string[]).filter((id): id is string => !!id)
-      : metaKeysSingle;
+    const keysArray = HookKeysHelper.getKeysFromMeta(meta);
 
     const logger = {
       info: (msg: string) => apiContext.logger.info(msg),
@@ -172,9 +161,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
 
       const isConfigured = AppStoreReviewsResponseHelper.isConfiguredForSource(feedback.source_identifier);
       if (!isConfigured) {
-        throw new Error(
-          `Cannot set response for ${feedback.source_identifier} review: store not configured`
-        );
+        throw new Error(`Cannot set response for ${feedback.source_identifier} review: store not configured`);
       }
 
       const responseHelper = new AppStoreReviewsResponseHelper(filterMyDatabaseHelper, logger);

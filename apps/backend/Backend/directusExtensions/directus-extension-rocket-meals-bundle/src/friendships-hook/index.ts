@@ -2,6 +2,7 @@ import { CollectionNames, DatabaseTypes, FriendshipStatus } from 'repo-depkit-co
 import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MyDefineHook } from '../helpers/MyDefineHook';
+import { HookKeysHelper } from '../helpers/HookKeysHelper';
 
 const HOOK_NAME = 'friendships-hook';
 
@@ -14,16 +15,9 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
     }
 
     const myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
-    const friendshipsHelper = new ItemsServiceHelper<DatabaseTypes.Friendships>(
-      myDatabaseHelper,
-      CollectionNames.FRIENDSHIPS
-    );
+    const friendshipsHelper = new ItemsServiceHelper<DatabaseTypes.Friendships>(myDatabaseHelper, CollectionNames.FRIENDSHIPS);
 
-    const metaKeysSingle = meta.keys ? [meta.keys as string | number] : [];
-    const keysArray = Array.isArray(meta.keys)
-      ? (meta.keys as (string | number | undefined)[])
-      : metaKeysSingle;
-    const itemIds = keysArray.filter((id): id is string | number => id !== undefined && id !== null);
+    const itemIds = HookKeysHelper.getKeysFromMeta(meta);
 
     for (const friendshipId of itemIds) {
       let currentFriendship: DatabaseTypes.Friendships;
@@ -34,9 +28,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
       }
 
       const requesterId = ItemsServiceHelper.getPrimaryKeyFromItemOrString(currentFriendship.requester_profiles_id);
-      const receiverId = typedPayload.receiver_profiles_id
-        ? ItemsServiceHelper.getPrimaryKeyFromItemOrString(typedPayload.receiver_profiles_id)
-        : ItemsServiceHelper.getPrimaryKeyFromItemOrString(currentFriendship.receiver_profiles_id);
+      const receiverId = typedPayload.receiver_profiles_id ? ItemsServiceHelper.getPrimaryKeyFromItemOrString(typedPayload.receiver_profiles_id) : ItemsServiceHelper.getPrimaryKeyFromItemOrString(currentFriendship.receiver_profiles_id);
 
       if (!requesterId || !receiverId) {
         continue;
@@ -50,16 +42,10 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
             {
               _or: [
                 {
-                  _and: [
-                    { requester_profiles_id: { _eq: String(requesterId) } },
-                    { receiver_profiles_id: { _eq: String(receiverId) } },
-                  ],
+                  _and: [{ requester_profiles_id: { _eq: String(requesterId) } }, { receiver_profiles_id: { _eq: String(receiverId) } }],
                 },
                 {
-                  _and: [
-                    { requester_profiles_id: { _eq: String(receiverId) } },
-                    { receiver_profiles_id: { _eq: String(requesterId) } },
-                  ],
+                  _and: [{ requester_profiles_id: { _eq: String(receiverId) } }, { receiver_profiles_id: { _eq: String(requesterId) } }],
                 },
               ],
             },

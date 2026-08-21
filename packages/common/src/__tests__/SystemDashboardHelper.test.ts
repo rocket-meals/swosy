@@ -26,6 +26,23 @@ describe('SystemDashboardHelper', () => {
     expect(SystemDashboardHelper.withSystemSuffix(undefined)).toBe('(System)');
   });
 
+  it('marks a dashboard with the key of a customer server', () => {
+    expect(SystemDashboardHelper.buildNameSuffix('Osnabrück')).toBe('(Osnabrück)');
+    expect(SystemDashboardHelper.withNameSuffix('Auswertung', 'Osnabrück')).toBe('Auswertung (Osnabrück)');
+    expect(SystemDashboardHelper.hasNameSuffix('Auswertung (Osnabrück)', 'Osnabrück')).toBe(true);
+    expect(SystemDashboardHelper.hasNameSuffix('Auswertung (Osnabrück)', 'Hannover')).toBe(false);
+    expect(SystemDashboardHelper.withoutNameSuffix('Auswertung (Osnabrück)', 'Osnabrück')).toBe('Auswertung');
+  });
+
+  it('does not add a customer marker twice', () => {
+    const marked = SystemDashboardHelper.withNameSuffix('Auswertung', 'Hannover');
+    expect(SystemDashboardHelper.withNameSuffix(marked, 'Hannover')).toBe(marked);
+  });
+
+  it('builds the system marker from the system key', () => {
+    expect(SystemDashboardHelper.SYSTEM_NAME_SUFFIX).toBe(SystemDashboardHelper.buildNameSuffix(SystemDashboardHelper.SYSTEM_NAME_KEY));
+  });
+
   it('removes the marker again', () => {
     expect(SystemDashboardHelper.withoutSystemSuffix('Mensen (System)')).toBe('Mensen');
     expect(SystemDashboardHelper.withoutSystemSuffix('Mensen')).toBe('Mensen');

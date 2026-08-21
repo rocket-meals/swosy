@@ -10,19 +10,20 @@ ausgelieferten Dashboard vornimmt, sind danach wieder weg.
 Damit niemand Arbeit in ein Dashboard steckt, das beim nächsten Update ohnehin zurückgesetzt wird,
 sind ausgelieferte Dashboards auf Kundenservern schreibgeschützt.
 
-## Wie ein System-Dashboard erkannt wird
+## Wie ein Dashboard gekennzeichnet ist
 
-Am Suffix im Namen, z. B. `Mensen (System)`.
+Am Suffix im Namen: ausgelieferte Dashboards tragen `(System)`, Dashboards eines Kunden den
+Schlüssel seines Servers - also z. B. `Mensen (System)` und `Auswertung Mensa (Osnabrück)`.
 
 Single source of truth ist `SystemDashboardHelper` in
 `packages/common/src/SystemDashboardHelper.ts`:
 
-| Member                  | Bedeutung                                          |
-| ----------------------- | -------------------------------------------------- |
-| `SYSTEM_NAME_SUFFIX`    | Der Marker selbst (`(System)`)                     |
-| `isSystemDashboardName` | Prüft, ob ein Name ein System-Dashboard bezeichnet |
-| `withSystemSuffix`      | Ergänzt den Marker (idempotent)                    |
-| `withoutSystemSuffix`   | Entfernt den Marker wieder                         |
+| Member                                                               | Bedeutung                                            |
+| -------------------------------------------------------------------- | ---------------------------------------------------- |
+| `SYSTEM_NAME_KEY` / `SYSTEM_NAME_SUFFIX`                             | Der Schlüssel `System` und der daraus gebaute Marker |
+| `buildNameSuffix(key)`                                               | Baut den Marker für einen beliebigen Schlüssel       |
+| `hasNameSuffix` / `withNameSuffix` / `withoutNameSuffix`             | Prüfen, Ergänzen (idempotent), Entfernen             |
+| `isSystemDashboardName` / `withSystemSuffix` / `withoutSystemSuffix` | Dasselbe, fest auf den Schlüssel `System`            |
 
 Panels haben keinen eigenen Marker - sie sind geschützt, wenn das Dashboard, zu dem sie gehören, ein
 System-Dashboard ist.
@@ -35,11 +36,14 @@ System-Dashboard ist.
   System-Dashboard ist.
 - `panels.create` / `panels.update` / `panels.delete`: **HTTP 403**, wenn das Panel zu einem
   System-Dashboard gehört oder in eines verschoben werden soll.
-- `dashboards.create` durch den **ADMIN_EMAIL**-User: der Marker wird ergänzt, falls er fehlt - neue
-  ausgelieferte Dashboards sind damit von Anfang an gekennzeichnet.
-- `dashboards.create` / `dashboards.update` durch andere Nutzer: ein selbst gesetzter
-  `(System)`-Marker wird entfernt, damit sich niemand versehentlich aus dem eigenen Dashboard
-  aussperrt.
+- `dashboards.create` durch den **ADMIN_EMAIL**-User: der `(System)`-Marker wird ergänzt, falls er
+  fehlt - neue ausgelieferte Dashboards sind damit von Anfang an gekennzeichnet.
+- `dashboards.create` / `dashboards.update` durch andere Nutzer auf einem Kundenserver: ein selbst
+  gesetzter `(System)`-Marker wird entfernt (sonst würde sich der Kunde aus seinem eigenen Dashboard
+  aussperren) und stattdessen der Schlüssel des eigenen Servers gesetzt, z. B. `(Osnabrück)`.
+- Umbenennen eines System-Dashboards: der `(System)`-Marker bleibt erhalten und wird wieder ergänzt.
+  Das gilt auch für den ADMIN_EMAIL-User - ein ausgeliefertes Dashboard soll nicht versehentlich so
+  aussehen, als dürfte man es bearbeiten, obwohl der Deploy es weiterhin zurücksetzt.
 
 Die Fehlermeldungen stehen als Keys `dashboard_system_edit_forbidden` und
 `dashboard_system_panel_edit_forbidden` im Übersetzungskatalog

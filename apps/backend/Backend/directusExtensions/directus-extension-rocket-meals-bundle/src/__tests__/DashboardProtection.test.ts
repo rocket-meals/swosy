@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it } from '@jest/globals';
-import { ALL_TRANSLATION_LANGUAGES, SystemDashboardHelper } from 'repo-depkit-common';
+import { ALL_TRANSLATION_LANGUAGES, LanguageCodes, SystemDashboardHelper } from 'repo-depkit-common';
 import { BackendTranslationKeys, BackendTranslator } from '../helpers/translations';
 import { createMyForbiddenError } from '../helpers/MyDirectusError';
 import { EnvVariableHelper, SyncForCustomerEnum } from '../helpers/EnvVariableHelper';
 
 describe('dashboard protection texts', () => {
   it('renders the marker into the message instead of restating it', () => {
-    const message = BackendTranslator.translate(BackendTranslationKeys.dashboard_system_edit_forbidden, 'de-DE', {
+    const message = BackendTranslator.translate(BackendTranslationKeys.dashboard_system_edit_forbidden, LanguageCodes.DE, {
       marker: SystemDashboardHelper.SYSTEM_NAME_SUFFIX,
     });
 
@@ -15,7 +15,7 @@ describe('dashboard protection texts', () => {
   });
 
   it('renders in the language of the user', () => {
-    const message = BackendTranslator.translate(BackendTranslationKeys.dashboard_system_panel_edit_forbidden, 'en-US', {
+    const message = BackendTranslator.translate(BackendTranslationKeys.dashboard_system_panel_edit_forbidden, LanguageCodes.EN, {
       marker: SystemDashboardHelper.SYSTEM_NAME_SUFFIX,
     });
 

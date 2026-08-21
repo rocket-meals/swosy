@@ -1,10 +1,11 @@
 import { defineHook } from '@directus/extensions-sdk';
-import { Accountability } from '@directus/types';
+import { Accountability, PrimaryKey } from '@directus/types';
 import { CollectionNames, DatabaseTypes, SystemDashboardHelper } from 'repo-depkit-common';
 import { MyDatabaseHelper, MyEventContext } from '../helpers/MyDatabaseHelper';
 import { EventHelper } from '../helpers/EventHelper';
 import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
 import { createMyForbiddenError } from '../helpers/MyDirectusError';
+import { HookKeysHelper } from '../helpers/HookKeysHelper';
 import { BackendTranslationKeys, BackendTranslator, ProfileWithLanguage } from '../helpers/translations';
 
 const HOOK_NAME = 'dashboard-protection-hook';
@@ -27,25 +28,6 @@ function isAdminEmail(email: string | null | undefined): boolean {
     return false;
   }
   return email.trim().toLowerCase() === adminEmail.trim().toLowerCase();
-}
-
-/**
- * Directus passes the affected primary keys as meta.keys (update) or as the input itself
- * (delete). Both are normalized to a list of strings here.
- */
-function getKeysFromMeta(meta: Record<string, any> | undefined): string[] {
-  const keys = meta?.keys ?? (meta?.key !== undefined && meta?.key !== null ? [meta.key] : []);
-  return toKeyList(keys);
-}
-
-function toKeyList(input: unknown): string[] {
-  if (Array.isArray(input)) {
-    return input.map(key => String(key));
-  }
-  if (input === undefined || input === null) {
-    return [];
-  }
-  return [String(input)];
 }
 
 export default defineHook(async ({ filter }, apiContext) => {
@@ -83,7 +65,7 @@ export default defineHook(async ({ filter }, apiContext) => {
   }
 
   /** The names of those dashboards among the given ids that are system dashboards. */
-  async function getSystemDashboardNames(myDatabaseHelper: MyDatabaseHelper, dashboardIds: string[]): Promise<string[]> {
+  async function getSystemDashboardNames(myDatabaseHelper: MyDatabaseHelper, dashboardIds: PrimaryKey[]): Promise<string[]> {
     if (dashboardIds.length === 0) {
       return [];
     }
@@ -101,7 +83,7 @@ export default defineHook(async ({ filter }, apiContext) => {
     }
   }
 
-  async function getDashboardIdsOfPanels(myDatabaseHelper: MyDatabaseHelper, panelIds: string[]): Promise<string[]> {
+  async function getDashboardIdsOfPanels(myDatabaseHelper: MyDatabaseHelper, panelIds: PrimaryKey[]): Promise<PrimaryKey[]> {
     if (panelIds.length === 0) {
       return [];
     }
@@ -118,13 +100,25 @@ export default defineHook(async ({ filter }, apiContext) => {
     }
   }
 
-  async function assertDashboardsAreEditable(dashboardIds: string[], myDatabaseHelper: MyDatabaseHelper, actingUserInfo: ActingUserInfo) {
-    if (dashboardIds.length === 0 || !isProtectionActiveFor(actingUserInfo)) {
-      return;
+  /**
+   * The name a dashboard of this customer carries: never the system marker, always the key of
+   * their own server - as long as this instance knows which customer it belongs to.
+   */
+  function getCustomerDashboardName(name: string | null | undefined): string {
+    const nameWithoutSystemMarker = SystemDashboardHelper.withoutSystemSuffix(name);
+    if (nameWithoutSystemMarker !== (name ?? '').trim()) {
+      apiContext.logger.info(`${HOOK_NAME}: removed the system marker from a dashboard of a customer: ${name}`);
     }
 
-    const systemDashboardNames = await getSystemDashboardNames(myDatabaseHelper, dashboardIds);
-    if (systemDashboardNames.length === 0) {
+    const serverKey = EnvVariableHelper.getSyncForCustomer();
+    if (!serverKey) {
+      return nameWithoutSystemMarker;
+    }
+    return SystemDashboardHelper.withNameSuffix(nameWithoutSystemMarker, serverKey);
+  }
+
+  function assertNoSystemDashboards(systemDashboardNames: string[], actingUserInfo: ActingUserInfo) {
+    if (systemDashboardNames.length === 0 || !isProtectionActiveFor(actingUserInfo)) {
       return;
     }
 
@@ -132,11 +126,18 @@ export default defineHook(async ({ filter }, apiContext) => {
     throw buildForbiddenError(actingUserInfo, BackendTranslationKeys.dashboard_system_edit_forbidden);
   }
 
+  async function assertDashboardsAreEditable(dashboardIds: PrimaryKey[], myDatabaseHelper: MyDatabaseHelper, actingUserInfo: ActingUserInfo) {
+    if (dashboardIds.length === 0 || !isProtectionActiveFor(actingUserInfo)) {
+      return;
+    }
+    assertNoSystemDashboards(await getSystemDashboardNames(myDatabaseHelper, dashboardIds), actingUserInfo);
+  }
+
   /**
    * Panels are protected through their dashboard: they may not be changed inside a system
    * dashboard, and they may not be moved into one.
    */
-  async function assertPanelsAreEditable(panelIds: string[], targetDashboardIds: string[], myDatabaseHelper: MyDatabaseHelper, actingUserInfo: ActingUserInfo) {
+  async function assertPanelsAreEditable(panelIds: PrimaryKey[], targetDashboardIds: PrimaryKey[], myDatabaseHelper: MyDatabaseHelper, actingUserInfo: ActingUserInfo) {
     if (panelIds.length === 0 && targetDashboardIds.length === 0) {
       return;
     }
@@ -154,7 +155,7 @@ export default defineHook(async ({ filter }, apiContext) => {
     throw buildForbiddenError(actingUserInfo, BackendTranslationKeys.dashboard_system_panel_edit_forbidden);
   }
 
-  function getDashboardIdOfPanelPayload(payload: Partial<DatabaseTypes.DirectusPanels>): string[] {
+  function getDashboardIdOfPanelPayload(payload: Partial<DatabaseTypes.DirectusPanels>): PrimaryKey[] {
     return typeof payload?.dashboard === 'string' ? [payload.dashboard] : [];
   }
 
@@ -169,11 +170,11 @@ export default defineHook(async ({ filter }, apiContext) => {
       return payload;
     }
 
-    // Nobody else may create a dashboard that looks like a system dashboard - they would lock
-    // themselves out of their own dashboard.
-    if (isProtectionActiveFor(actingUserInfo) && SystemDashboardHelper.isSystemDashboardName(payload.name)) {
-      apiContext.logger.info(`${HOOK_NAME}: removed the system marker from a new dashboard: ${payload.name}`);
-      payload.name = SystemDashboardHelper.withoutSystemSuffix(payload.name);
+    if (isProtectionActiveFor(actingUserInfo)) {
+      // Nobody else may create a dashboard that looks like a system dashboard - they would lock
+      // themselves out of their own dashboard. It is marked with the key of their own server
+      // instead, so it is visible at a glance whose dashboard it is.
+      payload.name = getCustomerDashboardName(payload.name);
     }
     return payload;
   });
@@ -183,12 +184,23 @@ export default defineHook(async ({ filter }, apiContext) => {
     const myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     const actingUserInfo = await getActingUserInfo(myDatabaseHelper, eventContext?.accountability);
 
-    await assertDashboardsAreEditable(getKeysFromMeta(meta), myDatabaseHelper, actingUserInfo);
+    const dashboardIds = HookKeysHelper.getKeysFromMeta(meta);
+    const isRename = payload.name !== undefined;
+    // Needed for the rename rules below even when the protection does not apply to this user.
+    const systemDashboardNames = isProtectionActiveFor(actingUserInfo) || isRename ? await getSystemDashboardNames(myDatabaseHelper, dashboardIds) : [];
 
-    // Renaming an own dashboard into a system dashboard is not allowed either.
-    if (payload.name !== undefined && isProtectionActiveFor(actingUserInfo) && SystemDashboardHelper.isSystemDashboardName(payload.name)) {
-      apiContext.logger.info(`${HOOK_NAME}: removed the system marker from a renamed dashboard: ${payload.name}`);
-      payload.name = SystemDashboardHelper.withoutSystemSuffix(payload.name);
+    assertNoSystemDashboards(systemDashboardNames, actingUserInfo);
+
+    if (isRename) {
+      if (systemDashboardNames.length > 0) {
+        // A system dashboard keeps its marker: renaming it into an own dashboard would leave a
+        // dashboard behind that looks editable but is still reset with every deploy.
+        payload.name = SystemDashboardHelper.withSystemSuffix(payload.name);
+      } else if (isProtectionActiveFor(actingUserInfo)) {
+        // ... and the other way round: an own dashboard may not be renamed into a system one, and
+        // keeps the key of its own server.
+        payload.name = getCustomerDashboardName(payload.name);
+      }
     }
     return payload;
   });
@@ -197,7 +209,7 @@ export default defineHook(async ({ filter }, apiContext) => {
     const myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     const actingUserInfo = await getActingUserInfo(myDatabaseHelper, eventContext?.accountability);
 
-    await assertDashboardsAreEditable(toKeyList(input), myDatabaseHelper, actingUserInfo);
+    await assertDashboardsAreEditable(HookKeysHelper.toPrimaryKeys(input), myDatabaseHelper, actingUserInfo);
     return input;
   });
 
@@ -215,7 +227,7 @@ export default defineHook(async ({ filter }, apiContext) => {
     const myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     const actingUserInfo = await getActingUserInfo(myDatabaseHelper, eventContext?.accountability);
 
-    await assertPanelsAreEditable(getKeysFromMeta(meta), getDashboardIdOfPanelPayload(payload), myDatabaseHelper, actingUserInfo);
+    await assertPanelsAreEditable(HookKeysHelper.getKeysFromMeta(meta), getDashboardIdOfPanelPayload(payload), myDatabaseHelper, actingUserInfo);
     return input;
   });
 
@@ -223,7 +235,7 @@ export default defineHook(async ({ filter }, apiContext) => {
     const myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     const actingUserInfo = await getActingUserInfo(myDatabaseHelper, eventContext?.accountability);
 
-    await assertPanelsAreEditable(toKeyList(input), [], myDatabaseHelper, actingUserInfo);
+    await assertPanelsAreEditable(HookKeysHelper.toPrimaryKeys(input), [], myDatabaseHelper, actingUserInfo);
     return input;
   });
 });
