@@ -108,15 +108,6 @@ export class EnvVariableHelper {
     return this.getEnvVariable('ADMIN_PASSWORD');
   }
 
-  /**
-   * Whether this instance is the internal test system, on which the shipped "(System)" dashboards
-   * are authored and everybody with the according Directus rights may edit them. Every other
-   * instance is a customer server, where only the ADMIN_EMAIL user may touch them.
-   */
-  static isTestServer(): boolean {
-    return this.getSyncForCustomer() === SyncForCustomerEnum.TEST;
-  }
-
   static getEnvFieldNameForAppStoreConnectPrivateKey(): string {
     return 'APP_STORE_CONNECT_PRIVATE_KEY';
   }

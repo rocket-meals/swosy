@@ -52,11 +52,16 @@ export default defineHook(async ({ filter }, apiContext) => {
   }
 
   /**
-   * On the test system the shipped dashboards are authored, so everybody with the according
-   * Directus rights may edit them. On a customer server only the ADMIN_EMAIL user may.
+   * System dashboards belong to the ADMIN_EMAIL user, on every instance - the test system
+   * included, where they are authored. Being an administrator by role is not enough: their
+   * changes would be reset with the next deploy, and on the test system they would silently end
+   * up in the next release.
+   *
+   * Dashboards that are not marked as system dashboards stay untouched by this and are edited
+   * along the usual Directus permissions.
    */
   function isProtectionActiveFor(actingUserInfo: ActingUserInfo): boolean {
-    return !EnvVariableHelper.isTestServer() && !actingUserInfo.isAdminEmailUser;
+    return !actingUserInfo.isAdminEmailUser;
   }
 
   function buildForbiddenError(actingUserInfo: ActingUserInfo, translationKey: BackendTranslationKeys) {
@@ -193,29 +198,24 @@ export default defineHook(async ({ filter }, apiContext) => {
     const myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     const actingUserInfo = await getActingUserInfo(myDatabaseHelper, eventContext?.accountability);
 
-    const dashboardIds = HookKeysHelper.getKeysFromMeta(meta);
-    const isRename = payload.name !== undefined;
-    // Needed for the rename rules below even when the protection does not apply to this user. The
-    // ADMIN_EMAIL user needs neither, so they do not pay for the query.
-    const needsSystemDashboardNames = !actingUserInfo.isAdminEmailUser && (isProtectionActiveFor(actingUserInfo) || isRename);
-    const systemDashboardNames = needsSystemDashboardNames ? await getSystemDashboardNames(myDatabaseHelper, dashboardIds) : [];
-
-    assertNoSystemDashboards(systemDashboardNames, actingUserInfo);
-
-    if (isRename) {
-      if (actingUserInfo.isAdminEmailUser) {
-        // Whatever the ADMIN_EMAIL user renames becomes a shipped dashboard, so they can turn
-        // "App [Test]" into "App [System]" - and never leave the key of a server behind.
+    if (actingUserInfo.isAdminEmailUser) {
+      // Whatever the ADMIN_EMAIL user renames becomes a shipped dashboard, so they can turn
+      // "App [Test]" into "App [System]" - and never leave the key of a server behind.
+      if (payload.name !== undefined) {
         payload.name = buildSystemDashboardName(payload.name);
-      } else if (systemDashboardNames.length > 0) {
-        // A system dashboard keeps its marker: renaming it into an own dashboard would leave a
-        // dashboard behind that looks editable but is still reset with every deploy.
-        payload.name = DashboardNameHelper.withSystemMarker(payload.name);
-      } else {
-        // ... and the other way round: nobody else may rename a dashboard into a system one.
-        assertSystemMarkerIsAllowed(payload.name, actingUserInfo);
-        payload.name = buildServerDashboardName(payload.name, EnvVariableHelper.getSyncForCustomer());
       }
+      return payload;
+    }
+
+    // Everybody else may not touch a system dashboard at all - not its name, and not its color,
+    // icon or note either.
+    const dashboardIds = HookKeysHelper.getKeysFromMeta(meta);
+    assertNoSystemDashboards(await getSystemDashboardNames(myDatabaseHelper, dashboardIds), actingUserInfo);
+
+    if (payload.name !== undefined) {
+      // What is left is a dashboard of this server, and it may not be renamed into a system one.
+      assertSystemMarkerIsAllowed(payload.name, actingUserInfo);
+      payload.name = buildServerDashboardName(payload.name, EnvVariableHelper.getSyncForCustomer());
     }
     return payload;
   });
