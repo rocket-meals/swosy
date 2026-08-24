@@ -1,15 +1,15 @@
 # Accessibility Report
 
-> Generated: 2026-08-17T03:26:23.044Z | axe-core 4.12.1 | Rules: wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice | Viewport: 1280x900
+> Generated: 2026-08-24T03:28:00.714Z | axe-core 4.12.1 | Rules: wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice | Viewport: 1280x900
 > Base URL: http://localhost:8081/rocket-meals
 
 ## Summary
 
-Total violations (affected elements): **197** — 🟥 Critical: 1, 🟧 Serious: 8, 🟨 Moderate: 188, 🟦 Minor: 0
+Total violations (affected elements): **198** — 🟥 Critical: 1, 🟧 Serious: 8, 🟨 Moderate: 189, 🟦 Minor: 0
 
 | Screen | 🟥 Critical | 🟧 Serious | 🟨 Moderate | 🟦 Minor | Total | Passes |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| licenseInformation | 0 | 0 | 107 | 0 | 107 | 22 |
+| licenseInformation | 0 | 0 | 108 | 0 | 108 | 22 |
 | foodPlanList | 0 | 0 | 7 | 0 | 7 | 28 |
 | login | 0 | 0 | 5 | 0 | 5 | 8 |
 | price-group | 0 | 0 | 5 | 0 | 5 | 8 |
@@ -53,7 +53,7 @@ Total violations (affected elements): **197** — 🟥 Critical: 1, 🟧 Serious
 
 | Rule | Impact | Elements | Screens | Help |
 | --- | --- | ---: | ---: | --- |
-| `region` | 🟨 moderate | 183 | 38 | [All page content should be contained by landmarks](https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer) |
+| `region` | 🟨 moderate | 184 | 38 | [All page content should be contained by landmarks](https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer) |
 | `document-title` | 🟧 serious | 5 | 5 | [Documents must have <title> element to aid in navigation](https://dequeuniversity.com/rules/axe/4.12/document-title?application=axe-puppeteer) |
 | `landmark-one-main` | 🟨 moderate | 4 | 4 | [Document should have one main landmark](https://dequeuniversity.com/rules/axe/4.12/landmark-one-main?application=axe-puppeteer) |
 | `page-has-heading-one` | 🟨 moderate | 1 | 1 | [Page should contain a level-one heading](https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=axe-puppeteer) |
@@ -68,12 +68,12 @@ Total violations (affected elements): **197** — 🟥 Critical: 1, 🟧 Serious
 
 URL: `http://localhost:8081/rocket-meals/licenseInformation?kioskMode=true`
 
-- 🟨 **region** (moderate) — 107 element(s)
+- 🟨 **region** (moderate) — 108 element(s)
   - All page content should be contained by landmarks ([docs](https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer))
   - `.r-1p0dtai.r-ipm5af.r-dnmrzs`
   - `.r-12vffkv`
   - `.r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(1) > .r-1w2pmg.r-633pao.r-1udh08x`
-  - … and 104 more (see JSON report)
+  - … and 105 more (see JSON report)
 
 ### foodPlanList
 
