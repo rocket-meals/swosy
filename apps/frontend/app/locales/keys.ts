@@ -156,6 +156,7 @@ export const TranslationKeys = {
 	notification_index_introduction: 'notification_index_introduction',
 	notification_please_enable_notifications_in_order_to_use_this_feature: 'notification_please_enable_notifications_in_order_to_use_this_feature',
 	notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified: 'notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified',
+	notification_open_system_settings: 'notification_open_system_settings',
 	this_feature_is_not_available_currently_reason: 'this_feature_is_not_available_currently_reason',
 	device_android_system: 'device_android_system',
 	device_ios_system: 'device_ios_system',

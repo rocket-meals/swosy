@@ -16,6 +16,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { DatabaseTypes, EmailHelper, StringHelper } from 'repo-depkit-common';
 import { useAppSelector } from '@/redux/hooks';
 import { configureStore } from '@/redux/store';
+import { buildAppStateJsonForFeedback } from '@/helper/appStateForFeedback';
 import { myContrastColor } from '@/helper/ColorHelper';
 import SettingsList from '@/components/SettingsList';
 import SettingsListEditable from '@/components/SettingsListEditable';
@@ -236,7 +237,9 @@ const FeedbackScreen = () => {
 	const appendAppStateToContent = (sanitizedInput: { [key: string]: any }) => {
 		if (!includeAppState) return;
 		try {
-			const appStateJson = JSON.stringify(configureStore.getState());
+			// The raw state contains the whole content catalogue with all translations (>1 MB in
+			// production), which blew up the feedback entry and the notification mail.
+			const appStateJson = buildAppStateJsonForFeedback(configureStore.getState());
 			sanitizedInput.content = `${sanitizedInput.content ?? ''}\n\n---APP_STATE_JSON---\n${appStateJson}`;
 		} catch (e) {
 			console.warn('feedback-support: could not serialize app state', e);
