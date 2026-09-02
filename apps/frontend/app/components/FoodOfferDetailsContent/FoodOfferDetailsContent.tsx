@@ -16,7 +16,6 @@ import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { DELETE_FOOD_FEEDBACK_LOCAL, SET_FOOD_DETAILS_LAST_TAB, UPDATE_FOOD_FEEDBACK_LOCAL, UPDATE_PROFILE } from '@/redux/Types/types';
 import { FoodOfferDetailTab } from '@/constants/TabEnums';
 import { MarkingContent } from '@/components/MarkingBottomSheet';
-import NotificationSheet from '@/components/NotificationSheet/NotificationSheet';
 import usePlatformHelper from '@/helper/platformHelper';
 import { NotificationHelper } from '@/helper/NotificationHelper';
 import { getCurrentDevice, getDeviceIdentifier, getDeviceInformationWithoutPushToken } from '@/helper/DeviceHelper';
@@ -28,6 +27,7 @@ import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
+import useFoodNotificationModal from '@/hooks/useFoodNotificationModal';
 import FoodHeader from '@/app/(app)/foodoffers/details/components/FoodHeader';
 import NotificationSection from '@/app/(app)/foodoffers/details/components/NotificationSection';
 import TabController from '@/app/(app)/foodoffers/details/components/TabController';
@@ -91,6 +91,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const selectedCanteen = useSelectedCanteen();
     const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
     const { openAccountRequiredModal } = useAccountRequiredModal();
+    const { openNotificationConfirmModal, openNotificationPermissionModal } = useFoodNotificationModal();
 
     // Initialisierung mit dem zuletzt gespeicherten Reiter.
     // Ist der gespeicherte Wert kein gültiger Tab (z. B. null, undefined oder ein veralteter Wert),
@@ -129,18 +130,6 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             console.error('Error fetching food details: ', e);
         }
     }, [offerId, initialFoodId, language]);
-
-    const openNotificationSheet = useCallback(() => {
-        showModal({
-            children: <NotificationSheet closeSheet={closeModal} previousFeedback={previousFeedback} foodDetails={foodDetails} />,
-        });
-    }, [showModal, closeModal, previousFeedback, foodDetails]);
-
-    const openNotificationPermissionSheet = useCallback(() => {
-        showModal({
-            children: <NotificationSheet variant="permission-required" closeSheet={closeModal} previousFeedback={previousFeedback} foodDetails={foodDetails} />,
-        });
-    }, [showModal, closeModal, previousFeedback, foodDetails]);
 
     const openMenuSheet = useCallback(() => {
         showModal({
@@ -323,7 +312,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             return;
         }
         if (!isSmartPhone()) {
-            openNotificationSheet();
+            openNotificationConfirmModal(updateFoodFeedbackNotification);
             return;
         }
         // Switching a reminder off must always work, even when the system permission is gone.
@@ -342,8 +331,8 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
         // Without the system permission the reminder would never arrive. iOS only shows its
         // permission dialog once, so instead of leaving the toggle silently dead we explain the
         // situation and offer the way to the system settings.
-        openNotificationPermissionSheet();
-    }, [user, isSmartPhone, previousFeedback, updateFoodFeedbackNotification, updateDeviceInfo, openNotificationSheet, openNotificationPermissionSheet, openAccountRequiredModal]);
+        openNotificationPermissionModal();
+    }, [user, isSmartPhone, previousFeedback, updateFoodFeedbackNotification, updateDeviceInfo, openNotificationConfirmModal, openNotificationPermissionModal, openAccountRequiredModal]);
 
     const pagerViewStyle = useMemo(() => [
         styles.pagerView,
