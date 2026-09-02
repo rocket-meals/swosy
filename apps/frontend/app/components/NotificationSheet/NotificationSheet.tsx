@@ -16,8 +16,9 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useAppSelector } from '@/redux/hooks';
+import { NotificationHelper } from '@/helper/NotificationHelper';
 
-const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previousFeedback, foodDetails }) => {
+const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previousFeedback, foodDetails, variant = 'confirm' }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
@@ -98,6 +99,21 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previ
 		return () => subscription?.remove();
 	}, []);
 
+	// The permission variant is shown when the system permission is missing and can no longer be
+	// requested from inside the app - confirming a reminder would have no effect there.
+	const isPermissionRequired = variant === 'permission-required';
+
+	const openSystemNotificationSettings = async () => {
+		await NotificationHelper.openSystemNotificationSettings();
+		closeSheet();
+	};
+
+	const bodyText = isPermissionRequired
+		? translate(TranslationKeys.notification_please_enable_notifications_in_order_to_use_this_feature)
+		: translate(TranslationKeys.notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified);
+	const confirmLabel = isPermissionRequired ? translate(TranslationKeys.notification_open_system_settings) : translate(TranslationKeys.confirm);
+	const onConfirm = isPermissionRequired ? openSystemNotificationSettings : updateFoodFeedbackNotification;
+
 	const sheetHeadingFontSize = isWeb() && screenWidth > 800 ? 40 : 28;
 	const bodyFontSize = isWeb() && screenWidth > 800 ? 18 : 16;
 
@@ -130,10 +146,10 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previ
 						fontSize: bodyFontSize,
 					}}
 				>
-					{translate(TranslationKeys.notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified)}
+					{bodyText}
 				</Text>
-				<TouchableOpacity style={{ ...styles.button, backgroundColor: foods_area_color }} onPress={updateFoodFeedbackNotification}>
-					<Text style={{ ...styles.buttonLabel, color: contrastColor }}>{translate(TranslationKeys.confirm)}</Text>
+				<TouchableOpacity style={{ ...styles.button, backgroundColor: foods_area_color }} onPress={onConfirm}>
+					<Text style={{ ...styles.buttonLabel, color: contrastColor }}>{confirmLabel}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={{ ...styles.cancelButton, borderColor: foods_area_color }} onPress={closeSheet}>
 					<Text style={{ ...styles.buttonLabel, color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>

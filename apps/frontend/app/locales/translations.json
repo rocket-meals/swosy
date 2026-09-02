@@ -1419,6 +1419,16 @@
     "tr": "Bu özelliği kullanmak için lütfen bildirimleri etkinleştirin.",
     "zh": "请启用通知以使用此功能。"
   },
+  "notification_open_system_settings": {
+    "de": "Systemeinstellungen öffnen",
+    "en": "Open system settings",
+    "ar": "فتح إعدادات النظام",
+    "es": "Abrir la configuración del sistema",
+    "fr": "Ouvrir les paramètres du système",
+    "ru": "Открыть системные настройки",
+    "tr": "Sistem ayarlarını aç",
+    "zh": "打开系统设置"
+  },
   "notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified": {
     "de": "Bitte benachrichtige mich auf meinen Smartphones. Die Benachrichtigungen müssen auf den Geräten erlaubt sein.",
     "en": "Please notify me on my smartphones. Notifications must be allowed on the devices.",

@@ -59,7 +59,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const { show: showModal, close: closeModal } = useMyScrollViewModal();
     const { addPointsForTabSwitch, addPointsForFoodRating5Stars } = useAppRatingScore();
 
-    const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
+    const { isSmartPhone } = usePlatformHelper();
     const user = useAppSelector((state) => state.authReducer.user, shallowEqual);
     const profile = useAppSelector((state) => state.authReducer.profile, shallowEqual);
     const isManagement = useAppSelector((state) => state.authReducer.isManagement);
@@ -79,7 +79,6 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
 
     const profileHelper = useMemo(() => new ProfileHelper(), []);
     const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
-    const [, pushTokenObj, _, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
 
     const { foodDetails, foodAttributes, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId });
     const { groupedAttributes } = useFoodAttributes({ foodAttributes, foodDetails });
@@ -134,6 +133,12 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const openNotificationSheet = useCallback(() => {
         showModal({
             children: <NotificationSheet closeSheet={closeModal} previousFeedback={previousFeedback} foodDetails={foodDetails} />,
+        });
+    }, [showModal, closeModal, previousFeedback, foodDetails]);
+
+    const openNotificationPermissionSheet = useCallback(() => {
+        showModal({
+            children: <NotificationSheet variant="permission-required" closeSheet={closeModal} previousFeedback={previousFeedback} foodDetails={foodDetails} />,
         });
     }, [showModal, closeModal, previousFeedback, foodDetails]);
 
@@ -317,27 +322,28 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             openAccountRequiredModal();
             return;
         }
-        if (isSmartPhone()) {
-            const result = await NotificationHelper.getDeviceNotificationPermission();
-            if (isAndroid()) {
-                if (result?.granted) {
-                    updateFoodFeedbackNotification();
-                } else if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
-                    requestDeviceNotificationPermission();
-                }
-            }
-            if (isIOS()) {
-                const result = await NotificationHelper.requestDeviceNotificationPermission();
-                if (result?.granted) {
-                    updateFoodFeedbackNotification();
-                } else if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
-                    requestDeviceNotificationPermission();
-                }
-            }
-        } else {
+        if (!isSmartPhone()) {
             openNotificationSheet();
+            return;
         }
-    }, [user, isSmartPhone, isAndroid, isIOS, pushTokenObj, requestDeviceNotificationPermission, updateFoodFeedbackNotification, openNotificationSheet, openAccountRequiredModal]);
+        // Switching a reminder off must always work, even when the system permission is gone.
+        if (previousFeedback?.notify) {
+            await updateFoodFeedbackNotification();
+            return;
+        }
+        const permission = await NotificationHelper.ensureDeviceNotificationPermission();
+        if (permission?.granted) {
+            await updateFoodFeedbackNotification();
+            // The stored device still carries the old permission/push token - without refreshing it
+            // the backend has no token to send the reminder to.
+            await updateDeviceInfo();
+            return;
+        }
+        // Without the system permission the reminder would never arrive. iOS only shows its
+        // permission dialog once, so instead of leaving the toggle silently dead we explain the
+        // situation and offer the way to the system settings.
+        openNotificationPermissionSheet();
+    }, [user, isSmartPhone, previousFeedback, updateFoodFeedbackNotification, updateDeviceInfo, openNotificationSheet, openNotificationPermissionSheet, openAccountRequiredModal]);
 
     const pagerViewStyle = useMemo(() => [
         styles.pagerView,
