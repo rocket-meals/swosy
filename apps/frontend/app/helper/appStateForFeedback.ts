@@ -24,6 +24,11 @@ export type OmittedCollection = {
 export type AppStateSanitizeOptions = {
 	/** Arrays and dictionaries whose JSON is longer than this are replaced by a placeholder. */
 	maxCollectionLength?: number;
+	/**
+	 * Nesting level from which on collections may be replaced. The default keeps the state root
+	 * and its reducer slices (`canteenReducer`, `campus`, …) and only drops what is inside them.
+	 */
+	minCollapseDepth?: number;
 	/** Longer strings are cut off (wiki/markdown content can be several pages long). */
 	maxStringLength?: number;
 	/** Hard limit for the resulting JSON; anything beyond it is cut off. */
@@ -40,6 +45,7 @@ export type AppStateSanitizeSummary = {
 };
 
 export const DEFAULT_MAX_COLLECTION_LENGTH = 20000;
+export const DEFAULT_MIN_COLLAPSE_DEPTH = 2;
 export const DEFAULT_MAX_STRING_LENGTH = 500;
 export const DEFAULT_MAX_TOTAL_LENGTH = 100000;
 
@@ -78,7 +84,7 @@ type SanitizeResult = {
  * Recursively sanitizes `value`, returning the cleaned value together with an estimate of its
  * serialized size so that parents can decide whether they are still small enough to keep.
  */
-function sanitizeValue(value: unknown, options: Required<AppStateSanitizeOptions>, summary: AppStateSanitizeSummary, seen: Set<object>): SanitizeResult {
+function sanitizeValue(value: unknown, options: Required<AppStateSanitizeOptions>, summary: AppStateSanitizeSummary, seen: Set<object>, depth: number): SanitizeResult {
 	if (typeof value === 'string') {
 		if (value.length > options.maxStringLength) {
 			summary.truncatedStrings += 1;
@@ -105,9 +111,9 @@ function sanitizeValue(value: unknown, options: Required<AppStateSanitizeOptions
 	seen.add(value as object);
 	try {
 		if (Array.isArray(value)) {
-			return sanitizeArray(value, options, summary, seen);
+			return sanitizeArray(value, options, summary, seen, depth);
 		}
-		return sanitizeObject(value as Record<string, unknown>, options, summary, seen);
+		return sanitizeObject(value as Record<string, unknown>, options, summary, seen, depth);
 	} finally {
 		seen.delete(value as object);
 	}
@@ -119,14 +125,15 @@ function omitCollection(kind: OmittedCollection['__omitted'], length: number, su
 	return { value: placeholder, size: 40 };
 }
 
-function sanitizeArray(value: unknown[], options: Required<AppStateSanitizeOptions>, summary: AppStateSanitizeSummary, seen: Set<object>): SanitizeResult {
+function sanitizeArray(value: unknown[], options: Required<AppStateSanitizeOptions>, summary: AppStateSanitizeSummary, seen: Set<object>, depth: number): SanitizeResult {
+	const mayBeOmitted = depth >= options.minCollapseDepth;
 	const items: unknown[] = [];
 	let size = 2;
 	for (const entry of value) {
-		const sanitized = sanitizeValue(entry, options, summary, seen);
+		const sanitized = sanitizeValue(entry, options, summary, seen, depth + 1);
 		items.push(sanitized.value === undefined ? null : sanitized.value);
 		size += sanitized.size + 1;
-		if (size > options.maxCollectionLength) {
+		if (mayBeOmitted && size > options.maxCollectionLength) {
 			// No need to keep sanitizing entries of a collection that gets dropped anyway.
 			return omitCollection('array', value.length, summary);
 		}
@@ -134,8 +141,10 @@ function sanitizeArray(value: unknown[], options: Required<AppStateSanitizeOptio
 	return { value: items, size };
 }
 
-function sanitizeObject(value: Record<string, unknown>, options: Required<AppStateSanitizeOptions>, summary: AppStateSanitizeSummary, seen: Set<object>): SanitizeResult {
-	const dictionary = isEntityDictionary(value);
+function sanitizeObject(value: Record<string, unknown>, options: Required<AppStateSanitizeOptions>, summary: AppStateSanitizeSummary, seen: Set<object>, depth: number): SanitizeResult {
+	// The state root and its reducer slices are what makes the snapshot readable - only the
+	// collections inside them may be dropped.
+	const mayBeOmitted = depth >= options.minCollapseDepth && isEntityDictionary(value);
 	const result: Record<string, unknown> = {};
 	let size = 2;
 	for (const [key, entry] of Object.entries(value)) {
@@ -143,11 +152,11 @@ function sanitizeObject(value: Record<string, unknown>, options: Required<AppSta
 			summary.removedTranslationFields += 1;
 			continue;
 		}
-		const sanitized = sanitizeValue(entry, options, summary, seen);
+		const sanitized = sanitizeValue(entry, options, summary, seen, depth + 1);
 		if (sanitized.value === undefined) continue;
 		result[key] = sanitized.value;
 		size += key.length + 4 + sanitized.size;
-		if (dictionary && size > options.maxCollectionLength) {
+		if (mayBeOmitted && size > options.maxCollectionLength) {
 			return omitCollection('object', Object.keys(value).length, summary);
 		}
 	}
@@ -160,6 +169,7 @@ function sanitizeObject(value: Record<string, unknown>, options: Required<AppSta
 export function sanitizeAppStateForFeedback(state: unknown, options?: AppStateSanitizeOptions): { state: unknown; summary: AppStateSanitizeSummary } {
 	const resolvedOptions: Required<AppStateSanitizeOptions> = {
 		maxCollectionLength: options?.maxCollectionLength ?? DEFAULT_MAX_COLLECTION_LENGTH,
+		minCollapseDepth: options?.minCollapseDepth ?? DEFAULT_MIN_COLLAPSE_DEPTH,
 		maxStringLength: options?.maxStringLength ?? DEFAULT_MAX_STRING_LENGTH,
 		maxTotalLength: options?.maxTotalLength ?? DEFAULT_MAX_TOTAL_LENGTH,
 	};
@@ -168,7 +178,7 @@ export function sanitizeAppStateForFeedback(state: unknown, options?: AppStateSa
 		omittedCollections: 0,
 		truncatedStrings: 0,
 	};
-	const sanitized = sanitizeValue(state, resolvedOptions, summary, new Set<object>());
+	const sanitized = sanitizeValue(state, resolvedOptions, summary, new Set<object>(), 0);
 	return { state: sanitized.value, summary };
 }
 

@@ -68,6 +68,17 @@ describe('sanitizeAppStateForFeedback', () => {
 		expect((state as any).canteenReducer.buildingsDict).toEqual({ __omitted: 'object', length: 50 });
 	});
 
+	it('never drops the state root or a reducer slice, however big they are', () => {
+		const { state } = sanitizeAppStateForFeedback(
+			{ canteenReducer: { canteens: buildBuildings(50), buildingsDict: {} }, campus: { campuses: buildBuildings(50) } },
+			{ maxCollectionLength: 500 }
+		);
+
+		expect(Object.keys(state as object)).toEqual(['canteenReducer', 'campus']);
+		expect(Object.keys((state as any).canteenReducer)).toEqual(['canteens', 'buildingsDict']);
+		expect((state as any).canteenReducer.canteens).toEqual({ __omitted: 'array', length: 50 });
+	});
+
 	it('keeps small, user specific data untouched', () => {
 		const ownFoodFeedbacks = [{ id: 'feedback-1', food: 'food-1', rating: 4, notify: null }];
 
