@@ -180,7 +180,6 @@ export const TranslationKeys = {
 	food_plan_week: 'food_plan_week',
 	response: 'response',
 	your_request: 'your_request',
-	support_warning_no_account_or_mail_provided_therefore_we_cannot_answer_your_request: 'support_warning_no_account_or_mail_provided_therefore_we_cannot_answer_your_request',
 	my_support_tickets: 'my_support_tickets',
 	no_permission_for: 'no_permission_for',
 	please_create_an_account: 'please_create_an_account',
@@ -427,6 +426,7 @@ export const TranslationKeys = {
 	linked_elements_food_image: 'linked_elements_food_image',
 	linked_elements_rating: 'linked_elements_rating',
 	linked_elements_comment: 'linked_elements_comment',
+	linked_elements_app_feedback: 'linked_elements_app_feedback',
 	mark_all_chats_as_read: 'mark_all_chats_as_read',
 	mark_all_chats_as_unread: 'mark_all_chats_as_unread',
 	rss_feed: 'rss_feed',
@@ -639,6 +639,7 @@ export const TranslationKeys = {
 	debug_request_send: 'debug_request_send',
 	debug_request_default_title: 'debug_request_default_title',
 	debug_request_default_content: 'debug_request_default_content',
+	feedback_open_chat: 'feedback_open_chat',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];
