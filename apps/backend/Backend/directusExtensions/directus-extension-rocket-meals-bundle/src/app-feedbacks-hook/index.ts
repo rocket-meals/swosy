@@ -1,9 +1,19 @@
-import { CollectionNames, DateHelper, MailAdresses } from 'repo-depkit-common';
+import {
+  AppFeedbackContentHelper,
+  ChatConversationState,
+  CollectionNames,
+  DatabaseTypes,
+  DateHelper,
+  MailAdresses,
+} from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { HtmlTemplatesEnum } from '../helpers/html/HtmlGenerator';
+import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
 import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'activity_auto_cleanup';
+
+const CHAT_ALIAS_MAX_LENGTH = 255;
 
 type AppFeedbackMailTemplateVariablesType = {
   subject: string;
@@ -29,6 +39,62 @@ type AppFeedbackMailTemplateVariablesType = {
   }[];
 };
 
+/**
+ * Build the chat title shown in the chat list of the app. Falls back to the feedback id, so
+ * the chat is still identifiable when the user did not provide a title.
+ */
+function getChatAliasForAppFeedback(app_feedback: DatabaseTypes.AppFeedbacks): string {
+  const title = (app_feedback.title || '').trim();
+  const alias = title.length > 0 ? title : app_feedback.id;
+  return alias.substring(0, CHAT_ALIAS_MAX_LENGTH);
+}
+
+/**
+ * Create a support chat for a freshly created app feedback of a user with a profile, so that
+ * support can answer the request directly inside the app. Anonymous feedbacks (without a
+ * profile) cannot be answered via chat and are therefore skipped - those users have to
+ * provide a contact email instead.
+ *
+ * Returns the id of the created chat or undefined when no chat was created.
+ */
+async function createChatForAppFeedback(
+  myDatabaseHelper: MyDatabaseHelper,
+  app_feedback: DatabaseTypes.AppFeedbacks
+): Promise<string | undefined> {
+  const profileId = ItemsServiceHelper.getPrimaryKeyFromItemOrString(app_feedback.profile);
+  if (!profileId) {
+    return undefined;
+  }
+
+  // Never replace an already linked chat (e.g. when the feedback was created via an import).
+  const existingChatId = ItemsServiceHelper.getPrimaryKeyFromItemOrString(app_feedback.chat);
+  if (existingChatId) {
+    return String(existingChatId);
+  }
+
+  const chatsHelper = myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.Chats>(CollectionNames.CHATS);
+  const chatsParticipantsHelper = myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.ChatsParticipants>(
+    CollectionNames.CHATS_PARTICIPANTS
+  );
+  const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
+
+  const chatId = await chatsHelper.createOne({
+    alias: getChatAliasForAppFeedback(app_feedback),
+    // The content may carry the technical app state dump - only the text the user wrote belongs here.
+    initial_message: AppFeedbackContentHelper.stripAppState(app_feedback.content),
+    conversation_state: ChatConversationState.WAITING_FOR_SUPPORT,
+  });
+
+  await chatsParticipantsHelper.createOne({
+    chats_id: String(chatId),
+    profiles_id: String(profileId),
+  });
+
+  await appFeedbacksHelper.updateOne(app_feedback.id, { chat: String(chatId) });
+
+  return String(chatId);
+}
+
 export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ schedule, action }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
   const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
@@ -43,6 +109,13 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
     let app_feedback = await appFeedbacksHelper.readOne(app_feedback_id);
     if (!app_feedback) {
       return;
+    }
+
+    try {
+      await createChatForAppFeedback(myDatabaseHelper, app_feedback);
+    } catch (error) {
+      // A failing chat creation must not swallow the notification mail to support.
+      console.error(`app-feedbacks-hook: Failed to create chat for app feedback ${app_feedback_id}`, error);
     }
 
     const server_info = await myDatabaseHelper.getServerInfo();

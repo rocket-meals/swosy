@@ -906,6 +906,17 @@
                   }
                 }
               }
+            },
+            {
+              "chat": {
+                "app_feedbacks": {
+                  "profile": {
+                    "id": {
+                      "_eq": "$CURRENT_USER.profile"
+                    }
+                  }
+                }
+              }
             }
           ]
         }
@@ -1004,6 +1015,15 @@
                   }
                 }
               }
+            },
+            {
+              "app_feedbacks": {
+                "profile": {
+                  "id": {
+                    "_eq": "$CURRENT_USER.profile"
+                  }
+                }
+              }
             }
           ]
         }
@@ -1024,7 +1044,8 @@
       "conversation_state",
       "initial_message",
       "food_feedbacks",
-      "linked_entities"
+      "linked_entities",
+      "app_feedbacks"
     ],
     "presets": null,
     "action": "read",
@@ -1051,6 +1072,15 @@
             },
             {
               "food_feedbacks": {
+                "profile": {
+                  "id": {
+                    "_eq": "$CURRENT_USER.profile"
+                  }
+                }
+              }
+            },
+            {
+              "app_feedbacks": {
                 "profile": {
                   "id": {
                     "_eq": "$CURRENT_USER.profile"
