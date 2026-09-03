@@ -46,6 +46,7 @@ export type AppFeedbacks = {
   chat?: string | Chats | null;
   contact_email?: string | null;
   content?: string | null;
+  data?: unknown | null;
   date_created?: string | null;
   date_updated?: string | null;
   device_brand?: string | null;
