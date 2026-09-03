@@ -43,6 +43,7 @@ export type AppElementsTranslations = {
 };
 
 export type AppFeedbacks = {
+  chat?: string | Chats | null;
   contact_email?: string | null;
   content?: string | null;
   date_created?: string | null;
@@ -66,6 +67,7 @@ export type AppFeedbacks = {
   sort?: number | null;
   source_identifier?: string | null;
   source_rating_raw?: number | null;
+  state?: string | null;
   status?: string | null;
   title?: string | null;
   user_created?: string | null;

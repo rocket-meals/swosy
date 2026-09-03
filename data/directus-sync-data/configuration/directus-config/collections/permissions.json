@@ -561,7 +561,8 @@
       "user_created",
       "date_created",
       "user_updated",
-      "date_updated"
+      "date_updated",
+      "state"
     ],
     "presets": null,
     "action": "create",
@@ -632,7 +633,8 @@
       "display_fontscale",
       "display_height",
       "display_pixelratio",
-      "display_scale"
+      "display_scale",
+      "state"
     ],
     "presets": null,
     "action": "update",
@@ -2742,7 +2744,8 @@
       "display_scale",
       "display_fontscale",
       "display_height",
-      "display_width"
+      "display_width",
+      "state"
     ],
     "presets": null,
     "action": "create",

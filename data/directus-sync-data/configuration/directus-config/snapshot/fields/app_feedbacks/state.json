@@ -1,23 +1,36 @@
 {
   "collection": "app_feedbacks",
-  "field": "content",
-  "type": "text",
+  "field": "state",
+  "type": "string",
   "meta": {
     "collection": "app_feedbacks",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "content",
+    "field": "state",
     "group": null,
     "hidden": false,
-    "interface": "input-multiline",
+    "interface": "select-dropdown",
     "note": null,
     "options": {
-      "softLength": 65536
+      "choices": [
+        {
+          "text": "open",
+          "value": "open"
+        },
+        {
+          "text": "in review",
+          "value": "in_review"
+        },
+        {
+          "text": "solved / closed",
+          "value": "closed"
+        }
+      ]
     },
     "readonly": false,
     "required": false,
-    "sort": 10,
+    "sort": 29,
     "special": null,
     "translations": null,
     "validation": null,
@@ -25,11 +38,11 @@
     "width": "full"
   },
   "schema": {
-    "name": "content",
+    "name": "state",
     "table": "app_feedbacks",
-    "data_type": "text",
-    "default_value": null,
-    "max_length": null,
+    "data_type": "character varying",
+    "default_value": "open",
+    "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,
