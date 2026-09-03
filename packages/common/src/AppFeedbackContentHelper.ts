@@ -1,27 +1,47 @@
+/** Shape of the `app_feedbacks.data` payload written by the app. */
+export type AppFeedbackData = {
+  /** The sanitized redux state as an object - present when it could be parsed back. */
+  app_state?: unknown;
+  /** The serialized state as raw text - used when the dump had to be truncated to fit the size cap. */
+  app_state_json?: string;
+  /** True when `app_state_json` is a cut off dump and therefore no longer valid JSON. */
+  app_state_truncated?: boolean;
+  /** Set when the state could not be serialized at all, so the failure can still be investigated. */
+  app_state_error?: unknown;
+};
+
 /**
- * The feedback screen may append a serialized app state to the feedback content so that
- * support can debug the reported issue. The markers below separate that technical payload
- * from the text the user actually wrote.
+ * Helpers around the app state that the feedback screen collects for support.
  *
- * Everything starting at a marker is machine data and must never be shown to the user
- * again (e.g. as the initial message of the support chat or in the linked-elements preview).
+ * The state lives in the JSON column `app_feedbacks.data`. Older feedbacks still carry it
+ * appended to `content` behind one of the markers below - {@link stripAppState} removes that
+ * legacy payload so only the text the user wrote is shown (chat message, linked-element preview).
  */
 export class AppFeedbackContentHelper {
+  /** Legacy marker: the app state used to be appended to `content` behind this line. */
   static readonly APP_STATE_JSON_MARKER = '---APP_STATE_JSON---';
+  /** Legacy marker for a failed serialization, appended to `content` the same way. */
   static readonly APP_STATE_JSON_ERROR_MARKER = '---APP_STATE_JSON_ERROR---';
 
-  /** Append the serialized app state to the feedback content. */
-  static appendAppState(content: string | undefined | null, appStateJson: string): string {
-    return `${content ?? ''}\n\n${AppFeedbackContentHelper.APP_STATE_JSON_MARKER}\n${appStateJson}`;
+  /** Wrap the serialized app state for the `data` column of an app feedback. */
+  static buildAppStateData(appStateJson: string): AppFeedbackData {
+    try {
+      return { app_state: JSON.parse(appStateJson) };
+    } catch {
+      // The serializer caps the dump at a maximum length, so a large state is cut off and no
+      // longer parseable. Keep the raw text instead of losing the whole snapshot.
+      return { app_state_json: appStateJson, app_state_truncated: true };
+    }
   }
 
-  /** Append the serialization error, so a failed app state dump can still be investigated. */
-  static appendAppStateError(content: string | undefined | null, errorJson: string): string {
-    return `${content ?? ''}\n\n${AppFeedbackContentHelper.APP_STATE_JSON_ERROR_MARKER}\n${errorJson}`;
+  /** Wrap a failed app state serialization for the `data` column of an app feedback. */
+  static buildAppStateErrorData(error: unknown): AppFeedbackData {
+    const errorInfo = error instanceof Error ? { message: error.message, stack: error.stack } : error;
+    return { app_state_error: errorInfo };
   }
 
   /**
-   * Return only the part the user wrote, i.e. the content without any appended app state.
+   * Return only the part the user wrote, i.e. the content without a legacy app state dump.
    */
   static stripAppState(content: string | undefined | null): string {
     if (!content) {

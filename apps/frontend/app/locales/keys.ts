@@ -639,6 +639,7 @@ export const TranslationKeys = {
 	debug_request_send: 'debug_request_send',
 	debug_request_default_title: 'debug_request_default_title',
 	debug_request_default_content: 'debug_request_default_content',
+	feedback_open_chat: 'feedback_open_chat',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];

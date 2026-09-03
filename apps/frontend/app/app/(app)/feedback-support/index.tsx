@@ -105,6 +105,7 @@ const FeedbackScreen = () => {
 				display_scale: response?.display_scale,
 				positive: response?.positive,
 				profile: response?.profile,
+				chat: response?.chat,
 			});
 		}
 	};
@@ -246,25 +247,27 @@ const FeedbackScreen = () => {
 		[inputValues, openTextInputModal, translate]
 	);
 
-	const appendAppStateToContent = (sanitizedInput: { [key: string]: any }) => {
+	// The app state belongs into the `data` column, not into `content`: `content` is what the
+	// user wrote and is shown as the initial message of the support chat.
+	const applyAppStateToFeedback = (sanitizedInput: { [key: string]: any }) => {
 		if (!includeAppState) return;
 		try {
 			// The raw state contains the whole content catalogue with all translations (>1 MB in
 			// production), which blew up the feedback entry and the notification mail.
 			const appStateJson = buildAppStateJsonForFeedback(configureStore.getState());
-			sanitizedInput.content = AppFeedbackContentHelper.appendAppState(sanitizedInput.content, appStateJson);
+			sanitizedInput.data = AppFeedbackContentHelper.buildAppStateData(appStateJson);
 		} catch (e) {
 			console.warn('feedback-support: could not serialize app state', e);
 			// send the serialization error itself along with the feedback so it can be investigated
-			const errorInfo = e instanceof Error ? { message: e.message, stack: e.stack } : e;
-			sanitizedInput.content = AppFeedbackContentHelper.appendAppStateError(sanitizedInput.content, JSON.stringify(errorInfo));
+			sanitizedInput.data = AppFeedbackContentHelper.buildAppStateErrorData(e);
 		}
 	};
 
 	const handleCreateAppFeedback = async (defaultValues?: { title: string; content: string }) => {
 		if (inputValues) {
 			setLoading(true);
-			const { email, ...filteredInputValues } = inputValues;
+			// `chat` is linked by the server-side hook and is not writable for the app.
+			const { email, chat, ...filteredInputValues } = inputValues;
 			applyDefaultFeedbackValues(filteredInputValues, defaultValues);
 			if (profile?.id) {
 				filteredInputValues.profile = profile?.id;
@@ -278,7 +281,7 @@ const FeedbackScreen = () => {
 					return true;
 				})
 			);
-			appendAppStateToContent(sanitizedInput);
+			applyAppStateToFeedback(sanitizedInput);
 			try {
 				console.log('Creating app feedback with input:');
 				await appFeedback.createAppFeedback(sanitizedInput);
@@ -310,7 +313,8 @@ const FeedbackScreen = () => {
 	const handleUpdateAppFeedback = async () => {
 		if (inputValues && app_feedbacks_id) {
 			setLoading(true);
-			const { email, ...filteredInputValues } = inputValues;
+			// `chat` is linked by the server-side hook and is not writable for the app.
+			const { email, chat, ...filteredInputValues } = inputValues;
 			if (profile?.id) {
 				filteredInputValues.profile = profile?.id;
 			}
@@ -323,7 +327,7 @@ const FeedbackScreen = () => {
 					return true;
 				})
 			);
-			appendAppStateToContent(sanitizedInput);
+			applyAppStateToFeedback(sanitizedInput);
 			try {
 				await appFeedback.updateAppFeedback(String(app_feedbacks_id), sanitizedInput);
 				setLoading(false);
@@ -370,6 +374,9 @@ const FeedbackScreen = () => {
 		}
 		return inputValues[key] || '';
 	};
+
+	// A chat only exists for feedbacks of users with a profile - the hook creates it on the server.
+	const linkedChatId = typeof inputValues.chat === 'object' ? inputValues.chat?.id : inputValues.chat;
 
 	const isSubmitDisabled =
 		inputValues?.title?.length === 0 || inputValues?.content?.length === 0 || isContactEmailMissing;
@@ -489,6 +496,38 @@ const FeedbackScreen = () => {
 								</>
 							)}
 						</TouchableOpacity>
+
+						{linkedChatId && (
+							<TouchableOpacity
+								style={[
+									styles.row,
+									{
+										marginTop: 10,
+										padding: 15,
+										borderRadius: 10,
+										backgroundColor: theme.screen.iconBg,
+									},
+								]}
+								onPress={() => router.push({ pathname: '/chats/details', params: { chat_id: String(linkedChatId) } })}
+							>
+								<View style={styles.leftView}>
+									<Text
+										style={[
+											styles.linkText,
+											{
+												color: theme.screen.text,
+												fontSize: linkFontSize,
+											},
+										]}
+									>
+										{translate(TranslationKeys.feedback_open_chat)}
+									</Text>
+								</View>
+								<View>
+									<MaterialCommunityIcons name="chat" size={24} color={theme.screen.text} />
+								</View>
+							</TouchableOpacity>
+						)}
 					</View>
 
 					<View style={[styles.section, { width: windowWidth > 600 ? '85%' : '100%' }]}>

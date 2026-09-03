@@ -6188,5 +6188,15 @@
     "ru": "Удерживайте логотип приложения, чтобы показать параметры отладки",
     "tr": "Hata ayıklama seçeneklerini göstermek için uygulama logosuna basılı tut",
     "zh": "长按应用标志以显示调试选项"
+  },
+  "feedback_open_chat": {
+    "de": "Zum Chat",
+    "en": "Go to chat",
+    "ar": "الانتقال إلى المحادثة",
+    "es": "Ir al chat",
+    "fr": "Aller au chat",
+    "ru": "Перейти к чату",
+    "tr": "Sohbete git",
+    "zh": "前往聊天"
   }
 }
