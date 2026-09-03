@@ -6,13 +6,13 @@
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
 | 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 10 | 10 |
+| 🔧 Maintainability | 11 | 11 |
 
-**Total issues:** 10
+**Total issues:** 11
 
 ---
 
-## 🔧 Maintainability (10/10)
+## 🔧 Maintainability (11/11)
 
 - **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172
@@ -41,6 +41,10 @@
 - **The empty object is useless.**
   apps/frontend/app/helper/AppUsageEventHelper.ts:113
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/AppUsageEventHelper.ts#L113
+
+- **Prefer `node:path` over `path`.**
+  apps/frontend/app/scripts/deploy-gh-pages.js:20
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/scripts/deploy-gh-pages.js#L20
 
 - **Move this component definition out of the parent component and pass data as props.**
   apps/tag-und-jahr/frontend/app/_layout.tsx:31
