@@ -3,7 +3,7 @@
   "info": {
     "title": "Dynamic API Specification",
     "description": "This is a dynamically generated API specification for all endpoints existing on the current project.",
-    "version": "83b2d08f3b9f35d6d6b2a573d582aafefc462616"
+    "version": "bacaff6fb602ac594b3a740ed18c932907d6bdc1"
   },
   "servers": [
     {
@@ -49471,6 +49471,21 @@
                 "$ref": "#/components/schemas/Users"
               }
             ]
+          },
+          "app_feedbacks": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "$ref": "#/components/schemas/ItemsAppFeedbacks"
+                }
+              ]
+            }
           },
           "food_feedbacks": {
             "nullable": true,

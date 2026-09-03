@@ -497,6 +497,7 @@ export type ChatMessages = {
 
 export type Chats = {
   alias?: string | null;
+  app_feedbacks: any[] | AppFeedbacks[];
   conversation_state?: string | null;
   date_created?: string | null;
   date_updated?: string | null;

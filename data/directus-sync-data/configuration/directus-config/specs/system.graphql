@@ -1240,6 +1240,8 @@ type chats {
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  app_feedbacks(filter: app_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_feedbacks]
+  app_feedbacks_func: count_functions
   food_feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
   food_feedbacks_func: count_functions
   messages(filter: chat_messages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [chat_messages]
@@ -4433,6 +4435,81 @@ input app_elements_translations_quantifier_filter {
   _none: app_elements_translations_filter
 }
 
+input app_feedbacks_filter {
+  response_read_by_user: boolean_filter_operators
+  feedback_read_by_support: boolean_filter_operators
+  positive: boolean_filter_operators
+  priority: number_filter_operators
+  sort: number_filter_operators
+  source_rating_raw: number_filter_operators
+  response: string_filter_operators
+  content: string_filter_operators
+  display_scale: number_filter_operators
+  display_pixelratio: number_filter_operators
+  display_fontscale: number_filter_operators
+  display_width: number_filter_operators
+  display_height: number_filter_operators
+  device_platform: string_filter_operators
+  device_brand: string_filter_operators
+  contact_email: string_filter_operators
+  state: string_filter_operators
+  external_identifier: string_filter_operators
+  source_identifier: string_filter_operators
+  title: string_filter_operators
+  status: string_filter_operators
+  device_system_version: string_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  profile: profiles_filter
+  id: id_filter_operators
+  chat: chats_filter
+  user_updated: directus_users_filter
+  user_created: id_filter_operators
+  _and: [app_feedbacks_filter]
+  _or: [app_feedbacks_filter]
+}
+
+""""""
+input app_feedbacks_quantifier_filter {
+  response_read_by_user: boolean_filter_operators
+  feedback_read_by_support: boolean_filter_operators
+  positive: boolean_filter_operators
+  priority: number_filter_operators
+  sort: number_filter_operators
+  source_rating_raw: number_filter_operators
+  response: string_filter_operators
+  content: string_filter_operators
+  display_scale: number_filter_operators
+  display_pixelratio: number_filter_operators
+  display_fontscale: number_filter_operators
+  display_width: number_filter_operators
+  display_height: number_filter_operators
+  device_platform: string_filter_operators
+  device_brand: string_filter_operators
+  contact_email: string_filter_operators
+  state: string_filter_operators
+  external_identifier: string_filter_operators
+  source_identifier: string_filter_operators
+  title: string_filter_operators
+  status: string_filter_operators
+  device_system_version: string_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  profile: profiles_filter
+  id: id_filter_operators
+  chat: chats_filter
+  user_updated: directus_users_filter
+  user_created: id_filter_operators
+  _and: [app_feedbacks_filter]
+  _or: [app_feedbacks_filter]
+  _some: app_feedbacks_filter
+  _none: app_feedbacks_filter
+}
+
 input app_settings_balance_translations_filter {
   be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
@@ -5037,6 +5114,8 @@ input chats_filter {
   id: id_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  app_feedbacks: app_feedbacks_quantifier_filter
+  app_feedbacks_func: count_function_filter_operators
   food_feedbacks: foods_feedbacks_quantifier_filter
   food_feedbacks_func: count_function_filter_operators
   messages: chat_messages_quantifier_filter
@@ -5212,6 +5291,38 @@ input create_apartments_input {
   washingmachines: [create_washingmachines_input]
 }
 
+input create_app_feedbacks_input {
+  response_read_by_user: Boolean
+  feedback_read_by_support: Boolean
+  positive: Boolean
+  priority: Int
+  sort: Int
+  source_rating_raw: Int
+  response: String
+  content: String
+  display_scale: Float
+  display_pixelratio: Float
+  display_fontscale: Float
+  display_width: Float
+  display_height: Float
+  device_platform: String
+  device_brand: String
+  contact_email: String
+  state: String
+  external_identifier: String
+  source_identifier: String
+  title: String
+  status: String
+  device_system_version: String
+  date_updated: Date
+  date_created: Date
+  profile: create_profiles_input
+  id: ID
+  chat: create_chats_input
+  user_updated: create_directus_users_input
+  user_created: ID
+}
+
 input create_buildings_businesshours_input {
   id: ID
   buildings_id: create_buildings_input
@@ -5357,6 +5468,7 @@ input create_chats_input {
   id: ID
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  app_feedbacks: [create_app_feedbacks_input]
   food_feedbacks: [create_foods_feedbacks_input]
   messages: [create_chat_messages_input]
   participants: [create_chats_participants_input]
@@ -8353,6 +8465,38 @@ input update_apartments_input {
   washingmachines: [update_washingmachines_input]
 }
 
+input update_app_feedbacks_input {
+  response_read_by_user: Boolean
+  feedback_read_by_support: Boolean
+  positive: Boolean
+  priority: Int
+  sort: Int
+  source_rating_raw: Int
+  response: String
+  content: String
+  display_scale: Float
+  display_pixelratio: Float
+  display_fontscale: Float
+  display_width: Float
+  display_height: Float
+  device_platform: String
+  device_brand: String
+  contact_email: String
+  state: String
+  external_identifier: String
+  source_identifier: String
+  title: String
+  status: String
+  device_system_version: String
+  date_updated: Date
+  date_created: Date
+  profile: update_profiles_input
+  id: ID
+  chat: update_chats_input
+  user_updated: update_directus_users_input
+  user_created: ID
+}
+
 input update_buildings_businesshours_input {
   id: ID
   buildings_id: update_buildings_input
@@ -8498,6 +8642,7 @@ input update_chats_input {
   id: ID
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  app_feedbacks: [update_app_feedbacks_input]
   food_feedbacks: [update_foods_feedbacks_input]
   messages: [update_chat_messages_input]
   participants: [update_chats_participants_input]
