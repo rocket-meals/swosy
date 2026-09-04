@@ -1423,8 +1423,8 @@ type app_elements_translations {
   be_source_for_translations: Boolean
   let_be_translated: Boolean
   id: ID!
-  content: String
   popup_content: String
+  content: String
   popup_button_text: String
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
   app_elements_id(filter: app_elements_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_elements
@@ -1447,8 +1447,8 @@ type app_elements_translations_aggregated_count {
   be_source_for_translations: Int
   let_be_translated: Int
   id: Int
-  content: Int
   popup_content: Int
+  content: Int
   popup_button_text: Int
   languages_code: Int
   app_elements_id: Int
@@ -1465,21 +1465,21 @@ type app_elements_translations_mutated {
 }
 
 type app_feedbacks {
+  response_read_by_user: Boolean
   feedback_read_by_support: Boolean
   positive: Boolean
-  response_read_by_user: Boolean
-  source_rating_raw: Int
   priority: Int
   sort: Int
+  source_rating_raw: Int
   content: String
-  response: String
   data: JSON
   data_func: count_functions
-  display_height: Float
-  display_fontscale: Float
-  display_scale: Float
+  response: String
   display_pixelratio: Float
+  display_scale: Float
   display_width: Float
+  display_fontscale: Float
+  display_height: Float
   device_brand: String
   contact_email: String
   state: String
@@ -1514,20 +1514,20 @@ type app_feedbacks_aggregated {
 }
 
 type app_feedbacks_aggregated_count {
+  response_read_by_user: Int
   feedback_read_by_support: Int
   positive: Int
-  response_read_by_user: Int
-  source_rating_raw: Int
   priority: Int
   sort: Int
+  source_rating_raw: Int
   content: Int
-  response: Int
   data: Int
-  display_height: Int
-  display_fontscale: Int
-  display_scale: Int
+  response: Int
   display_pixelratio: Int
+  display_scale: Int
   display_width: Int
+  display_fontscale: Int
+  display_height: Int
   device_brand: Int
   contact_email: Int
   state: Int
@@ -1547,14 +1547,14 @@ type app_feedbacks_aggregated_count {
 }
 
 type app_feedbacks_aggregated_fields {
-  source_rating_raw: Float
   priority: Float
   sort: Float
-  display_height: Float
-  display_fontscale: Float
-  display_scale: Float
+  source_rating_raw: Float
   display_pixelratio: Float
+  display_scale: Float
   display_width: Float
+  display_fontscale: Float
+  display_height: Float
 }
 
 type app_feedbacks_mutated {
@@ -1564,23 +1564,10 @@ type app_feedbacks_mutated {
 }
 
 type app_settings {
-  """KI generierte Bilder für Speisen ohne Fotos erstellen?"""
-  foods_image_ai_generation_enabled: Boolean
-  friends_enabled: Boolean
-
-  """Zeigt in der App den Bereich News an"""
-  news_enabled: Boolean
-
-  """Zeige den Lageplan in der App an"""
-  map_enabled: Boolean
-  notifications_android_enabled: Boolean
-  notifications_email_enabled: Boolean
-  animations_auto_start: Boolean
-
-  """Bereich "Mensa" in der App aktivieren?"""
-  foods_enabled: Boolean
   course_timetable_enabled: Boolean
   balance_enabled: Boolean
+  notifications_android_enabled: Boolean
+  notifications_email_enabled: Boolean
   notifications_ios_enabled: Boolean
 
   """Zeige in der App den Bereich Campus an"""
@@ -1588,16 +1575,30 @@ type app_settings {
 
   """Zeige die Auslastungsprognose in der App"""
   utilization_display_enabled: Boolean
-  id: ID!
+  animations_auto_start: Boolean
 
-  """Zeigt den Bereich Wohnen in der App an"""
-  housing_enabled: Boolean
+  """Soll die Anzahl der Bewertungen angezeigt werden?"""
+  foods_ratings_amount_display: Boolean
 
   """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
   foods_ratings_average_display: Boolean
 
-  """Soll die Anzahl der Bewertungen angezeigt werden?"""
-  foods_ratings_amount_display: Boolean
+  """Zeigt den Bereich Wohnen in der App an"""
+  housing_enabled: Boolean
+
+  """Zeige den Lageplan in der App an"""
+  map_enabled: Boolean
+  friends_enabled: Boolean
+
+  """Zeigt in der App den Bereich News an"""
+  news_enabled: Boolean
+
+  """Bereich "Mensa" in der App aktivieren?"""
+  foods_enabled: Boolean
+
+  """KI generierte Bilder für Speisen ohne Fotos erstellen?"""
+  foods_image_ai_generation_enabled: Boolean
+  id: ID!
 
   """Liste erlaubter Seiten die sich bei der App Anmelden dürfen"""
   redirect_whitelist: JSON
@@ -1658,8 +1659,8 @@ type app_settings {
 }
 
 type app_settings_balance_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   app_settings_id(filter: app_settings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_settings
   id: ID!
   content: String
@@ -1680,8 +1681,8 @@ type app_settings_balance_translations_aggregated {
 }
 
 type app_settings_balance_translations_aggregated_count {
-  be_source_for_translations: Int
   let_be_translated: Int
+  be_source_for_translations: Int
   app_settings_id: Int
   id: Int
   content: Int
@@ -1702,9 +1703,9 @@ type app_settings_balance_translations_mutated {
 type app_settings_housing_translations {
   be_source_for_translations: Boolean
   let_be_translated: Boolean
+  content: String
   id: ID!
   app_settings_id(filter: app_settings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_settings
-  content: String
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
 }
 
@@ -1724,9 +1725,9 @@ type app_settings_housing_translations_aggregated {
 type app_settings_housing_translations_aggregated_count {
   be_source_for_translations: Int
   let_be_translated: Int
+  content: Int
   id: Int
   app_settings_id: Int
-  content: Int
   languages_code: Int
 }
 
@@ -1744,10 +1745,10 @@ type app_settings_housing_translations_mutated {
 type app_settings_login_screen_translations {
   be_source_for_translations: Boolean
   let_be_translated: Boolean
-  id: ID!
-  detailed_description: String
-  intro_description: String
   app_settings_id(filter: app_settings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_settings
+  id: ID!
+  intro_description: String
+  detailed_description: String
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
 }
 
@@ -1767,16 +1768,16 @@ type app_settings_login_screen_translations_aggregated {
 type app_settings_login_screen_translations_aggregated_count {
   be_source_for_translations: Int
   let_be_translated: Int
-  id: Int
-  detailed_description: Int
-  intro_description: Int
   app_settings_id: Int
+  id: Int
+  intro_description: Int
+  detailed_description: Int
   languages_code: Int
 }
 
 type app_settings_login_screen_translations_aggregated_fields {
-  id: Float
   app_settings_id: Float
+  id: Float
 }
 
 type app_settings_login_screen_translations_mutated {
@@ -1794,9 +1795,9 @@ type app_settings_mutated {
 type app_usage_events {
   payload_boolean: Boolean
   sequence_number: Int
+  payload_number: Float
   payload: JSON
   payload_func: count_functions
-  payload_number: Float
   platform: String
   app_version: String
   screen_name: String
@@ -1828,8 +1829,8 @@ type app_usage_events_aggregated {
 type app_usage_events_aggregated_count {
   payload_boolean: Int
   sequence_number: Int
-  payload: Int
   payload_number: Int
+  payload: Int
   platform: Int
   app_version: Int
   screen_name: Int
@@ -1854,8 +1855,8 @@ type app_usage_events_mutated {
 }
 
 type auto_translation_settings {
-  valid_auth_key: Boolean
   active: Boolean
+  valid_auth_key: Boolean
   id: ID!
   used: Int
   percentage: Int
@@ -1880,8 +1881,8 @@ type auto_translation_settings_mutated {
 }
 
 type buildings {
-  map_marker_cluster_exclude: Boolean
   map_marker_is_visible: Boolean
+  map_marker_cluster_exclude: Boolean
   sort: Int
   coordinates: JSON
   coordinates_func: count_functions
@@ -1929,8 +1930,8 @@ type buildings_aggregated {
 }
 
 type buildings_aggregated_count {
-  map_marker_cluster_exclude: Int
   map_marker_is_visible: Int
+  map_marker_cluster_exclude: Int
   sort: Int
   coordinates: Int
   map_marker_label_color: Int
@@ -2123,13 +2124,13 @@ type buildings_translations_mutated {
 }
 
 type businesshours {
+  saturday: Boolean
+  monday: Boolean
+  friday: Boolean
   wednesday: Boolean
   tuesday: Boolean
   thursday: Boolean
   sunday: Boolean
-  saturday: Boolean
-  monday: Boolean
-  friday: Boolean
   sort: Int
   status: String
   date_created: Date
@@ -2168,13 +2169,13 @@ type businesshours_aggregated {
 }
 
 type businesshours_aggregated_count {
+  saturday: Int
+  monday: Int
+  friday: Int
   wednesday: Int
   tuesday: Int
   thursday: Int
   sunday: Int
-  saturday: Int
-  monday: Int
-  friday: Int
   sort: Int
   status: Int
   date_created: Int
@@ -2295,8 +2296,6 @@ type businesshours_mutated {
 }
 
 type canteen_food_feedback_report_schedules {
-  enabled: Boolean
-
   """Zeige Speise Kommentare insgesammt"""
   show_food_comments_for_all_time: Boolean
 
@@ -2323,11 +2322,13 @@ type canteen_food_feedback_report_schedules {
   send_on_fridays: Boolean
   send_on_thursdays: Boolean
   send_on_wednesdays: Boolean
-  send_on_tuesdays: Boolean
   send_on_mondays: Boolean
 
   """Zeige Bilder der Speisen"""
   show_images: Boolean
+  send_on_tuesdays: Boolean
+  enabled: Boolean
+  sort: Int
 
   """
   Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
@@ -2339,7 +2340,6 @@ type canteen_food_feedback_report_schedules {
   """
   period_days_amount: Int
   report_status_log: String
-  sort: Int
   alias: String
   status: String
   date_next_report_is_due: Date
@@ -2377,8 +2377,6 @@ type canteen_food_feedback_report_schedules_aggregated {
 }
 
 type canteen_food_feedback_report_schedules_aggregated_count {
-  enabled: Int
-
   """Zeige Speise Kommentare insgesammt"""
   show_food_comments_for_all_time: Int
 
@@ -2405,11 +2403,13 @@ type canteen_food_feedback_report_schedules_aggregated_count {
   send_on_fridays: Int
   send_on_thursdays: Int
   send_on_wednesdays: Int
-  send_on_tuesdays: Int
   send_on_mondays: Int
 
   """Zeige Bilder der Speisen"""
   show_images: Int
+  send_on_tuesdays: Int
+  enabled: Int
+  sort: Int
 
   """
   Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
@@ -2421,7 +2421,6 @@ type canteen_food_feedback_report_schedules_aggregated_count {
   """
   period_days_amount: Int
   report_status_log: Int
-  sort: Int
   alias: Int
   status: Int
   date_next_report_is_due: Int
@@ -2445,6 +2444,8 @@ type canteen_food_feedback_report_schedules_aggregated_count {
 }
 
 type canteen_food_feedback_report_schedules_aggregated_fields {
+  sort: Float
+
   """
   Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
   """
@@ -2454,7 +2455,6 @@ type canteen_food_feedback_report_schedules_aggregated_fields {
   Anzahl der vorherigen Tage fest, die im Bericht enthalten sein sollen, einschließlich des Referenztags. Wenn 1 gesetzt ist, wird nur der Referenztag im Bericht berücksichtigt. Der Referenztag kann durch den Offset verschoben werden.
   """
   period_days_amount: Float
-  sort: Float
 }
 
 type canteen_food_feedback_report_schedules_canteens {
@@ -2587,14 +2587,14 @@ type canteen_visits_mutated {
 
 type canteens {
   """
-  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
-  """
-  foodoffers_import_delete_all_without_dates: Boolean
-
-  """
   Beim Importieren von Speiseangeboten sind die Angebote für alle Tage gültig und haben daher kein Datum.
   """
   foodoffers_import_without_date: Boolean
+
+  """
+  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
+  """
+  foodoffers_import_delete_all_without_dates: Boolean
   sort: Int
   status: String
   external_identifier: String
@@ -2625,14 +2625,14 @@ type canteens_aggregated {
 
 type canteens_aggregated_count {
   """
-  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
-  """
-  foodoffers_import_delete_all_without_dates: Int
-
-  """
   Beim Importieren von Speiseangeboten sind die Angebote für alle Tage gültig und haben daher kein Datum.
   """
   foodoffers_import_without_date: Int
+
+  """
+  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
+  """
+  foodoffers_import_delete_all_without_dates: Int
   sort: Int
   status: Int
   external_identifier: Int
@@ -2707,8 +2707,8 @@ type canteens_feedbacks_labels_aggregated_fields {
 }
 
 type canteens_feedbacks_labels_entries {
-  like: Boolean
   dislike: Boolean
+  like: Boolean
   sort: Int
   status: String
   date: Date
@@ -2739,8 +2739,8 @@ type canteens_feedbacks_labels_entries_aggregated {
 }
 
 type canteens_feedbacks_labels_entries_aggregated_count {
-  like: Int
   dislike: Int
+  like: Int
   sort: Int
   status: Int
   date: Int
@@ -3208,36 +3208,36 @@ type collectible_event_participants_mutated {
 }
 
 type collectible_events {
+  collectible_at_housing: Boolean
+  monitor_display_number_of_collected_items: Boolean
+  collectible_at_card_balance: Boolean
+  collectible_at_course_timetable: Boolean
   collectible_at_news: Boolean
-  collectible_at_license_information: Boolean
-  collectible_at_markings: Boolean
-  collectible_at_markings_details: Boolean
+  collectible_at_data_access: Boolean
   collectible_at_drawer: Boolean
+  collectible_at_price_group_selection: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
   collectible_at_foodoffers_details: Boolean
   collectible_at_foodoffers_details_markings: Boolean
+  collectible_at_notification: Boolean
   collectible_at_foodoffers_details_nutritions: Boolean
   collectible_at_foodoffers_select_date: Boolean
   collectible_at_foodoffers_sort: Boolean
-  collectible_at_housing: Boolean
-  collectible_at_price_group_selection: Boolean
-  monitor_display_number_of_collected_items: Boolean
-  collectible_at_notification: Boolean
-  monitor_display_number_of_participants: Boolean
-  ask_for_contact_details: Boolean
-  collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
-  collectible_at_card_balance: Boolean
-  collectible_at_course_timetable: Boolean
-  collectible_at_data_access: Boolean
-  sort: Int
-  collectible_at_settings: Boolean
-  collectible_at_settings_amount_column: Boolean
+  collectible_at_campus: Boolean
+  ask_for_contact_details: Boolean
+  monitor_display_number_of_participants: Boolean
+  collectible_at_markings: Boolean
+  collectible_at_markings_details: Boolean
   collectible_at_settings_first_day_of_week: Boolean
-  collectible_at_settings_menuposition: Boolean
-  collectible_at_settings_theme: Boolean
+  collectible_at_settings_amount_column: Boolean
+  collectible_at_settings: Boolean
+  collectible_at_license_information: Boolean
   repeat_every_year: Boolean
+  collectible_at_settings_theme: Boolean
+  collectible_at_settings_menuposition: Boolean
+  sort: Int
   points_minimum: Int
   points_maximum: Int
   status: String
@@ -3276,36 +3276,36 @@ type collectible_events_aggregated {
 }
 
 type collectible_events_aggregated_count {
+  collectible_at_housing: Int
+  monitor_display_number_of_collected_items: Int
+  collectible_at_card_balance: Int
+  collectible_at_course_timetable: Int
   collectible_at_news: Int
-  collectible_at_license_information: Int
-  collectible_at_markings: Int
-  collectible_at_markings_details: Int
+  collectible_at_data_access: Int
   collectible_at_drawer: Int
+  collectible_at_price_group_selection: Int
   collectible_at_faq: Int
   collectible_at_foodoffers: Int
   collectible_at_foodoffers_details: Int
   collectible_at_foodoffers_details_markings: Int
+  collectible_at_notification: Int
   collectible_at_foodoffers_details_nutritions: Int
   collectible_at_foodoffers_select_date: Int
   collectible_at_foodoffers_sort: Int
-  collectible_at_housing: Int
-  collectible_at_price_group_selection: Int
-  monitor_display_number_of_collected_items: Int
-  collectible_at_notification: Int
-  monitor_display_number_of_participants: Int
-  ask_for_contact_details: Int
-  collectible_at_campus: Int
   collectible_at_canteen_selection: Int
-  collectible_at_card_balance: Int
-  collectible_at_course_timetable: Int
-  collectible_at_data_access: Int
-  sort: Int
-  collectible_at_settings: Int
-  collectible_at_settings_amount_column: Int
+  collectible_at_campus: Int
+  ask_for_contact_details: Int
+  monitor_display_number_of_participants: Int
+  collectible_at_markings: Int
+  collectible_at_markings_details: Int
   collectible_at_settings_first_day_of_week: Int
-  collectible_at_settings_menuposition: Int
-  collectible_at_settings_theme: Int
+  collectible_at_settings_amount_column: Int
+  collectible_at_settings: Int
+  collectible_at_license_information: Int
   repeat_every_year: Int
+  collectible_at_settings_theme: Int
+  collectible_at_settings_menuposition: Int
+  sort: Int
   points_minimum: Int
   points_maximum: Int
   status: Int
@@ -3463,15 +3463,15 @@ type devices {
   is_ios: Boolean
   is_android: Boolean
   sort: Int
-  pushTokenObj: JSON
-  pushTokenObj_func: count_functions
-  custom_data: JSON
-  custom_data_func: count_functions
-  display_fontscale: Float
   display_height: Float
   display_pixelratio: Float
   display_scale: Float
   display_width: Float
+  display_fontscale: Float
+  pushTokenObj: JSON
+  pushTokenObj_func: count_functions
+  custom_data: JSON
+  custom_data_func: count_functions
   app_version: String
   system_version: String
   status: String
@@ -3509,13 +3509,13 @@ type devices_aggregated_count {
   is_ios: Int
   is_android: Int
   sort: Int
-  pushTokenObj: Int
-  custom_data: Int
-  display_fontscale: Int
   display_height: Int
   display_pixelratio: Int
   display_scale: Int
   display_width: Int
+  display_fontscale: Int
+  pushTokenObj: Int
+  custom_data: Int
   app_version: Int
   system_version: Int
   status: Int
@@ -3532,11 +3532,11 @@ type devices_aggregated_count {
 
 type devices_aggregated_fields {
   sort: Float
-  display_fontscale: Float
   display_height: Float
   display_pixelratio: Float
   display_scale: Float
   display_width: Float
+  display_fontscale: Float
 }
 
 type devices_mutated {
@@ -3620,20 +3620,20 @@ type directus_dashboards_mutated {
 
 type directus_files {
   is_unreferenced: Boolean
-  filesize: GraphQLBigInt
-  height: Int
   focal_point_y: Int
   focal_point_x: Int
-  width: Int
   duration: Int
+  height: Int
+  width: Int
+  filesize: GraphQLBigInt
   tags: JSON
   tags_func: count_functions
   location: String
   description: String
-  tus_data: JSON
-  tus_data_func: count_functions
   metadata: JSON
   metadata_func: count_functions
+  tus_data: JSON
+  tus_data_func: count_functions
   tus_id: String
   embed: String
   charset: String
@@ -3717,8 +3717,8 @@ type directus_notifications_mutated {
 }
 
 type directus_operations {
-  position_x: Int!
   position_y: Int!
+  position_x: Int!
   options: JSON
   options_func: count_functions
   type: String!
@@ -3741,11 +3741,11 @@ type directus_operations_mutated {
 
 type directus_panels {
   show_header: Boolean!
-  position_x: Int!
-  position_y: Int!
-  width: Int!
-  height: Int!
   note: String
+  height: Int!
+  width: Int!
+  position_y: Int!
+  position_x: Int!
   options: JSON
   options_func: count_functions
   type: String!
@@ -3766,8 +3766,8 @@ type directus_panels_mutated {
 }
 
 type directus_permissions {
-  id: ID
   fields: [String]
+  id: ID
   presets: JSON
   presets_func: count_functions
   validation: JSON
@@ -3786,10 +3786,9 @@ type directus_permissions_mutated {
 }
 
 type directus_policies {
-  admin_access: Boolean!
-
   """$t:field_options.directus_policies.enforce_tfa"""
   enforce_tfa: Boolean!
+  admin_access: Boolean!
   app_access: Boolean!
   ip_access: [String]
   description: String
@@ -3813,17 +3812,17 @@ type directus_policies_mutated {
 type directus_presets {
   refresh_interval: Int
   id: ID!
+  layout_options: JSON
+  layout_options_func: count_functions
+  search: String
   layout_query: JSON
   layout_query_func: count_functions
   filter: JSON
   filter_func: count_functions
-  layout_options: JSON
-  layout_options_func: count_functions
-  collection: String
   color: String
   icon: String
   layout: String
-  search: String
+  collection: String
   bookmark: String
   role(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_roles
   user(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -3882,10 +3881,8 @@ type directus_settings {
 
   """$t:fields.directus_settings.public_registration_note"""
   public_registration: Boolean!
-  id: ID!
   auth_login_attempts: Int
-  custom_css: String
-  public_note: String
+  id: ID!
   storage_asset_presets: JSON
   storage_asset_presets_func: count_functions
   basemaps: JSON
@@ -3904,6 +3901,8 @@ type directus_settings {
   public_registration_email_filter_func: count_functions
   visual_editor_urls: JSON
   visual_editor_urls_func: count_functions
+  public_note: String
+  custom_css: String
   report_feature_url: String
   report_bug_url: String
   report_error_url: String
@@ -4086,8 +4085,8 @@ type directus_versions_mutated {
 }
 
 type directus_webhooks {
-  was_active_before_deprecation: Boolean!
   data: Boolean
+  was_active_before_deprecation: Boolean!
   id: ID!
   headers: JSON
   headers_func: count_functions
@@ -4108,10 +4107,10 @@ type directus_webhooks_mutated {
 
 type feature_whishes {
   likes: Int
+  description: String
   sort: Int
   tags: JSON
   tags_func: count_functions
-  description: String
   title: String
   alias: String
   status: String
@@ -4139,9 +4138,9 @@ type feature_whishes_aggregated {
 
 type feature_whishes_aggregated_count {
   likes: Int
+  description: Int
   sort: Int
   tags: Int
-  description: Int
   title: Int
   alias: Int
   status: Int
@@ -4218,9 +4217,15 @@ type files_shares_mutated {
 type foodoffers {
   is_component: Boolean
   sort: Int
-  price_student: Float
+
+  """Pro wieviel? z. B. Preis pro 100 (gramm)"""
+  price_reference_amount: Float
   price_employee: Float
   price_guest: Float
+  price_student: Float
+
+  """Pro welche Einheit? z. B. (100)g für Gramm."""
+  price_reference_unit: String
   result_hash: String
   redirect_url: String
   category: String
@@ -4238,10 +4243,10 @@ type foodoffers {
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
   canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
-  markings(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers_markings]
-  markings_func: count_functions
   attribute_values(filter: foods_attributes_values_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_attributes_values]
   attribute_values_func: count_functions
+  markings(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers_markings]
+  markings_func: count_functions
   foodoffer_components(filter: foodoffers_components_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers_components]
   foodoffer_components_func: count_functions
   translations(filter: foodoffers_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers_translations]
@@ -4264,9 +4269,15 @@ type foodoffers_aggregated {
 type foodoffers_aggregated_count {
   is_component: Int
   sort: Int
-  price_student: Int
+
+  """Pro wieviel? z. B. Preis pro 100 (gramm)"""
+  price_reference_amount: Int
   price_employee: Int
   price_guest: Int
+  price_student: Int
+
+  """Pro welche Einheit? z. B. (100)g für Gramm."""
+  price_reference_unit: Int
   result_hash: Int
   redirect_url: Int
   category: Int
@@ -4281,17 +4292,20 @@ type foodoffers_aggregated_count {
   user_created: Int
   id: Int
   canteen: Int
-  markings: Int
   attribute_values: Int
+  markings: Int
   foodoffer_components: Int
   translations: Int
 }
 
 type foodoffers_aggregated_fields {
   sort: Float
-  price_student: Float
+
+  """Pro wieviel? z. B. Preis pro 100 (gramm)"""
+  price_reference_amount: Float
   price_employee: Float
   price_guest: Float
+  price_student: Float
 }
 
 type foodoffers_categories {
@@ -4423,14 +4437,14 @@ type foodoffers_components_mutated {
 }
 
 type foodoffers_info_items {
-  show_on_sundays: Boolean
-  show_on_wednesdays: Boolean
-  show_on_saturdays: Boolean
-  show_on_fridays: Boolean
-  show_on_mondays: Boolean
-  show_on_tuesdays: Boolean
   show_on_thursdays: Boolean
+  show_on_wednesdays: Boolean
   show_only_when_no_foodoffers_found: Boolean
+  show_on_saturdays: Boolean
+  show_on_mondays: Boolean
+  show_on_fridays: Boolean
+  show_on_tuesdays: Boolean
+  show_on_sundays: Boolean
   sort: Int
   alias: String
   image_remote_url: String
@@ -4463,14 +4477,14 @@ type foodoffers_info_items_aggregated {
 }
 
 type foodoffers_info_items_aggregated_count {
-  show_on_sundays: Int
-  show_on_wednesdays: Int
-  show_on_saturdays: Int
-  show_on_fridays: Int
-  show_on_mondays: Int
-  show_on_tuesdays: Int
   show_on_thursdays: Int
+  show_on_wednesdays: Int
   show_only_when_no_foodoffers_found: Int
+  show_on_saturdays: Int
+  show_on_mondays: Int
+  show_on_fridays: Int
+  show_on_tuesdays: Int
+  show_on_sundays: Int
   sort: Int
   alias: Int
   image_remote_url: Int
@@ -4663,9 +4677,9 @@ type foods_aggregated_fields {
 }
 
 type foods_attributes {
+  full_width: Boolean
   show_on_card: Boolean
   show_on_label_list: Boolean
-  full_width: Boolean
   sort: Int
   suffix: String
   prefix: String
@@ -4705,9 +4719,9 @@ type foods_attributes_aggregated {
 }
 
 type foods_attributes_aggregated_count {
+  full_width: Int
   show_on_card: Int
   show_on_label_list: Int
-  full_width: Int
   sort: Int
   suffix: Int
   prefix: Int
@@ -4989,8 +5003,8 @@ type foods_categories_mutated {
 }
 
 type foods_categories_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID!
   name: String
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
@@ -5011,8 +5025,8 @@ type foods_categories_translations_aggregated {
 }
 
 type foods_categories_translations_aggregated_count {
-  be_source_for_translations: Int
   let_be_translated: Int
+  be_source_for_translations: Int
   id: Int
   name: Int
   languages_code: Int
@@ -5332,8 +5346,8 @@ type foods_mutated {
 }
 
 type foods_translations {
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
   id: ID!
   description: String
   name: String
@@ -5355,8 +5369,8 @@ type foods_translations_aggregated {
 }
 
 type foods_translations_aggregated_count {
-  let_be_translated: Int
   be_source_for_translations: Int
+  let_be_translated: Int
   id: Int
   description: Int
   name: Int
@@ -5376,11 +5390,11 @@ type foods_translations_mutated {
 
 type form_answers {
   value_boolean: Boolean
+  value_string: String
   sort: Int
+  value_number: Float
   value_custom: JSON
   value_custom_func: count_functions
-  value_string: String
-  value_number: Float
   status: String
   value_date: Date
   value_date_func: datetime_functions
@@ -5413,10 +5427,10 @@ type form_answers_aggregated {
 
 type form_answers_aggregated_count {
   value_boolean: Int
-  sort: Int
-  value_custom: Int
   value_string: Int
+  sort: Int
   value_number: Int
+  value_custom: Int
   status: Int
   value_date: Int
   date_updated: Int
@@ -5536,8 +5550,8 @@ type form_categories_mutated {
 }
 
 type form_categories_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID!
   name: String
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
@@ -5558,8 +5572,8 @@ type form_categories_translations_aggregated {
 }
 
 type form_categories_translations_aggregated_count {
-  be_source_for_translations: Int
   let_be_translated: Int
+  be_source_for_translations: Int
   id: Int
   name: Int
   languages_code: Int
@@ -5775,8 +5789,8 @@ type form_fields_mutated {
 type form_fields_translations {
   let_be_translated: Boolean
   be_source_for_translations: Boolean
-  id: ID!
   description: String
+  id: ID!
   name: String
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
   form_fields_id(filter: form_fields_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): form_fields
@@ -5798,8 +5812,8 @@ type form_fields_translations_aggregated {
 type form_fields_translations_aggregated_count {
   let_be_translated: Int
   be_source_for_translations: Int
-  id: Int
   description: Int
+  id: Int
   name: Int
   languages_code: Int
   form_fields_id: Int
@@ -5952,8 +5966,8 @@ type forms_mutated {
 }
 
 type forms_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID!
   description: String
   name: String
@@ -5975,8 +5989,8 @@ type forms_translations_aggregated {
 }
 
 type forms_translations_aggregated_count {
-  be_source_for_translations: Int
   let_be_translated: Int
+  be_source_for_translations: Int
   id: Int
   description: Int
   name: Int
@@ -6075,10 +6089,10 @@ type languages_mutated {
 type mails {
   send_attachments_as_links: Boolean
   sort: Int
-  template_data: JSON
-  template_data_func: count_functions
   log: String
   markdown_content: String
+  template_data: JSON
+  template_data_func: count_functions
   send_status: String
   template_name: String
   subject: String
@@ -6112,9 +6126,9 @@ type mails_aggregated {
 type mails_aggregated_count {
   send_attachments_as_links: Int
   sort: Int
-  template_data: Int
   log: Int
   markdown_content: Int
+  template_data: Int
   send_status: Int
   template_name: Int
   subject: Int
@@ -6175,13 +6189,14 @@ type mails_mutated {
 }
 
 type markings {
-  """Keinen Rand verwenden"""
-  hide_border: Boolean
-  show_on_card: Boolean
   show_on_label_list: Boolean
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Boolean
+
+  """Keinen Rand verwenden"""
+  hide_border: Boolean
+  show_on_card: Boolean
   sort: Int
 
   """
@@ -6234,13 +6249,14 @@ type markings_aggregated {
 }
 
 type markings_aggregated_count {
-  """Keinen Rand verwenden"""
-  hide_border: Int
-  show_on_card: Int
   show_on_label_list: Int
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Int
+
+  """Keinen Rand verwenden"""
+  hide_border: Int
+  show_on_card: Int
   sort: Int
 
   """
@@ -6374,8 +6390,8 @@ type markings_groups_mutated {
 }
 
 type markings_groups_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID!
   name: String
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
@@ -6396,8 +6412,8 @@ type markings_groups_translations_aggregated {
 }
 
 type markings_groups_translations_aggregated_count {
-  be_source_for_translations: Int
   let_be_translated: Int
+  be_source_for_translations: Int
   id: Int
   name: Int
   languages_code: Int
@@ -6530,8 +6546,8 @@ type news_mutated {
 }
 
 type news_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID!
   content: String
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
@@ -6553,8 +6569,8 @@ type news_translations_aggregated {
 }
 
 type news_translations_aggregated_count {
-  be_source_for_translations: Int
   let_be_translated: Int
+  be_source_for_translations: Int
   id: Int
   content: Int
   languages_code: Int
@@ -6638,10 +6654,10 @@ type organizations_mutated {
 }
 
 type popup_events {
-  send_notification: Boolean
-  show_on_android: Boolean
-  show_on_ios: Boolean
   show_on_web: Boolean
+  show_on_ios: Boolean
+  show_on_android: Boolean
+  send_notification: Boolean
   show_app_rating_button: Boolean
   sort: Int
   image_remote_url: String
@@ -6685,10 +6701,10 @@ type popup_events_aggregated {
 }
 
 type popup_events_aggregated_count {
-  send_notification: Int
-  show_on_android: Int
-  show_on_ios: Int
   show_on_web: Int
+  show_on_ios: Int
+  show_on_android: Int
+  send_notification: Int
   show_app_rating_button: Int
   sort: Int
   image_remote_url: Int
@@ -6805,12 +6821,12 @@ type popup_events_translations_mutated {
 type profiles {
   notifiy_on_free_apartments: Boolean
   sort: Int
-  course_timetable: JSON
-  course_timetable_func: count_functions
   avatar: JSON
   avatar_func: count_functions
-  credit_balance_last_transaction: Float
   credit_balance: Float
+  credit_balance_last_transaction: Float
+  course_timetable: JSON
+  course_timetable_func: count_functions
   status: String
   price_group: String
   nickname: String
@@ -6859,10 +6875,10 @@ type profiles_aggregated {
 type profiles_aggregated_count {
   notifiy_on_free_apartments: Int
   sort: Int
-  course_timetable: Int
   avatar: Int
-  credit_balance_last_transaction: Int
   credit_balance: Int
+  credit_balance_last_transaction: Int
+  course_timetable: Int
   status: Int
   price_group: Int
   nickname: Int
@@ -6886,8 +6902,8 @@ type profiles_aggregated_count {
 
 type profiles_aggregated_fields {
   sort: Float
-  credit_balance_last_transaction: Float
   credit_balance: Float
+  credit_balance_last_transaction: Float
 }
 
 type profiles_buildings_favorites {
@@ -7304,8 +7320,8 @@ type version_app_elements_translations {
   be_source_for_translations: Boolean
   let_be_translated: Boolean
   id: ID
-  content: String
   popup_content: String
+  content: String
   popup_button_text: String
   languages_code: JSON
   app_elements_id: JSON
@@ -7313,20 +7329,20 @@ type version_app_elements_translations {
 
 """"""
 type version_app_feedbacks {
+  response_read_by_user: Boolean
   feedback_read_by_support: Boolean
   positive: Boolean
-  response_read_by_user: Boolean
-  source_rating_raw: Int
   priority: Int
   sort: Int
+  source_rating_raw: Int
   content: String
-  response: String
   data: JSON
-  display_height: Float
-  display_fontscale: Float
-  display_scale: Float
+  response: String
   display_pixelratio: Float
+  display_scale: Float
   display_width: Float
+  display_fontscale: Float
+  display_height: Float
   device_brand: String
   contact_email: String
   state: String
@@ -7347,23 +7363,10 @@ type version_app_feedbacks {
 
 """"""
 type version_app_settings {
-  """KI generierte Bilder für Speisen ohne Fotos erstellen?"""
-  foods_image_ai_generation_enabled: Boolean
-  friends_enabled: Boolean
-
-  """Zeigt in der App den Bereich News an"""
-  news_enabled: Boolean
-
-  """Zeige den Lageplan in der App an"""
-  map_enabled: Boolean
-  notifications_android_enabled: Boolean
-  notifications_email_enabled: Boolean
-  animations_auto_start: Boolean
-
-  """Bereich "Mensa" in der App aktivieren?"""
-  foods_enabled: Boolean
   course_timetable_enabled: Boolean
   balance_enabled: Boolean
+  notifications_android_enabled: Boolean
+  notifications_email_enabled: Boolean
   notifications_ios_enabled: Boolean
 
   """Zeige in der App den Bereich Campus an"""
@@ -7371,16 +7374,30 @@ type version_app_settings {
 
   """Zeige die Auslastungsprognose in der App"""
   utilization_display_enabled: Boolean
-  id: ID
+  animations_auto_start: Boolean
 
-  """Zeigt den Bereich Wohnen in der App an"""
-  housing_enabled: Boolean
+  """Soll die Anzahl der Bewertungen angezeigt werden?"""
+  foods_ratings_amount_display: Boolean
 
   """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
   foods_ratings_average_display: Boolean
 
-  """Soll die Anzahl der Bewertungen angezeigt werden?"""
-  foods_ratings_amount_display: Boolean
+  """Zeigt den Bereich Wohnen in der App an"""
+  housing_enabled: Boolean
+
+  """Zeige den Lageplan in der App an"""
+  map_enabled: Boolean
+  friends_enabled: Boolean
+
+  """Zeigt in der App den Bereich News an"""
+  news_enabled: Boolean
+
+  """Bereich "Mensa" in der App aktivieren?"""
+  foods_enabled: Boolean
+
+  """KI generierte Bilder für Speisen ohne Fotos erstellen?"""
+  foods_image_ai_generation_enabled: Boolean
+  id: ID
 
   """Liste erlaubter Seiten die sich bei der App Anmelden dürfen"""
   redirect_whitelist: JSON
@@ -7433,8 +7450,8 @@ type version_app_settings {
 
 """"""
 type version_app_settings_balance_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   app_settings_id: JSON
   id: ID
   content: String
@@ -7445,9 +7462,9 @@ type version_app_settings_balance_translations {
 type version_app_settings_housing_translations {
   be_source_for_translations: Boolean
   let_be_translated: Boolean
+  content: String
   id: ID
   app_settings_id: JSON
-  content: String
   languages_code: JSON
 }
 
@@ -7455,10 +7472,10 @@ type version_app_settings_housing_translations {
 type version_app_settings_login_screen_translations {
   be_source_for_translations: Boolean
   let_be_translated: Boolean
-  id: ID
-  detailed_description: String
-  intro_description: String
   app_settings_id: JSON
+  id: ID
+  intro_description: String
+  detailed_description: String
   languages_code: JSON
 }
 
@@ -7466,8 +7483,8 @@ type version_app_settings_login_screen_translations {
 type version_app_usage_events {
   payload_boolean: Boolean
   sequence_number: Int
-  payload: JSON
   payload_number: Float
+  payload: JSON
   platform: String
   app_version: String
   screen_name: String
@@ -7482,8 +7499,8 @@ type version_app_usage_events {
 
 """"""
 type version_auto_translation_settings {
-  valid_auth_key: Boolean
   active: Boolean
+  valid_auth_key: Boolean
   id: ID
   used: Int
   percentage: Int
@@ -7503,8 +7520,8 @@ type version_auto_translation_settings {
 
 """"""
 type version_buildings {
-  map_marker_cluster_exclude: Boolean
   map_marker_is_visible: Boolean
+  map_marker_cluster_exclude: Boolean
   sort: Int
   coordinates: JSON
   map_marker_label_color: String
@@ -7567,13 +7584,13 @@ type version_buildings_translations {
 
 """"""
 type version_businesshours {
+  saturday: Boolean
+  monday: Boolean
+  friday: Boolean
   wednesday: Boolean
   tuesday: Boolean
   thursday: Boolean
   sunday: Boolean
-  saturday: Boolean
-  monday: Boolean
-  friday: Boolean
   sort: Int
   status: String
   date_created: Date
@@ -7617,8 +7634,6 @@ type version_businesshours_groups_translations {
 
 """"""
 type version_canteen_food_feedback_report_schedules {
-  enabled: Boolean
-
   """Zeige Speise Kommentare insgesammt"""
   show_food_comments_for_all_time: Boolean
 
@@ -7645,11 +7660,13 @@ type version_canteen_food_feedback_report_schedules {
   send_on_fridays: Boolean
   send_on_thursdays: Boolean
   send_on_wednesdays: Boolean
-  send_on_tuesdays: Boolean
   send_on_mondays: Boolean
 
   """Zeige Bilder der Speisen"""
   show_images: Boolean
+  send_on_tuesdays: Boolean
+  enabled: Boolean
+  sort: Int
 
   """
   Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
@@ -7661,7 +7678,6 @@ type version_canteen_food_feedback_report_schedules {
   """
   period_days_amount: Int
   report_status_log: String
-  sort: Int
   alias: String
   status: String
   date_next_report_is_due: Date
@@ -7709,14 +7725,14 @@ type version_canteen_visits {
 """"""
 type version_canteens {
   """
-  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
-  """
-  foodoffers_import_delete_all_without_dates: Boolean
-
-  """
   Beim Importieren von Speiseangeboten sind die Angebote für alle Tage gültig und haben daher kein Datum.
   """
   foodoffers_import_without_date: Boolean
+
+  """
+  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
+  """
+  foodoffers_import_delete_all_without_dates: Boolean
   sort: Int
   status: String
   external_identifier: String
@@ -7751,8 +7767,8 @@ type version_canteens_feedbacks_labels {
 
 """"""
 type version_canteens_feedbacks_labels_entries {
-  like: Boolean
   dislike: Boolean
+  like: Boolean
   sort: Int
   status: String
   date: Date
@@ -7880,36 +7896,36 @@ type version_collectible_event_participants {
 
 """"""
 type version_collectible_events {
+  collectible_at_housing: Boolean
+  monitor_display_number_of_collected_items: Boolean
+  collectible_at_card_balance: Boolean
+  collectible_at_course_timetable: Boolean
   collectible_at_news: Boolean
-  collectible_at_license_information: Boolean
-  collectible_at_markings: Boolean
-  collectible_at_markings_details: Boolean
+  collectible_at_data_access: Boolean
   collectible_at_drawer: Boolean
+  collectible_at_price_group_selection: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
   collectible_at_foodoffers_details: Boolean
   collectible_at_foodoffers_details_markings: Boolean
+  collectible_at_notification: Boolean
   collectible_at_foodoffers_details_nutritions: Boolean
   collectible_at_foodoffers_select_date: Boolean
   collectible_at_foodoffers_sort: Boolean
-  collectible_at_housing: Boolean
-  collectible_at_price_group_selection: Boolean
-  monitor_display_number_of_collected_items: Boolean
-  collectible_at_notification: Boolean
-  monitor_display_number_of_participants: Boolean
-  ask_for_contact_details: Boolean
-  collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
-  collectible_at_card_balance: Boolean
-  collectible_at_course_timetable: Boolean
-  collectible_at_data_access: Boolean
-  sort: Int
-  collectible_at_settings: Boolean
-  collectible_at_settings_amount_column: Boolean
+  collectible_at_campus: Boolean
+  ask_for_contact_details: Boolean
+  monitor_display_number_of_participants: Boolean
+  collectible_at_markings: Boolean
+  collectible_at_markings_details: Boolean
   collectible_at_settings_first_day_of_week: Boolean
-  collectible_at_settings_menuposition: Boolean
-  collectible_at_settings_theme: Boolean
+  collectible_at_settings_amount_column: Boolean
+  collectible_at_settings: Boolean
+  collectible_at_license_information: Boolean
   repeat_every_year: Boolean
+  collectible_at_settings_theme: Boolean
+  collectible_at_settings_menuposition: Boolean
+  sort: Int
   points_minimum: Int
   points_maximum: Int
   status: String
@@ -7959,13 +7975,13 @@ type version_devices {
   is_ios: Boolean
   is_android: Boolean
   sort: Int
-  pushTokenObj: JSON
-  custom_data: JSON
-  display_fontscale: Float
   display_height: Float
   display_pixelratio: Float
   display_scale: Float
   display_width: Float
+  display_fontscale: Float
+  pushTokenObj: JSON
+  custom_data: JSON
   app_version: String
   system_version: String
   status: String
@@ -7992,9 +8008,9 @@ type version_directus_sync_id_map {
 """"""
 type version_feature_whishes {
   likes: Int
+  description: String
   sort: Int
   tags: JSON
-  description: String
   title: String
   alias: String
   status: String
@@ -8022,9 +8038,15 @@ type version_files_shares {
 type version_foodoffers {
   is_component: Boolean
   sort: Int
-  price_student: Float
+
+  """Pro wieviel? z. B. Preis pro 100 (gramm)"""
+  price_reference_amount: Float
   price_employee: Float
   price_guest: Float
+  price_student: Float
+
+  """Pro welche Einheit? z. B. (100)g für Gramm."""
+  price_reference_unit: String
   result_hash: String
   redirect_url: String
   category: String
@@ -8039,8 +8061,8 @@ type version_foodoffers {
   user_created: JSON
   id: ID
   canteen: JSON
-  markings: JSON
   attribute_values: JSON
+  markings: JSON
   foodoffer_components: JSON
   translations: JSON
 }
@@ -8078,14 +8100,14 @@ type version_foodoffers_components {
 
 """"""
 type version_foodoffers_info_items {
-  show_on_sundays: Boolean
-  show_on_wednesdays: Boolean
-  show_on_saturdays: Boolean
-  show_on_fridays: Boolean
-  show_on_mondays: Boolean
-  show_on_tuesdays: Boolean
   show_on_thursdays: Boolean
+  show_on_wednesdays: Boolean
   show_only_when_no_foodoffers_found: Boolean
+  show_on_saturdays: Boolean
+  show_on_mondays: Boolean
+  show_on_fridays: Boolean
+  show_on_tuesdays: Boolean
+  show_on_sundays: Boolean
   sort: Int
   alias: String
   image_remote_url: String
@@ -8150,9 +8172,9 @@ type version_foods {
 
 """"""
 type version_foods_attributes {
+  full_width: Boolean
   show_on_card: Boolean
   show_on_label_list: Boolean
-  full_width: Boolean
   sort: Int
   suffix: String
   prefix: String
@@ -8245,8 +8267,8 @@ type version_foods_categories {
 
 """"""
 type version_foods_categories_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   name: String
   languages_code: JSON
@@ -8336,8 +8358,8 @@ type version_foods_markings {
 
 """"""
 type version_foods_translations {
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
   id: ID
   description: String
   name: String
@@ -8348,10 +8370,10 @@ type version_foods_translations {
 """"""
 type version_form_answers {
   value_boolean: Boolean
-  sort: Int
-  value_custom: JSON
   value_string: String
+  sort: Int
   value_number: Float
+  value_custom: JSON
   status: String
   value_date: Date
   date_updated: Date
@@ -8391,8 +8413,8 @@ type version_form_categories {
 
 """"""
 type version_form_categories_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   name: String
   languages_code: JSON
@@ -8466,8 +8488,8 @@ type version_form_fields {
 type version_form_fields_translations {
   let_be_translated: Boolean
   be_source_for_translations: Boolean
-  id: ID
   description: String
+  id: ID
   name: String
   languages_code: JSON
   form_fields_id: JSON
@@ -8516,8 +8538,8 @@ type version_forms {
 
 """"""
 type version_forms_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   description: String
   name: String
@@ -8551,9 +8573,9 @@ type version_languages {
 type version_mails {
   send_attachments_as_links: Boolean
   sort: Int
-  template_data: JSON
   log: String
   markdown_content: String
+  template_data: JSON
   send_status: String
   template_name: String
   subject: String
@@ -8577,13 +8599,14 @@ type version_mails_files {
 
 """"""
 type version_markings {
-  """Keinen Rand verwenden"""
-  hide_border: Boolean
-  show_on_card: Boolean
   show_on_label_list: Boolean
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Boolean
+
+  """Keinen Rand verwenden"""
+  hide_border: Boolean
+  show_on_card: Boolean
   sort: Int
 
   """
@@ -8642,8 +8665,8 @@ type version_markings_groups {
 
 """"""
 type version_markings_groups_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   name: String
   languages_code: JSON
@@ -8683,8 +8706,8 @@ type version_news {
 
 """"""
 type version_news_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   content: String
   languages_code: JSON
@@ -8714,10 +8737,10 @@ type version_organizations {
 
 """"""
 type version_popup_events {
-  send_notification: Boolean
-  show_on_android: Boolean
-  show_on_ios: Boolean
   show_on_web: Boolean
+  show_on_ios: Boolean
+  show_on_android: Boolean
+  send_notification: Boolean
   show_app_rating_button: Boolean
   sort: Int
   image_remote_url: String
@@ -8763,10 +8786,10 @@ type version_popup_events_translations {
 type version_profiles {
   notifiy_on_free_apartments: Boolean
   sort: Int
-  course_timetable: JSON
   avatar: JSON
-  credit_balance_last_transaction: Float
   credit_balance: Float
+  credit_balance_last_transaction: Float
+  course_timetable: JSON
   status: String
   price_group: String
   nickname: String
@@ -8982,8 +9005,8 @@ type version_workflows {
 """"""
 type version_workflows_runs {
   sort: Int
-  log: String
   runtime_in_seconds: Int
+  log: String
   result_hash: JSON
   output: String
   input: String
@@ -9335,8 +9358,8 @@ type workflows_mutated {
 
 type workflows_runs {
   sort: Int
-  log: String
   runtime_in_seconds: Int
+  log: String
   result_hash: JSON
   result_hash_func: count_functions
   output: String
@@ -9373,8 +9396,8 @@ type workflows_runs_aggregated {
 
 type workflows_runs_aggregated_count {
   sort: Int
-  log: Int
   runtime_in_seconds: Int
+  log: Int
   result_hash: Int
   output: Int
   input: Int
@@ -9473,8 +9496,8 @@ input app_elements_translations_filter {
   be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
   id: number_filter_operators
-  content: string_filter_operators
   popup_content: string_filter_operators
+  content: string_filter_operators
   popup_button_text: string_filter_operators
   languages_code: languages_filter
   app_elements_id: app_elements_filter
@@ -9487,8 +9510,8 @@ input app_elements_translations_quantifier_filter {
   be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
   id: number_filter_operators
-  content: string_filter_operators
   popup_content: string_filter_operators
+  content: string_filter_operators
   popup_button_text: string_filter_operators
   languages_code: languages_filter
   app_elements_id: app_elements_filter
@@ -9499,21 +9522,21 @@ input app_elements_translations_quantifier_filter {
 }
 
 input app_feedbacks_filter {
+  response_read_by_user: boolean_filter_operators
   feedback_read_by_support: boolean_filter_operators
   positive: boolean_filter_operators
-  response_read_by_user: boolean_filter_operators
-  source_rating_raw: number_filter_operators
   priority: number_filter_operators
   sort: number_filter_operators
+  source_rating_raw: number_filter_operators
   content: string_filter_operators
-  response: string_filter_operators
   data: string_filter_operators
   data_func: count_function_filter_operators
-  display_height: number_filter_operators
-  display_fontscale: number_filter_operators
-  display_scale: number_filter_operators
+  response: string_filter_operators
   display_pixelratio: number_filter_operators
+  display_scale: number_filter_operators
   display_width: number_filter_operators
+  display_fontscale: number_filter_operators
+  display_height: number_filter_operators
   device_brand: string_filter_operators
   contact_email: string_filter_operators
   state: string_filter_operators
@@ -9538,21 +9561,21 @@ input app_feedbacks_filter {
 
 """"""
 input app_feedbacks_quantifier_filter {
+  response_read_by_user: boolean_filter_operators
   feedback_read_by_support: boolean_filter_operators
   positive: boolean_filter_operators
-  response_read_by_user: boolean_filter_operators
-  source_rating_raw: number_filter_operators
   priority: number_filter_operators
   sort: number_filter_operators
+  source_rating_raw: number_filter_operators
   content: string_filter_operators
-  response: string_filter_operators
   data: string_filter_operators
   data_func: count_function_filter_operators
-  display_height: number_filter_operators
-  display_fontscale: number_filter_operators
-  display_scale: number_filter_operators
+  response: string_filter_operators
   display_pixelratio: number_filter_operators
+  display_scale: number_filter_operators
   display_width: number_filter_operators
+  display_fontscale: number_filter_operators
+  display_height: number_filter_operators
   device_brand: string_filter_operators
   contact_email: string_filter_operators
   state: string_filter_operators
@@ -9578,8 +9601,8 @@ input app_feedbacks_quantifier_filter {
 }
 
 input app_settings_balance_translations_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   app_settings_id: app_settings_filter
   id: number_filter_operators
   content: string_filter_operators
@@ -9590,8 +9613,8 @@ input app_settings_balance_translations_filter {
 
 """"""
 input app_settings_balance_translations_quantifier_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   app_settings_id: app_settings_filter
   id: number_filter_operators
   content: string_filter_operators
@@ -9603,23 +9626,23 @@ input app_settings_balance_translations_quantifier_filter {
 }
 
 input app_settings_filter {
-  foods_image_ai_generation_enabled: boolean_filter_operators
-  friends_enabled: boolean_filter_operators
-  news_enabled: boolean_filter_operators
-  map_enabled: boolean_filter_operators
-  notifications_android_enabled: boolean_filter_operators
-  notifications_email_enabled: boolean_filter_operators
-  animations_auto_start: boolean_filter_operators
-  foods_enabled: boolean_filter_operators
   course_timetable_enabled: boolean_filter_operators
   balance_enabled: boolean_filter_operators
+  notifications_android_enabled: boolean_filter_operators
+  notifications_email_enabled: boolean_filter_operators
   notifications_ios_enabled: boolean_filter_operators
   campus_enabled: boolean_filter_operators
   utilization_display_enabled: boolean_filter_operators
-  id: number_filter_operators
-  housing_enabled: boolean_filter_operators
-  foods_ratings_average_display: boolean_filter_operators
+  animations_auto_start: boolean_filter_operators
   foods_ratings_amount_display: boolean_filter_operators
+  foods_ratings_average_display: boolean_filter_operators
+  housing_enabled: boolean_filter_operators
+  map_enabled: boolean_filter_operators
+  friends_enabled: boolean_filter_operators
+  news_enabled: boolean_filter_operators
+  foods_enabled: boolean_filter_operators
+  foods_image_ai_generation_enabled: boolean_filter_operators
+  id: number_filter_operators
   redirect_whitelist: string_filter_operators
   redirect_whitelist_func: count_function_filter_operators
   course_timetable_area_color: string_filter_operators
@@ -9672,9 +9695,9 @@ input app_settings_filter {
 input app_settings_housing_translations_filter {
   be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  content: string_filter_operators
   id: number_filter_operators
   app_settings_id: app_settings_filter
-  content: string_filter_operators
   languages_code: languages_filter
   _and: [app_settings_housing_translations_filter]
   _or: [app_settings_housing_translations_filter]
@@ -9684,9 +9707,9 @@ input app_settings_housing_translations_filter {
 input app_settings_housing_translations_quantifier_filter {
   be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  content: string_filter_operators
   id: number_filter_operators
   app_settings_id: app_settings_filter
-  content: string_filter_operators
   languages_code: languages_filter
   _and: [app_settings_housing_translations_filter]
   _or: [app_settings_housing_translations_filter]
@@ -9697,10 +9720,10 @@ input app_settings_housing_translations_quantifier_filter {
 input app_settings_login_screen_translations_filter {
   be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
-  id: number_filter_operators
-  detailed_description: string_filter_operators
-  intro_description: string_filter_operators
   app_settings_id: app_settings_filter
+  id: number_filter_operators
+  intro_description: string_filter_operators
+  detailed_description: string_filter_operators
   languages_code: languages_filter
   _and: [app_settings_login_screen_translations_filter]
   _or: [app_settings_login_screen_translations_filter]
@@ -9710,10 +9733,10 @@ input app_settings_login_screen_translations_filter {
 input app_settings_login_screen_translations_quantifier_filter {
   be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
-  id: number_filter_operators
-  detailed_description: string_filter_operators
-  intro_description: string_filter_operators
   app_settings_id: app_settings_filter
+  id: number_filter_operators
+  intro_description: string_filter_operators
+  detailed_description: string_filter_operators
   languages_code: languages_filter
   _and: [app_settings_login_screen_translations_filter]
   _or: [app_settings_login_screen_translations_filter]
@@ -9724,9 +9747,9 @@ input app_settings_login_screen_translations_quantifier_filter {
 input app_usage_events_filter {
   payload_boolean: boolean_filter_operators
   sequence_number: number_filter_operators
+  payload_number: number_filter_operators
   payload: string_filter_operators
   payload_func: count_function_filter_operators
-  payload_number: number_filter_operators
   platform: string_filter_operators
   app_version: string_filter_operators
   screen_name: string_filter_operators
@@ -9800,8 +9823,8 @@ input buildings_businesshours_quantifier_filter {
 }
 
 input buildings_filter {
-  map_marker_cluster_exclude: boolean_filter_operators
   map_marker_is_visible: boolean_filter_operators
+  map_marker_cluster_exclude: boolean_filter_operators
   sort: number_filter_operators
   coordinates: string_filter_operators
   coordinates_func: count_function_filter_operators
@@ -9882,13 +9905,13 @@ input buildings_translations_quantifier_filter {
 }
 
 input businesshours_filter {
+  saturday: boolean_filter_operators
+  monday: boolean_filter_operators
+  friday: boolean_filter_operators
   wednesday: boolean_filter_operators
   tuesday: boolean_filter_operators
   thursday: boolean_filter_operators
   sunday: boolean_filter_operators
-  saturday: boolean_filter_operators
-  monday: boolean_filter_operators
-  friday: boolean_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
   date_created: date_filter_operators
@@ -9973,7 +9996,6 @@ input canteen_food_feedback_report_schedules_canteens_quantifier_filter {
 }
 
 input canteen_food_feedback_report_schedules_filter {
-  enabled: boolean_filter_operators
   show_food_comments_for_all_time: boolean_filter_operators
   show_food_comments_for_selected_period: boolean_filter_operators
   show_food_feedback_labels_for_selected_period: boolean_filter_operators
@@ -9987,13 +10009,14 @@ input canteen_food_feedback_report_schedules_filter {
   send_on_fridays: boolean_filter_operators
   send_on_thursdays: boolean_filter_operators
   send_on_wednesdays: boolean_filter_operators
-  send_on_tuesdays: boolean_filter_operators
   send_on_mondays: boolean_filter_operators
   show_images: boolean_filter_operators
+  send_on_tuesdays: boolean_filter_operators
+  enabled: boolean_filter_operators
+  sort: number_filter_operators
   period_days_offset: number_filter_operators
   period_days_amount: number_filter_operators
   report_status_log: string_filter_operators
-  sort: number_filter_operators
   alias: string_filter_operators
   status: string_filter_operators
   date_next_report_is_due: date_filter_operators
@@ -10055,8 +10078,8 @@ input canteen_visits_filter {
 }
 
 input canteens_feedbacks_labels_entries_filter {
-  like: boolean_filter_operators
   dislike: boolean_filter_operators
+  like: boolean_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
   date: date_filter_operators
@@ -10122,8 +10145,8 @@ input canteens_feedbacks_labels_translations_quantifier_filter {
 }
 
 input canteens_filter {
-  foodoffers_import_delete_all_without_dates: boolean_filter_operators
   foodoffers_import_without_date: boolean_filter_operators
+  foodoffers_import_delete_all_without_dates: boolean_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
   external_identifier: string_filter_operators
@@ -10346,36 +10369,36 @@ input collectible_event_participants_quantifier_filter {
 }
 
 input collectible_events_filter {
+  collectible_at_housing: boolean_filter_operators
+  monitor_display_number_of_collected_items: boolean_filter_operators
+  collectible_at_card_balance: boolean_filter_operators
+  collectible_at_course_timetable: boolean_filter_operators
   collectible_at_news: boolean_filter_operators
-  collectible_at_license_information: boolean_filter_operators
-  collectible_at_markings: boolean_filter_operators
-  collectible_at_markings_details: boolean_filter_operators
+  collectible_at_data_access: boolean_filter_operators
   collectible_at_drawer: boolean_filter_operators
+  collectible_at_price_group_selection: boolean_filter_operators
   collectible_at_faq: boolean_filter_operators
   collectible_at_foodoffers: boolean_filter_operators
   collectible_at_foodoffers_details: boolean_filter_operators
   collectible_at_foodoffers_details_markings: boolean_filter_operators
+  collectible_at_notification: boolean_filter_operators
   collectible_at_foodoffers_details_nutritions: boolean_filter_operators
   collectible_at_foodoffers_select_date: boolean_filter_operators
   collectible_at_foodoffers_sort: boolean_filter_operators
-  collectible_at_housing: boolean_filter_operators
-  collectible_at_price_group_selection: boolean_filter_operators
-  monitor_display_number_of_collected_items: boolean_filter_operators
-  collectible_at_notification: boolean_filter_operators
-  monitor_display_number_of_participants: boolean_filter_operators
-  ask_for_contact_details: boolean_filter_operators
-  collectible_at_campus: boolean_filter_operators
   collectible_at_canteen_selection: boolean_filter_operators
-  collectible_at_card_balance: boolean_filter_operators
-  collectible_at_course_timetable: boolean_filter_operators
-  collectible_at_data_access: boolean_filter_operators
-  sort: number_filter_operators
-  collectible_at_settings: boolean_filter_operators
-  collectible_at_settings_amount_column: boolean_filter_operators
+  collectible_at_campus: boolean_filter_operators
+  ask_for_contact_details: boolean_filter_operators
+  monitor_display_number_of_participants: boolean_filter_operators
+  collectible_at_markings: boolean_filter_operators
+  collectible_at_markings_details: boolean_filter_operators
   collectible_at_settings_first_day_of_week: boolean_filter_operators
-  collectible_at_settings_menuposition: boolean_filter_operators
-  collectible_at_settings_theme: boolean_filter_operators
+  collectible_at_settings_amount_column: boolean_filter_operators
+  collectible_at_settings: boolean_filter_operators
+  collectible_at_license_information: boolean_filter_operators
   repeat_every_year: boolean_filter_operators
+  collectible_at_settings_theme: boolean_filter_operators
+  collectible_at_settings_menuposition: boolean_filter_operators
+  sort: number_filter_operators
   points_minimum: number_filter_operators
   points_maximum: number_filter_operators
   status: string_filter_operators
@@ -10481,28 +10504,28 @@ input create_app_elements_translations_input {
   be_source_for_translations: Boolean
   let_be_translated: Boolean
   id: ID
-  content: String
   popup_content: String
+  content: String
   popup_button_text: String
   languages_code: create_languages_input
   app_elements_id: create_app_elements_input
 }
 
 input create_app_feedbacks_input {
+  response_read_by_user: Boolean
   feedback_read_by_support: Boolean
   positive: Boolean
-  response_read_by_user: Boolean
-  source_rating_raw: Int
   priority: Int
   sort: Int
+  source_rating_raw: Int
   content: String
-  response: String
   data: JSON
-  display_height: Float
-  display_fontscale: Float
-  display_scale: Float
+  response: String
   display_pixelratio: Float
+  display_scale: Float
   display_width: Float
+  display_fontscale: Float
+  display_height: Float
   device_brand: String
   contact_email: String
   state: String
@@ -10522,8 +10545,8 @@ input create_app_feedbacks_input {
 }
 
 input create_app_settings_balance_translations_input {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   app_settings_id: create_app_settings_input
   id: ID
   content: String
@@ -10533,30 +10556,17 @@ input create_app_settings_balance_translations_input {
 input create_app_settings_housing_translations_input {
   be_source_for_translations: Boolean
   let_be_translated: Boolean
+  content: String
   id: ID
   app_settings_id: create_app_settings_input
-  content: String
   languages_code: create_languages_input
 }
 
 input create_app_settings_input {
-  """KI generierte Bilder für Speisen ohne Fotos erstellen?"""
-  foods_image_ai_generation_enabled: Boolean
-  friends_enabled: Boolean
-
-  """Zeigt in der App den Bereich News an"""
-  news_enabled: Boolean
-
-  """Zeige den Lageplan in der App an"""
-  map_enabled: Boolean
-  notifications_android_enabled: Boolean
-  notifications_email_enabled: Boolean
-  animations_auto_start: Boolean
-
-  """Bereich "Mensa" in der App aktivieren?"""
-  foods_enabled: Boolean
   course_timetable_enabled: Boolean
   balance_enabled: Boolean
+  notifications_android_enabled: Boolean
+  notifications_email_enabled: Boolean
   notifications_ios_enabled: Boolean
 
   """Zeige in der App den Bereich Campus an"""
@@ -10564,16 +10574,30 @@ input create_app_settings_input {
 
   """Zeige die Auslastungsprognose in der App"""
   utilization_display_enabled: Boolean
-  id: ID
+  animations_auto_start: Boolean
 
-  """Zeigt den Bereich Wohnen in der App an"""
-  housing_enabled: Boolean
+  """Soll die Anzahl der Bewertungen angezeigt werden?"""
+  foods_ratings_amount_display: Boolean
 
   """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
   foods_ratings_average_display: Boolean
 
-  """Soll die Anzahl der Bewertungen angezeigt werden?"""
-  foods_ratings_amount_display: Boolean
+  """Zeigt den Bereich Wohnen in der App an"""
+  housing_enabled: Boolean
+
+  """Zeige den Lageplan in der App an"""
+  map_enabled: Boolean
+  friends_enabled: Boolean
+
+  """Zeigt in der App den Bereich News an"""
+  news_enabled: Boolean
+
+  """Bereich "Mensa" in der App aktivieren?"""
+  foods_enabled: Boolean
+
+  """KI generierte Bilder für Speisen ohne Fotos erstellen?"""
+  foods_image_ai_generation_enabled: Boolean
+  id: ID
 
   """Liste erlaubter Seiten die sich bei der App Anmelden dürfen"""
   redirect_whitelist: JSON
@@ -10627,18 +10651,18 @@ input create_app_settings_input {
 input create_app_settings_login_screen_translations_input {
   be_source_for_translations: Boolean
   let_be_translated: Boolean
-  id: ID
-  detailed_description: String
-  intro_description: String
   app_settings_id: create_app_settings_input
+  id: ID
+  intro_description: String
+  detailed_description: String
   languages_code: create_languages_input
 }
 
 input create_app_usage_events_input {
   payload_boolean: Boolean
   sequence_number: Int
-  payload: JSON
   payload_number: Float
+  payload: JSON
   platform: String
   app_version: String
   screen_name: String
@@ -10668,8 +10692,8 @@ input create_buildings_businesshours_input {
 }
 
 input create_buildings_input {
-  map_marker_cluster_exclude: Boolean
   map_marker_is_visible: Boolean
+  map_marker_cluster_exclude: Boolean
   sort: Int
   coordinates: JSON
   map_marker_label_color: String
@@ -10732,13 +10756,13 @@ input create_businesshours_groups_translations_input {
 }
 
 input create_businesshours_input {
+  saturday: Boolean
+  monday: Boolean
+  friday: Boolean
   wednesday: Boolean
   tuesday: Boolean
   thursday: Boolean
   sunday: Boolean
-  saturday: Boolean
-  monday: Boolean
-  friday: Boolean
   sort: Int
   status: String
   date_created: Date
@@ -10764,8 +10788,6 @@ input create_canteen_food_feedback_report_schedules_canteens_input {
 }
 
 input create_canteen_food_feedback_report_schedules_input {
-  enabled: Boolean
-
   """Zeige Speise Kommentare insgesammt"""
   show_food_comments_for_all_time: Boolean
 
@@ -10792,11 +10814,13 @@ input create_canteen_food_feedback_report_schedules_input {
   send_on_fridays: Boolean
   send_on_thursdays: Boolean
   send_on_wednesdays: Boolean
-  send_on_tuesdays: Boolean
   send_on_mondays: Boolean
 
   """Zeige Bilder der Speisen"""
   show_images: Boolean
+  send_on_tuesdays: Boolean
+  enabled: Boolean
+  sort: Int
 
   """
   Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
@@ -10808,7 +10832,6 @@ input create_canteen_food_feedback_report_schedules_input {
   """
   period_days_amount: Int
   report_status_log: String
-  sort: Int
   alias: String
   status: String
   date_next_report_is_due: Date
@@ -10845,8 +10868,8 @@ input create_canteen_visits_input {
 }
 
 input create_canteens_feedbacks_labels_entries_input {
-  like: Boolean
   dislike: Boolean
+  like: Boolean
   sort: Int
   status: String
   date: Date
@@ -10901,14 +10924,14 @@ input create_canteens_foodservice_hours_input {
 
 input create_canteens_input {
   """
-  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
-  """
-  foodoffers_import_delete_all_without_dates: Boolean
-
-  """
   Beim Importieren von Speiseangeboten sind die Angebote für alle Tage gültig und haben daher kein Datum.
   """
   foodoffers_import_without_date: Boolean
+
+  """
+  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
+  """
+  foodoffers_import_delete_all_without_dates: Boolean
   sort: Int
   status: String
   external_identifier: String
@@ -11005,36 +11028,36 @@ input create_collectible_event_participants_input {
 }
 
 input create_collectible_events_input {
+  collectible_at_housing: Boolean
+  monitor_display_number_of_collected_items: Boolean
+  collectible_at_card_balance: Boolean
+  collectible_at_course_timetable: Boolean
   collectible_at_news: Boolean
-  collectible_at_license_information: Boolean
-  collectible_at_markings: Boolean
-  collectible_at_markings_details: Boolean
+  collectible_at_data_access: Boolean
   collectible_at_drawer: Boolean
+  collectible_at_price_group_selection: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
   collectible_at_foodoffers_details: Boolean
   collectible_at_foodoffers_details_markings: Boolean
+  collectible_at_notification: Boolean
   collectible_at_foodoffers_details_nutritions: Boolean
   collectible_at_foodoffers_select_date: Boolean
   collectible_at_foodoffers_sort: Boolean
-  collectible_at_housing: Boolean
-  collectible_at_price_group_selection: Boolean
-  monitor_display_number_of_collected_items: Boolean
-  collectible_at_notification: Boolean
-  monitor_display_number_of_participants: Boolean
-  ask_for_contact_details: Boolean
-  collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
-  collectible_at_card_balance: Boolean
-  collectible_at_course_timetable: Boolean
-  collectible_at_data_access: Boolean
-  sort: Int
-  collectible_at_settings: Boolean
-  collectible_at_settings_amount_column: Boolean
+  collectible_at_campus: Boolean
+  ask_for_contact_details: Boolean
+  monitor_display_number_of_participants: Boolean
+  collectible_at_markings: Boolean
+  collectible_at_markings_details: Boolean
   collectible_at_settings_first_day_of_week: Boolean
-  collectible_at_settings_menuposition: Boolean
-  collectible_at_settings_theme: Boolean
+  collectible_at_settings_amount_column: Boolean
+  collectible_at_settings: Boolean
+  collectible_at_license_information: Boolean
   repeat_every_year: Boolean
+  collectible_at_settings_theme: Boolean
+  collectible_at_settings_menuposition: Boolean
+  sort: Int
   points_minimum: Int
   points_maximum: Int
   status: String
@@ -11081,13 +11104,13 @@ input create_devices_input {
   is_ios: Boolean
   is_android: Boolean
   sort: Int
-  pushTokenObj: JSON
-  custom_data: JSON
-  display_fontscale: Float
   display_height: Float
   display_pixelratio: Float
   display_scale: Float
   display_width: Float
+  display_fontscale: Float
+  pushTokenObj: JSON
+  custom_data: JSON
   app_version: String
   system_version: String
   status: String
@@ -11112,17 +11135,17 @@ input create_directus_access_input {
 
 input create_directus_files_input {
   is_unreferenced: Boolean
-  filesize: GraphQLBigInt
-  height: Int
   focal_point_y: Int
   focal_point_x: Int
-  width: Int
   duration: Int
+  height: Int
+  width: Int
+  filesize: GraphQLBigInt
   tags: JSON
   location: String
   description: String
-  tus_data: JSON
   metadata: JSON
+  tus_data: JSON
   tus_id: String
   embed: String
   charset: String
@@ -11147,8 +11170,8 @@ input create_directus_folders_input {
 }
 
 input create_directus_permissions_input {
-  id: ID
   fields: [String]
+  id: ID
   presets: JSON
   validation: JSON
   permissions: JSON
@@ -11158,10 +11181,9 @@ input create_directus_permissions_input {
 }
 
 input create_directus_policies_input {
-  admin_access: Boolean!
-
   """$t:field_options.directus_policies.enforce_tfa"""
   enforce_tfa: Boolean!
+  admin_access: Boolean!
   app_access: Boolean!
   ip_access: [String]
   description: String
@@ -11225,9 +11247,9 @@ input create_directus_users_input {
 
 input create_feature_whishes_input {
   likes: Int
+  description: String
   sort: Int
   tags: JSON
-  description: String
   title: String
   alias: String
   status: String
@@ -11279,14 +11301,14 @@ input create_foodoffers_components_input {
 }
 
 input create_foodoffers_info_items_input {
-  show_on_sundays: Boolean
-  show_on_wednesdays: Boolean
-  show_on_saturdays: Boolean
-  show_on_fridays: Boolean
-  show_on_mondays: Boolean
-  show_on_tuesdays: Boolean
   show_on_thursdays: Boolean
+  show_on_wednesdays: Boolean
   show_only_when_no_foodoffers_found: Boolean
+  show_on_saturdays: Boolean
+  show_on_mondays: Boolean
+  show_on_fridays: Boolean
+  show_on_tuesdays: Boolean
+  show_on_sundays: Boolean
   sort: Int
   alias: String
   image_remote_url: String
@@ -11306,9 +11328,15 @@ input create_foodoffers_info_items_input {
 input create_foodoffers_input {
   is_component: Boolean
   sort: Int
-  price_student: Float
+
+  """Pro wieviel? z. B. Preis pro 100 (gramm)"""
+  price_reference_amount: Float
   price_employee: Float
   price_guest: Float
+  price_student: Float
+
+  """Pro welche Einheit? z. B. (100)g für Gramm."""
+  price_reference_unit: String
   result_hash: String
   redirect_url: String
   category: String
@@ -11323,8 +11351,8 @@ input create_foodoffers_input {
   user_created: create_directus_users_input
   id: ID
   canteen: create_canteens_input
-  markings: [create_foodoffers_markings_input]
   attribute_values: [create_foods_attributes_values_input]
+  markings: [create_foodoffers_markings_input]
   foodoffer_components: [create_foodoffers_components_input]
   translations: [create_foodoffers_translations_input]
 }
@@ -11373,9 +11401,9 @@ input create_foods_attributes_groups_translations_input {
 }
 
 input create_foods_attributes_input {
+  full_width: Boolean
   show_on_card: Boolean
   show_on_label_list: Boolean
-  full_width: Boolean
   sort: Int
   suffix: String
   prefix: String
@@ -11434,8 +11462,8 @@ input create_foods_categories_input {
 }
 
 input create_foods_categories_translations_input {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   name: String
   languages_code: create_languages_input
@@ -11546,8 +11574,8 @@ input create_foods_markings_input {
 }
 
 input create_foods_translations_input {
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
   id: ID
   description: String
   name: String
@@ -11563,10 +11591,10 @@ input create_form_answers_files_input {
 
 input create_form_answers_input {
   value_boolean: Boolean
-  sort: Int
-  value_custom: JSON
   value_string: String
+  sort: Int
   value_number: Float
+  value_custom: JSON
   status: String
   value_date: Date
   date_updated: Date
@@ -11597,8 +11625,8 @@ input create_form_categories_input {
 }
 
 input create_form_categories_translations_input {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   name: String
   languages_code: create_languages_input
@@ -11668,8 +11696,8 @@ input create_form_fields_input {
 input create_form_fields_translations_input {
   let_be_translated: Boolean
   be_source_for_translations: Boolean
-  id: ID
   description: String
+  id: ID
   name: String
   languages_code: create_languages_input
   form_fields_id: create_form_fields_input
@@ -11715,8 +11743,8 @@ input create_forms_input {
 }
 
 input create_forms_translations_input {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   description: String
   name: String
@@ -11753,9 +11781,9 @@ input create_mails_files_input {
 input create_mails_input {
   send_attachments_as_links: Boolean
   sort: Int
-  template_data: JSON
   log: String
   markdown_content: String
+  template_data: JSON
   send_status: String
   template_name: String
   subject: String
@@ -11791,8 +11819,8 @@ input create_markings_groups_input {
 }
 
 input create_markings_groups_translations_input {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   name: String
   languages_code: create_languages_input
@@ -11800,13 +11828,14 @@ input create_markings_groups_translations_input {
 }
 
 input create_markings_input {
-  """Keinen Rand verwenden"""
-  hide_border: Boolean
-  show_on_card: Boolean
   show_on_label_list: Boolean
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Boolean
+
+  """Keinen Rand verwenden"""
+  hide_border: Boolean
+  show_on_card: Boolean
   sort: Int
 
   """
@@ -11871,8 +11900,8 @@ input create_news_input {
 }
 
 input create_news_translations_input {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   content: String
   languages_code: create_languages_input
@@ -11906,10 +11935,10 @@ input create_popup_events_canteens_input {
 }
 
 input create_popup_events_input {
-  send_notification: Boolean
-  show_on_android: Boolean
-  show_on_ios: Boolean
   show_on_web: Boolean
+  show_on_ios: Boolean
+  show_on_android: Boolean
+  send_notification: Boolean
   show_app_rating_button: Boolean
   sort: Int
   image_remote_url: String
@@ -11958,10 +11987,10 @@ input create_profiles_buildings_last_opened_input {
 input create_profiles_input {
   notifiy_on_free_apartments: Boolean
   sort: Int
-  course_timetable: JSON
   avatar: JSON
-  credit_balance_last_transaction: Float
   credit_balance: Float
+  credit_balance_last_transaction: Float
+  course_timetable: JSON
   status: String
   price_group: String
   nickname: String
@@ -12151,8 +12180,8 @@ input create_workflows_input {
 
 input create_workflows_runs_input {
   sort: Int
-  log: String
   runtime_in_seconds: Int
+  log: String
   result_hash: JSON
   output: String
   input: String
@@ -12211,15 +12240,15 @@ input devices_filter {
   is_ios: boolean_filter_operators
   is_android: boolean_filter_operators
   sort: number_filter_operators
-  pushTokenObj: string_filter_operators
-  pushTokenObj_func: count_function_filter_operators
-  custom_data: string_filter_operators
-  custom_data_func: count_function_filter_operators
-  display_fontscale: number_filter_operators
   display_height: number_filter_operators
   display_pixelratio: number_filter_operators
   display_scale: number_filter_operators
   display_width: number_filter_operators
+  display_fontscale: number_filter_operators
+  pushTokenObj: string_filter_operators
+  pushTokenObj_func: count_function_filter_operators
+  custom_data: string_filter_operators
+  custom_data_func: count_function_filter_operators
   app_version: string_filter_operators
   system_version: string_filter_operators
   status: string_filter_operators
@@ -12247,15 +12276,15 @@ input devices_quantifier_filter {
   is_ios: boolean_filter_operators
   is_android: boolean_filter_operators
   sort: number_filter_operators
-  pushTokenObj: string_filter_operators
-  pushTokenObj_func: count_function_filter_operators
-  custom_data: string_filter_operators
-  custom_data_func: count_function_filter_operators
-  display_fontscale: number_filter_operators
   display_height: number_filter_operators
   display_pixelratio: number_filter_operators
   display_scale: number_filter_operators
   display_width: number_filter_operators
+  display_fontscale: number_filter_operators
+  pushTokenObj: string_filter_operators
+  pushTokenObj_func: count_function_filter_operators
+  custom_data: string_filter_operators
+  custom_data_func: count_function_filter_operators
   app_version: string_filter_operators
   system_version: string_filter_operators
   status: string_filter_operators
@@ -12333,20 +12362,20 @@ input directus_dashboards_filter {
 
 input directus_files_filter {
   is_unreferenced: boolean_filter_operators
-  filesize: big_int_filter_operators
-  height: number_filter_operators
   focal_point_y: number_filter_operators
   focal_point_x: number_filter_operators
-  width: number_filter_operators
   duration: number_filter_operators
+  height: number_filter_operators
+  width: number_filter_operators
+  filesize: big_int_filter_operators
   tags: string_filter_operators
   tags_func: count_function_filter_operators
   location: string_filter_operators
   description: string_filter_operators
-  tus_data: string_filter_operators
-  tus_data_func: count_function_filter_operators
   metadata: string_filter_operators
   metadata_func: count_function_filter_operators
+  tus_data: string_filter_operators
+  tus_data_func: count_function_filter_operators
   tus_id: string_filter_operators
   embed: string_filter_operators
   charset: string_filter_operators
@@ -12399,8 +12428,8 @@ input directus_folders_filter {
 }
 
 input directus_operations_filter {
-  position_x: number_filter_operators
   position_y: number_filter_operators
+  position_x: number_filter_operators
   options: string_filter_operators
   options_func: count_function_filter_operators
   type: string_filter_operators
@@ -12419,8 +12448,8 @@ input directus_operations_filter {
 
 """"""
 input directus_operations_quantifier_filter {
-  position_x: number_filter_operators
   position_y: number_filter_operators
+  position_x: number_filter_operators
   options: string_filter_operators
   options_func: count_function_filter_operators
   type: string_filter_operators
@@ -12441,11 +12470,11 @@ input directus_operations_quantifier_filter {
 
 input directus_panels_filter {
   show_header: boolean_filter_operators
-  position_x: number_filter_operators
-  position_y: number_filter_operators
-  width: number_filter_operators
-  height: number_filter_operators
   note: string_filter_operators
+  height: number_filter_operators
+  width: number_filter_operators
+  position_y: number_filter_operators
+  position_x: number_filter_operators
   options: string_filter_operators
   options_func: count_function_filter_operators
   type: string_filter_operators
@@ -12464,11 +12493,11 @@ input directus_panels_filter {
 """"""
 input directus_panels_quantifier_filter {
   show_header: boolean_filter_operators
-  position_x: number_filter_operators
-  position_y: number_filter_operators
-  width: number_filter_operators
-  height: number_filter_operators
   note: string_filter_operators
+  height: number_filter_operators
+  width: number_filter_operators
+  position_y: number_filter_operators
+  position_x: number_filter_operators
   options: string_filter_operators
   options_func: count_function_filter_operators
   type: string_filter_operators
@@ -12487,8 +12516,8 @@ input directus_panels_quantifier_filter {
 }
 
 input directus_permissions_filter {
-  id: number_filter_operators
   fields: string_filter_operators
+  id: number_filter_operators
   presets: string_filter_operators
   presets_func: count_function_filter_operators
   validation: string_filter_operators
@@ -12504,8 +12533,8 @@ input directus_permissions_filter {
 
 """"""
 input directus_permissions_quantifier_filter {
-  id: number_filter_operators
   fields: string_filter_operators
+  id: number_filter_operators
   presets: string_filter_operators
   presets_func: count_function_filter_operators
   validation: string_filter_operators
@@ -12522,8 +12551,8 @@ input directus_permissions_quantifier_filter {
 }
 
 input directus_policies_filter {
-  admin_access: boolean_filter_operators
   enforce_tfa: boolean_filter_operators
+  admin_access: boolean_filter_operators
   app_access: boolean_filter_operators
   ip_access: string_filter_operators
   description: string_filter_operators
@@ -12721,10 +12750,10 @@ input directus_versions_filter {
 
 input feature_whishes_filter {
   likes: number_filter_operators
+  description: string_filter_operators
   sort: number_filter_operators
   tags: string_filter_operators
   tags_func: count_function_filter_operators
-  description: string_filter_operators
   title: string_filter_operators
   alias: string_filter_operators
   status: string_filter_operators
@@ -12821,9 +12850,11 @@ input foodoffers_components_quantifier_filter {
 input foodoffers_filter {
   is_component: boolean_filter_operators
   sort: number_filter_operators
-  price_student: number_filter_operators
+  price_reference_amount: number_filter_operators
   price_employee: number_filter_operators
   price_guest: number_filter_operators
+  price_student: number_filter_operators
+  price_reference_unit: string_filter_operators
   result_hash: string_filter_operators
   redirect_url: string_filter_operators
   category: string_filter_operators
@@ -12841,10 +12872,10 @@ input foodoffers_filter {
   user_created: directus_users_filter
   id: id_filter_operators
   canteen: canteens_filter
-  markings: foodoffers_markings_quantifier_filter
-  markings_func: count_function_filter_operators
   attribute_values: foods_attributes_values_quantifier_filter
   attribute_values_func: count_function_filter_operators
+  markings: foodoffers_markings_quantifier_filter
+  markings_func: count_function_filter_operators
   foodoffer_components: foodoffers_components_quantifier_filter
   foodoffer_components_func: count_function_filter_operators
   translations: foodoffers_translations_quantifier_filter
@@ -12854,14 +12885,14 @@ input foodoffers_filter {
 }
 
 input foodoffers_info_items_filter {
-  show_on_sundays: boolean_filter_operators
-  show_on_wednesdays: boolean_filter_operators
-  show_on_saturdays: boolean_filter_operators
-  show_on_fridays: boolean_filter_operators
-  show_on_mondays: boolean_filter_operators
-  show_on_tuesdays: boolean_filter_operators
   show_on_thursdays: boolean_filter_operators
+  show_on_wednesdays: boolean_filter_operators
   show_only_when_no_foodoffers_found: boolean_filter_operators
+  show_on_saturdays: boolean_filter_operators
+  show_on_mondays: boolean_filter_operators
+  show_on_fridays: boolean_filter_operators
+  show_on_tuesdays: boolean_filter_operators
+  show_on_sundays: boolean_filter_operators
   sort: number_filter_operators
   alias: string_filter_operators
   image_remote_url: string_filter_operators
@@ -12927,9 +12958,9 @@ input foodoffers_translations_quantifier_filter {
 }
 
 input foods_attributes_filter {
+  full_width: boolean_filter_operators
   show_on_card: boolean_filter_operators
   show_on_label_list: boolean_filter_operators
-  full_width: boolean_filter_operators
   sort: number_filter_operators
   suffix: string_filter_operators
   prefix: string_filter_operators
@@ -13007,9 +13038,9 @@ input foods_attributes_groups_translations_quantifier_filter {
 
 """"""
 input foods_attributes_quantifier_filter {
+  full_width: boolean_filter_operators
   show_on_card: boolean_filter_operators
   show_on_label_list: boolean_filter_operators
-  full_width: boolean_filter_operators
   sort: number_filter_operators
   suffix: string_filter_operators
   prefix: string_filter_operators
@@ -13114,8 +13145,8 @@ input foods_categories_filter {
 }
 
 input foods_categories_translations_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   name: string_filter_operators
   languages_code: languages_filter
@@ -13126,8 +13157,8 @@ input foods_categories_translations_filter {
 
 """"""
 input foods_categories_translations_quantifier_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   name: string_filter_operators
   languages_code: languages_filter
@@ -13317,8 +13348,8 @@ input foods_markings_quantifier_filter {
 }
 
 input foods_translations_filter {
-  let_be_translated: boolean_filter_operators
   be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
   id: number_filter_operators
   description: string_filter_operators
   name: string_filter_operators
@@ -13330,8 +13361,8 @@ input foods_translations_filter {
 
 """"""
 input foods_translations_quantifier_filter {
-  let_be_translated: boolean_filter_operators
   be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
   id: number_filter_operators
   description: string_filter_operators
   name: string_filter_operators
@@ -13364,11 +13395,11 @@ input form_answers_files_quantifier_filter {
 
 input form_answers_filter {
   value_boolean: boolean_filter_operators
+  value_string: string_filter_operators
   sort: number_filter_operators
+  value_number: number_filter_operators
   value_custom: string_filter_operators
   value_custom_func: count_function_filter_operators
-  value_string: string_filter_operators
-  value_number: number_filter_operators
   status: string_filter_operators
   value_date: date_filter_operators
   value_date_func: datetime_function_filter_operators
@@ -13391,11 +13422,11 @@ input form_answers_filter {
 """"""
 input form_answers_quantifier_filter {
   value_boolean: boolean_filter_operators
+  value_string: string_filter_operators
   sort: number_filter_operators
+  value_number: number_filter_operators
   value_custom: string_filter_operators
   value_custom_func: count_function_filter_operators
-  value_string: string_filter_operators
-  value_number: number_filter_operators
   status: string_filter_operators
   value_date: date_filter_operators
   value_date_func: datetime_function_filter_operators
@@ -13438,8 +13469,8 @@ input form_categories_filter {
 }
 
 input form_categories_translations_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   name: string_filter_operators
   languages_code: languages_filter
@@ -13450,8 +13481,8 @@ input form_categories_translations_filter {
 
 """"""
 input form_categories_translations_quantifier_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   name: string_filter_operators
   languages_code: languages_filter
@@ -13589,8 +13620,8 @@ input form_fields_quantifier_filter {
 input form_fields_translations_filter {
   let_be_translated: boolean_filter_operators
   be_source_for_translations: boolean_filter_operators
-  id: number_filter_operators
   description: string_filter_operators
+  id: number_filter_operators
   name: string_filter_operators
   languages_code: languages_filter
   form_fields_id: form_fields_filter
@@ -13602,8 +13633,8 @@ input form_fields_translations_filter {
 input form_fields_translations_quantifier_filter {
   let_be_translated: boolean_filter_operators
   be_source_for_translations: boolean_filter_operators
-  id: number_filter_operators
   description: string_filter_operators
+  id: number_filter_operators
   name: string_filter_operators
   languages_code: languages_filter
   form_fields_id: form_fields_filter
@@ -13726,8 +13757,8 @@ input forms_quantifier_filter {
 }
 
 input forms_translations_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   description: string_filter_operators
   name: string_filter_operators
@@ -13739,8 +13770,8 @@ input forms_translations_filter {
 
 """"""
 input forms_translations_quantifier_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   description: string_filter_operators
   name: string_filter_operators
@@ -13849,10 +13880,10 @@ input mails_files_quantifier_filter {
 input mails_filter {
   send_attachments_as_links: boolean_filter_operators
   sort: number_filter_operators
-  template_data: string_filter_operators
-  template_data_func: count_function_filter_operators
   log: string_filter_operators
   markdown_content: string_filter_operators
+  template_data: string_filter_operators
+  template_data_func: count_function_filter_operators
   send_status: string_filter_operators
   template_name: string_filter_operators
   subject: string_filter_operators
@@ -13876,10 +13907,10 @@ input mails_filter {
 input mails_quantifier_filter {
   send_attachments_as_links: boolean_filter_operators
   sort: number_filter_operators
-  template_data: string_filter_operators
-  template_data_func: count_function_filter_operators
   log: string_filter_operators
   markdown_content: string_filter_operators
+  template_data: string_filter_operators
+  template_data_func: count_function_filter_operators
   send_status: string_filter_operators
   template_name: string_filter_operators
   subject: string_filter_operators
@@ -13921,10 +13952,10 @@ input markings_exclusions_quantifier_filter {
 }
 
 input markings_filter {
-  hide_border: boolean_filter_operators
-  show_on_card: boolean_filter_operators
   show_on_label_list: boolean_filter_operators
   invert_background_color: boolean_filter_operators
+  hide_border: boolean_filter_operators
+  show_on_card: boolean_filter_operators
   sort: number_filter_operators
   background_color: string_filter_operators
   short_code: string_filter_operators
@@ -13972,8 +14003,8 @@ input markings_groups_filter {
 }
 
 input markings_groups_translations_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   name: string_filter_operators
   languages_code: languages_filter
@@ -13984,8 +14015,8 @@ input markings_groups_translations_filter {
 
 """"""
 input markings_groups_translations_quantifier_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   name: string_filter_operators
   languages_code: languages_filter
@@ -13998,10 +14029,10 @@ input markings_groups_translations_quantifier_filter {
 
 """"""
 input markings_quantifier_filter {
-  hide_border: boolean_filter_operators
-  show_on_card: boolean_filter_operators
   show_on_label_list: boolean_filter_operators
   invert_background_color: boolean_filter_operators
+  hide_border: boolean_filter_operators
+  show_on_card: boolean_filter_operators
   sort: number_filter_operators
   background_color: string_filter_operators
   short_code: string_filter_operators
@@ -14084,8 +14115,8 @@ input news_filter {
 }
 
 input news_translations_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   content: string_filter_operators
   languages_code: languages_filter
@@ -14097,8 +14128,8 @@ input news_translations_filter {
 
 """"""
 input news_translations_quantifier_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   content: string_filter_operators
   languages_code: languages_filter
@@ -14198,10 +14229,10 @@ input popup_events_canteens_quantifier_filter {
 }
 
 input popup_events_filter {
-  send_notification: boolean_filter_operators
-  show_on_android: boolean_filter_operators
-  show_on_ios: boolean_filter_operators
   show_on_web: boolean_filter_operators
+  show_on_ios: boolean_filter_operators
+  show_on_android: boolean_filter_operators
+  send_notification: boolean_filter_operators
   show_app_rating_button: boolean_filter_operators
   sort: number_filter_operators
   image_remote_url: string_filter_operators
@@ -14297,12 +14328,12 @@ input profiles_buildings_last_opened_quantifier_filter {
 input profiles_filter {
   notifiy_on_free_apartments: boolean_filter_operators
   sort: number_filter_operators
-  course_timetable: string_filter_operators
-  course_timetable_func: count_function_filter_operators
   avatar: string_filter_operators
   avatar_func: count_function_filter_operators
-  credit_balance_last_transaction: number_filter_operators
   credit_balance: number_filter_operators
+  credit_balance_last_transaction: number_filter_operators
+  course_timetable: string_filter_operators
+  course_timetable_func: count_function_filter_operators
   status: string_filter_operators
   price_group: string_filter_operators
   nickname: string_filter_operators
@@ -14467,28 +14498,28 @@ input update_app_elements_translations_input {
   be_source_for_translations: Boolean
   let_be_translated: Boolean
   id: ID
-  content: String
   popup_content: String
+  content: String
   popup_button_text: String
   languages_code: update_languages_input
   app_elements_id: update_app_elements_input
 }
 
 input update_app_feedbacks_input {
+  response_read_by_user: Boolean
   feedback_read_by_support: Boolean
   positive: Boolean
-  response_read_by_user: Boolean
-  source_rating_raw: Int
   priority: Int
   sort: Int
+  source_rating_raw: Int
   content: String
-  response: String
   data: JSON
-  display_height: Float
-  display_fontscale: Float
-  display_scale: Float
+  response: String
   display_pixelratio: Float
+  display_scale: Float
   display_width: Float
+  display_fontscale: Float
+  display_height: Float
   device_brand: String
   contact_email: String
   state: String
@@ -14508,8 +14539,8 @@ input update_app_feedbacks_input {
 }
 
 input update_app_settings_balance_translations_input {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   app_settings_id: update_app_settings_input
   id: ID
   content: String
@@ -14519,30 +14550,17 @@ input update_app_settings_balance_translations_input {
 input update_app_settings_housing_translations_input {
   be_source_for_translations: Boolean
   let_be_translated: Boolean
+  content: String
   id: ID
   app_settings_id: update_app_settings_input
-  content: String
   languages_code: update_languages_input
 }
 
 input update_app_settings_input {
-  """KI generierte Bilder für Speisen ohne Fotos erstellen?"""
-  foods_image_ai_generation_enabled: Boolean
-  friends_enabled: Boolean
-
-  """Zeigt in der App den Bereich News an"""
-  news_enabled: Boolean
-
-  """Zeige den Lageplan in der App an"""
-  map_enabled: Boolean
-  notifications_android_enabled: Boolean
-  notifications_email_enabled: Boolean
-  animations_auto_start: Boolean
-
-  """Bereich "Mensa" in der App aktivieren?"""
-  foods_enabled: Boolean
   course_timetable_enabled: Boolean
   balance_enabled: Boolean
+  notifications_android_enabled: Boolean
+  notifications_email_enabled: Boolean
   notifications_ios_enabled: Boolean
 
   """Zeige in der App den Bereich Campus an"""
@@ -14550,16 +14568,30 @@ input update_app_settings_input {
 
   """Zeige die Auslastungsprognose in der App"""
   utilization_display_enabled: Boolean
-  id: ID
+  animations_auto_start: Boolean
 
-  """Zeigt den Bereich Wohnen in der App an"""
-  housing_enabled: Boolean
+  """Soll die Anzahl der Bewertungen angezeigt werden?"""
+  foods_ratings_amount_display: Boolean
 
   """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
   foods_ratings_average_display: Boolean
 
-  """Soll die Anzahl der Bewertungen angezeigt werden?"""
-  foods_ratings_amount_display: Boolean
+  """Zeigt den Bereich Wohnen in der App an"""
+  housing_enabled: Boolean
+
+  """Zeige den Lageplan in der App an"""
+  map_enabled: Boolean
+  friends_enabled: Boolean
+
+  """Zeigt in der App den Bereich News an"""
+  news_enabled: Boolean
+
+  """Bereich "Mensa" in der App aktivieren?"""
+  foods_enabled: Boolean
+
+  """KI generierte Bilder für Speisen ohne Fotos erstellen?"""
+  foods_image_ai_generation_enabled: Boolean
+  id: ID
 
   """Liste erlaubter Seiten die sich bei der App Anmelden dürfen"""
   redirect_whitelist: JSON
@@ -14613,18 +14645,18 @@ input update_app_settings_input {
 input update_app_settings_login_screen_translations_input {
   be_source_for_translations: Boolean
   let_be_translated: Boolean
-  id: ID
-  detailed_description: String
-  intro_description: String
   app_settings_id: update_app_settings_input
+  id: ID
+  intro_description: String
+  detailed_description: String
   languages_code: update_languages_input
 }
 
 input update_app_usage_events_input {
   payload_boolean: Boolean
   sequence_number: Int
-  payload: JSON
   payload_number: Float
+  payload: JSON
   platform: String
   app_version: String
   screen_name: String
@@ -14638,8 +14670,8 @@ input update_app_usage_events_input {
 }
 
 input update_auto_translation_settings_input {
-  valid_auth_key: Boolean
   active: Boolean
+  valid_auth_key: Boolean
   id: ID
   used: Int
   percentage: Int
@@ -14674,8 +14706,8 @@ input update_buildings_businesshours_input {
 }
 
 input update_buildings_input {
-  map_marker_cluster_exclude: Boolean
   map_marker_is_visible: Boolean
+  map_marker_cluster_exclude: Boolean
   sort: Int
   coordinates: JSON
   map_marker_label_color: String
@@ -14738,13 +14770,13 @@ input update_businesshours_groups_translations_input {
 }
 
 input update_businesshours_input {
+  saturday: Boolean
+  monday: Boolean
+  friday: Boolean
   wednesday: Boolean
   tuesday: Boolean
   thursday: Boolean
   sunday: Boolean
-  saturday: Boolean
-  monday: Boolean
-  friday: Boolean
   sort: Int
   status: String
   date_created: Date
@@ -14770,8 +14802,6 @@ input update_canteen_food_feedback_report_schedules_canteens_input {
 }
 
 input update_canteen_food_feedback_report_schedules_input {
-  enabled: Boolean
-
   """Zeige Speise Kommentare insgesammt"""
   show_food_comments_for_all_time: Boolean
 
@@ -14798,11 +14828,13 @@ input update_canteen_food_feedback_report_schedules_input {
   send_on_fridays: Boolean
   send_on_thursdays: Boolean
   send_on_wednesdays: Boolean
-  send_on_tuesdays: Boolean
   send_on_mondays: Boolean
 
   """Zeige Bilder der Speisen"""
   show_images: Boolean
+  send_on_tuesdays: Boolean
+  enabled: Boolean
+  sort: Int
 
   """
   Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
@@ -14814,7 +14846,6 @@ input update_canteen_food_feedback_report_schedules_input {
   """
   period_days_amount: Int
   report_status_log: String
-  sort: Int
   alias: String
   status: String
   date_next_report_is_due: Date
@@ -14851,8 +14882,8 @@ input update_canteen_visits_input {
 }
 
 input update_canteens_feedbacks_labels_entries_input {
-  like: Boolean
   dislike: Boolean
+  like: Boolean
   sort: Int
   status: String
   date: Date
@@ -14907,14 +14938,14 @@ input update_canteens_foodservice_hours_input {
 
 input update_canteens_input {
   """
-  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
-  """
-  foodoffers_import_delete_all_without_dates: Boolean
-
-  """
   Beim Importieren von Speiseangeboten sind die Angebote für alle Tage gültig und haben daher kein Datum.
   """
   foodoffers_import_without_date: Boolean
+
+  """
+  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
+  """
+  foodoffers_import_delete_all_without_dates: Boolean
   sort: Int
   status: String
   external_identifier: String
@@ -15011,36 +15042,36 @@ input update_collectible_event_participants_input {
 }
 
 input update_collectible_events_input {
+  collectible_at_housing: Boolean
+  monitor_display_number_of_collected_items: Boolean
+  collectible_at_card_balance: Boolean
+  collectible_at_course_timetable: Boolean
   collectible_at_news: Boolean
-  collectible_at_license_information: Boolean
-  collectible_at_markings: Boolean
-  collectible_at_markings_details: Boolean
+  collectible_at_data_access: Boolean
   collectible_at_drawer: Boolean
+  collectible_at_price_group_selection: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
   collectible_at_foodoffers_details: Boolean
   collectible_at_foodoffers_details_markings: Boolean
+  collectible_at_notification: Boolean
   collectible_at_foodoffers_details_nutritions: Boolean
   collectible_at_foodoffers_select_date: Boolean
   collectible_at_foodoffers_sort: Boolean
-  collectible_at_housing: Boolean
-  collectible_at_price_group_selection: Boolean
-  monitor_display_number_of_collected_items: Boolean
-  collectible_at_notification: Boolean
-  monitor_display_number_of_participants: Boolean
-  ask_for_contact_details: Boolean
-  collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
-  collectible_at_card_balance: Boolean
-  collectible_at_course_timetable: Boolean
-  collectible_at_data_access: Boolean
-  sort: Int
-  collectible_at_settings: Boolean
-  collectible_at_settings_amount_column: Boolean
+  collectible_at_campus: Boolean
+  ask_for_contact_details: Boolean
+  monitor_display_number_of_participants: Boolean
+  collectible_at_markings: Boolean
+  collectible_at_markings_details: Boolean
   collectible_at_settings_first_day_of_week: Boolean
-  collectible_at_settings_menuposition: Boolean
-  collectible_at_settings_theme: Boolean
+  collectible_at_settings_amount_column: Boolean
+  collectible_at_settings: Boolean
+  collectible_at_license_information: Boolean
   repeat_every_year: Boolean
+  collectible_at_settings_theme: Boolean
+  collectible_at_settings_menuposition: Boolean
+  sort: Int
   points_minimum: Int
   points_maximum: Int
   status: String
@@ -15087,13 +15118,13 @@ input update_devices_input {
   is_ios: Boolean
   is_android: Boolean
   sort: Int
-  pushTokenObj: JSON
-  custom_data: JSON
-  display_fontscale: Float
   display_height: Float
   display_pixelratio: Float
   display_scale: Float
   display_width: Float
+  display_fontscale: Float
+  pushTokenObj: JSON
+  custom_data: JSON
   app_version: String
   system_version: String
   status: String
@@ -15118,17 +15149,17 @@ input update_directus_access_input {
 
 input update_directus_files_input {
   is_unreferenced: Boolean
-  filesize: GraphQLBigInt
-  height: Int
   focal_point_y: Int
   focal_point_x: Int
-  width: Int
   duration: Int
+  height: Int
+  width: Int
+  filesize: GraphQLBigInt
   tags: JSON
   location: String
   description: String
-  tus_data: JSON
   metadata: JSON
+  tus_data: JSON
   tus_id: String
   embed: String
   charset: String
@@ -15153,8 +15184,8 @@ input update_directus_folders_input {
 }
 
 input update_directus_permissions_input {
-  id: ID
   fields: [String]
+  id: ID
   presets: JSON
   validation: JSON
   permissions: JSON
@@ -15164,10 +15195,9 @@ input update_directus_permissions_input {
 }
 
 input update_directus_policies_input {
-  admin_access: Boolean
-
   """$t:field_options.directus_policies.enforce_tfa"""
   enforce_tfa: Boolean
+  admin_access: Boolean
   app_access: Boolean
   ip_access: [String]
   description: String
@@ -15231,9 +15261,9 @@ input update_directus_users_input {
 
 input update_feature_whishes_input {
   likes: Int
+  description: String
   sort: Int
   tags: JSON
-  description: String
   title: String
   alias: String
   status: String
@@ -15285,14 +15315,14 @@ input update_foodoffers_components_input {
 }
 
 input update_foodoffers_info_items_input {
-  show_on_sundays: Boolean
-  show_on_wednesdays: Boolean
-  show_on_saturdays: Boolean
-  show_on_fridays: Boolean
-  show_on_mondays: Boolean
-  show_on_tuesdays: Boolean
   show_on_thursdays: Boolean
+  show_on_wednesdays: Boolean
   show_only_when_no_foodoffers_found: Boolean
+  show_on_saturdays: Boolean
+  show_on_mondays: Boolean
+  show_on_fridays: Boolean
+  show_on_tuesdays: Boolean
+  show_on_sundays: Boolean
   sort: Int
   alias: String
   image_remote_url: String
@@ -15312,9 +15342,15 @@ input update_foodoffers_info_items_input {
 input update_foodoffers_input {
   is_component: Boolean
   sort: Int
-  price_student: Float
+
+  """Pro wieviel? z. B. Preis pro 100 (gramm)"""
+  price_reference_amount: Float
   price_employee: Float
   price_guest: Float
+  price_student: Float
+
+  """Pro welche Einheit? z. B. (100)g für Gramm."""
+  price_reference_unit: String
   result_hash: String
   redirect_url: String
   category: String
@@ -15329,8 +15365,8 @@ input update_foodoffers_input {
   user_created: update_directus_users_input
   id: ID
   canteen: update_canteens_input
-  markings: [update_foodoffers_markings_input]
   attribute_values: [update_foods_attributes_values_input]
+  markings: [update_foodoffers_markings_input]
   foodoffer_components: [update_foodoffers_components_input]
   translations: [update_foodoffers_translations_input]
 }
@@ -15379,9 +15415,9 @@ input update_foods_attributes_groups_translations_input {
 }
 
 input update_foods_attributes_input {
+  full_width: Boolean
   show_on_card: Boolean
   show_on_label_list: Boolean
-  full_width: Boolean
   sort: Int
   suffix: String
   prefix: String
@@ -15440,8 +15476,8 @@ input update_foods_categories_input {
 }
 
 input update_foods_categories_translations_input {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   name: String
   languages_code: update_languages_input
@@ -15552,8 +15588,8 @@ input update_foods_markings_input {
 }
 
 input update_foods_translations_input {
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
   id: ID
   description: String
   name: String
@@ -15569,10 +15605,10 @@ input update_form_answers_files_input {
 
 input update_form_answers_input {
   value_boolean: Boolean
-  sort: Int
-  value_custom: JSON
   value_string: String
+  sort: Int
   value_number: Float
+  value_custom: JSON
   status: String
   value_date: Date
   date_updated: Date
@@ -15603,8 +15639,8 @@ input update_form_categories_input {
 }
 
 input update_form_categories_translations_input {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   name: String
   languages_code: update_languages_input
@@ -15674,8 +15710,8 @@ input update_form_fields_input {
 input update_form_fields_translations_input {
   let_be_translated: Boolean
   be_source_for_translations: Boolean
-  id: ID
   description: String
+  id: ID
   name: String
   languages_code: update_languages_input
   form_fields_id: update_form_fields_input
@@ -15721,8 +15757,8 @@ input update_forms_input {
 }
 
 input update_forms_translations_input {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   description: String
   name: String
@@ -15759,9 +15795,9 @@ input update_mails_files_input {
 input update_mails_input {
   send_attachments_as_links: Boolean
   sort: Int
-  template_data: JSON
   log: String
   markdown_content: String
+  template_data: JSON
   send_status: String
   template_name: String
   subject: String
@@ -15797,8 +15833,8 @@ input update_markings_groups_input {
 }
 
 input update_markings_groups_translations_input {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   name: String
   languages_code: update_languages_input
@@ -15806,13 +15842,14 @@ input update_markings_groups_translations_input {
 }
 
 input update_markings_input {
-  """Keinen Rand verwenden"""
-  hide_border: Boolean
-  show_on_card: Boolean
   show_on_label_list: Boolean
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Boolean
+
+  """Keinen Rand verwenden"""
+  hide_border: Boolean
+  show_on_card: Boolean
   sort: Int
 
   """
@@ -15877,8 +15914,8 @@ input update_news_input {
 }
 
 input update_news_translations_input {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID
   content: String
   languages_code: update_languages_input
@@ -15912,10 +15949,10 @@ input update_popup_events_canteens_input {
 }
 
 input update_popup_events_input {
-  send_notification: Boolean
-  show_on_android: Boolean
-  show_on_ios: Boolean
   show_on_web: Boolean
+  show_on_ios: Boolean
+  show_on_android: Boolean
+  send_notification: Boolean
   show_app_rating_button: Boolean
   sort: Int
   image_remote_url: String
@@ -15964,10 +16001,10 @@ input update_profiles_buildings_last_opened_input {
 input update_profiles_input {
   notifiy_on_free_apartments: Boolean
   sort: Int
-  course_timetable: JSON
   avatar: JSON
-  credit_balance_last_transaction: Float
   credit_balance: Float
+  credit_balance_last_transaction: Float
+  course_timetable: JSON
   status: String
   price_group: String
   nickname: String
@@ -16157,8 +16194,8 @@ input update_workflows_input {
 
 input update_workflows_runs_input {
   sort: Int
-  log: String
   runtime_in_seconds: Int
+  log: String
   result_hash: JSON
   output: String
   input: String
@@ -16444,8 +16481,8 @@ input workflows_filter {
 
 input workflows_runs_filter {
   sort: number_filter_operators
-  log: string_filter_operators
   runtime_in_seconds: number_filter_operators
+  log: string_filter_operators
   result_hash: string_filter_operators
   result_hash_func: count_function_filter_operators
   output: string_filter_operators
@@ -16472,8 +16509,8 @@ input workflows_runs_filter {
 """"""
 input workflows_runs_quantifier_filter {
   sort: number_filter_operators
-  log: string_filter_operators
   runtime_in_seconds: number_filter_operators
+  log: string_filter_operators
   result_hash: string_filter_operators
   result_hash_func: count_function_filter_operators
   output: string_filter_operators

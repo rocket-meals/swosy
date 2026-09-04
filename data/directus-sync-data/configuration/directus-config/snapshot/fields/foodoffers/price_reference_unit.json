@@ -1,29 +1,49 @@
 {
   "collection": "foodoffers",
-  "field": "redirect_url",
+  "field": "price_reference_unit",
   "type": "string",
   "meta": {
     "collection": "foodoffers",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "redirect_url",
-    "group": null,
+    "field": "price_reference_unit",
+    "group": "prices",
     "hidden": false,
-    "interface": "input",
-    "note": null,
-    "options": null,
+    "interface": "select-dropdown",
+    "note": "Pro welche Einheit? z. B. (100)g für Gramm.",
+    "options": {
+      "allowOther": true,
+      "choices": [
+        {
+          "text": "Gramm",
+          "value": "g"
+        },
+        {
+          "text": "Kilogramm",
+          "value": "kg"
+        },
+        {
+          "text": "Milliliter",
+          "value": "ml"
+        },
+        {
+          "text": "Liter",
+          "value": "l"
+        }
+      ]
+    },
     "readonly": false,
     "required": false,
-    "sort": 17,
+    "sort": 5,
     "special": null,
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
-    "name": "redirect_url",
+    "name": "price_reference_unit",
     "table": "foodoffers",
     "data_type": "character varying",
     "default_value": null,

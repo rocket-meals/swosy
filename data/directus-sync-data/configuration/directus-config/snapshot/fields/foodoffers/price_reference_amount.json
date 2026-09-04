@@ -1,36 +1,36 @@
 {
   "collection": "foodoffers",
-  "field": "is_component",
-  "type": "boolean",
+  "field": "price_reference_amount",
+  "type": "float",
   "meta": {
     "collection": "foodoffers",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "is_component",
-    "group": null,
+    "field": "price_reference_amount",
+    "group": "prices",
     "hidden": false,
-    "interface": "boolean",
-    "note": null,
-    "options": null,
+    "interface": "input",
+    "note": "Pro wieviel? z. B. Preis pro 100 (gramm)",
+    "options": {
+      "placeholder": "100"
+    },
     "readonly": false,
     "required": false,
-    "sort": 20,
-    "special": [
-      "cast-boolean"
-    ],
+    "sort": 4,
+    "special": null,
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
-    "name": "is_component",
+    "name": "price_reference_amount",
     "table": "foodoffers",
-    "data_type": "boolean",
-    "default_value": false,
+    "data_type": "real",
+    "default_value": null,
     "max_length": null,
-    "numeric_precision": null,
+    "numeric_precision": 24,
     "numeric_scale": null,
     "is_nullable": true,
     "is_unique": false,

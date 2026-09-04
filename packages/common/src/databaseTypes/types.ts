@@ -1101,6 +1101,8 @@ export type Foodoffers = {
   markings: any[] | FoodoffersMarkings[];
   price_employee?: number | null;
   price_guest?: number | null;
+  price_reference_amount?: number | null;
+  price_reference_unit?: string | null;
   price_student?: number | null;
   prices: string;
   redirect_url?: string | null;

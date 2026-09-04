@@ -912,17 +912,6 @@
                   }
                 }
               }
-            },
-            {
-              "chat": {
-                "app_feedbacks": {
-                  "profile": {
-                    "id": {
-                      "_eq": "$CURRENT_USER.profile"
-                    }
-                  }
-                }
-              }
             }
           ]
         }
@@ -1010,8 +999,7 @@
       "conversation_state",
       "initial_message",
       "food_feedbacks",
-      "linked_entities",
-      "app_feedbacks"
+      "linked_entities"
     ],
     "presets": null,
     "validation": null,
@@ -1030,15 +1018,6 @@
             },
             {
               "food_feedbacks": {
-                "profile": {
-                  "id": {
-                    "_eq": "$CURRENT_USER.profile"
-                  }
-                }
-              }
-            },
-            {
-              "app_feedbacks": {
                 "profile": {
                   "id": {
                     "_eq": "$CURRENT_USER.profile"
@@ -1078,15 +1057,6 @@
             },
             {
               "food_feedbacks": {
-                "profile": {
-                  "id": {
-                    "_eq": "$CURRENT_USER.profile"
-                  }
-                }
-              }
-            },
-            {
-              "app_feedbacks": {
                 "profile": {
                   "id": {
                     "_eq": "$CURRENT_USER.profile"
