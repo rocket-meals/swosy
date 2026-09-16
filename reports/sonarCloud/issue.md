@@ -5,12 +5,18 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
-| 🐛 Reliability | 0 | 0 |
+| 🐛 Reliability | 1 | 1 |
 | 🔧 Maintainability | 11 | 11 |
 
-**Total issues:** 11
+**Total issues:** 12
 
 ---
+
+## 🐛 Reliability (1/1)
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  packages/common/src/FoodofferPriceHelper.ts:227
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/FoodofferPriceHelper.ts#L227
 
 ## 🔧 Maintainability (11/11)
 
