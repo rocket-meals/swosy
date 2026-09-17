@@ -74,7 +74,6 @@ const GiroCardIbanScreen = () => {
 				</View>
 
 				<View style={styles.section}>
-					<Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.iban_format)}</Text>
 					<IBANInput id="experimental-iban" value={iban} onChange={(_id, nextValue) => setIban(nextValue)} onError={(_id, nextError) => setError(nextError)} error={error} isDisabled={false} custom_type="bank_account_number" prefix={null} suffix={null} allowInvalidScannedChecksum={allowInvalidChecksum} />
 					{!isRecognitionSupported && <Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.giro_card_scan_unsupported)}</Text>}
 				</View>

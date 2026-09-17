@@ -134,6 +134,9 @@ const styles = StyleSheet.create({
 	},
 	ibanInput: {
 		height: 50,
+		// Without this the <input> keeps its intrinsic width on web and the scan
+		// button next to it is pushed out of the row.
+		minWidth: 0,
 		fontFamily: 'Poppins_400Regular',
 		borderWidth: 1,
 		outlineWidth: 0,

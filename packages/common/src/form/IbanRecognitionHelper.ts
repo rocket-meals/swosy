@@ -248,9 +248,12 @@ export class IbanRecognitionHelper {
   }
 
   /**
-   * Finds the runs of letters and digits that could be an IBAN. Separators
-   * inside the number are dropped first, so `DE00 0123 4567` is one run, while
-   * the cardholder name on the line before stays a separate one.
+   * Finds the runs of letters and digits that could be an IBAN.
+   *
+   * Every separator a card prints between the blocks is dropped first, so
+   * `DE00 0123 4567 …` collapses into a single run. Words collapse the same
+   * way — the sliding window below throws them out again, because a run only
+   * counts from a position that reads like `XX00`.
    */
   private static extractIbanShapedRuns(text: string): string[] {
     const upperCased = text.toUpperCase();
@@ -259,7 +262,7 @@ export class IbanRecognitionHelper {
     // a boundary.
     const glued = StringHelper.replaceAllWithOptions({
       str: upperCased,
-      find: '[ .\\-   ]',
+      find: '[ .\\-\\u00a0\\u202f\\u2009]',
       replace: '',
     });
     const boundaryCleaned = StringHelper.replaceAllWithOptions({
