@@ -1,0 +1,23 @@
+{
+	"image": "girocard-sample.jpg",
+	"description": "Text lines an on-device OCR engine (ML Kit on Android, Vision on iOS) returns for girocard-sample.jpg. The card is a public specimen, the printed IBAN is a dummy: its shape and length are those of a German IBAN, but the check digits '00' can never validate.",
+	"recognizedLines": [
+		"Volksbanken",
+		"Oberberg eG",
+		"MeinPlus",
+		"Wir machen den Weg frei.",
+		"girocard",
+		"Toni Raiffeisen",
+		"IBAN:",
+		"DE00 0123 4567 8901 2345 67",
+		"Gültig bis",
+		"00/00"
+	],
+	"expected": {
+		"iban": "DE00012345678901234567",
+		"formatted": "DE00 0123 4567 8901 2345 67",
+		"countryCode": "DE",
+		"lengthValid": true,
+		"checksumValid": false
+	}
+}

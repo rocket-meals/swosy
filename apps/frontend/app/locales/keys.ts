@@ -640,6 +640,21 @@ export const TranslationKeys = {
 	debug_request_default_title: 'debug_request_default_title',
 	debug_request_default_content: 'debug_request_default_content',
 	feedback_open_chat: 'feedback_open_chat',
+	iban_invalid_length: 'iban_invalid_length',
+	giro_card_scan_title: 'giro_card_scan_title',
+	giro_card_scan_hint: 'giro_card_scan_hint',
+	giro_card_scan_searching: 'giro_card_scan_searching',
+	giro_card_scan_permission_required: 'giro_card_scan_permission_required',
+	giro_card_scan_unsupported: 'giro_card_scan_unsupported',
+	giro_card_scan_toggle_torch: 'giro_card_scan_toggle_torch',
+	giro_card_iban_scanner_test: 'giro_card_iban_scanner_test',
+	giro_card_iban_scanner_test_description: 'giro_card_iban_scanner_test_description',
+	giro_card_scan_allow_invalid_checksum: 'giro_card_scan_allow_invalid_checksum',
+	giro_card_scan_recognized_lines: 'giro_card_scan_recognized_lines',
+	giro_card_scan_no_lines_yet: 'giro_card_scan_no_lines_yet',
+	giro_card_scan_last_result: 'giro_card_scan_last_result',
+	giro_card_scan_no_result_yet: 'giro_card_scan_no_result_yet',
+	giro_card_scan_supported_state: 'giro_card_scan_supported_state',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];

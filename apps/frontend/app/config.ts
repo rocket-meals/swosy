@@ -58,7 +58,7 @@ export enum ConfigCustomerEnum {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 206;
+	return 207;
 }
 
 export function getMajorVersion() {
@@ -84,7 +84,8 @@ export function getVersionPatch() {
         // 26: the unit of that base price is translated where it is a known unit
         // 27: narrow no-break space before the € symbol, as before a unit
         // 28: every value/unit pair uses the narrow no-break space, nutrients included
-        return 28;
+        // 29: IBAN form field scans a giro card with the camera (on-device OCR)
+        return 29;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
@@ -312,7 +313,7 @@ export function getFinalConfig(config?: any, licenses?: unknown[]) {
 				[
 					'expo-camera',
 					{
-						cameraPermission: 'This app needs camera access to scan QR codes for adding friends.',
+						cameraPermission: 'This app needs camera access to scan QR codes for adding friends and to read the IBAN from your bank card.',
 						recordAudioAndroid: false,
 					},
 				],

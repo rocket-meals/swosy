@@ -6198,5 +6198,155 @@
     "ru": "Перейти к чату",
     "tr": "Sohbete git",
     "zh": "前往聊天"
+  },
+  "iban_invalid_length": {
+    "de": "Ungültige IBAN-Länge",
+    "en": "Invalid IBAN length",
+    "ar": "طول IBAN غير صالح",
+    "es": "Longitud de IBAN no válida",
+    "fr": "Longueur d'IBAN invalide",
+    "ru": "Неверная длина IBAN",
+    "tr": "Geçersiz IBAN uzunluğu",
+    "zh": "IBAN 长度无效"
+  },
+  "giro_card_scan_title": {
+    "de": "Girocard scannen",
+    "en": "Scan giro card",
+    "ar": "مسح بطاقة المصرف",
+    "es": "Escanear tarjeta bancaria",
+    "fr": "Scanner la carte bancaire",
+    "ru": "Сканировать банковскую карту",
+    "tr": "Banka kartını tara",
+    "zh": "扫描银行卡"
+  },
+  "giro_card_scan_hint": {
+    "de": "Halte die Karte so in den Rahmen, dass die IBAN gut lesbar ist.",
+    "en": "Hold the card in the frame so that the IBAN is clearly readable.",
+    "ar": "ضع البطاقة داخل الإطار بحيث يكون رقم IBAN واضحًا للقراءة.",
+    "es": "Coloca la tarjeta en el marco de modo que el IBAN se lea con claridad.",
+    "fr": "Placez la carte dans le cadre de sorte que l'IBAN soit bien lisible.",
+    "ru": "Расположите карту в рамке так, чтобы IBAN хорошо читался.",
+    "tr": "Kartı, IBAN net okunacak şekilde çerçevenin içinde tutun.",
+    "zh": "请将卡片置于取景框内，使 IBAN 清晰可辨。"
+  },
+  "giro_card_scan_searching": {
+    "de": "IBAN wird gesucht …",
+    "en": "Looking for the IBAN …",
+    "ar": "جارٍ البحث عن رقم IBAN …",
+    "es": "Buscando el IBAN …",
+    "fr": "Recherche de l'IBAN …",
+    "ru": "Поиск IBAN …",
+    "tr": "IBAN aranıyor …",
+    "zh": "正在查找 IBAN …"
+  },
+  "giro_card_scan_permission_required": {
+    "de": "Zum Scannen wird Zugriff auf die Kamera benötigt.",
+    "en": "Scanning needs access to the camera.",
+    "ar": "يتطلب المسح الوصول إلى الكاميرا.",
+    "es": "El escaneo necesita acceso a la cámara.",
+    "fr": "Le scan nécessite l'accès à la caméra.",
+    "ru": "Для сканирования нужен доступ к камере.",
+    "tr": "Tarama için kamera erişimi gerekir.",
+    "zh": "扫描需要访问相机。"
+  },
+  "giro_card_scan_unsupported": {
+    "de": "Texterkennung ist auf diesem Gerät nicht verfügbar. Bitte gib die IBAN von Hand ein.",
+    "en": "Text recognition is not available on this device. Please enter the IBAN by hand.",
+    "ar": "التعرف على النص غير متاح على هذا الجهاز. يرجى إدخال رقم IBAN يدويًا.",
+    "es": "El reconocimiento de texto no está disponible en este dispositivo. Introduce el IBAN a mano.",
+    "fr": "La reconnaissance de texte n'est pas disponible sur cet appareil. Saisissez l'IBAN à la main.",
+    "ru": "Распознавание текста недоступно на этом устройстве. Введите IBAN вручную.",
+    "tr": "Bu cihazda metin tanıma kullanılamıyor. Lütfen IBAN'ı elle girin.",
+    "zh": "此设备不支持文字识别，请手动输入 IBAN。"
+  },
+  "giro_card_scan_toggle_torch": {
+    "de": "Licht an/aus",
+    "en": "Light on/off",
+    "ar": "تشغيل/إيقاف الضوء",
+    "es": "Encender/apagar la luz",
+    "fr": "Allumer/éteindre la lumière",
+    "ru": "Включить/выключить свет",
+    "tr": "Işığı aç/kapat",
+    "zh": "开灯/关灯"
+  },
+  "giro_card_iban_scanner_test": {
+    "de": "Girocard-IBAN-Scanner",
+    "en": "Giro card IBAN scanner",
+    "ar": "ماسح IBAN لبطاقة المصرف",
+    "es": "Escáner de IBAN de tarjeta bancaria",
+    "fr": "Scanner d'IBAN de carte bancaire",
+    "ru": "Сканер IBAN банковской карты",
+    "tr": "Banka kartı IBAN tarayıcı",
+    "zh": "银行卡 IBAN 扫描器"
+  },
+  "giro_card_iban_scanner_test_description": {
+    "de": "Liest die IBAN von einer Girocard und füllt damit das Formularfeld. Die Testkarte liegt im Repository unter packages/common/src/__tests__/fixtures/girocard.",
+    "en": "Reads the IBAN off a giro card and fills the form field with it. The test card is in the repository under packages/common/src/__tests__/fixtures/girocard.",
+    "ar": "يقرأ رقم IBAN من بطاقة المصرف ويملأ به حقل النموذج. بطاقة الاختبار موجودة في المستودع ضمن packages/common/src/__tests__/fixtures/girocard.",
+    "es": "Lee el IBAN de una tarjeta bancaria y rellena con él el campo del formulario. La tarjeta de prueba está en el repositorio en packages/common/src/__tests__/fixtures/girocard.",
+    "fr": "Lit l'IBAN d'une carte bancaire et remplit le champ du formulaire. La carte de test se trouve dans le dépôt sous packages/common/src/__tests__/fixtures/girocard.",
+    "ru": "Считывает IBAN с банковской карты и заполняет им поле формы. Тестовая карта лежит в репозитории в packages/common/src/__tests__/fixtures/girocard.",
+    "tr": "IBAN'ı banka kartından okur ve form alanını doldurur. Test kartı depoda packages/common/src/__tests__/fixtures/girocard altındadır.",
+    "zh": "从银行卡读取 IBAN 并填入表单字段。测试卡片位于仓库的 packages/common/src/__tests__/fixtures/girocard。"
+  },
+  "giro_card_scan_allow_invalid_checksum": {
+    "de": "Prüfsumme ignorieren (für Musterkarten)",
+    "en": "Ignore the checksum (for specimen cards)",
+    "ar": "تجاهل المجموع الاختباري (للبطاقات النموذجية)",
+    "es": "Ignorar la suma de verificación (para tarjetas de muestra)",
+    "fr": "Ignorer la somme de contrôle (pour les cartes spécimen)",
+    "ru": "Игнорировать контрольную сумму (для образцов карт)",
+    "tr": "Sağlama toplamını yok say (örnek kartlar için)",
+    "zh": "忽略校验和（用于样卡）"
+  },
+  "giro_card_scan_recognized_lines": {
+    "de": "Erkannte Textzeilen",
+    "en": "Recognized text lines",
+    "ar": "أسطر النص المتعرف عليها",
+    "es": "Líneas de texto reconocidas",
+    "fr": "Lignes de texte reconnues",
+    "ru": "Распознанные строки текста",
+    "tr": "Tanınan metin satırları",
+    "zh": "识别到的文本行"
+  },
+  "giro_card_scan_no_lines_yet": {
+    "de": "Noch keine Zeilen erkannt.",
+    "en": "No lines recognized yet.",
+    "ar": "لم يتم التعرف على أي أسطر بعد.",
+    "es": "Todavía no se ha reconocido ninguna línea.",
+    "fr": "Aucune ligne reconnue pour le moment.",
+    "ru": "Строки пока не распознаны.",
+    "tr": "Henüz satır tanınmadı.",
+    "zh": "尚未识别到文本行。"
+  },
+  "giro_card_scan_last_result": {
+    "de": "Zuletzt erkannte IBAN",
+    "en": "Last recognized IBAN",
+    "ar": "آخر رقم IBAN تم التعرف عليه",
+    "es": "Último IBAN reconocido",
+    "fr": "Dernier IBAN reconnu",
+    "ru": "Последний распознанный IBAN",
+    "tr": "Son tanınan IBAN",
+    "zh": "最近识别到的 IBAN"
+  },
+  "giro_card_scan_no_result_yet": {
+    "de": "Noch keine IBAN erkannt.",
+    "en": "No IBAN recognized yet.",
+    "ar": "لم يتم التعرف على أي رقم IBAN بعد.",
+    "es": "Todavía no se ha reconocido ningún IBAN.",
+    "fr": "Aucun IBAN reconnu pour le moment.",
+    "ru": "IBAN пока не распознан.",
+    "tr": "Henüz IBAN tanınmadı.",
+    "zh": "尚未识别到 IBAN。"
+  },
+  "giro_card_scan_supported_state": {
+    "de": "Texterkennung auf diesem Gerät",
+    "en": "Text recognition on this device",
+    "ar": "التعرف على النص على هذا الجهاز",
+    "es": "Reconocimiento de texto en este dispositivo",
+    "fr": "Reconnaissance de texte sur cet appareil",
+    "ru": "Распознавание текста на этом устройстве",
+    "tr": "Bu cihazda metin tanıma",
+    "zh": "此设备上的文字识别"
   }
 }

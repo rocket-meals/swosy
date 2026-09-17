@@ -15504,6 +15504,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-text-extractor@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "expo-text-extractor@npm:2.0.0"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/cdb418bea3b03e4131016ca55d70dc8b93918783c8586eb43f8691a2caa7732a1700e2f133c55318571fd053d87d5e2c5466bc642767b34d5224a8bee8554829
+  languageName: node
+  linkType: hard
+
 "expo-updates-interface@npm:~57.0.1":
   version: 57.0.1
   resolution: "expo-updates-interface@npm:57.0.1"
@@ -25147,6 +25158,7 @@ __metadata:
     expo-store-review: "npm:~57.0.1"
     expo-symbols: "npm:~57.0.2"
     expo-system-ui: "npm:~57.0.2"
+    expo-text-extractor: "npm:^2.0.0"
     expo-updates: "npm:~57.0.12"
     expo-web-browser: "npm:~57.0.2"
     gh-pages: "npm:^6.2.0"
