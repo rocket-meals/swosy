@@ -158,6 +158,37 @@ describe('IbanRecognitionHelper', () => {
 			expect(assembled.find((candidate) => candidate.iban.startsWith('GI11'))?.looksPrinted).toBe(false);
 		});
 
+		it('reads a number whose groups the engine welded together', () => {
+			// What PaddleOCR returns for one of the sample cards: the blocks are not
+			// where the card prints them, and the last one has the validity date
+			// stuck to it. The digits are all there, which is what counts.
+			expect(IbanRecognitionHelper.findIban(['IBAN: Gultigbis', 'DE0001234567 890123456700/00'], { allowInvalidChecksum: true })?.iban).toBe('DE00012345678901234567');
+		});
+
+		it('reads a number the engine tore apart at the country code', () => {
+			expect(IbanRecognitionHelper.findIban(['D E9912354678 1234 5678 90 12/XX'], { allowInvalidChecksum: true })?.iban).toBe('DE99123546781234567890');
+		});
+
+		it('refuses a number with letters in it when nothing but its shape speaks for it', () => {
+			// `Gültig bis` in front of the number: the umlaut ends a token, so what
+			// is left welds into `LT16BISDE00012345678` — Lithuania, correct length,
+			// entirely invented. Its giveaway is the `BIS` in the middle, and that
+			// giveaway survives the repair step only as long as it is looked for in
+			// what the engine read, not in the reading built from it.
+			const lines = ['IBAN: Gültig bis', 'DE00 0123 4567 8901 2345 67 00/00'];
+			const candidates = IbanRecognitionHelper.findIbanCandidates(lines);
+			expect(candidates.some((candidate) => candidate.iban.startsWith('LT16'))).toBe(true);
+			expect(candidates.find((candidate) => candidate.iban.startsWith('LT16'))?.looksPrinted).toBe(false);
+			expect(IbanRecognitionHelper.findIban(lines, { allowInvalidChecksum: true })?.iban).toBe('DE00012345678901234567');
+		});
+
+		it('still reads such a number once its checksum vouches for it', () => {
+			// The price of the rule above is that a country whose account part
+			// carries letters needs its checksum. A real card always has one.
+			expect(IbanRecognitionHelper.findIban([`IBAN ${VALID_GB_IBAN}`])?.iban).toBe(VALID_GB_IBAN);
+			expect(IbanRecognitionHelper.findIban([VALID_GB_IBAN], { allowInvalidChecksum: true })?.iban).toBe(VALID_GB_IBAN);
+		});
+
 		it('refuses a reading without a checksum that does not look printed', () => {
 			// The caller waived the checksum, so the shape is the only thing left
 			// that can speak for the number.

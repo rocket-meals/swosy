@@ -35,16 +35,19 @@ interface IbanShapedRun {
   /** Letters and digits only, the printed blocks already glued together. */
   run: string;
   /**
-   * The run stops where one of the printed blocks stops, rather than somewhere
-   * inside one. A number printed on a card always does.
+   * The run stops at a place a printed number can stop: where one of the
+   * groups ends, or inside a group of digits that an engine welded to the
+   * validity date behind it. What it must not do is stop inside a word.
    */
-  endsAtPrintedBlock: boolean;
+  endsCleanly: boolean;
   /**
-   * Every block the run covers is at most four characters long. A card prints
-   * its IBAN in groups of four; a run reaching across a longer block is
-   * reaching across a word.
+   * The run's first four characters are exactly one printed group.
+   *
+   * A printed IBAN opens with `XX00` as its own group. A reading whose head is
+   * half of a word, or spread across two tokens, is the weaker guess when
+   * nothing else tells the two apart.
    */
-  coversPrintedBlocksOnly: boolean;
+  headIsOwnBlock: boolean;
 }
 
 export interface FindIbanOptions {
@@ -156,6 +159,25 @@ export class IbanRecognitionHelper {
     return remainder === 1;
   }
 
+  /**
+   * True when every letter in the reading sits where an IBAN always carries
+   * one: the two country letters, and the two check digits an engine may have
+   * read as letters.
+   *
+   * This is the strongest thing a reading has going for it when the caller has
+   * waived the checksum. `Gültig bis DE00 …` welds into `LT16BISDE00012345678`
+   * — Lithuania, correct length, entirely invented, and its giveaway is the
+   * `BIS` sitting in the middle of it.
+   *
+   * The price is that a country whose account part legitimately carries letters
+   * (GB, NL, GI and others) is not recognized without a valid checksum. A real
+   * card always has one; only a specimen card with dummy check digits does not,
+   * and inventing a number for one of those is the worse outcome.
+   */
+  static hasNoLettersInBody(iban: string): boolean {
+    return !/[A-Z]/.test(IbanRecognitionHelper.normalizeIban(iban).slice(4));
+  }
+
   /** True when the length matches the registry entry for the country. */
   static hasValidIbanLength(iban: string): boolean {
     const normalized = IbanRecognitionHelper.normalizeIban(iban);
@@ -256,15 +278,23 @@ export class IbanRecognitionHelper {
     // again in the pair it forms with its neighbour. It is kept once, with the
     // best shape any of those runs gave it.
     const byReading = new Map<string, IbanCandidate>();
+    /** Ranking only: which readings opened with a printed group of their own. */
+    const headIsOwnBlockByReading = new Map<string, boolean>();
     for (const searchSpace of searchSpaces) {
       for (const shapedRun of IbanRecognitionHelper.extractIbanShapedRuns(searchSpace)) {
-        const looksPrinted = shapedRun.coversPrintedBlocksOnly && shapedRun.endsAtPrintedBlock;
+        // Asked of the run as the engine read it, not of the readings derived
+        // from it: for a country whose account part is all digits those
+        // readings have had their letters mapped to digits already, which would
+        // hide exactly the `BIS` this is looking for.
+        const looksPrinted = shapedRun.endsCleanly && IbanRecognitionHelper.hasNoLettersInBody(shapedRun.run);
         for (const reading of IbanRecognitionHelper.buildReadings(shapedRun.run)) {
           const known = byReading.get(reading);
           if (known !== undefined) {
             known.looksPrinted = known.looksPrinted || looksPrinted;
+            headIsOwnBlockByReading.set(reading, (headIsOwnBlockByReading.get(reading) ?? false) || shapedRun.headIsOwnBlock);
             continue;
           }
+          headIsOwnBlockByReading.set(reading, shapedRun.headIsOwnBlock);
           const described = IbanRecognitionHelper.describeCandidate(reading, looksPrinted);
           // Only a reading whose length matches its country is a candidate. A
           // reading that is one character too long can still pass mod-97 by
@@ -282,7 +312,14 @@ export class IbanRecognitionHelper {
       if (byChecksum !== 0) {
         return byChecksum;
       }
-      return Number(b.looksPrinted) - Number(a.looksPrinted);
+      const byShape = Number(b.looksPrinted) - Number(a.looksPrinted);
+      if (byShape !== 0) {
+        return byShape;
+      }
+      // Last resort, and it settles the case where a word in front of the
+      // number is itself IBAN-shaped: a printed number opens with `XX00` as a
+      // group of its own, a reading starting inside `bis DE00 …` does not.
+      return Number(headIsOwnBlockByReading.get(b.iban) ?? false) - Number(headIsOwnBlockByReading.get(a.iban) ?? false);
     });
   }
 
@@ -336,17 +373,20 @@ export class IbanRecognitionHelper {
       // than any of the readings below can use, and bounds the work.
       let glued = '';
       const blockEnds = new Set<number>();
-      let longestBlockLength = 0;
-      const blockLengthUpTo: number[] = [0];
+      /** Where the first token of this run ends, to see whether it is a group. */
+      let firstBlockEnd = 0;
+      /** Per position: does the token covering it carry any letter at all? */
+      const isInsideTokenWithLetter: boolean[] = [];
       for (let index = first; index < tokens.length && glued.length < IbanRecognitionHelper.MAX_IBAN_LENGTH * 2; index++) {
         const token = tokens[index] ?? '';
+        const tokenHasLetter = /[A-Z]/.test(token);
+        for (let position = 0; position < token.length; position++) {
+          isInsideTokenWithLetter.push(tokenHasLetter);
+        }
         glued += token;
         blockEnds.add(glued.length);
-        longestBlockLength = Math.max(longestBlockLength, token.length);
-        // The longest block anywhere in the first `position` characters, so
-        // that a run can ask the question for the part of the text it covers.
-        while (blockLengthUpTo.length <= glued.length) {
-          blockLengthUpTo.push(longestBlockLength);
+        if (index === first) {
+          firstBlockEnd = glued.length;
         }
       }
 
@@ -359,10 +399,13 @@ export class IbanRecognitionHelper {
         if (!/^[A-Z]{2}\d{2}$/.test(repairedHead)) {
           continue;
         }
+        const headIsOwnBlock = firstBlockEnd - start === IbanRecognitionHelper.PRINTED_BLOCK_LENGTH;
         const describeRun = (length: number): IbanShapedRun => ({
           run: run.slice(0, length),
-          endsAtPrintedBlock: blockEnds.has(start + length),
-          coversPrintedBlocksOnly: (blockLengthUpTo[start + length] ?? Number.MAX_SAFE_INTEGER) <= IbanRecognitionHelper.PRINTED_BLOCK_LENGTH,
+          // Stopping inside a group is allowed as long as that group is digits:
+          // an engine regularly welds the last group to the date behind it.
+          endsCleanly: blockEnds.has(start + length) || isInsideTokenWithLetter[start + length] === false,
+          headIsOwnBlock,
         });
         const expectedLength = IbanRecognitionHelper.IBAN_LENGTH_BY_COUNTRY[repairedHead.slice(0, 2)];
         if (expectedLength !== undefined && expectedLength <= run.length) {

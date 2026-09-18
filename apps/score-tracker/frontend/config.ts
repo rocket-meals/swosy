@@ -50,7 +50,8 @@ export function getVersionPatch() {
 	// 20: NumberHelper sets every value/unit pair with a narrow no-break space
 	// 21: shared IBAN recognition helper added to repo-depkit-common
 	// 22: shared IBAN recognition no longer reads a number out of surrounding words
-	return 22;
+	// 23: shared IBAN recognition reads welded groups, refuses lettered bodies
+	return 23;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

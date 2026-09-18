@@ -90,7 +90,9 @@ export function getVersionPatch() {
         //     printed around it (bank name, cardholder, "Gültig bis")
         // 31: taking the picture and reading it are separated - the camera
         //     preview and the engine's WebView are never on screen together
-        return 31;
+        // 32: a number is only read when its letters sit where an IBAN has them,
+        //     and groups the engine welded together are read again
+        return 32;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
