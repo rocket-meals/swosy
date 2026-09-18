@@ -6358,5 +6358,45 @@
     "ru": "Подготовка распознавания текста …",
     "tr": "Metin tanıma hazırlanıyor …",
     "zh": "正在准备文字识别 …"
+  },
+  "giro_card_scan_take_photo": {
+    "de": "Foto aufnehmen",
+    "en": "Take a photo",
+    "ar": "التقاط صورة",
+    "es": "Hacer una foto",
+    "fr": "Prendre une photo",
+    "ru": "Сделать фото",
+    "tr": "Fotoğraf çek",
+    "zh": "拍照"
+  },
+  "giro_card_scan_retry": {
+    "de": "Neues Foto",
+    "en": "New photo",
+    "ar": "صورة جديدة",
+    "es": "Nueva foto",
+    "fr": "Nouvelle photo",
+    "ru": "Новое фото",
+    "tr": "Yeni fotoğraf",
+    "zh": "重新拍照"
+  },
+  "giro_card_scan_switch_camera": {
+    "de": "Kamera wechseln",
+    "en": "Switch camera",
+    "ar": "تبديل الكاميرا",
+    "es": "Cambiar de cámara",
+    "fr": "Changer de caméra",
+    "ru": "Сменить камеру",
+    "tr": "Kamerayı değiştir",
+    "zh": "切换摄像头"
+  },
+  "giro_card_scan_no_iban_in_photo": {
+    "de": "Auf diesem Foto war keine IBAN zu lesen.",
+    "en": "No IBAN could be read in this photo.",
+    "ar": "تعذرت قراءة أي رقم IBAN في هذه الصورة.",
+    "es": "No se ha podido leer ningún IBAN en esta foto.",
+    "fr": "Aucun IBAN n'a pu être lu sur cette photo.",
+    "ru": "На этом фото не удалось прочитать IBAN.",
+    "tr": "Bu fotoğrafta IBAN okunamadı.",
+    "zh": "这张照片中没有读到 IBAN。"
   }
 }

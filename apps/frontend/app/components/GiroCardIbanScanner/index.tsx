@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { IbanCandidate, IbanRecognitionHelper } from 'repo-depkit-common';
 
@@ -11,6 +11,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useTextRecognition } from '@/hooks/useTextRecognition';
+import type { RecognitionImage } from '@/helper/TextRecognitionShared';
 
 /** Pause between two recognition passes. One pass itself takes about a second. */
 const SCAN_PAUSE_IN_MS = 300;
@@ -34,10 +35,12 @@ export interface GiroCardIbanScannerProps {
 /**
  * Camera preview that reads the IBAN off a giro card.
  *
- * Instead of a shutter button the preview is sampled continuously: a frame is
- * captured, run through on-device OCR and searched for an IBAN, then the next
- * one. The first hit ends the scan — the caller closes the sheet and fills its
- * input field.
+ * Two ways to the same end. By default the preview is sampled continuously: a
+ * frame is captured, read and searched for an IBAN, then the next one. And at
+ * any moment the shutter button takes one deliberate still and reads that —
+ * which is the better way to hold a card steady, because the frame stays put
+ * while the engine works on it. Either way the first hit ends the scan: the
+ * caller closes the sheet and fills its input field.
  */
 export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIbanDetected, allowInvalidChecksum, onRecognizedLinesChange }) => {
 	const { theme } = useTheme();
@@ -48,7 +51,11 @@ export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIban
 	const [permission, requestPermission] = useCameraPermissions();
 	const [isCameraReady, setIsCameraReady] = useState(false);
 	const [isTorchEnabled, setIsTorchEnabled] = useState(false);
+	const [facing, setFacing] = useState<CameraType>('back');
 	const [hasRecognizedOnce, setHasRecognizedOnce] = useState(false);
+	/** The still the shutter button took, held on screen while it is read. */
+	const [capturedImage, setCapturedImage] = useState<RecognitionImage | null>(null);
+	const [isCapturedImageRead, setIsCapturedImageRead] = useState(false);
 
 	const { recognizeLines, progress, errorMessage, engineElement } = useTextRecognition();
 
@@ -59,10 +66,10 @@ export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIban
 	const isPermissionGranted = permission?.granted === true;
 	const isPermissionPending = permission === null;
 
-	const scanOnce = useCallback(async (): Promise<boolean> => {
+	const takePicture = useCallback(async (): Promise<RecognitionImage | null> => {
 		const camera = cameraRef.current;
 		if (!camera) {
-			return false;
+			return null;
 		}
 		// No `skipProcessing`: it hands back the frame in the sensor's own
 		// orientation, and text lying on its side is text the engine cannot read.
@@ -72,21 +79,54 @@ export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIban
 			shutterSound: false,
 		});
 		if (!picture?.uri) {
-			return false;
+			return null;
 		}
-		const lines = await recognizeLines({ uri: picture.uri, width: picture.width });
-		setHasRecognizedOnce(true);
-		onRecognizedLinesChange?.(lines);
-		const candidate = IbanRecognitionHelper.findIban(lines, { allowInvalidChecksum });
-		if (!candidate) {
-			return false;
+		return { uri: picture.uri, width: picture.width };
+	}, []);
+
+	/** Reads one image and reports the IBAN if there is one. */
+	const readImage = useCallback(
+		async (image: RecognitionImage): Promise<boolean> => {
+			const lines = await recognizeLines(image);
+			setHasRecognizedOnce(true);
+			onRecognizedLinesChange?.(lines);
+			const candidate = IbanRecognitionHelper.findIban(lines, { allowInvalidChecksum });
+			if (!candidate) {
+				return false;
+			}
+			isFinishedRef.current = true;
+			onIbanDetected(candidate);
+			return true;
+		},
+		[allowInvalidChecksum, onIbanDetected, onRecognizedLinesChange, recognizeLines],
+	);
+
+	/** The shutter: freeze one frame and read that instead of a moving preview. */
+	const captureAndRead = useCallback(async () => {
+		const image = await takePicture();
+		if (!image) {
+			return;
 		}
-		onIbanDetected(candidate);
-		return true;
-	}, [allowInvalidChecksum, onIbanDetected, onRecognizedLinesChange, recognizeLines]);
+		setCapturedImage(image);
+		setIsCapturedImageRead(false);
+		try {
+			await readImage(image);
+		} catch {
+			// The hook reports what went wrong; the still stays up so the user can
+			// try again without hunting for the card a second time.
+		}
+		setIsCapturedImageRead(true);
+	}, [readImage, takePicture]);
+
+	const discardCapturedImage = useCallback(() => {
+		setCapturedImage(null);
+		setIsCapturedImageRead(false);
+	}, []);
 
 	useEffect(() => {
-		if (!isCameraReady || !isPermissionGranted) {
+		// While a still is on screen the loop stands down: that frame is the one
+		// the user picked, and a second recognition would only compete with it.
+		if (!isCameraReady || !isPermissionGranted || capturedImage !== null) {
 			return;
 		}
 
@@ -98,9 +138,8 @@ export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIban
 				return;
 			}
 			try {
-				const isDone = await scanOnce();
-				if (isDone) {
-					isFinishedRef.current = true;
+				const image = await takePicture();
+				if (image && (await readImage(image))) {
 					return;
 				}
 			} catch {
@@ -123,7 +162,7 @@ export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIban
 				clearTimeout(timeoutId);
 			}
 		};
-	}, [isCameraReady, isPermissionGranted, scanOnce]);
+	}, [capturedImage, isCameraReady, isPermissionGranted, readImage, takePicture]);
 
 	if (!isPermissionGranted) {
 		return (
@@ -152,23 +191,49 @@ export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIban
 	} else if (!hasRecognizedOnce) {
 		statusText = translate(TranslationKeys.giro_card_scan_preparing);
 	}
+	const isReadingCapturedImage = capturedImage !== null && !isCapturedImageRead;
+	if (capturedImage !== null && isCapturedImageRead) {
+		statusText = translate(TranslationKeys.giro_card_scan_no_iban_in_photo);
+	}
 
 	return (
 		<View style={styles.container}>
 			{engineElement}
 			<View style={[styles.cameraWrapper, { borderColor: primaryColor }]}>
-				<CameraView ref={cameraRef} style={styles.camera} facing="back" animateShutter={false} enableTorch={isTorchEnabled} onCameraReady={() => setIsCameraReady(true)} />
+				<CameraView ref={cameraRef} style={styles.camera} facing={facing} animateShutter={false} enableTorch={isTorchEnabled} onCameraReady={() => setIsCameraReady(true)} />
+				{capturedImage !== null && <Image source={{ uri: capturedImage.uri }} style={styles.capturedImage} resizeMode="cover" accessibilityLabel={translate(TranslationKeys.giro_card_scan_take_photo)} />}
 				<View pointerEvents="none" style={[styles.cardFrame, { borderColor: contrastColor }]} />
 			</View>
+
 			<View style={styles.statusRow}>
-				<ActivityIndicator size="small" color={primaryColor} />
+				{(capturedImage === null || isReadingCapturedImage) && <ActivityIndicator size="small" color={primaryColor} />}
 				<Text style={[styles.statusText, { color: theme.screen.text }]}>{statusText}</Text>
 			</View>
 			<Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.giro_card_scan_hint)}</Text>
-			<TouchableOpacity style={[styles.actionButton, { backgroundColor: primaryColor }]} onPress={() => setIsTorchEnabled((enabled) => !enabled)} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.giro_card_scan_toggle_torch)}>
-				<MaterialCommunityIcons name={isTorchEnabled ? 'flashlight-off' : 'flashlight'} size={20} color={contrastColor} />
-				<Text style={[styles.actionButtonText, { color: contrastColor }]}>{translate(TranslationKeys.giro_card_scan_toggle_torch)}</Text>
-			</TouchableOpacity>
+
+			{capturedImage === null ? (
+				<TouchableOpacity style={[styles.actionButton, { backgroundColor: primaryColor }]} onPress={() => void captureAndRead()} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.giro_card_scan_take_photo)}>
+					<MaterialCommunityIcons name="camera-iris" size={20} color={contrastColor} />
+					<Text style={[styles.actionButtonText, { color: contrastColor }]}>{translate(TranslationKeys.giro_card_scan_take_photo)}</Text>
+				</TouchableOpacity>
+			) : (
+				<TouchableOpacity style={[styles.actionButton, { backgroundColor: primaryColor }]} onPress={discardCapturedImage} disabled={isReadingCapturedImage} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.giro_card_scan_retry)}>
+					<MaterialCommunityIcons name="camera-retake-outline" size={20} color={contrastColor} />
+					<Text style={[styles.actionButtonText, { color: contrastColor }]}>{translate(TranslationKeys.giro_card_scan_retry)}</Text>
+				</TouchableOpacity>
+			)}
+
+			<View style={styles.secondaryRow}>
+				<TouchableOpacity style={[styles.secondaryButton, { borderColor: theme.screen.icon }]} onPress={() => setFacing((current) => (current === 'back' ? 'front' : 'back'))} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.giro_card_scan_switch_camera)}>
+					<MaterialCommunityIcons name="camera-flip-outline" size={20} color={theme.screen.icon} />
+					<Text style={[styles.secondaryButtonText, { color: theme.screen.text }]}>{translate(TranslationKeys.giro_card_scan_switch_camera)}</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style={[styles.secondaryButton, { borderColor: theme.screen.icon }]} onPress={() => setIsTorchEnabled((enabled) => !enabled)} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.giro_card_scan_toggle_torch)}>
+					<MaterialCommunityIcons name={isTorchEnabled ? 'flashlight-off' : 'flashlight'} size={20} color={theme.screen.icon} />
+					<Text style={[styles.secondaryButtonText, { color: theme.screen.text }]}>{translate(TranslationKeys.giro_card_scan_toggle_torch)}</Text>
+				</TouchableOpacity>
+			</View>
+
 			{Boolean(errorMessage) && (
 				<>
 					<Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.giro_card_scan_engine_failed)}</Text>
@@ -236,6 +301,13 @@ const styles = StyleSheet.create({
 		width: '100%',
 		height: '100%',
 	},
+	capturedImage: {
+		position: 'absolute',
+		top: 0,
+		right: 0,
+		bottom: 0,
+		left: 0,
+	},
 	cardFrame: {
 		position: 'absolute',
 		top: '18%',
@@ -276,6 +348,26 @@ const styles = StyleSheet.create({
 	},
 	actionButtonText: {
 		fontSize: 16,
+		fontFamily: 'Poppins_400Regular',
+	},
+	secondaryRow: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'center',
+		gap: 10,
+	},
+	secondaryButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 8,
+		borderRadius: 10,
+		borderWidth: 1,
+		paddingHorizontal: 14,
+		height: 40,
+	},
+	secondaryButtonText: {
+		fontSize: 14,
 		fontFamily: 'Poppins_400Regular',
 	},
 	errorText: {
