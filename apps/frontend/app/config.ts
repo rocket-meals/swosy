@@ -62,8 +62,12 @@ export function getBuildNumber() {
 	// onnxruntime. onnxruntime-react-native and @shopify/react-native-skia are
 	// native modules, so this needs a new binary - it cannot ship as an OTA
 	// update the way the WebView could.
-	// 208: new dev client build for the PaddleOCR native modules.
-	return 208;
+	// 208: new dev client build for the PaddleOCR native modules. Android
+	//      failed on a Gradle 9 incompatibility in onnxruntime-react-native,
+	//      iOS went through - so 208 exists online for iOS only.
+	// 209: same modules, with that library patched. A fresh number so both
+	//      platforms build again rather than being skipped as already built.
+	return 209;
 }
 
 export function getMajorVersion() {
@@ -102,7 +106,8 @@ export function getVersionPatch() {
         //     picture should come from (automatic camera, camera, photo)
         // 35: build number raised to 208
         // 36: onnxruntime-react-native patched for Gradle 9 (Android build)
-        return 36;
+        // 37: build number raised to 209
+        return 37;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
