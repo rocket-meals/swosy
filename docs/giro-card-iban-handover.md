@@ -119,31 +119,74 @@ zufällig, und der Scanner sieht mehrere Bilder pro Sekunde an.
 
 1. **Eine Lesung beginnt dort, wo die Karte anfängt etwas zu drucken** — nie
    mitten in einem Wort.
-2. **Ohne Prüfsumme muss eine Lesung aussehen wie etwas Gedrucktes**: Gruppen
-   von höchstens vier, endend dort wo eine Gruppe endet
-   (`IbanCandidate.looksPrinted`).
+2. **Ohne Prüfsumme muss eine Lesung aussehen wie etwas Gedrucktes**
+   (`IbanCandidate.looksPrinted`): sie endet, wo eine Gruppe endet — oder
+   mitten in einer Gruppe, die nur aus Ziffern besteht, weil Engines die letzte
+   Gruppe regelmäßig mit dem Datum dahinter verschweißen. Und sie trägt
+   Buchstaben nur in ihren ersten vier Zeichen, dort wo jede IBAN welche hat.
+   Geprüft an dem, was die Engine gelesen hat, nicht an der daraus gebauten
+   Lesung: für Länder mit rein numerischer BBAN sind die Buchstaben dort längst
+   zu Ziffern gemacht, und das verräterische `BIS` mitten in
+   `LT16BISDE00012345678` wäre verschwunden.
 
-Ergebnis an den 14 Bildern: vorher 2 von 11 IBAN-Karten richtig und 5
-Erfindungen, jetzt 5 richtig, 2 falsch (beides verlesene Zeichen, die eine echte
-Prüfsumme abfinge), 0 Erfindungen. Details und die Einzelbefunde stehen in
+   Preis: ein Land, dessen Kontoteil legitim Buchstaben trägt (GB, NL, GI),
+   wird ohne gültige Prüfsumme nicht gelesen. Eine echte Karte hat immer eine.
+
+Ergebnis an den 14 Bildern, mit Tesseract: vorher 2 von 11 IBAN-Karten richtig
+und 5 Erfindungen, jetzt 5 richtig, 2 falsch (beides verlesene Zeichen, die eine
+echte Prüfsumme abfinge), 0 Erfindungen. Mit PaddleOCR 9 richtig, 0 falsch, 0
+Erfindungen. Details und die Einzelbefunde stehen in
 `packages/common/src/__tests__/fixtures/bankcards/README.md`.
+
+## Offene Entscheidung: Engine wechseln?
+
+An denselben 14 Bildern gemessen, mit demselben `IbanRecognitionHelper`, nur
+die Engine getauscht (`ppu-paddle-ocr`, PP-OCRv6 tiny, auf onnxruntime):
+
+| | Tesseract | PaddleOCR |
+| --- | --- | --- |
+| richtig gelesen | 5 von 11 | **9 von 11** |
+| **falsch** gelesen | 2 | **0** |
+| nichts gelesen | 4 | 2 |
+| Karten ohne IBAN korrekt abgelehnt | 3 von 3 | 3 von 3 |
+| Zeit pro Bild | rund 1 s | rund 0,2 s |
+
+Die Lesungen liegen als `bank-cards.paddleocr.json` neben denen von Tesseract,
+der Vergleich steht in `BankCardEngineComparison.test.ts`.
+
+Was ein Wechsel kosten würde:
+
+- **Native wird ein nativer Build.** `onnxruntime-react-native` ist ein natives
+  Modul, dazu `@shopify/react-native-skia` als Peer. Neue Buildnummer, kein
+  OTA-Update mehr. Dafür fällt die WebView komplett weg — also genau das, was
+  abstürzt, und damit auch die ganze Surface-Akrobatik oben.
+- **Modelle rund 6,4 MB** (Detection 1,9 + Recognition 4,5 + Dictionary 0,03),
+  liegen auf HuggingFace und müssten wie Tesseract ins Repo vendored werden.
+  Größenordnung wie jetzt (5,9 MB).
+- **Das Paket ist jung** (erste Version Mai 2025, ein Maintainer). Für eine
+  Funktion, die eine IBAN in ein Zahlungsformular schreibt, ist das ein Punkt,
+  den man bewusst akzeptieren sollte.
+- `MINIMUM_SHARPNESS = 12` ist auf Tesseract kalibriert und müsste neu
+  vermessen werden: `Test_2` liegt mit Schärfe 9 darunter, PaddleOCR liest die
+  Karte trotzdem korrekt.
+
+Die Trennung von Aufnahme und Erkennung ist genau die Fuge, an der das
+ausgetauscht wird: `TextRecognitionApi` bliebe wie sie ist, nur die beiden
+`useTextRecognition`-Implementierungen werden andere.
 
 ## Was als Nächstes zu tun wäre
 
-1. **Auf einem Gerät prüfen, ob der Absturz weg ist.** Falls nicht: PR #4400 hat
-   einen Diagnosescreen (Experimentell → Texterkennung-Diagnose), der die Kette
-   in drei einzeln startbaren Stufen durchgeht (Entpacken → nackte WebView →
-   Engine-Seite). Welche Stufe zuletzt zu sehen war, bevor die App weg ist,
-   benennt den Schuldigen.
-2. **Falls die WebView auf dem Gerät grundsätzlich nicht tragfähig ist**, bleibt
-   nur ein natives OCR-Modul (ML Kit auf Android, Vision auf iOS, z. B. über
-   `expo-text-extractor`) — mit neuer Buildnummer, und Web weiter über
-   Tesseract. Die Trennung von Aufnahme und Erkennung ist genau die Fuge, an der
-   das ausgetauscht werden kann: `TextRecognitionApi` bliebe wie sie ist.
-3. **`Test_3` und `Test_5`** werden falsch gelesen, weil Tesseract `DE12` als
-   `bEI2` und `DE99` als `DE9S` zurückgibt. Eine Buchstabenverwechslungs-Tabelle
-   für die Länderkennung würde das auffangen, bringt aber Mehrdeutigkeit
-   (DE/BE/SE) — bewusst nicht gemacht.
+1. **Über den Engine-Wechsel entscheiden** (siehe oben).
+2. **Auf einem Gerät prüfen, ob der Absturz weg ist.** Falls die WebView bleibt:
+   PR #4400 hat einen Diagnosescreen (Experimentell → Texterkennung-Diagnose),
+   der die Kette in drei einzeln startbaren Stufen durchgeht (Entpacken →
+   nackte WebView → Engine-Seite). Welche Stufe zuletzt zu sehen war, bevor die
+   App weg ist, benennt den Schuldigen. Mit PaddleOCR erübrigt sich das.
+3. **`Test_3` und `Test_5`** werden von Tesseract falsch gelesen, weil es `DE12`
+   als `bEI2` und `DE99` als `DE9S` zurückgibt. Eine
+   Buchstabenverwechslungs-Tabelle für die Länderkennung würde das auffangen,
+   bringt aber Mehrdeutigkeit (DE/BE/SE) — bewusst nicht gemacht. PaddleOCR
+   liest beide richtig.
 4. **Nie committen:** die zwei Frontkamera-Fotos einer echten Karte aus dem
    Gesprächsverlauf. Die IBAN darauf ist prüfsummengültig und das Repo ist
    öffentlich.
