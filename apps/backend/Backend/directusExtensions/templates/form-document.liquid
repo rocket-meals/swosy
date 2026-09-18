@@ -1,0 +1,379 @@
+{% comment %}
+  form-document.liquid – das Layout für ausgefüllte Formulare als PDF.
+
+  Anders als `base-german-markdown-content.liquid` ist das hier kein E-Mail-Layout, sondern ein
+  Druckdokument im A4-Format: Kopfzeile mit Logo, Abschnitte, beschriftete Formularzeilen mit
+  Schreiblinie, Ankreuzfelder, IBAN-/BIC-Kästchen, Unterschriftenfelder und ein Anhang für Fotos.
+
+  Das Template bekommt ein fertiges Datenmodell (siehe `FormPdfDocumentHelper.ts`) und kümmert
+  sich ausschließlich um Struktur und Aussehen. Alle Werte kommen als reiner Text herein und
+  werden hier mit `escape` ausgegeben – das Backend baut kein HTML mehr zusammen.
+
+  Erwartete Variablen:
+    documentTitle, documentSubtitle, projectName, projectLogo, project_color
+    sections[]      – { title, rows[] }
+    row             – { type: 'text' | 'multiline' | 'boolean' | 'character_boxes',
+                        label, text, options[], boxGroups[] }
+    signatures[]    – { label, imageUrl }
+    attachments[]   – { label, imageUrl }
+    attachmentsTitle, signaturesTitle
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ documentTitle | escape }}</title>
+    <style>
+        :root {
+            --accent-color: {{ project_color | default: '#D14610' }};
+            --text-color: #14161a;
+            --muted-color: #5c6169;
+            --line-color: #9aa0a6;
+            --border-color: #d3d7dd;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: var(--text-color);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Kopfzeile ───────────────────────────────────────────────────── */
+
+        .doc-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10mm;
+        }
+
+        .doc-header__title {
+            margin: 0;
+            font-size: 21pt;
+            font-weight: 800;
+            letter-spacing: -0.2pt;
+            line-height: 1.15;
+        }
+
+        .doc-header__subtitle {
+            margin: 1.5mm 0 0 0;
+            font-size: 10pt;
+            color: var(--muted-color);
+        }
+
+        .doc-header__logo {
+            max-height: 18mm;
+            max-width: 45mm;
+            height: auto;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .doc-rule {
+            margin: 3mm 0 7mm 0;
+            height: 1.1mm;
+            background: var(--accent-color);
+            border-radius: 0.6mm;
+        }
+
+        /* ── Abschnitte ──────────────────────────────────────────────────── */
+
+        .section {
+            margin: 0 0 6mm 0;
+        }
+
+        .section__title {
+            margin: 0 0 3mm 0;
+            padding-bottom: 1.2mm;
+            font-size: 11pt;
+            font-weight: 700;
+            color: var(--accent-color);
+            border-bottom: 0.4mm solid var(--border-color);
+            break-after: avoid;
+            page-break-after: avoid;
+        }
+
+        /* ── Formularzeilen ──────────────────────────────────────────────── */
+
+        .field {
+            display: flex;
+            align-items: baseline;
+            gap: 3mm;
+            margin: 0 0 2.8mm 0;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .field__label {
+            flex: 0 0 58mm;
+            font-weight: 700;
+        }
+
+        .field__value {
+            flex: 1 1 auto;
+            min-height: 5.4mm;
+            padding: 0 1mm 0.8mm 1mm;
+            border-bottom: 0.3mm solid var(--line-color);
+            word-break: break-word;
+        }
+
+        .field__value--plain {
+            border-bottom: none;
+            padding-left: 0;
+        }
+
+        .field--boxes {
+            align-items: center;
+        }
+
+        .field__value--empty::after {
+            content: '';
+        }
+
+        /* Mehrzeiliger Text bekommt ein Feld über die volle Breite. */
+        .field--block {
+            display: block;
+        }
+
+        .field--block .field__label {
+            margin-bottom: 1.2mm;
+        }
+
+        .field--block .field__value {
+            min-height: 16mm;
+            padding: 2mm 2.5mm;
+            border: 0.3mm solid var(--border-color);
+            border-radius: 1mm;
+            background: #fbfbfc;
+            white-space: pre-wrap;
+        }
+
+        /* ── Ankreuzfelder ───────────────────────────────────────────────── */
+
+        .checkbox-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 1.6mm;
+            margin-right: 9mm;
+        }
+
+        .checkbox {
+            display: inline-block;
+            width: 4.2mm;
+            height: 4.2mm;
+            border: 0.45mm solid var(--text-color);
+            border-radius: 0.5mm;
+            text-align: center;
+            line-height: 3.6mm;
+            font-size: 10pt;
+            font-weight: 900;
+        }
+
+        .checkbox--checked {
+            background: #f1f2f4;
+        }
+
+        /* ── IBAN-/BIC-Kästchen ──────────────────────────────────────────── */
+
+        .boxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8mm;
+        }
+
+        .boxes__group {
+            display: flex;
+        }
+
+        .box {
+            width: 4.3mm;
+            height: 6.2mm;
+            border: 0.3mm solid var(--line-color);
+            border-left-width: 0;
+            text-align: center;
+            line-height: 6.2mm;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 9pt;
+        }
+
+        .boxes__group .box:first-child {
+            border-left-width: 0.3mm;
+        }
+
+        /* ── Unterschriften ──────────────────────────────────────────────── */
+
+        /*
+           Bewusst kein Flexbox: Chromium bricht Flex-Container im Druck ungern sauber um und
+           lässt dann angeschnittene Unterschriften am Seitenende stehen. Inline-Blöcke halten
+           `page-break-inside: avoid` zuverlässig ein.
+        */
+        .signatures {
+            margin: 9mm 0 0 0;
+            font-size: 0;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .signature {
+            display: inline-block;
+            width: 48%;
+            margin: 0 4% 5mm 0;
+            vertical-align: top;
+            font-size: 10.5pt;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .signature:nth-child(even) {
+            margin-right: 0;
+        }
+
+        .signature__canvas {
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+            height: 20mm;
+            border-bottom: 0.4mm solid var(--text-color);
+        }
+
+        .signature__canvas img {
+            max-height: 20mm;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .signature__label {
+            margin-top: 1.5mm;
+            font-size: 9pt;
+            color: var(--muted-color);
+        }
+
+        /* ── Anhänge ─────────────────────────────────────────────────────── */
+
+        .attachments {
+            break-before: page;
+            page-break-before: always;
+        }
+
+        .attachment {
+            margin: 0 0 6mm 0;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .attachment img {
+            max-width: 100%;
+            max-height: 105mm;
+            height: auto;
+            border: 0.3mm solid var(--border-color);
+            border-radius: 1mm;
+        }
+
+        .attachment__caption {
+            margin-top: 1.2mm;
+            font-size: 9pt;
+            color: var(--muted-color);
+        }
+    </style>
+</head>
+<body>
+<header class="doc-header">
+    <div>
+        <h1 class="doc-header__title">{{ documentTitle | escape }}</h1>
+        {% if documentSubtitle %}
+            <p class="doc-header__subtitle">{{ documentSubtitle | escape }}</p>
+        {% endif %}
+    </div>
+    {% if projectLogo %}
+        <img class="doc-header__logo" src="{{ projectLogo | escape }}" alt="{{ projectName | escape }}" />
+    {% endif %}
+</header>
+<div class="doc-rule"></div>
+
+{% for section in sections %}
+    <section class="section">
+        {% if section.title %}
+            <h2 class="section__title">{{ section.title | escape }}</h2>
+        {% endif %}
+        {% for row in section.rows %}
+            {% if row.type == 'multiline' %}
+                <div class="field field--block">
+                    <div class="field__label">{{ row.label | escape }}</div>
+                    <div class="field__value">{{ row.text | escape }}</div>
+                </div>
+            {% elsif row.type == 'boolean' %}
+                <div class="field">
+                    <div class="field__label">{{ row.label | escape }}</div>
+                    <div class="field__value field__value--plain">
+                        {% for option in row.options %}
+                            <span class="checkbox-option">
+                                <span class="checkbox {% if option.checked %}checkbox--checked{% endif %}">{% if option.checked %}&#10003;{% endif %}</span>
+                                <span>{{ option.label | escape }}</span>
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% elsif row.type == 'character_boxes' %}
+                <div class="field field--boxes">
+                    <div class="field__label">{{ row.label | escape }}</div>
+                    <div class="field__value field__value--plain">
+                        <span class="boxes">
+                            {% for group in row.boxGroups %}
+                                <span class="boxes__group">
+                                    {% for character in group %}<span class="box">{{ character | escape }}</span>{% endfor %}
+                                </span>
+                            {% endfor %}
+                        </span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="field">
+                    <div class="field__label">{{ row.label | escape }}</div>
+                    <div class="field__value">{{ row.text | escape }}</div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </section>
+{% endfor %}
+
+{% if signatures.size > 0 %}
+    <div class="signatures">
+        {% for signature in signatures %}
+            <div class="signature">
+                <div class="signature__canvas">
+                    {% if signature.imageUrl %}
+                        <img src="{{ signature.imageUrl | escape }}" alt="{{ signature.label | escape }}" />
+                    {% endif %}
+                </div>
+                <div class="signature__label">{{ signature.label | escape }}</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if attachments.size > 0 %}
+    <section class="section attachments">
+        <h2 class="section__title">{{ attachmentsTitle | escape }}</h2>
+        {% for attachment in attachments %}
+            <figure class="attachment">
+                <img src="{{ attachment.imageUrl | escape }}" alt="{{ attachment.label | escape }}" />
+                <figcaption class="attachment__caption">{{ attachment.label | escape }}</figcaption>
+            </figure>
+        {% endfor %}
+    </section>
+{% endif %}
+</body>
+</html>
