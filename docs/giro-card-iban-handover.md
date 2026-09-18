@@ -175,6 +175,18 @@ lesen, ein Pfad würde die Engine also ins Netz schicken.
   steht nach 5,5 s im Feld, der Auslöser liest sein Standbild, meldet die
   Unschärfe, und „Neues Foto" bringt die Vorschau zurück. **Sechs Anfragen für
   die Engine, alle vom eigenen Origin.**
+- **Das Kamera-Modal, am gebauten Export nachgemessen** (Screenshots in
+  `docs/screenshots/giro-card-iban/07`–`10`): Vorschau über die volle Breite,
+  Auslöser unten mittig, Kamerawechsel unten rechts, Licht oben rechts; der
+  Rahmen nur beim Kartenscan. Der Auslöser auf dem Girocard-Screen liefert
+  „Text erkannt, aber nicht das Gesuchte" statt „kein Text erkannt", und auf
+  **Texterkennung testen** schließt dieselbe Aufnahme *beide* Modal-Ebenen und
+  legt die Zeile auf dem Screen ab — die Quellenauswahl kommt nicht zurück.
+- **Eine Falle, die genau hier zuschlug:** die Höhe der Vorschau kam zuerst aus
+  einem `onLayout` auf dem Container. Im Bottom Sheet kam der Callback nie an,
+  `height` blieb 0, und sichtbar war nur die schwarze Leiste mit den Knöpfen.
+  Jetzt rechnet die Layout-Engine sie über `aspectRatio` aus, gedeckelt per
+  `maxHeight` — nichts wird mehr gemessen.
 - **Nativer Export gebaut:** 100 Assets, darin die beiden `.ort`-Modelle und das
   Wörterbuch. Keine Tesseract-Reste, keine Testbilder.
 - 401 Tests in `packages/common`, 103 im Frontend, 80 in `common-ui`.

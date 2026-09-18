@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Image, LayoutChangeEvent, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -14,7 +14,10 @@ import type { RecognitionImage, RecognitionResult } from '@/helper/TextRecogniti
 const SCAN_PAUSE_IN_MS = 300;
 /** Quality of the captured frame: enough detail to read, small enough to stay quick. */
 const CAPTURE_QUALITY = 0.8;
-/** The shape a phone camera fills, and the shape this preview keeps. */
+/**
+ * The shape a phone camera fills, and the shape this preview keeps. Width over
+ * height, the way the layout engine reads it: taller than it is wide.
+ */
 const PREVIEW_ASPECT_RATIO = 3 / 4;
 /** How much of the window the preview may take, so the controls stay in view. */
 const MAX_PREVIEW_HEIGHT_RATIO = 0.55;
@@ -87,8 +90,6 @@ export const OcrCamera: React.FC<OcrCameraProps> = ({ recognizeImage, isAutomati
 	const [lastReadingLineCount, setLastReadingLineCount] = useState(0);
 	/** True when the last frame was too soft for the engine to make anything of. */
 	const [isTooBlurry, setIsTooBlurry] = useState(false);
-	/** The width the modal actually gives this component, measured rather than guessed. */
-	const [availableWidth, setAvailableWidth] = useState(0);
 
 	const cameraRef = useRef<CameraView>(null);
 	/** Set once the caller is satisfied, so the loop stops and nothing is reported twice. */
@@ -222,10 +223,6 @@ export const OcrCamera: React.FC<OcrCameraProps> = ({ recognizeImage, isAutomati
 		};
 	}, [capturedImage, isAutomatic, isCameraReady, isPermissionGranted, readImage, takePicture]);
 
-	const handleLayout = useCallback((event: LayoutChangeEvent) => {
-		setAvailableWidth(event.nativeEvent.layout.width);
-	}, []);
-
 	if (!isPermissionGranted) {
 		return (
 			<View style={styles.permissionContainer}>
@@ -268,19 +265,22 @@ export const OcrCamera: React.FC<OcrCameraProps> = ({ recognizeImage, isAutomati
 		statusText = translate(TranslationKeys.ocr_too_blurry);
 	}
 
-	// Capped against the window rather than against a fixed width: the modal is as
-	// wide as the window on a desktop browser, and an uncapped preview pushes the
-	// shutter below the fold - the reading nobody can see is the reading nobody gets.
-	const previewHeight = Math.min(availableWidth / PREVIEW_ASPECT_RATIO, windowHeight * MAX_PREVIEW_HEIGHT_RATIO);
+	// The height follows from the width through the aspect ratio, and is capped
+	// against the window: the modal is as wide as the window on a desktop browser,
+	// and an uncapped preview pushes the shutter below the fold - the reading
+	// nobody can see is the reading nobody gets. Measuring the width instead (an
+	// `onLayout` on this container) looked equivalent and was not: inside the
+	// bottom sheet the callback never arrived, and the preview stayed at zero
+	// height with only the controls under it showing.
+	const maxPreviewHeight = windowHeight * MAX_PREVIEW_HEIGHT_RATIO;
 
 	return (
-		<View style={styles.container} onLayout={handleLayout}>
-			<View style={[styles.preview, { height: previewHeight }]}>
-				{availableWidth > 0 &&
-					/* One or the other, never both: the still replaces the preview
-					   rather than covering it, so no camera is left running underneath
-					   while the engine reads. */
-					(isCameraActive ? <CameraView ref={cameraRef} style={styles.fill} facing={facing} animateShutter={false} enableTorch={isTorchEnabled} onCameraReady={() => setIsCameraReady(true)} /> : <Image source={{ uri: capturedImage.uri }} style={styles.fill} resizeMode="cover" accessibilityLabel={translate(TranslationKeys.ocr_take_photo)} />)}
+		<View style={styles.container}>
+			<View style={[styles.preview, { maxHeight: maxPreviewHeight }]}>
+				{/* One or the other, never both: the still replaces the preview
+				    rather than covering it, so no camera is left running underneath
+				    while the engine reads. */}
+				{isCameraActive ? <CameraView ref={cameraRef} style={styles.fill} facing={facing} animateShutter={false} enableTorch={isTorchEnabled} onCameraReady={() => setIsCameraReady(true)} /> : <Image source={{ uri: capturedImage.uri }} style={styles.fill} resizeMode="cover" accessibilityLabel={translate(TranslationKeys.ocr_take_photo)} />}
 
 				{showFrame && <View pointerEvents="none" style={[styles.frame, { borderColor: contrastColor }]} />}
 
@@ -355,6 +355,7 @@ const styles = StyleSheet.create({
 	},
 	preview: {
 		width: '100%',
+		aspectRatio: PREVIEW_ASPECT_RATIO,
 		backgroundColor: CONTROL_BACKGROUND_COLOR,
 		overflow: 'hidden',
 	},
