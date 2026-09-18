@@ -1,22 +1,23 @@
 {% comment %}
   form-document.liquid – das Layout für ausgefüllte Formulare als PDF.
 
-  Anders als `base-german-markdown-content.liquid` ist das hier kein E-Mail-Layout, sondern ein
-  Druckdokument im A4-Format: Kopfzeile mit Logo, Abschnitte, beschriftete Formularzeilen mit
-  Schreiblinie, Ankreuzfelder, IBAN-/BIC-Kästchen, Unterschriftenfelder und ein Anhang für Fotos.
+  Vorbild ist das gedruckte Protokoll, das in den Wohnheimen ausgefüllt und unterschrieben wird:
+  Titel oben links, Logo oben rechts, fette Beschriftung mit Doppelpunkt in einer festen Spalte,
+  der Wert daneben. Wo nichts eingetragen wurde, steht – wie auf Papier – eine Schreiblinie bis
+  zum rechten Rand. Deshalb ist das Dokument schwarzweiß: eine Behördenvorlage, kein Web-Layout.
 
   Das Template bekommt ein fertiges Datenmodell (siehe `FormPdfDocumentHelper.ts`) und kümmert
   sich ausschließlich um Struktur und Aussehen. Alle Werte kommen als reiner Text herein und
   werden hier mit `escape` ausgegeben – das Backend baut kein HTML mehr zusammen.
 
   Erwartete Variablen:
-    documentTitle, documentSubtitle, projectName, projectLogo, project_color
+    documentTitle, documentSubtitle, projectName, projectLogo
     sections[]      – { title, rows[] }
     row             – { type: 'text' | 'multiline' | 'boolean' | 'character_boxes',
                         label, text, options[], boxGroups[] }
     signatures[]    – { label, imageUrl }
     attachments[]   – { label, imageUrl }
-    attachmentsTitle, signaturesTitle
+    attachmentsTitle
 {% endcomment %}
 <!DOCTYPE html>
 <html lang="de">
@@ -26,11 +27,9 @@
     <title>{{ documentTitle | escape }}</title>
     <style>
         :root {
-            --accent-color: {{ project_color | default: '#D14610' }};
-            --text-color: #14161a;
-            --muted-color: #5c6169;
-            --line-color: #9aa0a6;
-            --border-color: #d3d7dd;
+            --text-color: #000000;
+            --line-color: #000000;
+            --muted-color: #555555;
         }
 
         * {
@@ -46,7 +45,7 @@
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif;
             font-size: 10.5pt;
-            line-height: 1.45;
+            line-height: 1.35;
             color: var(--text-color);
             -webkit-font-smoothing: antialiased;
         }
@@ -58,19 +57,20 @@
             align-items: flex-start;
             justify-content: space-between;
             gap: 10mm;
+            margin-bottom: 9mm;
         }
 
         .doc-header__title {
             margin: 0;
-            font-size: 21pt;
+            font-size: 22pt;
             font-weight: 800;
             letter-spacing: -0.2pt;
-            line-height: 1.15;
+            line-height: 1.1;
         }
 
         .doc-header__subtitle {
             margin: 1.5mm 0 0 0;
-            font-size: 10pt;
+            font-size: 9.5pt;
             color: var(--muted-color);
         }
 
@@ -82,26 +82,20 @@
             object-fit: contain;
         }
 
-        .doc-rule {
-            margin: 3mm 0 7mm 0;
-            height: 1.1mm;
-            background: var(--accent-color);
-            border-radius: 0.6mm;
-        }
-
         /* ── Abschnitte ──────────────────────────────────────────────────── */
 
         .section {
-            margin: 0 0 6mm 0;
+            margin: 0 0 5mm 0;
+        }
+
+        .section + .section {
+            margin-top: 5mm;
         }
 
         .section__title {
-            margin: 0 0 3mm 0;
-            padding-bottom: 1.2mm;
-            font-size: 11pt;
+            margin: 0 0 2.5mm 0;
+            font-size: 11.5pt;
             font-weight: 700;
-            color: var(--accent-color);
-            border-bottom: 0.4mm solid var(--border-color);
             break-after: avoid;
             page-break-after: avoid;
         }
@@ -111,8 +105,8 @@
         .field {
             display: flex;
             align-items: baseline;
-            gap: 3mm;
-            margin: 0 0 2.8mm 0;
+            gap: 2mm;
+            margin: 0 0 1.4mm 0;
             break-inside: avoid;
             page-break-inside: avoid;
         }
@@ -124,66 +118,63 @@
 
         .field__value {
             flex: 1 1 auto;
-            min-height: 5.4mm;
-            padding: 0 1mm 0.8mm 1mm;
-            border-bottom: 0.3mm solid var(--line-color);
+            min-height: 4.6mm;
             word-break: break-word;
         }
 
-        .field__value--plain {
-            border-bottom: none;
-            padding-left: 0;
+        /*
+           Wie auf dem Papierformular: die Linie gehört dem leeren Feld. Ein eingetragener Wert
+           steht einfach da, so wie der Vordruck seine bereits bekannten Angaben zeigt.
+        */
+        .field__value--empty {
+            border-bottom: 0.3mm solid var(--line-color);
         }
 
         .field--boxes {
             align-items: center;
         }
 
-        .field__value--empty::after {
-            content: '';
-        }
-
-        /* Mehrzeiliger Text bekommt ein Feld über die volle Breite. */
+        /* Mehrzeiliger Text bekommt ein Linienraster über die volle Breite. */
         .field--block {
             display: block;
+            margin-bottom: 3mm;
         }
 
         .field--block .field__label {
-            margin-bottom: 1.2mm;
+            margin-bottom: 1.5mm;
         }
 
         .field--block .field__value {
-            min-height: 16mm;
-            padding: 2mm 2.5mm;
-            border: 0.3mm solid var(--border-color);
-            border-radius: 1mm;
-            background: #fbfbfc;
+            min-height: 0;
+            line-height: 1.5;
             white-space: pre-wrap;
+        }
+
+        /* Leerer Freitext: drei Schreiblinien, wie sie der Vordruck dafür vorsieht. */
+        .writing-line {
+            height: 6mm;
+            border-bottom: 0.3mm solid var(--line-color);
         }
 
         /* ── Ankreuzfelder ───────────────────────────────────────────────── */
 
         .checkbox-option {
-            display: inline-flex;
-            align-items: center;
-            gap: 1.6mm;
-            margin-right: 9mm;
+            display: inline-block;
+            margin-right: 10mm;
+            white-space: nowrap;
         }
 
         .checkbox {
             display: inline-block;
-            width: 4.2mm;
-            height: 4.2mm;
-            border: 0.45mm solid var(--text-color);
-            border-radius: 0.5mm;
+            width: 3.8mm;
+            height: 3.8mm;
+            margin-right: 1.5mm;
+            border: 0.3mm solid var(--line-color);
             text-align: center;
-            line-height: 3.6mm;
-            font-size: 10pt;
-            font-weight: 900;
-        }
-
-        .checkbox--checked {
-            background: #f1f2f4;
+            line-height: 3.4mm;
+            font-size: 9pt;
+            font-weight: 700;
+            vertical-align: -0.4mm;
         }
 
         /* ── IBAN-/BIC-Kästchen ──────────────────────────────────────────── */
@@ -191,26 +182,22 @@
         .boxes {
             display: flex;
             flex-wrap: wrap;
-            gap: 1.8mm;
+            gap: 1.5mm;
         }
 
         .boxes__group {
             display: flex;
+            gap: 0.5mm;
         }
 
         .box {
             width: 4.3mm;
-            height: 6.2mm;
+            height: 6mm;
             border: 0.3mm solid var(--line-color);
-            border-left-width: 0;
             text-align: center;
-            line-height: 6.2mm;
+            line-height: 6mm;
             font-family: 'Courier New', Courier, monospace;
             font-size: 9pt;
-        }
-
-        .boxes__group .box:first-child {
-            border-left-width: 0.3mm;
         }
 
         /* ── Unterschriften ──────────────────────────────────────────────── */
@@ -221,7 +208,7 @@
            `page-break-inside: avoid` zuverlässig ein.
         */
         .signatures {
-            margin: 9mm 0 0 0;
+            margin: 10mm 0 0 0;
             font-size: 0;
             break-inside: avoid;
             page-break-inside: avoid;
@@ -230,8 +217,8 @@
         .signature {
             display: inline-block;
             width: 48%;
-            margin: 0 4% 5mm 0;
-            vertical-align: top;
+            margin: 0 4% 6mm 0;
+            vertical-align: bottom;
             font-size: 10.5pt;
             break-inside: avoid;
             page-break-inside: avoid;
@@ -241,25 +228,30 @@
             margin-right: 0;
         }
 
-        /* Auch hier kein Flexbox, damit der Seitenumbruch den Block nicht anschneidet. */
-        .signature__canvas {
-            height: 20mm;
-            line-height: 20mm;
-            white-space: nowrap;
-            overflow: hidden;
-            border-bottom: 0.4mm solid var(--text-color);
-        }
-
-        .signature__canvas img {
-            max-height: 20mm;
-            max-width: 100%;
-            vertical-align: bottom;
+        .signature__row {
+            display: flex;
+            align-items: flex-end;
+            gap: 2mm;
         }
 
         .signature__label {
-            margin-top: 1.5mm;
-            font-size: 9pt;
-            color: var(--muted-color);
+            flex: 0 0 auto;
+            padding-bottom: 1mm;
+        }
+
+        .signature__line {
+            flex: 1 1 auto;
+            height: 18mm;
+            line-height: 18mm;
+            white-space: nowrap;
+            overflow: hidden;
+            border-bottom: 0.3mm solid var(--line-color);
+        }
+
+        .signature__line img {
+            max-height: 18mm;
+            max-width: 100%;
+            vertical-align: bottom;
         }
 
         /* ── Anhänge ─────────────────────────────────────────────────────── */
@@ -279,8 +271,7 @@
             max-width: 100%;
             max-height: 105mm;
             height: auto;
-            border: 0.3mm solid var(--border-color);
-            border-radius: 1mm;
+            border: 0.3mm solid var(--line-color);
         }
 
         .attachment__caption {
@@ -302,35 +293,39 @@
         <img class="doc-header__logo" src="{{ projectLogo | escape }}" alt="{{ projectName | escape }}" />
     {% endif %}
 </header>
-<div class="doc-rule"></div>
 
 {% for section in sections %}
     <section class="section">
         {% if section.title %}
-            <h2 class="section__title">{{ section.title | escape }}</h2>
+            <h2 class="section__title">{{ section.title | escape }}:</h2>
         {% endif %}
         {% for row in section.rows %}
             {% if row.type == 'multiline' %}
                 <div class="field field--block">
-                    <div class="field__label">{{ row.label | escape }}</div>
-                    <div class="field__value">{{ row.text | escape }}</div>
+                    <div class="field__label">{{ row.label | escape }}:</div>
+                    {% if row.text == '' %}
+                        <div class="writing-line"></div>
+                        <div class="writing-line"></div>
+                        <div class="writing-line"></div>
+                    {% else %}
+                        <div class="field__value">{{ row.text | escape }}</div>
+                    {% endif %}
                 </div>
             {% elsif row.type == 'boolean' %}
                 <div class="field">
-                    <div class="field__label">{{ row.label | escape }}</div>
-                    <div class="field__value field__value--plain">
+                    <div class="field__label">{{ row.label | escape }}:</div>
+                    <div class="field__value">
                         {% for option in row.options %}
                             <span class="checkbox-option">
-                                <span class="checkbox {% if option.checked %}checkbox--checked{% endif %}">{% if option.checked %}&#10003;{% endif %}</span>
-                                <span>{{ option.label | escape }}</span>
+                                <span class="checkbox">{% if option.checked %}X{% endif %}</span>{{ option.label | escape }}
                             </span>
                         {% endfor %}
                     </div>
                 </div>
             {% elsif row.type == 'character_boxes' %}
                 <div class="field field--boxes">
-                    <div class="field__label">{{ row.label | escape }}</div>
-                    <div class="field__value field__value--plain">
+                    <div class="field__label">{{ row.label | escape }}:</div>
+                    <div class="field__value">
                         <span class="boxes">
                             {% for group in row.boxGroups %}
                                 <span class="boxes__group">
@@ -342,8 +337,8 @@
                 </div>
             {% else %}
                 <div class="field">
-                    <div class="field__label">{{ row.label | escape }}</div>
-                    <div class="field__value">{{ row.text | escape }}</div>
+                    <div class="field__label">{{ row.label | escape }}:</div>
+                    <div class="field__value{% if row.text == '' %} field__value--empty{% endif %}">{{ row.text | escape }}</div>
                 </div>
             {% endif %}
         {% endfor %}
@@ -354,12 +349,14 @@
     <div class="signatures">
         {% for signature in signatures %}
             <div class="signature">
-                <div class="signature__canvas">
-                    {% if signature.imageUrl %}
-                        <img src="{{ signature.imageUrl | escape }}" alt="{{ signature.label | escape }}" />
-                    {% endif %}
+                <div class="signature__row">
+                    <div class="signature__label">{{ signature.label | escape }}:</div>
+                    <div class="signature__line">
+                        {% if signature.imageUrl %}
+                            <img src="{{ signature.imageUrl | escape }}" alt="{{ signature.label | escape }}" />
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="signature__label">{{ signature.label | escape }}</div>
             </div>
         {% endfor %}
     </div>
@@ -367,7 +364,7 @@
 
 {% if attachments.size > 0 %}
     <section class="section attachments">
-        <h2 class="section__title">{{ attachmentsTitle | escape }}</h2>
+        <h2 class="section__title">{{ attachmentsTitle | escape }}:</h2>
         {% for attachment in attachments %}
             <figure class="attachment">
                 <img src="{{ attachment.imageUrl | escape }}" alt="{{ attachment.label | escape }}" />
