@@ -101,7 +101,8 @@ export function getVersionPatch() {
         // 34: reading text is a shared useOcr hook now - it asks where the
         //     picture should come from (automatic camera, camera, photo)
         // 35: build number raised to 208
-        return 35;
+        // 36: onnxruntime-react-native patched for Gradle 9 (Android build)
+        return 36;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

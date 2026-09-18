@@ -101,7 +101,7 @@
     "lottie-react-native": "~7.3.8",
     "markdown-it": "^14.1.0",
     "nanoid": "^5.1.5",
-    "onnxruntime-react-native": "^1.24.3",
+    "onnxruntime-react-native": "patch:onnxruntime-react-native@npm%3A1.24.3#~/.yarn/patches/onnxruntime-react-native-npm-1.24.3-ac3e341e40.patch",
     "onnxruntime-web": "^1.30.0",
     "ppu-paddle-ocr": "^6.6.0",
     "qrcode": "^1.5.4",

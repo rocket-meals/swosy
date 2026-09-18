@@ -1,0 +1,19 @@
+diff --git a/android/build.gradle b/android/build.gradle
+index 41b43599a9af6ef1c170047d39db1f3baa6ca682..09f6558224e9c94aee58e2ecac08f80932683293 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -247,7 +247,13 @@ dependencies {
+     extractLibs "com.microsoft.onnxruntime:onnxruntime-android:latest.integration@aar"
+   }
+ 
+-  if (VersionNumber.parse(REACT_NATIVE_VERSION) < VersionNumber.parse("0.71")) {
++  // Patched: org.gradle.util.VersionNumber was removed in Gradle 9, and Expo SDK
++  // 57 builds with Gradle 9.3. Referencing it aborts the evaluation of this
++  // project before anything is compiled. Compared as a list of integers
++  // instead, which Groovy orders the same way for the shape these versions
++  // have ("0.86.2" -> [0, 86], "0.71.0-rc.1" -> [0, 71]).
++  def reactNativeVersionParts = { String version -> version.tokenize('.-').take(2).collect { it.toInteger() } }
++  if (reactNativeVersionParts(REACT_NATIVE_VERSION) < reactNativeVersionParts("0.71")) {
+     extractLibs "com.facebook.fbjni:fbjni:+:headers"
+     extractLibs "com.facebook.fbjni:fbjni:+"
+   }

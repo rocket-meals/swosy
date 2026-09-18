@@ -21986,7 +21986,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"onnxruntime-react-native@npm:^1.24.3":
+"onnxruntime-react-native@npm:1.24.3":
   version: 1.24.3
   resolution: "onnxruntime-react-native@npm:1.24.3"
   dependencies:
@@ -21995,6 +21995,18 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/980f376ec3996385de45e194fee1dc8ab885b70fe5c90ac25ad19f52d0fe27c465d0e68db1024fefe5e36346eebe8d462d468df5d8f642a0c26cb92ff6373640
+  languageName: node
+  linkType: hard
+
+"onnxruntime-react-native@patch:onnxruntime-react-native@npm%3A1.24.3#~/.yarn/patches/onnxruntime-react-native-npm-1.24.3-ac3e341e40.patch":
+  version: 1.24.3
+  resolution: "onnxruntime-react-native@patch:onnxruntime-react-native@npm%3A1.24.3#~/.yarn/patches/onnxruntime-react-native-npm-1.24.3-ac3e341e40.patch::version=1.24.3&hash=8c833c"
+  dependencies:
+    onnxruntime-common: "npm:1.24.3"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/c6182d81b366b1011115dbefece4f0b9fb9f237c820472709fa8140d7ad0bbf9c757b6f4ec026bdf91aaf2d37beadd1378b3b9adc96286dff48a0fed33dff6d6
   languageName: node
   linkType: hard
 
@@ -25567,7 +25579,7 @@ __metadata:
     lottie-react-native: "npm:~7.3.8"
     markdown-it: "npm:^14.1.0"
     nanoid: "npm:^5.1.5"
-    onnxruntime-react-native: "npm:^1.24.3"
+    onnxruntime-react-native: "patch:onnxruntime-react-native@npm%3A1.24.3#~/.yarn/patches/onnxruntime-react-native-npm-1.24.3-ac3e341e40.patch"
     onnxruntime-web: "npm:^1.30.0"
     ppu-paddle-ocr: "npm:^6.6.0"
     prop-types: "npm:^15.8.1"
