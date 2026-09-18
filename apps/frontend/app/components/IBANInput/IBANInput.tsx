@@ -9,7 +9,6 @@ import { isWeb } from '@/constants/Constants';
 import { TranslationKeys } from '@/locales/keys';
 import { FormHelperCommon } from 'repo-depkit-common';
 import { useGiroCardIbanScannerModal } from '@/components/GiroCardIbanScanner';
-import { isTextRecognitionSupported } from '@/helper/TextRecognitionHelper';
 
 export interface IBANInputProps {
 	id: string;
@@ -37,9 +36,9 @@ const IBANInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 	const { openGiroCardIbanScanner } = useGiroCardIbanScannerModal();
 	const flag = !suffix && !prefix;
 
-	// The scan button is only offered where the device can actually recognize
-	// text; on a platform without OCR the IBAN is typed in as before.
-	const isScanAvailable = !isDisabled && isTextRecognitionSupported();
+	// Text recognition runs on every platform the app ships on, so the button is
+	// there wherever the field can be edited at all.
+	const isScanAvailable = !isDisabled;
 
 	const formatIBAN = (text: string) => FormHelperCommon.formatIban(text);
 

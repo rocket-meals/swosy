@@ -5,13 +5,19 @@ import { IbanRecognitionHelper } from '../form/IbanRecognitionHelper';
 /**
  * The recorded OCR output for `fixtures/girocard/girocard-sample.jpg` — see the
  * README next to it. The image itself is not run through an OCR engine here:
- * this suite is ts-jest in Node, where neither ML Kit nor Apple Vision exists.
+ * this suite is ts-jest in Node, while the engine runs in a browser or a WebView.
  */
 const FIXTURE_DIRECTORY = path.join(__dirname, 'fixtures', 'girocard');
 
+interface GiroCardReading {
+	source: string;
+	recognizedLines: string[];
+}
+
 interface GiroCardFixture {
 	image: string;
-	recognizedLines: string[];
+	engine: string;
+	readings: GiroCardReading[];
 	expected: {
 		iban: string;
 		formatted: string;
@@ -135,12 +141,26 @@ describe('IbanRecognitionHelper', () => {
 	});
 
 	describe('the recorded giro card photo', () => {
+		it('recorded the engine it came from', () => {
+			expect(giroCardFixture.engine).toContain('Tesseract');
+			expect(giroCardFixture.readings.length).toBeGreaterThan(1);
+		});
+
+		it('keeps the misreadings the engine actually produced', () => {
+			// `DE00` came back as `DEDD` once and as `DEOD` the other time. Were
+			// these tidied up in the fixture, the repair would be tested against a
+			// problem that never occurs.
+			const recognized = giroCardFixture.readings.map((reading) => reading.recognizedLines.join(' '));
+			expect(recognized.some((text) => text.includes('DEDD'))).toBe(true);
+			expect(recognized.some((text) => text.includes('DEOD'))).toBe(true);
+		});
+
 		it('keeps the image the recognized lines belong to', () => {
 			expect(fs.existsSync(path.join(FIXTURE_DIRECTORY, giroCardFixture.image))).toBe(true);
 		});
 
-		it('reads the printed IBAN out of the recognized lines', () => {
-			const candidates = IbanRecognitionHelper.findIbanCandidates(giroCardFixture.recognizedLines);
+		it.each(giroCardFixture.readings.map((reading) => [reading.source, reading] as const))('reads the printed IBAN out of the lines from %s', (_source, reading) => {
+			const candidates = IbanRecognitionHelper.findIbanCandidates(reading.recognizedLines);
 			const printed = candidates.find((candidate) => candidate.iban === giroCardFixture.expected.iban);
 			expect(printed).toBeDefined();
 			expect(printed?.formatted).toBe(giroCardFixture.expected.formatted);
@@ -149,12 +169,12 @@ describe('IbanRecognitionHelper', () => {
 			expect(printed?.checksumValid).toBe(giroCardFixture.expected.checksumValid);
 		});
 
-		it('withholds the specimen IBAN from a scanner that demands a valid checksum', () => {
-			expect(IbanRecognitionHelper.findIban(giroCardFixture.recognizedLines)).toBeNull();
+		it.each(giroCardFixture.readings.map((reading) => [reading.source, reading] as const))('withholds the specimen IBAN from a scanner that demands a valid checksum (%s)', (_source, reading) => {
+			expect(IbanRecognitionHelper.findIban(reading.recognizedLines)).toBeNull();
 		});
 
-		it('hands it over once the caller allows a dummy checksum', () => {
-			const found = IbanRecognitionHelper.findIban(giroCardFixture.recognizedLines, { allowInvalidChecksum: true });
+		it.each(giroCardFixture.readings.map((reading) => [reading.source, reading] as const))('hands it over once the caller allows a dummy checksum (%s)', (_source, reading) => {
+			const found = IbanRecognitionHelper.findIban(reading.recognizedLines, { allowInvalidChecksum: true });
 			expect(found?.iban).toBe(giroCardFixture.expected.iban);
 			expect(found?.formatted).toBe(giroCardFixture.expected.formatted);
 		});

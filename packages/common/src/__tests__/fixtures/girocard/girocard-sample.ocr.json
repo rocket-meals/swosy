@@ -1,17 +1,31 @@
 {
 	"image": "girocard-sample.jpg",
-	"description": "Text lines an on-device OCR engine (ML Kit on Android, Vision on iOS) returns for girocard-sample.jpg. The card is a public specimen, the printed IBAN is a dummy: its shape and length are those of a German IBAN, but the check digits '00' can never validate.",
-	"recognizedLines": [
-		"Volksbanken",
-		"Oberberg eG",
-		"MeinPlus",
-		"Wir machen den Weg frei.",
-		"girocard",
-		"Toni Raiffeisen",
-		"IBAN:",
-		"DE00 0123 4567 8901 2345 67",
-		"Gültig bis",
-		"00/00"
+	"engine": "Tesseract 7.0.0, eng, via tesseract.js",
+	"description": "What Tesseract actually returns for girocard-sample.jpg, recorded from two real runs. The card is a public specimen, the printed IBAN is a dummy: its shape and length are those of a German IBAN, but the check digits '00' can never validate. Note what the engine makes of those two zeros - 'DD' in one reading, 'OD' in the other. Repairing exactly that is what IbanRecognitionHelper.repairOcrConfusions is for.",
+	"readings": [
+		{
+			"source": "tesseract.js run against the image file directly",
+			"recognizedLines": [
+				"ERE ee",
+				"Wir machen den Weg frei.",
+				"rE",
+				"3",
+				"- girocar",
+				"Toni Raiffeisen =",
+				"DEDD 0123 4567 8901 2345 67 00/00 q"
+			]
+		},
+		{
+			"source": "the app's scanner, reading a camera frame of the card on the experimental screen",
+			"recognizedLines": [
+				"Wir machen den Weg frei.",
+				"si",
+				"LL] Fy",
+				"Toni Ra iffeise n",
+				"ww —",
+				"DEOD 0123 4567 8901 2345 67 00/0"
+			]
+		}
 	],
 	"expected": {
 		"iban": "DE00012345678901234567",

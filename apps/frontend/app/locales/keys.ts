@@ -645,7 +645,7 @@ export const TranslationKeys = {
 	giro_card_scan_hint: 'giro_card_scan_hint',
 	giro_card_scan_searching: 'giro_card_scan_searching',
 	giro_card_scan_permission_required: 'giro_card_scan_permission_required',
-	giro_card_scan_unsupported: 'giro_card_scan_unsupported',
+	giro_card_scan_engine_failed: 'giro_card_scan_engine_failed',
 	giro_card_scan_toggle_torch: 'giro_card_scan_toggle_torch',
 	giro_card_iban_scanner_test: 'giro_card_iban_scanner_test',
 	giro_card_iban_scanner_test_description: 'giro_card_iban_scanner_test_description',
@@ -654,7 +654,8 @@ export const TranslationKeys = {
 	giro_card_scan_no_lines_yet: 'giro_card_scan_no_lines_yet',
 	giro_card_scan_last_result: 'giro_card_scan_last_result',
 	giro_card_scan_no_result_yet: 'giro_card_scan_no_result_yet',
-	giro_card_scan_supported_state: 'giro_card_scan_supported_state',
+	giro_card_scan_engine: 'giro_card_scan_engine',
+	giro_card_scan_preparing: 'giro_card_scan_preparing',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];

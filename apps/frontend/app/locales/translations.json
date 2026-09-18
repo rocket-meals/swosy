@@ -6249,16 +6249,6 @@
     "tr": "Tarama için kamera erişimi gerekir.",
     "zh": "扫描需要访问相机。"
   },
-  "giro_card_scan_unsupported": {
-    "de": "Texterkennung ist auf diesem Gerät nicht verfügbar. Bitte gib die IBAN von Hand ein.",
-    "en": "Text recognition is not available on this device. Please enter the IBAN by hand.",
-    "ar": "التعرف على النص غير متاح على هذا الجهاز. يرجى إدخال رقم IBAN يدويًا.",
-    "es": "El reconocimiento de texto no está disponible en este dispositivo. Introduce el IBAN a mano.",
-    "fr": "La reconnaissance de texte n'est pas disponible sur cet appareil. Saisissez l'IBAN à la main.",
-    "ru": "Распознавание текста недоступно на этом устройстве. Введите IBAN вручную.",
-    "tr": "Bu cihazda metin tanıma kullanılamıyor. Lütfen IBAN'ı elle girin.",
-    "zh": "此设备不支持文字识别，请手动输入 IBAN。"
-  },
   "giro_card_scan_toggle_torch": {
     "de": "Licht an/aus",
     "en": "Light on/off",
@@ -6339,14 +6329,34 @@
     "tr": "Henüz IBAN tanınmadı.",
     "zh": "尚未识别到 IBAN。"
   },
-  "giro_card_scan_supported_state": {
-    "de": "Texterkennung auf diesem Gerät",
-    "en": "Text recognition on this device",
-    "ar": "التعرف على النص على هذا الجهاز",
-    "es": "Reconocimiento de texto en este dispositivo",
-    "fr": "Reconnaissance de texte sur cet appareil",
-    "ru": "Распознавание текста на этом устройстве",
-    "tr": "Bu cihazda metin tanıma",
-    "zh": "此设备上的文字识别"
+  "giro_card_scan_engine_failed": {
+    "de": "Die Texterkennung konnte nicht geladen werden. Prüfe die Internetverbindung oder gib die IBAN von Hand ein.",
+    "en": "The text recognition could not be loaded. Check your internet connection or enter the IBAN by hand.",
+    "ar": "تعذر تحميل أداة التعرف على النص. تحقق من اتصال الإنترنت أو أدخل رقم IBAN يدويًا.",
+    "es": "No se ha podido cargar el reconocimiento de texto. Comprueba la conexión a internet o introduce el IBAN a mano.",
+    "fr": "La reconnaissance de texte n'a pas pu être chargée. Vérifiez la connexion internet ou saisissez l'IBAN à la main.",
+    "ru": "Не удалось загрузить распознавание текста. Проверьте подключение к интернету или введите IBAN вручную.",
+    "tr": "Metin tanıma yüklenemedi. İnternet bağlantısını kontrol edin veya IBAN'ı elle girin.",
+    "zh": "文字识别加载失败。请检查网络连接，或手动输入 IBAN。"
+  },
+  "giro_card_scan_engine": {
+    "de": "Texterkennung",
+    "en": "Text recognition",
+    "ar": "التعرف على النص",
+    "es": "Reconocimiento de texto",
+    "fr": "Reconnaissance de texte",
+    "ru": "Распознавание текста",
+    "tr": "Metin tanıma",
+    "zh": "文字识别"
+  },
+  "giro_card_scan_preparing": {
+    "de": "Texterkennung wird vorbereitet …",
+    "en": "Preparing text recognition …",
+    "ar": "جارٍ تجهيز التعرف على النص …",
+    "es": "Preparando el reconocimiento de texto …",
+    "fr": "Préparation de la reconnaissance de texte …",
+    "ru": "Подготовка распознавания текста …",
+    "tr": "Metin tanıma hazırlanıyor …",
+    "zh": "正在准备文字识别 …"
   }
 }
