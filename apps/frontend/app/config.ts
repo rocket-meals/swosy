@@ -62,7 +62,8 @@ export function getBuildNumber() {
 	// onnxruntime. onnxruntime-react-native and @shopify/react-native-skia are
 	// native modules, so this needs a new binary - it cannot ship as an OTA
 	// update the way the WebView could.
-	return 207;
+	// 208: new dev client build for the PaddleOCR native modules.
+	return 208;
 }
 
 export function getMajorVersion() {
@@ -99,7 +100,8 @@ export function getVersionPatch() {
         // 33: the giro card scanner reads with PaddleOCR instead of Tesseract
         // 34: reading text is a shared useOcr hook now - it asks where the
         //     picture should come from (automatic camera, camera, photo)
-        return 34;
+        // 35: build number raised to 208
+        return 35;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
