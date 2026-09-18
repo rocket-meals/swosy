@@ -67,7 +67,9 @@ export function getBuildNumber() {
 	//      iOS went through - so 208 exists online for iOS only.
 	// 209: same modules, with that library patched. A fresh number so both
 	//      platforms build again rather than being skipped as already built.
-	return 209;
+	// 210: the patch itself was wrong - it compared two Lists, which the Groovy
+	//      in Gradle 9 refuses. Corrected and verified against Gradle 9.3.1.
+	return 210;
 }
 
 export function getMajorVersion() {
@@ -107,7 +109,8 @@ export function getVersionPatch() {
         // 35: build number raised to 208
         // 36: onnxruntime-react-native patched for Gradle 9 (Android build)
         // 37: build number raised to 209
-        return 37;
+        // 38: the Gradle 9 patch compares integers now, not lists
+        return 38;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

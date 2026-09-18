@@ -1,19 +1,29 @@
 diff --git a/android/build.gradle b/android/build.gradle
-index 41b43599a9af6ef1c170047d39db1f3baa6ca682..09f6558224e9c94aee58e2ecac08f80932683293 100644
+index 41b43599a9af6ef1c170047d39db1f3baa6ca682..c139513d06dc7d29981486a5ef9e204619bbeca2 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
-@@ -247,7 +247,13 @@ dependencies {
+@@ -247,7 +247,23 @@ dependencies {
      extractLibs "com.microsoft.onnxruntime:onnxruntime-android:latest.integration@aar"
    }
  
 -  if (VersionNumber.parse(REACT_NATIVE_VERSION) < VersionNumber.parse("0.71")) {
-+  // Patched: org.gradle.util.VersionNumber was removed in Gradle 9, and Expo SDK
-+  // 57 builds with Gradle 9.3. Referencing it aborts the evaluation of this
-+  // project before anything is compiled. Compared as a list of integers
-+  // instead, which Groovy orders the same way for the shape these versions
-+  // have ("0.86.2" -> [0, 86], "0.71.0-rc.1" -> [0, 71]).
-+  def reactNativeVersionParts = { String version -> version.tokenize('.-').take(2).collect { it.toInteger() } }
-+  if (reactNativeVersionParts(REACT_NATIVE_VERSION) < reactNativeVersionParts("0.71")) {
++  // Patched: org.gradle.util.VersionNumber was removed in Gradle 9, and Expo
++  // SDK 57 builds with Gradle 9.3. Referencing it aborts the evaluation of this
++  // project before anything is compiled, over a branch that only matters for
++  // React Native older than 0.71.
++  //
++  // Reduced to a single integer rather than comparing lists: the Groovy that
++  // ships with Gradle 9 refuses relational operators between two Lists
++  // ("Cannot compare java.util.ArrayList with value '[0, 86]' ..."), while two
++  // Integers are unambiguous in every version. "0.86.2" -> 86, "0.71" -> 71,
++  // and a future "1.0" -> 1000 still sorts above both.
++  def reactNativeVersionRank = { String version ->
++    def parts = version.tokenize('.-')
++    def major = parts.size() > 0 ? parts[0].toInteger() : 0
++    def minor = parts.size() > 1 ? parts[1].toInteger() : 0
++    major * 1000 + minor
++  }
++  if (reactNativeVersionRank(REACT_NATIVE_VERSION) < reactNativeVersionRank("0.71")) {
      extractLibs "com.facebook.fbjni:fbjni:+:headers"
      extractLibs "com.facebook.fbjni:fbjni:+"
    }
