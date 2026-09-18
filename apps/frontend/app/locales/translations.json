@@ -6229,36 +6229,6 @@
     "tr": "Kartı, IBAN net okunacak şekilde çerçevenin içinde tutun.",
     "zh": "请将卡片置于取景框内，使 IBAN 清晰可辨。"
   },
-  "giro_card_scan_searching": {
-    "de": "IBAN wird gesucht …",
-    "en": "Looking for the IBAN …",
-    "ar": "جارٍ البحث عن رقم IBAN …",
-    "es": "Buscando el IBAN …",
-    "fr": "Recherche de l'IBAN …",
-    "ru": "Поиск IBAN …",
-    "tr": "IBAN aranıyor …",
-    "zh": "正在查找 IBAN …"
-  },
-  "giro_card_scan_permission_required": {
-    "de": "Zum Scannen wird Zugriff auf die Kamera benötigt.",
-    "en": "Scanning needs access to the camera.",
-    "ar": "يتطلب المسح الوصول إلى الكاميرا.",
-    "es": "El escaneo necesita acceso a la cámara.",
-    "fr": "Le scan nécessite l'accès à la caméra.",
-    "ru": "Для сканирования нужен доступ к камере.",
-    "tr": "Tarama için kamera erişimi gerekir.",
-    "zh": "扫描需要访问相机。"
-  },
-  "giro_card_scan_toggle_torch": {
-    "de": "Licht an/aus",
-    "en": "Light on/off",
-    "ar": "تشغيل/إيقاف الضوء",
-    "es": "Encender/apagar la luz",
-    "fr": "Allumer/éteindre la lumière",
-    "ru": "Включить/выключить свет",
-    "tr": "Işığı aç/kapat",
-    "zh": "开灯/关灯"
-  },
   "giro_card_iban_scanner_test": {
     "de": "Girocard-IBAN-Scanner",
     "en": "Giro card IBAN scanner",
@@ -6329,16 +6299,6 @@
     "tr": "Henüz IBAN tanınmadı.",
     "zh": "尚未识别到 IBAN。"
   },
-  "giro_card_scan_engine_failed": {
-    "de": "Die Texterkennung konnte nicht geladen werden. Prüfe die Internetverbindung oder gib die IBAN von Hand ein.",
-    "en": "The text recognition could not be loaded. Check your internet connection or enter the IBAN by hand.",
-    "ar": "تعذر تحميل أداة التعرف على النص. تحقق من اتصال الإنترنت أو أدخل رقم IBAN يدويًا.",
-    "es": "No se ha podido cargar el reconocimiento de texto. Comprueba la conexión a internet o introduce el IBAN a mano.",
-    "fr": "La reconnaissance de texte n'a pas pu être chargée. Vérifiez la connexion internet ou saisissez l'IBAN à la main.",
-    "ru": "Не удалось загрузить распознавание текста. Проверьте подключение к интернету или введите IBAN вручную.",
-    "tr": "Metin tanıma yüklenemedi. İnternet bağlantısını kontrol edin veya IBAN'ı elle girin.",
-    "zh": "文字识别加载失败。请检查网络连接，或手动输入 IBAN。"
-  },
   "giro_card_scan_engine": {
     "de": "Texterkennung",
     "en": "Text recognition",
@@ -6349,7 +6309,47 @@
     "tr": "Metin tanıma",
     "zh": "文字识别"
   },
-  "giro_card_scan_preparing": {
+  "ocr_source_camera_automatic": {
+    "de": "Kamera (automatisch)",
+    "en": "Camera (automatic)",
+    "ar": "الكاميرا (تلقائي)",
+    "es": "Cámara (automática)",
+    "fr": "Appareil photo (automatique)",
+    "ru": "Камера (автоматически)",
+    "tr": "Kamera (otomatik)",
+    "zh": "相机（自动）"
+  },
+  "ocr_source_camera": {
+    "de": "Kamera",
+    "en": "Camera",
+    "ar": "الكاميرا",
+    "es": "Cámara",
+    "fr": "Appareil photo",
+    "ru": "Камера",
+    "tr": "Kamera",
+    "zh": "相机"
+  },
+  "ocr_source_photo": {
+    "de": "Foto auswählen",
+    "en": "Choose a photo",
+    "ar": "اختيار صورة",
+    "es": "Elegir una foto",
+    "fr": "Choisir une photo",
+    "ru": "Выбрать фото",
+    "tr": "Fotoğraf seç",
+    "zh": "选择照片"
+  },
+  "ocr_searching": {
+    "de": "Text wird gesucht …",
+    "en": "Looking for text …",
+    "ar": "جارٍ البحث عن نص …",
+    "es": "Buscando texto …",
+    "fr": "Recherche de texte …",
+    "ru": "Поиск текста …",
+    "tr": "Metin aranıyor …",
+    "zh": "正在查找文字 …"
+  },
+  "ocr_preparing": {
     "de": "Texterkennung wird vorbereitet …",
     "en": "Preparing text recognition …",
     "ar": "جارٍ تجهيز التعرف على النص …",
@@ -6359,7 +6359,17 @@
     "tr": "Metin tanıma hazırlanıyor …",
     "zh": "正在准备文字识别 …"
   },
-  "giro_card_scan_take_photo": {
+  "ocr_ready_for_photo": {
+    "de": "Bereit. Nimm ein Foto auf.",
+    "en": "Ready. Take a photo.",
+    "ar": "جاهز. التقط صورة.",
+    "es": "Listo. Haz una foto.",
+    "fr": "Prêt. Prenez une photo.",
+    "ru": "Готово. Сделайте фото.",
+    "tr": "Hazır. Bir fotoğraf çek.",
+    "zh": "准备就绪。请拍照。"
+  },
+  "ocr_take_photo": {
     "de": "Foto aufnehmen",
     "en": "Take a photo",
     "ar": "التقاط صورة",
@@ -6369,7 +6379,7 @@
     "tr": "Fotoğraf çek",
     "zh": "拍照"
   },
-  "giro_card_scan_retry": {
+  "ocr_retry": {
     "de": "Neues Foto",
     "en": "New photo",
     "ar": "صورة جديدة",
@@ -6379,7 +6389,7 @@
     "tr": "Yeni fotoğraf",
     "zh": "重新拍照"
   },
-  "giro_card_scan_switch_camera": {
+  "ocr_switch_camera": {
     "de": "Kamera wechseln",
     "en": "Switch camera",
     "ar": "تبديل الكاميرا",
@@ -6389,17 +6399,17 @@
     "tr": "Kamerayı değiştir",
     "zh": "切换摄像头"
   },
-  "giro_card_scan_no_iban_in_photo": {
-    "de": "Auf diesem Foto war keine IBAN zu lesen.",
-    "en": "No IBAN could be read in this photo.",
-    "ar": "تعذرت قراءة أي رقم IBAN في هذه الصورة.",
-    "es": "No se ha podido leer ningún IBAN en esta foto.",
-    "fr": "Aucun IBAN n'a pu être lu sur cette photo.",
-    "ru": "На этом фото не удалось прочитать IBAN.",
-    "tr": "Bu fotoğrafta IBAN okunamadı.",
-    "zh": "这张照片中没有读到 IBAN。"
+  "ocr_toggle_torch": {
+    "de": "Licht an/aus",
+    "en": "Light on/off",
+    "ar": "تشغيل/إيقاف الإضاءة",
+    "es": "Luz encendida/apagada",
+    "fr": "Lumière activée/désactivée",
+    "ru": "Свет вкл./выкл.",
+    "tr": "Işığı aç/kapat",
+    "zh": "开/关灯"
   },
-  "giro_card_scan_too_blurry": {
+  "ocr_too_blurry": {
     "de": "Bild zu unscharf. Nutze die Rückkamera und halte etwas Abstand.",
     "en": "The image is too blurry. Use the back camera and keep some distance.",
     "ar": "الصورة غير واضحة. استخدم الكاميرا الخلفية واترك بعض المسافة.",
@@ -6408,5 +6418,105 @@
     "ru": "Изображение слишком размыто. Используйте заднюю камеру и держите небольшое расстояние.",
     "tr": "Görüntü çok bulanık. Arka kamerayı kullanın ve biraz mesafe bırakın.",
     "zh": "图像太模糊。请使用后置摄像头，并保持一些距离。"
+  },
+  "ocr_nothing_in_photo": {
+    "de": "Auf diesem Foto war kein Text zu lesen.",
+    "en": "No text could be read in this photo.",
+    "ar": "تعذرت قراءة أي نص في هذه الصورة.",
+    "es": "No se ha podido leer ningún texto en esta foto.",
+    "fr": "Aucun texte n'a pu être lu sur cette photo.",
+    "ru": "На этом фото не удалось прочитать текст.",
+    "tr": "Bu fotoğrafta okunabilir metin yok.",
+    "zh": "这张照片中没有可读取的文字。"
+  },
+  "ocr_engine_failed": {
+    "de": "Die Texterkennung konnte nicht gestartet werden.",
+    "en": "Text recognition could not be started.",
+    "ar": "تعذر بدء التعرف على النص.",
+    "es": "No se ha podido iniciar el reconocimiento de texto.",
+    "fr": "La reconnaissance de texte n'a pas pu démarrer.",
+    "ru": "Не удалось запустить распознавание текста.",
+    "tr": "Metin tanıma başlatılamadı.",
+    "zh": "无法启动文字识别。"
+  },
+  "ocr_camera_permission_required": {
+    "de": "Für die Texterkennung wird Zugriff auf die Kamera gebraucht.",
+    "en": "Text recognition needs access to the camera.",
+    "ar": "يحتاج التعرف على النص إلى إذن الوصول إلى الكاميرا.",
+    "es": "El reconocimiento de texto necesita acceso a la cámara.",
+    "fr": "La reconnaissance de texte a besoin d'accéder à la caméra.",
+    "ru": "Для распознавания текста нужен доступ к камере.",
+    "tr": "Metin tanıma için kamera erişimi gerekir.",
+    "zh": "文字识别需要访问相机。"
+  },
+  "ocr_gallery_permission_required": {
+    "de": "Für die Texterkennung wird Zugriff auf die Fotos gebraucht.",
+    "en": "Text recognition needs access to your photos.",
+    "ar": "يحتاج التعرف على النص إلى إذن الوصول إلى الصور.",
+    "es": "El reconocimiento de texto necesita acceso a tus fotos.",
+    "fr": "La reconnaissance de texte a besoin d'accéder à vos photos.",
+    "ru": "Для распознавания текста нужен доступ к фотографиям.",
+    "tr": "Metin tanıma için fotoğraflara erişim gerekir.",
+    "zh": "文字识别需要访问您的照片。"
+  },
+  "text_recognition_test": {
+    "de": "Texterkennung testen",
+    "en": "Test text recognition",
+    "ar": "اختبار التعرف على النص",
+    "es": "Probar el reconocimiento de texto",
+    "fr": "Tester la reconnaissance de texte",
+    "ru": "Проверить распознавание текста",
+    "tr": "Metin tanımayı test et",
+    "zh": "测试文字识别"
+  },
+  "text_recognition_test_description": {
+    "de": "Liest Text aus einem Foto oder direkt von der Kamera und zeigt, was die Erkennung daraus macht. Ohne Suche nach etwas Bestimmtem — jede erkannte Zeile wird angezeigt.",
+    "en": "Reads text from a photo or straight from the camera and shows what the engine makes of it. Nothing in particular is searched for — every recognized line is listed.",
+    "ar": "يقرأ النص من صورة أو مباشرة من الكاميرا ويعرض ما يستخلصه المحرك. لا يبحث عن شيء محدد — تُعرض كل سطر مُتعرَّف عليه.",
+    "es": "Lee texto de una foto o directamente de la cámara y muestra lo que el motor obtiene. No busca nada en concreto: se muestran todas las líneas reconocidas.",
+    "fr": "Lit le texte d'une photo ou directement de la caméra et montre ce que le moteur en tire. Rien de particulier n'est recherché : chaque ligne reconnue est affichée.",
+    "ru": "Читает текст с фотографии или прямо с камеры и показывает, что получилось. Ничего конкретного не ищется — выводится каждая распознанная строка.",
+    "tr": "Bir fotoğraftan veya doğrudan kameradan metin okur ve motorun ne çıkardığını gösterir. Belirli bir şey aranmaz — tanınan her satır listelenir.",
+    "zh": "从照片或直接从相机读取文字，并显示识别结果。不查找特定内容——列出每一行识别到的文字。"
+  },
+  "text_recognition_test_start": {
+    "de": "Text erkennen",
+    "en": "Recognize text",
+    "ar": "التعرف على النص",
+    "es": "Reconocer texto",
+    "fr": "Reconnaître le texte",
+    "ru": "Распознать текст",
+    "tr": "Metni tanı",
+    "zh": "识别文字"
+  },
+  "text_recognition_test_hint": {
+    "de": "Halte den Text so in den Rahmen, dass er gut lesbar ist.",
+    "en": "Hold the text in the frame so that it is clearly readable.",
+    "ar": "ضع النص داخل الإطار بحيث يكون واضحًا.",
+    "es": "Coloca el texto en el marco de forma que se lea con claridad.",
+    "fr": "Placez le texte dans le cadre de façon à ce qu’il soit bien lisible.",
+    "ru": "Держите текст в рамке так, чтобы он был хорошо читаем.",
+    "tr": "Metni çerçeve içinde okunaklı olacak şekilde tut.",
+    "zh": "把文字放在取景框内，使其清晰可读。"
+  },
+  "text_recognition_test_result": {
+    "de": "Erkannte Textzeilen",
+    "en": "Recognized lines of text",
+    "ar": "أسطر النص المُتعرَّف عليها",
+    "es": "Líneas de texto reconocidas",
+    "fr": "Lignes de texte reconnues",
+    "ru": "Распознанные строки текста",
+    "tr": "Tanınan metin satırları",
+    "zh": "识别到的文本行"
+  },
+  "text_recognition_test_no_result": {
+    "de": "Noch nichts erkannt.",
+    "en": "Nothing recognized yet.",
+    "ar": "لم يتم التعرف على شيء بعد.",
+    "es": "Todavía no se ha reconocido nada.",
+    "fr": "Rien n'a encore été reconnu.",
+    "ru": "Пока ничего не распознано.",
+    "tr": "Henüz bir şey tanınmadı.",
+    "zh": "尚未识别到任何内容。"
   }
 }

@@ -1,7 +1,7 @@
 # Girocard-IBAN-Scanner — Handover
 
-Stand: 2026-09-18. Branch `claude/giro-card-iban-camera-blws22` (PR #4399),
-Diagnose-Ableger `claude/text-recognition-native-diagnose` (PR #4400).
+Stand: 2026-09-18. Branch `claude/giro-card-iban-paddleocr`.
+Die Vorgänger-PRs #4399 und #4400 sind geschlossen; alles steckt im neuen PR.
 
 Dieses Dokument ist der Übergabepunkt: was gebaut ist, warum es so gebaut ist,
 was nachweislich funktioniert, was nachweislich nicht, und woran als Nächstes zu
@@ -21,9 +21,46 @@ zu Recht abgelehnt.
 
 ## Die Architektur in einem Satz
 
-**Bildaufnahme und Texterkennung sind getrennt.** Die App nimmt mit der
-plattformeigenen Kamera (`expo-camera`) ein Bild auf und reicht dieses Bild an
-die Erkennung weiter. Mehr macht das Modal nicht.
+**Bildaufnahme und Texterkennung sind getrennt.** Die App besorgt ein Bild —
+von der Kamera oder aus den Fotos — und reicht es an die Erkennung weiter. Die
+Erkennung weiß nicht, woher es kommt.
+
+## `useOcr`: Text lesen, egal woher das Bild kommt
+
+`hooks/useOcr.tsx` ist die Schicht, die alles über Kameras, Fotorollen und
+Engines weiß. Wer sie benutzt, sagt nur, **wonach** gesucht wird — nicht, wie
+man dahin kommt:
+
+```ts
+openOcr<IbanCandidate>({
+  title, hint,
+  findMatch: (lines) => IbanRecognitionHelper.findIban(lines, { … }),
+  onRecognized: ({ match }) => …,
+});
+```
+
+Beim Öffnen fragt sie, woher das Bild kommen soll:
+
+| | |
+| --- | --- |
+| **Kamera (automatisch)** | Tastet die laufende Vorschau ab und schließt sich selbst, sobald `findMatch` etwas findet. Ohne Auslöser, ohne Zutun. |
+| **Kamera** | Vorschau mit Auslöser: ein bewusstes Standbild, das für sich gelesen wird. Besser, um etwas ruhig zu halten. |
+| **Foto auswählen** | Ein Bild, das schon auf dem Gerät liegt. Wird einmal gelesen; was dabei herauskommt, ist das Ergebnis. |
+
+**Die automatische Kamera erscheint nur, wenn `findMatch` übergeben wurde.** Ein
+Scan, der seinen eigenen Erfolg nicht erkennen kann, würde nie von selbst enden
+— deshalb ist die Option dort schlicht nicht da.
+
+`components/GiroCardIbanScanner` ist damit auf das eine geschrumpft, was
+wirklich mit IBANs zu tun hat: was als Fund zählt. Der Screen
+**Experimentell → Texterkennung testen** benutzt dieselbe Schicht ohne
+`findMatch` und zeigt einfach jede erkannte Zeile.
+
+### Die Vorschau ist auf 420 px gedeckelt
+
+Ein Modal im Desktop-Browser ist so breit wie das Fenster. Eine ungedeckelte
+Vorschau drückt Statuszeile und Knöpfe unter den Rand — und die Lesung, die
+niemand sieht, ist die Lesung, die niemand bekommt.
 
 ### Die Engine: PaddleOCR auf onnxruntime
 

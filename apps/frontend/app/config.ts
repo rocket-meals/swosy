@@ -97,7 +97,9 @@ export function getVersionPatch() {
         // 32: a number is only read when its letters sit where an IBAN has them,
         //     and groups the engine welded together are read again
         // 33: the giro card scanner reads with PaddleOCR instead of Tesseract
-        return 33;
+        // 34: reading text is a shared useOcr hook now - it asks where the
+        //     picture should come from (automatic camera, camera, photo)
+        return 34;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

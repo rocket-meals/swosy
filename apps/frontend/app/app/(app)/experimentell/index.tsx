@@ -104,6 +104,12 @@ const Index = () => {
 			onPress: () => router.push('/experimentell/giro-card-iban'),
 		},
 		{
+			key: 'text-recognition-test',
+			label: translate(TranslationKeys.text_recognition_test),
+			leftIcon: <MaterialCommunityIcons name="text-recognition" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/text-recognition-test'),
+		},
+		{
 			key: 'markdown-test',
 			label: translate(TranslationKeys.markdown_test),
 			leftIcon: <MaterialCommunityIcons name="language-markdown-outline" size={24} color={theme.screen.icon} />,
