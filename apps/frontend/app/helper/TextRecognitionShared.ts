@@ -76,10 +76,14 @@ export const MINIMUM_SHARPNESS = 12;
  * Blur flattens the second derivative, so a soft image scores near zero while
  * a crisp one scores in the hundreds.
  *
- * Deliberately self-contained and written in plain ES5: the native side ships
- * it into the WebView with `Function.prototype.toString()`, so that both
- * platforms measure with the very same code instead of two implementations
- * that drift apart.
+ * The same computation exists twice: here for the web build, and as source text
+ * in {@link SHARPNESS_FUNCTION_SOURCE} for the page that runs inside the
+ * WebView on native. Handing the WebView `measureImageSharpness.toString()`
+ * would be the obvious way to avoid that — but the app runs on Hermes, which
+ * does not keep function bodies around, so there `toString()` yields
+ * `function measureImageSharpness() { [bytecode] }` and the page would measure
+ * nothing at all. `__tests__/imageSharpness.test.ts` runs both over the same
+ * images and insists they agree, so the two cannot drift apart unnoticed.
  */
 export function measureImageSharpness(pixels: Uint8ClampedArray | number[], width: number, height: number): number {
 	var pixelCount = width * height;
@@ -106,6 +110,36 @@ export function measureImageSharpness(pixels: Uint8ClampedArray | number[], widt
 	var mean = sum / count;
 	return sumOfSquares / count - mean * mean;
 }
+
+/**
+ * {@link measureImageSharpness} as source text, for the WebView page on native.
+ * Kept in plain ES5 so that it needs no transpiling wherever it is dropped in.
+ */
+export const SHARPNESS_FUNCTION_SOURCE = `function measureImageSharpness(pixels, width, height) {
+	var pixelCount = width * height;
+	var gray = new Float32Array(pixelCount);
+	for (var index = 0; index < pixelCount; index++) {
+		var offset = index * 4;
+		gray[index] = (pixels[offset] * 299 + pixels[offset + 1] * 587 + pixels[offset + 2] * 114) / 1000;
+	}
+	var sum = 0;
+	var sumOfSquares = 0;
+	var count = 0;
+	for (var y = 1; y < height - 1; y++) {
+		for (var x = 1; x < width - 1; x++) {
+			var position = y * width + x;
+			var laplacian = gray[position - width] + gray[position + width] + gray[position - 1] + gray[position + 1] - 4 * gray[position];
+			sum += laplacian;
+			sumOfSquares += laplacian * laplacian;
+			count++;
+		}
+	}
+	if (count === 0) {
+		return 0;
+	}
+	var mean = sum / count;
+	return sumOfSquares / count - mean * mean;
+}`;
 
 /** What one pass over a frame came back with. */
 export interface RecognitionResult {
@@ -186,7 +220,7 @@ export const buildTextRecognitionPageHtml = (): string => `<!DOCTYPE html>
 	<body>
 		<script src="./${ENGINE_FILE_NAMES.library}"></script>
 		<script>
-			${measureImageSharpness.toString()}
+			${SHARPNESS_FUNCTION_SOURCE}
 
 			(function () {
 				var post = function (message) {

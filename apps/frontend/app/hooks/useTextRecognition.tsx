@@ -5,6 +5,8 @@ import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+
 import { ENGINE_FILE_NAMES, MAX_RECOGNITION_IMAGE_WIDTH, MINIMUM_SHARPNESS, RECOGNITION_IMAGE_COMPRESSION, RecognitionImage, RecognitionResult, TextRecognitionApi, TextRecognitionEngineMessage, buildTextRecognitionPageHtml, splitRecognizedText } from '@/helper/TextRecognitionShared';
 
 /** How long one recognition may take before it is given up on. */
@@ -22,14 +24,21 @@ const ENGINE_PAGE_NAME = 'index.html';
  * under a name Metro leaves alone — see `public/tesseract/README.md`. The two
  * large files carry extensions Metro already treats as assets and are taken
  * straight from the directory the web build serves.
+ *
+ * Resolved when first needed rather than at import time: a `require` that fails
+ * at module level takes the whole screen down with it, and an engine that
+ * cannot be found should show a message in the sheet instead.
  */
-const ENGINE_ASSETS: { module: number; fileName: string }[] = [
+const loadEngineAssetList = (): { module: number; fileName: string }[] => [
 	{ module: require('@/assets/tesseract/tesseract.min.js.txt'), fileName: ENGINE_FILE_NAMES.library },
 	{ module: require('@/assets/tesseract/worker.min.js.txt'), fileName: ENGINE_FILE_NAMES.worker },
 	{ module: require('@/assets/tesseract/tesseract-core-simd-lstm.js.txt'), fileName: ENGINE_FILE_NAMES.core },
 	{ module: require('@/public/tesseract/tesseract-core-simd-lstm.wasm'), fileName: ENGINE_FILE_NAMES.coreWasm },
 	{ module: require('@/public/tesseract/eng.traineddata.gz'), fileName: ENGINE_FILE_NAMES.trainedData },
 ];
+
+/** The message of whatever was thrown, prefixed with the step that threw it. */
+const describeFailure = (step: string, error: unknown): string => `${step}: ${error instanceof Error ? error.message : String(error)}`;
 
 /**
  * Unpacks the engine into the cache directory, once per install, and returns
@@ -42,28 +51,52 @@ const ENGINE_ASSETS: { module: number; fileName: string }[] = [
  * do.
  */
 const unpackEngine = async (): Promise<string> => {
-	const directory = `${FileSystem.cacheDirectory}${ENGINE_DIRECTORY_NAME}`;
-	const directoryInfo = await FileSystem.getInfoAsync(directory);
-	if (!directoryInfo.exists) {
-		await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
+	const cacheDirectory = FileSystem.cacheDirectory;
+	if (!cacheDirectory) {
+		throw new Error('this device has no cache directory to unpack the text recognition engine into');
+	}
+	const directory = `${cacheDirectory}${ENGINE_DIRECTORY_NAME}`;
+
+	let engineAssets: { module: number; fileName: string }[];
+	try {
+		engineAssets = loadEngineAssetList();
+	} catch (error) {
+		throw new Error(describeFailure('the text recognition engine is not bundled with this app version', error));
 	}
 
-	for (const engineAsset of ENGINE_ASSETS) {
+	try {
+		const directoryInfo = await FileSystem.getInfoAsync(directory);
+		if (!directoryInfo.exists) {
+			await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
+		}
+	} catch (error) {
+		throw new Error(describeFailure('the engine directory could not be created', error));
+	}
+
+	for (const engineAsset of engineAssets) {
 		const target = `${directory}/${engineAsset.fileName}`;
-		const targetInfo = await FileSystem.getInfoAsync(target);
-		if (targetInfo.exists) {
-			continue;
+		try {
+			const targetInfo = await FileSystem.getInfoAsync(target);
+			if (targetInfo.exists) {
+				continue;
+			}
+			const asset = Asset.fromModule(engineAsset.module);
+			await asset.downloadAsync();
+			if (!asset.localUri) {
+				throw new Error('it has no local copy on this device');
+			}
+			await FileSystem.copyAsync({ from: asset.localUri, to: target });
+		} catch (error) {
+			throw new Error(describeFailure(`engine file "${engineAsset.fileName}" could not be unpacked`, error));
 		}
-		const asset = Asset.fromModule(engineAsset.module);
-		await asset.downloadAsync();
-		if (!asset.localUri) {
-			throw new Error(`text recognition engine file ${engineAsset.fileName} is missing`);
-		}
-		await FileSystem.copyAsync({ from: asset.localUri, to: target });
 	}
 
-	// Always rewritten: the page is ours, it is small, and it changes with the app.
-	await FileSystem.writeAsStringAsync(`${directory}/${ENGINE_PAGE_NAME}`, buildTextRecognitionPageHtml());
+	try {
+		// Always rewritten: the page is ours, it is small, and it changes with the app.
+		await FileSystem.writeAsStringAsync(`${directory}/${ENGINE_PAGE_NAME}`, buildTextRecognitionPageHtml());
+	} catch (error) {
+		throw new Error(describeFailure('the engine page could not be written', error));
+	}
 	return directory;
 };
 
@@ -165,9 +198,14 @@ export const useTextRecognition = (): TextRecognitionApi => {
 		async (image: RecognitionImage): Promise<RecognitionResult> => {
 			const webView = webViewRef.current;
 			if (!webView) {
-				throw new Error('text recognition engine is not mounted');
+				throw new Error(engineDirectory === null ? 'the text recognition engine is still being unpacked' : 'the text recognition engine is not mounted');
 			}
-			const dataUri = await toDataUri(image);
+			let dataUri: string;
+			try {
+				dataUri = await toDataUri(image);
+			} catch (error) {
+				throw new Error(describeFailure('the photo could not be prepared for reading', error));
+			}
 			const requestId = `request-${nextRequestId.current++}`;
 
 			return new Promise<RecognitionResult>((resolve, reject) => {
@@ -191,7 +229,7 @@ export const useTextRecognition = (): TextRecognitionApi => {
 				webView.injectJavaScript(`window.recognizeImage(${request}); true;`);
 			});
 		},
-		[toDataUri],
+		[engineDirectory, toDataUri],
 	);
 
 	// The page is loaded out of the engine directory rather than handed over as
@@ -200,9 +238,26 @@ export const useTextRecognition = (): TextRecognitionApi => {
 	// which is what the file-access props below are for.
 	const engineElement =
 		engineDirectory === null ? null : (
-			<View style={styles.engineContainer} pointerEvents="none">
-				<WebView ref={webViewRef} source={{ uri: `${engineDirectory}/${ENGINE_PAGE_NAME}` }} originWhitelist={['*']} allowFileAccess allowFileAccessFromFileURLs allowUniversalAccessFromFileURLs allowingReadAccessToURL={engineDirectory} javaScriptEnabled domStorageEnabled onMessage={handleMessage} onError={() => setErrorMessage('text recognition engine could not be loaded')} />
-			</View>
+			<ErrorBoundary onError={(error) => setErrorMessage(describeFailure('the engine view could not be started', error))}>
+				<View style={styles.engineContainer} pointerEvents="none">
+					<WebView
+						ref={webViewRef}
+						source={{ uri: `${engineDirectory}/${ENGINE_PAGE_NAME}` }}
+						originWhitelist={['*']}
+						allowFileAccess
+						allowFileAccessFromFileURLs
+						allowUniversalAccessFromFileURLs
+						allowingReadAccessToURL={engineDirectory}
+						javaScriptEnabled
+						domStorageEnabled
+						onMessage={handleMessage}
+						onError={(event) => setErrorMessage(describeFailure('the engine view could not be loaded', event.nativeEvent.description))}
+						onHttpError={(event) => setErrorMessage(describeFailure('the engine view could not be loaded', `HTTP ${event.nativeEvent.statusCode}`))}
+						onRenderProcessGone={() => setErrorMessage('the engine view was shut down by the system, most likely out of memory')}
+						onContentProcessDidTerminate={() => setErrorMessage('the engine view was shut down by the system, most likely out of memory')}
+					/>
+				</View>
+			</ErrorBoundary>
 		);
 
 	return { recognizeImage, progress, errorMessage, engineElement };

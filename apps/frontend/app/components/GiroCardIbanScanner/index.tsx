@@ -11,6 +11,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useTextRecognition } from '@/hooks/useTextRecognition';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import type { RecognitionImage } from '@/helper/TextRecognitionShared';
 
 /** Pause between two recognition passes. One pass itself takes about a second. */
@@ -42,6 +43,27 @@ export interface GiroCardIbanScannerProps {
  * while the engine works on it. Either way the first hit ends the scan: the
  * caller closes the sheet and fills its input field.
  */
+/**
+ * Says what went wrong, in words the user can act on and with the raw message
+ * underneath. Without the raw message an engine that fails on a device nobody
+ * here owns is undiagnosable.
+ */
+const ScannerFailure: React.FC<{ detail?: string }> = ({ detail }) => {
+	const { theme } = useTheme();
+	const { translate } = useLanguage();
+	return (
+		<View style={styles.failureContainer}>
+			<MaterialCommunityIcons name="alert-circle-outline" size={40} color={theme.screen.icon} />
+			<Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.giro_card_scan_engine_failed)}</Text>
+			{detail !== undefined && (
+				<Text selectable style={[styles.errorText, { color: theme.screen.text }]}>
+					{detail}
+				</Text>
+			)}
+		</View>
+	);
+};
+
 export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIbanDetected, allowInvalidChecksum, onRecognizedLinesChange }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -248,12 +270,7 @@ export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIban
 				</TouchableOpacity>
 			</View>
 
-			{Boolean(errorMessage) && (
-				<>
-					<Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.giro_card_scan_engine_failed)}</Text>
-					<Text style={[styles.errorText, { color: theme.screen.text }]}>{errorMessage}</Text>
-				</>
-			)}
+			{errorMessage !== null && <ScannerFailure detail={errorMessage} />}
 		</View>
 	);
 };
@@ -280,14 +297,19 @@ export const useGiroCardIbanScannerModal = () => {
 				title: translate(TranslationKeys.giro_card_scan_title),
 				onClose: close,
 				children: (
-					<GiroCardIbanScanner
-						allowInvalidChecksum={options.allowInvalidChecksum}
-						onRecognizedLinesChange={options.onRecognizedLinesChange}
-						onIbanDetected={(candidate) => {
-							close();
-							options.onIbanDetected(candidate.formatted, candidate);
-						}}
-					/>
+					// The scanner leans on the camera, the file system and a WebView,
+					// three things that can fail in ways this app cannot control. None
+					// of them may take the app down with them.
+					<ErrorBoundary fallback={<ScannerFailure />}>
+						<GiroCardIbanScanner
+							allowInvalidChecksum={options.allowInvalidChecksum}
+							onRecognizedLinesChange={options.onRecognizedLinesChange}
+							onIbanDetected={(candidate) => {
+								close();
+								options.onIbanDetected(candidate.formatted, candidate);
+							}}
+						/>
+					</ErrorBoundary>
 				),
 			});
 		},
@@ -344,6 +366,12 @@ const styles = StyleSheet.create({
 	hintContainer: {
 		alignItems: 'center',
 		gap: 12,
+		paddingVertical: 16,
+	},
+	failureContainer: {
+		width: '100%',
+		alignItems: 'center',
+		gap: 10,
 		paddingVertical: 16,
 	},
 	hintText: {
