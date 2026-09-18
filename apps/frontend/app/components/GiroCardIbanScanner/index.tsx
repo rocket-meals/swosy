@@ -56,8 +56,10 @@ export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIban
 	/** The still the shutter button took, held on screen while it is read. */
 	const [capturedImage, setCapturedImage] = useState<RecognitionImage | null>(null);
 	const [isCapturedImageRead, setIsCapturedImageRead] = useState(false);
+	/** True while the frames coming in are too soft for the engine to bother. */
+	const [isTooBlurry, setIsTooBlurry] = useState(false);
 
-	const { recognizeLines, progress, errorMessage, engineElement } = useTextRecognition();
+	const { recognizeImage, progress, errorMessage, engineElement } = useTextRecognition();
 
 	const cameraRef = useRef<CameraView>(null);
 	/** Set once the IBAN is found, so the loop stops and no second hit is reported. */
@@ -87,10 +89,15 @@ export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIban
 	/** Reads one image and reports the IBAN if there is one. */
 	const readImage = useCallback(
 		async (image: RecognitionImage): Promise<boolean> => {
-			const lines = await recognizeLines(image);
+			const result = await recognizeImage(image);
+			setIsTooBlurry(result.tooBlurry);
+			if (result.tooBlurry) {
+				// Nothing was read, so there is nothing to report or search through.
+				return false;
+			}
 			setHasRecognizedOnce(true);
-			onRecognizedLinesChange?.(lines);
-			const candidate = IbanRecognitionHelper.findIban(lines, { allowInvalidChecksum });
+			onRecognizedLinesChange?.(result.lines);
+			const candidate = IbanRecognitionHelper.findIban(result.lines, { allowInvalidChecksum });
 			if (!candidate) {
 				return false;
 			}
@@ -98,7 +105,7 @@ export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIban
 			onIbanDetected(candidate);
 			return true;
 		},
-		[allowInvalidChecksum, onIbanDetected, onRecognizedLinesChange, recognizeLines],
+		[allowInvalidChecksum, onIbanDetected, onRecognizedLinesChange, recognizeImage],
 	);
 
 	/** The shutter: freeze one frame and read that instead of a moving preview. */
@@ -121,6 +128,7 @@ export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIban
 	const discardCapturedImage = useCallback(() => {
 		setCapturedImage(null);
 		setIsCapturedImageRead(false);
+		setIsTooBlurry(false);
 	}, []);
 
 	useEffect(() => {
@@ -194,6 +202,12 @@ export const GiroCardIbanScanner: React.FC<GiroCardIbanScannerProps> = ({ onIban
 	const isReadingCapturedImage = capturedImage !== null && !isCapturedImageRead;
 	if (capturedImage !== null && isCapturedImageRead) {
 		statusText = translate(TranslationKeys.giro_card_scan_no_iban_in_photo);
+	}
+	// A frame too soft to read is the common case on a front camera, which
+	// cannot focus at the distance a card is held at. Say so rather than
+	// searching on in silence.
+	if (isTooBlurry) {
+		statusText = translate(TranslationKeys.giro_card_scan_too_blurry);
 	}
 
 	return (

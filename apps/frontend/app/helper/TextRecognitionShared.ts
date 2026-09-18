@@ -44,6 +44,79 @@ export const MAX_RECOGNITION_IMAGE_WIDTH = 1600;
 /** JPEG quality of the scaled-down frame handed to the engine. */
 export const RECOGNITION_IMAGE_COMPRESSION = 0.8;
 
+/**
+ * Width the frame is scaled to before its sharpness is measured, so that the
+ * number means the same thing whatever the camera delivers.
+ */
+export const SHARPNESS_MEASUREMENT_WIDTH = 800;
+
+/**
+ * Below this, a frame is not worth reading.
+ *
+ * Measured with the function below, on the images in this repository and on
+ * photos of a real card taken with a front camera:
+ *
+ * | Frame | Sharpness | IBAN read |
+ * | --- | --- | --- |
+ * | the fixture card, in focus | 266…430 | yes |
+ * | the same, slightly softened | 21 | no |
+ * | a real card, front camera | 3…7 | no |
+ *
+ * A front camera has a fixed focus and cannot sharpen up at the distance
+ * someone holds a card at, which is why those photos land where they do. The
+ * threshold sits low on purpose: it turns away only what is hopeless, and
+ * never a frame that might still be readable — a wrongly rejected frame looks
+ * to the user like a broken feature, while a wrongly accepted one costs a
+ * second of reading.
+ */
+export const MINIMUM_SHARPNESS = 12;
+
+/**
+ * How sharp an image is: the variance of its Laplacian, the standard measure.
+ * Blur flattens the second derivative, so a soft image scores near zero while
+ * a crisp one scores in the hundreds.
+ *
+ * Deliberately self-contained and written in plain ES5: the native side ships
+ * it into the WebView with `Function.prototype.toString()`, so that both
+ * platforms measure with the very same code instead of two implementations
+ * that drift apart.
+ */
+export function measureImageSharpness(pixels: Uint8ClampedArray | number[], width: number, height: number): number {
+	var pixelCount = width * height;
+	var gray = new Float32Array(pixelCount);
+	for (var index = 0; index < pixelCount; index++) {
+		var offset = index * 4;
+		gray[index] = (pixels[offset] * 299 + pixels[offset + 1] * 587 + pixels[offset + 2] * 114) / 1000;
+	}
+	var sum = 0;
+	var sumOfSquares = 0;
+	var count = 0;
+	for (var y = 1; y < height - 1; y++) {
+		for (var x = 1; x < width - 1; x++) {
+			var position = y * width + x;
+			var laplacian = gray[position - width] + gray[position + width] + gray[position - 1] + gray[position + 1] - 4 * gray[position];
+			sum += laplacian;
+			sumOfSquares += laplacian * laplacian;
+			count++;
+		}
+	}
+	if (count === 0) {
+		return 0;
+	}
+	var mean = sum / count;
+	return sumOfSquares / count - mean * mean;
+}
+
+/** What one pass over a frame came back with. */
+export interface RecognitionResult {
+	/** The recognized lines, empty when the frame was not worth reading. */
+	lines: string[];
+	/** How sharp the frame was — see {@link MINIMUM_SHARPNESS}. */
+	sharpness: number;
+	/** The frame was too soft to read, and was not handed to the engine at all. */
+	tooBlurry: boolean;
+}
+
 /** The frame handed to the recognizer, as `takePictureAsync` returns it. */
 export interface RecognitionImage {
 	uri: string;
@@ -52,8 +125,8 @@ export interface RecognitionImage {
 
 /** What a platform's `useTextRecognition` hook gives its caller. */
 export interface TextRecognitionApi {
-	/** Recognizes the text in an image and returns it line by line. */
-	recognizeLines: (image: RecognitionImage) => Promise<string[]>;
+	/** Reads one frame: its text line by line, plus how sharp it was. */
+	recognizeImage: (image: RecognitionImage) => Promise<RecognitionResult>;
 	/** 0…1 while the engine loads or reads, `null` when it is idle. */
 	progress: number | null;
 	/** Set once the engine failed to load or a recognition failed. */
@@ -66,7 +139,7 @@ export interface TextRecognitionApi {
 export type TextRecognitionEngineMessage =
 	| { type: 'ready'; engineLoaded: boolean }
 	| { type: 'progress'; status: string; progress: number }
-	| { type: 'result'; id: string; text: string }
+	| { type: 'result'; id: string; text: string; sharpness: number }
 	| { type: 'error'; id?: string; message: string };
 
 /** Splits the engine's raw output into the lines the IBAN search works on. */
@@ -113,6 +186,8 @@ export const buildTextRecognitionPageHtml = (): string => `<!DOCTYPE html>
 	<body>
 		<script src="./${ENGINE_FILE_NAMES.library}"></script>
 		<script>
+			${measureImageSharpness.toString()}
+
 			(function () {
 				var post = function (message) {
 					if (window.ReactNativeWebView) {
@@ -137,13 +212,49 @@ export const buildTextRecognitionPageHtml = (): string => `<!DOCTYPE html>
 					return workerPromise;
 				};
 
+				// How sharp the frame is, measured on a canvas at a fixed width.
+				var measure = function (dataUri) {
+					return new Promise(function (resolve) {
+						var image = new Image();
+						image.onload = function () {
+							var width = Math.min(${SHARPNESS_MEASUREMENT_WIDTH}, image.width) || 1;
+							var height = Math.max(1, Math.round((image.height / image.width) * width));
+							var canvas = document.createElement('canvas');
+							canvas.width = width;
+							canvas.height = height;
+							var context = canvas.getContext('2d');
+							if (!context) {
+								resolve(Number.POSITIVE_INFINITY);
+								return;
+							}
+							context.drawImage(image, 0, 0, width, height);
+							var pixels = context.getImageData(0, 0, width, height).data;
+							resolve(measureImageSharpness(pixels, width, height));
+						};
+						// Unreadable for another reason: let the engine say so.
+						image.onerror = function () {
+							resolve(Number.POSITIVE_INFINITY);
+						};
+						image.src = dataUri;
+					});
+				};
+
 				window.recognizeImage = function (request) {
-					getWorker()
-						.then(function (worker) {
-							return worker.recognize(request.image);
+					var sharpness = 0;
+					measure(request.image)
+						.then(function (measured) {
+							sharpness = measured;
+							if (measured < ${MINIMUM_SHARPNESS}) {
+								// Not worth a second of reading, and the user is better
+								// served by being told than by a silent retry.
+								return null;
+							}
+							return getWorker().then(function (worker) {
+								return worker.recognize(request.image);
+							});
 						})
 						.then(function (result) {
-							post({ type: 'result', id: request.id, text: String((result && result.data && result.data.text) || '') });
+							post({ type: 'result', id: request.id, sharpness: sharpness, text: String((result && result.data && result.data.text) || '') });
 						})
 						.catch(function (error) {
 							// Build a fresh worker next time: a worker that failed to

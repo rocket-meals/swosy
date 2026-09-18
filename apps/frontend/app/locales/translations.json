@@ -6398,5 +6398,15 @@
     "ru": "На этом фото не удалось прочитать IBAN.",
     "tr": "Bu fotoğrafta IBAN okunamadı.",
     "zh": "这张照片中没有读到 IBAN。"
+  },
+  "giro_card_scan_too_blurry": {
+    "de": "Bild zu unscharf. Nutze die Rückkamera und halte etwas Abstand.",
+    "en": "The image is too blurry. Use the back camera and keep some distance.",
+    "ar": "الصورة غير واضحة. استخدم الكاميرا الخلفية واترك بعض المسافة.",
+    "es": "La imagen está demasiado borrosa. Usa la cámara trasera y mantén algo de distancia.",
+    "fr": "L'image est trop floue. Utilisez la caméra arrière et gardez un peu de distance.",
+    "ru": "Изображение слишком размыто. Используйте заднюю камеру и держите небольшое расстояние.",
+    "tr": "Görüntü çok bulanık. Arka kamerayı kullanın ve biraz mesafe bırakın.",
+    "zh": "图像太模糊。请使用后置摄像头，并保持一些距离。"
   }
 }

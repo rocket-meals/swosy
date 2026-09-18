@@ -5,7 +5,7 @@ import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 
-import { ENGINE_FILE_NAMES, MAX_RECOGNITION_IMAGE_WIDTH, RECOGNITION_IMAGE_COMPRESSION, RecognitionImage, TextRecognitionApi, TextRecognitionEngineMessage, buildTextRecognitionPageHtml, splitRecognizedText } from '@/helper/TextRecognitionShared';
+import { ENGINE_FILE_NAMES, MAX_RECOGNITION_IMAGE_WIDTH, MINIMUM_SHARPNESS, RECOGNITION_IMAGE_COMPRESSION, RecognitionImage, RecognitionResult, TextRecognitionApi, TextRecognitionEngineMessage, buildTextRecognitionPageHtml, splitRecognizedText } from '@/helper/TextRecognitionShared';
 
 /** How long one recognition may take before it is given up on. */
 const RECOGNITION_TIMEOUT_IN_MS = 60_000;
@@ -77,7 +77,7 @@ const unpackEngine = async (): Promise<string> => {
  * the app onto the device, so it works offline and tells no one about it.
  *
  * The caller must render `engineElement`; without it there is no WebView and
- * `recognizeLines` never resolves.
+ * `recognizeImage` never resolves.
  */
 export const useTextRecognition = (): TextRecognitionApi => {
 	const webViewRef = useRef<WebView>(null);
@@ -86,7 +86,7 @@ export const useTextRecognition = (): TextRecognitionApi => {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 	/** Requests waiting for their answer from the page, by request id. */
-	const pendingRequests = useRef(new Map<string, { resolve: (lines: string[]) => void; reject: (error: Error) => void }>());
+	const pendingRequests = useRef(new Map<string, { resolve: (result: RecognitionResult) => void; reject: (error: Error) => void }>());
 	const nextRequestId = useRef(0);
 
 	useEffect(() => {
@@ -126,7 +126,11 @@ export const useTextRecognition = (): TextRecognitionApi => {
 			return;
 		}
 		if (message.type === 'result') {
-			pendingRequests.current.get(message.id)?.resolve(splitRecognizedText(message.text));
+			pendingRequests.current.get(message.id)?.resolve({
+				lines: splitRecognizedText(message.text),
+				sharpness: message.sharpness,
+				tooBlurry: message.sharpness < MINIMUM_SHARPNESS,
+			});
 			pendingRequests.current.delete(message.id);
 			setProgress(null);
 			return;
@@ -157,8 +161,8 @@ export const useTextRecognition = (): TextRecognitionApi => {
 		return `data:image/jpeg;base64,${saved.base64}`;
 	}, []);
 
-	const recognizeLines = useCallback(
-		async (image: RecognitionImage): Promise<string[]> => {
+	const recognizeImage = useCallback(
+		async (image: RecognitionImage): Promise<RecognitionResult> => {
 			const webView = webViewRef.current;
 			if (!webView) {
 				throw new Error('text recognition engine is not mounted');
@@ -166,16 +170,16 @@ export const useTextRecognition = (): TextRecognitionApi => {
 			const dataUri = await toDataUri(image);
 			const requestId = `request-${nextRequestId.current++}`;
 
-			return new Promise<string[]>((resolve, reject) => {
+			return new Promise<RecognitionResult>((resolve, reject) => {
 				const timeoutId = setTimeout(() => {
 					pendingRequests.current.delete(requestId);
 					reject(new Error('text recognition timed out'));
 				}, RECOGNITION_TIMEOUT_IN_MS);
 
 				pendingRequests.current.set(requestId, {
-					resolve: (lines) => {
+					resolve: (result) => {
 						clearTimeout(timeoutId);
-						resolve(lines);
+						resolve(result);
 					},
 					reject: (error) => {
 						clearTimeout(timeoutId);
@@ -201,7 +205,7 @@ export const useTextRecognition = (): TextRecognitionApi => {
 			</View>
 		);
 
-	return { recognizeLines, progress, errorMessage, engineElement };
+	return { recognizeImage, progress, errorMessage, engineElement };
 };
 
 const styles = StyleSheet.create({

@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 
-import { ENGINE_FILE_NAMES, MAX_RECOGNITION_IMAGE_WIDTH, RECOGNITION_IMAGE_COMPRESSION, RecognitionImage, TESSERACT_LANGUAGE, TextRecognitionApi, buildWorkerOptions, splitRecognizedText } from '@/helper/TextRecognitionShared';
+import { ENGINE_FILE_NAMES, MAX_RECOGNITION_IMAGE_WIDTH, MINIMUM_SHARPNESS, RECOGNITION_IMAGE_COMPRESSION, RecognitionImage, RecognitionResult, SHARPNESS_MEASUREMENT_WIDTH, TESSERACT_LANGUAGE, TextRecognitionApi, buildWorkerOptions, measureImageSharpness, splitRecognizedText } from '@/helper/TextRecognitionShared';
 
 interface TesseractWorker {
 	recognize: (image: string) => Promise<{ data: { text: string } }>;
@@ -53,27 +53,39 @@ const loadTesseract = async (engineDirectoryUrl: string): Promise<TesseractGloba
 	return tesseract;
 };
 
-/** Scales the frame down, so one pass stays near a second instead of ten. */
-const scaleDown = async (imageUri: string): Promise<string> =>
+/** Draws an image onto a canvas of the given width and hands back its pixels. */
+const drawToCanvas = (image: HTMLImageElement, width: number): { canvas: HTMLCanvasElement; context: CanvasRenderingContext2D } | null => {
+	const canvas = document.createElement('canvas');
+	canvas.width = width;
+	canvas.height = Math.max(1, Math.round((image.height / image.width) * width));
+	const context = canvas.getContext('2d');
+	if (!context) {
+		return null;
+	}
+	context.drawImage(image, 0, 0, canvas.width, canvas.height);
+	return { canvas, context };
+};
+
+/**
+ * Scales the frame down so one pass stays near a second instead of ten, and
+ * measures how sharp it is on the way past.
+ */
+const prepareFrame = async (imageUri: string): Promise<{ dataUri: string; sharpness: number }> =>
 	new Promise((resolve, reject) => {
 		const image = new Image();
 		image.crossOrigin = 'anonymous';
 		image.onload = () => {
+			const measured = drawToCanvas(image, Math.min(SHARPNESS_MEASUREMENT_WIDTH, image.width) || 1);
+			// No canvas, no measurement: let the engine have its say rather than
+			// turning the frame away on a guess.
+			const sharpness = measured === null ? Number.POSITIVE_INFINITY : measureImageSharpness(measured.context.getImageData(0, 0, measured.canvas.width, measured.canvas.height).data, measured.canvas.width, measured.canvas.height);
+
 			if (image.width <= MAX_RECOGNITION_IMAGE_WIDTH) {
-				resolve(imageUri);
+				resolve({ dataUri: imageUri, sharpness });
 				return;
 			}
-			const canvas = document.createElement('canvas');
-			const scale = MAX_RECOGNITION_IMAGE_WIDTH / image.width;
-			canvas.width = MAX_RECOGNITION_IMAGE_WIDTH;
-			canvas.height = Math.round(image.height * scale);
-			const context = canvas.getContext('2d');
-			if (!context) {
-				resolve(imageUri);
-				return;
-			}
-			context.drawImage(image, 0, 0, canvas.width, canvas.height);
-			resolve(canvas.toDataURL('image/jpeg', RECOGNITION_IMAGE_COMPRESSION));
+			const scaled = drawToCanvas(image, MAX_RECOGNITION_IMAGE_WIDTH);
+			resolve({ dataUri: scaled === null ? imageUri : scaled.canvas.toDataURL('image/jpeg', RECOGNITION_IMAGE_COMPRESSION), sharpness });
 		};
 		image.onerror = () => reject(new Error('image could not be prepared for text recognition'));
 		image.src = imageUri;
@@ -107,15 +119,22 @@ export const useTextRecognition = (): TextRecognitionApi => {
 		return workerPromise.current;
 	}, []);
 
-	const recognizeLines = useCallback(
-		async (image: RecognitionImage): Promise<string[]> => {
+	const recognizeImage = useCallback(
+		async (image: RecognitionImage): Promise<RecognitionResult> => {
 			try {
+				const prepared = await prepareFrame(image.uri);
+				if (prepared.sharpness < MINIMUM_SHARPNESS) {
+					// Not worth a second of reading, and the user is better served by
+					// being told than by a silent retry.
+					setProgress(null);
+					setErrorMessage(null);
+					return { lines: [], sharpness: prepared.sharpness, tooBlurry: true };
+				}
 				const worker = await getWorker();
-				const prepared = await scaleDown(image.uri);
-				const result = await worker.recognize(prepared);
+				const result = await worker.recognize(prepared.dataUri);
 				setProgress(null);
 				setErrorMessage(null);
-				return splitRecognizedText(result.data.text);
+				return { lines: splitRecognizedText(result.data.text), sharpness: prepared.sharpness, tooBlurry: false };
 			} catch (error) {
 				// A worker that failed to start stays broken; drop it so the next
 				// attempt builds a fresh one.
@@ -128,7 +147,7 @@ export const useTextRecognition = (): TextRecognitionApi => {
 		[getWorker],
 	);
 
-	return { recognizeLines, progress, errorMessage, engineElement: null };
+	return { recognizeImage, progress, errorMessage, engineElement: null };
 };
 
 export default useTextRecognition;
