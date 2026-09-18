@@ -14,3 +14,15 @@ declare module '*.png' {
 	const value: any;
 	export default value;
 }
+
+// The bundled text recognition models, required as Metro assets.
+// See public/paddleocr/README.md.
+declare module '*.ort' {
+	const content: number;
+	export default content;
+}
+
+declare module '*.txt' {
+	const content: number;
+	export default content;
+}

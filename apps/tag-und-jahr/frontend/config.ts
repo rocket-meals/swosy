@@ -42,7 +42,10 @@ export function getVersionPatch() {
 	// 13: shared translation catalogue gained the measurement unit symbols
 	// 14: shared price formatting uses a narrow no-break space before the symbol
 	// 15: NumberHelper sets every value/unit pair with a narrow no-break space
-	return 15;
+	// 16: shared IBAN recognition helper added to repo-depkit-common
+	// 17: shared IBAN recognition no longer reads a number out of surrounding words
+	// 18: shared IBAN recognition reads welded groups, refuses lettered bodies
+	return 18;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

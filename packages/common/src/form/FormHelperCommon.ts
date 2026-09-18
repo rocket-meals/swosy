@@ -1,3 +1,5 @@
+import { StringHelper } from '../StringHelper';
+
 export class FormHelperCommon {
 
   static readonly FORM_FIELD_PREFIX_CUSTOM_REFERENCE = "value_custom-reference-";
@@ -40,9 +42,8 @@ export class FormHelperCommon {
   }
 
   static formatIban(text: string): string {
-      let cleaned = text.replace(/[^A-Za-z0-9]/g, '');
-      let formatted = cleaned.replace(/(.{4})/g, '$1 ').trim();
-      return formatted;
+      const cleaned = StringHelper.replaceAllWithOptions({ str: text, find: '[^A-Za-z0-9]', replace: '' });
+      return StringHelper.replaceAllWithOptions({ str: cleaned, find: '(.{4})', replace: '$1 ' }).trim();
   }
 
 }
