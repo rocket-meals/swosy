@@ -1,9 +1,10 @@
-import { MINIMUM_SHARPNESS, SHARPNESS_FUNCTION_SOURCE, measureImageSharpness } from '../helper/TextRecognitionShared';
+import { MINIMUM_SHARPNESS, measureImageSharpness } from '../helper/TextRecognitionShared';
 
 /**
- * The scanner turns away a frame that is too soft to read, so that the user is
- * told instead of watching a silent search — a front camera has a fixed focus
- * and cannot sharpen up at the distance a card is held at.
+ * When a frame yields nothing, the scanner says whether the picture was the
+ * reason — a front camera has a fixed focus and cannot sharpen up at the
+ * distance a card is held at, and being told that beats watching a silent
+ * search.
  *
  * The threshold itself is calibrated against real photos (see the comment on
  * `MINIMUM_SHARPNESS`); what is checked here is that the measure behaves: flat
@@ -86,17 +87,4 @@ describe('measureImageSharpness', () => {
 		expect(measureImageSharpness(new Uint8ClampedArray(4), 1, 1)).toBe(0);
 	});
 
-	it('agrees with the copy that ships into the WebView', () => {
-		// The native side cannot use this function directly: it runs on Hermes,
-		// which does not keep function bodies, so `toString()` would hand the
-		// WebView an empty shell. The copy in SHARPNESS_FUNCTION_SOURCE exists for
-		// that reason, and has to stay the same computation.
-		const fromSource = new Function(`${SHARPNESS_FUNCTION_SOURCE}; return measureImageSharpness;`)() as typeof measureImageSharpness;
-
-		const images = [buildImage(() => 128), buildImage((x, y) => ((x >> 1) + (y >> 1)) % 2 === 0 ? 0 : 255), buildImage((x, y) => 100 + Math.round((x / WIDTH) * 40) + Math.round((y / HEIGHT) * 20)), buildImage((x, y) => (x * 7 + y * 13) % 256)];
-
-		for (const image of images) {
-			expect(fromSource(image, WIDTH, HEIGHT)).toBe(measureImageSharpness(image, WIDTH, HEIGHT));
-		}
-	});
 });

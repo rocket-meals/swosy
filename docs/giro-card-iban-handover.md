@@ -23,90 +23,93 @@ zu Recht abgelehnt.
 
 **Bildaufnahme und Texterkennung sind getrennt.** Die App nimmt mit der
 plattformeigenen Kamera (`expo-camera`) ein Bild auf und reicht dieses Bild an
-Tesseract weiter. Mehr macht das Modal nicht.
+die Erkennung weiter. Mehr macht das Modal nicht.
 
-### Warum Tesseract und keine native Texterkennung
+### Die Engine: PaddleOCR auf onnxruntime
 
 Erster Versuch war `expo-text-extractor` (ML Kit / Apple Vision). Das scheiterte
-im Web — iOS Safari hat kein `TextDetector` — und hätte für native einen neuen
-Binary-Build gebraucht. Tesseract läuft auf beiden Seiten und geht als
-OTA-Update raus. Kein neues natives Modul, keine neue Buildnummer.
+im Web — iOS Safari hat kein `TextDetector`. Zweiter Versuch war Tesseract, das
+auf beiden Seiten läuft und ohne nativen Build auskommt. An vierzehn
+fotografierten Karten gemessen war es aber deutlich schlechter als PaddleOCR
+(5 von 11 richtig und 2 falsch gegenüber 9 von 11 und 0 falsch, bei rund 1 s
+statt rund 0,2 s pro Bild), und deshalb liegt jetzt PaddleOCR darunter:
+`ppu-paddle-ocr` mit den Modellen PP-OCRv6 tiny.
 
-### Warum auf native eine WebView im Spiel ist
+- **Web:** onnxruntime-web, also WebAssembly.
+- **Native:** `onnxruntime-react-native` und `@shopify/react-native-skia` —
+  beides native Module. Das kostet einen echten Build (Buildnummer 207) statt
+  eines OTA-Updates. Dafür gibt es **keine WebView mehr**, und damit ist auch
+  der Absturz weg, den die WebView neben der Kamera verursacht hat.
 
-Tesseract ist WebAssembly. **Hermes hat kein WebAssembly**, also kann die Engine
-nicht im JS-Kontext der App laufen. Was jedes Gerät aber hat, ist eine WebView,
-und darin läuft sie. Die WebView ist dabei *nur* die Engine — ein Pixel groß,
-unsichtbar, ohne UI. Die Kamera hat mit ihr nichts zu tun.
+### Zwei Fallstricke, die hier Blut gekostet haben
 
-### Warum Kamera und WebView sich nie gleichzeitig auf dem Schirm befinden
+Beide sehen von außen aus wie nichts: der Scanner funktioniert weiter, er lädt
+nur vorher bei einem Dritten nach.
 
-Genau das war der Absturz. Kamera-Vorschau und WebView wollen beide eine
-Hardware-Surface; ein Screen, der beides hält, zeigt eine leere Vorschau und
-nimmt die App mit. Deshalb:
+- **`ort.env.wasm.wasmPaths`.** onnxruntime-web trägt hier beim Import eine
+  jsDelivr-URL ein. Der Web-Hook überschreibt sie bedingungslos mit dem eigenen
+  Verzeichnis — die Bibliothek setzt ihren Default nur, wenn das Feld leer ist,
+  „nichts tun" genügt also nicht.
+- **Die Execution Provider müssen auf `wasm` festgenagelt sein.** Sonst fragt
+  die Bibliothek zuerst WebGPU an, onnxruntime lädt dann eine *andere*,
+  WebGPU-fähige WebAssembly-Datei — die hier nicht liegt. Im Browser gemessen:
+  404 auf `ort-wasm-simd-threaded.jsep.mjs`, und direkt dahinter das CDN.
 
-- `useTextRecognition({ isCameraActive })` — der Aufrufer sagt, was gerade auf
-  dem Schirm ist. Die WebView wird nur gemountet, wenn die Vorschau weg ist,
-  und auch dann erst `SURFACE_SETTLE_IN_MS` (250 ms) später: React nimmt die
-  Vorschau in einem Rutsch aus dem Baum, die Kamera gibt ihre Surface aber in
-  ihrem eigenen Tempo zurück.
-- `runsAlongsideCamera` — die Engine sagt, ob sie neben einer laufenden Vorschau
-  arbeiten darf. Im Browser ja (Dauer-Sampling der Vorschau), auf dem Gerät
-  nein (Auslöser → Vorschau verschwindet → Standbild wird gelesen).
-- Der Scanner rendert `CameraView` **oder** das Standbild, nie beides.
+### Ein dritter: Metro kann onnxruntime-web nicht bündeln
+
+Die veröffentlichten Bundles rufen `import(irgendeineVariable)` auf, um ihren
+WebAssembly-Loader zu holen, und Metro bricht den ganzen Web-Build daran ab.
+Deshalb wird die Runtime **nicht gebündelt**, sondern wie die Modelle als
+gewöhnliches Skript aus `public/paddleocr/` geladen; `metro.config.js` löst
+`onnxruntime-web` auf `helper/onnxruntimeFromPage.js` auf, und der Web-Hook
+importiert `ppu-paddle-ocr/web` erst, nachdem das Skript geladen ist.
 
 ### Datenschutz: nichts vom CDN
 
-Die komplette Engine liegt im Repo unter `apps/frontend/app/public/tesseract/`
-(5,9 MB): `tesseract.min.js`, `worker.min.js`, `tesseract-core-simd-lstm.js`
-und `.wasm`, `eng.traineddata.gz`. Zur Laufzeit geht **keine einzige Anfrage**
-nach außen; im gebauten Web-Export nachgemessen.
+Alles liegt im Repo unter `apps/frontend/app/public/paddleocr/` (rund 20 MB:
+Modelle 6,4 MB, onnxruntimes WebAssembly 14,2 MB, das sich auf etwa 3,7 MB
+komprimiert). Am gebauten Web-Export nachgemessen: **genau sechs Anfragen, alle
+vom eigenen Origin.** (Die App lädt an anderer Stelle einen Lottie-Player von
+jsDelivr — das ist nicht die Texterkennung und ein eigener Punkt.)
 
-Zwei Fallstricke, die dabei Blut gekostet haben und nicht wieder eingebaut
-werden dürfen:
-
-- `workerBlobURL: false` ist Pflicht. Ein Blob-Worker hat keine Basis-URL,
-  über die der Core-Loader sein `.wasm` daneben findet → „Failed to parse URL".
-- Metro bündelt `.js` **als Quelltext, nie als Asset**. Die drei Skripte liegen
-  deshalb zusätzlich als `.txt`-Kopien unter `assets/tesseract/` (263 KB), und
-  `metro.config.js` führt `txt`, `gz`, `wasm` in `assetExts`. Beim Start werden
-  sie als echte Nachbardateien ins Cache-Verzeichnis entpackt
-  (`unpackEngine`), weil Loader und Worker ihre Nachbarn über relative Namen
-  suchen.
+Auf dem Gerät werden die Modelle als Metro-Assets mitgeliefert und über
+`File.arrayBuffer()` eingelesen: `fetch` kann in React Native kein `file://`
+lesen, ein Pfad würde die Engine also ins Netz schicken.
 
 ## Die Dateien
 
 | Datei | Wofür |
 | --- | --- |
 | `packages/common/src/form/IbanRecognitionHelper.ts` | Die IBAN aus erkannten Zeilen. Prüfsumme (mod-97), Längenregister, OCR-Verwechslungen, die beiden Formregeln unten. Ohne Kamera- oder OCR-Abhängigkeit, damit sie testbar bleibt. |
-| `apps/frontend/app/helper/TextRecognitionShared.ts` | Was sich Web und Native teilen: Engine-Dateinamen, Schärfemaß, die HTML-Seite der Engine, `TextRecognitionApi`. |
-| `apps/frontend/app/hooks/useTextRecognition.tsx` | Native: Entpacken, die versteckte WebView, `isCameraActive`. |
-| `apps/frontend/app/hooks/useTextRecognition.web.tsx` | Web: tesseract.js im Worker, aus eigener Origin. |
+| `apps/frontend/app/helper/TextRecognitionShared.ts` | Was sich Web und Native teilen: Modellnamen, Schärfemaß, `TextRecognitionApi`. |
+| `apps/frontend/app/hooks/useTextRecognition.tsx` | Native: Modelle aus dem Bundle lesen, onnxruntime-react-native, Schärfe über Skia. |
+| `apps/frontend/app/hooks/useTextRecognition.web.tsx` | Web: onnxruntime-web als Skript, dann `ppu-paddle-ocr/web`. |
+| `apps/frontend/app/helper/onnxruntimeFromPage.js` | Der Platzhalter, auf den Metro `onnxruntime-web` auflöst. |
+| `apps/frontend/app/public/paddleocr/` | Modelle und Runtime, mit README zu Herkunft und Größen. |
 | `apps/frontend/app/components/GiroCardIbanScanner/index.tsx` | Kamera-Vorschau, Auslöser, Kamerawechsel, Licht, Unschärfe-Hinweis. |
 | `apps/frontend/app/components/IBANInput/IBANInput.tsx` | Der Kamera-Button neben dem Feld. |
 | `apps/frontend/app/app/(app)/experimentell/giro-card-iban/` | Der Testscreen. |
 
 ## Was nachweislich funktioniert
 
-- **Web, gebauter Export, echte Kamera** (Playwright mit Fake-Kamera): alle fünf
-  Engine-Dateien kommen von `/rocket-meals/tesseract/`, **null** Anfragen
-  verlassen die Origin, IBAN nach ~5,5 s erkannt, Feld gefüllt, Modal zu.
-  Unschärfe-Hinweis nach ~4,5 s.
-- **Die 14 Kartenfotos** unter `packages/common/src/__tests__/fixtures/bankcards/`
-  werden nicht mitkompiliert: das Asset-Manifest eines Android-Exports listet
-  102 Assets und keinen Verweis darauf.
-- 374 Tests in `packages/common`, 98 im Frontend.
+- **Web, gebauter Export, echte Kamera** (Playwright mit Fake-Kamera): die IBAN
+  steht nach 5,5 s im Feld, der Auslöser liest sein Standbild, meldet die
+  Unschärfe, und „Neues Foto" bringt die Vorschau zurück. **Sechs Anfragen für
+  die Engine, alle vom eigenen Origin.**
+- **Nativer Export gebaut:** 100 Assets, darin die beiden `.ort`-Modelle und das
+  Wörterbuch. Keine Tesseract-Reste, keine Testbilder.
+- 384 Tests in `packages/common`, 103 im Frontend.
 
 ## Was nachweislich nicht funktioniert
 
-- **Frontkamera-Fotos sind unlesbar.** Gemessen: Schärfe 3–7 gegenüber 266–430
-  bei der Rückkamera. Über 30 Vorverarbeitungs-Kombinationen probiert, keine
-  rettet das. Eine Frontkamera hat Fixfokus und kann auf Kartenabstand nicht
-  scharfstellen. Deshalb der Unschärfe-Hinweis statt stiller Weitersuche
-  (`MINIMUM_SHARPNESS = 12`, Laplace-Varianz).
-- **Der native Absturz** war bis zuletzt offen. Die Trennung oben ist die
-  Reparatur dafür, aber **auf einem echten Gerät noch nicht bestätigt** — hier
-  steht keines zur Verfügung. Das ist der wichtigste offene Punkt.
+- **Der Scanner auf einem echten Gerät ist ungetestet.** Hier steht keines zur
+  Verfügung. Der Absturz sollte weg sein, weil die WebView weg ist — bestätigen
+  kann das nur ein Gerät.
+- **Frontkamera-Fotos waren für Tesseract unlesbar** (Schärfe 3–7 gegenüber
+  266–430). Ob PaddleOCR damit besser umgeht, ist nicht gemessen; die
+  Schärfemessung ist deshalb **kein Tor mehr**, sondern nur noch die Begründung,
+  wenn nichts gelesen wurde. Der alte Schwellwert hätte `Test_2` (Schärfe 9)
+  abgewiesen, das PaddleOCR korrekt liest.
 
 ## Die zwei Formregeln, und warum es sie gibt
 
@@ -138,55 +141,24 @@ echte Prüfsumme abfinge), 0 Erfindungen. Mit PaddleOCR 9 richtig, 0 falsch, 0
 Erfindungen. Details und die Einzelbefunde stehen in
 `packages/common/src/__tests__/fixtures/bankcards/README.md`.
 
-## Offene Entscheidung: Engine wechseln?
-
-An denselben 14 Bildern gemessen, mit demselben `IbanRecognitionHelper`, nur
-die Engine getauscht (`ppu-paddle-ocr`, PP-OCRv6 tiny, auf onnxruntime):
-
-| | Tesseract | PaddleOCR |
-| --- | --- | --- |
-| richtig gelesen | 5 von 11 | **9 von 11** |
-| **falsch** gelesen | 2 | **0** |
-| nichts gelesen | 4 | 2 |
-| Karten ohne IBAN korrekt abgelehnt | 3 von 3 | 3 von 3 |
-| Zeit pro Bild | rund 1 s | rund 0,2 s |
-
-Die Lesungen liegen als `bank-cards.paddleocr.json` neben denen von Tesseract,
-der Vergleich steht in `BankCardEngineComparison.test.ts`.
-
-Was ein Wechsel kosten würde:
-
-- **Native wird ein nativer Build.** `onnxruntime-react-native` ist ein natives
-  Modul, dazu `@shopify/react-native-skia` als Peer. Neue Buildnummer, kein
-  OTA-Update mehr. Dafür fällt die WebView komplett weg — also genau das, was
-  abstürzt, und damit auch die ganze Surface-Akrobatik oben.
-- **Modelle rund 6,4 MB** (Detection 1,9 + Recognition 4,5 + Dictionary 0,03),
-  liegen auf HuggingFace und müssten wie Tesseract ins Repo vendored werden.
-  Größenordnung wie jetzt (5,9 MB).
-- **Das Paket ist jung** (erste Version Mai 2025, ein Maintainer). Für eine
-  Funktion, die eine IBAN in ein Zahlungsformular schreibt, ist das ein Punkt,
-  den man bewusst akzeptieren sollte.
-- `MINIMUM_SHARPNESS = 12` ist auf Tesseract kalibriert und müsste neu
-  vermessen werden: `Test_2` liegt mit Schärfe 9 darunter, PaddleOCR liest die
-  Karte trotzdem korrekt.
-
-Die Trennung von Aufnahme und Erkennung ist genau die Fuge, an der das
-ausgetauscht wird: `TextRecognitionApi` bliebe wie sie ist, nur die beiden
-`useTextRecognition`-Implementierungen werden andere.
-
 ## Was als Nächstes zu tun wäre
 
-1. **Über den Engine-Wechsel entscheiden** (siehe oben).
-2. **Auf einem Gerät prüfen, ob der Absturz weg ist.** Falls die WebView bleibt:
-   PR #4400 hat einen Diagnosescreen (Experimentell → Texterkennung-Diagnose),
-   der die Kette in drei einzeln startbaren Stufen durchgeht (Entpacken →
-   nackte WebView → Engine-Seite). Welche Stufe zuletzt zu sehen war, bevor die
-   App weg ist, benennt den Schuldigen. Mit PaddleOCR erübrigt sich das.
-3. **`Test_3` und `Test_5`** werden von Tesseract falsch gelesen, weil es `DE12`
-   als `bEI2` und `DE99` als `DE9S` zurückgibt. Eine
-   Buchstabenverwechslungs-Tabelle für die Länderkennung würde das auffangen,
-   bringt aber Mehrdeutigkeit (DE/BE/SE) — bewusst nicht gemacht. PaddleOCR
-   liest beide richtig.
-4. **Nie committen:** die zwei Frontkamera-Fotos einer echten Karte aus dem
+1. **Auf einem Gerät prüfen.** Das ist der einzige offene Punkt, der zählt: ob
+   der Scanner dort läuft und ob der Absturz mit der WebView verschwunden ist.
+   Dafür braucht es einen neuen Dev-Client-Build (Buildnummer 207) — ein
+   OTA-Update reicht nicht mehr, die beiden neuen Module sind nativ.
+2. **`MINIMUM_SHARPNESS` neu vermessen.** Der Wert 12 stammt von Tesseract. Er
+   ist jetzt nur noch die Begründung für eine leere Lesung, kein Tor mehr, aber
+   er sollte an Aufnahmen der neuen Engine kalibriert werden.
+3. **`Test_1` und `Test_4`** bleiben ungelesen: einmal findet die Engine die
+   Zeile mit der Nummer gar nicht, einmal verliert sie Ziffern mitten darin. Ein
+   größeres Modell (`v6-small`, `v6-medium`) könnte das lösen und kostet
+   Bundle-Größe — nicht gemessen.
+4. **Der Lottie-Player lädt von jsDelivr.** Beim Nachmessen der Engine-Requests
+   aufgefallen, hat mit der Texterkennung nichts zu tun, ist aber dasselbe
+   Datenschutzthema.
+5. **PR #4400** (Diagnosescreen für die WebView-Kette) ist gegenstandslos,
+   seit es keine WebView mehr gibt.
+6. **Nie committen:** die zwei Frontkamera-Fotos einer echten Karte aus dem
    Gesprächsverlauf. Die IBAN darauf ist prüfsummengültig und das Repo ist
    öffentlich.

@@ -1,104 +1,98 @@
-import type { ReactNode } from 'react';
-
 /**
- * The parts of the text recognition (OCR) that web and native have in common.
+ * What the two text recognition hooks share.
  *
- * Both platforms run the same engine — Tesseract, compiled to WebAssembly. The
- * web build serves it from the app's own origin; native copies it onto the
- * device and points a hidden WebView at it (`useTextRecognition.tsx`). Two
- * things follow from that, and both are on purpose:
- *
- * - **Nothing is fetched from a CDN.** The engine ships with the app (see
- *   `public/tesseract/README.md`) and works offline. A photographed bank card
- *   is not something to hand a third party, and neither is the fact that
- *   someone is about to scan one.
- * - **No native module.** React Native has no WebAssembly, a WebView has it, so
- *   the feature needs no new binary and ships as an OTA update.
+ * The engine is PaddleOCR (PP-OCRv6 tiny) running on onnxruntime: WebAssembly
+ * in the browser, the native runtime on a device. Both read the same models out
+ * of `public/paddleocr/`, so nothing is ever fetched from a third party — see
+ * the README there.
  */
 
-/** The vendored engine version — see `public/tesseract/README.md`. */
-export const TESSERACT_VERSION = '7.0.0';
+/** What the experimental screen prints under "Texterkennung". */
+export const ENGINE_NAME = 'PaddleOCR PP-OCRv6 tiny (onnxruntime)';
 
-/**
- * English is the right model for a bank card even in Germany: the IBAN is
- * digits and Latin letters, and English is what Tesseract is trained best on.
- */
-export const TESSERACT_LANGUAGE = 'eng';
-
-/** The engine's files, as they are named inside the engine directory. */
+/** The models and the character dictionary, as they are named on disk. */
 export const ENGINE_FILE_NAMES = {
-	library: 'tesseract.min.js',
-	worker: 'worker.min.js',
-	core: 'tesseract-core-simd-lstm.js',
-	coreWasm: 'tesseract-core-simd-lstm.wasm',
-	trainedData: `${TESSERACT_LANGUAGE}.traineddata.gz`,
+	detection: 'PP-OCRv6_tiny_det.ort',
+	recognition: 'PP-OCRv6_tiny_rec.ort',
+	charactersDictionary: 'ppocrv6_tiny_dict.txt',
 } as const;
 
 /**
- * Longest edge the image is scaled to before recognition. Large enough that the
- * IBAN line stays legible, small enough to keep one pass near a second and the
- * native bridge payload small.
+ * The WebAssembly onnxruntime loads in the browser, and the glue beside it.
+ *
+ * onnxruntime-web points at a CDN by default. These are the same two files,
+ * served from this app instead — see `getEngineDirectoryUrl` in the web hook.
+ */
+export const ONNXRUNTIME_FILE_NAMES = {
+	// The wasm-only build, on purpose: the all-backends bundle reaches for a
+	// WebGPU-capable WebAssembly file that is not bundled here, and falls back to
+	// the CDN when it cannot find it. See `EXECUTION_PROVIDERS` below.
+	library: 'ort.wasm.min.js',
+	webAssembly: 'ort-wasm-simd-threaded.wasm',
+	webAssemblyLoader: 'ort-wasm-simd-threaded.mjs',
+} as const;
+
+/**
+ * The one backend the engine is allowed to use.
+ *
+ * Left to itself the library asks for WebGPU first, which makes onnxruntime
+ * load a different, WebGPU-capable WebAssembly file — one this app does not
+ * bundle, and which it would therefore fetch from a CDN. Pinning the backend
+ * pins the file.
+ */
+export const WEB_EXECUTION_PROVIDERS = ['wasm'] as const;
+
+/** The directory the engine is served from, below the app's base path. */
+export const ENGINE_DIRECTORY_NAME = 'paddleocr';
+
+/**
+ * How wide a frame is scaled to before it is read. The models detect text at
+ * their own scale anyway, and a full-resolution photo only costs time and
+ * memory on the way there.
  */
 export const MAX_RECOGNITION_IMAGE_WIDTH = 1600;
 
-/** JPEG quality of the scaled-down frame handed to the engine. */
+/** JPEG quality for that scaled frame. */
 export const RECOGNITION_IMAGE_COMPRESSION = 0.8;
 
-/**
- * Width the frame is scaled to before its sharpness is measured, so that the
- * number means the same thing whatever the camera delivers.
- */
+/** Sharpness is measured at a fixed width so the number means the same thing. */
 export const SHARPNESS_MEASUREMENT_WIDTH = 800;
 
 /**
- * Below this, a frame is not worth reading.
+ * Below this, a frame is soft enough to explain why nothing was read.
  *
- * Measured with the function below, on the images in this repository and on
- * photos of a real card taken with a front camera:
- *
- * | Frame | Sharpness | IBAN read |
- * | --- | --- | --- |
- * | the fixture card, in focus | 266…430 | yes |
- * | the same, slightly softened | 21 | no |
- * | a real card, front camera | 3…7 | no |
- *
- * A front camera has a fixed focus and cannot sharpen up at the distance
- * someone holds a card at, which is why those photos land where they do. The
- * threshold sits low on purpose: it turns away only what is hopeless, and
- * never a frame that might still be readable — a wrongly rejected frame looks
- * to the user like a broken feature, while a wrongly accepted one costs a
- * second of reading.
+ * It is no longer a gate. It used to be one, because the previous engine spent
+ * about a second on every frame and said nothing about the ones it could not
+ * use. This engine reads a frame in a fraction of that, and reads images well
+ * below this threshold — the specimen card in `Test_2` comes back at 9 and is
+ * read correctly. Turning that frame away would have been a false rejection, so
+ * the measurement now only answers the question afterwards: nothing was read,
+ * and the picture was soft, so say so.
  */
 export const MINIMUM_SHARPNESS = 12;
 
 /**
- * How sharp an image is: the variance of its Laplacian, the standard measure.
- * Blur flattens the second derivative, so a soft image scores near zero while
- * a crisp one scores in the hundreds.
+ * How sharp an image is, as the variance of its Laplacian — the usual measure.
  *
- * The same computation exists twice: here for the web build, and as source text
- * in {@link SHARPNESS_FUNCTION_SOURCE} for the page that runs inside the
- * WebView on native. Handing the WebView `measureImageSharpness.toString()`
- * would be the obvious way to avoid that — but the app runs on Hermes, which
- * does not keep function bodies around, so there `toString()` yields
- * `function measureImageSharpness() { [bytecode] }` and the page would measure
- * nothing at all. `__tests__/imageSharpness.test.ts` runs both over the same
- * images and insists they agree, so the two cannot drift apart unnoticed.
+ * A flat surface has none, an edge has a lot, and a photo out of focus has
+ * almost none because its edges have been smeared into gradients. `pixels` is
+ * RGBA, four bytes per pixel, as a canvas hands it over.
  */
-export function measureImageSharpness(pixels: Uint8ClampedArray | number[], width: number, height: number): number {
-	var pixelCount = width * height;
-	var gray = new Float32Array(pixelCount);
-	for (var index = 0; index < pixelCount; index++) {
-		var offset = index * 4;
-		gray[index] = (pixels[offset] * 299 + pixels[offset + 1] * 587 + pixels[offset + 2] * 114) / 1000;
+export const measureImageSharpness = (pixels: Uint8ClampedArray, width: number, height: number): number => {
+	const pixelCount = width * height;
+	const gray = new Float32Array(pixelCount);
+	for (let index = 0; index < pixelCount; index++) {
+		const offset = index * 4;
+		gray[index] = ((pixels[offset] ?? 0) * 299 + (pixels[offset + 1] ?? 0) * 587 + (pixels[offset + 2] ?? 0) * 114) / 1000;
 	}
-	var sum = 0;
-	var sumOfSquares = 0;
-	var count = 0;
-	for (var y = 1; y < height - 1; y++) {
-		for (var x = 1; x < width - 1; x++) {
-			var position = y * width + x;
-			var laplacian = gray[position - width] + gray[position + width] + gray[position - 1] + gray[position + 1] - 4 * gray[position];
+
+	let sum = 0;
+	let sumOfSquares = 0;
+	let count = 0;
+	for (let y = 1; y < height - 1; y++) {
+		for (let x = 1; x < width - 1; x++) {
+			const position = y * width + x;
+			const laplacian = (gray[position - width] ?? 0) + (gray[position + width] ?? 0) + (gray[position - 1] ?? 0) + (gray[position + 1] ?? 0) - 4 * (gray[position] ?? 0);
 			sum += laplacian;
 			sumOfSquares += laplacian * laplacian;
 			count++;
@@ -107,94 +101,38 @@ export function measureImageSharpness(pixels: Uint8ClampedArray | number[], widt
 	if (count === 0) {
 		return 0;
 	}
-	var mean = sum / count;
+	const mean = sum / count;
 	return sumOfSquares / count - mean * mean;
-}
+};
 
-/**
- * {@link measureImageSharpness} as source text, for the WebView page on native.
- * Kept in plain ES5 so that it needs no transpiling wherever it is dropped in.
- */
-export const SHARPNESS_FUNCTION_SOURCE = `function measureImageSharpness(pixels, width, height) {
-	var pixelCount = width * height;
-	var gray = new Float32Array(pixelCount);
-	for (var index = 0; index < pixelCount; index++) {
-		var offset = index * 4;
-		gray[index] = (pixels[offset] * 299 + pixels[offset + 1] * 587 + pixels[offset + 2] * 114) / 1000;
-	}
-	var sum = 0;
-	var sumOfSquares = 0;
-	var count = 0;
-	for (var y = 1; y < height - 1; y++) {
-		for (var x = 1; x < width - 1; x++) {
-			var position = y * width + x;
-			var laplacian = gray[position - width] + gray[position + width] + gray[position - 1] + gray[position + 1] - 4 * gray[position];
-			sum += laplacian;
-			sumOfSquares += laplacian * laplacian;
-			count++;
-		}
-	}
-	if (count === 0) {
-		return 0;
-	}
-	var mean = sum / count;
-	return sumOfSquares / count - mean * mean;
-}`;
-
-/** What one pass over a frame came back with. */
-export interface RecognitionResult {
-	/** The recognized lines, empty when the frame was not worth reading. */
-	lines: string[];
-	/** How sharp the frame was — see {@link MINIMUM_SHARPNESS}. */
-	sharpness: number;
-	/** The frame was too soft to read, and was not handed to the engine at all. */
-	tooBlurry: boolean;
-}
-
-/** The frame handed to the recognizer, as `takePictureAsync` returns it. */
+/** One frame handed to the engine. */
 export interface RecognitionImage {
 	uri: string;
+	/** Known width, so a frame already small enough is not scaled twice. */
 	width?: number;
 }
 
-/** What a platform's `useTextRecognition` hook gives its caller. */
-export interface TextRecognitionOptions {
+/** What one pass over a frame produced. */
+export interface RecognitionResult {
+	/** The recognized text, line by line, empty lines dropped. */
+	lines: string[];
 	/**
-	 * Whether a camera preview is on screen right now.
-	 *
-	 * Taking the picture and reading it are two separate jobs, and on Android
-	 * they cannot be done at the same time: the camera preview and the WebView
-	 * the engine runs in both want a hardware surface, and a screen holding both
-	 * shows an empty preview and takes the app down with it. The engine
-	 * therefore only exists while the preview does not — the caller says which
-	 * of the two it is showing, and the hook does the rest.
+	 * How sharp the frame was, or `null` where it could not be measured. Only
+	 * ever used to explain an empty reading.
 	 */
-	isCameraActive: boolean;
+	sharpness: number | null;
+	/** Nothing was read and the frame was soft enough for that to be the reason. */
+	tooBlurry: boolean;
 }
 
 export interface TextRecognitionApi {
 	/** Reads one frame: its text line by line, plus how sharp it was. */
 	recognizeImage: (image: RecognitionImage) => Promise<RecognitionResult>;
-	/** 0…1 while the engine loads or reads, `null` when it is idle. */
+	/** 0…1 while the engine loads, `null` once it is up. */
 	progress: number | null;
 	/** Set once the engine failed to load or a recognition failed. */
 	errorMessage: string | null;
-	/** Must be rendered by the caller — on native it carries the engine. */
-	engineElement: ReactNode;
-	/**
-	 * The engine may read while the camera preview is live, so frames can be
-	 * sampled continuously. False where the two cannot share a screen: there a
-	 * picture is taken first and read afterwards, one deliberate still at a time.
-	 */
-	runsAlongsideCamera: boolean;
 }
-
-/** What the WebView page posts back to the app. */
-export type TextRecognitionEngineMessage =
-	| { type: 'ready'; engineLoaded: boolean }
-	| { type: 'progress'; status: string; progress: number }
-	| { type: 'result'; id: string; text: string; sharpness: number }
-	| { type: 'error'; id?: string; message: string };
 
 /** Splits the engine's raw output into the lines the IBAN search works on. */
 export const splitRecognizedText = (text: string): string[] =>
@@ -204,123 +142,14 @@ export const splitRecognizedText = (text: string): string[] =>
 		.filter((line) => line.length > 0);
 
 /**
- * The options both platforms hand `Tesseract.createWorker`, given the directory
- * the engine files sit in.
- *
- * Every path is spelled out rather than left to the library, because its
- * defaults point at a CDN. `workerBlobURL: false` matters for the same reason
- * it is easy to get wrong: with the default the worker is built from a blob,
- * and a blob has no address for the core loader to resolve its `.wasm`
- * neighbour against — the worker then dies with "Failed to parse URL". Loading
- * the worker straight out of the directory gives it a base to resolve against.
+ * Turns a reading into a {@link RecognitionResult}, deciding on the way whether
+ * an empty one is worth blaming on the picture.
  */
-export const buildWorkerOptions = (engineDirectoryUrl: string) => ({
-	workerPath: `${engineDirectoryUrl}/${ENGINE_FILE_NAMES.worker}`,
-	corePath: `${engineDirectoryUrl}/${ENGINE_FILE_NAMES.core}`,
-	langPath: engineDirectoryUrl,
-	workerBlobURL: false,
-	gzip: true,
-});
-
-/**
- * The page that runs the engine inside the WebView on native.
- *
- * It is written into the engine directory on the device, next to the engine
- * files, so that every path in it is a plain neighbour. It exposes
- * `window.recognizeImage({ id, image })`, which the app calls through
- * `injectJavaScript`, and reports back through `ReactNativeWebView.postMessage`.
- * Kept to ES5 syntax and free of any bundler: this string is the whole program.
- */
-export const buildTextRecognitionPageHtml = (): string => `<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-	</head>
-	<body>
-		<script src="./${ENGINE_FILE_NAMES.library}"></script>
-		<script>
-			${SHARPNESS_FUNCTION_SOURCE}
-
-			(function () {
-				var post = function (message) {
-					if (window.ReactNativeWebView) {
-						window.ReactNativeWebView.postMessage(JSON.stringify(message));
-					}
-				};
-
-				var workerPromise = null;
-				var getWorker = function () {
-					if (!window.Tesseract) {
-						return Promise.reject(new Error('text recognition engine could not be loaded'));
-					}
-					if (!workerPromise) {
-						var options = ${JSON.stringify(buildWorkerOptions('.'))};
-						options.logger = function (entry) {
-							if (entry && typeof entry.progress === 'number') {
-								post({ type: 'progress', status: String(entry.status || ''), progress: entry.progress });
-							}
-						};
-						workerPromise = window.Tesseract.createWorker('${TESSERACT_LANGUAGE}', 1, options);
-					}
-					return workerPromise;
-				};
-
-				// How sharp the frame is, measured on a canvas at a fixed width.
-				var measure = function (dataUri) {
-					return new Promise(function (resolve) {
-						var image = new Image();
-						image.onload = function () {
-							var width = Math.min(${SHARPNESS_MEASUREMENT_WIDTH}, image.width) || 1;
-							var height = Math.max(1, Math.round((image.height / image.width) * width));
-							var canvas = document.createElement('canvas');
-							canvas.width = width;
-							canvas.height = height;
-							var context = canvas.getContext('2d');
-							if (!context) {
-								resolve(Number.POSITIVE_INFINITY);
-								return;
-							}
-							context.drawImage(image, 0, 0, width, height);
-							var pixels = context.getImageData(0, 0, width, height).data;
-							resolve(measureImageSharpness(pixels, width, height));
-						};
-						// Unreadable for another reason: let the engine say so.
-						image.onerror = function () {
-							resolve(Number.POSITIVE_INFINITY);
-						};
-						image.src = dataUri;
-					});
-				};
-
-				window.recognizeImage = function (request) {
-					var sharpness = 0;
-					measure(request.image)
-						.then(function (measured) {
-							sharpness = measured;
-							if (measured < ${MINIMUM_SHARPNESS}) {
-								// Not worth a second of reading, and the user is better
-								// served by being told than by a silent retry.
-								return null;
-							}
-							return getWorker().then(function (worker) {
-								return worker.recognize(request.image);
-							});
-						})
-						.then(function (result) {
-							post({ type: 'result', id: request.id, sharpness: sharpness, text: String((result && result.data && result.data.text) || '') });
-						})
-						.catch(function (error) {
-							// Build a fresh worker next time: a worker that failed to
-							// start stays broken for every following frame.
-							workerPromise = null;
-							post({ type: 'error', id: request.id, message: String((error && error.message) || error) });
-						});
-				};
-
-				post({ type: 'ready', engineLoaded: Boolean(window.Tesseract) });
-			})();
-		</script>
-	</body>
-</html>
-`;
+export const describeReading = (text: string, sharpness: number | null): RecognitionResult => {
+	const lines = splitRecognizedText(text);
+	return {
+		lines,
+		sharpness,
+		tooBlurry: lines.length === 0 && sharpness !== null && sharpness < MINIMUM_SHARPNESS,
+	};
+};

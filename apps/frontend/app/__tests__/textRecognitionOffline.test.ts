@@ -1,64 +1,71 @@
 import * as fs from 'fs';
 import * as path from 'path';
-
-import { ENGINE_FILE_NAMES } from '../helper/TextRecognitionShared';
+import { ENGINE_DIRECTORY_NAME, ENGINE_FILE_NAMES, ONNXRUNTIME_FILE_NAMES, WEB_EXECUTION_PROVIDERS } from '../helper/TextRecognitionShared';
 
 /**
- * The text recognition reads a photographed bank card. Neither that photo nor
- * the request for the engine may reach a third party, so the engine ships with
- * the app and every path to it is local.
+ * The engine is bundled, and it has to stay bundled.
  *
- * This is easy to undo by accident: leave one of Tesseract's paths unset and
- * the library quietly falls back to its CDN defaults, and nothing about the
- * feature looks broken afterwards. Hence these tests.
+ * A photo of a bank card should not tell anyone that someone is photographing a
+ * bank card. Both libraries involved reach for a CDN when they are not told
+ * otherwise, and a lapse here looks like nothing from the outside: the scanner
+ * keeps working, it just fetches the engine from somewhere else first. So this
+ * tests the two things that would be silently wrong.
  */
-const APP_ROOT = path.join(__dirname, '..');
+const APP_DIRECTORY = path.join(__dirname, '..');
+const ENGINE_DIRECTORY = path.join(APP_DIRECTORY, 'public', ENGINE_DIRECTORY_NAME);
 
-const ENGINE_SOURCE_FILES = ['helper/TextRecognitionShared.ts', 'hooks/useTextRecognition.tsx', 'hooks/useTextRecognition.web.tsx', 'components/GiroCardIbanScanner/index.tsx'];
+/** The files that decide where the engine is loaded from. */
+const SOURCE_FILES = ['helper/TextRecognitionShared.ts', 'hooks/useTextRecognition.tsx', 'hooks/useTextRecognition.web.tsx'];
 
-/** A URL in code, ignoring the ones inside comments. */
-const findRemoteUrls = (source: string): string[] =>
-	source
-		.split('\n')
-		.filter((line) => {
-			const trimmed = line.trim();
-			const isComment = trimmed.startsWith('//') || trimmed.startsWith('*') || trimmed.startsWith('/*');
-			return !isComment && /https?:\/\//.test(line);
-		})
-		.map((line) => line.trim());
-
-describe('text recognition stays offline', () => {
-	it.each(ENGINE_SOURCE_FILES)('has no remote URL in %s', (relativePath) => {
-		const source = fs.readFileSync(path.join(APP_ROOT, relativePath), 'utf-8');
-		expect(findRemoteUrls(source)).toEqual([]);
+describe('the bundled text recognition engine', () => {
+	it.each(Object.values(ENGINE_FILE_NAMES))('ships the model file %s', (fileName) => {
+		expect(fs.existsSync(path.join(ENGINE_DIRECTORY, fileName))).toBe(true);
 	});
 
-	it('ships every engine file the library would otherwise fetch', () => {
-		for (const fileName of Object.values(ENGINE_FILE_NAMES)) {
-			const bundled = path.join(APP_ROOT, 'public', 'tesseract', fileName);
-			expect({ fileName, exists: fs.existsSync(bundled) }).toEqual({ fileName, exists: true });
+	it.each(Object.values(ONNXRUNTIME_FILE_NAMES))('ships the runtime file %s for the browser', (fileName) => {
+		expect(fs.existsSync(path.join(ENGINE_DIRECTORY, fileName))).toBe(true);
+	});
+
+	it.each(SOURCE_FILES)('names no remote address in %s', (relativePath) => {
+		const source = fs.readFileSync(path.join(APP_DIRECTORY, relativePath), 'utf-8');
+		const lines = source.split('\n').filter((line) => !line.trim().startsWith('*') && !line.trim().startsWith('//'));
+		expect(lines.join('\n')).not.toMatch(/https?:\/\//);
+	});
+
+	it('overwrites the CDN address onnxruntime fills in for itself', () => {
+		// The library sets `wasmPaths` to a jsDelivr URL when it is imported, and
+		// only fills in that default while the field is empty — so the assignment
+		// has to happen, and it has to happen unconditionally.
+		const source = fs.readFileSync(path.join(APP_DIRECTORY, 'hooks/useTextRecognition.web.tsx'), 'utf-8');
+		expect(source).toMatch(/\.env\.wasm\.wasmPaths\s*=/);
+	});
+
+	it('pins the backend, so the runtime cannot ask for a file that is not here', () => {
+		// Left alone the engine asks for WebGPU first, and onnxruntime then loads a
+		// different, WebGPU-capable WebAssembly file. That file is not bundled, and
+		// a browser run showed what happens next: a 404 on
+		// `ort-wasm-simd-threaded.jsep.mjs`, and the CDN right behind it.
+		expect(WEB_EXECUTION_PROVIDERS).toEqual(['wasm']);
+		const source = fs.readFileSync(path.join(APP_DIRECTORY, 'hooks/useTextRecognition.web.tsx'), 'utf-8');
+		expect(source).toMatch(/executionProviders/);
+	});
+
+	it('hands the engine every model path, leaving none to its own default', () => {
+		// `ppu-paddle-ocr` falls back to a Hugging Face URL per model. All three
+		// have to be passed, on both platforms.
+		for (const relativePath of ['hooks/useTextRecognition.tsx', 'hooks/useTextRecognition.web.tsx']) {
+			const source = fs.readFileSync(path.join(APP_DIRECTORY, relativePath), 'utf-8');
+			expect(source).toMatch(/detection:/);
+			expect(source).toMatch(/recognition:/);
+			expect(source).toMatch(/charactersDictionary:/);
 		}
 	});
 
-	it('keeps a copy of the engine scripts that Metro bundles as assets', () => {
-		// Metro treats a .js file as source code, so native cannot require the
-		// engine's own scripts directly - see public/tesseract/README.md.
-		for (const fileName of [ENGINE_FILE_NAMES.library, ENGINE_FILE_NAMES.worker, ENGINE_FILE_NAMES.core]) {
-			const nativeCopy = path.join(APP_ROOT, 'assets', 'tesseract', `${fileName}.txt`);
-			expect({ fileName, exists: fs.existsSync(nativeCopy) }).toEqual({ fileName, exists: true });
-
-			const served = fs.readFileSync(path.join(APP_ROOT, 'public', 'tesseract', fileName), 'utf-8');
-			expect(fs.readFileSync(nativeCopy, 'utf-8')).toBe(served);
-		}
-	});
-
-	it('spells out every path the library needs, so none of them defaults to a CDN', () => {
-		const shared = fs.readFileSync(path.join(APP_ROOT, 'helper/TextRecognitionShared.ts'), 'utf-8');
-		expect(shared).toContain('workerPath');
-		expect(shared).toContain('corePath');
-		expect(shared).toContain('langPath');
-		// Without this the worker is built from a blob, which has no address for
-		// the core loader to resolve its .wasm neighbour against.
-		expect(shared).toContain('workerBlobURL: false');
+	it('reads the models off the device rather than fetching them, on native', () => {
+		// `fetch` cannot read a `file://` URI in React Native, so a path would send
+		// the engine looking on the network. The bytes are handed over instead.
+		const source = fs.readFileSync(path.join(APP_DIRECTORY, 'hooks/useTextRecognition.tsx'), 'utf-8');
+		expect(source).toMatch(/arrayBuffer\(\)/);
+		expect(source).not.toMatch(/fetch\(/);
 	});
 });

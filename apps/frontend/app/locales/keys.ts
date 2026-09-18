@@ -661,7 +661,6 @@ export const TranslationKeys = {
 	giro_card_scan_switch_camera: 'giro_card_scan_switch_camera',
 	giro_card_scan_no_iban_in_photo: 'giro_card_scan_no_iban_in_photo',
 	giro_card_scan_too_blurry: 'giro_card_scan_too_blurry',
-	giro_card_scan_ready_for_photo: 'giro_card_scan_ready_for_photo',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];

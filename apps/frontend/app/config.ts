@@ -58,7 +58,11 @@ export enum ConfigCustomerEnum {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 206;
+	// 207: text recognition moved from Tesseract in a WebView to PaddleOCR on
+	// onnxruntime. onnxruntime-react-native and @shopify/react-native-skia are
+	// native modules, so this needs a new binary - it cannot ship as an OTA
+	// update the way the WebView could.
+	return 207;
 }
 
 export function getMajorVersion() {
@@ -92,7 +96,8 @@ export function getVersionPatch() {
         //     preview and the engine's WebView are never on screen together
         // 32: a number is only read when its letters sit where an IBAN has them,
         //     and groups the engine welded together are read again
-        return 32;
+        // 33: the giro card scanner reads with PaddleOCR instead of Tesseract
+        return 33;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

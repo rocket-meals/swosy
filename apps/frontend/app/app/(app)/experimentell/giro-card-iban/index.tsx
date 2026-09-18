@@ -12,7 +12,7 @@ import IBANInput from '@/components/IBANInput/IBANInput';
 import SettingsList from '@/components/SettingsList';
 import SettingsListBoolean from '@/components/SettingsListBoolean';
 import { useGiroCardIbanScannerModal } from '@/components/GiroCardIbanScanner';
-import { TESSERACT_VERSION } from '@/helper/TextRecognitionShared';
+import { ENGINE_NAME } from '@/helper/TextRecognitionShared';
 import styles from '../styles';
 
 /**
@@ -69,7 +69,7 @@ const GiroCardIbanScreen = () => {
 				<View style={styles.section}>
 					<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="credit-card-scan-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.giro_card_scan_title)} rightIcon={<MaterialCommunityIcons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openScanner} groupPosition="top" />
 					<SettingsListBoolean iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="numeric" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.giro_card_scan_allow_invalid_checksum)} valueActive={translate(TranslationKeys.active)} valueInactive={translate(TranslationKeys.inactive)} isEnabled={allowInvalidChecksum} onToggle={() => setAllowInvalidChecksum((enabled) => !enabled)} groupPosition="middle" />
-					<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="text-recognition" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.giro_card_scan_engine)} value={`Tesseract ${TESSERACT_VERSION}`} groupPosition="bottom" />
+					<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="text-recognition" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.giro_card_scan_engine)} value={ENGINE_NAME} groupPosition="bottom" />
 				</View>
 
 				<View style={styles.section}>
