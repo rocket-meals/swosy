@@ -3,30 +3,36 @@ import type { ReactNode } from 'react';
 /**
  * The parts of the text recognition (OCR) that web and native have in common.
  *
- * Both platforms run the very same engine — Tesseract, compiled to WebAssembly.
- * The web build loads it into the page; native loads it into a hidden WebView
- * (`useTextRecognition.tsx`). That keeps the feature free of any native module,
- * so it ships as an OTA update and needs no new app binary.
+ * Both platforms run the same engine — Tesseract, compiled to WebAssembly. The
+ * web build serves it from the app's own origin; native copies it onto the
+ * device and points a hidden WebView at it (`useTextRecognition.tsx`). Two
+ * things follow from that, and both are on purpose:
  *
- * The engine and its language data are fetched from a CDN on first use and then
- * cached by the browser. **The photographed card itself never leaves the
- * device** — recognition happens locally, only the engine is downloaded.
+ * - **Nothing is fetched from a CDN.** The engine ships with the app (see
+ *   `public/tesseract/README.md`) and works offline. A photographed bank card
+ *   is not something to hand a third party, and neither is the fact that
+ *   someone is about to scan one.
+ * - **No native module.** React Native has no WebAssembly, a WebView has it, so
+ *   the feature needs no new binary and ships as an OTA update.
  */
 
-/** Pinned on purpose: an OCR engine that changes under us changes what we read. */
+/** The vendored engine version — see `public/tesseract/README.md`. */
 export const TESSERACT_VERSION = '7.0.0';
-
-/** Where the engine, its worker, its wasm core and its language data come from. */
-export const TESSERACT_BASE_URL = 'https://cdn.jsdelivr.net/';
-
-export const TESSERACT_SCRIPT_URL = `${TESSERACT_BASE_URL}npm/tesseract.js@${TESSERACT_VERSION}/dist/tesseract.min.js`;
 
 /**
  * English is the right model for a bank card even in Germany: the IBAN is
- * digits and Latin letters, and the English model is the one Tesseract ships
- * the most training for.
+ * digits and Latin letters, and English is what Tesseract is trained best on.
  */
 export const TESSERACT_LANGUAGE = 'eng';
+
+/** The engine's files, as they are named inside the engine directory. */
+export const ENGINE_FILE_NAMES = {
+	library: 'tesseract.min.js',
+	worker: 'worker.min.js',
+	core: 'tesseract-core-simd-lstm.js',
+	coreWasm: 'tesseract-core-simd-lstm.wasm',
+	trainedData: `${TESSERACT_LANGUAGE}.traineddata.gz`,
+} as const;
 
 /**
  * Longest edge the image is scaled to before recognition. Large enough that the
@@ -71,9 +77,30 @@ export const splitRecognizedText = (text: string): string[] =>
 		.filter((line) => line.length > 0);
 
 /**
- * The page that runs Tesseract inside the WebView on native.
+ * The options both platforms hand `Tesseract.createWorker`, given the directory
+ * the engine files sit in.
  *
- * It exposes `window.recognizeImage({ id, image })`, which the app calls through
+ * Every path is spelled out rather than left to the library, because its
+ * defaults point at a CDN. `workerBlobURL: false` matters for the same reason
+ * it is easy to get wrong: with the default the worker is built from a blob,
+ * and a blob has no address for the core loader to resolve its `.wasm`
+ * neighbour against — the worker then dies with "Failed to parse URL". Loading
+ * the worker straight out of the directory gives it a base to resolve against.
+ */
+export const buildWorkerOptions = (engineDirectoryUrl: string) => ({
+	workerPath: `${engineDirectoryUrl}/${ENGINE_FILE_NAMES.worker}`,
+	corePath: `${engineDirectoryUrl}/${ENGINE_FILE_NAMES.core}`,
+	langPath: engineDirectoryUrl,
+	workerBlobURL: false,
+	gzip: true,
+});
+
+/**
+ * The page that runs the engine inside the WebView on native.
+ *
+ * It is written into the engine directory on the device, next to the engine
+ * files, so that every path in it is a plain neighbour. It exposes
+ * `window.recognizeImage({ id, image })`, which the app calls through
  * `injectJavaScript`, and reports back through `ReactNativeWebView.postMessage`.
  * Kept to ES5 syntax and free of any bundler: this string is the whole program.
  */
@@ -84,7 +111,7 @@ export const buildTextRecognitionPageHtml = (): string => `<!DOCTYPE html>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 	</head>
 	<body>
-		<script src="${TESSERACT_SCRIPT_URL}"></script>
+		<script src="./${ENGINE_FILE_NAMES.library}"></script>
 		<script>
 			(function () {
 				var post = function (message) {
@@ -99,13 +126,13 @@ export const buildTextRecognitionPageHtml = (): string => `<!DOCTYPE html>
 						return Promise.reject(new Error('text recognition engine could not be loaded'));
 					}
 					if (!workerPromise) {
-						workerPromise = window.Tesseract.createWorker('${TESSERACT_LANGUAGE}', 1, {
-							logger: function (entry) {
-								if (entry && typeof entry.progress === 'number') {
-									post({ type: 'progress', status: String(entry.status || ''), progress: entry.progress });
-								}
-							},
-						});
+						var options = ${JSON.stringify(buildWorkerOptions('.'))};
+						options.logger = function (entry) {
+							if (entry && typeof entry.progress === 'number') {
+								post({ type: 'progress', status: String(entry.status || ''), progress: entry.progress });
+							}
+						};
+						workerPromise = window.Tesseract.createWorker('${TESSERACT_LANGUAGE}', 1, options);
 					}
 					return workerPromise;
 				};

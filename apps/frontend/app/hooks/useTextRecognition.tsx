@@ -1,33 +1,111 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system/legacy';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 
-import { MAX_RECOGNITION_IMAGE_WIDTH, RECOGNITION_IMAGE_COMPRESSION, RecognitionImage, TESSERACT_BASE_URL, TextRecognitionApi, TextRecognitionEngineMessage, buildTextRecognitionPageHtml, splitRecognizedText } from '@/helper/TextRecognitionShared';
+import { ENGINE_FILE_NAMES, MAX_RECOGNITION_IMAGE_WIDTH, RECOGNITION_IMAGE_COMPRESSION, RecognitionImage, TextRecognitionApi, TextRecognitionEngineMessage, buildTextRecognitionPageHtml, splitRecognizedText } from '@/helper/TextRecognitionShared';
 
 /** How long one recognition may take before it is given up on. */
 const RECOGNITION_TIMEOUT_IN_MS = 60_000;
+
+/** Where the engine is unpacked on the device. */
+const ENGINE_DIRECTORY_NAME = 'text-recognition-engine';
+const ENGINE_PAGE_NAME = 'index.html';
+
+/**
+ * The bundled engine, as Metro assets.
+ *
+ * Three of these are `.txt` copies of `.js` files. Metro bundles a `.js` file
+ * as source code, never as an asset, so the engine's own scripts have to arrive
+ * under a name Metro leaves alone — see `public/tesseract/README.md`. The two
+ * large files carry extensions Metro already treats as assets and are taken
+ * straight from the directory the web build serves.
+ */
+const ENGINE_ASSETS: { module: number; fileName: string }[] = [
+	{ module: require('@/assets/tesseract/tesseract.min.js.txt'), fileName: ENGINE_FILE_NAMES.library },
+	{ module: require('@/assets/tesseract/worker.min.js.txt'), fileName: ENGINE_FILE_NAMES.worker },
+	{ module: require('@/assets/tesseract/tesseract-core-simd-lstm.js.txt'), fileName: ENGINE_FILE_NAMES.core },
+	{ module: require('@/public/tesseract/tesseract-core-simd-lstm.wasm'), fileName: ENGINE_FILE_NAMES.coreWasm },
+	{ module: require('@/public/tesseract/eng.traineddata.gz'), fileName: ENGINE_FILE_NAMES.trainedData },
+];
+
+/**
+ * Unpacks the engine into the cache directory, once per install, and returns
+ * the directory it landed in.
+ *
+ * The engine has to end up as real neighbouring files: its core loader looks
+ * for its `.wasm` next to itself and the worker looks for the language data
+ * next to itself, both by relative name. Scattering them is what makes the
+ * library fall back to its CDN defaults, which is the one thing this must not
+ * do.
+ */
+const unpackEngine = async (): Promise<string> => {
+	const directory = `${FileSystem.cacheDirectory}${ENGINE_DIRECTORY_NAME}`;
+	const directoryInfo = await FileSystem.getInfoAsync(directory);
+	if (!directoryInfo.exists) {
+		await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
+	}
+
+	for (const engineAsset of ENGINE_ASSETS) {
+		const target = `${directory}/${engineAsset.fileName}`;
+		const targetInfo = await FileSystem.getInfoAsync(target);
+		if (targetInfo.exists) {
+			continue;
+		}
+		const asset = Asset.fromModule(engineAsset.module);
+		await asset.downloadAsync();
+		if (!asset.localUri) {
+			throw new Error(`text recognition engine file ${engineAsset.fileName} is missing`);
+		}
+		await FileSystem.copyAsync({ from: asset.localUri, to: target });
+	}
+
+	// Always rewritten: the page is ours, it is small, and it changes with the app.
+	await FileSystem.writeAsStringAsync(`${directory}/${ENGINE_PAGE_NAME}`, buildTextRecognitionPageHtml());
+	return directory;
+};
 
 /**
  * Text recognition (OCR) on native, running Tesseract inside a hidden WebView.
  *
  * React Native has no WebAssembly, so Tesseract cannot run in the app's own JS
- * context — but it runs happily in a WebView, which every platform already has.
- * That is what buys this feature its independence from a native build: no new
- * module, no new binary, ships as an OTA update. The web build resolves
- * `useTextRecognition.web.tsx` instead and runs the same engine in the page.
+ * context — but it runs in a WebView, which every platform already has. That is
+ * what buys this feature its independence from a native build: no new module,
+ * no new binary, ships as an OTA update. The engine itself is unpacked out of
+ * the app onto the device, so it works offline and tells no one about it.
  *
  * The caller must render `engineElement`; without it there is no WebView and
  * `recognizeLines` never resolves.
  */
 export const useTextRecognition = (): TextRecognitionApi => {
 	const webViewRef = useRef<WebView>(null);
+	const [engineDirectory, setEngineDirectory] = useState<string | null>(null);
 	const [progress, setProgress] = useState<number | null>(null);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 	/** Requests waiting for their answer from the page, by request id. */
 	const pendingRequests = useRef(new Map<string, { resolve: (lines: string[]) => void; reject: (error: Error) => void }>());
 	const nextRequestId = useRef(0);
+
+	useEffect(() => {
+		let isMounted = true;
+		unpackEngine()
+			.then((directory) => {
+				if (isMounted) {
+					setEngineDirectory(directory);
+				}
+			})
+			.catch((error: unknown) => {
+				if (isMounted) {
+					setErrorMessage(error instanceof Error ? error.message : String(error));
+				}
+			});
+		return () => {
+			isMounted = false;
+		};
+	}, []);
 
 	const handleMessage = useCallback((event: WebViewMessageEvent) => {
 		let message: TextRecognitionEngineMessage;
@@ -112,15 +190,16 @@ export const useTextRecognition = (): TextRecognitionApi => {
 		[toDataUri],
 	);
 
-	// The page is given the engine's own origin as its base URL. A WebView fed
-	// plain HTML otherwise has an opaque origin, from which the engine's own
-	// fetches (its worker, the wasm core, the language data) are a cross-origin
-	// request that some WebView versions refuse outright.
-	const engineElement = (
-		<View style={styles.engineContainer} pointerEvents="none">
-			<WebView ref={webViewRef} source={{ html: buildTextRecognitionPageHtml(), baseUrl: TESSERACT_BASE_URL }} originWhitelist={['*']} javaScriptEnabled domStorageEnabled onMessage={handleMessage} onError={() => setErrorMessage('text recognition engine could not be loaded')} />
-		</View>
-	);
+	// The page is loaded out of the engine directory rather than handed over as
+	// a string, so that the engine's own relative lookups land on its
+	// neighbours. That needs the WebView to be allowed to read that directory,
+	// which is what the file-access props below are for.
+	const engineElement =
+		engineDirectory === null ? null : (
+			<View style={styles.engineContainer} pointerEvents="none">
+				<WebView ref={webViewRef} source={{ uri: `${engineDirectory}/${ENGINE_PAGE_NAME}` }} originWhitelist={['*']} allowFileAccess allowFileAccessFromFileURLs allowUniversalAccessFromFileURLs allowingReadAccessToURL={engineDirectory} javaScriptEnabled domStorageEnabled onMessage={handleMessage} onError={() => setErrorMessage('text recognition engine could not be loaded')} />
+			</View>
+		);
 
 	return { recognizeLines, progress, errorMessage, engineElement };
 };

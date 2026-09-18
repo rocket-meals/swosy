@@ -1,32 +1,46 @@
 import { useCallback, useRef, useState } from 'react';
 
-import { MAX_RECOGNITION_IMAGE_WIDTH, RECOGNITION_IMAGE_COMPRESSION, RecognitionImage, TESSERACT_LANGUAGE, TESSERACT_SCRIPT_URL, TextRecognitionApi, splitRecognizedText } from '@/helper/TextRecognitionShared';
+import { ENGINE_FILE_NAMES, MAX_RECOGNITION_IMAGE_WIDTH, RECOGNITION_IMAGE_COMPRESSION, RecognitionImage, TESSERACT_LANGUAGE, TextRecognitionApi, buildWorkerOptions, splitRecognizedText } from '@/helper/TextRecognitionShared';
 
 interface TesseractWorker {
 	recognize: (image: string) => Promise<{ data: { text: string } }>;
 }
 
 interface TesseractGlobal {
-	createWorker: (language: string, oem: number, options: { logger: (entry: { status?: string; progress?: number }) => void }) => Promise<TesseractWorker>;
+	createWorker: (language: string, oem: number, options: Record<string, unknown>) => Promise<TesseractWorker>;
 }
 
 const getTesseract = (): TesseractGlobal | undefined => (window as unknown as { Tesseract?: TesseractGlobal }).Tesseract;
 
+/**
+ * Where the bundled engine is served from — `public/tesseract/`, which the web
+ * export copies to the root of the deployment, below whatever base path the app
+ * runs under (`/rocket-meals`, `/rocket-meals/pr-4399`, …). Expo inlines that
+ * base path as `EXPO_BASE_URL` at build time; the fallback covers a dev server
+ * serving from the root.
+ */
+const getEngineDirectoryUrl = (): string => {
+	const basePath = process.env.EXPO_BASE_URL ?? '';
+	const normalized = basePath.endsWith('/') ? basePath.slice(0, -1) : basePath;
+	return `${window.location.origin}${normalized}/tesseract`;
+};
+
 /** Loads the engine into the page once; every later call reuses the script tag. */
-const loadTesseract = async (): Promise<TesseractGlobal> => {
+const loadTesseract = async (engineDirectoryUrl: string): Promise<TesseractGlobal> => {
 	const loaded = getTesseract();
 	if (loaded) {
 		return loaded;
 	}
+	const source = `${engineDirectoryUrl}/${ENGINE_FILE_NAMES.library}`;
 	await new Promise<void>((resolve, reject) => {
-		const existing = document.querySelector<HTMLScriptElement>(`script[src="${TESSERACT_SCRIPT_URL}"]`);
+		const existing = document.querySelector<HTMLScriptElement>(`script[src="${source}"]`);
 		if (existing) {
 			existing.addEventListener('load', () => resolve());
 			existing.addEventListener('error', () => reject(new Error('text recognition engine could not be loaded')));
 			return;
 		}
 		const script = document.createElement('script');
-		script.src = TESSERACT_SCRIPT_URL;
+		script.src = source;
 		script.async = true;
 		script.onload = () => resolve();
 		script.onerror = () => reject(new Error('text recognition engine could not be loaded'));
@@ -67,8 +81,9 @@ const scaleDown = async (imageUri: string): Promise<string> =>
 
 /**
  * Text recognition (OCR) in the browser — the web counterpart of
- * `useTextRecognition.tsx`, running the same Tesseract build in the page
- * instead of in a WebView. Nothing to render, so `engineElement` stays null.
+ * `useTextRecognition.tsx`. It runs the same engine, served from the app's own
+ * origin, so no request for it ever leaves for a third party. Nothing to
+ * render, so `engineElement` stays null.
  */
 export const useTextRecognition = (): TextRecognitionApi => {
 	const workerPromise = useRef<Promise<TesseractWorker> | null>(null);
@@ -77,9 +92,11 @@ export const useTextRecognition = (): TextRecognitionApi => {
 
 	const getWorker = useCallback((): Promise<TesseractWorker> => {
 		if (!workerPromise.current) {
-			workerPromise.current = loadTesseract().then((tesseract) =>
+			const engineDirectoryUrl = getEngineDirectoryUrl();
+			workerPromise.current = loadTesseract(engineDirectoryUrl).then((tesseract) =>
 				tesseract.createWorker(TESSERACT_LANGUAGE, 1, {
-					logger: (entry) => {
+					...buildWorkerOptions(engineDirectoryUrl),
+					logger: (entry: { progress?: number }) => {
 						if (typeof entry.progress === 'number') {
 							setProgress(entry.progress);
 						}
