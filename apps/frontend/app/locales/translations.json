@@ -6429,6 +6429,16 @@
     "tr": "Bu fotoğrafta okunabilir metin yok.",
     "zh": "这张照片中没有可读取的文字。"
   },
+  "ocr_no_match_in_photo": {
+    "de": "Text erkannt, aber nicht das Gesuchte.",
+    "en": "Text was read, but not what we are looking for.",
+    "ar": "تم التعرف على نص، لكنه ليس المطلوب.",
+    "es": "Se reconoció texto, pero no lo que buscamos.",
+    "fr": "Du texte a été reconnu, mais pas celui recherché.",
+    "ru": "Текст распознан, но не тот, который нужен.",
+    "tr": "Metin tanındı, ancak aranan metin değil.",
+    "zh": "已识别到文字，但不是要找的内容。"
+  },
   "ocr_engine_failed": {
     "de": "Die Texterkennung konnte nicht gestartet werden.",
     "en": "Text recognition could not be started.",
