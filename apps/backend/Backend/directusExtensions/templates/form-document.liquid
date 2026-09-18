@@ -241,18 +241,19 @@
             margin-right: 0;
         }
 
+        /* Auch hier kein Flexbox, damit der Seitenumbruch den Block nicht anschneidet. */
         .signature__canvas {
-            display: flex;
-            align-items: flex-end;
-            justify-content: flex-start;
             height: 20mm;
+            line-height: 20mm;
+            white-space: nowrap;
+            overflow: hidden;
             border-bottom: 0.4mm solid var(--text-color);
         }
 
         .signature__canvas img {
             max-height: 20mm;
             max-width: 100%;
-            object-fit: contain;
+            vertical-align: bottom;
         }
 
         .signature__label {
