@@ -185,19 +185,29 @@
             gap: 1.5mm;
         }
 
+        /*
+           Eine Vierergruppe ist ein zusammenhängender Kasten: die Kästchen teilen sich ihre
+           senkrechten Striche, oben bleibt er offen – so sind Bankdaten auf Formularen gesetzt.
+        */
         .boxes__group {
             display: flex;
-            gap: 0.5mm;
+            gap: 0;
         }
 
         .box {
             width: 4.3mm;
             height: 6mm;
             border: 0.3mm solid var(--line-color);
+            border-top: none;
+            border-left: none;
             text-align: center;
             line-height: 6mm;
             font-family: 'Courier New', Courier, monospace;
             font-size: 9pt;
+        }
+
+        .boxes__group .box:first-child {
+            border-left: 0.3mm solid var(--line-color);
         }
 
         /* ── Unterschriften ──────────────────────────────────────────────── */
