@@ -1,6 +1,7 @@
-import {GeneratePdfFromHtmlProps, HtmlPdfGeneratorInterface} from "./HtmlPdfGeneratorInterface";
+import { GeneratePdfFromHtmlProps, HtmlPdfGeneratorInterface } from './HtmlPdfGeneratorInterface';
 import puppeteerCore from 'puppeteer-core';
 import { EnvVariableHelper } from '../EnvVariableHelper';
+import { MockImageFileHelper } from './MockImageFileHelper';
 
 export class PuppeteerGenerator implements HtmlPdfGeneratorInterface {
   public static readonly PuppeteerCore: any = puppeteerCore;
@@ -28,9 +29,7 @@ export class PuppeteerGenerator implements HtmlPdfGeneratorInterface {
    * rocket-meals-directus-2         |     at async Promise.all (index 1)
    */
 
-  static async generatePdfFromHtmlPuppeteer(
-    data: GeneratePdfFromHtmlProps
-  ): Promise<Buffer> {
+  static async generatePdfFromHtmlPuppeteer(data: GeneratePdfFromHtmlProps): Promise<Buffer> {
     const { html, requestOptions, options = {} } = data;
     let browser;
     let puppeteer = PuppeteerGenerator.getPuppeteerLib();
@@ -85,7 +84,9 @@ export class PuppeteerGenerator implements HtmlPdfGeneratorInterface {
 
       //console.log("Bearer token: " + requestOptions.bearerToken);
 
-      if (requestOptions.bearerToken || requestOptions.mockImageResolution) {
+      const hasMockImageFiles = !!requestOptions.mockImageFilesByUrlPart && requestOptions.mockImageFilesByUrlPart.length > 0;
+
+      if (requestOptions.bearerToken || requestOptions.mockImageResolution || hasMockImageFiles) {
         await page.setRequestInterception(true);
 
         page.on('request', (request: any) => {
@@ -95,6 +96,20 @@ export class PuppeteerGenerator implements HtmlPdfGeneratorInterface {
                 Authorization: `Bearer ${requestOptions.bearerToken}`,
               }
             : request.headers();
+
+          if (request.resourceType() === 'image') {
+            // Eine zugeordnete lokale Datei geht dem grauen Platzhalter vor.
+            const mockImageFile = MockImageFileHelper.findMockImageFileForUrl(request.url(), requestOptions.mockImageFilesByUrlPart);
+            const mockImageFileBody = mockImageFile ? MockImageFileHelper.readMockImageFileBody(mockImageFile) : null;
+            if (mockImageFile && mockImageFileBody) {
+              request.respond({
+                status: 200,
+                contentType: mockImageFile.contentType,
+                body: mockImageFileBody,
+              });
+              return;
+            }
+          }
 
           if (requestOptions.mockImageResolution && request.resourceType() === 'image') {
             //console.log('Mocking image resolution for:', request.url());
@@ -160,9 +175,7 @@ export class PuppeteerGenerator implements HtmlPdfGeneratorInterface {
     }
   }
 
-  public async generatePdfFromHtml(
-    data: GeneratePdfFromHtmlProps
-  ): Promise<Buffer> {
+  public async generatePdfFromHtml(data: GeneratePdfFromHtmlProps): Promise<Buffer> {
     return await PuppeteerGenerator.generatePdfFromHtmlPuppeteer(data);
   }
 }

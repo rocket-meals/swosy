@@ -197,7 +197,7 @@ export class FormPdfDocumentHelper {
    * `project_name` sind nur der App-Name und deshalb bloß die letzte Notlösung, damit der
    * Briefkopf nie leer bleibt.
    */
-  private static async resolveOrganization(myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<{ name: string | null; logoUrl: string | null }> {
+  public static async resolveOrganization(myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<{ name: string | null; logoUrl: string | null }> {
     const organization = await myDatabaseHelperInterface.getDocumentOrganization();
     const serverInfo = await myDatabaseHelperInterface.getServerInfo();
 

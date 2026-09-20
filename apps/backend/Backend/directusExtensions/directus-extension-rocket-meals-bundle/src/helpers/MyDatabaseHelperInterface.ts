@@ -4,7 +4,8 @@ import { ItemsServiceHelper } from './ItemsServiceHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { ServerInfo } from './ItemsServiceCreator';
 import { createDirectus, DirectusClient, rest, RestClient, serverInfo } from '@directus/sdk';
-import * as fs from 'node:fs';
+import { DocumentOrganizationHelper } from './DocumentOrganizationHelper';
+import { MockImageFile } from './pdf/MockImageFileHelper';
 import * as path from 'node:path';
 
 /**
@@ -13,7 +14,7 @@ import * as path from 'node:path';
  * Das ist bewusst **nicht** der App-Name aus der Directus-Server-Info. Ein Abnahmeprotokoll
  * trägt den Namen der Einrichtung, die es ausgibt („Studentenwerk Hannover"), nicht den Namen
  * der App, mit der es ausgefüllt wurde. Beide Felder dürfen leer sein – dann fällt der Aufrufer
- * auf die Server-Info zurück (siehe `FormHelper.resolveDocumentOrganization`).
+ * auf die Server-Info zurück (siehe `FormPdfDocumentHelper.resolveOrganization`).
  */
 export type DocumentOrganization = {
   /** Name der Einrichtung aus `app_settings.company_name`. */
@@ -39,6 +40,15 @@ export interface MyDatabaseTestableHelperInterface {
 export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterface {
   /** Name der Einrichtung in Beispiel-PDFs – ein Muster, keine echte Einrichtung. */
   public static readonly EXAMPLE_ORGANIZATION_NAME = 'Studentenwerk Musterstadt';
+
+  /**
+   * Die Datei-ID, unter der das Beispiel-Logo als `app_settings.company_image` steht.
+   *
+   * Eine feste Beispiel-UUID: Das Beispiel-PDF verlangt sein Logo damit unter derselben
+   * Asset-URL wie im Betrieb. Wer offline rendert, ordnet dieser ID die Datei aus dem
+   * Repository zu (siehe {@link getExampleOrganizationLogoMockImageFile}).
+   */
+  public static readonly EXAMPLE_COMPANY_IMAGE_FILE_ID = '1e6a0c8e-4b2d-4c7a-9a4f-0b1d2e3f4a5b';
 
   private static readonly EXAMPLE_ORGANIZATION_LOGO_PATH = path.join(__dirname, 'form', '__tests__', 'data', 'example_organization_logo.svg');
 
@@ -79,22 +89,32 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
   /**
    * Beispielwerte für den Briefkopf: eine erfundene Einrichtung und ein schlichtes Beispiel-Logo.
    * Kein echtes Logo einer echten Einrichtung – die Beispiel-PDFs landen im Repository.
+   *
+   * Bewusst kein Sonderweg: Die Beispiel-`AppSettings` gehen durch dieselbe Auflösung wie die
+   * Einstellungen aus der Datenbank, die Logo-URL ist also eine echte Asset-URL.
    */
   async getDocumentOrganization(): Promise<DocumentOrganization> {
+    return DocumentOrganizationHelper.resolveDocumentOrganization(MyDatabaseTestableHelper.getExampleAppSettings(), this);
+  }
+
+  /** Die `app_settings`, mit denen Beispiel-Dokumente erzeugt werden – reine Musterdaten. */
+  public static getExampleAppSettings(): Partial<DatabaseTypes.AppSettings> {
     return {
-      name: MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_NAME,
-      logoUrl: MyDatabaseTestableHelper.getExampleOrganizationLogoDataUri(),
+      company_name: MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_NAME,
+      company_image: MyDatabaseTestableHelper.EXAMPLE_COMPANY_IMAGE_FILE_ID,
     };
   }
 
-  /** Das Beispiel-Logo als Data-URI, damit das PDF ohne Server erzeugt werden kann. */
-  public static getExampleOrganizationLogoDataUri(): string | null {
-    const logoPath = MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_LOGO_PATH;
-    if (!fs.existsSync(logoPath)) {
-      return null;
-    }
-    const logoSvg = fs.readFileSync(logoPath);
-    return `data:image/svg+xml;base64,${logoSvg.toString('base64')}`;
+  /**
+   * Die Zuordnung, mit der das Beispiel-Logo offline ausgeliefert wird: Die Beispiel-Datei-ID
+   * kommt in der angefragten Asset-URL vor, geantwortet wird mit der Datei aus dem Repository.
+   */
+  public static getExampleOrganizationLogoMockImageFile(): MockImageFile {
+    return {
+      urlPart: MyDatabaseTestableHelper.EXAMPLE_COMPANY_IMAGE_FILE_ID,
+      filePath: MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_LOGO_PATH,
+      contentType: 'image/svg+xml',
+    };
   }
 
   public getPublicClient() {
