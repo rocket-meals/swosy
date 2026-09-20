@@ -117,7 +117,10 @@ export function getVersionPatch() {
         //     IBAN registry's character patterns
         // 41: the camera preview had no height at all in the sheet - its size
         //     comes from the aspect ratio now, not from a layout callback
-        return 41;
+        // 42: housing analytics reports for the handover protocols (management menu)
+        // 43: housing analytics reports exportable as PDF (print) and CSV on the web
+        // 44: common-ui: PrintHidden keeps tap affordances off the printed page
+        return 44;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
