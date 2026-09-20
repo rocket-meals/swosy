@@ -170,8 +170,12 @@ export class ActivityServiceCreator extends GetItemsService {
 export type ServerInfo = {
   project: {
     project_name: string;
-    project_descriptor?: string;
-    project_logo?: string;
+    /**
+     * Der Beschreibungstext der Installation. Directus liefert ihn als `null`, solange er nicht
+     * gepflegt ist – deshalb steht `null` hier ausdrücklich im Typ.
+     */
+    project_descriptor?: string | null;
+    project_logo?: string | null;
     project_color: string;
     default_appearance?: string;
     default_theme_light?: any;

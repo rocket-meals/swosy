@@ -1,0 +1,506 @@
+{% comment %}
+  form-document.liquid – das Layout für ausgefüllte Formulare als PDF.
+
+  Vorbild ist das gedruckte Protokoll, das in den Wohnheimen ausgefüllt und unterschrieben wird:
+  Titel oben links, das Logo der Einrichtung oben rechts, fette Beschriftung mit Doppelpunkt
+  in einer festen Spalte, der Wert daneben. Wo nichts eingetragen wurde, steht – wie auf Papier –
+  eine Schreiblinie bis zum rechten Rand. Deshalb ist das Dokument schwarzweiß: eine
+  Behördenvorlage, kein Web-Layout.
+
+  Das Template bekommt ein fertiges Datenmodell (siehe `FormPdfDocumentHelper.ts`) und kümmert
+  sich ausschließlich um Struktur und Aussehen. Alle Werte kommen als reiner Text herein und
+  werden hier mit `escape` ausgegeben – das Backend baut kein HTML mehr zusammen.
+
+  Erwartete Variablen:
+    documentTitle, documentSubtitle
+    organizationLogoUrl                     – das Logo der Einrichtung im Briefkopf
+                                              (`organizationName` steht nur in der Fußzeile,
+                                               siehe `FormHelper.getPdfFooterTemplate`, und hier
+                                               nur als `alt` am Logo)
+    metaEntries[]   – { label, value }, z. B. Vorgang und Eingangsdatum
+    sections[]      – { title, rows[] }
+    row             – { type: 'text' | 'multiline' | 'boolean' | 'character_boxes',
+                        label, hint, text, options[], boxGroups[] }
+    placeAndDateLabel, placeAndDateValue
+    signatures[]    – { label, imageUrl }
+    attachments[]   – { label, imageUrl }
+    attachmentsTitle
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ documentTitle | escape }}</title>
+    <style>
+        :root {
+            --text-color: #000000;
+            --line-color: #000000;
+            --muted-color: #555555;
+            --label-column-width: 58mm;
+            --rule-width: 0.25mm;
+            --line-width: 0.3mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.35;
+            color: var(--text-color);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Briefkopf ───────────────────────────────────────────────────── */
+
+        .doc-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10mm;
+            padding-bottom: 3mm;
+            border-bottom: var(--rule-width) solid var(--line-color);
+        }
+
+        .doc-header__title {
+            margin: 0;
+            font-size: 20pt;
+            font-weight: 700;
+            letter-spacing: -0.2pt;
+            line-height: 1.12;
+        }
+
+        .doc-header__subtitle {
+            margin: 1.8mm 0 0 0;
+            font-size: 9.5pt;
+            color: var(--muted-color);
+            max-width: 105mm;
+        }
+
+        /*
+           Das Logo der Einrichtung steht als Block rechts, wie auf dem Briefbogen.
+
+           Die 62mm sind der Platz, der im Briefkopf tatsächlich frei ist: 178mm Satzspiegel
+           (A4 abzüglich 2×16mm Rand) minus 105mm `max-width` des Untertitels minus 10mm `gap`
+           ergeben 63mm; 1mm bleibt als Reserve.
+        */
+        .doc-header__organization {
+            flex: 0 0 auto;
+            max-width: 62mm;
+            text-align: right;
+        }
+
+        /*
+           Beide Grenzen zusammen halten das Seitenverhältnis und geben jeder Logoform ihre
+           Größe: Die Höhe ist gedeckelt, damit ein quadratisches Logo den Briefkopf nicht
+           sprengt; die Breite deckelt den Querformat-Fall. Bei 62mm zu 16mm schöpft ein
+           Wort-Bild-Zeichen bis etwa 3,9:1 (62 ÷ 16) die volle Höhe aus – ein breiter
+           Schriftzug wird damit genauso groß gesetzt wie ein quadratisches Logo, erst jenseits
+           dieses Verhältnisses greift die Breite (4:1 ergibt 62 × 15,5mm).
+        */
+        .doc-header__logo {
+            display: block;
+            margin-left: auto;
+            max-height: 16mm;
+            max-width: 62mm;
+            height: auto;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* ── Vorgangsdaten ───────────────────────────────────────────────── */
+
+        .doc-meta {
+            margin: 2mm 0 7mm 0;
+            font-size: 8.5pt;
+            color: var(--muted-color);
+        }
+
+        .doc-meta__entry + .doc-meta__entry {
+            margin-left: 8mm;
+        }
+
+        .doc-meta__label {
+            font-weight: 700;
+        }
+
+        .doc-meta--empty {
+            margin-bottom: 7mm;
+        }
+
+        /* ── Abschnitte ──────────────────────────────────────────────────── */
+
+        .section {
+            margin: 0 0 5mm 0;
+        }
+
+        .section + .section {
+            margin-top: 5mm;
+        }
+
+        .section__title {
+            margin: 0 0 2.5mm 0;
+            font-size: 11.5pt;
+            font-weight: 700;
+            /* Eine Abschnittsüberschrift bleibt nie allein am Seitenende stehen. */
+            break-after: avoid;
+            page-break-after: avoid;
+        }
+
+        /* ── Formularzeilen ──────────────────────────────────────────────── */
+
+        .field {
+            display: flex;
+            align-items: baseline;
+            gap: 2mm;
+            margin: 0 0 1.6mm 0;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .field__label {
+            flex: 0 0 var(--label-column-width);
+            font-weight: 700;
+        }
+
+        /*
+           Das Kleingedruckte unter der Beschriftung – auf dem Vordruck steht dort z. B.
+           „(nur, wenn abweichend von bisheriger Nummer)".
+        */
+        .field__hint {
+            margin-top: 0.4mm;
+            font-size: 7.5pt;
+            font-weight: 400;
+            line-height: 1.25;
+            color: var(--muted-color);
+        }
+
+        .field__value {
+            flex: 1 1 auto;
+            min-width: 0;
+            min-height: 4.6mm;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        /*
+           Wie auf dem Papierformular: die Linie gehört dem leeren Feld. Ein eingetragener Wert
+           steht einfach da, so wie der Vordruck seine bereits bekannten Angaben zeigt.
+        */
+        .field__value--empty {
+            border-bottom: var(--line-width) solid var(--line-color);
+        }
+
+        .field--boxes {
+            align-items: center;
+        }
+
+        /* Mehrzeiliger Text bekommt ein Linienraster über die volle Breite. */
+        .field--block {
+            display: block;
+            margin-bottom: 3.5mm;
+        }
+
+        .field--block .field__label {
+            margin-bottom: 1.5mm;
+        }
+
+        .field--block .field__value {
+            min-height: 0;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        /* Leerer Freitext: drei Schreiblinien, wie sie der Vordruck dafür vorsieht. */
+        .writing-line {
+            height: 6mm;
+            border-bottom: var(--line-width) solid var(--line-color);
+        }
+
+        /* ── Ankreuzfelder ───────────────────────────────────────────────── */
+
+        .checkbox-option {
+            display: inline-block;
+            margin-right: 10mm;
+            white-space: nowrap;
+        }
+
+        .checkbox {
+            display: inline-block;
+            width: 3.6mm;
+            height: 3.6mm;
+            margin-right: 1.6mm;
+            border: var(--line-width) solid var(--line-color);
+            text-align: center;
+            line-height: 3.2mm;
+            font-size: 8.5pt;
+            font-weight: 700;
+            /* Das Kästchen sitzt auf der Grundlinie der Beschriftung, nicht darunter. */
+            vertical-align: -0.5mm;
+        }
+
+        /* ── IBAN-/BIC-Kästchen ──────────────────────────────────────────── */
+
+        .boxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5mm;
+        }
+
+        /*
+           Eine Vierergruppe ist ein zusammenhängender Kasten: die Kästchen teilen sich ihre
+           senkrechten Striche, oben bleibt er offen – so sind Bankdaten auf Formularen gesetzt.
+        */
+        .boxes__group {
+            display: flex;
+            gap: 0;
+        }
+
+        .box {
+            width: 4.3mm;
+            height: 6mm;
+            border: var(--line-width) solid var(--line-color);
+            border-top: none;
+            border-left: none;
+            text-align: center;
+            line-height: 6mm;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 9pt;
+        }
+
+        .boxes__group .box:first-child {
+            border-left: var(--line-width) solid var(--line-color);
+        }
+
+        /* ── Ort, Datum und Unterschriften ───────────────────────────────── */
+
+        .closing {
+            /* Der letzte Abschnitt bringt schon seinen eigenen Abstand mit. */
+            margin-top: 5mm;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .place-and-date {
+            display: flex;
+            align-items: baseline;
+            gap: 2mm;
+            margin-bottom: 7mm;
+        }
+
+        .place-and-date__label {
+            flex: 0 0 auto;
+            font-weight: 700;
+        }
+
+        .place-and-date__line {
+            flex: 0 0 70mm;
+            border-bottom: var(--line-width) solid var(--line-color);
+            min-height: 4.6mm;
+        }
+
+        /*
+           Bewusst kein Flexbox für die Unterschriften: Chromium bricht Flex-Container im Druck
+           ungern sauber um und lässt dann angeschnittene Unterschriften am Seitenende stehen.
+           Inline-Blöcke halten `page-break-inside: avoid` zuverlässig ein.
+        */
+        .signatures {
+            font-size: 0;
+            /*
+               Der Abstand unter einer Unterschrift trennt zwei Reihen. Nach der letzten Reihe
+               soll er den Block nicht höher machen, als er ist – sonst rutscht er unnötig auf
+               eine neue Seite.
+            */
+            margin-bottom: -4mm;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .signature {
+            display: inline-block;
+            width: 48%;
+            margin: 0 4% 4mm 0;
+            vertical-align: bottom;
+            font-size: 10.5pt;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .signature:nth-child(even) {
+            margin-right: 0;
+        }
+
+        .signature__line {
+            height: 16mm;
+            line-height: 16mm;
+            white-space: nowrap;
+            overflow: hidden;
+            border-bottom: var(--line-width) solid var(--line-color);
+        }
+
+        .signature__line img {
+            max-height: 15mm;
+            max-width: 100%;
+            vertical-align: bottom;
+        }
+
+        /* Die Beschriftung steht klein unter der Linie – wie „Hausleitung" auf dem Vordruck. */
+        .signature__label {
+            margin-top: 1.2mm;
+            font-size: 8.5pt;
+            line-height: 1.25;
+            color: var(--muted-color);
+        }
+
+        /* ── Anhänge ─────────────────────────────────────────────────────── */
+
+        .attachments {
+            break-before: page;
+            page-break-before: always;
+        }
+
+        .attachment {
+            margin: 0 0 6mm 0;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .attachment img {
+            max-width: 100%;
+            max-height: 105mm;
+            height: auto;
+            border: var(--line-width) solid var(--line-color);
+        }
+
+        .attachment__caption {
+            margin-top: 1.2mm;
+            font-size: 8.5pt;
+            color: var(--muted-color);
+        }
+    </style>
+</head>
+<body>
+<header class="doc-header">
+    <div>
+        <h1 class="doc-header__title">{{ documentTitle | escape }}</h1>
+        {% if documentSubtitle %}
+            <p class="doc-header__subtitle">{{ documentSubtitle | escape }}</p>
+        {% endif %}
+    </div>
+    {% comment %}
+      Im Briefkopf steht nur das Logo. Der Name der Einrichtung steht schon als Schriftzug darin,
+      und wo es kein Logo gibt, bleibt die Spalte leer: Den Aussteller nennt die Fußzeile auf
+      jeder Seite. Als `alt` bleibt der Name am Logo, damit er kopier- und vorlesbar ist.
+    {% endcomment %}
+    {% if organizationLogoUrl %}
+        <div class="doc-header__organization">
+            <img class="doc-header__logo" src="{{ organizationLogoUrl | escape }}" alt="{{ organizationName | escape }}" />
+        </div>
+    {% endif %}
+</header>
+
+{% if metaEntries.size > 0 %}
+    <div class="doc-meta">
+        {% for metaEntry in metaEntries %}
+            <span class="doc-meta__entry"><span class="doc-meta__label">{{ metaEntry.label | escape }}:</span> {{ metaEntry.value | escape }}</span>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="doc-meta doc-meta--empty"></div>
+{% endif %}
+
+{% for section in sections %}
+    <section class="section">
+        {% if section.title %}
+            <h2 class="section__title">{{ section.title | escape }}:</h2>
+        {% endif %}
+        {% for row in section.rows %}
+            {% if row.type == 'multiline' %}
+                <div class="field field--block">
+                    <div class="field__label">{{ row.label | escape }}:{% if row.hint %}<div class="field__hint">{{ row.hint | escape }}</div>{% endif %}</div>
+                    {% if row.text == '' %}
+                        <div class="writing-line"></div>
+                        <div class="writing-line"></div>
+                        <div class="writing-line"></div>
+                    {% else %}
+                        <div class="field__value">{{ row.text | escape }}</div>
+                    {% endif %}
+                </div>
+            {% elsif row.type == 'boolean' %}
+                <div class="field">
+                    <div class="field__label">{{ row.label | escape }}:{% if row.hint %}<div class="field__hint">{{ row.hint | escape }}</div>{% endif %}</div>
+                    <div class="field__value">
+                        {% for option in row.options %}
+                            <span class="checkbox-option">
+                                <span class="checkbox">{% if option.checked %}X{% endif %}</span>{{ option.label | escape }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% elsif row.type == 'character_boxes' %}
+                <div class="field field--boxes">
+                    <div class="field__label">{{ row.label | escape }}:{% if row.hint %}<div class="field__hint">{{ row.hint | escape }}</div>{% endif %}</div>
+                    <div class="field__value">
+                        <span class="boxes">
+                            {% for group in row.boxGroups %}
+                                <span class="boxes__group">
+                                    {% for character in group %}<span class="box">{{ character | escape }}</span>{% endfor %}
+                                </span>
+                            {% endfor %}
+                        </span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="field">
+                    <div class="field__label">{{ row.label | escape }}:{% if row.hint %}<div class="field__hint">{{ row.hint | escape }}</div>{% endif %}</div>
+                    <div class="field__value{% if row.text == '' %} field__value--empty{% endif %}">{{ row.text | escape }}</div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </section>
+{% endfor %}
+
+<div class="closing">
+    <div class="place-and-date">
+        <div class="place-and-date__label">{{ placeAndDateLabel | escape }}:</div>
+        <div class="place-and-date__line">{{ placeAndDateValue | escape }}</div>
+    </div>
+
+    {% if signatures.size > 0 %}
+        <div class="signatures">
+            {% for signature in signatures %}
+                <div class="signature">
+                    <div class="signature__line">
+                        {% if signature.imageUrl %}
+                            <img src="{{ signature.imageUrl | escape }}" alt="{{ signature.label | escape }}" />
+                        {% endif %}
+                    </div>
+                    <div class="signature__label">{{ signature.label | escape }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+{% if attachments.size > 0 %}
+    <section class="section attachments">
+        <h2 class="section__title">{{ attachmentsTitle | escape }}:</h2>
+        {% for attachment in attachments %}
+            <figure class="attachment">
+                <img src="{{ attachment.imageUrl | escape }}" alt="{{ attachment.label | escape }}" />
+                <figcaption class="attachment__caption">{{ attachment.label | escape }}</figcaption>
+            </figure>
+        {% endfor %}
+    </section>
+{% endif %}
+</body>
+</html>

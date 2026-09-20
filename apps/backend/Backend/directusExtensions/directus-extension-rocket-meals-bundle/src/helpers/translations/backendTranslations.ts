@@ -12,6 +12,96 @@
 import type { TranslationResources } from 'repo-depkit-common';
 
 export const backendTranslations: TranslationResources = {
+  /** Überschrift des Anhangs im Formular-PDF, unter dem die hochgeladenen Fotos stehen. */
+  form_pdf_attachments: {
+    de: 'Anhänge',
+    en: 'Attachments',
+    ar: 'المرفقات',
+    es: 'Anexos',
+    fr: 'Pièces jointes',
+    ru: 'Приложения',
+    tr: 'Ekler',
+    zh: '附件',
+  },
+
+  /** Fußzeile des Formular-PDFs. `{{date}}` ist der Zeitpunkt, zu dem das PDF entstanden ist. */
+  form_pdf_generated_at: {
+    de: 'Erstellt am {{date}}',
+    en: 'Created on {{date}}',
+    ar: 'أُنشئ في {{date}}',
+    es: 'Creado el {{date}}',
+    fr: 'Créé le {{date}}',
+    ru: 'Создано {{date}}',
+    tr: '{{date}} tarihinde oluşturuldu',
+    zh: '创建于 {{date}}',
+  },
+
+  /**
+   * Prüfsumme in der Fußzeile des Formular-PDFs. Sie belegt, dass zwei Ausdrucke desselben
+   * Formulars denselben Inhalt haben. `{{hash}}` ist der Hash über die Antworten.
+   */
+  form_pdf_checksum: {
+    de: 'Prüfsumme: {{hash}}',
+    en: 'Checksum: {{hash}}',
+    ar: 'المجموع الاختباري: {{hash}}',
+    es: 'Suma de verificación: {{hash}}',
+    fr: 'Somme de contrôle : {{hash}}',
+    ru: 'Контрольная сумма: {{hash}}',
+    tr: 'Sağlama toplamı: {{hash}}',
+    zh: '校验和：{{hash}}',
+  },
+
+  /**
+   * Beschriftung der Vorgangskennung im Kopf des Formular-PDFs: die Kennung, unter der die
+   * Einrichtung diese Einreichung wiederfindet.
+   */
+  form_pdf_reference: {
+    de: 'Vorgang',
+    en: 'Reference',
+    ar: 'المعاملة',
+    es: 'Expediente',
+    fr: 'Dossier',
+    ru: 'Дело',
+    tr: 'İşlem',
+    zh: '事项编号',
+  },
+
+  /** Beschriftung des Eingangsdatums im Kopf des Formular-PDFs. */
+  form_pdf_received_at: {
+    de: 'Eingegangen am',
+    en: 'Received on',
+    ar: 'تاريخ الاستلام',
+    es: 'Recibido el',
+    fr: 'Reçu le',
+    ru: 'Получено',
+    tr: 'Geliş tarihi',
+    zh: '收到日期',
+  },
+
+  /** Beschriftung der Zeile über den Unterschriften, in die Ort und Datum eingetragen werden. */
+  form_pdf_place_and_date: {
+    de: 'Ort, Datum',
+    en: 'Place, date',
+    ar: 'المكان والتاريخ',
+    es: 'Lugar, fecha',
+    fr: 'Lieu, date',
+    ru: 'Место, дата',
+    tr: 'Yer, tarih',
+    zh: '地点、日期',
+  },
+
+  /** Seitenzahl in der Fußzeile des Formular-PDFs. */
+  form_pdf_page: {
+    de: 'Seite {{page}} von {{pages}}',
+    en: 'Page {{page}} of {{pages}}',
+    ar: 'صفحة {{page}} من {{pages}}',
+    es: 'Página {{page}} de {{pages}}',
+    fr: 'Page {{page}} sur {{pages}}',
+    ru: 'Страница {{page}} из {{pages}}',
+    tr: 'Sayfa {{page}} / {{pages}}',
+    zh: '第 {{page}} 页，共 {{pages}} 页',
+  },
+
   /**
    * Body of the "your meal is served soon" push notification.
    * `{{date}}` is a day the user recognises ("Morgen", "24.08.2026"), `{{food}}` the meal name.

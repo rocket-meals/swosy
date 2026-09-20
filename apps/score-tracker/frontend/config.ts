@@ -54,7 +54,9 @@ export function getVersionPatch() {
 	// 24: shared IBAN form helpers: spacing-aware length and field validation
 	// 25: shared IBAN validation against the registry's character patterns
 	// 26: common-ui: PrintHidden keeps tap affordances off the printed page
-	return 26;
+	// 27: form PDF: letterhead carries only the logo, the issuer in the footer
+	// 28: master merged back in - PrintHidden next to the form PDF letterhead
+	return 28;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

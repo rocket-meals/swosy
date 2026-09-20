@@ -458,6 +458,7 @@ async function sendFormExtractMail(form: DatabaseTypes.Forms, formExtract: Datab
     form,
     formExtractRelevantInformation,
     myDatabaseHelperInterface: internalMyDatabaseHelper,
+    formSubmission, // Vorgangskennung und Eingangsdatum fuer den Kopf des Dokuments
   });
 
   console.log('recipient_emails: ');

@@ -120,7 +120,11 @@ export function getVersionPatch() {
         // 42: housing analytics reports for the handover protocols (management menu)
         // 43: housing analytics reports exportable as PDF (print) and CSV on the web
         // 44: common-ui: PrintHidden keeps tap affordances off the printed page
-        return 44;
+        // 45: form PDF: letterhead carries only the logo, the issuer's name moved
+        //     to the footer
+        // 46: master merged back in - housing analytics reports next to the form
+        //     PDF letterhead changes
+        return 46;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

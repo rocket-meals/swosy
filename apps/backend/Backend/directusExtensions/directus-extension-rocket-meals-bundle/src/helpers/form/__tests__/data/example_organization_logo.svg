@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180" role="img" aria-label="Beispiel-Logo einer Einrichtung">
+  <rect width="180" height="180" fill="#ffffff"/>
+  <g fill="none" stroke="#111111" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">
+    <circle cx="90" cy="90" r="72"/>
+    <path d="M90 34 C 58 60, 58 120, 90 146 C 122 120, 122 60, 90 34 Z"/>
+    <path d="M90 34 L 90 146"/>
+  </g>
+</svg>

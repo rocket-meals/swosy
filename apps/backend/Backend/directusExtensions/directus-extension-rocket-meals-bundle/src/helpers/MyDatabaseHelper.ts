@@ -1,24 +1,25 @@
-import {ApiContext} from './ApiContext';
+import { ApiContext } from './ApiContext';
 
-import {CashregisterHelper} from './itemServiceHelpers/CashregisterHelper';
-import {ItemsServiceHelper} from './ItemsServiceHelper';
-import {CollectionFieldNames, CollectionNames, DatabaseTypes} from 'repo-depkit-common';
+import { CashregisterHelper } from './itemServiceHelpers/CashregisterHelper';
+import { ItemsServiceHelper } from './ItemsServiceHelper';
+import { CollectionFieldNames, CollectionNames, DatabaseTypes } from 'repo-depkit-common';
 
-import {ServerServiceCreator} from './ItemsServiceCreator';
-import {AppSettingsHelper} from './itemServiceHelpers/AppSettingsHelper';
-import {AutoTranslationSettingsHelper} from './itemServiceHelpers/AutoTranslationSettingsHelper';
-import {WorkflowsRunHelper} from './itemServiceHelpers/WorkflowsRunHelper';
-import {FilesServiceHelper} from './FilesServiceHelper';
-import {EventContext, SchemaOverview} from '@directus/types';
-import {ShareServiceHelper} from './ShareServiceHelper';
-import {MyDatabaseHelperInterface} from './MyDatabaseHelperInterface';
-import {EnvVariableHelper} from './EnvVariableHelper';
+import { ServerServiceCreator } from './ItemsServiceCreator';
+import { AppSettingsHelper } from './itemServiceHelpers/AppSettingsHelper';
+import { AutoTranslationSettingsHelper } from './itemServiceHelpers/AutoTranslationSettingsHelper';
+import { WorkflowsRunHelper } from './itemServiceHelpers/WorkflowsRunHelper';
+import { FilesServiceHelper } from './FilesServiceHelper';
+import { EventContext, SchemaOverview } from '@directus/types';
+import { ShareServiceHelper } from './ShareServiceHelper';
+import { DocumentOrganization, MyDatabaseHelperInterface } from './MyDatabaseHelperInterface';
+import { DocumentOrganizationHelper } from './DocumentOrganizationHelper';
+import { EnvVariableHelper } from './EnvVariableHelper';
 import ms from 'ms';
 import jwt from 'jsonwebtoken';
-import {NanoidHelper} from './NanoidHelper';
-import {DirectusFieldsServiceHelper} from "./DirectusFieldsServiceHelper";
-import {UserHelper} from "./UserHelper";
-import {DevicesServiceHelper} from "./DevicesServiceHelper";
+import { NanoidHelper } from './NanoidHelper';
+import { DirectusFieldsServiceHelper } from './DirectusFieldsServiceHelper';
+import { UserHelper } from './UserHelper';
+import { DevicesServiceHelper } from './DevicesServiceHelper';
 
 export type MyEventContext = EventContext;
 
@@ -127,6 +128,22 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
 
   getAppSettingsHelper() {
     return new AppSettingsHelper(this.apiContext);
+  }
+
+  /**
+   * Das Logo der Einrichtung fuer den Briefkopf erzeugter Dokumente.
+   *
+   * Quelle ist `app_settings.company_image`. Ist das Feld leer oder nicht lesbar, entscheidet
+   * der Aufrufer ueber den Rueckfall (siehe `FormPdfDocumentHelper.resolveOrganization`).
+   */
+  async getDocumentOrganization(): Promise<DocumentOrganization> {
+    try {
+      let appSettings = await this.getAppSettingsHelper().getAppSettings();
+      return DocumentOrganizationHelper.resolveDocumentOrganization(appSettings, this);
+    } catch (error) {
+      console.error('Could not read the organization for the document header: ' + error);
+      return { logoUrl: null };
+    }
   }
 
   getAutoTranslationSettingsHelper() {
