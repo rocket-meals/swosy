@@ -49,7 +49,9 @@ export function getVersionPatch() {
 	// 20: shared IBAN validation against the registry's character patterns
 	// 21: never shipped - the change it described was undone before the merge
 	// 22: form PDF: letterhead carries only the logo, the issuer in the footer
-	return 22;
+	// 23: master merged back in - shared common-ui changes from the housing
+	//     analytics reports
+	return 23;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

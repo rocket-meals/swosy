@@ -122,7 +122,9 @@ export function getVersionPatch() {
         // 44: common-ui: PrintHidden keeps tap affordances off the printed page
         // 45: form PDF: letterhead carries only the logo, the issuer's name moved
         //     to the footer
-        return 45;
+        // 46: master merged back in - housing analytics reports next to the form
+        //     PDF letterhead changes
+        return 46;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

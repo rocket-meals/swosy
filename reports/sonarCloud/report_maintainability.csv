@@ -257,6 +257,11 @@ Key,Message,Component,Line
 "AaBmrg8uWnKIYqRPo5r7","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/app/scripts/deploy-gh-pages.js",20
 "AaBg9V9xEfY3x5R1F0GH","Compare with `undefined` directly instead of using `typeof`.","rocket-meals_rocket-meals:apps/frontend/app/helper/appStateForFeedback.ts",98
 "AaBg9V9xEfY3x5R1F0GI","'value' may use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/frontend/app/helper/appStateForFeedback.ts",103
+"AaC_3Y1fynaeS38RnmCJ","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing-analytics/[report].tsx",64
+"AaC_3ZbzynaeS38RnmCK","Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.","rocket-meals_rocket-meals:apps/frontend/app/helper/downloadTextFileOnWeb.ts",14
+"AaC_3ZdWynaeS38RnmCN","Prefer `String#replaceAll()` over `String#split().join()`.","rocket-meals_rocket-meals:apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts",50
+"AaC_3ZdEynaeS38RnmCM","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/helper/housingAnalytics/HousingAnalyticsReports.ts",451
+"AaC_3ZcmynaeS38RnmCL","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts",121
 "AaAjUba4LLG6L2zbMTrv","Move function 'getDashboardIdOfPanelPayload' to the outer scope.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts",172
 "AaAjUba4LLG6L2zbMTrt","Move function 'isProtectionActiveFor' to the outer scope.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts",63
 "AaAjUba4LLG6L2zbMTru","Move function 'buildForbiddenError' to the outer scope.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts",67

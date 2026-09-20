@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
-| 🐛 Reliability | 29 | 29 |
-| 🔧 Maintainability | 266 | 20 |
+| 🐛 Reliability | 30 | 30 |
+| 🔧 Maintainability | 271 | 19 |
 
-**Total issues:** 296 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 302 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -18,7 +18,11 @@
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:10
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L10
 
-## 🐛 Reliability (29/29)
+## 🐛 Reliability (30/30)
+
+- **Prefer `String#replaceAll()` over `String#split().join()`.**
+  apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts:50
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts#L50
 
 - **Do not use "SharedArrayBuffer" to declare a variable - use another name.**
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:2
@@ -136,7 +140,7 @@
   packages/common/src/form/IbanValidationHelper.ts:124
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanValidationHelper.ts#L124
 
-## 🔧 Maintainability (20/266)
+## 🔧 Maintainability (19/271)
 
 - **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172
@@ -149,6 +153,10 @@
 - **Move function 'buildForbiddenError' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:67
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L67
+
+- **Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.**
+  apps/frontend/app/app/(app)/housing-analytics/[report].tsx:64
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/housing-analytics/[report].tsx#L64
 
 - **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
   apps/frontend/app/components/OcrCamera/index.tsx:73
@@ -169,6 +177,22 @@
 - **The empty object is useless.**
   apps/frontend/app/helper/AppUsageEventHelper.ts:113
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/AppUsageEventHelper.ts#L113
+
+- **Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.**
+  apps/frontend/app/helper/downloadTextFileOnWeb.ts:14
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/downloadTextFileOnWeb.ts#L14
+
+- **Prefer `String#replaceAll()` over `String#split().join()`.**
+  apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts:50
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts#L50
+
+- **Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.**
+  apps/frontend/app/helper/housingAnalytics/HousingAnalyticsReports.ts:451
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/housingAnalytics/HousingAnalyticsReports.ts#L451
+
+- **`String.raw` should be used to avoid escaping `\`.**
+  apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts:121
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts#L121
 
 - **Do not call `Array#push()` multiple times.**
   apps/frontend/app/hooks/useOcr.tsx:198
@@ -193,28 +217,4 @@
 - **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:1
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L1
-
-- **Prefer `node:module` over `module`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L1
-
-- **Consider moving declaration of 'require' as it is referenced outside current binding context.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L1
-
-- **Consider moving declaration of 'ba' as it is referenced outside current binding context.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L1
-
-- **Prefer `node:worker_threads` over `worker_threads`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L1
-
-- **Remove the declaration of the unused 'SharedArrayBuffer' variable.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L2
-
-- **Remove this useless assignment to variable "SharedArrayBuffer".**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L2
 
