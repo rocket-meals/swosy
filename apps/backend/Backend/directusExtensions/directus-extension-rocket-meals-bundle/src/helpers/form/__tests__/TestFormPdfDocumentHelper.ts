@@ -16,7 +16,13 @@ type AnswerValues = {
   value_files?: string[];
 };
 
-function buildExtract(alias: string, fieldType: string, values: AnswerValues = {}): FormExtractRelevantInformationSingle {
+/** Eine Übersetzungszeile, wie Directus sie liefert, wenn die Relation mitgeladen wurde. */
+type ContentTranslation = {
+  name?: string | null;
+  description?: string | null;
+};
+
+function buildExtract(alias: string, fieldType: string, values: AnswerValues = {}, translation?: ContentTranslation): FormExtractRelevantInformationSingle {
   const formField = {
     alias,
     field_type: fieldType,
@@ -25,7 +31,7 @@ function buildExtract(alias: string, fieldType: string, values: AnswerValues = {
     import_settings: '',
     id: `field-${alias}`,
     status: 'published',
-    translations: [],
+    translations: translation ? [{ id: `translation-${alias}`, languages_code: 'de-DE', name: translation.name ?? null, description: translation.description ?? null }] : [],
   } as unknown as DatabaseTypes.FormFields;
 
   const answer = {
@@ -47,22 +53,23 @@ function buildExtract(alias: string, fieldType: string, values: AnswerValues = {
   return { form_field_id: formField.id, sort: 0, form_field: formField, form_answer: answer };
 }
 
-function buildDocument(formExtractRelevantInformation: FormExtractRelevantInformation) {
+async function buildDocument(formExtractRelevantInformation: FormExtractRelevantInformation, params?: { form?: DatabaseTypes.Forms; formSubmission?: DatabaseTypes.FormSubmissions }) {
   return FormPdfDocumentHelper.buildFormDocument({
-    form: { id: 'form-id', alias: 'Übergabeprotokoll' } as unknown as DatabaseTypes.Forms,
+    form: params?.form ?? ({ id: 'form-id', alias: 'Übergabeprotokoll' } as unknown as DatabaseTypes.Forms),
     formExtractRelevantInformation,
     myDatabaseHelperInterface: new MyDatabaseTestableHelper(),
+    formSubmission: params?.formSubmission,
   });
 }
 
 describe('FormPdfDocumentHelper', () => {
-  it('uses the form alias as document title', () => {
-    const document = buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })]);
+  it('uses the form alias as document title', async () => {
+    const document = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })]);
     expect(document.documentTitle).toBe('Übergabeprotokoll');
   });
 
-  it('groups consecutive fields that share an alias prefix into one section', () => {
-    const document = buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' }), buildExtract('Mieter: Vorname', FIELD_TYPE.STRING, { value_string: 'Max' }), buildExtract('Mieter: Nachname', FIELD_TYPE.STRING, { value_string: 'Mustermann' })]);
+  it('groups consecutive fields that share an alias prefix into one section', async () => {
+    const document = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' }), buildExtract('Mieter: Vorname', FIELD_TYPE.STRING, { value_string: 'Max' }), buildExtract('Mieter: Nachname', FIELD_TYPE.STRING, { value_string: 'Mustermann' })]);
 
     expect(document.sections).toHaveLength(2);
     expect(document.sections[0]?.title).toBeNull();
@@ -71,29 +78,29 @@ describe('FormPdfDocumentHelper', () => {
     expect(document.sections[1]?.rows.map(row => row.label)).toEqual(['Vorname', 'Nachname']);
   });
 
-  it('keeps the full label when a prefix is used by a single field only', () => {
-    const document = buildDocument([buildExtract('Mieter: Nummer', FIELD_TYPE.STRING, { value_string: '188030' }), buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })]);
+  it('keeps the full label when a prefix is used by a single field only', async () => {
+    const document = await buildDocument([buildExtract('Mieter: Nummer', FIELD_TYPE.STRING, { value_string: '188030' }), buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })]);
 
     expect(document.sections).toHaveLength(1);
     expect(document.sections[0]?.title).toBeNull();
     expect(document.sections[0]?.rows.map(row => row.label)).toEqual(['Mieter: Nummer', 'Wohnheim']);
   });
 
-  it('keeps the order of the fields the form author defined', () => {
-    const document = buildDocument([buildExtract('Mieter: Vorname', FIELD_TYPE.STRING, { value_string: 'Max' }), buildExtract('Mieter: Nachname', FIELD_TYPE.STRING, { value_string: 'Mustermann' }), buildExtract('Auszugsdatum', FIELD_TYPE.DATE, { value_date: '2000-01-01T00:00:00.000Z' }), buildExtract('Mieter: Telefon', FIELD_TYPE.STRING, { value_string: '0123' })]);
+  it('keeps the order of the fields the form author defined', async () => {
+    const document = await buildDocument([buildExtract('Mieter: Vorname', FIELD_TYPE.STRING, { value_string: 'Max' }), buildExtract('Mieter: Nachname', FIELD_TYPE.STRING, { value_string: 'Mustermann' }), buildExtract('Auszugsdatum', FIELD_TYPE.DATE, { value_date: '2000-01-01T00:00:00.000Z' }), buildExtract('Mieter: Telefon', FIELD_TYPE.STRING, { value_string: '0123' })]);
 
     const labelsInOrder = document.sections.flatMap(section => section.rows.map(row => row.label));
     expect(labelsInOrder).toEqual(['Vorname', 'Nachname', 'Auszugsdatum', 'Mieter: Telefon']);
   });
 
-  it('prints a row for a field nobody filled in', () => {
-    const document = buildDocument([buildExtract('Konto-Inhaber/in', FIELD_TYPE.STRING, { value_string: null })]);
+  it('prints a row for a field nobody filled in', async () => {
+    const document = await buildDocument([buildExtract('Konto-Inhaber/in', FIELD_TYPE.STRING, { value_string: null })]);
 
     expect(document.sections[0]?.rows[0]).toMatchObject({ type: 'text', label: 'Konto-Inhaber/in', text: '' });
   });
 
-  it('renders a checkbox for both answers of a boolean field', () => {
-    const document = buildDocument([buildExtract('Mängelfrei?', FIELD_TYPE.BOOLEAN_CHECKBOX, { value_boolean: true }), buildExtract('Mieterbelastung', FIELD_TYPE.BOOLEAN_CHECKBOX, { value_boolean: false }), buildExtract('Unbeantwortet', FIELD_TYPE.BOOLEAN_CHECKBOX, { value_boolean: null })]);
+  it('renders a checkbox for both answers of a boolean field', async () => {
+    const document = await buildDocument([buildExtract('Mängelfrei?', FIELD_TYPE.BOOLEAN_CHECKBOX, { value_boolean: true }), buildExtract('Mieterbelastung', FIELD_TYPE.BOOLEAN_CHECKBOX, { value_boolean: false }), buildExtract('Unbeantwortet', FIELD_TYPE.BOOLEAN_CHECKBOX, { value_boolean: null })]);
 
     const rows = document.sections[0]?.rows ?? [];
     expect(rows[0]?.options?.map(option => option.checked)).toEqual([false, true]);
@@ -101,8 +108,8 @@ describe('FormPdfDocumentHelper', () => {
     expect(rows[2]?.options?.map(option => option.checked)).toEqual([false, false]);
   });
 
-  it('splits an IBAN into groups of four characters', () => {
-    const document = buildDocument([buildExtract('Bankverbindung', FIELD_TYPE.STRING_BANK_ACCOUNT, { value_string: 'DE89 3704 0044 0532 0130 00' })]);
+  it('splits an IBAN into groups of four characters', async () => {
+    const document = await buildDocument([buildExtract('Bankverbindung', FIELD_TYPE.STRING_BANK_ACCOUNT, { value_string: 'DE89 3704 0044 0532 0130 00' })]);
 
     const row = document.sections[0]?.rows[0];
     expect(row?.type).toBe('character_boxes');
@@ -116,8 +123,8 @@ describe('FormPdfDocumentHelper', () => {
     ]);
   });
 
-  it('prints empty boxes when no bank details were given', () => {
-    const document = buildDocument([buildExtract('IBAN', FIELD_TYPE.STRING_BANK_ACCOUNT, { value_string: null }), buildExtract('BIC', FIELD_TYPE.STRING_BIC, { value_string: null })]);
+  it('prints empty boxes when no bank details were given', async () => {
+    const document = await buildDocument([buildExtract('IBAN', FIELD_TYPE.STRING_BANK_ACCOUNT, { value_string: null }), buildExtract('BIC', FIELD_TYPE.STRING_BIC, { value_string: null })]);
 
     const rows = document.sections[0]?.rows ?? [];
     const countBoxes = (boxGroups: string[][] | undefined) => (boxGroups ?? []).reduce((sum, group) => sum + group.length, 0);
@@ -126,17 +133,57 @@ describe('FormPdfDocumentHelper', () => {
     expect(rows[0]?.boxGroups?.[0]).toEqual(['', '', '', '']);
   });
 
-  it('formats numbers in German notation and keeps prefix and suffix', () => {
+  it('formats numbers in German notation and keeps prefix and suffix', async () => {
     const extract = buildExtract('Kaution', FIELD_TYPE.NUMBER, { value_number: 1380.5 });
     extract.form_field.value_prefix = '€ ';
     extract.form_field.value_suffix = ' brutto';
 
-    const document = buildDocument([extract]);
+    const document = await buildDocument([extract]);
     expect(document.sections[0]?.rows[0]?.text).toBe('€ 1.380,50 brutto');
   });
 
-  it('puts signatures and photos into their own areas instead of the field list', () => {
-    const document = buildDocument([buildExtract('Zimmer', FIELD_TYPE.STRING, { value_string: '42-7' }), buildExtract('Unterschrift Heimleitung', FIELD_TYPE.FILES_IMAGE_SIGNATURE, { value_image: 'https://example.com/signature.png' }), buildExtract('Unterschrift Mieter/in', FIELD_TYPE.FILES_IMAGE_SIGNATURE, { value_image: null }), buildExtract('Mängel: Fotos', FIELD_TYPE.FILES_FILES, { value_files: ['https://example.com/a.jpg', 'https://example.com/b.jpg'] })]);
+  it('prefers the translated name over the alias and prints the description as a hint', async () => {
+    const document = await buildDocument([buildExtract('Mieter: Telefon/Mobil', FIELD_TYPE.STRING, { value_string: '0172 3458247' }, { name: 'Mieter: Telefon/Mobil', description: '(nur, wenn abweichend von bisheriger Nummer)' }), buildExtract('Mieter: Nachname', FIELD_TYPE.STRING, { value_string: 'Mustermann' })]);
+
+    const rows = document.sections[0]?.rows ?? [];
+    expect(rows[0]).toMatchObject({ label: 'Telefon/Mobil', hint: '(nur, wenn abweichend von bisheriger Nummer)' });
+    // Ohne Übersetzung bleibt der Alias die Beschriftung und es gibt kein Kleingedrucktes.
+    expect(rows[1]).toMatchObject({ label: 'Nachname', hint: null });
+  });
+
+  it('takes title and subtitle from the translations of the form', async () => {
+    const form = {
+      id: 'form-id',
+      alias: 'Übergabeprotokoll',
+      translations: [{ id: 'form-translation', languages_code: 'de-DE', name: 'Abnahmeprotokoll', description: 'Protokoll über die Rückgabe des Wohnraums.' }],
+    } as unknown as DatabaseTypes.Forms;
+
+    const document = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })], { form });
+    expect(document.documentTitle).toBe('Abnahmeprotokoll');
+    expect(document.documentSubtitle).toBe('Protokoll über die Rückgabe des Wohnraums.');
+  });
+
+  it('shows reference and date of the submission, and nothing when there is none', async () => {
+    const formSubmission = { id: 'submission-id', alias: 'A-2023-000188', date_created: '2023-11-27T09:12:00.000Z' } as unknown as DatabaseTypes.FormSubmissions;
+
+    const documentWithSubmission = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })], { formSubmission });
+    expect(documentWithSubmission.metaEntries.map(metaEntry => metaEntry.value)).toEqual(['A-2023-000188', '27.11.2023']);
+    expect(documentWithSubmission.placeAndDateValue).toBe('27.11.2023');
+
+    const documentWithoutSubmission = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })]);
+    expect(documentWithoutSubmission.metaEntries).toEqual([]);
+    expect(documentWithoutSubmission.placeAndDateValue).toBe('');
+  });
+
+  it('puts the issuing organization into the letterhead', async () => {
+    const document = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })]);
+
+    expect(document.organizationName).toBe(MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_NAME);
+    expect(document.organizationLogoUrl).toContain('data:image/svg+xml;base64,');
+  });
+
+  it('puts signatures and photos into their own areas instead of the field list', async () => {
+    const document = await buildDocument([buildExtract('Zimmer', FIELD_TYPE.STRING, { value_string: '42-7' }), buildExtract('Unterschrift Heimleitung', FIELD_TYPE.FILES_IMAGE_SIGNATURE, { value_image: 'https://example.com/signature.png' }), buildExtract('Unterschrift Mieter/in', FIELD_TYPE.FILES_IMAGE_SIGNATURE, { value_image: null }), buildExtract('Mängel: Fotos', FIELD_TYPE.FILES_FILES, { value_files: ['https://example.com/a.jpg', 'https://example.com/b.jpg'] })]);
 
     expect(document.sections.flatMap(section => section.rows).map(row => row.label)).toEqual(['Zimmer']);
     expect(document.signatures).toEqual([

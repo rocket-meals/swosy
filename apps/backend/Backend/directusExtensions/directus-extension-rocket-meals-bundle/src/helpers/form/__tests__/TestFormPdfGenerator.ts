@@ -22,6 +22,7 @@ describe('Pdf Generator Test', () => {
       form: testForm,
       formExtractRelevantInformation: testFormExtractRelevantInformation,
       myDatabaseHelperInterface: myDatabaseTestableHelperInterface,
+      formSubmission: FormHelper.getExampleFormSubmission(),
       requestOptions,
     });
     expect(pdfBuffer).toBeTruthy();
