@@ -133,8 +133,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/FoodofferPriceHelper.ts#L227
 
 - **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  packages/common/src/form/IbanRecognitionHelper.ts:149
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanRecognitionHelper.ts#L149
+  packages/common/src/form/IbanRecognitionHelper.ts:158
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanRecognitionHelper.ts#L158
 
 ## 🔧 Maintainability (20/265)
 
