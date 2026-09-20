@@ -38,7 +38,16 @@ export function getVersionPatch() {
 	// 9: repaired French texts in the shared translation catalogue
 	// 10: apostrophe-truncation check added to the shared translation validation
 	// 11: translation lookup accepts a language code in any case and region
-	return 11;
+	// 12: shared food offer price helper added to repo-depkit-common
+	// 13: shared translation catalogue gained the measurement unit symbols
+	// 14: shared price formatting uses a narrow no-break space before the symbol
+	// 15: NumberHelper sets every value/unit pair with a narrow no-break space
+	// 16: shared IBAN recognition helper added to repo-depkit-common
+	// 17: shared IBAN recognition no longer reads a number out of surrounding words
+	// 18: shared IBAN recognition reads welded groups, refuses lettered bodies
+	// 19: shared IBAN form helpers: spacing-aware length and field validation
+	// 20: shared IBAN validation against the registry's character patterns
+	return 20;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

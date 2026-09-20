@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-31T03:12:55.831Z",
+  "generatedAt": "2026-09-14T03:12:27.521Z",
   "baseUrl": "http://localhost:8081/rocket-meals",
   "axeCoreVersion": "4.12.1",
   "tags": [
@@ -15,10 +15,10 @@
   },
   "totals": {
     "critical": 1,
-    "serious": 8,
+    "serious": 7,
     "moderate": 189,
     "minor": 0,
-    "violations": 198,
+    "violations": 197,
     "screensWithErrors": 0
   },
   "screens": [
@@ -228,25 +228,6 @@
       "url": "http://localhost:8081/rocket-meals/housing?kioskMode=true",
       "violations": [
         {
-          "id": "color-contrast",
-          "impact": "serious",
-          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-          "help": "Elements must meet minimum color contrast ratio thresholds",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2aa",
-            "wcag143"
-          ],
-          "nodeCount": 1,
-          "nodes": [
-            {
-              "target": ".r-1f0042m > .r-q4m81j.css-146c3p1[dir=\"auto\"]",
-              "html": "<div dir=\"auto\" class=\"css-146c3p1 r-q4m81j\" style=\"font-size: 16px; color: rgb(255, 255, 255);\">Failed to load apartments</div>",
-              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.63 (foreground color: #ffffff, background color: #ff3333, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
-            }
-          ]
-        },
-        {
           "id": "region",
           "impact": "moderate",
           "description": "Ensure all page content is contained by landmarks",
@@ -261,14 +242,14 @@
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             },
             {
-              "target": ".r-1udh08x.r-1p0dtai.r-1d2f490 > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx",
+              "target": ".r-1udh08x.r-1d2f490.r-u8s1d > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx",
               "html": "<div class=\"css-g5y9jx r-13awgt0\">",
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             }
           ]
         }
       ],
-      "passCount": 24,
+      "passCount": 21,
       "incompleteCount": 2
     },
     {

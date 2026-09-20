@@ -1,0 +1,195 @@
+{
+	"engine": "PaddleOCR PP-OCRv6 tiny, via ppu-paddle-ocr 6.6.0 on onnxruntime-node",
+	"description": "What PaddleOCR returns for the same photos as bank-cards.ocr.json, recorded in one run in Node. Kept beside the Tesseract readings so the two engines can be compared on identical material: same images, same IbanRecognitionHelper, only the engine differs.",
+	"cards": [
+		{
+			"file": "Test_1_DE00012345678901234567.png",
+			"description": "Volksbank specimen card, \"Toni Raiffeisen\", photographed head-on.",
+			"printedIban": "DE00012345678901234567",
+			"millisecondsToRead": 186,
+			"recognizedLines": [
+				"R Brliner Volksbank",
+				"Wir machen den Weg fre.",
+				"girocard",
+				"Toni Raiffeisen"
+			]
+		},
+		{
+			"file": "Test_2_DE09123456780000000000.png",
+			"description": "Deutsche Bank specimen card held into a camera, \"Max Mustermann\".",
+			"printedIban": "DE09123456780000000000",
+			"millisecondsToRead": 268,
+			"recognizedLines": [
+				"2)",
+				"MAX985TERMAN",
+				"11:06:2024",
+				"DE09 1234 5678 0000 0000 00 2025"
+			]
+		},
+		{
+			"file": "Test_3_DE123456678901234567890.png",
+			"description": "Musterbank specimen card, a flat render, \"Maxi Muster\".",
+			"printedIban": "DE12345678901234567890",
+			"millisecondsToRead": 206,
+			"recognizedLines": [
+				"Musterbank",
+				"中",
+				"girocard",
+				"VISA",
+				"D",
+				"C",
+				"Maxi Muster",
+				"IBAN",
+				"DE12 3456 7890 1234 5678 90"
+			]
+		},
+		{
+			"file": "Test_4_DE9912354678123456780.png",
+			"description": "Sparkasse Musterstadt specimen card, a flat render, \"Ute Mustermann\".",
+			"printedIban": "DE99123546781234567890",
+			"millisecondsToRead": 188,
+			"recognizedLines": [
+				"Sparkasse",
+				"Musterstadt",
+				"girocard",
+				"IBAN (BLZ) (Konto-Nr.) Gültig bis:",
+				"DE99 1235 467 8  12/XX",
+				"1"
+			]
+		},
+		{
+			"file": "Test_5_DE99123546781234567890.png",
+			"description": "The same Sparkasse card, photographed at an angle.",
+			"printedIban": "DE99123546781234567890",
+			"millisecondsToRead": 168,
+			"recognizedLines": [
+				"Sparkasse",
+				"Musterstadt",
+				"曲",
+				"girocard",
+				"OOIGO",
+				"UTE MUSTERMANN",
+				"D E9912354678 1234 5678 90 12/XX"
+			]
+		},
+		{
+			"file": "Test_6_DE00012345678901234567.png",
+			"description": "Volksbank Oberberg specimen card, photographed at an angle.",
+			"printedIban": "DE00012345678901234567",
+			"millisecondsToRead": 177,
+			"recognizedLines": [
+				"Volksbanken",
+				"Oberberg eG MeinPlus •0。 0",
+				"Wir machen den Weg frei.",
+				")",
+				"girocard",
+				"ToniRaiffeisen",
+				"IBAN: Gultigbis",
+				"DE0001234567 890123456700/00"
+			]
+		},
+		{
+			"file": "Test_7_DE00012345678901234567.png",
+			"description": "VR-Bank Mitte specimen card, \"Max Mustermann\".",
+			"printedIban": "DE00012345678901234567",
+			"millisecondsToRead": 321,
+			"recognizedLines": [
+				"M VR-Bank Mitte eG",
+				"MeinPlus",
+				"Wir machen den Weg frei.",
+				"girocard",
+				"Max Mustermann",
+				"IBAN: Gültig bis",
+				"DE00 0123 4567 8901 2345 67 2030"
+			]
+		},
+		{
+			"file": "Test_8_DE00012345678901234567.png",
+			"description": "Volksbank Bergisches Land specimen card, \"Robert Schumann\".",
+			"printedIban": "DE00012345678901234567",
+			"millisecondsToRead": 196,
+			"recognizedLines": [
+				"M im Bergischen Lard Volksbank",
+				"m00nd",
+				"a品 A e 。",
+				"0",
+				"9 0",
+				"C 0",
+				"gitoçard",
+				"Robert Schumann",
+				"IBAN:",
+				"DE00 0123 45678901 234567 0000 Gültig bis",
+				"maestro."
+			]
+		},
+		{
+			"file": "Test_9_DE99123546781234567890.png",
+			"description": "The Sparkasse card held in front of a terminal, small in the frame.",
+			"printedIban": "DE99123546781234567890",
+			"millisecondsToRead": 160,
+			"recognizedLines": [
+				"grocard",
+				"UTEMUSTERMANN",
+				"DE99 1235 4678 1234 5678 90  12/XX"
+			]
+		},
+		{
+			"file": "Test_10_4724123456789123.png",
+			"description": "A Visa debit specimen card without an IBAN, \"G Raymond\", card number 4724 1234 5678 9123.",
+			"printedIban": null,
+			"millisecondsToRead": 245,
+			"recognizedLines": [
+				"D Access Card",
+				"47241234.56784123 T",
+				"4724",
+				"R 00/00 Ieterac VISA",
+				"N DEBIT",
+				"G RAYMOND"
+			]
+		},
+		{
+			"file": "Test_11_1234567800000000.png",
+			"description": "A Mastercard specimen card without an IBAN, \"A N Other\", card number 1234 5678 0000 0000.",
+			"printedIban": null,
+			"millisecondsToRead": 198,
+			"recognizedLines": []
+		},
+		{
+			"file": "Test_12_5310435678543801.png",
+			"description": "A Mastercard marketing render without an IBAN, card number 5310 4356 7854 3801.",
+			"printedIban": null,
+			"millisecondsToRead": 177,
+			"recognizedLines": []
+		},
+		{
+			"file": "Test_13_DE000123456778901234567.png",
+			"description": "Volksbanken Raiffeisenbanken specimen card, a flat render, \"Toni Raiffeisen\".",
+			"printedIban": "DE00012345678901234567",
+			"millisecondsToRead": 185,
+			"recognizedLines": [
+				"Volksbanken",
+				"Raiffeisenbanken",
+				"1",
+				"Wir machen den Weg frei.",
+				"girocard",
+				"Toni Raiffeisen",
+				"IBAN: Gültig bis",
+				"DE00 0123 4567 8901 2345 67 00/00",
+				"VISA"
+			]
+		},
+		{
+			"file": "Test_14_DE12345678901234567890.png",
+			"description": "Musterbank specimen card, a second render, \"Maxi Muster\".",
+			"printedIban": "DE12345678901234567890",
+			"millisecondsToRead": 198,
+			"recognizedLines": [
+				"Musterbank",
+				"girocard",
+				"Maxi Muster",
+				"IBAN",
+				"DE12 3456 7890 1234 5678 90"
+			]
+		}
+	]
+}

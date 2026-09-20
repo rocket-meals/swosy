@@ -6199,6 +6199,346 @@
     "tr": "Sohbete git",
     "zh": "前往聊天"
   },
+  "iban_invalid_length": {
+    "de": "Ungültige IBAN-Länge",
+    "en": "Invalid IBAN length",
+    "ar": "طول IBAN غير صالح",
+    "es": "Longitud de IBAN no válida",
+    "fr": "Longueur d'IBAN invalide",
+    "ru": "Неверная длина IBAN",
+    "tr": "Geçersiz IBAN uzunluğu",
+    "zh": "IBAN 长度无效"
+  },
+  "iban_invalid_checksum": {
+    "de": "IBAN-Prüfziffern stimmen nicht",
+    "en": "The IBAN check digits do not add up",
+    "ar": "أرقام التحقق في الآيبان غير صحيحة",
+    "es": "Los dígitos de control del IBAN no coinciden",
+    "fr": "Les clés de contrôle de l’IBAN ne correspondent pas",
+    "ru": "Контрольные цифры IBAN не сходятся",
+    "tr": "IBAN kontrol haneleri uyuşmuyor",
+    "zh": "IBAN 校验位不正确"
+  },
+  "giro_card_scan_title": {
+    "de": "Girocard scannen",
+    "en": "Scan giro card",
+    "ar": "مسح بطاقة المصرف",
+    "es": "Escanear tarjeta bancaria",
+    "fr": "Scanner la carte bancaire",
+    "ru": "Сканировать банковскую карту",
+    "tr": "Banka kartını tara",
+    "zh": "扫描银行卡"
+  },
+  "giro_card_scan_hint": {
+    "de": "Halte die Karte so in den Rahmen, dass die IBAN gut lesbar ist.",
+    "en": "Hold the card in the frame so that the IBAN is clearly readable.",
+    "ar": "ضع البطاقة داخل الإطار بحيث يكون رقم IBAN واضحًا للقراءة.",
+    "es": "Coloca la tarjeta en el marco de modo que el IBAN se lea con claridad.",
+    "fr": "Placez la carte dans le cadre de sorte que l'IBAN soit bien lisible.",
+    "ru": "Расположите карту в рамке так, чтобы IBAN хорошо читался.",
+    "tr": "Kartı, IBAN net okunacak şekilde çerçevenin içinde tutun.",
+    "zh": "请将卡片置于取景框内，使 IBAN 清晰可辨。"
+  },
+  "giro_card_iban_scanner_test": {
+    "de": "Girocard-IBAN-Scanner",
+    "en": "Giro card IBAN scanner",
+    "ar": "ماسح IBAN لبطاقة المصرف",
+    "es": "Escáner de IBAN de tarjeta bancaria",
+    "fr": "Scanner d'IBAN de carte bancaire",
+    "ru": "Сканер IBAN банковской карты",
+    "tr": "Banka kartı IBAN tarayıcı",
+    "zh": "银行卡 IBAN 扫描器"
+  },
+  "giro_card_iban_scanner_test_description": {
+    "de": "Liest die IBAN von einer Girocard und füllt damit das Formularfeld. Die Testkarte liegt im Repository unter packages/common/src/__tests__/fixtures/girocard.",
+    "en": "Reads the IBAN off a giro card and fills the form field with it. The test card is in the repository under packages/common/src/__tests__/fixtures/girocard.",
+    "ar": "يقرأ رقم IBAN من بطاقة المصرف ويملأ به حقل النموذج. بطاقة الاختبار موجودة في المستودع ضمن packages/common/src/__tests__/fixtures/girocard.",
+    "es": "Lee el IBAN de una tarjeta bancaria y rellena con él el campo del formulario. La tarjeta de prueba está en el repositorio en packages/common/src/__tests__/fixtures/girocard.",
+    "fr": "Lit l'IBAN d'une carte bancaire et remplit le champ du formulaire. La carte de test se trouve dans le dépôt sous packages/common/src/__tests__/fixtures/girocard.",
+    "ru": "Считывает IBAN с банковской карты и заполняет им поле формы. Тестовая карта лежит в репозитории в packages/common/src/__tests__/fixtures/girocard.",
+    "tr": "IBAN'ı banka kartından okur ve form alanını doldurur. Test kartı depoda packages/common/src/__tests__/fixtures/girocard altındadır.",
+    "zh": "从银行卡读取 IBAN 并填入表单字段。测试卡片位于仓库的 packages/common/src/__tests__/fixtures/girocard。"
+  },
+  "giro_card_scan_allow_invalid_checksum": {
+    "de": "Prüfsumme ignorieren (für Musterkarten)",
+    "en": "Ignore the checksum (for specimen cards)",
+    "ar": "تجاهل المجموع الاختباري (للبطاقات النموذجية)",
+    "es": "Ignorar la suma de verificación (para tarjetas de muestra)",
+    "fr": "Ignorer la somme de contrôle (pour les cartes spécimen)",
+    "ru": "Игнорировать контрольную сумму (для образцов карт)",
+    "tr": "Sağlama toplamını yok say (örnek kartlar için)",
+    "zh": "忽略校验和（用于样卡）"
+  },
+  "giro_card_scan_recognized_lines": {
+    "de": "Erkannte Textzeilen",
+    "en": "Recognized text lines",
+    "ar": "أسطر النص المتعرف عليها",
+    "es": "Líneas de texto reconocidas",
+    "fr": "Lignes de texte reconnues",
+    "ru": "Распознанные строки текста",
+    "tr": "Tanınan metin satırları",
+    "zh": "识别到的文本行"
+  },
+  "giro_card_scan_no_lines_yet": {
+    "de": "Noch keine Zeilen erkannt.",
+    "en": "No lines recognized yet.",
+    "ar": "لم يتم التعرف على أي أسطر بعد.",
+    "es": "Todavía no se ha reconocido ninguna línea.",
+    "fr": "Aucune ligne reconnue pour le moment.",
+    "ru": "Строки пока не распознаны.",
+    "tr": "Henüz satır tanınmadı.",
+    "zh": "尚未识别到文本行。"
+  },
+  "giro_card_scan_last_result": {
+    "de": "Zuletzt erkannte IBAN",
+    "en": "Last recognized IBAN",
+    "ar": "آخر رقم IBAN تم التعرف عليه",
+    "es": "Último IBAN reconocido",
+    "fr": "Dernier IBAN reconnu",
+    "ru": "Последний распознанный IBAN",
+    "tr": "Son tanınan IBAN",
+    "zh": "最近识别到的 IBAN"
+  },
+  "giro_card_scan_no_result_yet": {
+    "de": "Noch keine IBAN erkannt.",
+    "en": "No IBAN recognized yet.",
+    "ar": "لم يتم التعرف على أي رقم IBAN بعد.",
+    "es": "Todavía no se ha reconocido ningún IBAN.",
+    "fr": "Aucun IBAN reconnu pour le moment.",
+    "ru": "IBAN пока не распознан.",
+    "tr": "Henüz IBAN tanınmadı.",
+    "zh": "尚未识别到 IBAN。"
+  },
+  "giro_card_scan_engine": {
+    "de": "Texterkennung",
+    "en": "Text recognition",
+    "ar": "التعرف على النص",
+    "es": "Reconocimiento de texto",
+    "fr": "Reconnaissance de texte",
+    "ru": "Распознавание текста",
+    "tr": "Metin tanıma",
+    "zh": "文字识别"
+  },
+  "ocr_source_camera_automatic": {
+    "de": "Kamera (automatisch)",
+    "en": "Camera (automatic)",
+    "ar": "الكاميرا (تلقائي)",
+    "es": "Cámara (automática)",
+    "fr": "Appareil photo (automatique)",
+    "ru": "Камера (автоматически)",
+    "tr": "Kamera (otomatik)",
+    "zh": "相机（自动）"
+  },
+  "ocr_source_camera": {
+    "de": "Kamera",
+    "en": "Camera",
+    "ar": "الكاميرا",
+    "es": "Cámara",
+    "fr": "Appareil photo",
+    "ru": "Камера",
+    "tr": "Kamera",
+    "zh": "相机"
+  },
+  "ocr_source_photo": {
+    "de": "Foto auswählen",
+    "en": "Choose a photo",
+    "ar": "اختيار صورة",
+    "es": "Elegir una foto",
+    "fr": "Choisir une photo",
+    "ru": "Выбрать фото",
+    "tr": "Fotoğraf seç",
+    "zh": "选择照片"
+  },
+  "ocr_searching": {
+    "de": "Text wird gesucht …",
+    "en": "Looking for text …",
+    "ar": "جارٍ البحث عن نص …",
+    "es": "Buscando texto …",
+    "fr": "Recherche de texte …",
+    "ru": "Поиск текста …",
+    "tr": "Metin aranıyor …",
+    "zh": "正在查找文字 …"
+  },
+  "ocr_preparing": {
+    "de": "Texterkennung wird vorbereitet …",
+    "en": "Preparing text recognition …",
+    "ar": "جارٍ تجهيز التعرف على النص …",
+    "es": "Preparando el reconocimiento de texto …",
+    "fr": "Préparation de la reconnaissance de texte …",
+    "ru": "Подготовка распознавания текста …",
+    "tr": "Metin tanıma hazırlanıyor …",
+    "zh": "正在准备文字识别 …"
+  },
+  "ocr_ready_for_photo": {
+    "de": "Bereit. Nimm ein Foto auf.",
+    "en": "Ready. Take a photo.",
+    "ar": "جاهز. التقط صورة.",
+    "es": "Listo. Haz una foto.",
+    "fr": "Prêt. Prenez une photo.",
+    "ru": "Готово. Сделайте фото.",
+    "tr": "Hazır. Bir fotoğraf çek.",
+    "zh": "准备就绪。请拍照。"
+  },
+  "ocr_take_photo": {
+    "de": "Foto aufnehmen",
+    "en": "Take a photo",
+    "ar": "التقاط صورة",
+    "es": "Hacer una foto",
+    "fr": "Prendre une photo",
+    "ru": "Сделать фото",
+    "tr": "Fotoğraf çek",
+    "zh": "拍照"
+  },
+  "ocr_retry": {
+    "de": "Neues Foto",
+    "en": "New photo",
+    "ar": "صورة جديدة",
+    "es": "Nueva foto",
+    "fr": "Nouvelle photo",
+    "ru": "Новое фото",
+    "tr": "Yeni fotoğraf",
+    "zh": "重新拍照"
+  },
+  "ocr_switch_camera": {
+    "de": "Kamera wechseln",
+    "en": "Switch camera",
+    "ar": "تبديل الكاميرا",
+    "es": "Cambiar de cámara",
+    "fr": "Changer de caméra",
+    "ru": "Сменить камеру",
+    "tr": "Kamerayı değiştir",
+    "zh": "切换摄像头"
+  },
+  "ocr_toggle_torch": {
+    "de": "Licht an/aus",
+    "en": "Light on/off",
+    "ar": "تشغيل/إيقاف الإضاءة",
+    "es": "Luz encendida/apagada",
+    "fr": "Lumière activée/désactivée",
+    "ru": "Свет вкл./выкл.",
+    "tr": "Işığı aç/kapat",
+    "zh": "开/关灯"
+  },
+  "ocr_too_blurry": {
+    "de": "Bild zu unscharf. Nutze die Rückkamera und halte etwas Abstand.",
+    "en": "The image is too blurry. Use the back camera and keep some distance.",
+    "ar": "الصورة غير واضحة. استخدم الكاميرا الخلفية واترك بعض المسافة.",
+    "es": "La imagen está demasiado borrosa. Usa la cámara trasera y mantén algo de distancia.",
+    "fr": "L'image est trop floue. Utilisez la caméra arrière et gardez un peu de distance.",
+    "ru": "Изображение слишком размыто. Используйте заднюю камеру и держите небольшое расстояние.",
+    "tr": "Görüntü çok bulanık. Arka kamerayı kullanın ve biraz mesafe bırakın.",
+    "zh": "图像太模糊。请使用后置摄像头，并保持一些距离。"
+  },
+  "ocr_nothing_in_photo": {
+    "de": "Auf diesem Foto war kein Text zu lesen.",
+    "en": "No text could be read in this photo.",
+    "ar": "تعذرت قراءة أي نص في هذه الصورة.",
+    "es": "No se ha podido leer ningún texto en esta foto.",
+    "fr": "Aucun texte n'a pu être lu sur cette photo.",
+    "ru": "На этом фото не удалось прочитать текст.",
+    "tr": "Bu fotoğrafta okunabilir metin yok.",
+    "zh": "这张照片中没有可读取的文字。"
+  },
+  "ocr_no_match_in_photo": {
+    "de": "Text erkannt, aber nicht das Gesuchte.",
+    "en": "Text was read, but not what we are looking for.",
+    "ar": "تم التعرف على نص، لكنه ليس المطلوب.",
+    "es": "Se reconoció texto, pero no lo que buscamos.",
+    "fr": "Du texte a été reconnu, mais pas celui recherché.",
+    "ru": "Текст распознан, но не тот, который нужен.",
+    "tr": "Metin tanındı, ancak aranan metin değil.",
+    "zh": "已识别到文字，但不是要找的内容。"
+  },
+  "ocr_engine_failed": {
+    "de": "Die Texterkennung konnte nicht gestartet werden.",
+    "en": "Text recognition could not be started.",
+    "ar": "تعذر بدء التعرف على النص.",
+    "es": "No se ha podido iniciar el reconocimiento de texto.",
+    "fr": "La reconnaissance de texte n'a pas pu démarrer.",
+    "ru": "Не удалось запустить распознавание текста.",
+    "tr": "Metin tanıma başlatılamadı.",
+    "zh": "无法启动文字识别。"
+  },
+  "ocr_camera_permission_required": {
+    "de": "Für die Texterkennung wird Zugriff auf die Kamera gebraucht.",
+    "en": "Text recognition needs access to the camera.",
+    "ar": "يحتاج التعرف على النص إلى إذن الوصول إلى الكاميرا.",
+    "es": "El reconocimiento de texto necesita acceso a la cámara.",
+    "fr": "La reconnaissance de texte a besoin d'accéder à la caméra.",
+    "ru": "Для распознавания текста нужен доступ к камере.",
+    "tr": "Metin tanıma için kamera erişimi gerekir.",
+    "zh": "文字识别需要访问相机。"
+  },
+  "ocr_gallery_permission_required": {
+    "de": "Für die Texterkennung wird Zugriff auf die Fotos gebraucht.",
+    "en": "Text recognition needs access to your photos.",
+    "ar": "يحتاج التعرف على النص إلى إذن الوصول إلى الصور.",
+    "es": "El reconocimiento de texto necesita acceso a tus fotos.",
+    "fr": "La reconnaissance de texte a besoin d'accéder à vos photos.",
+    "ru": "Для распознавания текста нужен доступ к фотографиям.",
+    "tr": "Metin tanıma için fotoğraflara erişim gerekir.",
+    "zh": "文字识别需要访问您的照片。"
+  },
+  "text_recognition_test": {
+    "de": "Texterkennung testen",
+    "en": "Test text recognition",
+    "ar": "اختبار التعرف على النص",
+    "es": "Probar el reconocimiento de texto",
+    "fr": "Tester la reconnaissance de texte",
+    "ru": "Проверить распознавание текста",
+    "tr": "Metin tanımayı test et",
+    "zh": "测试文字识别"
+  },
+  "text_recognition_test_description": {
+    "de": "Liest Text aus einem Foto oder direkt von der Kamera und zeigt, was die Erkennung daraus macht. Ohne Suche nach etwas Bestimmtem — jede erkannte Zeile wird angezeigt.",
+    "en": "Reads text from a photo or straight from the camera and shows what the engine makes of it. Nothing in particular is searched for — every recognized line is listed.",
+    "ar": "يقرأ النص من صورة أو مباشرة من الكاميرا ويعرض ما يستخلصه المحرك. لا يبحث عن شيء محدد — تُعرض كل سطر مُتعرَّف عليه.",
+    "es": "Lee texto de una foto o directamente de la cámara y muestra lo que el motor obtiene. No busca nada en concreto: se muestran todas las líneas reconocidas.",
+    "fr": "Lit le texte d'une photo ou directement de la caméra et montre ce que le moteur en tire. Rien de particulier n'est recherché : chaque ligne reconnue est affichée.",
+    "ru": "Читает текст с фотографии или прямо с камеры и показывает, что получилось. Ничего конкретного не ищется — выводится каждая распознанная строка.",
+    "tr": "Bir fotoğraftan veya doğrudan kameradan metin okur ve motorun ne çıkardığını gösterir. Belirli bir şey aranmaz — tanınan her satır listelenir.",
+    "zh": "从照片或直接从相机读取文字，并显示识别结果。不查找特定内容——列出每一行识别到的文字。"
+  },
+  "text_recognition_test_start": {
+    "de": "Text erkennen",
+    "en": "Recognize text",
+    "ar": "التعرف على النص",
+    "es": "Reconocer texto",
+    "fr": "Reconnaître le texte",
+    "ru": "Распознать текст",
+    "tr": "Metni tanı",
+    "zh": "识别文字"
+  },
+  "text_recognition_test_hint": {
+    "de": "Halte den Text so vor die Kamera, dass er gut lesbar ist.",
+    "en": "Hold the text in front of the camera so that it is clearly readable.",
+    "ar": "ضع النص أمام الكاميرا بحيث يكون واضحًا.",
+    "es": "Coloca el texto delante de la cámara de forma que se lea con claridad.",
+    "fr": "Placez le texte devant l’appareil photo de façon à ce qu’il soit bien lisible.",
+    "ru": "Держите текст перед камерой так, чтобы он был хорошо читаем.",
+    "tr": "Metni kameranın önünde okunaklı olacak şekilde tut.",
+    "zh": "把文字放在摄像头前，使其清晰可读。"
+  },
+  "text_recognition_test_result": {
+    "de": "Erkannte Textzeilen",
+    "en": "Recognized lines of text",
+    "ar": "أسطر النص المُتعرَّف عليها",
+    "es": "Líneas de texto reconocidas",
+    "fr": "Lignes de texte reconnues",
+    "ru": "Распознанные строки текста",
+    "tr": "Tanınan metin satırları",
+    "zh": "识别到的文本行"
+  },
+  "text_recognition_test_no_result": {
+    "de": "Noch nichts erkannt.",
+    "en": "Nothing recognized yet.",
+    "ar": "لم يتم التعرف على شيء بعد.",
+    "es": "Todavía no se ha reconocido nada.",
+    "fr": "Rien n'a encore été reconnu.",
+    "ru": "Пока ничего не распознано.",
+    "tr": "Henüz bir şey tanınmadı.",
+    "zh": "尚未识别到任何内容。"
+  },
   "housing_analytics": {
     "de": "Wohnanlagen: Auswertungen",
     "en": "Housing analytics",

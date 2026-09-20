@@ -58,7 +58,18 @@ export enum ConfigCustomerEnum {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 206;
+	// 207: text recognition moved from Tesseract in a WebView to PaddleOCR on
+	// onnxruntime. onnxruntime-react-native and @shopify/react-native-skia are
+	// native modules, so this needs a new binary - it cannot ship as an OTA
+	// update the way the WebView could.
+	// 208: new dev client build for the PaddleOCR native modules. Android
+	//      failed on a Gradle 9 incompatibility in onnxruntime-react-native,
+	//      iOS went through - so 208 exists online for iOS only.
+	// 209: same modules, with that library patched. A fresh number so both
+	//      platforms build again rather than being skipped as already built.
+	// 210: the patch itself was wrong - it compared two Lists, which the Groovy
+	//      in Gradle 9 refuses. Corrected and verified against Gradle 9.3.1.
+	return 210;
 }
 
 export function getMajorVersion() {
@@ -80,10 +91,36 @@ export function getVersionPatch() {
         // 22: shared translation catalogue now also serves the backend; French texts repaired
         // 23: 20 French texts repaired that were cut off at an apostrophe
         // 24: language codes matched case- and region-insensitively when picking a translation
-        // 25: housing analytics reports for the handover protocols (management menu)
-        // 26: housing analytics reports exportable as PDF (print) and CSV on the web
-        // 27: common-ui: PrintHidden keeps tap affordances off the printed page
-        return 27;
+        // 25: food offers sold by weight show a base price ("0,40 €/100 g")
+        // 26: the unit of that base price is translated where it is a known unit
+        // 27: narrow no-break space before the € symbol, as before a unit
+        // 28: every value/unit pair uses the narrow no-break space, nutrients included
+        // 29: IBAN form field scans a giro card with the camera (Tesseract OCR,
+        //     no native module - ships as an OTA update)
+        // 30: the giro card scanner no longer reads a number out of the words
+        //     printed around it (bank name, cardholder, "Gültig bis")
+        // 31: taking the picture and reading it are separated - the camera
+        //     preview and the engine's WebView are never on screen together
+        // 32: a number is only read when its letters sit where an IBAN has them,
+        //     and groups the engine welded together are read again
+        // 33: the giro card scanner reads with PaddleOCR instead of Tesseract
+        // 34: reading text is a shared useOcr hook now - it asks where the
+        //     picture should come from (automatic camera, camera, photo)
+        // 35: build number raised to 208
+        // 36: onnxruntime-react-native patched for Gradle 9 (Android build)
+        // 37: build number raised to 209
+        // 38: the Gradle 9 patch compares integers now, not lists
+        // 39: the IBAN form field keeps its printed spacing without being cut
+        //     short, and checks the number rather than the spaces
+        // 40: the OCR modal says what it read, closes itself for good, and wears
+        //     the phone camera's own controls; IBANs are validated against the
+        //     IBAN registry's character patterns
+        // 41: the camera preview had no height at all in the sheet - its size
+        //     comes from the aspect ratio now, not from a layout callback
+        // 42: housing analytics reports for the handover protocols (management menu)
+        // 43: housing analytics reports exportable as PDF (print) and CSV on the web
+        // 44: common-ui: PrintHidden keeps tap affordances off the printed page
+        return 44;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

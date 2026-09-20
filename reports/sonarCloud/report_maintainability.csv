@@ -1,4 +1,259 @@
 Key,Message,Component,Line
+"AaC0s5wzhkA3gTKRIozs","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",140
+"AaC0s5wzhkA3gTKRIozt","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",156
+"AaC0s5wzhkA3gTKRIozu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",156
+"AaC0s50_hkA3gTKRIo3w","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/app/metro.config.js",1
+"AaC0s5zthkA3gTKRIoz0","Extract the assignment of ""k"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",1
+"AaC0s5zthkA3gTKRIozv","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",1
+"AaC0s5zthkA3gTKRIozw","Prefer `node:module` over `module`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",1
+"AaC0s5zthkA3gTKRIozx","Consider moving declaration of 'require' as it is referenced outside current binding context.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",1
+"AaC0s5zthkA3gTKRIozy","Consider moving declaration of 'ba' as it is referenced outside current binding context.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",1
+"AaC0s5zthkA3gTKRIozz","Prefer `node:worker_threads` over `worker_threads`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",1
+"AaC0s5zthkA3gTKRIoz2","Remove the declaration of the unused 'SharedArrayBuffer' variable.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",2
+"AaC0s5zthkA3gTKRIoz3","Remove this useless assignment to variable ""SharedArrayBuffer"".","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",2
+"AaC0s5zthkA3gTKRIoz4","Consider moving declaration of 'fs' as it is referenced outside current binding context.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",3
+"AaC0s5zthkA3gTKRIoz5","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",3
+"AaC0s5zthkA3gTKRIoz6","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",3
+"AaC0s5zthkA3gTKRIoz7","Prefer `node:url` over `url`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",3
+"AaC0s5zthkA3gTKRIoz8","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",3
+"AaC0s5zthkA3gTKRIo0A","Use `new Error()` instead of `Error()`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",4
+"AaC0s5zthkA3gTKRIo0B","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",4
+"AaC0s5zthkA3gTKRIoz-","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",4
+"AaC0s5zthkA3gTKRIoz_","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",4
+"AaC0s5zthkA3gTKRIo0C","Prefer `node:util` over `util`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",5
+"AaC0s5zthkA3gTKRIo0D","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",7
+"AaC0s5zthkA3gTKRIo0E","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",7
+"AaC0s5zthkA3gTKRIo0F","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",7
+"AaC0s5zthkA3gTKRIo0G","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",7
+"AaC0s5zthkA3gTKRIo0H","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",8
+"AaC0s5zthkA3gTKRIo0K","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",9
+"AaC0s5zthkA3gTKRIo0L","Expected an error object to be thrown.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",9
+"AaC0s5zthkA3gTKRIo0M","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",9
+"AaC0s5zthkA3gTKRIo0N","The catch parameter `c` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",10
+"AaC0s5zthkA3gTKRIo0O","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",10
+"AaC0s5zthkA3gTKRIo0P","The catch parameter `c` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",10
+"AaC0s5zthkA3gTKRIo0Q","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",10
+"AaC0s5zthkA3gTKRIo0R","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",10
+"AaC0s5zthkA3gTKRIo0S","Arguments 'b' and 'a' have the same names but not the same order as the function parameters.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",10
+"AaC0s5zthkA3gTKRIo0T","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",15
+"AaC0s5zthkA3gTKRIo0U","Move this ""if"" to a new line or add the missing ""else"".","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",15
+"AaC0s5zthkA3gTKRIo0V","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",15
+"AaC0s5zthkA3gTKRIo0W","Rename class ""$c"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",15
+"AaC0s5zthkA3gTKRIo0X","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",16
+"AaC0s5zthkA3gTKRIo0Y","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",16
+"AaC0s5zthkA3gTKRIo0Z","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",17
+"AaC0s5zthkA3gTKRIo0a","Use the opposite operator (>=) instead.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",17
+"AaC0s5zthkA3gTKRIo0b","Consider moving declaration of 'b' as it is referenced outside current binding context.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",17
+"AaC0s5zthkA3gTKRIo0c","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",17
+"AaC0s5zthkA3gTKRIo0d","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",17
+"AaC0s5zthkA3gTKRIo0e","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",17
+"AaC0s5zthkA3gTKRIo0f","Expected an error object to be thrown.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",17
+"AaC0s5zthkA3gTKRIo0g","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",17
+"AaC0s5zthkA3gTKRIo0h","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",17
+"AaC0s5zthkA3gTKRIo0i","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",17
+"AaC0s5zthkA3gTKRIo0j","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",18
+"AaC0s5zthkA3gTKRIo0l","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",19
+"AaC0s5zthkA3gTKRIo0m","Extract the assignment of ""t"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",20
+"AaC0s5zthkA3gTKRIo0n","A constructor name should not start with a lowercase letter.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",20
+"AaC0s5zthkA3gTKRIo0o","Rename class ""od"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",21
+"AaC0s5zthkA3gTKRIo0p","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",21
+"AaC0s5zthkA3gTKRIo0q","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",21
+"AaC0s5zthkA3gTKRIo0r","A constructor name should not start with a lowercase letter.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",21
+"AaC0s5zthkA3gTKRIo0s","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",21
+"AaC0s5zthkA3gTKRIo0t","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",21
+"AaC0s5zthkA3gTKRIo0u","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",21
+"AaC0s5zthkA3gTKRIo0v","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",21
+"AaC0s5zthkA3gTKRIo0w","A constructor name should not start with a lowercase letter.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",22
+"AaC0s5zthkA3gTKRIo0x","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",23
+"AaC0s5zthkA3gTKRIo0y","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",23
+"AaC0s5zthkA3gTKRIo0-","Prefer `String.fromCodePoint()` over `String.fromCharCode()`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",24
+"AaC0s5zthkA3gTKRIo00","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",24
+"AaC0s5zthkA3gTKRIo01","Refactor this function to always return the same type.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",24
+"AaC0s5zthkA3gTKRIo02","Replace this ""for"" loop with a ""while"" loop.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",24
+"AaC0s5zthkA3gTKRIo03","Use the opposite operator (<) instead.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",24
+"AaC0s5zthkA3gTKRIo04","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",24
+"AaC0s5zthkA3gTKRIo05","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",24
+"AaC0s5zthkA3gTKRIo06","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",24
+"AaC0s5zthkA3gTKRIo07","Prefer `String.fromCodePoint()` over `String.fromCharCode()`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",24
+"AaC0s5zthkA3gTKRIo08","Extract the assignment of ""e"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",24
+"AaC0s5zthkA3gTKRIo09","Prefer `String.fromCodePoint()` over `String.fromCharCode()`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",24
+"AaC0s5zthkA3gTKRIo0z","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",24
+"AaC0s5zthkA3gTKRIo0_","Prefer `String.fromCodePoint()` over `String.fromCharCode()`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",25
+"AaC0s5zthkA3gTKRIo1A","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",25
+"AaC0s5zthkA3gTKRIo1B","Extract the assignment of ""a"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",25
+"AaC0s5zthkA3gTKRIo1C","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",27
+"AaC0s5zthkA3gTKRIo1D","Use the opposite operator (>=) instead.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",27
+"AaC0s5zthkA3gTKRIo1E","The catch parameter `b` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",27
+"AaC0s5zthkA3gTKRIo1F","The catch parameter `b` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",27
+"AaC0s5zthkA3gTKRIo1G","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",27
+"AaC0s5zthkA3gTKRIo1H","Use concise character class syntax '\d' instead of '[0-9]'.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",27
+"AaC0s5zthkA3gTKRIo1I","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",28
+"AaC0s5zthkA3gTKRIo1J","Extract the assignment of ""a"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",28
+"AaC0s5zthkA3gTKRIo1L","Extract the assignment of ""f"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",28
+"AaC0s5zthkA3gTKRIo1M","Extract the assignment of ""f"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",28
+"AaC0s5zthkA3gTKRIo1N","Prefer `Number.NaN` over `NaN`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",29
+"AaC0s5zthkA3gTKRIo1O","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",29
+"AaC0s5zthkA3gTKRIo1P","Prefer `Number.NaN` over `NaN`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",31
+"AaC0s5zthkA3gTKRIo1Q","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",31
+"AaC0s5zthkA3gTKRIo1S","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",32
+"AaC0s5zthkA3gTKRIo1T","Extract the assignment of ""(v(),C)[a+32>>>2>>>0]"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",33
+"AaC0s5zthkA3gTKRIo1U","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",33
+"AaC0s5zthkA3gTKRIo1V","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",33
+"AaC0s5zthkA3gTKRIo1W","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",34
+"AaC0s5zthkA3gTKRIo1X","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",35
+"AaC0s5zthkA3gTKRIo1Z","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",35
+"AaC0s5zthkA3gTKRIo1a","Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",36
+"AaC0s5zthkA3gTKRIo1b","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",36
+"AaC0s5zthkA3gTKRIo1c","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",36
+"AaC0s5zthkA3gTKRIo1d","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",36
+"AaC0s5zthkA3gTKRIo1e","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",36
+"AaC0s5zthkA3gTKRIo1f","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",36
+"AaC0s5zthkA3gTKRIo1g","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",38
+"AaC0s5zthkA3gTKRIo1h","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",38
+"AaC0s5zthkA3gTKRIo1i","Extract the assignment of ""c"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",38
+"AaC0s5zthkA3gTKRIo1j","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",38
+"AaC0s5zthkA3gTKRIo1k","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",38
+"AaC0s5zthkA3gTKRIo1l","Expected an error object to be thrown.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo1m","Move function 'Hb' to the outer scope.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo1n","Prefer `node:os` over `os`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo1o","Consider moving declaration of 'b' as it is referenced outside current binding context.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo1p","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo1q","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo1r","Extract the assignment of ""b"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo1s","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo1t","Extract the assignment of ""b"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo1u","Extract the assignment of ""b"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo1v","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo1w","Extract the assignment of ""b"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo1x","Extract the assignment of ""a"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",39
+"AaC0s5zthkA3gTKRIo10","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",40
+"AaC0s5zthkA3gTKRIo11","Extract the assignment of ""b"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",40
+"AaC0s5zthkA3gTKRIo12","Extract the assignment of ""b"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",40
+"AaC0s5zthkA3gTKRIo13","Extract the assignment of ""b"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",40
+"AaC0s5zthkA3gTKRIo14","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",40
+"AaC0s5zthkA3gTKRIo1y","Pass a message to the `Error` constructor.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",40
+"AaC0s5zthkA3gTKRIo1z","Use `new Error()` instead of `Error()`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",40
+"AaC0s5zuhkA3gTKRIo1-","Handle this exception, don't catch it at all, or explain in a comment why it is ignored.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",41
+"AaC0s5zuhkA3gTKRIo15","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",41
+"AaC0s5zuhkA3gTKRIo16","Remove this ""a"" label.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",41
+"AaC0s5zuhkA3gTKRIo17","Refactor the code to remove this label and the need for it.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",41
+"AaC0s5zuhkA3gTKRIo18","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",41
+"AaC0s5zuhkA3gTKRIo19","Consider moving declaration of 'e' as it is referenced outside current binding context.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",41
+"AaC0s5zuhkA3gTKRIo1_","The catch parameter `f` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",41
+"AaC0s5zuhkA3gTKRIo2A","Pass a message to the `Error` constructor.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",42
+"AaC0s5zuhkA3gTKRIo2B","Use `new Error()` instead of `Error()`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",42
+"AaC0s5zuhkA3gTKRIo2C","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",42
+"AaC0s5zuhkA3gTKRIo2D","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",42
+"AaC0s5zuhkA3gTKRIo2E","Consider moving declaration of 'e' as it is referenced outside current binding context.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",42
+"AaC0s5zuhkA3gTKRIo2F","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",42
+"AaC0s5zuhkA3gTKRIo2G","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",42
+"AaC0s5zuhkA3gTKRIo2H","Extract the assignment of ""a[b]"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",43
+"AaC0s5zuhkA3gTKRIo2I","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",43
+"AaC0s5zuhkA3gTKRIo2J","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",43
+"AaC0s5zuhkA3gTKRIo2K","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",43
+"AaC0s5zuhkA3gTKRIo2L","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",44
+"AaC0s5zuhkA3gTKRIo2M","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",44
+"AaC0s5zuhkA3gTKRIo2N","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",45
+"AaC0s5zuhkA3gTKRIo2O","Consider moving declaration of 'e' as it is referenced outside current binding context.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",45
+"AaC0s5zuhkA3gTKRIo2P","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",45
+"AaC0s5zuhkA3gTKRIo2Q","Move function 'Hc' to the outer scope.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",45
+"AaC0s5zuhkA3gTKRIo2R","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",48
+"AaC0s5zuhkA3gTKRIo2S","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",48
+"AaC0s5zuhkA3gTKRIo2T","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",48
+"AaC0s5zuhkA3gTKRIo2U","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",48
+"AaC0s5zuhkA3gTKRIo2V","Move function 'Qa' to the outer scope.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",49
+"AaC0s5zuhkA3gTKRIo2W","The catch parameter `f` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",49
+"AaC0s5zuhkA3gTKRIo2X","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",49
+"AaC0s5zuhkA3gTKRIo2Y","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",49
+"AaC0s5zuhkA3gTKRIo2Z","The catch parameter `d` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",49
+"AaC0s5zuhkA3gTKRIo2a","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",49
+"AaC0s5zuhkA3gTKRIo2b","The catch parameter `c` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",49
+"AaC0s5zuhkA3gTKRIo2c","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",49
+"AaC0s5zuhkA3gTKRIo2d","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",50
+"AaC0s5zuhkA3gTKRIo2e","The catch parameter `c` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",50
+"AaC0s5zuhkA3gTKRIo2f","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",50
+"AaC0s5zuhkA3gTKRIo2g","The catch parameter `u` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",50
+"AaC0s5zuhkA3gTKRIo2h","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",50
+"AaC0s5zuhkA3gTKRIo2i","The catch parameter `l` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",50
+"AaC0s5zuhkA3gTKRIo2j","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",50
+"AaC0s5zuhkA3gTKRIo2k","The catch parameter `f` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",50
+"AaC0s5zuhkA3gTKRIo2l","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",50
+"AaC0s5zuhkA3gTKRIo2m","The catch parameter `g` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",51
+"AaC0s5zuhkA3gTKRIo2n","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",51
+"AaC0s5zuhkA3gTKRIo2o","The catch parameter `u` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",51
+"AaC0s5zuhkA3gTKRIo2p","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",51
+"AaC0s5zuhkA3gTKRIo2q","The catch parameter `u` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",51
+"AaC0s5zuhkA3gTKRIo2r","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",51
+"AaC0s5zuhkA3gTKRIo2s","Function 'Fc' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",51
+"AaC0s5zuhkA3gTKRIo2t","The catch parameter `w` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",51
+"AaC0s5zuhkA3gTKRIo2u","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",51
+"AaC0s5zuhkA3gTKRIo2v","The catch parameter `g` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",51
+"AaC0s5zuhkA3gTKRIo2w","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",51
+"AaC0s5zuhkA3gTKRIo20","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",52
+"AaC0s5zuhkA3gTKRIo21","Function 'Dc' has too many parameters (12). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",52
+"AaC0s5zuhkA3gTKRIo22","The catch parameter `F` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",52
+"AaC0s5zuhkA3gTKRIo23","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",52
+"AaC0s5zuhkA3gTKRIo24","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",52
+"AaC0s5zuhkA3gTKRIo2x","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",52
+"AaC0s5zuhkA3gTKRIo2y","Function 'Ac' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",52
+"AaC0s5zuhkA3gTKRIo2z","The catch parameter `w` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",52
+"AaC0s5zuhkA3gTKRIo2-","The catch parameter `c` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",53
+"AaC0s5zuhkA3gTKRIo25","Function 'Bc' has too many parameters (9). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",53
+"AaC0s5zuhkA3gTKRIo26","The catch parameter `y` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",53
+"AaC0s5zuhkA3gTKRIo27","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",53
+"AaC0s5zuhkA3gTKRIo28","The catch parameter `d` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",53
+"AaC0s5zuhkA3gTKRIo29","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",53
+"AaC0s5zuhkA3gTKRIo2_","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",53
+"AaC0s5zuhkA3gTKRIo3A","The catch parameter `f` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",53
+"AaC0s5zuhkA3gTKRIo3B","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",53
+"AaC0s5zuhkA3gTKRIo3C","The catch parameter `d` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",53
+"AaC0s5zuhkA3gTKRIo3D","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",53
+"AaC0s5zuhkA3gTKRIo3E","The catch parameter `f` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",54
+"AaC0s5zuhkA3gTKRIo3F","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",54
+"AaC0s5zuhkA3gTKRIo3G","The catch parameter `g` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",54
+"AaC0s5zuhkA3gTKRIo3H","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",54
+"AaC0s5zuhkA3gTKRIo3I","The catch parameter `l` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",54
+"AaC0s5zuhkA3gTKRIo3J","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",54
+"AaC0s5zuhkA3gTKRIo3K","The catch parameter `l` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",54
+"AaC0s5zuhkA3gTKRIo3L","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",54
+"AaC0s5zuhkA3gTKRIo3M","The catch parameter `l` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",55
+"AaC0s5zuhkA3gTKRIo3N","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",55
+"AaC0s5zuhkA3gTKRIo3O","Function 'hc' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",55
+"AaC0s5zuhkA3gTKRIo3P","The catch parameter `w` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",55
+"AaC0s5zuhkA3gTKRIo3Q","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",55
+"AaC0s5zuhkA3gTKRIo3R","The catch parameter `g` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",55
+"AaC0s5zuhkA3gTKRIo3S","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",55
+"AaC0s5zuhkA3gTKRIo3T","The catch parameter `f` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",55
+"AaC0s5zuhkA3gTKRIo3U","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",55
+"AaC0s5zuhkA3gTKRIo3V","The catch parameter `f` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",56
+"AaC0s5zuhkA3gTKRIo3W","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",56
+"AaC0s5zuhkA3gTKRIo3X","Function 'ic' has too many parameters (12). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",56
+"AaC0s5zuhkA3gTKRIo3Y","The catch parameter `F` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",56
+"AaC0s5zuhkA3gTKRIo3Z","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",56
+"AaC0s5zuhkA3gTKRIo3a","Function 'Cc' has too many parameters (11). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",56
+"AaC0s5zuhkA3gTKRIo3b","The catch parameter `E` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",56
+"AaC0s5zuhkA3gTKRIo3c","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",56
+"AaC0s5zuhkA3gTKRIo3d","Function 'Ec' has too many parameters (16). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",56
+"AaC0s5zuhkA3gTKRIo3e","The catch parameter `Ma` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",56
+"AaC0s5zuhkA3gTKRIo3f","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",56
+"AaC0s5zuhkA3gTKRIo3g","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",57
+"AaC0s5zuhkA3gTKRIo3h","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",57
+"AaC0s5zuhkA3gTKRIo3i","The catch parameter `f` should be named `error_`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",57
+"AaC0s5zuhkA3gTKRIo3j","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",57
+"AaC0s5zuhkA3gTKRIo3k","Use an object spread instead of `Object.assign` eg: `{ ...foo }`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",57
+"AaC0s5zuhkA3gTKRIo3m","Unexpected use of comma operator.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",58
+"AaC0s5zuhkA3gTKRIo3n","This statement will not be executed in a loop; only the first statement will be. The rest will execute only once.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",58
+"AaC0s5zuhkA3gTKRIo3p","Extract the assignment of ""P"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",58
+"AaC0s5zuhkA3gTKRIo3q","Extract the assignment of ""moduleRtn"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",58
+"AaC0s5zuhkA3gTKRIo3r","Extract the assignment of ""moduleRtn"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",58
+"AaC0s5zuhkA3gTKRIo3s","Prefer `node:worker_threads` over `worker_threads`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",59
+"AaC0s5zuhkA3gTKRIo3t","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",59
+"AaC0s5zuhkA3gTKRIo3u","Prefer top-level await over an async function `ortWasmThreaded` call.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",59
+"AaC0s5BphkA3gTKRIozp","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",298
+"AaC0s5BphkA3gTKRIozq","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",389
+"AaC0s5BphkA3gTKRIozr","Expected a `for-of` loop instead of a `for` loop with this simple iteration.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",415
+"AaC0s5BphkA3gTKRIozo","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",158
+"AaBmrg8uWnKIYqRPo5r7","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/app/scripts/deploy-gh-pages.js",20
 "AaBg9V9xEfY3x5R1F0GH","Compare with `undefined` directly instead of using `typeof`.","rocket-meals_rocket-meals:apps/frontend/app/helper/appStateForFeedback.ts",98
 "AaBg9V9xEfY3x5R1F0GI","'value' may use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/frontend/app/helper/appStateForFeedback.ts",103
 "AaAjUba4LLG6L2zbMTrv","Move function 'getDashboardIdOfPanelPayload' to the outer scope.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts",172
