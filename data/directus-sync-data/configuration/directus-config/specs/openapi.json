@@ -49761,6 +49761,11 @@
             "nullable": true,
             "type": "string"
           },
+          "company_name": {
+            "nullable": true,
+            "description": "Name der Einrichtung, wie er im Briefkopf erzeugter Dokumente (z. B. Formular-PDFs) erscheinen soll.",
+            "type": "string"
+          },
           "food_responsible_organization_name": {
             "nullable": true,
             "description": "Wer ist für die Inhalte der Speiseangebote verantwortlich?",

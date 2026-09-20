@@ -110,7 +110,8 @@ export function getVersionPatch() {
         // 36: onnxruntime-react-native patched for Gradle 9 (Android build)
         // 37: build number raised to 209
         // 38: the Gradle 9 patch compares integers now, not lists
-        return 38;
+        // 39: app settings gained a company_name field (name of the institution)
+        return 39;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
