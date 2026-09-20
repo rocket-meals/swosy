@@ -9,17 +9,14 @@ import { MockImageFile } from './pdf/MockImageFileHelper';
 import * as path from 'node:path';
 
 /**
- * Wer ein erzeugtes Dokument herausgibt: der Briefkopf eines Formular-PDFs.
+ * Was eine Installation zum Briefkopf eines Formular-PDFs beisteuert: ihr Logo.
  *
- * Das ist bewusst **nicht** der App-Name aus der Directus-Server-Info. Ein Abnahmeprotokoll
- * trägt den Namen der Einrichtung, die es ausgibt („Studentenwerk Hannover"), nicht den Namen
- * der App, mit der es ausgefüllt wurde. Beide Felder dürfen leer sein – dann greift der
- * Rückfall auf den `project_descriptor` der Server-Info, und wenn auch der leer ist, bleibt der
- * Name leer (siehe `FormPdfDocumentHelper.resolveOrganization`).
+ * Nur das Logo – der Name der herausgebenden Einrichtung steht nicht im Briefkopf, sondern auf
+ * jeder Seite in der Fußzeile, und kommt aus der Server-Info (siehe
+ * `FormPdfDocumentHelper.resolveOrganization`). Das Feld darf leer sein; dann greift der
+ * Rückfall auf das `project_logo` der Server-Info.
  */
 export type DocumentOrganization = {
-  /** Name der Einrichtung aus `app_settings.company_name`. */
-  name: string | null;
   /** Bereits aufgelöste Bild-URL des Logos aus `app_settings.company_image`. */
   logoUrl: string | null;
 };
@@ -30,7 +27,7 @@ export interface MyDatabaseTestableHelperInterface {
   getServerPort(): string;
   getAdminBearerToken(): Promise<string | undefined>;
   /**
-   * Name und Logo der Einrichtung für den Briefkopf erzeugter Dokumente.
+   * Das Logo der Einrichtung für den Briefkopf erzeugter Dokumente.
    *
    * Absichtlich Teil der schmalen Test-Schnittstelle: die PDF-Erzeugung ist damit weiterhin
    * offline testbar, und der Test liefert Beispielwerte statt einer Datenbankabfrage.
@@ -39,9 +36,6 @@ export interface MyDatabaseTestableHelperInterface {
 }
 
 export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterface {
-  /** Name der Einrichtung in Beispiel-PDFs – ein Muster, keine echte Einrichtung. */
-  public static readonly EXAMPLE_ORGANIZATION_NAME = 'Studentenwerk Musterstadt';
-
   /**
    * Die Datei-ID, unter der das Beispiel-Logo als `app_settings.company_image` steht.
    *
@@ -101,8 +95,8 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
   }
 
   /**
-   * Beispielwerte für den Briefkopf: eine erfundene Einrichtung und ein schlichtes Beispiel-Logo.
-   * Kein echtes Logo einer echten Einrichtung – die Beispiel-PDFs landen im Repository.
+   * Der Briefkopf der Beispiel-PDFs: ein schlichtes Beispiel-Logo, kein echtes Logo einer
+   * echten Einrichtung – die Beispiel-PDFs landen im Repository.
    *
    * Bewusst kein Sonderweg: Die Beispiel-`AppSettings` gehen durch dieselbe Auflösung wie die
    * Einstellungen aus der Datenbank, die Logo-URL ist also eine echte Asset-URL.
@@ -114,7 +108,6 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
   /** Die `app_settings`, mit denen Beispiel-Dokumente erzeugt werden – reine Musterdaten. */
   public static getExampleAppSettings(): Partial<DatabaseTypes.AppSettings> {
     return {
-      company_name: MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_NAME,
       company_image: MyDatabaseTestableHelper.EXAMPLE_COMPANY_IMAGE_FILE_ID,
     };
   }
@@ -125,7 +118,6 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
    */
   public static getExampleAppSettingsWithSquareLogo(): Partial<DatabaseTypes.AppSettings> {
     return {
-      company_name: MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_NAME,
       company_image: MyDatabaseTestableHelper.EXAMPLE_SQUARE_COMPANY_IMAGE_FILE_ID,
     };
   }

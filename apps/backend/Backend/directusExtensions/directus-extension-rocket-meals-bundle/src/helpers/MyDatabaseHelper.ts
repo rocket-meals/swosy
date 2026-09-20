@@ -131,11 +131,10 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
   }
 
   /**
-   * Name und Logo der Einrichtung fuer den Briefkopf erzeugter Dokumente.
+   * Das Logo der Einrichtung fuer den Briefkopf erzeugter Dokumente.
    *
-   * Quelle sind `app_settings.company_name` und `app_settings.company_image` - der Name der
-   * Einrichtung, die das Dokument herausgibt, nicht der Name der App. Sind die Felder leer oder
-   * nicht lesbar, entscheidet der Aufrufer ueber den Rueckfall (siehe `FormHelper`).
+   * Quelle ist `app_settings.company_image`. Ist das Feld leer oder nicht lesbar, entscheidet
+   * der Aufrufer ueber den Rueckfall (siehe `FormPdfDocumentHelper.resolveOrganization`).
    */
   async getDocumentOrganization(): Promise<DocumentOrganization> {
     try {
@@ -143,7 +142,7 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
       return DocumentOrganizationHelper.resolveDocumentOrganization(appSettings, this);
     } catch (error) {
       console.error('Could not read the organization for the document header: ' + error);
-      return { name: null, logoUrl: null };
+      return { logoUrl: null };
     }
   }
 

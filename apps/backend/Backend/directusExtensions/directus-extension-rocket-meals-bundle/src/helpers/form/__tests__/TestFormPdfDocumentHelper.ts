@@ -175,10 +175,12 @@ describe('FormPdfDocumentHelper', () => {
     expect(documentWithoutSubmission.placeAndDateValue).toBe('');
   });
 
-  it('puts the issuing organization into the letterhead', async () => {
+  it('puts the logo into the letterhead and the issuer into the footer name', async () => {
     const document = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })]);
 
-    expect(document.organizationName).toBe(MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_NAME);
+    // Der Name kommt aus der Server-Info, hier aus deren `project_name` - im Briefkopf steht er
+    // nicht, die Fußzeile setzt ihn vor den Formulartitel.
+    expect(document.organizationName).toBe('Rocket Meals');
     // Das Beispiel-Logo laeuft ueber dieselbe Asset-URL wie im Betrieb, nicht ueber einen Data-URI.
     expect(document.organizationLogoUrl).toContain(`/assets/${MyDatabaseTestableHelper.EXAMPLE_COMPANY_IMAGE_FILE_ID}`);
   });

@@ -2,7 +2,7 @@
   form-document.liquid – das Layout für ausgefüllte Formulare als PDF.
 
   Vorbild ist das gedruckte Protokoll, das in den Wohnheimen ausgefüllt und unterschrieben wird:
-  Titel oben links, Logo und Name der Einrichtung oben rechts, fette Beschriftung mit Doppelpunkt
+  Titel oben links, das Logo der Einrichtung oben rechts, fette Beschriftung mit Doppelpunkt
   in einer festen Spalte, der Wert daneben. Wo nichts eingetragen wurde, steht – wie auf Papier –
   eine Schreiblinie bis zum rechten Rand. Deshalb ist das Dokument schwarzweiß: eine
   Behördenvorlage, kein Web-Layout.
@@ -13,7 +13,10 @@
 
   Erwartete Variablen:
     documentTitle, documentSubtitle
-    organizationName, organizationLogoUrl   – die Einrichtung, die das Dokument herausgibt
+    organizationLogoUrl                     – das Logo der Einrichtung im Briefkopf
+                                              (`organizationName` steht nur in der Fußzeile,
+                                               siehe `FormHelper.getPdfFooterTemplate`, und hier
+                                               nur als `alt` am Logo)
     metaEntries[]   – { label, value }, z. B. Vorgang und Eingangsdatum
     sections[]      – { title, rows[] }
     row             – { type: 'text' | 'multiline' | 'boolean' | 'character_boxes',
@@ -84,7 +87,7 @@
         }
 
         /*
-           Die Einrichtung steht als Block rechts, wie auf dem Briefbogen.
+           Das Logo der Einrichtung steht als Block rechts, wie auf dem Briefbogen.
 
            Die 62mm sind der Platz, der im Briefkopf tatsächlich frei ist: 178mm Satzspiegel
            (A4 abzüglich 2×16mm Rand) minus 105mm `max-width` des Untertitels minus 10mm `gap`
@@ -112,18 +115,6 @@
             height: auto;
             width: auto;
             object-fit: contain;
-        }
-
-        /*
-           Die Namenszeile gibt es nur, wenn kein Logo aufgelöst werden konnte – sonst stünde
-           der Name der Einrichtung doppelt im Briefkopf, einmal als Schriftzug im Logo und
-           einmal als Text darunter. Mit Logo trägt das `alt`-Attribut den Namen.
-        */
-        .doc-header__organization-name {
-            margin: 0;
-            font-size: 10pt;
-            font-weight: 700;
-            line-height: 1.2;
         }
 
         /* ── Vorgangsdaten ───────────────────────────────────────────────── */
@@ -405,13 +396,14 @@
             <p class="doc-header__subtitle">{{ documentSubtitle | escape }}</p>
         {% endif %}
     </div>
+    {% comment %}
+      Im Briefkopf steht nur das Logo. Der Name der Einrichtung steht schon als Schriftzug darin,
+      und wo es kein Logo gibt, bleibt die Spalte leer: Den Aussteller nennt die Fußzeile auf
+      jeder Seite. Als `alt` bleibt der Name am Logo, damit er kopier- und vorlesbar ist.
+    {% endcomment %}
     {% if organizationLogoUrl %}
         <div class="doc-header__organization">
             <img class="doc-header__logo" src="{{ organizationLogoUrl | escape }}" alt="{{ organizationName | escape }}" />
-        </div>
-    {% elsif organizationName %}
-        <div class="doc-header__organization">
-            <p class="doc-header__organization-name">{{ organizationName | escape }}</p>
         </div>
     {% endif %}
 </header>

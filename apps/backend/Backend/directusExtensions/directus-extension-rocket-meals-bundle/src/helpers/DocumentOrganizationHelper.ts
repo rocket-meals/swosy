@@ -3,7 +3,7 @@ import { DocumentOrganization, MyDatabaseTestableHelperInterface } from './MyDat
 import { DirectusFilesAssetHelper } from './DirectusFilesAssetHelper';
 
 /**
- * Der eine Weg von `app_settings` zum Briefkopf: Name und Logo der herausgebenden Einrichtung.
+ * Der eine Weg von `app_settings` zum Briefkopf: das Logo der herausgebenden Einrichtung.
  *
  * Betrieb und Beispiel-PDF gehen hier durch dieselbe Methode – das Beispiel unterscheidet sich
  * nur in den `AppSettings`, die es mitbringt, nicht im Weg zur Logo-URL.
@@ -13,10 +13,10 @@ export class DocumentOrganizationHelper {
   public static readonly LOGO_TRANSFORM_OPTIONS = DirectusFilesAssetHelper.PRESET_FILE_TRANSFORMATION_IMAGE_ORIGINAL;
 
   /**
-   * Löst `company_name` und `company_image` zu Name und Bild-URL auf.
+   * Löst `company_image` zur Bild-URL des Briefkopfs auf.
    *
-   * Beide Felder dürfen leer sein – dann bleibt das jeweilige Ergebnis `null` und der Aufrufer
-   * entscheidet über den Rückfall (siehe `FormPdfDocumentHelper.resolveOrganization`).
+   * Das Feld darf leer sein – dann bleibt das Ergebnis `null` und der Aufrufer entscheidet über
+   * den Rückfall (siehe `FormPdfDocumentHelper.resolveOrganization`).
    */
   public static resolveDocumentOrganization(appSettings: Partial<DatabaseTypes.AppSettings> | null | undefined, myDatabaseTestableHelperInterface: MyDatabaseTestableHelperInterface): DocumentOrganization {
     const companyImage = appSettings?.company_image;
@@ -25,7 +25,6 @@ export class DocumentOrganizationHelper {
       logoUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(companyImage, myDatabaseTestableHelperInterface, DocumentOrganizationHelper.LOGO_TRANSFORM_OPTIONS);
     }
     return {
-      name: appSettings?.company_name || null,
       logoUrl: logoUrl,
     };
   }

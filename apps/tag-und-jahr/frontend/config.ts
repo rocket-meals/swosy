@@ -47,8 +47,9 @@ export function getVersionPatch() {
 	// 18: shared IBAN recognition reads welded groups, refuses lettered bodies
 	// 19: shared IBAN form helpers: spacing-aware length and field validation
 	// 20: shared IBAN validation against the registry's character patterns
-	// 21: app settings gained a company_name field (name of the institution)
-	return 21;
+	// 21: never shipped - the change it described was undone before the merge
+	// 22: form PDF: letterhead carries only the logo, the issuer in the footer
+	return 22;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

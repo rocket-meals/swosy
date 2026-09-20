@@ -5,14 +5,14 @@ import { DocumentOrganizationHelper } from '../DocumentOrganizationHelper';
 import { MyDatabaseTestableHelper } from '../MyDatabaseHelperInterface';
 import { FormPdfDocumentHelper } from '../form/FormPdfDocumentHelper';
 
-/** Ein Helfer wie der Test-Helfer, nur ohne Einrichtung in den `app_settings`. */
+/** Ein Helfer wie der Test-Helfer, nur ohne Logo in den `app_settings`. */
 class MyDatabaseHelperWithoutOrganization extends MyDatabaseTestableHelper {
   async getDocumentOrganization() {
     return DocumentOrganizationHelper.resolveDocumentOrganization({}, this);
   }
 }
 
-/** Ein Helfer ohne Einrichtung, dessen Server-Info einen Projektnamen und ein Projektlogo hat. */
+/** Ein Helfer ohne Logo in den `app_settings`, dessen Server-Info Beschreibung und Logo hat. */
 class MyDatabaseHelperWithServerInfoOnly extends MyDatabaseHelperWithoutOrganization {
   public static readonly PROJECT_LOGO_FILE_ID = 'project-logo-file-id';
 
@@ -30,8 +30,7 @@ class MyDatabaseHelperWithServerInfoOnly extends MyDatabaseHelperWithoutOrganiza
 
 /**
  * Der Fall des Studentenwerks Hannover: Die Server-Info kennt nur den App-Namen, der
- * `project_descriptor` ist ausdrücklich `null`, und die `app_settings` haben noch keinen
- * `company_name`.
+ * `project_descriptor` ist ausdrücklich `null`, und die `app_settings` haben kein Logo.
  */
 class MyDatabaseHelperWithAppNameOnly extends MyDatabaseHelperWithoutOrganization {
   async getServerInfoNoInternetTest() {
@@ -46,10 +45,24 @@ class MyDatabaseHelperWithAppNameOnly extends MyDatabaseHelperWithoutOrganizatio
   }
 }
 
-/** Derselbe Server, aber die Einrichtung ist in den `app_settings` gepflegt. */
-class MyDatabaseHelperWithCompanyNameAndServerInfo extends MyDatabaseHelperWithServerInfoOnly {
+/** Ein Server ganz ohne Namen – weder Beschreibung noch Projektname. */
+class MyDatabaseHelperWithoutAnyName extends MyDatabaseHelperWithoutOrganization {
+  async getServerInfoNoInternetTest() {
+    return {
+      project: {
+        project_name: '',
+        project_descriptor: null,
+        project_color: '#D14610',
+        project_logo: undefined,
+      },
+    };
+  }
+}
+
+/** Derselbe Server, aber das Logo der Einrichtung ist in den `app_settings` gepflegt. */
+class MyDatabaseHelperWithCompanyImageAndServerInfo extends MyDatabaseHelperWithServerInfoOnly {
   async getDocumentOrganization() {
-    return DocumentOrganizationHelper.resolveDocumentOrganization({ company_name: 'Studentenwerk Hannover' }, this);
+    return DocumentOrganizationHelper.resolveDocumentOrganization({ company_image: MyDatabaseTestableHelper.EXAMPLE_COMPANY_IMAGE_FILE_ID }, this);
   }
 }
 
@@ -59,7 +72,6 @@ describe('DocumentOrganizationHelper', () => {
 
     const organization = await myDatabaseTestableHelper.getDocumentOrganization();
 
-    expect(organization.name).toBe(MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_NAME);
     expect(organization.logoUrl).toContain(`${myDatabaseTestableHelper.getServerUrl()}/assets/${MyDatabaseTestableHelper.EXAMPLE_COMPANY_IMAGE_FILE_ID}`);
     expect(organization.logoUrl?.startsWith('data:')).toBe(false);
   });
@@ -68,45 +80,45 @@ describe('DocumentOrganizationHelper', () => {
     const myDatabaseTestableHelper = new MyDatabaseTestableHelper();
     const companyImage = { id: MyDatabaseTestableHelper.EXAMPLE_COMPANY_IMAGE_FILE_ID } as unknown as DatabaseTypes.DirectusFiles;
 
-    const organization = DocumentOrganizationHelper.resolveDocumentOrganization({ company_name: 'Studentenwerk Musterstadt', company_image: companyImage }, myDatabaseTestableHelper);
+    const organization = DocumentOrganizationHelper.resolveDocumentOrganization({ company_image: companyImage }, myDatabaseTestableHelper);
 
     expect(organization.logoUrl).toContain(`/assets/${MyDatabaseTestableHelper.EXAMPLE_COMPANY_IMAGE_FILE_ID}`);
   });
 
-  it('leaves name and logo empty when the app_settings have neither', () => {
-    const organization = DocumentOrganizationHelper.resolveDocumentOrganization({ company_name: null, company_image: null }, new MyDatabaseTestableHelper());
+  it('leaves the logo empty when the app_settings have none', () => {
+    const organization = DocumentOrganizationHelper.resolveDocumentOrganization({ company_image: null }, new MyDatabaseTestableHelper());
 
-    expect(organization).toEqual({ name: null, logoUrl: null });
+    expect(organization).toEqual({ logoUrl: null });
   });
 
-  it('falls back to the server info when the app_settings have no organization', async () => {
+  it('takes the name from the descriptor of the server info and falls back to the project logo', async () => {
     const organization = await FormPdfDocumentHelper.resolveOrganization(new MyDatabaseHelperWithServerInfoOnly());
 
     expect(organization.name).toBe('Studentenwerk aus der Server-Info');
     expect(organization.logoUrl).toContain(`/assets/${MyDatabaseHelperWithServerInfoOnly.PROJECT_LOGO_FILE_ID}`);
   });
 
-  it('never puts the app name on the document, not even when nothing else is left', async () => {
-    // `project_name` ist der Name der App, nicht der Einrichtung – ein Abnahmeprotokoll trägt ihn
-    // nicht. Bleibt sonst nichts übrig, trägt das Dokument eben keinen Namen.
+  it('falls back to the app name when the server info has no descriptor', async () => {
+    // Der Name steht nur in der Fußzeile, nicht im Briefkopf – dort ist der App-Name die
+    // ehrlichere Angabe als gar keine: Er sagt, womit das Dokument erzeugt wurde.
     const organization = await FormPdfDocumentHelper.resolveOrganization(new MyDatabaseHelperWithAppNameOnly());
 
+    expect(organization.name).toBe('Studi|Futter');
+    expect(organization.logoUrl).toBeNull();
+  });
+
+  it('leaves the name empty when the server info has neither descriptor nor project name', async () => {
+    const organization = await FormPdfDocumentHelper.resolveOrganization(new MyDatabaseHelperWithoutAnyName());
+
     expect(organization.name).toBeNull();
     expect(organization.logoUrl).toBeNull();
   });
 
-  it('never puts the app name on the document even when the server info has no descriptor field at all', async () => {
-    const organization = await FormPdfDocumentHelper.resolveOrganization(new MyDatabaseHelperWithoutOrganization());
+  it('prefers the company image of the app_settings over the logo of the server info', async () => {
+    const organization = await FormPdfDocumentHelper.resolveOrganization(new MyDatabaseHelperWithCompanyImageAndServerInfo());
 
-    expect(organization.name).toBeNull();
-    expect(organization.logoUrl).toBeNull();
-  });
-
-  it('prefers the company name of the app_settings over the descriptor of the server info', async () => {
-    const organization = await FormPdfDocumentHelper.resolveOrganization(new MyDatabaseHelperWithCompanyNameAndServerInfo());
-
-    expect(organization.name).toBe('Studentenwerk Hannover');
-    // Ohne `company_image` bleibt es beim Projektlogo – nur der Name kommt aus den `app_settings`.
-    expect(organization.logoUrl).toContain(`/assets/${MyDatabaseHelperWithServerInfoOnly.PROJECT_LOGO_FILE_ID}`);
+    expect(organization.logoUrl).toContain(`/assets/${MyDatabaseTestableHelper.EXAMPLE_COMPANY_IMAGE_FILE_ID}`);
+    // Der Name bleibt der der Server-Info – die `app_settings` steuern nur das Logo bei.
+    expect(organization.name).toBe('Studentenwerk aus der Server-Info');
   });
 });

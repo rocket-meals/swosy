@@ -117,8 +117,12 @@ export function getVersionPatch() {
         //     IBAN registry's character patterns
         // 41: the camera preview had no height at all in the sheet - its size
         //     comes from the aspect ratio now, not from a layout callback
-        // 42: app settings gained a company_name field (name of the institution)
-        return 42;
+        // 42: housing analytics reports for the handover protocols (management menu)
+        // 43: housing analytics reports exportable as PDF (print) and CSV on the web
+        // 44: common-ui: PrintHidden keeps tap affordances off the printed page
+        // 45: form PDF: letterhead carries only the logo, the issuer's name moved
+        //     to the footer
+        return 45;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

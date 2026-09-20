@@ -89,7 +89,6 @@ export type AppSettings = {
   campus_enabled?: boolean | null;
   campus_settings: string;
   company_image?: string | DirectusFiles | null;
-  company_name?: string | null;
   course_timetable_area_color?: string | null;
   course_timetable_enabled?: boolean | null;
   course_timetable_settings: string;

@@ -1,4 +1,4 @@
-// Jest test: Briefkopf und Fußzeile nennen die Einrichtung genau einmal
+// Jest test: der Briefkopf trägt nur das Logo, die Fußzeile nennt den Aussteller
 import { describe, expect, it } from '@jest/globals';
 import { FormDocument } from '../FormPdfDocumentHelper';
 import { FormHelper } from '../FormHelper';
@@ -45,7 +45,7 @@ function renderFooterDocumentText(formDocument: FormDocument): string {
 }
 
 describe('Briefkopf des Formular-PDFs', () => {
-  it('setzt den Namen der Einrichtung nicht noch einmal unter ihr Logo', async () => {
+  it('zeigt im Briefkopf nur das Logo und trägt den Namen im alt-Attribut', async () => {
     // Das Logo einer Einrichtung ist üblicherweise ein Wort-Bild-Zeichen: Der Name steht schon
     // darin. Eine zusätzliche Textzeile würde ihn ein zweites Mal zeigen.
     const headerMarkup = await renderLetterheadMarkup(buildFormDocument(ORGANIZATION_NAME, LOGO_URL));
@@ -54,17 +54,21 @@ describe('Briefkopf des Formular-PDFs', () => {
     expect(headerMarkup).not.toContain('doc-header__organization-name');
     // Beim Kopieren aus dem PDF und für Screenreader bleibt der Name über das `alt` erhalten.
     expect(headerMarkup).toContain(`alt="${ORGANIZATION_NAME}"`);
+    // Als Text steht der Name nicht im Briefkopf – nur im `alt` des Logos.
+    expect(headerMarkup.replace(`alt="${ORGANIZATION_NAME}"`, '')).not.toContain(ORGANIZATION_NAME);
   });
 
-  it('setzt den Namen der Einrichtung als Textzeile, wenn es kein Logo gibt', async () => {
+  it('lässt den Block der Einrichtung ganz weg, wenn es kein Logo gibt', async () => {
+    // Ohne Logo bleibt die rechte Spalte leer, auch wenn ein Name bekannt ist: Den Aussteller
+    // nennt die Fußzeile auf jeder Seite, im Briefkopf stünde er ein zweites Mal.
     const headerMarkup = await renderLetterheadMarkup(buildFormDocument(ORGANIZATION_NAME, null));
 
-    expect(headerMarkup).not.toContain('doc-header__logo');
-    expect(headerMarkup).toContain('class="doc-header__organization-name"');
-    expect(headerMarkup).toContain(ORGANIZATION_NAME);
+    expect(headerMarkup).not.toContain('doc-header__organization');
+    expect(headerMarkup).not.toContain(ORGANIZATION_NAME);
+    expect(headerMarkup).toContain(DOCUMENT_TITLE);
   });
 
-  it('lässt den Block der Einrichtung ganz weg, wenn es weder Logo noch Namen gibt', async () => {
+  it('lässt den Block der Einrichtung auch ohne Logo und ohne Namen weg', async () => {
     const headerMarkup = await renderLetterheadMarkup(buildFormDocument(null, null));
 
     expect(headerMarkup).not.toContain('doc-header__organization');
@@ -73,11 +77,11 @@ describe('Briefkopf des Formular-PDFs', () => {
 });
 
 describe('Fußzeile des Formular-PDFs', () => {
-  it('nennt Einrichtung und Formular, durch einen Mittelpunkt getrennt', () => {
+  it('nennt Aussteller und Formular, durch einen Mittelpunkt getrennt', () => {
     expect(renderFooterDocumentText(buildFormDocument(ORGANIZATION_NAME, LOGO_URL))).toBe(`${ORGANIZATION_NAME} &middot; ${DOCUMENT_TITLE}`);
   });
 
-  it('zeigt ohne Einrichtung nur den Formulartitel, ohne einsames Trennzeichen', () => {
+  it('zeigt ohne Aussteller nur den Formulartitel, ohne einsames Trennzeichen', () => {
     expect(renderFooterDocumentText(buildFormDocument(null, LOGO_URL))).toBe(DOCUMENT_TITLE);
   });
 

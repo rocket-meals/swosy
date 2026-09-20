@@ -89,7 +89,7 @@ export type FormDocumentMetaEntry = {
 export type FormDocument = {
   documentTitle: string;
   documentSubtitle: string | null;
-  /** Name der herausgebenden Einrichtung im Briefkopf – nicht der Name der App. */
+  /** Name des Ausstellers für die Fußzeile – im Briefkopf steht er nicht. */
   organizationName: string | null;
   /** Logo der Einrichtung im Briefkopf. */
   organizationLogoUrl: string | null;
@@ -191,13 +191,14 @@ export class FormPdfDocumentHelper {
   }
 
   /**
-   * Name und Logo der herausgebenden Einrichtung.
+   * Name des Ausstellers und Logo für das Dokument.
    *
-   * Der Name kommt aus `app_settings.company_name`, ersatzweise aus dem `project_descriptor`
-   * der Server-Info – dort steht bei gepflegten Installationen die Einrichtung. **Nicht**
-   * herangezogen wird `project_name`: das ist der Name der App („Studi|Futter"), und den trägt
-   * ein Abnahmeprotokoll nicht. Gibt keine der beiden Quellen etwas her, bleibt der Name leer;
-   * der Briefkopf zeigt dann nur das Logo und die Fußzeile nur den Formulartitel.
+   * Der Name steht **nur in der Fußzeile**, nicht im Briefkopf – dort trägt das Logo die
+   * Einrichtung, und eine zweite Textzeile daneben würde sie doppelt zeigen. Deshalb ist hier
+   * auch der App-Name zulässig: Die Fußzeile sagt, womit das Dokument erzeugt wurde. Er kommt
+   * aus dem `project_descriptor` der Server-Info – dort steht bei gepflegten Installationen die
+   * Einrichtung –, ersatzweise aus dem `project_name`. Gibt die Server-Info nichts her, bleibt
+   * der Name leer und die Fußzeile zeigt nur den Formulartitel.
    *
    * Fürs Logo bleibt es bei `company_image`, ersatzweise dem `project_logo` der Server-Info.
    */
@@ -205,7 +206,7 @@ export class FormPdfDocumentHelper {
     const organization = await myDatabaseHelperInterface.getDocumentOrganization();
     const serverInfo = await myDatabaseHelperInterface.getServerInfo();
 
-    const name = organization.name || serverInfo?.project?.project_descriptor || null;
+    const name = serverInfo?.project?.project_descriptor || serverInfo?.project?.project_name || null;
 
     let logoUrl = organization.logoUrl;
     const projectLogoAssetId = serverInfo?.project?.project_logo;
