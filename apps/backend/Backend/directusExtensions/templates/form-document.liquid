@@ -2,19 +2,23 @@
   form-document.liquid – das Layout für ausgefüllte Formulare als PDF.
 
   Vorbild ist das gedruckte Protokoll, das in den Wohnheimen ausgefüllt und unterschrieben wird:
-  Titel oben links, Logo oben rechts, fette Beschriftung mit Doppelpunkt in einer festen Spalte,
-  der Wert daneben. Wo nichts eingetragen wurde, steht – wie auf Papier – eine Schreiblinie bis
-  zum rechten Rand. Deshalb ist das Dokument schwarzweiß: eine Behördenvorlage, kein Web-Layout.
+  Titel oben links, Logo und Name der Einrichtung oben rechts, fette Beschriftung mit Doppelpunkt
+  in einer festen Spalte, der Wert daneben. Wo nichts eingetragen wurde, steht – wie auf Papier –
+  eine Schreiblinie bis zum rechten Rand. Deshalb ist das Dokument schwarzweiß: eine
+  Behördenvorlage, kein Web-Layout.
 
   Das Template bekommt ein fertiges Datenmodell (siehe `FormPdfDocumentHelper.ts`) und kümmert
   sich ausschließlich um Struktur und Aussehen. Alle Werte kommen als reiner Text herein und
   werden hier mit `escape` ausgegeben – das Backend baut kein HTML mehr zusammen.
 
   Erwartete Variablen:
-    documentTitle, documentSubtitle, projectName, projectLogo
+    documentTitle, documentSubtitle
+    organizationName, organizationLogoUrl   – die Einrichtung, die das Dokument herausgibt
+    metaEntries[]   – { label, value }, z. B. Vorgang und Eingangsdatum
     sections[]      – { title, rows[] }
     row             – { type: 'text' | 'multiline' | 'boolean' | 'character_boxes',
-                        label, text, options[], boxGroups[] }
+                        label, hint, text, options[], boxGroups[] }
+    placeAndDateLabel, placeAndDateValue
     signatures[]    – { label, imageUrl }
     attachments[]   – { label, imageUrl }
     attachmentsTitle
@@ -30,6 +34,9 @@
             --text-color: #000000;
             --line-color: #000000;
             --muted-color: #555555;
+            --label-column-width: 58mm;
+            --rule-width: 0.25mm;
+            --line-width: 0.3mm;
         }
 
         * {
@@ -50,36 +57,78 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ── Kopfzeile ───────────────────────────────────────────────────── */
+        /* ── Briefkopf ───────────────────────────────────────────────────── */
 
         .doc-header {
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
             gap: 10mm;
-            margin-bottom: 9mm;
+            padding-bottom: 3mm;
+            border-bottom: var(--rule-width) solid var(--line-color);
         }
 
         .doc-header__title {
             margin: 0;
-            font-size: 22pt;
-            font-weight: 800;
+            font-size: 20pt;
+            font-weight: 700;
             letter-spacing: -0.2pt;
-            line-height: 1.1;
+            line-height: 1.12;
         }
 
         .doc-header__subtitle {
-            margin: 1.5mm 0 0 0;
+            margin: 1.8mm 0 0 0;
             font-size: 9.5pt;
             color: var(--muted-color);
+            max-width: 105mm;
+        }
+
+        /* Logo und Name der Einrichtung stehen als Block rechts, wie auf dem Briefbogen. */
+        .doc-header__organization {
+            flex: 0 0 auto;
+            max-width: 55mm;
+            text-align: right;
         }
 
         .doc-header__logo {
-            max-height: 18mm;
-            max-width: 45mm;
+            display: block;
+            margin-left: auto;
+            max-height: 16mm;
+            max-width: 55mm;
             height: auto;
             width: auto;
             object-fit: contain;
+        }
+
+        /*
+           Der Name steht unter dem Logo und nicht daneben: welches Seitenverhältnis das Logo
+           einer Einrichtung hat, weiß das Template nicht – untereinander passt beides immer.
+        */
+        .doc-header__organization-name {
+            margin: 1.6mm 0 0 0;
+            font-size: 10pt;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        /* ── Vorgangsdaten ───────────────────────────────────────────────── */
+
+        .doc-meta {
+            margin: 2mm 0 7mm 0;
+            font-size: 8.5pt;
+            color: var(--muted-color);
+        }
+
+        .doc-meta__entry + .doc-meta__entry {
+            margin-left: 8mm;
+        }
+
+        .doc-meta__label {
+            font-weight: 700;
+        }
+
+        .doc-meta--empty {
+            margin-bottom: 7mm;
         }
 
         /* ── Abschnitte ──────────────────────────────────────────────────── */
@@ -96,6 +145,7 @@
             margin: 0 0 2.5mm 0;
             font-size: 11.5pt;
             font-weight: 700;
+            /* Eine Abschnittsüberschrift bleibt nie allein am Seitenende stehen. */
             break-after: avoid;
             page-break-after: avoid;
         }
@@ -106,19 +156,33 @@
             display: flex;
             align-items: baseline;
             gap: 2mm;
-            margin: 0 0 1.4mm 0;
+            margin: 0 0 1.6mm 0;
             break-inside: avoid;
             page-break-inside: avoid;
         }
 
         .field__label {
-            flex: 0 0 58mm;
+            flex: 0 0 var(--label-column-width);
             font-weight: 700;
+        }
+
+        /*
+           Das Kleingedruckte unter der Beschriftung – auf dem Vordruck steht dort z. B.
+           „(nur, wenn abweichend von bisheriger Nummer)".
+        */
+        .field__hint {
+            margin-top: 0.4mm;
+            font-size: 7.5pt;
+            font-weight: 400;
+            line-height: 1.25;
+            color: var(--muted-color);
         }
 
         .field__value {
             flex: 1 1 auto;
+            min-width: 0;
             min-height: 4.6mm;
+            overflow-wrap: anywhere;
             word-break: break-word;
         }
 
@@ -127,7 +191,7 @@
            steht einfach da, so wie der Vordruck seine bereits bekannten Angaben zeigt.
         */
         .field__value--empty {
-            border-bottom: 0.3mm solid var(--line-color);
+            border-bottom: var(--line-width) solid var(--line-color);
         }
 
         .field--boxes {
@@ -137,7 +201,7 @@
         /* Mehrzeiliger Text bekommt ein Linienraster über die volle Breite. */
         .field--block {
             display: block;
-            margin-bottom: 3mm;
+            margin-bottom: 3.5mm;
         }
 
         .field--block .field__label {
@@ -153,7 +217,7 @@
         /* Leerer Freitext: drei Schreiblinien, wie sie der Vordruck dafür vorsieht. */
         .writing-line {
             height: 6mm;
-            border-bottom: 0.3mm solid var(--line-color);
+            border-bottom: var(--line-width) solid var(--line-color);
         }
 
         /* ── Ankreuzfelder ───────────────────────────────────────────────── */
@@ -166,15 +230,16 @@
 
         .checkbox {
             display: inline-block;
-            width: 3.8mm;
-            height: 3.8mm;
-            margin-right: 1.5mm;
-            border: 0.3mm solid var(--line-color);
+            width: 3.6mm;
+            height: 3.6mm;
+            margin-right: 1.6mm;
+            border: var(--line-width) solid var(--line-color);
             text-align: center;
-            line-height: 3.4mm;
-            font-size: 9pt;
+            line-height: 3.2mm;
+            font-size: 8.5pt;
             font-weight: 700;
-            vertical-align: -0.4mm;
+            /* Das Kästchen sitzt auf der Grundlinie der Beschriftung, nicht darunter. */
+            vertical-align: -0.5mm;
         }
 
         /* ── IBAN-/BIC-Kästchen ──────────────────────────────────────────── */
@@ -197,7 +262,7 @@
         .box {
             width: 4.3mm;
             height: 6mm;
-            border: 0.3mm solid var(--line-color);
+            border: var(--line-width) solid var(--line-color);
             border-top: none;
             border-left: none;
             text-align: center;
@@ -207,19 +272,49 @@
         }
 
         .boxes__group .box:first-child {
-            border-left: 0.3mm solid var(--line-color);
+            border-left: var(--line-width) solid var(--line-color);
         }
 
-        /* ── Unterschriften ──────────────────────────────────────────────── */
+        /* ── Ort, Datum und Unterschriften ───────────────────────────────── */
+
+        .closing {
+            /* Der letzte Abschnitt bringt schon seinen eigenen Abstand mit. */
+            margin-top: 5mm;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .place-and-date {
+            display: flex;
+            align-items: baseline;
+            gap: 2mm;
+            margin-bottom: 7mm;
+        }
+
+        .place-and-date__label {
+            flex: 0 0 auto;
+            font-weight: 700;
+        }
+
+        .place-and-date__line {
+            flex: 0 0 70mm;
+            border-bottom: var(--line-width) solid var(--line-color);
+            min-height: 4.6mm;
+        }
 
         /*
-           Bewusst kein Flexbox: Chromium bricht Flex-Container im Druck ungern sauber um und
-           lässt dann angeschnittene Unterschriften am Seitenende stehen. Inline-Blöcke halten
-           `page-break-inside: avoid` zuverlässig ein.
+           Bewusst kein Flexbox für die Unterschriften: Chromium bricht Flex-Container im Druck
+           ungern sauber um und lässt dann angeschnittene Unterschriften am Seitenende stehen.
+           Inline-Blöcke halten `page-break-inside: avoid` zuverlässig ein.
         */
         .signatures {
-            margin: 10mm 0 0 0;
             font-size: 0;
+            /*
+               Der Abstand unter einer Unterschrift trennt zwei Reihen. Nach der letzten Reihe
+               soll er den Block nicht höher machen, als er ist – sonst rutscht er unnötig auf
+               eine neue Seite.
+            */
+            margin-bottom: -4mm;
             break-inside: avoid;
             page-break-inside: avoid;
         }
@@ -227,7 +322,7 @@
         .signature {
             display: inline-block;
             width: 48%;
-            margin: 0 4% 6mm 0;
+            margin: 0 4% 4mm 0;
             vertical-align: bottom;
             font-size: 10.5pt;
             break-inside: avoid;
@@ -238,30 +333,26 @@
             margin-right: 0;
         }
 
-        .signature__row {
-            display: flex;
-            align-items: flex-end;
-            gap: 2mm;
-        }
-
-        .signature__label {
-            flex: 0 0 auto;
-            padding-bottom: 1mm;
-        }
-
         .signature__line {
-            flex: 1 1 auto;
-            height: 18mm;
-            line-height: 18mm;
+            height: 16mm;
+            line-height: 16mm;
             white-space: nowrap;
             overflow: hidden;
-            border-bottom: 0.3mm solid var(--line-color);
+            border-bottom: var(--line-width) solid var(--line-color);
         }
 
         .signature__line img {
-            max-height: 18mm;
+            max-height: 15mm;
             max-width: 100%;
             vertical-align: bottom;
+        }
+
+        /* Die Beschriftung steht klein unter der Linie – wie „Hausleitung" auf dem Vordruck. */
+        .signature__label {
+            margin-top: 1.2mm;
+            font-size: 8.5pt;
+            line-height: 1.25;
+            color: var(--muted-color);
         }
 
         /* ── Anhänge ─────────────────────────────────────────────────────── */
@@ -281,12 +372,12 @@
             max-width: 100%;
             max-height: 105mm;
             height: auto;
-            border: 0.3mm solid var(--line-color);
+            border: var(--line-width) solid var(--line-color);
         }
 
         .attachment__caption {
             margin-top: 1.2mm;
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: var(--muted-color);
         }
     </style>
@@ -299,10 +390,27 @@
             <p class="doc-header__subtitle">{{ documentSubtitle | escape }}</p>
         {% endif %}
     </div>
-    {% if projectLogo %}
-        <img class="doc-header__logo" src="{{ projectLogo | escape }}" alt="{{ projectName | escape }}" />
+    {% if organizationLogoUrl or organizationName %}
+        <div class="doc-header__organization">
+            {% if organizationLogoUrl %}
+                <img class="doc-header__logo" src="{{ organizationLogoUrl | escape }}" alt="{{ organizationName | escape }}" />
+            {% endif %}
+            {% if organizationName %}
+                <p class="doc-header__organization-name">{{ organizationName | escape }}</p>
+            {% endif %}
+        </div>
     {% endif %}
 </header>
+
+{% if metaEntries.size > 0 %}
+    <div class="doc-meta">
+        {% for metaEntry in metaEntries %}
+            <span class="doc-meta__entry"><span class="doc-meta__label">{{ metaEntry.label | escape }}:</span> {{ metaEntry.value | escape }}</span>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="doc-meta doc-meta--empty"></div>
+{% endif %}
 
 {% for section in sections %}
     <section class="section">
@@ -312,7 +420,7 @@
         {% for row in section.rows %}
             {% if row.type == 'multiline' %}
                 <div class="field field--block">
-                    <div class="field__label">{{ row.label | escape }}:</div>
+                    <div class="field__label">{{ row.label | escape }}:{% if row.hint %}<div class="field__hint">{{ row.hint | escape }}</div>{% endif %}</div>
                     {% if row.text == '' %}
                         <div class="writing-line"></div>
                         <div class="writing-line"></div>
@@ -323,7 +431,7 @@
                 </div>
             {% elsif row.type == 'boolean' %}
                 <div class="field">
-                    <div class="field__label">{{ row.label | escape }}:</div>
+                    <div class="field__label">{{ row.label | escape }}:{% if row.hint %}<div class="field__hint">{{ row.hint | escape }}</div>{% endif %}</div>
                     <div class="field__value">
                         {% for option in row.options %}
                             <span class="checkbox-option">
@@ -334,7 +442,7 @@
                 </div>
             {% elsif row.type == 'character_boxes' %}
                 <div class="field field--boxes">
-                    <div class="field__label">{{ row.label | escape }}:</div>
+                    <div class="field__label">{{ row.label | escape }}:{% if row.hint %}<div class="field__hint">{{ row.hint | escape }}</div>{% endif %}</div>
                     <div class="field__value">
                         <span class="boxes">
                             {% for group in row.boxGroups %}
@@ -347,7 +455,7 @@
                 </div>
             {% else %}
                 <div class="field">
-                    <div class="field__label">{{ row.label | escape }}:</div>
+                    <div class="field__label">{{ row.label | escape }}:{% if row.hint %}<div class="field__hint">{{ row.hint | escape }}</div>{% endif %}</div>
                     <div class="field__value{% if row.text == '' %} field__value--empty{% endif %}">{{ row.text | escape }}</div>
                 </div>
             {% endif %}
@@ -355,22 +463,27 @@
     </section>
 {% endfor %}
 
-{% if signatures.size > 0 %}
-    <div class="signatures">
-        {% for signature in signatures %}
-            <div class="signature">
-                <div class="signature__row">
-                    <div class="signature__label">{{ signature.label | escape }}:</div>
+<div class="closing">
+    <div class="place-and-date">
+        <div class="place-and-date__label">{{ placeAndDateLabel | escape }}:</div>
+        <div class="place-and-date__line">{{ placeAndDateValue | escape }}</div>
+    </div>
+
+    {% if signatures.size > 0 %}
+        <div class="signatures">
+            {% for signature in signatures %}
+                <div class="signature">
                     <div class="signature__line">
                         {% if signature.imageUrl %}
                             <img src="{{ signature.imageUrl | escape }}" alt="{{ signature.label | escape }}" />
                         {% endif %}
                     </div>
+                    <div class="signature__label">{{ signature.label | escape }}</div>
                 </div>
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
 
 {% if attachments.size > 0 %}
     <section class="section attachments">

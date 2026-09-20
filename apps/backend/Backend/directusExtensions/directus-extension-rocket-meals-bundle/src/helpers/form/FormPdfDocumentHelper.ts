@@ -19,6 +19,7 @@
  */
 
 import { FormExtractFormAnswerValueFileSingle, FormExtractFormAnswerValueFileSingleOrString, FormExtractRelevantInformation, FormExtractRelevantInformationSingle } from '../../forms-sync-hook';
+import { ContentTranslationHelper, ExistingTranslation } from '../ContentTranslationHelper';
 import { DirectusFilesAssetHelper } from '../DirectusFilesAssetHelper';
 import { MyDatabaseTestableHelperInterface } from '../MyDatabaseHelperInterface';
 import { BackendTranslationKeys, BackendTranslator } from '../translations';
@@ -29,6 +30,12 @@ export type FormGenerationParams = {
   form: DatabaseTypes.Forms;
   formExtractRelevantInformation: FormExtractRelevantInformation;
   myDatabaseHelperInterface: MyDatabaseTestableHelperInterface;
+  /**
+   * Der Vorgang, zu dem die Antworten gehören – optional, weil Tests und Vorschauen ein
+   * Formular ohne Einreichung setzen. Daraus entstehen Vorgangskennung und Eingangsdatum
+   * im Kopf des Dokuments.
+   */
+  formSubmission?: DatabaseTypes.FormSubmissions;
 };
 
 /** Welche Darstellung eine Formularzeile im Template bekommt. */
@@ -43,6 +50,11 @@ export type FormDocumentCheckboxOption = {
 export type FormDocumentRow = {
   type: FormDocumentRowType;
   label: string;
+  /**
+   * Der Kleingedruckte Hinweis unter der Beschriftung, aus `form_fields.translations.description`
+   * – auf dem Papiervordruck steht dort z. B. „(nur, wenn abweichend von bisheriger Nummer)".
+   */
+  hint: string | null;
   /** Der Wert als reiner Text; leer, wenn das Feld nicht ausgefüllt wurde. */
   text: string;
   /** Nur bei `boolean`: die Optionen in Anzeigereihenfolge. */
@@ -68,13 +80,32 @@ export type FormDocumentAttachment = {
   imageUrl: string;
 };
 
+/** Eine Zeile des Vorgangsblocks unter dem Titel, z. B. „Vorgang: 2024-000188". */
+export type FormDocumentMetaEntry = {
+  label: string;
+  value: string;
+};
+
 export type FormDocument = {
   documentTitle: string;
   documentSubtitle: string | null;
+  /** Name der herausgebenden Einrichtung im Briefkopf – nicht der Name der App. */
+  organizationName: string | null;
+  /** Logo der Einrichtung im Briefkopf. */
+  organizationLogoUrl: string | null;
+  /** Vorgangskennung und Eingangsdatum; leer, wenn keine Einreichung bekannt ist. */
+  metaEntries: FormDocumentMetaEntry[];
   sections: FormDocumentSection[];
   signatures: FormDocumentSignature[];
   attachments: FormDocumentAttachment[];
   attachmentsTitle: string;
+  /** Beschriftung der Zeile „Ort, Datum" über den Unterschriften. */
+  placeAndDateLabel: string;
+  /**
+   * Das Datum in dieser Zeile – das Eingangsdatum des Vorgangs. Der Ort bleibt leer: welcher
+   * Ort dort gehört, weiß nur, wer unterschreibt.
+   */
+  placeAndDateValue: string;
 };
 
 /** Ein Feld mit aufgeteilter Beschriftung, bevor daraus Abschnitte werden. */
@@ -101,8 +132,8 @@ export class FormPdfDocumentHelper {
 
   // ── Dokument ──────────────────────────────────────────────────────────────
 
-  public static buildFormDocument(params: FormGenerationParams): FormDocument {
-    const { form, formExtractRelevantInformation, myDatabaseHelperInterface } = params;
+  public static async buildFormDocument(params: FormGenerationParams): Promise<FormDocument> {
+    const { form, formExtractRelevantInformation, myDatabaseHelperInterface, formSubmission } = params;
 
     const labelledRows: LabelledRow[] = [];
     const signatures: FormDocumentSignature[] = [];
@@ -110,6 +141,7 @@ export class FormPdfDocumentHelper {
 
     for (const formExtract of formExtractRelevantInformation) {
       const label = this.getFieldLabel(formExtract);
+      const hint = this.getFieldHint(formExtract);
       const fieldType = formExtract.form_field.field_type ?? '';
 
       if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE_SIGNATURE) {
@@ -126,20 +158,89 @@ export class FormPdfDocumentHelper {
         continue;
       }
 
-      const row = this.buildRowForField(label, formExtract);
+      const row = this.buildRowForField(label, hint, formExtract);
       if (row) {
         labelledRows.push(this.splitLabelIntoGroupAndLabel(row));
       }
     }
 
+    const organization = await this.resolveOrganization(myDatabaseHelperInterface);
+
     return {
-      documentTitle: form.alias || form.id,
-      documentSubtitle: null,
+      documentTitle: this.getDocumentTitle(form),
+      documentSubtitle: this.getContentTranslation(form.translations, 'description'),
+      organizationName: organization.name,
+      organizationLogoUrl: organization.logoUrl,
+      metaEntries: this.buildMetaEntries(formSubmission),
       sections: this.buildSections(labelledRows),
       signatures,
       attachments,
       attachmentsTitle: BackendTranslator.translate(BackendTranslationKeys.form_pdf_attachments),
+      placeAndDateLabel: BackendTranslator.translate(BackendTranslationKeys.form_pdf_place_and_date),
+      placeAndDateValue: this.formatSubmissionDate(formSubmission),
     };
+  }
+
+  /**
+   * Der Titel des Dokuments: der übersetzte Name des Formulars, sonst sein Alias.
+   *
+   * Auch die Fußzeile zeigt diesen Namen, deshalb ist die Ableitung öffentlich.
+   */
+  public static getDocumentTitle(form: DatabaseTypes.Forms): string {
+    return this.getContentTranslation(form.translations, 'name') || form.alias || form.id;
+  }
+
+  /**
+   * Name und Logo der herausgebenden Einrichtung, mit den Rückfällen der Directus-Server-Info.
+   *
+   * `app_settings.company_name` ist der Name der Einrichtung; `project_descriptor` und
+   * `project_name` sind nur der App-Name und deshalb bloß die letzte Notlösung, damit der
+   * Briefkopf nie leer bleibt.
+   */
+  private static async resolveOrganization(myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<{ name: string | null; logoUrl: string | null }> {
+    const organization = await myDatabaseHelperInterface.getDocumentOrganization();
+    const serverInfo = await myDatabaseHelperInterface.getServerInfo();
+
+    const name = organization.name || serverInfo?.project?.project_descriptor || serverInfo?.project?.project_name || null;
+
+    let logoUrl = organization.logoUrl;
+    const projectLogoAssetId = serverInfo?.project?.project_logo;
+    if (!logoUrl && projectLogoAssetId) {
+      logoUrl = DirectusFilesAssetHelper.getDirectAssetUrlById(projectLogoAssetId, myDatabaseHelperInterface, this.SIGNATURE_TRANSFORM_OPTIONS);
+    }
+
+    return { name: name, logoUrl: logoUrl ?? null };
+  }
+
+  // ── Vorgangsdaten ─────────────────────────────────────────────────────────
+
+  /** Vorgangskennung und Eingangsdatum – beides nur, wenn die Einreichung es hergibt. */
+  private static buildMetaEntries(formSubmission: DatabaseTypes.FormSubmissions | null | undefined): FormDocumentMetaEntry[] {
+    if (!formSubmission) {
+      return [];
+    }
+
+    const metaEntries: FormDocumentMetaEntry[] = [];
+    const reference = formSubmission.alias || formSubmission.id;
+    if (reference) {
+      metaEntries.push({ label: BackendTranslator.translate(BackendTranslationKeys.form_pdf_reference), value: reference });
+    }
+
+    const receivedAt = this.formatSubmissionDate(formSubmission);
+    if (receivedAt) {
+      metaEntries.push({ label: BackendTranslator.translate(BackendTranslationKeys.form_pdf_received_at), value: receivedAt });
+    }
+
+    return metaEntries;
+  }
+
+  /** Das Eingangsdatum der Einreichung als deutsches Datum; leer, wenn es keins gibt. */
+  private static formatSubmissionDate(formSubmission: DatabaseTypes.FormSubmissions | null | undefined): string {
+    const dateCreated = formSubmission?.date_created;
+    if (!dateCreated) {
+      return '';
+    }
+    return DateHelper.formatDateToTimeZoneReadable(new Date(dateCreated), EnvVariableHelper.getTimeZoneString(), DateHelper.MOMENT_FORMAT.DATE_ONLY);
   }
 
   // ── Abschnitte aus den Feld-Aliassen ──────────────────────────────────────
@@ -205,31 +306,60 @@ export class FormPdfDocumentHelper {
 
   // ── Einzelne Zeilen ───────────────────────────────────────────────────────
 
+  /**
+   * Die Beschriftung eines Feldes: der übersetzte Name, sonst der Alias, sonst die Id.
+   *
+   * Der Alias ist der interne Name, den der Formularautor vergeben hat. Sobald es eine
+   * Übersetzung gibt, ist sie der Text, den Nutzer auch in der App lesen – und damit der Text,
+   * der auf dem Ausdruck stehen muss.
+   */
   private static getFieldLabel(formExtract: FormExtractRelevantInformationSingle): string {
-    return formExtract.form_field.alias || formExtract.form_field.id;
+    return this.getContentTranslation(formExtract.form_field.translations, 'name') || formExtract.form_field.alias || formExtract.form_field.id;
   }
 
-  private static buildRowForField(label: string, formExtract: FormExtractRelevantInformationSingle): FormDocumentRow | null {
+  /** Der Kleingedruckte Hinweis unter der Beschriftung, aus der Beschreibung des Feldes. */
+  private static getFieldHint(formExtract: FormExtractRelevantInformationSingle): string | null {
+    return this.getContentTranslation(formExtract.form_field.translations, 'description');
+  }
+
+  /**
+   * Ein Feld aus den `*_translations`-Zeilen eines Items, auf Deutsch.
+   *
+   * Das Dokument ist ein deutscher Vordruck, deshalb steht hier fest die deutsche Sprache und
+   * nicht die Sprache eines Nutzers. Sind die Übersetzungen gar nicht mitgeladen (dann stehen
+   * dort nur Ids), liefert der Helper nichts und der Aufrufer fällt auf den Alias zurück.
+   */
+  private static getContentTranslation(translations: unknown, fieldName: string): string | null {
+    const translationRows = (translations ?? []) as ExistingTranslation[];
+    const value = ContentTranslationHelper.getTranslation(translationRows, ContentTranslationHelper.LANGUAGE_CODE_DE, fieldName);
+    if (typeof value !== 'string') {
+      return null;
+    }
+    const trimmedValue = value.trim();
+    return trimmedValue.length > 0 ? trimmedValue : null;
+  }
+
+  private static buildRowForField(label: string, hint: string | null, formExtract: FormExtractRelevantInformationSingle): FormDocumentRow | null {
     const fieldType = formExtract.form_field.field_type ?? '';
     const FIELD_TYPE = FormHelperCommon.FORM_FIELD_TYPE;
 
     if (fieldType === FIELD_TYPE.BOOLEAN_CHECKBOX) {
-      return this.buildBooleanRow(label, formExtract.form_answer.value_boolean);
+      return this.buildBooleanRow(label, hint, formExtract.form_answer.value_boolean);
     }
     if (fieldType === FIELD_TYPE.STRING_BANK_ACCOUNT || fieldType === FIELD_TYPE.STRING_BIC) {
-      return this.buildCharacterBoxesRow(label, formExtract.form_answer.value_string, fieldType);
+      return this.buildCharacterBoxesRow(label, hint, formExtract.form_answer.value_string, fieldType);
     }
     if (fieldType === FIELD_TYPE.MULTILINE_TEXT) {
-      return { type: 'multiline', label, text: formExtract.form_answer.value_string ?? '' };
+      return { type: 'multiline', label, hint, text: formExtract.form_answer.value_string ?? '' };
     }
     if (FormHelperCommon.isDateFieldType(fieldType)) {
-      return { type: 'text', label, text: this.formatDateValue(formExtract) };
+      return { type: 'text', label, hint, text: this.formatDateValue(formExtract) };
     }
     if (formExtract.form_answer.value_number !== null && formExtract.form_answer.value_number !== undefined) {
-      return { type: 'text', label, text: this.formatValueWithPrefixAndSuffix(formExtract.form_answer.value_number, formExtract.form_field) };
+      return { type: 'text', label, hint, text: this.formatValueWithPrefixAndSuffix(formExtract.form_answer.value_number, formExtract.form_field) };
     }
     if (fieldType === FIELD_TYPE.NUMBER) {
-      return { type: 'text', label, text: '' };
+      return { type: 'text', label, hint, text: '' };
     }
     if (fieldType === FIELD_TYPE.FILES_IMAGE || fieldType === FIELD_TYPE.FILES_FILES) {
       // Ein Bildfeld ohne Bild bekommt keine leere Zeile – siehe Dateikopf.
@@ -240,14 +370,16 @@ export class FormPdfDocumentHelper {
     return {
       type: 'text',
       label,
+      hint,
       text: value ? this.formatValueWithPrefixAndSuffix(value, formExtract.form_field) : '',
     };
   }
 
-  private static buildBooleanRow(label: string, value: boolean | null | undefined): FormDocumentRow {
+  private static buildBooleanRow(label: string, hint: string | null, value: boolean | null | undefined): FormDocumentRow {
     return {
       type: 'boolean',
       label,
+      hint,
       text: '',
       options: [
         { label: BackendTranslator.translate(BackendTranslationKeys.no), checked: value === false },
@@ -256,7 +388,7 @@ export class FormPdfDocumentHelper {
     };
   }
 
-  private static buildCharacterBoxesRow(label: string, value: string | null | undefined, fieldType: string): FormDocumentRow {
+  private static buildCharacterBoxesRow(label: string, hint: string | null, value: string | null | undefined, fieldType: string): FormDocumentRow {
     const cleanedValue = value ? StringHelper.replaceAllWithOptions({ str: value, find: String.raw`\s`, replace: '' }).toUpperCase() : '';
     const emptyBoxCount = fieldType === FormHelperCommon.FORM_FIELD_TYPE.STRING_BIC ? this.EMPTY_BOX_COUNT_BIC : this.EMPTY_BOX_COUNT_IBAN;
     const characterCount = cleanedValue.length > 0 ? cleanedValue.length : emptyBoxCount;
@@ -271,7 +403,7 @@ export class FormPdfDocumentHelper {
       currentGroup.push(cleanedValue[index] ?? '');
     }
 
-    return { type: 'character_boxes', label, text: cleanedValue, boxGroups };
+    return { type: 'character_boxes', label, hint, text: cleanedValue, boxGroups };
   }
 
   private static formatDateValue(formExtract: FormExtractRelevantInformationSingle): string {

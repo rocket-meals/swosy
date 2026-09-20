@@ -2,7 +2,8 @@ import { FormExtractFormAnswer, FormExtractFormAnswerValueFileSingle, FormExtrac
 import { HtmlGenerator, HtmlTemplatesEnum } from '../html/HtmlGenerator';
 import { PdfGeneratorHelper } from '../pdf/PdfGeneratorHelper';
 import { PdfGeneratorOptions, RequestOptions } from '../pdf/PdfGeneratorInterfaces';
-import { FormGenerationParams, FormPdfDocumentHelper } from './FormPdfDocumentHelper';
+import { FormDocument, FormGenerationParams, FormPdfDocumentHelper } from './FormPdfDocumentHelper';
+import { HtmlEscapeHelper } from '../html/HtmlEscapeHelper';
 import { DirectusFilesAssetHelper } from '../DirectusFilesAssetHelper';
 import { MarkdownHelper } from '../html/MarkdownHelper';
 import { MyDatabaseTestableHelperInterface } from '../MyDatabaseHelperInterface';
@@ -44,6 +45,8 @@ type AddFormFieldParams = {
   suffix?: string;
   form_submission_id: string;
   index: number;
+  /** Das Kleingedruckte unter der Beschriftung, wie es aus `form_fields.translations` käme. */
+  hint?: string;
 };
 
 export type { FormGenerationParams };
@@ -52,116 +55,197 @@ export class FormHelper {
   private static readonly FORM_IMAGE_TRANSFORM_OPTIONS = DirectusFilesAssetHelper.PRESET_FILE_TRANSFORMATION_IMAGE_HD;
   private static readonly FORM_IMAGE_SIGNATURE_TRANSFORM_OPTIONS = DirectusFilesAssetHelper.PRESET_FILE_TRANSFORMATION_IMAGE_ORIGINAL;
 
+  /** Sprache, auf die die Beispiel-Übersetzungen geschlüsselt sind. */
+  private static readonly EXAMPLE_LANGUAGE_CODE = 'de-DE';
+
+  /** Das Beispiel-Formular: ein Abnahmeprotokoll, wie es in einem Wohnheim ausgefüllt wird. */
   public static getExampleForm(): DatabaseTypes.Forms {
     return {
-      form_fields: [], form_submissions: [], translations: [],
+      form_fields: [],
+      form_submissions: [],
+      translations: [
+        {
+          id: 'example-form-translation-de',
+          languages_code: FormHelper.EXAMPLE_LANGUAGE_CODE,
+          name: 'Abnahmeprotokoll',
+          description: 'Protokoll über die Rückgabe des Wohnraums und die Abrechnung der Kaution.',
+        },
+      ] as unknown as DatabaseTypes.Forms['translations'],
       id: 'example-form',
       alias: 'Example Form: Abnahmeprotokoll',
       date_created: '2021-09-01T00:00:00.000Z',
       date_updated: '2021-09-01T00:00:00.000Z',
       status: 'published',
       user_created: '1',
-      user_updated: '1'
+      user_updated: '1',
     };
   }
 
+  /**
+   * Der Beispiel-Vorgang zum Beispiel-Formular: Kennung und Eingangsdatum stehen im Kopf des
+   * Dokuments. Reine Musterdaten – das erzeugte PDF liegt im Repository.
+   */
+  public static getExampleFormSubmission(): DatabaseTypes.FormSubmissions {
+    return {
+      alias: 'A-2023-000188',
+      date_created: '2023-11-27T09:12:00.000Z',
+      form: 'example-form',
+      form_answers: [],
+      id: 'example-form-submission',
+      mails: [],
+      status: 'published',
+    } as unknown as DatabaseTypes.FormSubmissions;
+  }
+
+  /**
+   * Beispielantworten, die jeden Feldtyp einmal zeigen – mit Werten, wie sie wirklich in einem
+   * Abnahmeprotokoll stehen. Alle Angaben sind frei erfunden.
+   */
   public static getExampleFormExtractRelevantInformation(): FormExtractRelevantInformation {
     let formExtractRelevantInformation: FormExtractRelevantInformation = [];
-    let form_submission_id = MathHelper.random().toString();
+    let form_submission_id = FormHelper.getExampleFormSubmission().id;
 
     let index = 0;
 
     formExtractRelevantInformation.push(
-    	this.addFormField({
-        alias: 'Text Field',
-        data: { value_string: 'This is a long text example' },
+      this.addFormField({
+        alias: 'Mieter: Nummer',
+        data: { value_string: '188030' },
         form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING,
         form_submission_id: form_submission_id,
-        index: index++
-    }),
-    	this.addFormField({
-        alias: 'Text Field 2',
-        data: { value_string: 'This is a long text example This is a long text example This is a long text example This is a long text example This is a long text example This is a long text example ' },
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Mieter: Vorname',
+        data: { value_string: 'Max' },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING,
+        form_submission_id: form_submission_id,
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Mieter: Nachname',
+        data: { value_string: 'Mustermann' },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING,
+        form_submission_id: form_submission_id,
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Mieter: E-Mail Adresse',
+        data: { value_string: 'max.mustermann@example.com' },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING_EMAIL,
+        hint: '(nur, wenn abweichend von bisheriger E-Mail)',
+        form_submission_id: form_submission_id,
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Mieter: Telefon/Mobil',
+        data: { value_string: '0172 3458247' },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING,
+        hint: '(nur, wenn abweichend von bisheriger Nummer)',
+        form_submission_id: form_submission_id,
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Mieter: Adresse (neu)',
+        data: { value_string: 'Musterweg 12\n30159 Musterstadt' },
         form_field_type: FormHelperCommon.FORM_FIELD_TYPE.MULTILINE_TEXT,
         form_submission_id: form_submission_id,
-        index: index++
-    }),
-    	this.addFormField({
-      alias: 'IBAN',
-      data: { value_string: 'DE89370400440532013000' }, // example iban (DE89 3704 0044 0532 0130 00)
-      form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING_BANK_ACCOUNT,
-      form_submission_id: form_submission_id,
-      index: index++
-    }),
-    	this.addFormField({
-      alias: 'BIC',
-      data: { value_string: 'DEUTDEDBXXX' }, // example bic (11 chars)
-      form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING_BIC,
-      form_submission_id: form_submission_id,
-      index: index++
-    }),
-    	this.addFormField({
-        alias: 'Number Field',
-        data: { value_number: 12345.67 },
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Wohnhaus',
+        data: { value_string: 'Dorotheenstr. 5 - 7, Zimmer in 7er WG Nr. 42-7' },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING,
+        form_submission_id: form_submission_id,
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Bankverbindung',
+        data: { value_string: 'DE89370400440532013000' }, // example iban (DE89 3704 0044 0532 0130 00)
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING_BANK_ACCOUNT,
+        hint: '(nur, wenn abweichend von bisheriger Bankverbindung)',
+        form_submission_id: form_submission_id,
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'BIC',
+        data: { value_string: 'DEUTDEDBXXX' }, // example bic (11 chars)
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING_BIC,
+        form_submission_id: form_submission_id,
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Kaution',
+        data: { value_number: 1380.5 },
         form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
         form_submission_id: form_submission_id,
-        index: index++
-    }),
-    	this.addFormField({
-      alias: 'Number Field With Prefix',
-      data: { value_number: 12345.67 },
-      form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
-      prefix: "$ ",
-      form_submission_id: form_submission_id,
-      index: index++
-    }),
-    	this.addFormField({
-      alias: 'Number Field With Suffix',
-      data: { value_number: 12345.67 },
-      form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
-        suffix: " €",
-      form_submission_id: form_submission_id,
-      index: index++
-    }),
-    	this.addFormField({
-      alias: 'Number Field With Prefix And Suffix',
-      data: { value_number: 12345.67 },
-      form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
-      prefix: "€ ",
-      suffix: " EUR",
-      form_submission_id: form_submission_id,
-      index: index++
-    }),
-    	this.addFormField({
-      alias: 'Boolean Field',
-      data: { value_boolean: false },
-      form_field_type: FormHelperCommon.FORM_FIELD_TYPE.BOOLEAN_CHECKBOX,
-      form_submission_id: form_submission_id,
-      index: index++
-    }),
-    	this.addFormField({
-      alias: 'Boolean Field True',
-      data: { value_boolean: true },
-      form_field_type: FormHelperCommon.FORM_FIELD_TYPE.BOOLEAN_CHECKBOX,
-      form_submission_id: form_submission_id,
-      index: index++
-    }),
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Kaution mit Präfix',
+        data: { value_number: 1380.5 },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
+        prefix: '€ ',
+        form_submission_id: form_submission_id,
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Kaution mit Suffix',
+        data: { value_number: 1380.5 },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
+        suffix: ' €',
+        form_submission_id: form_submission_id,
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Kaution mit Präfix und Suffix',
+        data: { value_number: 1380.5 },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
+        prefix: '€ ',
+        suffix: ' brutto',
+        form_submission_id: form_submission_id,
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Mängelfrei?',
+        data: { value_boolean: false },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.BOOLEAN_CHECKBOX,
+        form_submission_id: form_submission_id,
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Übergabe persönlich?',
+        data: { value_boolean: true },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.BOOLEAN_CHECKBOX,
+        form_submission_id: form_submission_id,
+        index: index++,
+      }),
+      this.addFormField({
+        alias: 'Mängel: Sonstige',
+        data: { value_string: 'Kratzer im Linoleum vor dem Schreibtisch (ca. 20 cm). Duschvorhang fehlt. Fensterdichtung im Zimmer porös, bitte vor Neuvermietung erneuern.' },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.MULTILINE_TEXT,
+        form_submission_id: form_submission_id,
+        index: index++,
+      })
     );
 
-    let dateTypes = [
-        FormHelperCommon.FORM_FIELD_TYPE.DATE,
-        FormHelperCommon.FORM_FIELD_TYPE.DATE_HH_MM,
-      FormHelperCommon.FORM_FIELD_TYPE.DATE_TIMESTAMP,
-      FormHelperCommon.FORM_FIELD_TYPE.DATE_DATE_AND_HH_MM,
-    ]
-    for (let dateType of dateTypes) {
-      formExtractRelevantInformation.push(this.addFormField({
-        alias: dateType,
-        data: { value_date: '2021-09-01T00:00:00.000Z' },
-        form_field_type: dateType,
-        form_submission_id: form_submission_id,
-        index: index++
-      }));
+    // Jeder Datums-Typ einmal, damit das Format im Ausdruck geprüft werden kann.
+    let dateAliasesByType: { alias: string; form_field_type: string }[] = [
+      { alias: 'Datum des Auszuges', form_field_type: FormHelperCommon.FORM_FIELD_TYPE.DATE },
+      { alias: 'Uhrzeit der Übergabe', form_field_type: FormHelperCommon.FORM_FIELD_TYPE.DATE_HH_MM },
+      { alias: 'Zeitstempel des Eingangs', form_field_type: FormHelperCommon.FORM_FIELD_TYPE.DATE_TIMESTAMP },
+      { alias: 'Übergabe am', form_field_type: FormHelperCommon.FORM_FIELD_TYPE.DATE_DATE_AND_HH_MM },
+    ];
+    for (let dateAlias of dateAliasesByType) {
+      formExtractRelevantInformation.push(
+        this.addFormField({
+          alias: dateAlias.alias,
+          data: { value_date: '2023-11-27T09:12:00.000Z' },
+          form_field_type: dateAlias.form_field_type,
+          form_submission_id: form_submission_id,
+          index: index++,
+        })
+      );
     }
 
     let sizes = [200, 400, 800, 1600];
@@ -173,38 +257,45 @@ export class FormHelper {
 
     formExtractRelevantInformation.push(
       this.addFormField({
-        alias: 'Image Field',
+        alias: 'Wohnraum: Foto',
         data: { value_image: images[0] },
         form_field_type: FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE,
         form_submission_id: form_submission_id,
-        index: index++
-    }),
+        index: index++,
+      }),
       this.addFormField({
-      alias: 'Files Field',
-      data: { value_files: images },
-      form_field_type: FormHelperCommon.FORM_FIELD_TYPE.FILES_FILES,
-      form_submission_id: form_submission_id,
-      index: index++
-    }),
+        alias: 'Mängel: Fotos',
+        data: { value_files: images },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.FILES_FILES,
+        form_submission_id: form_submission_id,
+        index: index++,
+      })
     );
 
     const signaturePngPath = path.join(__dirname, '__tests__', 'data', 'signature_handwritten_example.png');
     if (fs.existsSync(signaturePngPath)) {
       const signaturePngBuffer = fs.readFileSync(signaturePngPath);
       const signatureDataUri = `data:image/png;base64,${signaturePngBuffer.toString('base64')}`;
-      formExtractRelevantInformation.push(this.addFormField({
-        alias: 'Signature Field',
-        data: { value_image: signatureDataUri },
-        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE_SIGNATURE,
-        form_submission_id: form_submission_id,
-        index: index++
-      }));
+      formExtractRelevantInformation.push(
+        this.addFormField({
+          alias: 'Unterschrift Mieter/in',
+          data: { value_image: signatureDataUri },
+          form_field_type: FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE_SIGNATURE,
+          form_submission_id: form_submission_id,
+          index: index++,
+        }),
+        this.addFormField({
+          alias: 'Hausleitung',
+          data: { value_image: signatureDataUri },
+          form_field_type: FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE_SIGNATURE,
+          form_submission_id: form_submission_id,
+          index: index++,
+        })
+      );
     }
 
     return formExtractRelevantInformation;
   }
-
-
 
   private static addFormField(obj: AddFormFieldParams): FormExtractRelevantInformationSingle {
     let form_field = this.getExampleFormField(obj);
@@ -244,7 +335,15 @@ export class FormHelper {
       visibility_rule: '',
       sort: 0,
       status: 'published',
-      translations: [],
+      // Beschriftung und Kleingedrucktes kommen aus den Übersetzungen – genau wie im Betrieb.
+      translations: [
+        {
+          id: `example-field-translation-${obj.index}`,
+          languages_code: FormHelper.EXAMPLE_LANGUAGE_CODE,
+          name: obj.alias,
+          description: obj.hint || null,
+        },
+      ] as unknown as DatabaseTypes.FormFields['translations'],
       user_created: '1',
       user_updated: '1',
       value_prefix: obj.prefix || null,
@@ -512,21 +611,26 @@ export class FormHelper {
   /**
    * Renders the filled form as a print-ready A4 document.
    *
-   * The layout – label column, writing lines, checkboxes, IBAN boxes, signature fields – lives
-   * in `templates/form-document.liquid`; this method only hands over the content model that
-   * {@link FormPdfDocumentHelper} builds from the answers.
+   * The layout – letterhead, label column, writing lines, checkboxes, IBAN boxes, signature
+   * fields – lives in `templates/form-document.liquid`; this method only hands over the content
+   * model that {@link FormPdfDocumentHelper} builds from the answers.
    */
   public static async generateHtmlFromForm(params: FormGenerationParams): Promise<string> {
     const { myDatabaseHelperInterface } = params;
-    const formDocument = FormPdfDocumentHelper.buildFormDocument(params);
+    const formDocument = await FormPdfDocumentHelper.buildFormDocument(params);
+    return await FormHelper.generateHtmlFromFormDocument(formDocument, myDatabaseHelperInterface);
+  }
+
+  private static async generateHtmlFromFormDocument(formDocument: FormDocument, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<string> {
     return await HtmlGenerator.generateHtml({ ...formDocument }, myDatabaseHelperInterface, HtmlTemplatesEnum.FORM_DOCUMENT);
   }
 
   /**
-   * The footer Chromium repeats on every page: when the document was created, the checksum over
-   * the answers, and the page number. It is rendered as its own document, hence the inline styles.
+   * The footer Chromium repeats on every page: who issued the document and which form it is,
+   * plus when it was created, the checksum over the answers and the page number. It is rendered
+   * as its own document, hence the inline styles.
    */
-  private static getPdfFooterTemplate(formExtractRelevantInformation: FormExtractRelevantInformation): string {
+  private static getPdfFooterTemplate(formDocument: FormDocument, formExtractRelevantInformation: FormExtractRelevantInformation): string {
     const generatedAtDateString = DateHelper.formatDateToTimeZoneReadable(new Date(), DateHelperTimezone.GERMANY);
     const generatedAtText = BackendTranslator.translate(BackendTranslationKeys.form_pdf_generated_at, undefined, { date: generatedAtDateString });
     const checksumText = BackendTranslator.translate(BackendTranslationKeys.form_pdf_checksum, undefined, { hash: HashHelper.getHashFromObject(formExtractRelevantInformation) });
@@ -535,17 +639,20 @@ export class FormHelper {
       pages: '<span class="totalPages"></span>',
     });
 
+    const documentParts = [formDocument.organizationName, formDocument.documentTitle].filter(part => !!part) as string[];
+    const documentText = documentParts.map(part => HtmlEscapeHelper.escapeHtml(part)).join(' &middot; ');
+
     return (
-      '<div style="width:100%; font-family: Helvetica, Arial, sans-serif; font-size:7pt; color:#5c6169;' +
-      ' padding:0 14mm; display:flex; justify-content:space-between; align-items:center;">' +
-      `<span>${generatedAtText} &middot; ${checksumText}</span>` +
-      `<span>${pageText}</span>` +
+      '<div style="width:100%; font-family: Helvetica, Arial, sans-serif; font-size:7pt; color:#555555;' +
+      ' padding:0 16mm; display:flex; justify-content:space-between; align-items:center; gap:8mm;">' +
+      `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${documentText}</span>` +
+      `<span style="white-space:nowrap;">${generatedAtText} &middot; ${checksumText} &middot; ${pageText}</span>` +
       '</div>'
     );
   }
 
   /** Page setup of the form PDF: A4 with room for the repeated footer. */
-  private static getPdfGeneratorOptionsForForm(formExtractRelevantInformation: FormExtractRelevantInformation): PdfGeneratorOptions {
+  private static getPdfGeneratorOptionsForForm(formDocument: FormDocument, formExtractRelevantInformation: FormExtractRelevantInformation): PdfGeneratorOptions {
     return {
       format: 'A4',
       landscape: false,
@@ -558,15 +665,17 @@ export class FormHelper {
       },
       displayHeaderFooter: true,
       headerTemplate: '<span></span>',
-      footerTemplate: FormHelper.getPdfFooterTemplate(formExtractRelevantInformation),
+      footerTemplate: FormHelper.getPdfFooterTemplate(formDocument, formExtractRelevantInformation),
     };
   }
 
   public static async generatePdfFromForm(params: FormGenerationParams & { requestOptions?: RequestOptions }): Promise<Buffer> {
     let { requestOptions, ...formGenerationParams } = params;
     let { myDatabaseHelperInterface, formExtractRelevantInformation } = formGenerationParams;
-    let html = await this.generateHtmlFromForm(formGenerationParams);
-    let options = FormHelper.getPdfGeneratorOptionsForForm(formExtractRelevantInformation);
+    // Das Dokument wird einmal gebaut: Kopf, Seiten und Fußzeile zeigen denselben Stand.
+    let formDocument = await FormPdfDocumentHelper.buildFormDocument(formGenerationParams);
+    let html = await FormHelper.generateHtmlFromFormDocument(formDocument, myDatabaseHelperInterface);
+    let options = FormHelper.getPdfGeneratorOptionsForForm(formDocument, formExtractRelevantInformation);
     let pdfBuffer = await this.generatePdfFromHtml(html, myDatabaseHelperInterface, requestOptions, options);
     return pdfBuffer;
   }

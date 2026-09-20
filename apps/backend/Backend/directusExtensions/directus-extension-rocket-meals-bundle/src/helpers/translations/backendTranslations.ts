@@ -51,6 +51,45 @@ export const backendTranslations: TranslationResources = {
     zh: '校验和：{{hash}}',
   },
 
+  /**
+   * Beschriftung der Vorgangskennung im Kopf des Formular-PDFs: die Kennung, unter der die
+   * Einrichtung diese Einreichung wiederfindet.
+   */
+  form_pdf_reference: {
+    de: 'Vorgang',
+    en: 'Reference',
+    ar: 'المعاملة',
+    es: 'Expediente',
+    fr: 'Dossier',
+    ru: 'Дело',
+    tr: 'İşlem',
+    zh: '事项编号',
+  },
+
+  /** Beschriftung des Eingangsdatums im Kopf des Formular-PDFs. */
+  form_pdf_received_at: {
+    de: 'Eingegangen am',
+    en: 'Received on',
+    ar: 'تاريخ الاستلام',
+    es: 'Recibido el',
+    fr: 'Reçu le',
+    ru: 'Получено',
+    tr: 'Geliş tarihi',
+    zh: '收到日期',
+  },
+
+  /** Beschriftung der Zeile über den Unterschriften, in die Ort und Datum eingetragen werden. */
+  form_pdf_place_and_date: {
+    de: 'Ort, Datum',
+    en: 'Place, date',
+    ar: 'المكان والتاريخ',
+    es: 'Lugar, fecha',
+    fr: 'Lieu, date',
+    ru: 'Место, дата',
+    tr: 'Yer, tarih',
+    zh: '地点、日期',
+  },
+
   /** Seitenzahl in der Fußzeile des Formular-PDFs. */
   form_pdf_page: {
     de: 'Seite {{page}} von {{pages}}',

@@ -11,7 +11,8 @@ import {WorkflowsRunHelper} from './itemServiceHelpers/WorkflowsRunHelper';
 import {FilesServiceHelper} from './FilesServiceHelper';
 import {EventContext, SchemaOverview} from '@directus/types';
 import {ShareServiceHelper} from './ShareServiceHelper';
-import {MyDatabaseHelperInterface} from './MyDatabaseHelperInterface';
+import {DocumentOrganization, MyDatabaseHelperInterface} from './MyDatabaseHelperInterface';
+import {DirectusFilesAssetHelper} from './DirectusFilesAssetHelper';
 import {EnvVariableHelper} from './EnvVariableHelper';
 import ms from 'ms';
 import jwt from 'jsonwebtoken';
@@ -127,6 +128,31 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
 
   getAppSettingsHelper() {
     return new AppSettingsHelper(this.apiContext);
+  }
+
+  /**
+   * Name und Logo der Einrichtung fuer den Briefkopf erzeugter Dokumente.
+   *
+   * Quelle sind `app_settings.company_name` und `app_settings.company_image` - der Name der
+   * Einrichtung, die das Dokument herausgibt, nicht der Name der App. Sind die Felder leer oder
+   * nicht lesbar, entscheidet der Aufrufer ueber den Rueckfall (siehe `FormHelper`).
+   */
+  async getDocumentOrganization(): Promise<DocumentOrganization> {
+    try {
+      let appSettings = await this.getAppSettingsHelper().getAppSettings();
+      let companyImage = appSettings?.company_image;
+      let logoUrl: string | null = null;
+      if (companyImage) {
+        logoUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(companyImage, this, DirectusFilesAssetHelper.PRESET_FILE_TRANSFORMATION_IMAGE_ORIGINAL);
+      }
+      return {
+        name: appSettings?.company_name || null,
+        logoUrl: logoUrl,
+      };
+    } catch (error) {
+      console.error('Could not read the organization for the document header: ' + error);
+      return { name: null, logoUrl: null };
+    }
   }
 
   getAutoTranslationSettingsHelper() {

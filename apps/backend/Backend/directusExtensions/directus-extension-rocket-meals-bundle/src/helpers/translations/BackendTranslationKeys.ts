@@ -30,6 +30,9 @@ export const BackendTranslationKeys = {
   form_pdf_generated_at: 'form_pdf_generated_at',
   form_pdf_checksum: 'form_pdf_checksum',
   form_pdf_page: 'form_pdf_page',
+  form_pdf_reference: 'form_pdf_reference',
+  form_pdf_received_at: 'form_pdf_received_at',
+  form_pdf_place_and_date: 'form_pdf_place_and_date',
 
   // Protection of the dashboards shipped with Rocket Meals
   dashboard_system_edit_forbidden: 'dashboard_system_edit_forbidden',
