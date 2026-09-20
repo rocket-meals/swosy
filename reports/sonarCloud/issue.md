@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
 | 🐛 Reliability | 30 | 30 |
-| 🔧 Maintainability | 271 | 19 |
+| 🔧 Maintainability | 273 | 19 |
 
-**Total issues:** 302 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 304 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -140,7 +140,7 @@
   packages/common/src/form/IbanValidationHelper.ts:124
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanValidationHelper.ts#L124
 
-## 🔧 Maintainability (19/271)
+## 🔧 Maintainability (19/273)
 
 - **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172
@@ -153,6 +153,14 @@
 - **Move function 'buildForbiddenError' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:67
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L67
+
+- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts:258
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts#L258
+
+- **Prefer using an optional chain expression instead, as it's more concise and easier to read.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts:287
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts#L287
 
 - **Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.**
   apps/frontend/app/app/(app)/housing-analytics/[report].tsx:64
@@ -209,12 +217,4 @@
 - **Prefer `node:path` over `path`.**
   apps/frontend/app/metro.config.js:1
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/metro.config.js#L1
-
-- **Extract the assignment of "k" from this expression.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L1
-
-- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L1
 

@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-09-20T17:26:33.211Z",
+  "report_timestamp": "2026-09-20T18:48:20.266Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 114,
-          "average": 1.5134792261338408,
-          "amountSavedValuesForKeys": 4772,
-          "amountKeys": 30
+          "average": 1.5112852664576804,
+          "amountSavedValuesForKeys": 4821,
+          "amountKeys": 29
         },
         "invertedParameterToMethods": {
           "median": 1.5,
           "maximum": 77,
-          "average": 2.296875,
-          "amountSavedValuesForKeys": 1764,
-          "amountKeys": 23
+          "average": 2.29156010230179,
+          "amountSavedValuesForKeys": 1792,
+          "amountKeys": 22
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 114,
-          "average": 1.5280179314761448,
-          "amountSavedValuesForKeys": 4772,
-          "amountKeys": 30
+          "average": 1.525632911392405,
+          "amountSavedValuesForKeys": 4821,
+          "amountKeys": 29
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3905,
-        "detection_time_ms": 80,
+        "ast_generation_time_ms": 5194,
+        "detection_time_ms": 100,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 103.53,
-          "os_memory_free": 14834593792,
-          "os_memory_total": 16766410752,
+          "os_uptime": 118.36,
+          "os_memory_free": 14775459840,
+          "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
+          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 9,
-    "amount_files_with_data_clumps": 8,
-    "amount_methods_with_data_clumps": 1,
+    "amount_classes_or_interfaces_with_data_clumps": 10,
+    "amount_files_with_data_clumps": 10,
+    "amount_methods_with_data_clumps": 2,
     "fields_to_fields_data_clump": 8,
-    "parameters_to_fields_data_clump": 1,
+    "parameters_to_fields_data_clump": 2,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 9
+    "amount_data_clumps": 10
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "e4ae8fdffd2e738a3026d0b9b546ae2be88292c2",
-    "project_commit_hash": "e4ae8fdffd2e738a3026d0b9b546ae2be88292c2",
+    "project_version": "5571ff6b9185552f2cb6047bbdea4b26b3c52acd",
+    "project_commit_hash": "5571ff6b9185552f2cb6047bbdea4b26b3c52acd",
     "project_tag": null,
-    "project_commit_date": "1789925096",
+    "project_commit_date": "1789929992",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 677,
-    "number_of_classes_or_interfaces": 1472,
-    "number_of_methods": 1590,
-    "number_of_data_fields": 4772,
-    "number_of_method_parameters": 1764
+    "number_of_files": 681,
+    "number_of_classes_or_interfaces": 1487,
+    "number_of_methods": 1613,
+    "number_of_data_fields": 4821,
+    "number_of_method_parameters": 1792
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -91,6 +91,103 @@
     }
   },
   "data_clumps": {
+    "parameters_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts/class/FormPdfDocumentHelper/method/buildCharacterBoxesRow-apps/score-tracker/frontend/app/tools/index.tsx/interface/ToolCategory-labelhintvalue": {
+      "type": "data_clump",
+      "key": "parameters_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts/class/FormPdfDocumentHelper/method/buildCharacterBoxesRow-apps/score-tracker/frontend/app/tools/index.tsx/interface/ToolCategory-labelhintvalue",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts",
+      "from_class_or_interface_name": "FormPdfDocumentHelper",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts/class/FormPdfDocumentHelper",
+      "from_method_name": "buildCharacterBoxesRow",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts/class/FormPdfDocumentHelper/method/buildCharacterBoxesRow",
+      "to_file_path": "apps/score-tracker/frontend/app/tools/index.tsx",
+      "to_class_or_interface_name": "ToolCategory",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/app/tools/index.tsx/interface/ToolCategory",
+      "to_method_name": null,
+      "to_method_key": null,
+      "data_clump_type": "parameters_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts/class/FormPdfDocumentHelper/method/buildCharacterBoxesRow/parameter/label": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts/class/FormPdfDocumentHelper/method/buildCharacterBoxesRow/parameter/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/app/tools/index.tsx/interface/ToolCategory/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 36,
+              "startColumn": 2,
+              "endLine": 36,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 396,
+            "startColumn": 41,
+            "endLine": 396,
+            "endColumn": 54
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts/class/FormPdfDocumentHelper/method/buildCharacterBoxesRow/parameter/hint": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts/class/FormPdfDocumentHelper/method/buildCharacterBoxesRow/parameter/hint",
+          "name": "hint",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/app/tools/index.tsx/interface/ToolCategory/memberField/hint",
+            "name": "hint",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 39,
+              "startColumn": 2,
+              "endLine": 39,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 396,
+            "startColumn": 56,
+            "endLine": 396,
+            "endColumn": 75
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts/class/FormPdfDocumentHelper/method/buildCharacterBoxesRow/parameter/value": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts/class/FormPdfDocumentHelper/method/buildCharacterBoxesRow/parameter/value",
+          "name": "value",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/app/tools/index.tsx/interface/ToolCategory/memberField/value",
+            "name": "value",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 37,
+              "startColumn": 2,
+              "endLine": 37,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 396,
+            "startColumn": 77,
+            "endLine": 396,
+            "endColumn": 109
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 2
+      }
+    },
     "parameters_to_fields_data_clump-apps/frontend/app/components/IBANInput/IBANInput.tsx-apps/frontend/app/components/IBANInput/IBANInput.tsx/interface/IBANInputProps/method/onChange-apps/frontend/app/components/IBANInput/IBANInput.tsx/interface/IBANInputProps-idvaluecustom_type": {
       "type": "data_clump",
       "key": "parameters_to_fields_data_clump-apps/frontend/app/components/IBANInput/IBANInput.tsx-apps/frontend/app/components/IBANInput/IBANInput.tsx/interface/IBANInputProps/method/onChange-apps/frontend/app/components/IBANInput/IBANInput.tsx/interface/IBANInputProps-idvaluecustom_type",
@@ -184,7 +281,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 1
       }
     },
@@ -223,9 +320,9 @@
             }
           },
           "position": {
-            "startLine": 29,
+            "startLine": 31,
             "startColumn": 3,
-            "endLine": 29,
+            "endLine": 31,
             "endColumn": 32
           }
         },
@@ -248,9 +345,9 @@
             }
           },
           "position": {
-            "startLine": 30,
+            "startLine": 32,
             "startColumn": 3,
-            "endLine": 30,
+            "endLine": 32,
             "endColumn": 32
           }
         },
@@ -273,9 +370,9 @@
             }
           },
           "position": {
-            "startLine": 31,
+            "startLine": 33,
             "startColumn": 3,
-            "endLine": 31,
+            "endLine": 33,
             "endColumn": 34
           }
         },
@@ -298,15 +395,15 @@
             }
           },
           "position": {
-            "startLine": 32,
+            "startLine": 34,
             "startColumn": 3,
-            "endLine": 32,
+            "endLine": 34,
             "endColumn": 30
           }
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 2,
+        "cluster_id": 3,
         "cluster_type": 2
       }
     },
@@ -338,9 +435,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 29,
+              "startLine": 31,
               "startColumn": 3,
-              "endLine": 29,
+              "endLine": 31,
               "endColumn": 32
             }
           },
@@ -363,9 +460,9 @@
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 30,
+              "startLine": 32,
               "startColumn": 3,
-              "endLine": 30,
+              "endLine": 32,
               "endColumn": 32
             }
           },
@@ -388,9 +485,9 @@
             "type": "boolean | null",
             "modifiers": [],
             "position": {
-              "startLine": 31,
+              "startLine": 33,
               "startColumn": 3,
-              "endLine": 31,
+              "endLine": 33,
               "endColumn": 34
             }
           },
@@ -413,9 +510,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 32,
+              "startLine": 34,
               "startColumn": 3,
-              "endLine": 32,
+              "endLine": 34,
               "endColumn": 30
             }
           },
@@ -428,7 +525,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 2,
+        "cluster_id": 3,
         "cluster_type": 2
       }
     },
@@ -525,7 +622,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 3,
+        "cluster_id": 4,
         "cluster_type": 2
       }
     },
@@ -622,7 +719,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 3,
+        "cluster_id": 4,
         "cluster_type": 2
       }
     },
@@ -731,7 +828,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 2
       }
     },
@@ -840,7 +937,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 2
       }
     },
@@ -937,7 +1034,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 5,
+        "cluster_id": 6,
         "cluster_type": 2
       }
     },
@@ -1034,7 +1131,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 5,
+        "cluster_id": 6,
         "cluster_type": 2
       }
     }
