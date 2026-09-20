@@ -245,7 +245,11 @@ async function generatePdfsForAllForms(fillWithExampleValues: boolean, fileNameS
   expect(forms.length).toBeGreaterThan(0);
 
   const myDatabaseHelper = new MyDatabaseTestableHelper();
-  const requestOptions = { mockImageResolution: true };
+  const requestOptions = {
+    mockImageResolution: true,
+    // Das Beispiel-Logo kommt aus dem Repository statt vom Server – sonst stünde im Briefkopf der graue Platzhalter.
+    mockImageFilesByUrlPart: [MyDatabaseTestableHelper.getExampleOrganizationLogoMockImageFile()],
+  };
 
   for (const rawForm of forms) {
     const form = withExampleFormTranslations(rawForm);

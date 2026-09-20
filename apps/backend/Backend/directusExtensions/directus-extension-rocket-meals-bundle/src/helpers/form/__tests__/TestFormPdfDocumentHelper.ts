@@ -179,7 +179,8 @@ describe('FormPdfDocumentHelper', () => {
     const document = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })]);
 
     expect(document.organizationName).toBe(MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_NAME);
-    expect(document.organizationLogoUrl).toContain('data:image/svg+xml;base64,');
+    // Das Beispiel-Logo laeuft ueber dieselbe Asset-URL wie im Betrieb, nicht ueber einen Data-URI.
+    expect(document.organizationLogoUrl).toContain(`/assets/${MyDatabaseTestableHelper.EXAMPLE_COMPANY_IMAGE_FILE_ID}`);
   });
 
   it('puts signatures and photos into their own areas instead of the field list', async () => {

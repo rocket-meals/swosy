@@ -8,7 +8,7 @@ import { MyDatabaseTestableHelper } from '../../MyDatabaseHelperInterface';
 PdfGeneratorForJest.activateForJest(); // activate puppeteer for jest tests
 
 describe('Pdf Generator Test', () => {
-//describe('dev', () => {
+  //describe('dev', () => {
   it('Test pdf generation from html', async () => {
     let testForm = FormHelper.getExampleForm();
     let testFormExtractRelevantInformation = FormHelper.getExampleFormExtractRelevantInformation();
@@ -16,6 +16,8 @@ describe('Pdf Generator Test', () => {
 
     let requestOptions = {
       mockImageResolution: true, // mock image resolution to avoid loading real images
+      // Das Beispiel-Logo kommt aus dem Repository statt vom Server – sonst stünde im Briefkopf der graue Platzhalter.
+      mockImageFilesByUrlPart: [MyDatabaseTestableHelper.getExampleOrganizationLogoMockImageFile()],
     };
 
     let pdfBuffer = await FormHelper.generatePdfFromForm({
