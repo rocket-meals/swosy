@@ -112,7 +112,12 @@ export function getVersionPatch() {
         // 38: the Gradle 9 patch compares integers now, not lists
         // 39: the IBAN form field keeps its printed spacing without being cut
         //     short, and checks the number rather than the spaces
-        return 39;
+        // 40: the OCR modal says what it read, closes itself for good, and wears
+        //     the phone camera's own controls; IBANs are validated against the
+        //     IBAN registry's character patterns
+        // 41: the camera preview had no height at all in the sheet - its size
+        //     comes from the aspect ratio now, not from a layout callback
+        return 41;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
