@@ -1,6 +1,6 @@
 import IBAN from 'iban';
 
-import { StringHelper } from '../StringHelper';
+import { FormHelperCommon } from './FormHelperCommon';
 
 export interface IbanValidationOptions {
   /**
@@ -62,12 +62,7 @@ export class IbanValidationHelper {
 
   /** Uppercases and drops everything that cannot be part of an IBAN. */
   static normalize(text: string): string {
-    const withoutSeparators = StringHelper.replaceAllWithOptions({
-      str: text,
-      find: '[^A-Za-z0-9]',
-      replace: '',
-    });
-    return withoutSeparators.toUpperCase();
+    return FormHelperCommon.normalizeIban(text);
   }
 
   /** The length this country's IBANs have, or `undefined` for a country that issues none. */
