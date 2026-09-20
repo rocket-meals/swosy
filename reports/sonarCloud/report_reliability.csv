@@ -28,3 +28,4 @@ Key,Message,Component,Line
 "AaC0s5zuhkA3gTKRIo3l","Expected an assignment or function call and instead saw an expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",58
 "AaC0s5zuhkA3gTKRIo3o","Expected an assignment or function call and instead saw an expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",58
 "AaCrmqYiE1eW3rjWDf9U","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:packages/common/src/FoodofferPriceHelper.ts",227
+"AaC_3ZdWynaeS38RnmCN","Prefer `String#replaceAll()` over `String#split().join()`.","rocket-meals_rocket-meals:apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts",50

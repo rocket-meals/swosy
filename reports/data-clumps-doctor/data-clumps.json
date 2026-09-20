@@ -1,16 +1,16 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-09-20T15:08:34.210Z",
+  "report_timestamp": "2026-09-20T17:26:33.211Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
-          "maximum": 113,
-          "average": 1.5218098958333333,
-          "amountSavedValuesForKeys": 4675,
-          "amountKeys": 29
+          "median": 1,
+          "maximum": 114,
+          "average": 1.5134792261338408,
+          "amountSavedValuesForKeys": 4772,
+          "amountKeys": 30
         },
         "invertedParameterToMethods": {
           "median": 1.5,
@@ -20,52 +20,52 @@
           "amountKeys": 23
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
-          "maximum": 113,
-          "average": 1.5368178829717292,
-          "amountSavedValuesForKeys": 4675,
-          "amountKeys": 29
+          "median": 1,
+          "maximum": 114,
+          "average": 1.5280179314761448,
+          "amountSavedValuesForKeys": 4772,
+          "amountKeys": 30
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 5052,
-        "detection_time_ms": 107,
+        "ast_generation_time_ms": 3905,
+        "detection_time_ms": 80,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 205.46,
-          "os_memory_free": 14781394944,
-          "os_memory_total": 16766414848,
+          "os_uptime": 103.53,
+          "os_memory_free": 14834593792,
+          "os_memory_total": 16766410752,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 7,
-    "amount_files_with_data_clumps": 6,
+    "amount_classes_or_interfaces_with_data_clumps": 9,
+    "amount_files_with_data_clumps": 8,
     "amount_methods_with_data_clumps": 1,
-    "fields_to_fields_data_clump": 6,
+    "fields_to_fields_data_clump": 8,
     "parameters_to_fields_data_clump": 1,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 7
+    "amount_data_clumps": 9
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "20c59684b7cde76122b89f7108fa04d4c888eda8",
-    "project_commit_hash": "20c59684b7cde76122b89f7108fa04d4c888eda8",
+    "project_version": "e4ae8fdffd2e738a3026d0b9b546ae2be88292c2",
+    "project_commit_hash": "e4ae8fdffd2e738a3026d0b9b546ae2be88292c2",
     "project_tag": null,
-    "project_commit_date": "1789916787",
+    "project_commit_date": "1789925096",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 671,
-    "number_of_classes_or_interfaces": 1452,
+    "number_of_files": 677,
+    "number_of_classes_or_interfaces": 1472,
     "number_of_methods": 1590,
-    "number_of_data_fields": 4675,
+    "number_of_data_fields": 4772,
     "number_of_method_parameters": 1764
   },
   "detector": {
@@ -188,6 +188,250 @@
         "cluster_type": 1
       }
     },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData-apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer-value_stringvalue_numbervalue_booleanvalue_date": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData-apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer-value_stringvalue_numbervalue_booleanvalue_date",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData",
+      "from_class_or_interface_name": "FormFieldExampleData",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts",
+      "to_class_or_interface_key": "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer",
+      "to_class_or_interface_name": "HousingHandoverAnswer",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData/memberField/value_string": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData/memberField/value_string",
+          "name": "value_string",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer/memberField/value_string",
+            "name": "value_string",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 67,
+              "startColumn": 2,
+              "endLine": 67,
+              "endColumn": 31
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData/memberField/value_number": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData/memberField/value_number",
+          "name": "value_number",
+          "type": "number | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer/memberField/value_number",
+            "name": "value_number",
+            "type": "number | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 68,
+              "startColumn": 2,
+              "endLine": 68,
+              "endColumn": 31
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 3,
+            "endLine": 30,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData/memberField/value_boolean": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData/memberField/value_boolean",
+          "name": "value_boolean",
+          "type": "boolean | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer/memberField/value_boolean",
+            "name": "value_boolean",
+            "type": "boolean | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 69,
+              "startColumn": 2,
+              "endLine": 69,
+              "endColumn": 33
+            }
+          },
+          "position": {
+            "startLine": 31,
+            "startColumn": 3,
+            "endLine": 31,
+            "endColumn": 34
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData/memberField/value_date": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData/memberField/value_date",
+          "name": "value_date",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer/memberField/value_date",
+            "name": "value_date",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 70,
+              "startColumn": 2,
+              "endLine": 70,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 32,
+            "startColumn": 3,
+            "endLine": 32,
+            "endColumn": 30
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts-apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData-value_stringvalue_numbervalue_booleanvalue_date": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts-apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData-value_stringvalue_numbervalue_booleanvalue_date",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts",
+      "from_class_or_interface_key": "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer",
+      "from_class_or_interface_name": "HousingHandoverAnswer",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData",
+      "to_class_or_interface_name": "FormFieldExampleData",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer/memberField/value_string": {
+          "key": "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer/memberField/value_string",
+          "name": "value_string",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData/memberField/value_string",
+            "name": "value_string",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 3,
+              "endLine": 29,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 67,
+            "startColumn": 2,
+            "endLine": 67,
+            "endColumn": 31
+          }
+        },
+        "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer/memberField/value_number": {
+          "key": "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer/memberField/value_number",
+          "name": "value_number",
+          "type": "number | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData/memberField/value_number",
+            "name": "value_number",
+            "type": "number | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 3,
+              "endLine": 30,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 68,
+            "startColumn": 2,
+            "endLine": 68,
+            "endColumn": 31
+          }
+        },
+        "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer/memberField/value_boolean": {
+          "key": "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer/memberField/value_boolean",
+          "name": "value_boolean",
+          "type": "boolean | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData/memberField/value_boolean",
+            "name": "value_boolean",
+            "type": "boolean | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 31,
+              "startColumn": 3,
+              "endLine": 31,
+              "endColumn": 34
+            }
+          },
+          "position": {
+            "startLine": 69,
+            "startColumn": 2,
+            "endLine": 69,
+            "endColumn": 33
+          }
+        },
+        "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer/memberField/value_date": {
+          "key": "apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer/memberField/value_date",
+          "name": "value_date",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData/memberField/value_date",
+            "name": "value_date",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 32,
+              "startColumn": 3,
+              "endLine": 32,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 70,
+            "startColumn": 2,
+            "endLine": 70,
+            "endColumn": 29
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts-packages/common/src/LicenseEntry.ts/interface/LicenseEntry-licenserepositorylicenseUrl": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts-packages/common/src/LicenseEntry.ts/interface/LicenseEntry-licenserepositorylicenseUrl",
@@ -281,7 +525,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 2,
+        "cluster_id": 3,
         "cluster_type": 2
       }
     },
@@ -378,7 +622,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 2,
+        "cluster_id": 3,
         "cluster_type": 2
       }
     },
@@ -487,7 +731,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 3,
+        "cluster_id": 4,
         "cluster_type": 2
       }
     },
@@ -596,7 +840,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 3,
+        "cluster_id": 4,
         "cluster_type": 2
       }
     },
@@ -693,7 +937,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 2
       }
     },
@@ -790,7 +1034,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 2
       }
     }
