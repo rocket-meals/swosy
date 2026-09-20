@@ -1,7 +1,9 @@
 Key,Message,Component,Line
-"AaC0s5wzhkA3gTKRIozs","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",140
-"AaC0s5wzhkA3gTKRIozt","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",156
-"AaC0s5wzhkA3gTKRIozu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",156
+"AaC_XuUiynaeS38RlKKI","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/OcrCamera/index.tsx",73
+"AaC_XtnSynaeS38RlKKH","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:packages/common/src/form/IbanValidationHelper.ts",124
+"AaC0s5wzhkA3gTKRIozs","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",198
+"AaC0s5wzhkA3gTKRIozt","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",211
+"AaC0s5wzhkA3gTKRIozu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",211
 "AaC0s50_hkA3gTKRIo3w","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/app/metro.config.js",1
 "AaC0s5zthkA3gTKRIoz0","Extract the assignment of ""k"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",1
 "AaC0s5zthkA3gTKRIozv","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",1
@@ -249,10 +251,9 @@ Key,Message,Component,Line
 "AaC0s5zuhkA3gTKRIo3s","Prefer `node:worker_threads` over `worker_threads`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",59
 "AaC0s5zuhkA3gTKRIo3t","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",59
 "AaC0s5zuhkA3gTKRIo3u","Prefer top-level await over an async function `ortWasmThreaded` call.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",59
-"AaC0s5BphkA3gTKRIozp","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",298
-"AaC0s5BphkA3gTKRIozq","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",389
-"AaC0s5BphkA3gTKRIozr","Expected a `for-of` loop instead of a `for` loop with this simple iteration.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",415
-"AaC0s5BphkA3gTKRIozo","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",158
+"AaC0s5BphkA3gTKRIozp","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",263
+"AaC0s5BphkA3gTKRIozq","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",359
+"AaC0s5BphkA3gTKRIozr","Expected a `for-of` loop instead of a `for` loop with this simple iteration.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",385
 "AaBmrg8uWnKIYqRPo5r7","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/app/scripts/deploy-gh-pages.js",20
 "AaBg9V9xEfY3x5R1F0GH","Compare with `undefined` directly instead of using `typeof`.","rocket-meals_rocket-meals:apps/frontend/app/helper/appStateForFeedback.ts",98
 "AaBg9V9xEfY3x5R1F0GI","'value' may use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/frontend/app/helper/appStateForFeedback.ts",103

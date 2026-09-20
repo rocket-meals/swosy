@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AaC_XtnSynaeS38RlKKH","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:packages/common/src/form/IbanValidationHelper.ts",124
 "AaC0s5zthkA3gTKRIoz1","Do not use ""SharedArrayBuffer"" to declare a variable - use another name.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",2
 "AaC0s5zthkA3gTKRIoz8","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",3
 "AaC0s5zthkA3gTKRIo0A","Use `new Error()` instead of `Error()`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",4
@@ -26,5 +27,4 @@ Key,Message,Component,Line
 "AaC0s5zuhkA3gTKRIo2B","Use `new Error()` instead of `Error()`.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",42
 "AaC0s5zuhkA3gTKRIo3l","Expected an assignment or function call and instead saw an expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",58
 "AaC0s5zuhkA3gTKRIo3o","Expected an assignment or function call and instead saw an expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",58
-"AaC0s5BphkA3gTKRIozo","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",158
 "AaCrmqYiE1eW3rjWDf9U","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:packages/common/src/FoodofferPriceHelper.ts",227
