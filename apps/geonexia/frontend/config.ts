@@ -55,8 +55,9 @@ export function getVersionPatch() {
 	// 28: shared IBAN recognition no longer reads a number out of surrounding words
 	// 29: shared IBAN recognition reads welded groups, refuses lettered bodies
 	// 30: shared IBAN form helpers: spacing-aware length and field validation
-	// 31: app settings gained a company_name field (name of the institution)
-	return 31;
+	// 31: shared IBAN validation against the registry's character patterns
+	// 32: app settings gained a company_name field (name of the institution)
+	return 32;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

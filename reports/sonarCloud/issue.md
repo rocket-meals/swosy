@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
 | 🐛 Reliability | 29 | 29 |
-| 🔧 Maintainability | 265 | 20 |
+| 🔧 Maintainability | 266 | 20 |
 
-**Total issues:** 295 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 296 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -133,10 +133,10 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/FoodofferPriceHelper.ts#L227
 
 - **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  packages/common/src/form/IbanRecognitionHelper.ts:158
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanRecognitionHelper.ts#L158
+  packages/common/src/form/IbanValidationHelper.ts:124
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanValidationHelper.ts#L124
 
-## 🔧 Maintainability (20/265)
+## 🔧 Maintainability (20/266)
 
 - **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172
@@ -149,6 +149,10 @@
 - **Move function 'buildForbiddenError' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:67
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L67
+
+- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
+  apps/frontend/app/components/OcrCamera/index.tsx:73
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/OcrCamera/index.tsx#L73
 
 - **Compare with `undefined` directly instead of using `typeof`.**
   apps/frontend/app/helper/appStateForFeedback.ts:98
@@ -167,16 +171,16 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/AppUsageEventHelper.ts#L113
 
 - **Do not call `Array#push()` multiple times.**
-  apps/frontend/app/hooks/useOcr.tsx:140
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useOcr.tsx#L140
+  apps/frontend/app/hooks/useOcr.tsx:198
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useOcr.tsx#L198
 
 - **Extract this nested ternary operation into an independent statement.**
-  apps/frontend/app/hooks/useOcr.tsx:156
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useOcr.tsx#L156
+  apps/frontend/app/hooks/useOcr.tsx:211
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useOcr.tsx#L211
 
 - **Extract this nested ternary operation into an independent statement.**
-  apps/frontend/app/hooks/useOcr.tsx:156
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useOcr.tsx#L156
+  apps/frontend/app/hooks/useOcr.tsx:211
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useOcr.tsx#L211
 
 - **Prefer `node:path` over `path`.**
   apps/frontend/app/metro.config.js:1
@@ -213,8 +217,4 @@
 - **Remove this useless assignment to variable "SharedArrayBuffer".**
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:2
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L2
-
-- **Consider moving declaration of 'fs' as it is referenced outside current binding context.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:3
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L3
 
