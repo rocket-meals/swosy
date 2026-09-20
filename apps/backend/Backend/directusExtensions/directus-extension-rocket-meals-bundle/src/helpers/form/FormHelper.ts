@@ -629,8 +629,11 @@ export class FormHelper {
    * The footer Chromium repeats on every page: who issued the document and which form it is,
    * plus when it was created, the checksum over the answers and the page number. It is rendered
    * as its own document, hence the inline styles.
+   *
+   * Öffentlich, weil die Fußzeile die einzige Stelle ist, an der das Dokument seinen Aussteller
+   * nennt – der Test hält fest, dass sie ohne Namen kein einsames Trennzeichen zeigt.
    */
-  private static getPdfFooterTemplate(formDocument: FormDocument, formExtractRelevantInformation: FormExtractRelevantInformation): string {
+  public static getPdfFooterTemplate(formDocument: FormDocument, formExtractRelevantInformation: FormExtractRelevantInformation): string {
     const generatedAtDateString = DateHelper.formatDateToTimeZoneReadable(new Date(), DateHelperTimezone.GERMANY);
     const generatedAtText = BackendTranslator.translate(BackendTranslationKeys.form_pdf_generated_at, undefined, { date: generatedAtDateString });
     const checksumText = BackendTranslator.translate(BackendTranslationKeys.form_pdf_checksum, undefined, { hash: HashHelper.getHashFromObject(formExtractRelevantInformation) });
@@ -639,7 +642,9 @@ export class FormHelper {
       pages: '<span class="totalPages"></span>',
     });
 
-    const documentParts = [formDocument.organizationName, formDocument.documentTitle].filter(part => !!part) as string[];
+    // Ohne Namen der Einrichtung steht in der Fußzeile nur der Formulartitel – kein einsames
+    // Trennzeichen und kein doppeltes Leerzeichen. Deshalb erst putzen, dann verbinden.
+    const documentParts = [formDocument.organizationName, formDocument.documentTitle].map(part => (part ?? '').trim()).filter(part => part.length > 0);
     const documentText = documentParts.map(part => HtmlEscapeHelper.escapeHtml(part)).join(' &middot; ');
 
     return (

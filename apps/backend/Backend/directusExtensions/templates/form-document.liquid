@@ -83,29 +83,44 @@
             max-width: 105mm;
         }
 
-        /* Logo und Name der Einrichtung stehen als Block rechts, wie auf dem Briefbogen. */
+        /*
+           Die Einrichtung steht als Block rechts, wie auf dem Briefbogen.
+
+           Die 62mm sind der Platz, der im Briefkopf tatsächlich frei ist: 178mm Satzspiegel
+           (A4 abzüglich 2×16mm Rand) minus 105mm `max-width` des Untertitels minus 10mm `gap`
+           ergeben 63mm; 1mm bleibt als Reserve.
+        */
         .doc-header__organization {
             flex: 0 0 auto;
-            max-width: 55mm;
+            max-width: 62mm;
             text-align: right;
         }
 
+        /*
+           Beide Grenzen zusammen halten das Seitenverhältnis und geben jeder Logoform ihre
+           Größe: Die Höhe ist gedeckelt, damit ein quadratisches Logo den Briefkopf nicht
+           sprengt; die Breite deckelt den Querformat-Fall. Bei 62mm zu 16mm schöpft ein
+           Wort-Bild-Zeichen bis etwa 3,9:1 (62 ÷ 16) die volle Höhe aus – ein breiter
+           Schriftzug wird damit genauso groß gesetzt wie ein quadratisches Logo, erst jenseits
+           dieses Verhältnisses greift die Breite (4:1 ergibt 62 × 15,5mm).
+        */
         .doc-header__logo {
             display: block;
             margin-left: auto;
             max-height: 16mm;
-            max-width: 55mm;
+            max-width: 62mm;
             height: auto;
             width: auto;
             object-fit: contain;
         }
 
         /*
-           Der Name steht unter dem Logo und nicht daneben: welches Seitenverhältnis das Logo
-           einer Einrichtung hat, weiß das Template nicht – untereinander passt beides immer.
+           Die Namenszeile gibt es nur, wenn kein Logo aufgelöst werden konnte – sonst stünde
+           der Name der Einrichtung doppelt im Briefkopf, einmal als Schriftzug im Logo und
+           einmal als Text darunter. Mit Logo trägt das `alt`-Attribut den Namen.
         */
         .doc-header__organization-name {
-            margin: 1.6mm 0 0 0;
+            margin: 0;
             font-size: 10pt;
             font-weight: 700;
             line-height: 1.2;
@@ -390,14 +405,13 @@
             <p class="doc-header__subtitle">{{ documentSubtitle | escape }}</p>
         {% endif %}
     </div>
-    {% if organizationLogoUrl or organizationName %}
+    {% if organizationLogoUrl %}
         <div class="doc-header__organization">
-            {% if organizationLogoUrl %}
-                <img class="doc-header__logo" src="{{ organizationLogoUrl | escape }}" alt="{{ organizationName | escape }}" />
-            {% endif %}
-            {% if organizationName %}
-                <p class="doc-header__organization-name">{{ organizationName | escape }}</p>
-            {% endif %}
+            <img class="doc-header__logo" src="{{ organizationLogoUrl | escape }}" alt="{{ organizationName | escape }}" />
+        </div>
+    {% elsif organizationName %}
+        <div class="doc-header__organization">
+            <p class="doc-header__organization-name">{{ organizationName | escape }}</p>
         </div>
     {% endif %}
 </header>

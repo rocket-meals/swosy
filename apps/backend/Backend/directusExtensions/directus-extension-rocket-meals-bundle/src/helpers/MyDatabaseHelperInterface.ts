@@ -13,8 +13,9 @@ import * as path from 'node:path';
  *
  * Das ist bewusst **nicht** der App-Name aus der Directus-Server-Info. Ein Abnahmeprotokoll
  * trägt den Namen der Einrichtung, die es ausgibt („Studentenwerk Hannover"), nicht den Namen
- * der App, mit der es ausgefüllt wurde. Beide Felder dürfen leer sein – dann fällt der Aufrufer
- * auf die Server-Info zurück (siehe `FormPdfDocumentHelper.resolveOrganization`).
+ * der App, mit der es ausgefüllt wurde. Beide Felder dürfen leer sein – dann greift der
+ * Rückfall auf den `project_descriptor` der Server-Info, und wenn auch der leer ist, bleibt der
+ * Name leer (siehe `FormPdfDocumentHelper.resolveOrganization`).
  */
 export type DocumentOrganization = {
   /** Name der Einrichtung aus `app_settings.company_name`. */
@@ -50,7 +51,20 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
    */
   public static readonly EXAMPLE_COMPANY_IMAGE_FILE_ID = '1e6a0c8e-4b2d-4c7a-9a4f-0b1d2e3f4a5b';
 
-  private static readonly EXAMPLE_ORGANIZATION_LOGO_PATH = path.join(__dirname, 'form', '__tests__', 'data', 'example_organization_logo.svg');
+  /**
+   * Das Beispiel-Logo ist ein Wort-Bild-Zeichen im Querformat (720 × 180, also 4:1).
+   *
+   * Absicht: Genau diese Form haben die Logos echter Einrichtungen – ein Schriftzug neben
+   * einem Zeichen. Das Beispiel-PDF zeigt damit denselben Fall wie der Betrieb, und dass der
+   * Briefkopf ein breites Logo verträgt, ist am erzeugten Beispiel zu sehen.
+   */
+  private static readonly EXAMPLE_ORGANIZATION_LOGO_PATH = path.join(__dirname, 'form', '__tests__', 'data', 'example_organization_logo_wide.svg');
+
+  /** Die Datei-ID des quadratischen Beispiel-Logos – der zweite Fall, den der Briefkopf trägt. */
+  public static readonly EXAMPLE_SQUARE_COMPANY_IMAGE_FILE_ID = '2f7b1d9f-5c3e-4d8b-8b5a-1c2d3e4f5a6b';
+
+  /** Ein quadratisches Beispiel-Logo (180 × 180), damit auch diese Form geprüft bleibt. */
+  private static readonly EXAMPLE_SQUARE_ORGANIZATION_LOGO_PATH = path.join(__dirname, 'form', '__tests__', 'data', 'example_organization_logo.svg');
 
   private cachedServerInfo: ServerInfo | undefined = undefined;
   private cachedClient: (DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>) | undefined = undefined;
@@ -106,6 +120,17 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
   }
 
   /**
+   * Dieselben Beispieldaten mit dem quadratischen Logo – der zweite Fall des Briefkopfs.
+   * Das Beispiel-PDF zeigt damit, dass ein quadratisches Logo nicht über die 16mm Höhe wächst.
+   */
+  public static getExampleAppSettingsWithSquareLogo(): Partial<DatabaseTypes.AppSettings> {
+    return {
+      company_name: MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_NAME,
+      company_image: MyDatabaseTestableHelper.EXAMPLE_SQUARE_COMPANY_IMAGE_FILE_ID,
+    };
+  }
+
+  /**
    * Die Zuordnung, mit der das Beispiel-Logo offline ausgeliefert wird: Die Beispiel-Datei-ID
    * kommt in der angefragten Asset-URL vor, geantwortet wird mit der Datei aus dem Repository.
    */
@@ -113,6 +138,15 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
     return {
       urlPart: MyDatabaseTestableHelper.EXAMPLE_COMPANY_IMAGE_FILE_ID,
       filePath: MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_LOGO_PATH,
+      contentType: 'image/svg+xml',
+    };
+  }
+
+  /** Dieselbe Zuordnung für das quadratische Beispiel-Logo. */
+  public static getExampleSquareOrganizationLogoMockImageFile(): MockImageFile {
+    return {
+      urlPart: MyDatabaseTestableHelper.EXAMPLE_SQUARE_COMPANY_IMAGE_FILE_ID,
+      filePath: MyDatabaseTestableHelper.EXAMPLE_SQUARE_ORGANIZATION_LOGO_PATH,
       contentType: 'image/svg+xml',
     };
   }

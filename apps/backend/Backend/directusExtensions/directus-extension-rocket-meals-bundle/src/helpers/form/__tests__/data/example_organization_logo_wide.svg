@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="180" viewBox="0 0 700 180" role="img" aria-label="Beispiel-Wort-Bild-Zeichen einer Einrichtung im Querformat">
+  <rect width="700" height="180" fill="#ffffff"/>
+  <g fill="none" stroke="#111111" stroke-width="8" stroke-linejoin="round" stroke-linecap="round">
+    <circle cx="90" cy="95" r="72"/>
+    <path d="M90 39 C 58 65, 58 125, 90 151 C 122 125, 122 65, 90 39 Z"/>
+    <path d="M90 39 L 90 151"/>
+  </g>
+  <g fill="#111111" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="72">
+    <text x="196" y="76">Studentenwerk</text>
+    <text x="196" y="156">Musterstadt</text>
+  </g>
+</svg>

@@ -191,17 +191,21 @@ export class FormPdfDocumentHelper {
   }
 
   /**
-   * Name und Logo der herausgebenden Einrichtung, mit den Rückfällen der Directus-Server-Info.
+   * Name und Logo der herausgebenden Einrichtung.
    *
-   * `app_settings.company_name` ist der Name der Einrichtung; `project_descriptor` und
-   * `project_name` sind nur der App-Name und deshalb bloß die letzte Notlösung, damit der
-   * Briefkopf nie leer bleibt.
+   * Der Name kommt aus `app_settings.company_name`, ersatzweise aus dem `project_descriptor`
+   * der Server-Info – dort steht bei gepflegten Installationen die Einrichtung. **Nicht**
+   * herangezogen wird `project_name`: das ist der Name der App („Studi|Futter"), und den trägt
+   * ein Abnahmeprotokoll nicht. Gibt keine der beiden Quellen etwas her, bleibt der Name leer;
+   * der Briefkopf zeigt dann nur das Logo und die Fußzeile nur den Formulartitel.
+   *
+   * Fürs Logo bleibt es bei `company_image`, ersatzweise dem `project_logo` der Server-Info.
    */
   public static async resolveOrganization(myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<{ name: string | null; logoUrl: string | null }> {
     const organization = await myDatabaseHelperInterface.getDocumentOrganization();
     const serverInfo = await myDatabaseHelperInterface.getServerInfo();
 
-    const name = organization.name || serverInfo?.project?.project_descriptor || serverInfo?.project?.project_name || null;
+    const name = organization.name || serverInfo?.project?.project_descriptor || null;
 
     let logoUrl = organization.logoUrl;
     const projectLogoAssetId = serverInfo?.project?.project_logo;
