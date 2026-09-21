@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T03:12:27.521Z",
+  "generatedAt": "2026-09-21T03:12:55.976Z",
   "baseUrl": "http://localhost:8081/rocket-meals",
   "axeCoreVersion": "4.12.1",
   "tags": [
@@ -15,10 +15,10 @@
   },
   "totals": {
     "critical": 1,
-    "serious": 7,
-    "moderate": 189,
+    "serious": 8,
+    "moderate": 194,
     "minor": 0,
-    "violations": 197,
+    "violations": 203,
     "screensWithErrors": 0
   },
   "screens": [
@@ -228,6 +228,25 @@
       "url": "http://localhost:8081/rocket-meals/housing?kioskMode=true",
       "violations": [
         {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=axe-puppeteer",
+          "wcagTags": [
+            "wcag2aa",
+            "wcag143"
+          ],
+          "nodeCount": 1,
+          "nodes": [
+            {
+              "target": ".r-1f0042m > .r-q4m81j.css-146c3p1[dir=\"auto\"]",
+              "html": "<div dir=\"auto\" class=\"css-146c3p1 r-q4m81j\" style=\"font-size: 16px; color: rgb(255, 255, 255);\">Failed to load apartments</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.63 (foreground color: #ffffff, background color: #ff3333, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
           "id": "region",
           "impact": "moderate",
           "description": "Ensure all page content is contained by landmarks",
@@ -242,14 +261,14 @@
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             },
             {
-              "target": ".r-1udh08x.r-1d2f490.r-u8s1d > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx",
+              "target": ".r-1udh08x.r-1p0dtai.r-1d2f490 > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx",
               "html": "<div class=\"css-g5y9jx r-13awgt0\">",
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             }
           ]
         }
       ],
-      "passCount": 21,
+      "passCount": 24,
       "incompleteCount": 2
     },
     {
@@ -463,7 +482,7 @@
           "help": "All page content should be contained by landmarks",
           "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer",
           "wcagTags": [],
-          "nodeCount": 108,
+          "nodeCount": 113,
           "nodes": [
             {
               "target": ".r-1p0dtai.r-ipm5af.r-dnmrzs",
@@ -1002,6 +1021,31 @@
             },
             {
               "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(106) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(107) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(108) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(109) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(110) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(111) > .r-1w2pmg.r-633pao.r-1udh08x",
               "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             }
