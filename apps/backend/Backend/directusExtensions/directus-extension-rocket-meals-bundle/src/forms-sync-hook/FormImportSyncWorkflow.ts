@@ -75,6 +75,9 @@ async function syncFormSubmission(
       form: form.id,
       internal_custom_id: internal_custom_id, // identifier for the form submission for future reference
       alias: alias,
+      // Die Rohdaten, aus denen der Entwurf entstanden ist. Nur beim Anlegen gesetzt,
+      // damit spaeter nachvollziehbar bleibt, welche Daten dafuer vorlagen.
+      data: formSubmission.source ?? null,
     };
 
     let createFormAnswers = buildCreateFormAnswers(formSubmission.form_answers, dictFormFieldExternalImportIdToFormFieldId);

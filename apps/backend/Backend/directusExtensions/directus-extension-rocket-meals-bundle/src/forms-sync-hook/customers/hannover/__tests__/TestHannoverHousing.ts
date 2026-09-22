@@ -94,6 +94,18 @@ describe('Hannover Housing Form Test', () => {
     }
   });
 
+  it('carries the raw housing contract fields in source, so they land in form_submissions.data', async () => {
+    await testWorkflow.createNeededData();
+    const data = await testWorkflow.getData();
+    for (let entry of data) {
+      const source = entry.source as ImportHousingContract;
+      expect(source).toBeDefined();
+      for (let field of Object.values(ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS)) {
+        expect(Object.keys(source)).toContain(field);
+      }
+    }
+  });
+
   it('all value_date must be in ISO format', async () => {
     await testWorkflow.createNeededData();
     const data = await testWorkflow.getData();

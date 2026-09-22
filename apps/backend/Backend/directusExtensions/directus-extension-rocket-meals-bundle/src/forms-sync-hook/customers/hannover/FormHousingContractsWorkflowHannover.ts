@@ -80,6 +80,8 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
         let formSubmission: FormImportSyncFormSubmissions = {
           alias: this.reader.getAlias(contract),
           internal_custom_id: internal_custom_id,
+          // Die gelesenen Felder des Mietverhaeltnisses – landen roh in `form_submissions.data`.
+          source: contract,
           form_answers: this.getFormImportSyncFormAnswers(contract),
         };
         result.push(formSubmission);
