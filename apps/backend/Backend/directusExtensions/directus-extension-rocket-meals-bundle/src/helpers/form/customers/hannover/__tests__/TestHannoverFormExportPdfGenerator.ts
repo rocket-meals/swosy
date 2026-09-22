@@ -94,11 +94,14 @@ function buildExampleFormSubmission(form: DatabaseTypes.Forms): DatabaseTypes.Fo
   return {
     alias: 'A-2023-000188',
     date_created: '2023-11-27T09:12:00.000Z',
+    date_updated: '2023-11-29T14:35:00.000Z',
     form: form.id,
     form_answers: [],
     id: `test-submission-${form.id}`,
     mails: [],
     status: 'published',
+    // Wie im Betrieb: Directus pflegt den letzten Bearbeiter mit; das PDF nennt ihn unten.
+    user_updated: MyDatabaseTestableHelper.getExampleDocumentUser(),
   } as unknown as DatabaseTypes.FormSubmissions;
 }
 

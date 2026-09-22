@@ -800,6 +800,27 @@ export default function Layout() {
 					}}
 				/>
 				<Drawer.Screen
+					name="experimentell/inventory-items/index"
+					options={{
+						header: makeTranslatedStackHeader(TranslationKeys.inventory_items, 'inventory_items'),
+						title: translate(TranslationKeys.inventory_items),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/inventory-items/create/index"
+					options={{
+						header: makeTranslatedStackHeader(TranslationKeys.inventory_item_create, 'inventory_item_create'),
+						title: translate(TranslationKeys.inventory_item_create),
+					}}
+				/>
+				<Drawer.Screen
+					name="inventory-items/details/index"
+					options={{
+						header: makeTranslatedStackHeader(TranslationKeys.inventory_item, 'inventory_item'),
+						title: translate(TranslationKeys.inventory_item),
+					}}
+				/>
+				<Drawer.Screen
 					name="map/index"
 					options={{
 						headerShown: false,

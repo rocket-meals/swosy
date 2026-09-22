@@ -7098,5 +7098,205 @@
     "ru": "Затраты",
     "tr": "Maliyet",
     "zh": "成本"
+  },
+  "form_field_group_other_fields": {
+    "de": "Weitere Felder",
+    "en": "Other fields",
+    "ar": "حقول أخرى",
+    "es": "Otros campos",
+    "fr": "Autres champs",
+    "ru": "Другие поля",
+    "tr": "Diğer alanlar",
+    "zh": "其他字段"
+  },
+  "form_last_edited_by": {
+    "de": "Zuletzt bearbeitet von",
+    "en": "Last edited by",
+    "ar": "آخر تعديل بواسطة",
+    "es": "Última edición por",
+    "fr": "Dernière modification par",
+    "ru": "Последнее изменение",
+    "tr": "Son düzenleyen",
+    "zh": "最后编辑者"
+  },
+  "form_last_edited_at": {
+    "de": "Zuletzt bearbeitet am",
+    "en": "Last edited on",
+    "ar": "آخر تعديل في",
+    "es": "Última edición el",
+    "fr": "Dernière modification le",
+    "ru": "Последнее изменение",
+    "tr": "Son düzenleme tarihi",
+    "zh": "最后编辑于"
+  },
+  "form_submissions_search_hint": {
+    "de": "Suche in Titel und Formularinhalten (z. B. Name, Zimmernummer)",
+    "en": "Search in title and form contents (e.g. name, room number)",
+    "ar": "البحث في العنوان ومحتويات النموذج (مثل الاسم ورقم الغرفة)",
+    "es": "Buscar en el título y el contenido del formulario (p. ej. nombre, número de habitación)",
+    "fr": "Rechercher dans le titre et le contenu du formulaire (p. ex. nom, numéro de chambre)",
+    "ru": "Поиск по заголовку и содержимому формы (например, имя, номер комнаты)",
+    "tr": "Başlık ve form içeriğinde ara (ör. ad, oda numarası)",
+    "zh": "搜索标题和表单内容（例如姓名、房间号）"
+  },
+  "inventory_items": {
+    "de": "Inventar",
+    "en": "Inventory",
+    "ar": "المخزون",
+    "es": "Inventario",
+    "fr": "Inventaire",
+    "ru": "Инвентарь",
+    "tr": "Envanter",
+    "zh": "库存"
+  },
+  "inventory_item": {
+    "de": "Inventar-Gegenstand",
+    "en": "Inventory item",
+    "ar": "عنصر المخزون",
+    "es": "Artículo de inventario",
+    "fr": "Objet d'inventaire",
+    "ru": "Предмет инвентаря",
+    "tr": "Envanter öğesi",
+    "zh": "库存物品"
+  },
+  "inventory_item_create": {
+    "de": "Neuen Gegenstand anlegen",
+    "en": "Create new item",
+    "ar": "إنشاء عنصر جديد",
+    "es": "Crear nuevo artículo",
+    "fr": "Créer un nouvel objet",
+    "ru": "Создать новый предмет",
+    "tr": "Yeni öğe oluştur",
+    "zh": "创建新物品"
+  },
+  "inventory_item_name": {
+    "de": "Bezeichnung",
+    "en": "Name",
+    "ar": "الاسم",
+    "es": "Nombre",
+    "fr": "Désignation",
+    "ru": "Название",
+    "tr": "Ad",
+    "zh": "名称"
+  },
+  "inventory_item_note": {
+    "de": "Notiz (Markdown)",
+    "en": "Note (Markdown)",
+    "ar": "ملاحظة (Markdown)",
+    "es": "Nota (Markdown)",
+    "fr": "Note (Markdown)",
+    "ru": "Заметка (Markdown)",
+    "tr": "Not (Markdown)",
+    "zh": "备注（Markdown）"
+  },
+  "inventory_item_image": {
+    "de": "Bild",
+    "en": "Image",
+    "ar": "صورة",
+    "es": "Imagen",
+    "fr": "Image",
+    "ru": "Изображение",
+    "tr": "Resim",
+    "zh": "图片"
+  },
+  "inventory_item_select_image": {
+    "de": "Bild auswählen",
+    "en": "Select image",
+    "ar": "اختر صورة",
+    "es": "Seleccionar imagen",
+    "fr": "Choisir une image",
+    "ru": "Выбрать изображение",
+    "tr": "Resim seç",
+    "zh": "选择图片"
+  },
+  "inventory_item_remove_image": {
+    "de": "Bild entfernen",
+    "en": "Remove image",
+    "ar": "إزالة الصورة",
+    "es": "Quitar imagen",
+    "fr": "Supprimer l'image",
+    "ru": "Удалить изображение",
+    "tr": "Resmi kaldır",
+    "zh": "移除图片"
+  },
+  "inventory_item_created": {
+    "de": "Gegenstand wurde angelegt",
+    "en": "Item created",
+    "ar": "تم إنشاء العنصر",
+    "es": "Artículo creado",
+    "fr": "Objet créé",
+    "ru": "Предмет создан",
+    "tr": "Öğe oluşturuldu",
+    "zh": "物品已创建"
+  },
+  "inventory_item_create_failed": {
+    "de": "Gegenstand konnte nicht angelegt werden",
+    "en": "Item could not be created",
+    "ar": "تعذر إنشاء العنصر",
+    "es": "No se pudo crear el artículo",
+    "fr": "L'objet n'a pas pu être créé",
+    "ru": "Не удалось создать предмет",
+    "tr": "Öğe oluşturulamadı",
+    "zh": "无法创建物品"
+  },
+  "inventory_item_name_required": {
+    "de": "Bitte eine Bezeichnung eingeben",
+    "en": "Please enter a name",
+    "ar": "يرجى إدخال اسم",
+    "es": "Introduce un nombre",
+    "fr": "Veuillez saisir une désignation",
+    "ru": "Введите название",
+    "tr": "Lütfen bir ad girin",
+    "zh": "请输入名称"
+  },
+  "inventory_item_not_found": {
+    "de": "Gegenstand nicht gefunden",
+    "en": "Item not found",
+    "ar": "العنصر غير موجود",
+    "es": "Artículo no encontrado",
+    "fr": "Objet introuvable",
+    "ru": "Предмет не найден",
+    "tr": "Öğe bulunamadı",
+    "zh": "未找到物品"
+  },
+  "inventory_items_empty": {
+    "de": "Noch keine Gegenstände vorhanden",
+    "en": "No items yet",
+    "ar": "لا توجد عناصر بعد",
+    "es": "Todavía no hay artículos",
+    "fr": "Aucun objet pour le moment",
+    "ru": "Пока нет предметов",
+    "tr": "Henüz öğe yok",
+    "zh": "暂无物品"
+  },
+  "inventory_item_qr_code": {
+    "de": "QR-Code",
+    "en": "QR code",
+    "ar": "رمز QR",
+    "es": "Código QR",
+    "fr": "Code QR",
+    "ru": "QR-код",
+    "tr": "QR kodu",
+    "zh": "二维码"
+  },
+  "inventory_item_qr_code_hint": {
+    "de": "Scannen öffnet diesen Gegenstand in der App oder im Browser",
+    "en": "Scanning opens this item in the app or in the browser",
+    "ar": "المسح يفتح هذا العنصر في التطبيق أو المتصفح",
+    "es": "Al escanear se abre este artículo en la app o en el navegador",
+    "fr": "Le scan ouvre cet objet dans l'application ou dans le navigateur",
+    "ru": "Сканирование открывает этот предмет в приложении или браузере",
+    "tr": "Taramak bu öğeyi uygulamada veya tarayıcıda açar",
+    "zh": "扫描可在应用或浏览器中打开此物品"
+  },
+  "inventory_item_open_link": {
+    "de": "Link öffnen",
+    "en": "Open link",
+    "ar": "فتح الرابط",
+    "es": "Abrir enlace",
+    "fr": "Ouvrir le lien",
+    "ru": "Открыть ссылку",
+    "tr": "Bağlantıyı aç",
+    "zh": "打开链接"
   }
 }

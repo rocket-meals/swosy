@@ -8,7 +8,7 @@ export class FormAnswersHelper extends CollectionHelper<DatabaseTypes.FormAnswer
 
 	async fetchFormAnswers(queryOverride: any = {}) {
 		const defaultQuery = {
-			fields: ['* , form_field.*, form_field.translations.*, value_files.*'],
+			fields: ['* , form_field.*, form_field.translations.*, form_field.group.*, form_field.group.translations.*, value_files.*'],
 			limit: -1,
 			sort: ['sort'],
 		};

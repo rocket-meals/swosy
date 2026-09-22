@@ -146,6 +146,12 @@ const Index = () => {
 			leftIcon: <MaterialCommunityIcons name="account-group" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/avatar-scroll-list'),
 		},
+		{
+			key: 'inventory-items',
+			label: translate(TranslationKeys.inventory_items),
+			leftIcon: <MaterialCommunityIcons name="package-variant" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/inventory-items'),
+		},
 	];
 
 	return (

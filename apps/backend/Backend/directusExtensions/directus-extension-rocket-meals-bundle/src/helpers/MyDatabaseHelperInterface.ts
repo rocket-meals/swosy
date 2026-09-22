@@ -21,6 +21,19 @@ export type DocumentOrganization = {
   logoUrl: string | null;
 };
 
+/**
+ * Die Angaben zu einer Person, die ein erzeugtes Dokument nennt.
+ *
+ * Bewusst nur diese drei Felder: Ein Dokument nennt einen Namen, sonst nichts. Wer einen
+ * ganzen `DirectusUsers`-Datensatz durchreicht, nimmt in Kauf, dass eines Tages mehr davon im
+ * PDF landet, als dort hingehört.
+ */
+export type DocumentUser = {
+  first_name?: string | null;
+  last_name?: string | null;
+  email?: string | null;
+};
+
 export interface MyDatabaseTestableHelperInterface {
   getServerInfo(): Promise<ServerInfo>;
   getServerUrl(): string;
@@ -33,6 +46,15 @@ export interface MyDatabaseTestableHelperInterface {
    * offline testbar, und der Test liefert Beispielwerte statt einer Datenbankabfrage.
    */
   getDocumentOrganization(): Promise<DocumentOrganization>;
+  /**
+   * Die Person hinter einer Nutzer-Id – für die Zeile „Zuletzt bearbeitet von" im Formular-PDF.
+   *
+   * Aus demselben Grund Teil der schmalen Test-Schnittstelle wie
+   * {@link getDocumentOrganization}: Das PDF bleibt offline erzeugbar. `null`, wenn es die Id
+   * nicht gibt oder sie nicht gelesen werden kann – ein Dokument darf an einem fehlenden Namen
+   * nicht scheitern.
+   */
+  getDocumentUserById(userId: string): Promise<DocumentUser | null>;
 }
 
 export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterface {
@@ -103,6 +125,35 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
    */
   async getDocumentOrganization(): Promise<DocumentOrganization> {
     return DocumentOrganizationHelper.resolveDocumentOrganization(MyDatabaseTestableHelper.getExampleAppSettings(), this);
+  }
+
+  /**
+   * Die Nutzer-Id, unter der die Beispiel-Bearbeiterin zu finden ist.
+   *
+   * Der Beispiel-Vorgang trägt sein `user_updated` als aufgelöstes Objekt (siehe
+   * `FormHelper.getExampleFormSubmission`); diese Id deckt den anderen Fall ab, in dem Directus
+   * nur die Id liefert und das Dokument die Person nachladen muss.
+   */
+  public static readonly EXAMPLE_DOCUMENT_USER_ID = '6b4c9f3a-2d71-4f58-9a0c-7e5b1d8c2f34';
+
+  /** Die Beispiel-Bearbeiterin – reine Musterdaten, keine echte Person. */
+  public static getExampleDocumentUser(): DocumentUser {
+    return {
+      first_name: 'Ulrike',
+      last_name: 'Wohnheimer',
+      email: 'wohnheimleitung@example.com',
+    };
+  }
+
+  /**
+   * Offline-Ersatz für den Nutzer-Lookup: Die Beispiel-Id liefert die Beispiel-Person, jede
+   * andere Id nichts. Tests kommen damit ohne Datenbank aus.
+   */
+  async getDocumentUserById(userId: string): Promise<DocumentUser | null> {
+    if (userId === MyDatabaseTestableHelper.EXAMPLE_DOCUMENT_USER_ID) {
+      return MyDatabaseTestableHelper.getExampleDocumentUser();
+    }
+    return null;
   }
 
   /** Die `app_settings`, mit denen Beispiel-Dokumente erzeugt werden – reine Musterdaten. */

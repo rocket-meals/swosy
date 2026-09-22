@@ -1,4 +1,4 @@
-import { ActivityIndicator, Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -43,6 +43,9 @@ import { MyBuffer } from 'repo-depkit-common-ui';
 import FilterFormSheet from '@/components/FilterFormSheet/FilterFormSheet';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { myContrastColor } from '@/helper/ColorHelper';
+import { Theme } from '@/context/ThemeContext';
+import { getUserDisplayName } from '@/helper/UserDisplayNameHelper';
 import * as FileSystem from 'expo-file-system/legacy';
 
 /**
@@ -175,6 +178,123 @@ const resolveFieldIcon = (iconExpo: string | undefined | null): { IconComponent:
 		}
 	}
 	return { IconComponent, iconName };
+};
+
+// Styles that belong to this screen only. New styles stay in this file (see AGENTS.md);
+// the pre-existing `./styles` module is kept as-is.
+const localStyles = StyleSheet.create({
+	groupTabBar: {
+		width: '100%',
+		// Without this the horizontal ScrollView would stretch inside the
+		// vertical content column on narrow phones.
+		flexGrow: 0,
+	},
+	groupTabBarContent: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 10,
+		paddingVertical: 2,
+		paddingRight: 10,
+	},
+	groupTab: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+		borderRadius: 20,
+		paddingHorizontal: 14,
+		paddingVertical: 8,
+	},
+	lastEditedContainer: {
+		width: '100%',
+		padding: 10,
+		borderRadius: 10,
+		gap: 4,
+	},
+});
+
+/**
+ * Pseudo group id for all form fields that are not assigned to a
+ * `form_field_groups` entry. Rendered as the last tab.
+ */
+const OTHER_FIELDS_GROUP_ID = '__other_fields__';
+
+type FormFieldGroupTab = {
+	id: string;
+	label: string;
+	iconExpo?: string | null;
+};
+
+const isFormFieldGroupEntity = (group: DatabaseTypes.FormFieldGroups | string | null | undefined): group is DatabaseTypes.FormFieldGroups => typeof group === 'object' && group !== null && 'id' in group;
+
+/**
+ * The expanded `form_field_groups` row of an answer's form field, or null when
+ * the field has no group (or the relation was not expanded).
+ */
+const getAnswerFieldGroup = (answer: DatabaseTypes.FormAnswers): DatabaseTypes.FormFieldGroups | null => {
+	const formField = isFormFieldEntity(answer?.form_field) ? answer.form_field : null;
+	const group = formField?.group;
+	return isFormFieldGroupEntity(group) ? group : null;
+};
+
+/** The tab id an answer belongs to (its group id, or the "other fields" pseudo group). */
+const getAnswerGroupTabId = (answer: DatabaseTypes.FormAnswers): string => {
+	const group = getAnswerFieldGroup(answer);
+	return group ? String(group.id) : OTHER_FIELDS_GROUP_ID;
+};
+
+/**
+ * Derive the ordered tab list from the (already sorted) answers: one tab per
+ * distinct form field group, in order of first appearance, plus a trailing
+ * "other fields" tab when at least one answer has no group.
+ *
+ * Returns an empty list when no answer has a group at all — the screen then
+ * renders the flat field list without any tab bar.
+ */
+const buildFormFieldGroupTabs = (answers: DatabaseTypes.FormAnswers[], language: string, otherFieldsLabel: string): FormFieldGroupTab[] => {
+	const tabs: FormFieldGroupTab[] = [];
+	const seenGroupIds = new Set<string>();
+	let hasUngroupedAnswer = false;
+
+	(answers || []).forEach(answer => {
+		const group = getAnswerFieldGroup(answer);
+		if (!group) {
+			hasUngroupedAnswer = true;
+			return;
+		}
+
+		const groupId = String(group.id);
+		if (seenGroupIds.has(groupId)) return;
+		seenGroupIds.add(groupId);
+
+		const translatedName = group.translations?.length > 0 ? getFromCategoryTranslation(group.translations as any, language) : '';
+		tabs.push({
+			id: groupId,
+			label: translatedName || group.alias || '',
+			iconExpo: group.icon_expo,
+		});
+	});
+
+	if (tabs.length === 0) {
+		return [];
+	}
+
+	if (hasUngroupedAnswer) {
+		tabs.push({ id: OTHER_FIELDS_GROUP_ID, label: otherFieldsLabel, iconExpo: null });
+	}
+
+	return tabs;
+};
+
+/**
+ * Human readable "last edited at" timestamp for the protocol footer, using the
+ * same `dd.MM.yyyy HH:mm` pattern the rest of the app uses. Empty when the
+ * submission has no (parsable) `date_updated`.
+ */
+const formatLastEditedAt = (dateUpdated: string | null | undefined): string => {
+	if (!dateUpdated) return '';
+	const parsed = new Date(dateUpdated);
+	if (!isValid(parsed)) return '';
+	return format(parsed, 'dd.MM.yyyy HH:mm');
 };
 
 /**
@@ -481,13 +601,33 @@ const Index = () => {
 		[key: string]: { value: any; error: string; custom_type?: string };
 	}>({});
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-	const { language, drawerPosition, primaryColor, offlineMode } = useAppSelector((state) => state.settings);
+	const { language, drawerPosition, primaryColor, offlineMode, selectedTheme } = useAppSelector((state) => state.settings);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 	const [imageFolderIdState, setImageFolderIdState] = useState<string | null>(null);
 	const [filesFolderIdState, setFilesFolderIdState] = useState<string | null>(null);
+	const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
 	// Set Page Title
 	useSetPageTitle(formSubmission?.alias || TranslationKeys.form_submission);
+
+	const otherFieldsGroupLabel = translate(TranslationKeys.form_field_group_other_fields);
+
+	const formFieldGroupTabs = useMemo(() => buildFormFieldGroupTabs(formAnswers, language, otherFieldsGroupLabel), [formAnswers, language, otherFieldsGroupLabel]);
+
+	// Derived so the first tab is already active on the very first render after the
+	// answers arrive, before the effect below has stored it.
+	const activeGroupId = formFieldGroupTabs.some(tab => tab.id === selectedGroupId) ? selectedGroupId : (formFieldGroupTabs[0]?.id ?? null);
+
+	// Keep the selected tab across reloads (e.g. re-focus) as long as it still
+	// exists, otherwise fall back to the first group.
+	useEffect(() => {
+		if (formFieldGroupTabs.length === 0) {
+			setSelectedGroupId(null);
+			return;
+		}
+
+		setSelectedGroupId(previous => (previous && formFieldGroupTabs.some(tab => tab.id === previous) ? previous : formFieldGroupTabs[0].id));
+	}, [formFieldGroupTabs]);
 
 	const isEditMode = useMemo(() => {
 		if (!formData || typeof formData !== 'object') return false;
@@ -591,7 +731,10 @@ const Index = () => {
 		} else {
 			// In online mode, always fetch fresh from API; fall back to cache on network error
 			try {
-				result = (await formsSubmissionsHelper.fetchFormubmissionById(String(form_submission_id))) as DatabaseTypes.FormSubmissions;
+				result = (await formsSubmissionsHelper.fetchFormubmissionById(String(form_submission_id), {
+					// `user_updated` is needed for the "last edited by" footer.
+					fields: ['*', 'user_updated.id', 'user_updated.first_name', 'user_updated.last_name', 'user_updated.email'],
+				})) as DatabaseTypes.FormSubmissions;
 			} catch {
 				result = Object.values(cachedFormData || {})
 					.flatMap(entry => entry.submissions || [])
@@ -1043,6 +1186,14 @@ const Index = () => {
 	}
 	const headerTitle = formSubmission ? excerpt(formSubmission?.alias as string, aliasExcerptLength) : '';
 	const formSubmissionIdText = formSubmission ? formSubmission?.id : '';
+	// `styles/themes.ts` is missing `drawer.logoBg` / `drawer.divider` from the `Theme`
+	// type — a pre-existing repo-wide mismatch that every `myContrastColor` call site
+	// hits. The cast keeps this screen type-clean until the theme objects are fixed.
+	const activeGroupTabTextColor = myContrastColor(primaryColor, theme as unknown as Theme, selectedTheme === 'dark');
+	// Offline/cached submissions may carry `user_updated` as a plain id string — then no name is shown.
+	const lastEditedByName = getUserDisplayName(formSubmission?.user_updated);
+	const lastEditedAtText = formatLastEditedAt(formSubmission?.date_updated);
+	const showLastEditedBlock = Boolean(lastEditedByName || lastEditedAtText);
 
 	return (
 		<View
@@ -1123,6 +1274,32 @@ const Index = () => {
 							>
 								<Text style={{ ...styles.body, color: theme.screen.text }}>{formSubmissionIdText}</Text>
 							</View>
+							{formFieldGroupTabs.length > 0 && (
+								<ScrollView horizontal showsHorizontalScrollIndicator={false} style={localStyles.groupTabBar} contentContainerStyle={localStyles.groupTabBarContent} keyboardShouldPersistTaps="handled">
+									{formFieldGroupTabs.map(tab => {
+										const isActiveTab = tab.id === activeGroupId;
+										const tabTextColor = isActiveTab ? activeGroupTabTextColor : theme.screen.text;
+										const { IconComponent: TabIconComponent, iconName: tabIconName } = resolveFieldIcon(tab.iconExpo);
+
+										return (
+											<TouchableOpacity
+												key={tab.id}
+												onPress={() => setSelectedGroupId(tab.id)}
+												style={{
+													...localStyles.groupTab,
+													backgroundColor: isActiveTab ? primaryColor : theme.screen.iconBg,
+												}}
+												accessibilityRole="tab"
+												accessibilityState={{ selected: isActiveTab }}
+												accessibilityLabel={tab.label}
+											>
+												{TabIconComponent && <TabIconComponent name={tabIconName} size={16} color={tabTextColor} />}
+												<Text style={{ ...styles.body, color: tabTextColor }}>{tab.label}</Text>
+											</TouchableOpacity>
+										);
+									})}
+								</ScrollView>
+							)}
 							{formAnswers?.map((answer, index) => {
 									const formField = isFormFieldEntity(answer?.form_field) ? answer.form_field : null;
 									const fieldType = formField?.field_type || '';
@@ -1134,8 +1311,10 @@ const Index = () => {
 									const dropdownValues = parseDropdownValues((answer?.form_field as DatabaseTypes.FormFields)?.dropdown_values);
 									const description = (answer?.form_field as DatabaseTypes.FormFields)?.translations?.length > 0 ? getFromDescriptionTranslation((answer?.form_field as DatabaseTypes.FormFields)?.translations, language) : '';
 									const showInForm = isAnswerVisible(answer, formAnswers, getAnswerValue);
+									// Without groups every field is shown; with groups only the selected tab's fields.
+									const isInSelectedGroup = formFieldGroupTabs.length === 0 || getAnswerGroupTabId(answer) === activeGroupId;
 
-									if (!showInForm) {
+									if (!showInForm || !isInSelectedGroup) {
 										return null;
 									}
 
@@ -1215,6 +1394,18 @@ const Index = () => {
 										</View>
 									);
 								})}
+							{showLastEditedBlock && (
+								<View
+									style={{
+										...localStyles.lastEditedContainer,
+										borderWidth: 1,
+										borderColor: theme.screen.iconBg,
+									}}
+								>
+									{Boolean(lastEditedByName) && <Text style={{ ...styles.body, color: theme.screen.text }}>{`${translate(TranslationKeys.form_last_edited_by)}: ${lastEditedByName}`}</Text>}
+									{Boolean(lastEditedAtText) && <Text style={{ ...styles.body, color: theme.screen.text }}>{`${translate(TranslationKeys.form_last_edited_at)}: ${lastEditedAtText}`}</Text>}
+								</View>
+							)}
 							<DebugView title="Form Data">
 								<Text style={{ ...styles.body, color: theme.screen.text }}>{JSON.stringify(formData, null, 2)}</Text>
 							</DebugView>

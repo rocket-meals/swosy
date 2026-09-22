@@ -8,6 +8,76 @@ import { FIELD_VALUE_KEY_PREFIX, KeyOfFormAnswersValueFieldsType } from '../../.
 const testFileReader = new HannoverTL1HousingTestFileReader();
 const testWorkflow = new FormHousingContractsWorkflowHannover(hannoverHousingContractExamplePath);
 
+/** Ein Mietverhältnis mit allen Feldern leer – die Tests setzen nur, worauf es ihnen ankommt. */
+function buildHousingContract(values: Partial<ImportHousingContract>): ImportHousingContract {
+  const emptyHousingContract = {} as ImportHousingContract;
+  for (const field of Object.values(ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS)) {
+    emptyHousingContract[field] = null;
+  }
+  return { ...emptyHousingContract, ...values };
+}
+
+describe('Hannover Housing Form Alias', () => {
+  it('names the room, the full name, the end of the tenancy and the tenant number', () => {
+    const alias = testFileReader.getAlias(
+      buildHousingContract({
+        [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.WOHNUNGSNAME]: 'Dorotheenstraße',
+        [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.ZIMMERNR]: '51-6',
+        [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSON_NACHNAME]: 'Mustermann',
+        [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSON_VORNAME]: 'Max',
+        [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETENDE]: '2025-05-31T00:00:00.000Z',
+        [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSONENNUMMER]: '197312',
+      })
+    );
+
+    expect(alias).toBe('Dorotheenstraße/Zimmer 51-6 - Mustermann, Max - 31.05.2025 - Mieternr. 197312');
+  });
+
+  it('leaves out room number, first name and tenant number when they are missing', () => {
+    const alias = testFileReader.getAlias(
+      buildHousingContract({
+        [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.WOHNUNGSNAME]: 'Dorotheenstraße',
+        [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSON_NACHNAME]: 'Mustermann',
+        [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETENDE]: '2025-05-31T00:00:00.000Z',
+      })
+    );
+
+    // Keine baumelnden Trennzeichen: nur, was da ist.
+    expect(alias).toBe('Dorotheenstraße/Mustermann - 31.05.2025');
+  });
+
+  it('uses exactly one folder separator, so the app shows two levels', async () => {
+    const data = await testFileReader.readData();
+    for (const housingContract of data) {
+      const alias = testFileReader.getAlias(housingContract);
+      const separatorCount = alias.split('/').length - 1;
+      if (separatorCount !== 1) {
+        console.log('Alias with unexpected amount of folder separators: ', alias);
+      }
+      expect(separatorCount).toBe(1);
+      // Der Alias darf die Angaben nicht doppelt enthalten (frueherer Fehler beim Anhaengen der Mieternummer).
+      expect(alias).not.toContain('PERSONNR');
+    }
+  });
+
+  it('falls back to the internal custom id when a required part is missing', () => {
+    const housingContract = buildHousingContract({
+      // Ohne Wohnheimnamen hat der Alias keine Aussage.
+      [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSON_NACHNAME]: 'Mustermann',
+      [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETENDE]: '2025-05-31T00:00:00.000Z',
+      [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.VERWALTUNGSOBJEKT_NUMMER]: '420-01-05-51-6',
+      [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSONENNUMMER]: '197312',
+      [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETBEGINN]: '2024-10-01T00:00:00.000Z',
+    });
+
+    expect(testFileReader.getAlias(housingContract)).toBe(testFileReader.getHousingContractInternalCustomId(housingContract));
+  });
+
+  it('returns an empty alias when neither the alias nor the internal custom id can be built', () => {
+    expect(testFileReader.getAlias(buildHousingContract({}))).toBe('');
+  });
+});
+
 describe('Hannover Housing Form Test', () => {
   async function getData() {
     return await testFileReader.readData();

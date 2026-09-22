@@ -124,7 +124,10 @@ export function getVersionPatch() {
         //     to the footer
         // 46: master merged back in - housing analytics reports next to the form
         //     PDF letterhead changes
-        return 46;
+        // 47: form fields grouped into tabs, last editor shown on the protocol and
+        //     in the PDF, search over form contents, experimental inventory items
+        //     with QR codes
+        return 47;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
