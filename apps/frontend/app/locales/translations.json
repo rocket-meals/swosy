@@ -7139,6 +7139,56 @@
     "tr": "Başlık ve form içeriğinde ara (ör. ad, oda numarası)",
     "zh": "搜索标题和表单内容（例如姓名、房间号）"
   },
+  "form_pdf_preview_title": {
+    "de": "Formular als PDF",
+    "en": "Form as PDF",
+    "ar": "النموذج كملف PDF",
+    "es": "Formulario como PDF",
+    "fr": "Formulaire en PDF",
+    "ru": "Форма в формате PDF",
+    "tr": "PDF olarak form",
+    "zh": "表单 PDF"
+  },
+  "form_pdf_preview_hint": {
+    "de": "Zeigt den gespeicherten Stand des Formulars als PDF – dasselbe Dokument wie beim Einreichen.",
+    "en": "Shows the saved state of the form as a PDF – the same document as when submitting.",
+    "ar": "يعرض الحالة المحفوظة للنموذج كملف PDF – وهو المستند نفسه المرسل عند التقديم.",
+    "es": "Muestra el estado guardado del formulario en PDF: el mismo documento que al enviarlo.",
+    "fr": "Affiche l'état enregistré du formulaire en PDF – le même document que lors de l'envoi.",
+    "ru": "Показывает сохранённое состояние формы в виде PDF — тот же документ, что и при отправке.",
+    "tr": "Formun kaydedilmiş hâlini PDF olarak gösterir – gönderimdeki belgenin aynısı.",
+    "zh": "以 PDF 显示表单的已保存状态——与提交时的文档相同。"
+  },
+  "form_pdf_preview_show": {
+    "de": "PDF anzeigen",
+    "en": "Show PDF",
+    "ar": "عرض ملف PDF",
+    "es": "Mostrar PDF",
+    "fr": "Afficher le PDF",
+    "ru": "Показать PDF",
+    "tr": "PDF'yi göster",
+    "zh": "显示 PDF"
+  },
+  "form_pdf_preview_loading": {
+    "de": "PDF wird erstellt",
+    "en": "Creating PDF",
+    "ar": "جارٍ إنشاء ملف PDF",
+    "es": "Creando PDF",
+    "fr": "Création du PDF",
+    "ru": "PDF создаётся",
+    "tr": "PDF oluşturuluyor",
+    "zh": "正在生成 PDF"
+  },
+  "form_pdf_preview_failed": {
+    "de": "Das PDF konnte nicht erstellt werden.",
+    "en": "The PDF could not be created.",
+    "ar": "تعذّر إنشاء ملف PDF.",
+    "es": "No se ha podido crear el PDF.",
+    "fr": "Le PDF n'a pas pu être créé.",
+    "ru": "Не удалось создать PDF.",
+    "tr": "PDF oluşturulamadı.",
+    "zh": "无法生成 PDF。"
+  },
   "inventory_items": {
     "de": "Inventar",
     "en": "Inventory",

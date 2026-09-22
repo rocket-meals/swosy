@@ -51,7 +51,8 @@ export function getVersionPatch() {
 	// 22: form PDF: letterhead carries only the logo, the issuer in the footer
 	// 23: master merged back in - shared common-ui changes from the housing
 	//     analytics reports
-	return 23;
+	// 24: common: FileNameHelper for file names that survive http headers and file systems
+	return 24;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

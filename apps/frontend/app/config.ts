@@ -127,7 +127,13 @@ export function getVersionPatch() {
         // 47: form fields grouped into tabs, last editor shown on the protocol and
         //     in the PDF, search over form contents, experimental inventory items
         //     with QR codes
-        return 47;
+        // 48: form submission screen shows the filled form as a PDF (debug view),
+        //     rendered on the fly by the backend's new form-pdf-preview endpoint
+        // 49: that endpoint takes the submission id alone and reuses the mail
+        //     hook's own pdf generation - the app only asks and shows
+        // 50: safe file names come from common's FileNameHelper, and every call
+        //     to our own backend goes through the authorized fetch wrapper
+        return 50;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

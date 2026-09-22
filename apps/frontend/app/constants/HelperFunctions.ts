@@ -3,8 +3,8 @@ import * as Crypto from 'expo-crypto';
 import { Platform } from 'react-native';
 import Server from './ServerUrl';
 import { DatabaseTypes, FoodofferPriceHelper, NumberHelper, StringHelper, type Translator } from 'repo-depkit-common';
-import { ServerAPI } from '@/redux/actions';
 import { buildDirectusUploadFormData } from '@/helper/fileUploadHelper';
+import { authorizedFetch } from '@/helper/authorizedFetch';
 import { configureStore } from '@/redux/store';
 import { PriceGroupKey } from '@/app/(app)/settings/types';
 
@@ -80,11 +80,10 @@ export const getFormValueImageUrl = (imageId: string) => {
 	return `${Server.ServerUrl}/assets/${imageId}${format}`;
 };
 
-const patchFileFolder = async (token: string | null, fileId: string, folderId: string): Promise<void> => {
-	await fetch(`${Server.ServerUrl}/files/${fileId}`, {
+const patchFileFolder = async (fileId: string, folderId: string): Promise<void> => {
+	await authorizedFetch(`/files/${fileId}`, {
 		method: 'PATCH',
 		headers: {
-			Authorization: `Bearer ${token}`,
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({ folder: folderId }),
@@ -93,8 +92,6 @@ const patchFileFolder = async (token: string | null, fileId: string, folderId: s
 
 export const uploadToDirectus = async (image: any, folderId?: string | null) => {
 	try {
-		const token = await ServerAPI.getClient().getToken();
-
 		const blob = new Blob([image.buffer], { type: image.type || '' });
 
 		// Directus only applies the payload fields it has already read when it reaches the
@@ -105,11 +102,8 @@ export const uploadToDirectus = async (image: any, folderId?: string | null) => 
 		formData.append('type', image.type);
 		formData.append('file', blob, image.name);
 
-		const uploadResponse = await fetch(`${Server.ServerUrl}/files`, {
+		const uploadResponse = await authorizedFetch('/files', {
 			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
 			body: formData,
 		});
 
@@ -117,7 +111,7 @@ export const uploadToDirectus = async (image: any, folderId?: string | null) => 
 		const fileId = data.data?.id || null;
 		if (fileId && folderId) {
 			try {
-				await patchFileFolder(token, fileId, folderId);
+				await patchFileFolder(fileId, folderId);
 			} catch (patchError) {
 				console.warn('Could not update folder for uploaded file:', patchError);
 			}
@@ -131,8 +125,6 @@ export const uploadToDirectus = async (image: any, folderId?: string | null) => 
 
 export const uploadToDirectusFromMobile = async (image: any, folderId?: string | null) => {
 	try {
-		const token = await ServerAPI.getClient().getToken();
-
 		// image.buffer is the local uri of the picked file (or a data uri for a signature).
 		const formData = await buildDirectusUploadFormData({
 			uri: image.buffer,
@@ -141,11 +133,8 @@ export const uploadToDirectusFromMobile = async (image: any, folderId?: string |
 			mimeType: image.type || 'image/png',
 		});
 
-		const uploadResponse = await fetch(`${Server.ServerUrl}/files`, {
+		const uploadResponse = await authorizedFetch('/files', {
 			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
 			body: formData,
 		});
 
@@ -153,7 +142,7 @@ export const uploadToDirectusFromMobile = async (image: any, folderId?: string |
 		const fileId = data.data?.id || null;
 		if (fileId && folderId) {
 			try {
-				await patchFileFolder(token, fileId, folderId);
+				await patchFileFolder(fileId, folderId);
 			} catch (patchError) {
 				console.warn('Could not update folder for uploaded file:', patchError);
 			}
@@ -167,14 +156,7 @@ export const uploadToDirectusFromMobile = async (image: any, folderId?: string |
 
 export const getFileFromDirectus = async (fileId: any) => {
 	try {
-		const token = await ServerAPI.getClient().getToken();
-
-		const response = await fetch(`${Server.ServerUrl}/files/${fileId}`, {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
+		const response = await authorizedFetch(`/files/${fileId}`, { method: 'GET' });
 
 		if (!response.ok) {
 			throw new Error(`Failed to fetch file. Status: ${response.status}`);
@@ -190,14 +172,7 @@ export const getFileFromDirectus = async (fileId: any) => {
 
 export const deleteDirectusFile = async (fileId: string) => {
 	try {
-		const token = await ServerAPI.getClient().getToken();
-
-		const deleteResponse = await fetch(`${Server.ServerUrl}/files/${fileId}`, {
-			method: 'DELETE',
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
+		const deleteResponse = await authorizedFetch(`/files/${fileId}`, { method: 'DELETE' });
 
 		if (deleteResponse.ok) {
 			return true; // File deleted successfully

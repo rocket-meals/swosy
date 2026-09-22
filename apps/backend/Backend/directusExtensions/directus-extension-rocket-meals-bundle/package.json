@@ -199,6 +199,11 @@
         "source": "src/news-rss-endpoint/index.ts"
       },
       {
+        "type": "endpoint",
+        "name": "form-pdf-preview-endpoint",
+        "source": "src/form-pdf-preview-endpoint/index.ts"
+      },
+      {
         "type": "hook",
         "name": "users-avatar-delete-hook",
         "source": "src/users-avatar-delete-hook/index.ts"
