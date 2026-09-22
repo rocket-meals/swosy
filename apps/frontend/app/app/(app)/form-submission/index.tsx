@@ -1,4 +1,4 @@
-import { ActivityIndicator, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -13,7 +13,7 @@ import useToast from '@/hooks/useToast';
 import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import SubmissionWarningModal from '@/components/SubmissionWarningModal/SubmissionWarningModal';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
-import { DatabaseTypes, FormHelperCommon, MathHelper } from 'repo-depkit-common';
+import { DatabaseTypes, FormHelperCommon, MathHelper, StringHelper } from 'repo-depkit-common';
 import SingleLineInput from '@/components/SingleLineInput/SingleLineInput';
 import MultiLineInput from '@/components/MultiLineInput/MultiLineInput';
 import IBANInput from '@/components/IBANInput/IBANInput';
@@ -47,7 +47,8 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { Theme } from '@/context/ThemeContext';
 import { getUserDisplayName } from '@/helper/UserDisplayNameHelper';
 import * as FileSystem from 'expo-file-system/legacy';
-import { buildFormPdfPreviewAnswers, buildFormPdfPreviewFileName, openFormPdfPreview, requestFormPdfPreview } from '@/helper/formPdfPreviewHelper';
+import Server from '@/constants/ServerUrl';
+import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 /**
  * Convert a file data object (from signature capture) to a base64 data URI.
@@ -578,6 +579,75 @@ async function buildUpdatedValueFieldsForAnswer(options: {
 	return {};
 }
 
+/**
+ * Die PDF-Ansicht eines Vorgangs.
+ *
+ * Wie ein ausgefülltes Formular gedruckt aussieht, weiß nur das Backend: dort liegt die
+ * Vorlage, und dort entsteht auch das PDF, das beim Einreichen an die Mail geht. Die App
+ * fragt es unter `POST /form-pdf-preview` für den Vorgang ab und zeigt das Ergebnis; gezeigt
+ * wird damit der gespeicherte Stand, nicht was gerade ungespeichert im Formular steht.
+ */
+const FORM_PDF_PREVIEW_ENDPOINT = '/form-pdf-preview';
+
+/** Wie lange die Adresse des Dokuments im Browser gültig bleibt, bevor sie freigegeben wird. */
+const BLOB_URL_LIFETIME_MS = 60_000;
+
+/** Der Dateiname auf dem Gerät – aus der Vorgangskennung, auf Buchstaben und Ziffern gekürzt. */
+function buildFormPdfFileName(alias: string | null | undefined): string {
+	const sanitizedAlias = StringHelper.replaceAllWithOptions({ str: String(alias ?? ''), find: String.raw`[^A-Za-z0-9]+`, replace: '_' });
+	const trimmedAlias = StringHelper.replaceAllWithOptions({ str: sanitizedAlias, find: String.raw`^_+|_+$`, replace: '' });
+	return `${trimmedAlias || 'form'}.pdf`;
+}
+
+/** Holt das PDF des Vorgangs vom Backend. Wirft, wenn die Route nichts liefert. */
+async function fetchFormPdf(formSubmissionId: string): Promise<ArrayBuffer> {
+	const token = await ServerAPI.getClient().getToken();
+
+	const response = await fetch(`${Server.ServerUrl}${FORM_PDF_PREVIEW_ENDPOINT}`, {
+		method: 'POST',
+		headers: {
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ form_submission_id: formSubmissionId }),
+	});
+
+	if (!response.ok) {
+		throw new Error(`Form pdf request failed with status ${response.status}`);
+	}
+
+	return await response.arrayBuffer();
+}
+
+/**
+ * Zeigt das PDF: im Web in einem neuen Tab, auf dem Gerät über das Teilen-Menü, das eine
+ * Vorschau anbietet – dasselbe Muster wie beim Herunterladen eines Bildes im Vollbild. Blockt
+ * der Browser den Tab, weil die Antwort erst nach dem Tippen kam, wird stattdessen
+ * heruntergeladen; ein Download wird nicht geblockt.
+ */
+async function openFormPdf(pdfBytes: ArrayBuffer, fileName: string): Promise<void> {
+	if (isWeb) {
+		const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+		const blobUrl = URL.createObjectURL(blob);
+		const openedWindow = window.open(blobUrl, '_blank');
+		if (!openedWindow) {
+			const link = document.createElement('a');
+			link.href = blobUrl;
+			link.download = fileName;
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
+		}
+		setTimeout(() => URL.revokeObjectURL(blobUrl), BLOB_URL_LIFETIME_MS);
+		return;
+	}
+
+	const base64 = MyBuffer.from(pdfBytes).toString('base64');
+	const fileUri = `${(FileSystem as any).cacheDirectory}${fileName}`;
+	await FileSystem.writeAsStringAsync(fileUri, base64, { encoding: FileSystem.EncodingType.Base64 });
+	await Share.share({ url: fileUri, message: fileUri });
+}
+
 const Index = () => {
 	const toast = useToast();
 	const scrollViewRef = useRef(null);
@@ -1019,7 +1089,11 @@ const Index = () => {
 	};
 
 	const handleAddToQueue = () => {
-		const form_id = getFormIdOfSubmission();
+		const rawFormId = (formSubmission as any)?.form;
+		let form_id = '';
+		if (rawFormId) {
+			form_id = typeof rawFormId === 'object' ? String(rawFormId?.id || '') : String(rawFormId);
+		}
 		const alias = String(formSubmission?.alias || form_submission_id || '');
 		const entryId = queue_entry_id ? String(queue_entry_id) : `${Date.now().toString(36)}-${MathHelper.random().toString(36).slice(2)}`;
 		const entry = {
@@ -1041,41 +1115,18 @@ const Index = () => {
 		}
 	};
 
-	/** Die Id des Formulars, zu dem dieser Vorgang gehört – Directus liefert sie als Id oder als Objekt. */
-	const getFormIdOfSubmission = (): string => {
-		const rawFormId = (formSubmission as any)?.form;
-		if (!rawFormId) return '';
-		return typeof rawFormId === 'object' ? String(rawFormId?.id || '') : String(rawFormId);
-	};
-
 	/**
-	 * Zeigt das Formular so, wie es gedruckt aussieht: Die aktuellen Eingaben gehen an das
-	 * Backend, das daraus dasselbe PDF baut, das beim Einreichen an die Mail geht. Gespeichert
-	 * wird dabei nichts – die Vorschau darf auch aus einem halb ausgefüllten Formular entstehen.
+	 * Zeigt den Vorgang als PDF – dasselbe Dokument, das beim Einreichen an die Mail geht.
+	 * Das Backend baut es aus den gespeicherten Antworten; ungespeicherte Eingaben stehen
+	 * deshalb erst nach dem Speichern darin.
 	 */
-	const handleShowFormPdfPreview = async () => {
-		const form_id = getFormIdOfSubmission();
-		if (!form_id) {
-			toast(translate(TranslationKeys.form_pdf_preview_failed), 'error');
-			return;
-		}
-
+	const handleShowFormPdf = async () => {
 		setPdfPreviewLoading(true);
 		try {
-			const answers = await buildFormPdfPreviewAnswers({
-				formAnswers,
-				formData,
-				formatDate: formatDateForSubmission,
-				toDataUri: toBase64DataUri,
-			});
-			const pdfBytes = await requestFormPdfPreview({
-				form_id,
-				form_submission_id: String(form_submission_id),
-				answers,
-			});
-			await openFormPdfPreview(pdfBytes, buildFormPdfPreviewFileName(formSubmission?.alias));
+			const pdfBytes = await fetchFormPdf(String(form_submission_id));
+			await openFormPdf(pdfBytes, buildFormPdfFileName(formSubmission?.alias));
 		} catch (error) {
-			console.error('Could not show the form pdf preview:', error);
+			console.error('Could not show the form pdf:', error);
 			toast(translate(TranslationKeys.form_pdf_preview_failed), 'error');
 		} finally {
 			setPdfPreviewLoading(false);
@@ -1451,7 +1502,7 @@ const Index = () => {
 									{
 										label: pdfPreviewLoading ? translate(TranslationKeys.form_pdf_preview_loading) : translate(TranslationKeys.form_pdf_preview_show),
 										icon: 'file-pdf-box',
-										onPress: handleShowFormPdfPreview,
+										onPress: handleShowFormPdf,
 										disabled: pdfPreviewLoading,
 									},
 								]}

@@ -157,7 +157,8 @@ export type FormExtractRelevantInformationSingle = {
 };
 export type FormExtractRelevantInformation = FormExtractRelevantInformationSingle[];
 
-function resolveFormIdFromFormSubmission(formSubmission: DatabaseTypes.FormSubmissions): string {
+/** Die Id des Formulars hinter einem Vorgang – Directus liefert die Relation als Id oder als Objekt. */
+export function resolveFormIdFromFormSubmission(formSubmission: DatabaseTypes.FormSubmissions): string {
   let form_id: string | undefined;
   if (formSubmission.form) {
     if (typeof formSubmission.form === 'string') {
@@ -249,7 +250,13 @@ async function resolveRelevantFormFieldsForExtract(form_extract: DatabaseTypes.F
   return relevant_form_fields;
 }
 
-function buildSortedFormAnswersForExtract(relevant_form_fields: DatabaseTypes.FormFields[], form_answers: FormExtractFormAnswer[]): FormExtractRelevantInformation {
+/**
+ * Felder und ihre Antworten in Formularreihenfolge – die Eingabe des Dokuments.
+ *
+ * Öffentlich, weil nicht nur der Mailversand daraus ein PDF baut, sondern auch die Vorschau
+ * eines Vorgangs (`form-pdf-preview-endpoint`). Beide müssen dasselbe Dokument sehen.
+ */
+export function buildSortedFormAnswersForExtract(relevant_form_fields: DatabaseTypes.FormFields[], form_answers: FormExtractFormAnswer[]): FormExtractRelevantInformation {
   let form_answers_relevant_for_form_extract: FormExtractRelevantInformation = [];
   for (let relevant_form_field of relevant_form_fields) {
     let form_field_id = relevant_form_field.id;

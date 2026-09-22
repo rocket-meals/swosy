@@ -7150,14 +7150,14 @@
     "zh": "表单 PDF"
   },
   "form_pdf_preview_hint": {
-    "de": "Zeigt das Formular mit den aktuellen Eingaben als PDF. Es wird nichts gespeichert.",
-    "en": "Shows the form with the current entries as a PDF. Nothing is saved.",
-    "ar": "يعرض النموذج بالمدخلات الحالية كملف PDF. لا يتم حفظ أي شيء.",
-    "es": "Muestra el formulario con las entradas actuales en PDF. No se guarda nada.",
-    "fr": "Affiche le formulaire avec les saisies actuelles en PDF. Rien n'est enregistré.",
-    "ru": "Показывает форму с текущими данными в виде PDF. Ничего не сохраняется.",
-    "tr": "Formu mevcut girdilerle PDF olarak gösterir. Hiçbir şey kaydedilmez.",
-    "zh": "以 PDF 显示包含当前输入的表单。不会保存任何内容。"
+    "de": "Zeigt den gespeicherten Stand des Formulars als PDF – dasselbe Dokument wie beim Einreichen.",
+    "en": "Shows the saved state of the form as a PDF – the same document as when submitting.",
+    "ar": "يعرض الحالة المحفوظة للنموذج كملف PDF – وهو المستند نفسه المرسل عند التقديم.",
+    "es": "Muestra el estado guardado del formulario en PDF: el mismo documento que al enviarlo.",
+    "fr": "Affiche l'état enregistré du formulaire en PDF – le même document que lors de l'envoi.",
+    "ru": "Показывает сохранённое состояние формы в виде PDF — тот же документ, что и при отправке.",
+    "tr": "Formun kaydedilmiş hâlini PDF olarak gösterir – gönderimdeki belgenin aynısı.",
+    "zh": "以 PDF 显示表单的已保存状态——与提交时的文档相同。"
   },
   "form_pdf_preview_show": {
     "de": "PDF anzeigen",
