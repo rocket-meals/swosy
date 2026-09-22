@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
 | 🐛 Reliability | 30 | 30 |
-| 🔧 Maintainability | 276 | 19 |
+| 🔧 Maintainability | 280 | 19 |
 
-**Total issues:** 307 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 311 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -140,7 +140,7 @@
   packages/common/src/form/IbanValidationHelper.ts:124
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanValidationHelper.ts#L124
 
-## 🔧 Maintainability (19/276)
+## 🔧 Maintainability (19/280)
 
 - **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172
@@ -174,6 +174,10 @@
   apps/frontend/app/app/(app)/experimentell/inventory-items/create/index.tsx:112
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/inventory-items/create/index.tsx#L112
 
+- **Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.**
+  apps/frontend/app/app/(app)/form-submission/index.tsx:645
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submission/index.tsx#L645
+
 - **Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.**
   apps/frontend/app/app/(app)/housing-analytics/[report].tsx:64
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/housing-analytics/[report].tsx#L64
@@ -198,6 +202,10 @@
   apps/frontend/app/helper/AppUsageEventHelper.ts:113
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/AppUsageEventHelper.ts#L113
 
+- **The empty object is useless.**
+  apps/frontend/app/helper/authorizedFetch.ts:24
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/authorizedFetch.ts#L24
+
 - **Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.**
   apps/frontend/app/helper/downloadTextFileOnWeb.ts:14
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/downloadTextFileOnWeb.ts#L14
@@ -209,12 +217,4 @@
 - **Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.**
   apps/frontend/app/helper/housingAnalytics/HousingAnalyticsReports.ts:451
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/housingAnalytics/HousingAnalyticsReports.ts#L451
-
-- **`String.raw` should be used to avoid escaping `\`.**
-  apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts:121
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts#L121
-
-- **Do not call `Array#push()` multiple times.**
-  apps/frontend/app/hooks/useOcr.tsx:198
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useOcr.tsx#L198
 

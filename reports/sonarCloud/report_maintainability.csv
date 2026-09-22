@@ -1,4 +1,8 @@
 Key,Message,Component,Line
+"AaDJdtK5S4SkZ9_68GSc","The empty object is useless.","rocket-meals_rocket-meals:apps/frontend/app/helper/authorizedFetch.ts",24
+"AaDJdsToS4SkZ9_68GSZ","Using `String.raw` is unnecessary as the string does not contain any `\`.","rocket-meals_rocket-meals:packages/common/src/FileNameHelper.ts",37
+"AaDJdsToS4SkZ9_68GSa","Using `String.raw` is unnecessary as the string does not contain any `\`.","rocket-meals_rocket-meals:packages/common/src/FileNameHelper.ts",38
+"AaDJds06S4SkZ9_68GSb","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",645
 "AaDIyBg-vP9HY8oxPbTE","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts",81
 "AaDIyBg-vP9HY8oxPbTF","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts",459
 "AaDIyBvwvP9HY8oxPbTG","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/inventory-items/create/index.tsx",112
