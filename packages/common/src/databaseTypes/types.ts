@@ -1546,6 +1546,7 @@ export type FormFieldsTranslations = {
 
 export type FormSubmissions = {
   alias?: string | null;
+  data?: unknown | null;
   date_created?: string | null;
   date_locked_until?: string | null;
   date_started?: string | null;
