@@ -129,7 +129,9 @@ export function getVersionPatch() {
         //     with QR codes
         // 48: form submission screen shows the filled form as a PDF (debug view),
         //     rendered on the fly by the backend's new form-pdf-preview endpoint
-        return 48;
+        // 49: that endpoint takes the submission id alone and reuses the mail
+        //     hook's own pdf generation - the app only asks and shows
+        return 49;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
