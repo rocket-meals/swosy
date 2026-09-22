@@ -1,6 +1,9 @@
 Key,Message,Component,Line
-"AaDAKJTemOQ488DYDbhD","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts",258
-"AaDAKJTemOQ488DYDbhE","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts",287
+"AaDIyBg-vP9HY8oxPbTE","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts",81
+"AaDIyBg-vP9HY8oxPbTF","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts",459
+"AaDIyBvwvP9HY8oxPbTG","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/inventory-items/create/index.tsx",112
+"AaDAKJTemOQ488DYDbhD","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts",357
+"AaDAKJTemOQ488DYDbhE","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts",386
 "AaC_XuUiynaeS38RlKKI","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/OcrCamera/index.tsx",73
 "AaC_XtnSynaeS38RlKKH","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:packages/common/src/form/IbanValidationHelper.ts",124
 "AaC0s5wzhkA3gTKRIozs","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",198

@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-09-20T18:48:20.266Z",
+  "report_timestamp": "2026-09-22T10:59:29.831Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
-          "maximum": 114,
-          "average": 1.5112852664576804,
-          "amountSavedValuesForKeys": 4821,
+          "median": 1,
+          "maximum": 118,
+          "average": 1.5225927080087254,
+          "amountSavedValuesForKeys": 4886,
           "amountKeys": 29
         },
         "invertedParameterToMethods": {
-          "median": 1.5,
-          "maximum": 77,
-          "average": 2.29156010230179,
-          "amountSavedValuesForKeys": 1792,
+          "median": 1,
+          "maximum": 78,
+          "average": 2.2960609911054637,
+          "amountSavedValuesForKeys": 1807,
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
-          "maximum": 114,
-          "average": 1.525632911392405,
-          "amountSavedValuesForKeys": 4821,
+          "median": 1,
+          "maximum": 118,
+          "average": 1.5369613085876062,
+          "amountSavedValuesForKeys": 4886,
           "amountKeys": 29
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 5194,
-        "detection_time_ms": 100,
+        "ast_generation_time_ms": 2911,
+        "detection_time_ms": 69,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 118.36,
-          "os_memory_free": 14775459840,
+          "os_uptime": 213.16,
+          "os_memory_free": 14792830976,
           "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_model": "AMD EPYC 9V45 96-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 10,
-    "amount_files_with_data_clumps": 10,
+    "amount_classes_or_interfaces_with_data_clumps": 12,
+    "amount_files_with_data_clumps": 12,
     "amount_methods_with_data_clumps": 2,
-    "fields_to_fields_data_clump": 8,
+    "fields_to_fields_data_clump": 10,
     "parameters_to_fields_data_clump": 2,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 10
+    "amount_data_clumps": 12
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "5571ff6b9185552f2cb6047bbdea4b26b3c52acd",
-    "project_commit_hash": "5571ff6b9185552f2cb6047bbdea4b26b3c52acd",
+    "project_version": "c6f748d9ff1b35961ccef2f2bad07f5e4f916c2e",
+    "project_commit_hash": "c6f748d9ff1b35961ccef2f2bad07f5e4f916c2e",
     "project_tag": null,
-    "project_commit_date": "1789929992",
+    "project_commit_date": "1790074664",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 681,
-    "number_of_classes_or_interfaces": 1487,
-    "number_of_methods": 1613,
-    "number_of_data_fields": 4821,
-    "number_of_method_parameters": 1792
+    "number_of_files": 685,
+    "number_of_classes_or_interfaces": 1498,
+    "number_of_methods": 1625,
+    "number_of_data_fields": 4886,
+    "number_of_method_parameters": 1807
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -126,9 +126,9 @@
             }
           },
           "position": {
-            "startLine": 396,
+            "startLine": 495,
             "startColumn": 41,
-            "endLine": 396,
+            "endLine": 495,
             "endColumn": 54
           }
         },
@@ -151,9 +151,9 @@
             }
           },
           "position": {
-            "startLine": 396,
+            "startLine": 495,
             "startColumn": 56,
-            "endLine": 396,
+            "endLine": 495,
             "endColumn": 75
           }
         },
@@ -176,9 +176,9 @@
             }
           },
           "position": {
-            "startLine": 396,
+            "startLine": 495,
             "startColumn": 77,
-            "endLine": 396,
+            "endLine": 495,
             "endColumn": 109
           }
         }
@@ -283,6 +283,103 @@
       "data_clump_type_additional": {
         "cluster_id": 2,
         "cluster_type": 1
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser-apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource-first_namelast_nameemail": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser-apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource-first_namelast_nameemail",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser",
+      "from_class_or_interface_name": "DocumentUser",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/helper/UserDisplayNameHelper.ts",
+      "to_class_or_interface_key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource",
+      "to_class_or_interface_name": "UserDisplayNameSource",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/first_name": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/first_name",
+          "name": "first_name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/first_name",
+            "name": "first_name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 5,
+              "startColumn": 2,
+              "endLine": 5,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 32,
+            "startColumn": 3,
+            "endLine": 32,
+            "endColumn": 30
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/last_name": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/last_name",
+          "name": "last_name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/last_name",
+            "name": "last_name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 6,
+              "startColumn": 2,
+              "endLine": 6,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 33,
+            "startColumn": 3,
+            "endLine": 33,
+            "endColumn": 29
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/email": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/email",
+          "name": "email",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/email",
+            "name": "email",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 34,
+            "startColumn": 3,
+            "endLine": 34,
+            "endColumn": 25
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
+        "cluster_type": 2
       }
     },
     "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData-apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer-value_stringvalue_numbervalue_booleanvalue_date": {
@@ -399,6 +496,103 @@
             "startColumn": 3,
             "endLine": 34,
             "endColumn": 30
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/helper/UserDisplayNameHelper.ts-apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser-first_namelast_nameemail": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/helper/UserDisplayNameHelper.ts-apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser-first_namelast_nameemail",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/helper/UserDisplayNameHelper.ts",
+      "from_class_or_interface_key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource",
+      "from_class_or_interface_name": "UserDisplayNameSource",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser",
+      "to_class_or_interface_name": "DocumentUser",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/first_name": {
+          "key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/first_name",
+          "name": "first_name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/first_name",
+            "name": "first_name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 32,
+              "startColumn": 3,
+              "endLine": 32,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 5,
+            "startColumn": 2,
+            "endLine": 5,
+            "endColumn": 29
+          }
+        },
+        "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/last_name": {
+          "key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/last_name",
+          "name": "last_name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/last_name",
+            "name": "last_name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 33,
+              "startColumn": 3,
+              "endLine": 33,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 6,
+            "startColumn": 2,
+            "endLine": 6,
+            "endColumn": 28
+          }
+        },
+        "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/email": {
+          "key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/email",
+          "name": "email",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/email",
+            "name": "email",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 34,
+              "startColumn": 3,
+              "endLine": 34,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 24
           }
         }
       },
@@ -525,7 +719,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 3,
+        "cluster_id": 4,
         "cluster_type": 2
       }
     },
@@ -622,7 +816,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 2
       }
     },
@@ -719,7 +913,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 2
       }
     },
@@ -828,7 +1022,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 5,
+        "cluster_id": 6,
         "cluster_type": 2
       }
     },
@@ -937,7 +1131,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 5,
+        "cluster_id": 6,
         "cluster_type": 2
       }
     },
@@ -1034,7 +1228,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 6,
+        "cluster_id": 7,
         "cluster_type": 2
       }
     },
@@ -1131,7 +1325,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 6,
+        "cluster_id": 7,
         "cluster_type": 2
       }
     }

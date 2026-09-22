@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
 | 🐛 Reliability | 30 | 30 |
-| 🔧 Maintainability | 273 | 19 |
+| 🔧 Maintainability | 276 | 19 |
 
-**Total issues:** 304 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 307 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -140,7 +140,7 @@
   packages/common/src/form/IbanValidationHelper.ts:124
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanValidationHelper.ts#L124
 
-## 🔧 Maintainability (19/273)
+## 🔧 Maintainability (19/276)
 
 - **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172
@@ -154,13 +154,25 @@
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:67
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L67
 
+- **Complete the task associated to this "TODO" comment.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts:81
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts#L81
+
+- **Do not call `Array#push()` multiple times.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts:459
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts#L459
+
 - **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts:258
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts#L258
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts:357
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts#L357
 
 - **Prefer using an optional chain expression instead, as it's more concise and easier to read.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts:287
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts#L287
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts:386
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts#L386
+
+- **Unnecessary use of conditional expression for default assignment.**
+  apps/frontend/app/app/(app)/experimentell/inventory-items/create/index.tsx:112
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/inventory-items/create/index.tsx#L112
 
 - **Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.**
   apps/frontend/app/app/(app)/housing-analytics/[report].tsx:64
@@ -205,16 +217,4 @@
 - **Do not call `Array#push()` multiple times.**
   apps/frontend/app/hooks/useOcr.tsx:198
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useOcr.tsx#L198
-
-- **Extract this nested ternary operation into an independent statement.**
-  apps/frontend/app/hooks/useOcr.tsx:211
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useOcr.tsx#L211
-
-- **Extract this nested ternary operation into an independent statement.**
-  apps/frontend/app/hooks/useOcr.tsx:211
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useOcr.tsx#L211
-
-- **Prefer `node:path` over `path`.**
-  apps/frontend/app/metro.config.js:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/metro.config.js#L1
 
