@@ -1474,6 +1474,27 @@ export type FormExtractsFormFields = {
   id: number;
 };
 
+export type FormFieldGroups = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  icon?: string | null;
+  icon_expo?: string | null;
+  id: string;
+  status: string;
+  translations: any[] | FormFieldGroupsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type FormFieldGroupsTranslations = {
+  description?: string | null;
+  form_field_groups_id?: string | FormFieldGroups | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  name?: string | null;
+};
+
 export type FormFields = {
   alias?: string | null;
   background_color?: string | null;
@@ -1487,6 +1508,7 @@ export type FormFields = {
   field_type?: string | null;
   form?: string | Forms | null;
   form_settings: string;
+  group?: string | FormFieldGroups | null;
   icon?: string | null;
   icon_expo?: string | null;
   id: string;
@@ -1577,6 +1599,40 @@ export type Friendships = {
   id: string;
   receiver_profiles_id?: string | Profiles | null;
   requester_profiles_id?: string | Profiles | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type InventoryItemCategories = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  icon?: string | null;
+  icon_expo?: string | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  translations: any[] | InventoryItemCategoriesTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type InventoryItemCategoriesTranslations = {
+  id: number;
+  inventory_item_categories_id?: string | InventoryItemCategories | null;
+  languages_code?: string | Languages | null;
+};
+
+export type InventoryItems = {
+  alias?: string | null;
+  category?: string | InventoryItemCategories | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  image?: string | DirectusFiles | null;
+  note?: string | null;
   sort?: number | null;
   status: string;
   user_created?: string | DirectusUsers | null;
@@ -2096,12 +2152,17 @@ export type CustomDirectusTypes = {
   form_categories_translations: FormCategoriesTranslations[];
   form_extracts: FormExtracts[];
   form_extracts_form_fields: FormExtractsFormFields[];
+  form_field_groups: FormFieldGroups[];
+  form_field_groups_translations: FormFieldGroupsTranslations[];
   form_fields: FormFields[];
   form_fields_translations: FormFieldsTranslations[];
   form_submissions: FormSubmissions[];
   forms: Forms[];
   forms_translations: FormsTranslations[];
   friendships: Friendships[];
+  inventory_item_categories: InventoryItemCategories[];
+  inventory_item_categories_translations: InventoryItemCategoriesTranslations[];
+  inventory_items: InventoryItems[];
   languages: Languages[];
   mails: Mails[];
   mails_files: MailsFiles[];

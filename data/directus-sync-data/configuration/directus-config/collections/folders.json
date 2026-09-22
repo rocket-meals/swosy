@@ -50,6 +50,11 @@
     "_syncId": "82168ce3-9ad1-4828-9f0d-61247d26763b"
   },
   {
+    "name": "Inventory Items",
+    "parent": null,
+    "_syncId": "8444dd1c-5d7c-4628-96cb-a7b503a42701"
+  },
+  {
     "name": "Form Fields",
     "parent": "db7284a6-52ab-4f6f-bfbb-1e49efb5341d",
     "_syncId": "a55368c5-ee59-4bd1-8710-d83fa8cf6f3c"
