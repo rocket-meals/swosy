@@ -127,7 +127,9 @@ export function getVersionPatch() {
         // 47: form fields grouped into tabs, last editor shown on the protocol and
         //     in the PDF, search over form contents, experimental inventory items
         //     with QR codes
-        return 47;
+        // 48: form submission screen shows the filled form as a PDF (debug view),
+        //     rendered on the fly by the backend's new form-pdf-preview endpoint
+        return 48;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -47,6 +47,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { Theme } from '@/context/ThemeContext';
 import { getUserDisplayName } from '@/helper/UserDisplayNameHelper';
 import * as FileSystem from 'expo-file-system/legacy';
+import { buildFormPdfPreviewAnswers, buildFormPdfPreviewFileName, openFormPdfPreview, requestFormPdfPreview } from '@/helper/formPdfPreviewHelper';
 
 /**
  * Convert a file data object (from signature capture) to a base64 data URI.
@@ -597,6 +598,7 @@ const Index = () => {
 	const { formSubmission, formQueue, cachedFormData } = useAppSelector((state) => state.form);
 	const { user } = useAppSelector((state) => state.authReducer);
 	const [submissionLoading, setSubmissionLoading] = useState(false);
+	const [pdfPreviewLoading, setPdfPreviewLoading] = useState(false);
 	const [formData, setFormData] = useState<{
 		[key: string]: { value: any; error: string; custom_type?: string };
 	}>({});
@@ -1017,11 +1019,7 @@ const Index = () => {
 	};
 
 	const handleAddToQueue = () => {
-		const rawFormId = (formSubmission as any)?.form;
-		let form_id = '';
-		if (rawFormId) {
-			form_id = typeof rawFormId === 'object' ? String(rawFormId?.id || '') : String(rawFormId);
-		}
+		const form_id = getFormIdOfSubmission();
 		const alias = String(formSubmission?.alias || form_submission_id || '');
 		const entryId = queue_entry_id ? String(queue_entry_id) : `${Date.now().toString(36)}-${MathHelper.random().toString(36).slice(2)}`;
 		const entry = {
@@ -1040,6 +1038,47 @@ const Index = () => {
 			router.back();
 		} else {
 			router.navigate('/form-categories');
+		}
+	};
+
+	/** Die Id des Formulars, zu dem dieser Vorgang gehört – Directus liefert sie als Id oder als Objekt. */
+	const getFormIdOfSubmission = (): string => {
+		const rawFormId = (formSubmission as any)?.form;
+		if (!rawFormId) return '';
+		return typeof rawFormId === 'object' ? String(rawFormId?.id || '') : String(rawFormId);
+	};
+
+	/**
+	 * Zeigt das Formular so, wie es gedruckt aussieht: Die aktuellen Eingaben gehen an das
+	 * Backend, das daraus dasselbe PDF baut, das beim Einreichen an die Mail geht. Gespeichert
+	 * wird dabei nichts – die Vorschau darf auch aus einem halb ausgefüllten Formular entstehen.
+	 */
+	const handleShowFormPdfPreview = async () => {
+		const form_id = getFormIdOfSubmission();
+		if (!form_id) {
+			toast(translate(TranslationKeys.form_pdf_preview_failed), 'error');
+			return;
+		}
+
+		setPdfPreviewLoading(true);
+		try {
+			const answers = await buildFormPdfPreviewAnswers({
+				formAnswers,
+				formData,
+				formatDate: formatDateForSubmission,
+				toDataUri: toBase64DataUri,
+			});
+			const pdfBytes = await requestFormPdfPreview({
+				form_id,
+				form_submission_id: String(form_submission_id),
+				answers,
+			});
+			await openFormPdfPreview(pdfBytes, buildFormPdfPreviewFileName(formSubmission?.alias));
+		} catch (error) {
+			console.error('Could not show the form pdf preview:', error);
+			toast(translate(TranslationKeys.form_pdf_preview_failed), 'error');
+		} finally {
+			setPdfPreviewLoading(false);
 		}
 	};
 
@@ -1406,6 +1445,19 @@ const Index = () => {
 									{Boolean(lastEditedAtText) && <Text style={{ ...styles.body, color: theme.screen.text }}>{`${translate(TranslationKeys.form_last_edited_at)}: ${lastEditedAtText}`}</Text>}
 								</View>
 							)}
+							<DebugView
+								title={translate(TranslationKeys.form_pdf_preview_title)}
+								actions={[
+									{
+										label: pdfPreviewLoading ? translate(TranslationKeys.form_pdf_preview_loading) : translate(TranslationKeys.form_pdf_preview_show),
+										icon: 'file-pdf-box',
+										onPress: handleShowFormPdfPreview,
+										disabled: pdfPreviewLoading,
+									},
+								]}
+							>
+								<Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.form_pdf_preview_hint)}</Text>
+							</DebugView>
 							<DebugView title="Form Data">
 								<Text style={{ ...styles.body, color: theme.screen.text }}>{JSON.stringify(formData, null, 2)}</Text>
 							</DebugView>

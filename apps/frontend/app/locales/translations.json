@@ -7139,6 +7139,56 @@
     "tr": "Başlık ve form içeriğinde ara (ör. ad, oda numarası)",
     "zh": "搜索标题和表单内容（例如姓名、房间号）"
   },
+  "form_pdf_preview_title": {
+    "de": "Formular als PDF",
+    "en": "Form as PDF",
+    "ar": "النموذج كملف PDF",
+    "es": "Formulario como PDF",
+    "fr": "Formulaire en PDF",
+    "ru": "Форма в формате PDF",
+    "tr": "PDF olarak form",
+    "zh": "表单 PDF"
+  },
+  "form_pdf_preview_hint": {
+    "de": "Zeigt das Formular mit den aktuellen Eingaben als PDF. Es wird nichts gespeichert.",
+    "en": "Shows the form with the current entries as a PDF. Nothing is saved.",
+    "ar": "يعرض النموذج بالمدخلات الحالية كملف PDF. لا يتم حفظ أي شيء.",
+    "es": "Muestra el formulario con las entradas actuales en PDF. No se guarda nada.",
+    "fr": "Affiche le formulaire avec les saisies actuelles en PDF. Rien n'est enregistré.",
+    "ru": "Показывает форму с текущими данными в виде PDF. Ничего не сохраняется.",
+    "tr": "Formu mevcut girdilerle PDF olarak gösterir. Hiçbir şey kaydedilmez.",
+    "zh": "以 PDF 显示包含当前输入的表单。不会保存任何内容。"
+  },
+  "form_pdf_preview_show": {
+    "de": "PDF anzeigen",
+    "en": "Show PDF",
+    "ar": "عرض ملف PDF",
+    "es": "Mostrar PDF",
+    "fr": "Afficher le PDF",
+    "ru": "Показать PDF",
+    "tr": "PDF'yi göster",
+    "zh": "显示 PDF"
+  },
+  "form_pdf_preview_loading": {
+    "de": "PDF wird erstellt",
+    "en": "Creating PDF",
+    "ar": "جارٍ إنشاء ملف PDF",
+    "es": "Creando PDF",
+    "fr": "Création du PDF",
+    "ru": "PDF создаётся",
+    "tr": "PDF oluşturuluyor",
+    "zh": "正在生成 PDF"
+  },
+  "form_pdf_preview_failed": {
+    "de": "Das PDF konnte nicht erstellt werden.",
+    "en": "The PDF could not be created.",
+    "ar": "تعذّر إنشاء ملف PDF.",
+    "es": "No se ha podido crear el PDF.",
+    "fr": "Le PDF n'a pas pu être créé.",
+    "ru": "Не удалось создать PDF.",
+    "tr": "PDF oluşturulamadı.",
+    "zh": "无法生成 PDF。"
+  },
   "inventory_items": {
     "de": "Inventar",
     "en": "Inventory",
