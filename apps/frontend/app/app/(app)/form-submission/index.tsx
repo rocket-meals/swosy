@@ -13,7 +13,7 @@ import useToast from '@/hooks/useToast';
 import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import SubmissionWarningModal from '@/components/SubmissionWarningModal/SubmissionWarningModal';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
-import { DatabaseTypes, FormHelperCommon, MathHelper, StringHelper } from 'repo-depkit-common';
+import { DatabaseTypes, FileNameHelper, FormHelperCommon, MathHelper } from 'repo-depkit-common';
 import SingleLineInput from '@/components/SingleLineInput/SingleLineInput';
 import MultiLineInput from '@/components/MultiLineInput/MultiLineInput';
 import IBANInput from '@/components/IBANInput/IBANInput';
@@ -47,8 +47,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { Theme } from '@/context/ThemeContext';
 import { getUserDisplayName } from '@/helper/UserDisplayNameHelper';
 import * as FileSystem from 'expo-file-system/legacy';
-import Server from '@/constants/ServerUrl';
-import { ServerAPI } from '@/redux/actions/Auth/Auth';
+import { authorizedFetch } from '@/helper/authorizedFetch';
 
 /**
  * Convert a file data object (from signature capture) to a base64 data URI.
@@ -592,21 +591,16 @@ const FORM_PDF_PREVIEW_ENDPOINT = '/form-pdf-preview';
 /** Wie lange die Adresse des Dokuments im Browser gültig bleibt, bevor sie freigegeben wird. */
 const BLOB_URL_LIFETIME_MS = 60_000;
 
-/** Der Dateiname auf dem Gerät – aus der Vorgangskennung, auf Buchstaben und Ziffern gekürzt. */
+/** Der Dateiname auf dem Gerät – aus der Vorgangskennung. */
 function buildFormPdfFileName(alias: string | null | undefined): string {
-	const sanitizedAlias = StringHelper.replaceAllWithOptions({ str: String(alias ?? ''), find: String.raw`[^A-Za-z0-9]+`, replace: '_' });
-	const trimmedAlias = StringHelper.replaceAllWithOptions({ str: sanitizedAlias, find: String.raw`^_+|_+$`, replace: '' });
-	return `${trimmedAlias || 'form'}.pdf`;
+	return FileNameHelper.buildSafeFileName({ name: alias, extension: 'pdf', fallbackName: 'form' });
 }
 
 /** Holt das PDF des Vorgangs vom Backend. Wirft, wenn die Route nichts liefert. */
 async function fetchFormPdf(formSubmissionId: string): Promise<ArrayBuffer> {
-	const token = await ServerAPI.getClient().getToken();
-
-	const response = await fetch(`${Server.ServerUrl}${FORM_PDF_PREVIEW_ENDPOINT}`, {
+	const response = await authorizedFetch(FORM_PDF_PREVIEW_ENDPOINT, {
 		method: 'POST',
 		headers: {
-			Authorization: `Bearer ${token}`,
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({ form_submission_id: formSubmissionId }),

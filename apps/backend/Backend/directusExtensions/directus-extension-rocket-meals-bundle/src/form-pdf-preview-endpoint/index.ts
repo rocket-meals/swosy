@@ -18,7 +18,7 @@
 
 import { defineEndpoint } from '@directus/extensions-sdk';
 import { Accountability, Query } from '@directus/types';
-import { CollectionNames, DatabaseTypes, StringHelper } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, FileNameHelper } from 'repo-depkit-common';
 import { ApiContext } from '../helpers/ApiContext';
 import { ContentTranslationHelper } from '../helpers/ContentTranslationHelper';
 import { FormHelper } from '../helpers/form/FormHelper';
@@ -52,17 +52,9 @@ async function getItemsServiceForAccountability<T>(apiContext: ApiContext, accou
   });
 }
 
-/**
- * Der Dateiname, unter dem der Browser das PDF anbietet – aus dem Titel des Dokuments.
- *
- * Nur Buchstaben und Ziffern aus ASCII bleiben stehen: `Content-Disposition` trägt nur ASCII,
- * ein „Übergabeprotokoll" käme sonst als Bytesalat beim Nutzer an.
- */
+/** Der Dateiname, unter dem der Browser das PDF anbietet – aus dem Titel des Dokuments. */
 function getPdfFileName(form: DatabaseTypes.Forms): string {
-  const documentTitle = FormPdfDocumentHelper.getDocumentTitle(form);
-  const sanitizedTitle = StringHelper.replaceAllWithOptions({ str: documentTitle, find: String.raw`[^A-Za-z0-9]+`, replace: '_' });
-  const trimmedTitle = StringHelper.replaceAllWithOptions({ str: sanitizedTitle, find: String.raw`^_+|_+$`, replace: '' });
-  return `${trimmedTitle || 'form'}.pdf`;
+  return FileNameHelper.buildSafeFileName({ name: FormPdfDocumentHelper.getDocumentTitle(form), extension: 'pdf', fallbackName: 'form' });
 }
 
 export default defineEndpoint({

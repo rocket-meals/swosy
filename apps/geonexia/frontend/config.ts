@@ -59,7 +59,8 @@ export function getVersionPatch() {
 	// 32: common-ui: PrintHidden keeps tap affordances off the printed page
 	// 33: form PDF: letterhead carries only the logo, the issuer in the footer
 	// 34: master merged back in - PrintHidden next to the form PDF letterhead
-	return 34;
+	// 35: common: FileNameHelper for file names that survive http headers and file systems
+	return 35;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
