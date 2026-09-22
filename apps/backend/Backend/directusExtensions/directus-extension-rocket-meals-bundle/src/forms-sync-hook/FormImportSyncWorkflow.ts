@@ -4,6 +4,7 @@ import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEn
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { FormImportSyncFormSubmissions } from './FormImportTypes';
 import { WorkflowResultHash } from '../helpers/itemServiceHelpers/WorkflowsRunHelper';
+import { buildFormSubmissionInitialData } from './FormSubmissionInitialData';
 
 /**
  * Builds a lookup from a form field's external_import_id to the form field itself.
@@ -54,6 +55,7 @@ function buildCreateFormAnswers(
  */
 async function syncFormSubmission(
   context: WorkflowRunContext,
+  workflowId: string,
   form: DatabaseTypes.Forms,
   formSubmission: FormImportSyncFormSubmissions,
   dictFormFieldExternalImportIdToFormFieldId: { [key: string]: DatabaseTypes.FormFields },
@@ -75,6 +77,14 @@ async function syncFormSubmission(
       form: form.id,
       internal_custom_id: internal_custom_id, // identifier for the form submission for future reference
       alias: alias,
+      // Momentaufnahme der Daten, aus denen der Entwurf entstanden ist. Nur beim Anlegen gesetzt,
+      // damit spaeter nachvollziehbar bleibt, welche Daten dafuer vorlagen.
+      data: buildFormSubmissionInitialData({
+        workflowId: workflowId,
+        form: form,
+        formSubmission: formSubmission,
+        dictFormFieldExternalImportIdToFormField: dictFormFieldExternalImportIdToFormFieldId,
+      }),
     };
 
     let createFormAnswers = buildCreateFormAnswers(formSubmission.form_answers, dictFormFieldExternalImportIdToFormFieldId);
@@ -100,6 +110,7 @@ async function syncFormSubmission(
  */
 async function syncAllFormSubmissions(
   context: WorkflowRunContext,
+  workflowId: string,
   form: DatabaseTypes.Forms,
   formSubmissions: FormImportSyncFormSubmissions[],
   dictFormFieldExternalImportIdToFormFieldId: { [key: string]: DatabaseTypes.FormFields },
@@ -109,7 +120,7 @@ async function syncAllFormSubmissions(
   let currentIndexOfFormSubmission = 0;
   for (let formSubmission of formSubmissions) {
     currentIndexOfFormSubmission++;
-    await syncFormSubmission(context, form, formSubmission, dictFormFieldExternalImportIdToFormFieldId, currentIndexOfFormSubmission, amountOfFormSubmissions);
+    await syncFormSubmission(context, workflowId, form, formSubmission, dictFormFieldExternalImportIdToFormFieldId, currentIndexOfFormSubmission, amountOfFormSubmissions);
   }
   await context.logger.appendLog('Finished processing all form submissions.');
 }
@@ -179,7 +190,7 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
         // Now we can create the form submissions or search for existing ones
         await context.logger.appendLog('Getting data.');
         let formSubmissions = await this.getData();
-        await syncAllFormSubmissions(context, form, formSubmissions, dictFormFieldExternalImportIdToFormFieldId);
+        await syncAllFormSubmissions(context, this.getWorkflowId(), form, formSubmissions, dictFormFieldExternalImportIdToFormFieldId);
 
         return context.logger.getFinalLogWithStateAndParams({
           state: WORKFLOW_RUN_STATE.SUCCESS,
