@@ -46,7 +46,7 @@ type ActionItem = Pick<SettingsListItemBaseProps, 'onPress' | 'showSeparator'> &
 	groupPosition?: 'bottom' | 'top' | 'middle' | 'single';
 };
 
-const MAX_IMAGE_DIMENSION = 6000;
+export const MAX_IMAGE_DIMENSION = 6000;
 
 const useCollectionFolder = (collection: CollectionNames) => {
 	const { foodCollection } = useAppSelector((state) => state.food);
@@ -122,7 +122,7 @@ const useCollectionFields = (collection: CollectionNames) => {
  * preserving aspect ratio. Returns the original uri unchanged if it already
  * fits within the limit.
  */
-async function resizeImageIfTooLarge(uri: string, width: number, height: number, maxDimension: number): Promise<string> {
+export async function resizeImageIfTooLarge(uri: string, width: number, height: number, maxDimension: number): Promise<string> {
 	if (width <= maxDimension && height <= maxDimension) {
 		return uri;
 	}

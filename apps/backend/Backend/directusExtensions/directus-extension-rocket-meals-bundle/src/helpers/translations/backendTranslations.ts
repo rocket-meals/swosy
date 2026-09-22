@@ -90,6 +90,34 @@ export const backendTranslations: TranslationResources = {
     zh: '地点、日期',
   },
 
+  /**
+   * Beschriftung der Bearbeitungszeile unter „Ort, Datum": Wer den Vorgang zuletzt bearbeitet
+   * hat. Directus pflegt dazu `form_submissions.user_updated` – das Protokoll nennt damit die
+   * abnehmende Person, ohne dass sie ein eigenes Unterschriftsfeld ausfüllen müsste.
+   */
+  form_pdf_last_edited_by: {
+    de: 'Zuletzt bearbeitet von',
+    en: 'Last edited by',
+    ar: 'آخر تعديل بواسطة',
+    es: 'Última modificación por',
+    fr: 'Dernière modification par',
+    ru: 'Последнее изменение:',
+    tr: 'Son düzenleyen',
+    zh: '最后编辑人',
+  },
+
+  /** Beschriftung des Zeitpunkts der letzten Bearbeitung, aus `form_submissions.date_updated`. */
+  form_pdf_last_edited_at: {
+    de: 'Zuletzt bearbeitet am',
+    en: 'Last edited on',
+    ar: 'تاريخ آخر تعديل',
+    es: 'Última modificación el',
+    fr: 'Dernière modification le',
+    ru: 'Дата последнего изменения',
+    tr: 'Son düzenleme tarihi',
+    zh: '最后编辑日期',
+  },
+
   /** Seitenzahl in der Fußzeile des Formular-PDFs. */
   form_pdf_page: {
     de: 'Seite {{page}} von {{pages}}',

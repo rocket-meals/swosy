@@ -25,6 +25,7 @@ export enum AppScreens {
   FORM_SUBMISSIONS = 'form-submissions',
   FORM_SUBMISSION = 'form-submission',
   HOUSING_DELETE_USER = 'delete-user',
+  INVENTORY_ITEMS = 'inventory-items',
   LEAFLET_MAP = 'leaflet-map',
   NOTIFICATION = 'notification',
   SUPPORT_TICKET = 'support-ticket',

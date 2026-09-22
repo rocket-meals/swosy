@@ -84,6 +84,8 @@ export const CollectionKeys = {
 	BUSINESSHOURS_GROUPS: 'businesshours_groups',
 	COLLECTIBLE_EVENT_PARTICIPANTS: 'collectible_event_participants',
 	FORM_FIELDS: 'form_fields',
+	FORM_FIELD_GROUPS: 'form_field_groups',
+	FORM_FIELD_GROUPS_TRANSLATIONS: 'form_field_groups_translations',
 	FORM_CATEGORIES_TRANSLATIONS: 'form_categories_translations',
 	CANTEENS_FEEDBACKS_LABELS_TRANSLATIONS: 'canteens_feedbacks_labels_translations',
 	BUSINESSHOURS_GROUPS_TRANSLATIONS: 'businesshours_groups_translations',
@@ -121,4 +123,7 @@ export const CollectionKeys = {
 	APP_SETTINGS: 'app_settings',
 	UTILIZATIONS_GROUPS: 'utilizations_groups',
 	CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES: 'canteen_food_feedback_report_schedules',
+	INVENTORY_ITEMS: 'inventory_items',
+	INVENTORY_ITEM_CATEGORIES: 'inventory_item_categories',
+	INVENTORY_ITEM_CATEGORIES_TRANSLATIONS: 'inventory_item_categories_translations',
 };

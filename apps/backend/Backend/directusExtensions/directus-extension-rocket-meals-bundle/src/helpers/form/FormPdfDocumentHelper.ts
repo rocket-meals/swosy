@@ -21,7 +21,7 @@
 import { FormExtractFormAnswerValueFileSingle, FormExtractFormAnswerValueFileSingleOrString, FormExtractRelevantInformation, FormExtractRelevantInformationSingle } from '../../forms-sync-hook';
 import { ContentTranslationHelper, ExistingTranslation } from '../ContentTranslationHelper';
 import { DirectusFilesAssetHelper } from '../DirectusFilesAssetHelper';
-import { MyDatabaseTestableHelperInterface } from '../MyDatabaseHelperInterface';
+import { DocumentUser, MyDatabaseTestableHelperInterface } from '../MyDatabaseHelperInterface';
 import { BackendTranslationKeys, BackendTranslator } from '../translations';
 import { DatabaseTypes, DateHelper, FormHelperCommon, NumberHelper, StringHelper } from 'repo-depkit-common';
 import { EnvVariableHelper } from '../EnvVariableHelper';
@@ -86,6 +86,25 @@ export type FormDocumentMetaEntry = {
   value: string;
 };
 
+/**
+ * Wer den Vorgang zuletzt bearbeitet hat – die Zeile unter „Ort, Datum".
+ *
+ * Das Protokoll nennt damit die abnehmende Person, ohne dass sie ein eigenes Unterschriftsfeld
+ * ausfüllen müsste: Directus pflegt `form_submissions.user_updated` und `date_updated` ohnehin
+ * bei jeder Änderung. `null`, solange kein Name feststeht – eine Zeile „Zuletzt bearbeitet von:"
+ * ohne Namen sagt nichts.
+ */
+export type FormDocumentLastEdited = {
+  /** Beschriftung vor dem Namen, z. B. „Zuletzt bearbeitet von". */
+  label: string;
+  /** Der Anzeigename der Person: Vor- und Nachname, ersatzweise die E-Mail-Adresse. */
+  name: string;
+  /** Beschriftung vor dem Datum, z. B. „Zuletzt bearbeitet am". */
+  dateLabel: string;
+  /** Das Datum der letzten Änderung; leer, wenn die Einreichung keins hat. */
+  date: string;
+};
+
 export type FormDocument = {
   documentTitle: string;
   documentSubtitle: string | null;
@@ -106,6 +125,11 @@ export type FormDocument = {
    * Ort dort gehört, weiß nur, wer unterschreibt.
    */
   placeAndDateValue: string;
+  /**
+   * Wer den Vorgang zuletzt bearbeitet hat und wann – steht unter „Ort, Datum" und vor den
+   * Unterschriften. `null`, wenn kein Name ermittelt werden konnte.
+   */
+  lastEdited: FormDocumentLastEdited | null;
 };
 
 /** Ein Feld mit aufgeteilter Beschriftung, bevor daraus Abschnitte werden. */
@@ -178,6 +202,7 @@ export class FormPdfDocumentHelper {
       attachmentsTitle: BackendTranslator.translate(BackendTranslationKeys.form_pdf_attachments),
       placeAndDateLabel: BackendTranslator.translate(BackendTranslationKeys.form_pdf_place_and_date),
       placeAndDateValue: this.formatSubmissionDate(formSubmission),
+      lastEdited: await this.buildLastEdited(formSubmission, myDatabaseHelperInterface),
     };
   }
 
@@ -241,11 +266,85 @@ export class FormPdfDocumentHelper {
 
   /** Das Eingangsdatum der Einreichung als deutsches Datum; leer, wenn es keins gibt. */
   private static formatSubmissionDate(formSubmission: DatabaseTypes.FormSubmissions | null | undefined): string {
-    const dateCreated = formSubmission?.date_created;
-    if (!dateCreated) {
+    return this.formatDateOfSubmission(formSubmission?.date_created);
+  }
+
+  /**
+   * Ein Zeitstempel der Einreichung als deutsches Datum, in der Zeitzone der Installation.
+   *
+   * Dieselbe Schreibweise für alle Daten des Vorgangs – Eingangsdatum und Bearbeitungsdatum
+   * dürfen auf demselben Blatt nicht verschieden aussehen.
+   */
+  private static formatDateOfSubmission(dateValue: string | null | undefined): string {
+    if (!dateValue) {
       return '';
     }
-    return DateHelper.formatDateToTimeZoneReadable(new Date(dateCreated), EnvVariableHelper.getTimeZoneString(), DateHelper.MOMENT_FORMAT.DATE_ONLY);
+    return DateHelper.formatDateToTimeZoneReadable(new Date(dateValue), EnvVariableHelper.getTimeZoneString(), DateHelper.MOMENT_FORMAT.DATE_ONLY);
+  }
+
+  // ── Zuletzt bearbeitet ────────────────────────────────────────────────────
+
+  /**
+   * Die Zeile „Zuletzt bearbeitet von … · Zuletzt bearbeitet am …".
+   *
+   * Sie tritt an die Stelle eines eigenen Unterschriftsfeldes für die abnehmende Person: Wer
+   * den Vorgang zuletzt angefasst hat, steht in `user_updated`, der Zeitpunkt in
+   * `date_updated` – beides pflegt Directus von selbst. Ohne Namen entsteht keine Zeile.
+   */
+  private static async buildLastEdited(formSubmission: DatabaseTypes.FormSubmissions | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<FormDocumentLastEdited | null> {
+    if (!formSubmission) {
+      return null;
+    }
+
+    const name = await this.resolveLastEditorName(formSubmission.user_updated, myDatabaseHelperInterface);
+    if (!name) {
+      return null;
+    }
+
+    return {
+      label: BackendTranslator.translate(BackendTranslationKeys.form_pdf_last_edited_by),
+      name: name,
+      dateLabel: BackendTranslator.translate(BackendTranslationKeys.form_pdf_last_edited_at),
+      date: this.formatDateOfSubmission(formSubmission.date_updated),
+    };
+  }
+
+  /**
+   * Der Name hinter `user_updated`.
+   *
+   * Directus liefert das Feld je nach Abfrage als aufgelösten Nutzer oder nur als Id; im
+   * zweiten Fall wird die Person nachgeladen. Schlägt das fehl, bleibt es beim fehlenden Namen –
+   * ein Protokoll darf an einem nicht lesbaren Nutzer nicht scheitern.
+   */
+  private static async resolveLastEditorName(userUpdated: string | DatabaseTypes.DirectusUsers | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<string | null> {
+    if (!userUpdated) {
+      return null;
+    }
+
+    if (typeof userUpdated !== 'string') {
+      return this.getDisplayNameOfUser(userUpdated);
+    }
+
+    try {
+      const loadedUser = await myDatabaseHelperInterface.getDocumentUserById(userUpdated);
+      return this.getDisplayNameOfUser(loadedUser);
+    } catch (error) {
+      console.error('Could not read the last editor of the form submission: ' + error);
+      return null;
+    }
+  }
+
+  /** Vor- und Nachname, ersatzweise die E-Mail-Adresse, sonst nichts. */
+  private static getDisplayNameOfUser(user: DocumentUser | null | undefined): string | null {
+    if (!user) {
+      return null;
+    }
+    const fullName = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
+    if (fullName.length > 0) {
+      return fullName;
+    }
+    const email = (user.email ?? '').trim();
+    return email.length > 0 ? email : null;
   }
 
   // ── Abschnitte aus den Feld-Aliassen ──────────────────────────────────────

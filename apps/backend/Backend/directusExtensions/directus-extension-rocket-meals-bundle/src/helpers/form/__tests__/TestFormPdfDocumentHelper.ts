@@ -2,7 +2,7 @@
 import { describe, expect, it } from '@jest/globals';
 import { DatabaseTypes, FormHelperCommon } from 'repo-depkit-common';
 import { FormPdfDocumentHelper } from '../FormPdfDocumentHelper';
-import { MyDatabaseTestableHelper } from '../../MyDatabaseHelperInterface';
+import { MyDatabaseTestableHelper, MyDatabaseTestableHelperInterface } from '../../MyDatabaseHelperInterface';
 import { FormExtractFormAnswer, FormExtractFormAnswerValueFileSingleOrString, FormExtractRelevantInformation, FormExtractRelevantInformationSingle } from '../../../forms-sync-hook';
 
 const FIELD_TYPE = FormHelperCommon.FORM_FIELD_TYPE;
@@ -53,13 +53,31 @@ function buildExtract(alias: string, fieldType: string, values: AnswerValues = {
   return { form_field_id: formField.id, sort: 0, form_field: formField, form_answer: answer };
 }
 
-async function buildDocument(formExtractRelevantInformation: FormExtractRelevantInformation, params?: { form?: DatabaseTypes.Forms; formSubmission?: DatabaseTypes.FormSubmissions }) {
+async function buildDocument(formExtractRelevantInformation: FormExtractRelevantInformation, params?: { form?: DatabaseTypes.Forms; formSubmission?: DatabaseTypes.FormSubmissions; myDatabaseHelperInterface?: MyDatabaseTestableHelperInterface }) {
   return FormPdfDocumentHelper.buildFormDocument({
     form: params?.form ?? ({ id: 'form-id', alias: 'Übergabeprotokoll' } as unknown as DatabaseTypes.Forms),
     formExtractRelevantInformation,
-    myDatabaseHelperInterface: new MyDatabaseTestableHelper(),
+    myDatabaseHelperInterface: params?.myDatabaseHelperInterface ?? new MyDatabaseTestableHelper(),
     formSubmission: params?.formSubmission,
   });
+}
+
+/** Eine Einreichung, die nur den letzten Bearbeiter und dessen Zeitpunkt beisteuert. */
+function buildSubmissionWithLastEditor(userUpdated: unknown, dateUpdated?: string | null): DatabaseTypes.FormSubmissions {
+  return {
+    id: 'submission-id',
+    alias: 'A-2023-000188',
+    date_created: '2023-11-27T09:12:00.000Z',
+    date_updated: dateUpdated === undefined ? '2023-11-29T14:35:00.000Z' : dateUpdated,
+    user_updated: userUpdated,
+  } as unknown as DatabaseTypes.FormSubmissions;
+}
+
+/** Eine Datenbank, die den Nutzer nicht hergibt – das Dokument muss trotzdem entstehen. */
+class MyDatabaseHelperWithFailingUserLookup extends MyDatabaseTestableHelper {
+  async getDocumentUserById(): Promise<never> {
+    throw new Error('user service not reachable');
+  }
 }
 
 describe('FormPdfDocumentHelper', () => {
@@ -173,6 +191,63 @@ describe('FormPdfDocumentHelper', () => {
     const documentWithoutSubmission = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })]);
     expect(documentWithoutSubmission.metaEntries).toEqual([]);
     expect(documentWithoutSubmission.placeAndDateValue).toBe('');
+  });
+
+  it('names the last editor of the submission and when they edited it', async () => {
+    const formSubmission = buildSubmissionWithLastEditor({ first_name: 'Ulrike', last_name: 'Wohnheimer', email: 'wohnheimleitung@example.com' });
+
+    const document = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })], { formSubmission });
+
+    expect(document.lastEdited).toEqual({
+      label: 'Zuletzt bearbeitet von',
+      name: 'Ulrike Wohnheimer',
+      dateLabel: 'Zuletzt bearbeitet am',
+      date: '29.11.2023',
+    });
+  });
+
+  it('loads the last editor when the submission only carries the user id', async () => {
+    const formSubmission = buildSubmissionWithLastEditor(MyDatabaseTestableHelper.EXAMPLE_DOCUMENT_USER_ID);
+
+    const document = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })], { formSubmission });
+
+    expect(document.lastEdited?.name).toBe('Ulrike Wohnheimer');
+  });
+
+  it('falls back to the email address when the last editor has no name', async () => {
+    const formSubmission = buildSubmissionWithLastEditor({ first_name: null, last_name: '  ', email: 'wohnheimleitung@example.com' });
+
+    const document = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })], { formSubmission });
+
+    expect(document.lastEdited?.name).toBe('wohnheimleitung@example.com');
+  });
+
+  it('leaves the date empty when the submission was never updated', async () => {
+    const formSubmission = buildSubmissionWithLastEditor({ first_name: 'Ulrike', last_name: 'Wohnheimer' }, null);
+
+    const document = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })], { formSubmission });
+
+    expect(document.lastEdited?.name).toBe('Ulrike Wohnheimer');
+    expect(document.lastEdited?.date).toBe('');
+  });
+
+  it('shows no editor line without a submission, without a user or with an unknown user', async () => {
+    const rows = [buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })];
+
+    expect((await buildDocument(rows)).lastEdited).toBeNull();
+    expect((await buildDocument(rows, { formSubmission: buildSubmissionWithLastEditor(null) })).lastEdited).toBeNull();
+    // Eine Id, die es nicht mehr gibt, und ein Nutzer ganz ohne Namen und E-Mail-Adresse.
+    expect((await buildDocument(rows, { formSubmission: buildSubmissionWithLastEditor('deleted-user-id') })).lastEdited).toBeNull();
+    expect((await buildDocument(rows, { formSubmission: buildSubmissionWithLastEditor({ first_name: null, last_name: null, email: null }) })).lastEdited).toBeNull();
+  });
+
+  it('still builds the document when the last editor cannot be read', async () => {
+    const formSubmission = buildSubmissionWithLastEditor(MyDatabaseTestableHelper.EXAMPLE_DOCUMENT_USER_ID);
+
+    const document = await buildDocument([buildExtract('Wohnheim', FIELD_TYPE.STRING, { value_string: 'Dorotheenstr. 5' })], { formSubmission, myDatabaseHelperInterface: new MyDatabaseHelperWithFailingUserLookup() });
+
+    expect(document.lastEdited).toBeNull();
+    expect(document.sections[0]?.rows[0]?.text).toBe('Dorotheenstr. 5');
   });
 
   it('puts the logo into the letterhead and the issuer into the footer name', async () => {

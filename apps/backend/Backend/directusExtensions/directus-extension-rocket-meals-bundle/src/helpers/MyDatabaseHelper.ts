@@ -11,7 +11,7 @@ import { WorkflowsRunHelper } from './itemServiceHelpers/WorkflowsRunHelper';
 import { FilesServiceHelper } from './FilesServiceHelper';
 import { EventContext, SchemaOverview } from '@directus/types';
 import { ShareServiceHelper } from './ShareServiceHelper';
-import { DocumentOrganization, MyDatabaseHelperInterface } from './MyDatabaseHelperInterface';
+import { DocumentOrganization, DocumentUser, MyDatabaseHelperInterface } from './MyDatabaseHelperInterface';
 import { DocumentOrganizationHelper } from './DocumentOrganizationHelper';
 import { EnvVariableHelper } from './EnvVariableHelper';
 import ms from 'ms';
@@ -143,6 +143,25 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
     } catch (error) {
       console.error('Could not read the organization for the document header: ' + error);
       return { logoUrl: null };
+    }
+  }
+
+  /**
+   * Die Person hinter einer Nutzer-Id fuer erzeugte Dokumente.
+   *
+   * Ein fehlender oder nicht lesbarer Nutzer ist kein Fehlerfall: Das Dokument laesst die
+   * Zeile dann einfach weg, statt gar nicht zu entstehen.
+   */
+  async getDocumentUserById(userId: string): Promise<DocumentUser | null> {
+    try {
+      let user = await this.getUsersHelper().readOne(userId);
+      if (!user) {
+        return null;
+      }
+      return { first_name: user.first_name, last_name: user.last_name, email: user.email };
+    } catch (error) {
+      console.error('Could not read the user for the document: ' + error);
+      return null;
     }
   }
 

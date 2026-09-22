@@ -74,6 +74,27 @@ export enum HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS {
   ADRESSE_NEU_STRASSE = 'Straße neue Anschrift', // Adresse neu Straße
 }
 
+/**
+ * Die Felder, aus denen die interne Kennung eines Mietverhältnisses entsteht:
+ * VO-Nummer + Mieternummer + Mietbeginn.
+ *
+ * TODO: Die Mieternummer (`PERSONNR`) ist **nicht eindeutig**. Institute halten mehrere Zimmer
+ * gleichzeitig, und dasselbe Zimmer wird nacheinander neu vermietet – eine Mieternummer steht
+ * deshalb für mehrere Mietverhältnisse, nicht für eines. Damit kann die hier gebildete Kennung
+ * zwei verschiedene Mietverhältnisse zusammenfallen lassen.
+ *
+ * Vorschlag für einen wirklich eindeutigen Schlüssel:
+ * VO-Nummer + Zimmernummer + Einzugsdatum (Mietbeginn) + Auszugsdatum (Mietende/Auszug).
+ *
+ * **Nicht einfach umstellen:** Die Kennung steht als `internal_custom_id` an jedem bereits
+ * angelegten Vorgang und ist das Einzige, woran der Import einen bestehenden Vorgang
+ * wiedererkennt (siehe `FormImportSyncWorkflow.syncFormSubmission`). Eine geänderte Berechnung
+ * legt beim nächsten Import jeden Vorgang ein zweites Mal an. Eine Umstellung braucht deshalb
+ * eine Migration der vorhandenen `internal_custom_id`-Werte – bis dahin bleibt es bei der
+ * bisherigen Berechnung, und hier steht nur die Dokumentation des Problems.
+ *
+ * Auch `getAlias` nutzt diese Kennung als Rückfall, wenn die sprechenden Felder fehlen.
+ */
 const HOUSING_CONTRACT_FIELDS_FOR_ID: ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS[] = [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.VERWALTUNGSOBJEKT_NUMMER, ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSONENNUMMER, ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETBEGINN].sort((a, b) => a.localeCompare(b)); // sort the keys to ensure the order is always the same, so even when the order of the fields defined above changes, the id stays the same
 
 // Define the type for ImportHousingContract
@@ -367,51 +388,81 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
     }
   }
 
+  /**
+   * Die festen Wörter des Alias.
+   *
+   * Deutsche Literale sind hier ausdrücklich in Ordnung: Der Alias ist keine Nutzeroberfläche,
+   * sondern die interne, für Sachbearbeiter lesbare Kennung deutscher Kundendaten. Er wird nie
+   * übersetzt, weil er sonst je nach Sprache des Betrachters ein anderer Ordner wäre.
+   */
+  private static readonly ALIAS_ROOM_PREFIX = 'Zimmer';
+  private static readonly ALIAS_TENANT_NUMBER_PREFIX = 'Mieternr.';
+
+  /** Trennzeichen zwischen den Angaben innerhalb eines Alias-Blattes. */
+  private static readonly ALIAS_SEGMENT_SEPARATOR = ' - ';
+
+  /** Trennzeichen zwischen Nach- und Vorname. */
+  private static readonly ALIAS_NAME_SEPARATOR = ', ';
+
+  /** Ein Feldwert ohne umgebende Leerzeichen; `null`, wenn nichts übrig bleibt. */
+  private getTrimmedValue(housingContract: ImportHousingContract, field: ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS): string | null {
+    let value = housingContract[field];
+    if (!value) {
+      return null;
+    }
+    let trimmedValue = value.trim();
+    return trimmedValue.length > 0 ? trimmedValue : null;
+  }
+
+  /**
+   * Der Alias eines Mietverhältnisses – die Bezeichnung, unter der der Vorgang in der App steht.
+   *
+   * Aufbau: `<Wohnheim>/<Zimmer> - <Nachname>, <Vorname> - <Mietende> - Mieternr. <Nummer>`.
+   * Genau **ein** Ordnertrenner, denn die App liest den Alias als Ordnerbaum: erste Ebene das
+   * Wohnheim, zweite Ebene das Mietverhältnis. Das Blatt nennt Zimmer und vollständigen Namen,
+   * weil eine Liste nach Wohnheim sonst nur Nachnamen zeigt und sich ein Zimmer nicht
+   * wiederfinden lässt.
+   *
+   * Zimmernummer, Vorname und Mieternummer sind optional; fehlt eines, entfällt der Abschnitt
+   * samt Trennzeichen. Wohnheim, Mietende und Nachname müssen da sein – sonst hat der Alias
+   * keine Aussage und es bleibt bei der internen Kennung.
+   */
   getAlias(housingContract: ImportHousingContract): string {
     let FOLDER_SEPERATOR = FormCommonHelper.FORM_VISUAL_FOLDER_SEPARATOR;
 
-    let partialIds: (string | null)[] = [];
+    let wohnheimname = this.getTrimmedValue(housingContract, ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.WOHNUNGSNAME);
+    let nachname = this.getTrimmedValue(housingContract, ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSON_NACHNAME);
+    let vorname = this.getTrimmedValue(housingContract, ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSON_VORNAME);
+    let zimmernummer = this.getTrimmedValue(housingContract, ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.ZIMMERNR);
+    let mieternummer = this.getTrimmedValue(housingContract, ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSONENNUMMER);
 
-    let wohnheimname = housingContract[ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.WOHNUNGSNAME];
-    partialIds.push(wohnheimname);
-
-    let mietendeRaw = housingContract[ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETENDE];
+    let mietendeRaw = this.getTrimmedValue(housingContract, ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETENDE);
     let mietende: string | null = null;
     if (mietendeRaw) {
       let date = new Date(mietendeRaw);
       mietende = DateHelper.getHumanReadableDate(date, false);
     }
 
-    let nachname = housingContract[ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSON_NACHNAME];
-
-
-    let dateAndMieter = mietende + '-' + nachname;
-
-    // Include tenant number (MIETER_PERSONENNUMMER) in the alias if present
-    let mieternummer = housingContract[ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSONENNUMMER];
-    if (mieternummer) {
-      // append the tenant number to make aliases more specific
-      dateAndMieter += `${dateAndMieter} - ${ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSONENNUMMER}: ${mieternummer}`;
-    }
-    partialIds.push(dateAndMieter);
-
-    // if any partial id is missing, return id
-    let allPartialIdsDefined = true;
-    for (let partialId of partialIds) {
-      if (!allPartialIdsDefined) {
-        break;
-      }
-      if (!partialId) {
-        allPartialIdsDefined = false;
-      }
-    }
-
-    if (allPartialIdsDefined) {
-      return partialIds.join(FOLDER_SEPERATOR);
-    } else {
+    // Ohne diese drei Angaben bleibt es bei der internen Kennung.
+    if (!wohnheimname || !mietende || !nachname) {
       let id = this.getHousingContractInternalCustomId(housingContract);
       return id || '';
     }
+
+    let name = vorname ? `${nachname}${HannoverTL1HousingFileReader.ALIAS_NAME_SEPARATOR}${vorname}` : nachname;
+
+    let leafSegments: string[] = [];
+    if (zimmernummer) {
+      leafSegments.push(`${HannoverTL1HousingFileReader.ALIAS_ROOM_PREFIX} ${zimmernummer}`);
+    }
+    leafSegments.push(name);
+    leafSegments.push(mietende);
+    if (mieternummer) {
+      leafSegments.push(`${HannoverTL1HousingFileReader.ALIAS_TENANT_NUMBER_PREFIX} ${mieternummer}`);
+    }
+
+    let leaf = leafSegments.join(HannoverTL1HousingFileReader.ALIAS_SEGMENT_SEPARATOR);
+    return `${wohnheimname}${FOLDER_SEPERATOR}${leaf}`;
   }
 
   private getPartialExternalId(housingContract: ImportHousingContract, field: ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS): string | null {

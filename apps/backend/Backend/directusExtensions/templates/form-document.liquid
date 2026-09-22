@@ -22,6 +22,8 @@
     row             – { type: 'text' | 'multiline' | 'boolean' | 'character_boxes',
                         label, hint, text, options[], boxGroups[] }
     placeAndDateLabel, placeAndDateValue
+    lastEdited      – { label, name, dateLabel, date } oder leer: wer den Vorgang zuletzt
+                      bearbeitet hat und wann (aus `user_updated` / `date_updated`)
     signatures[]    – { label, imageUrl }
     attachments[]   – { label, imageUrl }
     attachmentsTitle
@@ -309,6 +311,34 @@
         }
 
         /*
+           Wer den Vorgang zuletzt bearbeitet hat – an der Stelle, an der auf dem Papiervordruck
+           die Unterschrift der abnehmenden Person stand. Deshalb steht sie zwischen „Ort, Datum"
+           und den Unterschriften und ist gesetzt wie jene: dieselbe Schriftgröße, die
+           Beschriftungen grau und fett.
+        */
+        .last-edited {
+            margin-bottom: 7mm;
+        }
+
+        /*
+           Steht die Bearbeitungszeile unter „Ort, Datum", rücken beide zusammen; der Abstand zu
+           den Unterschriften gehört dann ihr. Kennt der Renderer `:has` nicht, bleibt der
+           Abstand nur etwas größer – das Dokument stimmt trotzdem.
+        */
+        .place-and-date:has(+ .last-edited) {
+            margin-bottom: 2.5mm;
+        }
+
+        .last-edited__label {
+            font-weight: 700;
+            color: var(--muted-color);
+        }
+
+        .last-edited__separator {
+            color: var(--muted-color);
+        }
+
+        /*
            Bewusst kein Flexbox für die Unterschriften: Chromium bricht Flex-Container im Druck
            ungern sauber um und lässt dann angeschnittene Unterschriften am Seitenende stehen.
            Inline-Blöcke halten `page-break-inside: avoid` zuverlässig ein.
@@ -474,6 +504,12 @@
         <div class="place-and-date__label">{{ placeAndDateLabel | escape }}:</div>
         <div class="place-and-date__line">{{ placeAndDateValue | escape }}</div>
     </div>
+
+    {% if lastEdited %}
+        <div class="last-edited">
+            <span class="last-edited__label">{{ lastEdited.label | escape }}:</span> {{ lastEdited.name | escape }}{% if lastEdited.date != '' %} <span class="last-edited__separator">&middot;</span> <span class="last-edited__label">{{ lastEdited.dateLabel | escape }}:</span> {{ lastEdited.date | escape }}{% endif %}
+        </div>
+    {% endif %}
 
     {% if signatures.size > 0 %}
         <div class="signatures">

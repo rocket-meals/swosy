@@ -73,23 +73,57 @@ function resolveSubmissionsContent(
 }
 
 /**
+ * Whether any cached answer of a submission contains the (already lowercased)
+ * search term, matching the online search which also looks into the form
+ * contents (`value_string` / `value_number`).
+ */
+function cachedAnswersMatchQuery(answers: DatabaseTypes.FormAnswers[] | undefined, filterQuery: string): boolean {
+	if (!answers || answers.length === 0) {
+		return false;
+	}
+
+	return answers.some(answer => {
+		const valueString = typeof answer?.value_string === 'string' ? answer.value_string.toLowerCase() : '';
+		if (valueString.includes(filterQuery)) {
+			return true;
+		}
+
+		const valueNumber = answer?.value_number;
+		if (valueNumber === null || valueNumber === undefined) {
+			return false;
+		}
+
+		return String(valueNumber).toLowerCase().includes(filterQuery);
+	});
+}
+
+/**
  * Filter cached (offline) form submissions by the currently selected state
- * and the free-text alias query. Mirrors the filtering previously inlined in
+ * and the free-text query. Mirrors the filtering previously inlined in
  * both the offline branch and the network-error fallback branch of
- * loadFormSubmissions.
+ * loadFormSubmissions, and — like the online search — matches the alias as
+ * well as the cached answers of the submission.
  */
 function filterCachedSubmissions(
 	cached: DatabaseTypes.FormSubmissions[],
 	selectedOption: string,
-	query: string
+	query: string,
+	cachedAnswers: Record<string, DatabaseTypes.FormAnswers[]> = {}
 ): DatabaseTypes.FormSubmissions[] {
 	const filterState = selectedOption || 'draft';
 	const filterQuery = query ? query.trim().toLowerCase() : '';
 
 	return cached.filter((s: DatabaseTypes.FormSubmissions) => {
 		const stateMatch = s.state === filterState;
-		const aliasMatch = filterQuery ? (s.alias || '').toLowerCase().includes(filterQuery) : true;
-		return stateMatch && aliasMatch;
+		if (!stateMatch) {
+			return false;
+		}
+		if (!filterQuery) {
+			return true;
+		}
+
+		const aliasMatch = (s.alias || '').toLowerCase().includes(filterQuery);
+		return aliasMatch || cachedAnswersMatchQuery(cachedAnswers[String(s.id)], filterQuery);
 	});
 }
 
@@ -314,7 +348,8 @@ const Index = () => {
 		// When offline mode is active, use cache directly without attempting API call
 		if (offlineMode) {
 			const cached = cachedFormData?.[String(form_id)]?.submissions || [];
-			const filtered = filterCachedSubmissions(cached, selectedOption, query);
+			const cachedAnswers = cachedFormData?.[String(form_id)]?.answers || {};
+			const filtered = filterCachedSubmissions(cached, selectedOption, query, cachedAnswers);
 			replaceSortedSubmissions(setFormSubmissions, sortFormSubmissions(filtered, sortOption));
 			if (cached.length > 0) setIsShowingCachedData(true);
 			setLoading(false);
@@ -335,7 +370,8 @@ const Index = () => {
 			// Network failed – fall back to locally cached submissions for this form
 			const cached = cachedFormData?.[String(form_id)]?.submissions || [];
 			if (cached.length > 0) {
-				const filtered = filterCachedSubmissions(cached, selectedOption, query);
+				const cachedAnswers = cachedFormData?.[String(form_id)]?.answers || {};
+				const filtered = filterCachedSubmissions(cached, selectedOption, query, cachedAnswers);
 				replaceSortedSubmissions(setFormSubmissions, sortFormSubmissions(filtered, sortOption));
 				setIsShowingCachedData(true);
 			} else {
@@ -584,7 +620,11 @@ const Index = () => {
 						placeholderTextColor={theme.screen.placeholder}
 						onChangeText={setQuery}
 						value={query}
-						placeholder={translate(TranslationKeys.search_with_alias)}
+						placeholder={translate(TranslationKeys.form_submissions_search_hint)}
+						accessibilityLabel={translate(TranslationKeys.form_submissions_search_hint)}
+						// Enter/return triggers the search too, not only the button next to it.
+						onSubmitEditing={handleSearchFilter}
+						returnKeyType="search"
 					/>
 					<TouchableOpacity
 						style={{
@@ -593,6 +633,8 @@ const Index = () => {
 							width: searchButtonWidth,
 						}}
 						onPress={handleSearchFilter}
+						accessibilityRole="button"
+						accessibilityLabel={translate(TranslationKeys.search)}
 					>
 						<Ionicons name="search" color={theme.screen.icon} size={22} />
 					</TouchableOpacity>

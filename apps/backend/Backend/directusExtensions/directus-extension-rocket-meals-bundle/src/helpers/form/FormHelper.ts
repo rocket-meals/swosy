@@ -6,7 +6,7 @@ import { FormDocument, FormGenerationParams, FormPdfDocumentHelper } from './For
 import { HtmlEscapeHelper } from '../html/HtmlEscapeHelper';
 import { DirectusFilesAssetHelper } from '../DirectusFilesAssetHelper';
 import { MarkdownHelper } from '../html/MarkdownHelper';
-import { MyDatabaseTestableHelperInterface } from '../MyDatabaseHelperInterface';
+import { MyDatabaseTestableHelper, MyDatabaseTestableHelperInterface } from '../MyDatabaseHelperInterface';
 import { BackendTranslationKeys, BackendTranslator } from '../translations';
 import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon, MathHelper, NumberHelper} from 'repo-depkit-common';
 import { EnvVariableHelper } from '../EnvVariableHelper';
@@ -84,16 +84,22 @@ export class FormHelper {
   /**
    * Der Beispiel-Vorgang zum Beispiel-Formular: Kennung und Eingangsdatum stehen im Kopf des
    * Dokuments. Reine Musterdaten – das erzeugte PDF liegt im Repository.
+   *
+   * `user_updated` steht hier als aufgelöstes Objekt, wie Directus es liefert, wenn die
+   * Relation mitgeladen wurde. Nur so zeigt das Beispiel-PDF auch die Zeile „Zuletzt bearbeitet
+   * von" – der Fall, dass dort bloß eine Id steht, wird in den Tests abgedeckt.
    */
   public static getExampleFormSubmission(): DatabaseTypes.FormSubmissions {
     return {
       alias: 'A-2023-000188',
       date_created: '2023-11-27T09:12:00.000Z',
+      date_updated: '2023-11-29T14:35:00.000Z',
       form: 'example-form',
       form_answers: [],
       id: 'example-form-submission',
       mails: [],
       status: 'published',
+      user_updated: MyDatabaseTestableHelper.getExampleDocumentUser(),
     } as unknown as DatabaseTypes.FormSubmissions;
   }
 

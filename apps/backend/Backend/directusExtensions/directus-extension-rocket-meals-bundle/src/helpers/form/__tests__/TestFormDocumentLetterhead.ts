@@ -24,6 +24,7 @@ function buildFormDocument(organizationName: string | null, organizationLogoUrl:
     attachmentsTitle: 'Anlagen',
     placeAndDateLabel: 'Ort, Datum',
     placeAndDateValue: '27.11.2023',
+    lastEdited: null,
   };
 }
 
