@@ -31,9 +31,9 @@ export type FormImportSyncFormSubmissions = {
   internal_custom_id: string;
   alias?: string | null;
   /**
-   * Der unveraenderte Datensatz aus der Quelle (z. B. die CSV-Zeile des Mietverhaeltnisses).
-   * Wird beim Anlegen des Entwurfs in `form_submissions.data` mitgeschrieben, damit spaeter
-   * nachvollziehbar bleibt, womit der Vorgang angelegt wurde – siehe `FormSubmissionInitialData`.
+   * Der unveraenderte Datensatz aus der Quelle (z. B. die gelesene Zeile des Mietverhaeltnisses).
+   * Wird beim Anlegen des Entwurfs in `form_submissions.data` geschrieben, damit spaeter
+   * nachvollziehbar bleibt, welche Daten dafuer vorlagen.
    */
   source?: unknown;
   form_answers: FormImportSyncFormAnswers;
