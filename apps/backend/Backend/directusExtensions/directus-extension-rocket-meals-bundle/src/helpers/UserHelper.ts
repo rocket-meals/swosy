@@ -48,10 +48,13 @@ export class UserHelper extends ItemsServiceHelper<DatabaseTypes.DirectusUsers> 
   async isAdminUser(userId: string): Promise<boolean> {
     try {
       const user = await this.readOne(userId, {
-        fields: ['id', 'policies.policy.admin_access', 'policies.directus_policies_id.admin_access'],
+        fields: ['id', 'policies.policy.admin_access', 'policies.directus_policies_id.admin_access', 'role.policies.policy.admin_access'],
       });
 
-      const policies = (user?.policies || []) as unknown[];
+      // Admin access comes from a policy on the user itself or on its role (e.g. "Administrator")
+      const role = user?.role as DatabaseTypes.DirectusRoles | string | null | undefined;
+      const rolePolicies = typeof role === 'object' && role !== null ? role.policies || [] : [];
+      const policies = [...(user?.policies || []), ...rolePolicies] as unknown[];
 
       return policies.some(policyEntry => {
         if (typeof policyEntry !== 'object' || policyEntry === null) {
