@@ -25,6 +25,7 @@ import { persistor } from '@/redux/store';
 import { clearChatReadStatus } from '@/helper/chatReadStatus';
 import { clearAppDownloadBannerDismissed } from '@/helper/appDownloadBannerStorage';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
+import { markOnboardingShouldBeShownAfterLogin } from '@/helper/onboardingIntentHelper';
 
 // ⚠️ Reminder: this function is the single place that resets app state on logout.
 // If you add a new persisted storage key - a redux slice backed by redux-persist,
@@ -73,6 +74,10 @@ export const performLogout = async (
 		await sqliteKeyValueStorage.multiRemove(['auth_data', 'persist:root']);
 
 		persistor.purge();
+		// Like every other way to the login screen (app/index.tsx, (app)/_layout.tsx): the next
+		// login - possibly a different or brand-new account - must be offered onboarding
+		// (canteen, price group, eating habits) again if its profile is incomplete.
+		markOnboardingShouldBeShownAfterLogin();
 		router.replace({ pathname: '/(auth)/login', params: { logout: 'true' } });
 	} catch (error) {
 		console.error('Error during logout:', error);

@@ -28,7 +28,7 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { ServerAPI } from '@/redux/actions';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { CollectibleAt, DatabaseTypes, ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
+import { CollectibleAt, DatabaseTypes, ApartmentSortOption, CampusSortOption, FoodSortOption, GuestAccountHelper } from 'repo-depkit-common';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
@@ -953,7 +953,7 @@ const Settings = () => {
 							handleFunction={showDebugRatingModal}
 							groupPosition="middle"
 						/>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="bottom" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? (GuestAccountHelper.isGuestEmail(user?.email) ? translate(TranslationKeys.guest_account) : user?.id) : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="bottom" />
 					</View>
 					<View style={groupStyle}>
 						<SettingsList

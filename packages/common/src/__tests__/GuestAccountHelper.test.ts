@@ -33,4 +33,15 @@ describe('GuestAccountHelper', () => {
     expect(GuestAccountHelper.isValidCredentials(null)).toBe(false);
     expect(GuestAccountHelper.isValidCredentials('guest')).toBe(false);
   });
+
+  it('builds the default nickname Guest_<YYMMDDHHmm> in the given time zone', () => {
+    const date = new Date('2026-09-23T19:51:00Z');
+    expect(GuestAccountHelper.buildDefaultNickname(date, 'Europe/Berlin')).toBe('Guest_2609232151');
+    expect(GuestAccountHelper.buildDefaultNickname(date, 'UTC')).toBe('Guest_2609231951');
+  });
+
+  it('pads single digits and uses 00 for midnight', () => {
+    const date = new Date('2027-01-02T23:05:00Z');
+    expect(GuestAccountHelper.buildDefaultNickname(date, 'Europe/Berlin')).toBe('Guest_2701030005');
+  });
 });

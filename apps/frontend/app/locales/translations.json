@@ -4119,6 +4119,16 @@
     "tr": "Misafir olarak devam et",
     "zh": "以访客身份继续"
   },
+  "guest_account": {
+    "de": "Gast-Account",
+    "en": "Guest account",
+    "ar": "حساب ضيف",
+    "es": "Cuenta de invitado",
+    "fr": "Compte invité",
+    "ru": "Гостевой аккаунт",
+    "tr": "Misafir hesabı",
+    "zh": "访客账户"
+  },
   "guest_account_creation_failed": {
     "de": "Das Gast-Profil konnte nicht angelegt werden. Bitte versuche es später erneut.",
     "en": "The guest profile could not be created. Please try again later.",
