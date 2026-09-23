@@ -3,12 +3,14 @@ import * as SecureStore from 'expo-secure-store';
 import { GuestAccountCredentials, GuestAccountHelper } from 'repo-depkit-common';
 import { getValue, removeValue, setValue } from '@/constants/AsyncStorageHelper';
 import { createGuestAccountCredentials } from '@/redux/actions/ApiService/ApiService';
+import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-// The generated credentials are the only way back into a guest account. They
-// intentionally survive a logout (see helper/logoutHelper.ts): "continue as
-// guest" then signs in to the same guest account again instead of creating a
-// new, empty one. Native keeps them in the keychain/keystore, web has no secure
-// storage and falls back to the regular key/value storage.
+// The generated credentials are the only way back into a guest account. A guest
+// cannot log out and come back: "logging out" as a guest deletes the account
+// (deleteGuestAccountAndCredentials below). Until then the credentials stay on
+// the device - on iOS the keychain even keeps them across a reinstall, so the
+// guest gets the same account back. Native keeps them in the keychain/keystore,
+// web has no secure storage and falls back to the regular key/value storage.
 const GUEST_ACCOUNT_CREDENTIALS_STORAGE_KEY = 'guest_account_credentials';
 
 const isSecureStoreUsable = () => Platform.OS !== 'web';
@@ -57,4 +59,19 @@ export const createAndStoreGuestAccount = async (): Promise<GuestAccountCredenti
 	}
 	await storeGuestAccountCredentials(credentials);
 	return credentials;
+};
+
+/**
+ * What "log out" means for a guest: try to delete the account on the server and in
+ * any case forget the credentials on this device. Without them nobody can sign in
+ * to the account any more, so a failed server deletion only leaves an unreachable
+ * account behind instead of blocking the user.
+ */
+export const deleteGuestAccountAndCredentials = async (): Promise<void> => {
+	try {
+		await ServerAPI.deleteOwnGuestAccount();
+	} catch (error) {
+		console.warn('Could not delete guest account on the server:', error);
+	}
+	await clearStoredGuestAccountCredentials();
 };

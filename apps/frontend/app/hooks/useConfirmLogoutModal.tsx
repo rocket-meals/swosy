@@ -11,6 +11,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import useLogoutButtonTranslation from './useLogoutButtonTranslation';
+import { deleteGuestAccountAndCredentials } from '@/helper/guestAccountHelper';
 
 const useConfirmLogoutModal = () => {
         const { show, close } = useMyScrollViewModal();
@@ -18,12 +19,15 @@ const useConfirmLogoutModal = () => {
         const router = useRouter();
         const { translate } = useLanguage();
         const { theme } = useTheme();
-        const { buttonLabel, modalDescription } = useLogoutButtonTranslation();
+        const { buttonLabel, modalDescription, isGuestUser } = useLogoutButtonTranslation();
 
         const openConfirmLogoutModal = useCallback(
                 () => {
                         const handleLogout = async () => {
                                 close();
+                                if (isGuestUser) {
+                                        await deleteGuestAccountAndCredentials();
+                                }
                                 await performLogout(dispatch, router);
                         };
 
@@ -59,7 +63,7 @@ const useConfirmLogoutModal = () => {
                                 {}
                         );
                 },
-                [buttonLabel, close, dispatch, modalDescription, router, show, theme.screen.text, translate]
+                [buttonLabel, close, dispatch, isGuestUser, modalDescription, router, show, theme.screen.text, translate]
         );
 
         return { openConfirmLogoutModal, closeConfirmLogoutModal: close };

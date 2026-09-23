@@ -849,8 +849,9 @@ const Settings = () => {
 						{isGuestUser && (
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="account-clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={translate(TranslationKeys.guest_account)} groupPosition="top" nativeID={ComponentIds.SETTINGS_GUEST_ACCOUNT} />
 						)}
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={isGuestUser ? 'middle' : isRegisteredUser ? 'top' : 'single'} />
-						{isRegisteredUser && (
+						{/* Guests can't log out and come back - their "log out" deletes the account (see useConfirmLogoutModal). */}
+						<SettingsList iconBgColor={primaryColor} leftIcon={isGuestUser ? <AntDesign name="user-delete" size={22} color={theme.screen.icon} /> : <Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={isGuestUser ? <Octicons name="chevron-right" size={24} color={theme.screen.icon} /> : <Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={isGuestUser ? 'bottom' : isRegisteredUser ? 'top' : 'single'} />
+						{isRegisteredUser && !isGuestUser && (
 							<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="bottom" />
 						)}
 					</View>

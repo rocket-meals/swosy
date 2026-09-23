@@ -16,6 +16,10 @@
  * - Rate-Limit pro IP im Speicher dieses Prozesses, aktuell unbegrenzt (-1): Im Uni-WLAN teilen sich
  *   viele Nutzer per NAT eine IP. Ein passendes Limit ist in Issue #4423 offen. Die IP wird nicht gespeichert.
  * - Das Passwort verlässt den Server genau einmal; gespeichert wird nur der Hash (Directus-Feld `hash`).
+ *
+ * `DELETE /guest-accounts/me` löscht den angemeldeten Gast samt Profil. Für Gäste ersetzt das in der
+ * App das Abmelden: Ohne die Zugangsdaten auf dem Gerät kommt niemand mehr in den Account, er würde
+ * sonst verwaist auf dem Server liegen bleiben. Nur für Gast-Accounts – andere Nutzer bekommen 403.
  */
 
 import { defineEndpoint } from '@directus/extensions-sdk';
@@ -23,6 +27,7 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import { CollectionNames, DatabaseTypes, GuestAccountCredentials, GuestAccountHelper } from 'repo-depkit-common';
 import { ApiContext } from '../helpers/ApiContext';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
+import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
 import { GuestAccountRateLimiter } from './GuestAccountRateLimiter';
 
 /** Name der Rolle, die Gäste bekommen – dieselbe wie bei registrierten App-Nutzern. */
@@ -86,6 +91,32 @@ export default defineEndpoint({
       } catch (error) {
         console.error(GuestAccountHelper.ENDPOINT_ID + ': could not create guest account', error);
         return res.status(500).json({ error: 'Could not create guest account.' });
+      }
+    });
+
+    router.delete('/me', async (req: any, res: any) => {
+      const userId = req?.accountability?.user as string | undefined;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required.' });
+      }
+
+      const myDatabaseHelper = new MyDatabaseHelper(apiContext);
+      try {
+        const usersHelper = myDatabaseHelper.getUsersHelper();
+        const user = await usersHelper.readOne(userId, { fields: ['id', 'email', 'profile'] });
+        if (!GuestAccountHelper.isGuestEmail(user?.email)) {
+          return res.status(403).json({ error: 'Only guest accounts can be deleted here.' });
+        }
+
+        const profileId = ItemsServiceHelper.getPrimaryKeyFromItemOrString(user.profile as any);
+        await usersHelper.deleteOne(userId);
+        if (profileId) {
+          await myDatabaseHelper.getProfilesHelper().deleteOne(profileId);
+        }
+        return res.status(204).send();
+      } catch (error) {
+        console.error(GuestAccountHelper.ENDPOINT_ID + ': could not delete guest account ' + userId, error);
+        return res.status(500).json({ error: 'Could not delete guest account.' });
       }
     });
   },

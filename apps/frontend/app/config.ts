@@ -138,7 +138,8 @@ export function getVersionPatch() {
         // 52: guest accounts use guest.example.com - Directus rejects .invalid on login
         // 53: guest account shown in settings, onboarding offered again after
         //     logout/account deletion, no backend logout without a session
-        return 53;
+        // 54: guests delete their account instead of logging out
+        return 54;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

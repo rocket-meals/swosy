@@ -455,6 +455,8 @@ export const TranslationKeys = {
 	management_login_description: 'management_login_description',
 	continue_as_guest: 'continue_as_guest',
 	guest_account: 'guest_account',
+	guest_account_delete: 'guest_account_delete',
+	guest_account_delete_description: 'guest_account_delete_description',
 	guest_account_creation_failed: 'guest_account_creation_failed',
 	continue_without_account: 'continue_without_account',
 	continue_without_rating: 'continue_without_rating',

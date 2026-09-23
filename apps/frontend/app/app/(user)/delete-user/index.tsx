@@ -16,7 +16,7 @@ import { isWeb } from '@/constants/Constants';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
 import { deleteProfileRemote } from '@/redux/actions/Profile/Profile';
 import { performLogout } from '@/helper/logoutHelper';
-import { clearStoredGuestAccountCredentials } from '@/helper/guestAccountHelper';
+import { deleteGuestAccountAndCredentials } from '@/helper/guestAccountHelper';
 import { GuestAccountHelper } from 'repo-depkit-common';
 import { TranslationKeys } from '@/locales/keys';
 
@@ -111,11 +111,12 @@ const Index = () => {
 	const handleDeleteAccount = async () => {
 		if (profile?.id) {
 			setLoading(true);
-			await deleteProfileRemote(profile.id);
-			// A deleted guest account must not be signed into again by "continue as guest" -
-			// the next guest login creates a fresh account instead.
 			if (GuestAccountHelper.isGuestEmail(user?.email)) {
-				await clearStoredGuestAccountCredentials();
+				// Guests: delete the whole account (user and profile) and forget its credentials,
+				// the next "continue as guest" creates a fresh one.
+				await deleteGuestAccountAndCredentials();
+			} else {
+				await deleteProfileRemote(profile.id);
 			}
 			await performLogout(dispatch, router);
 			setLoading(false);
