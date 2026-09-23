@@ -11,7 +11,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import useLogoutButtonTranslation from './useLogoutButtonTranslation';
-import { deleteGuestAccountAndCredentials } from '@/helper/guestAccountHelper';
+import { deleteOwnAccount } from '@/helper/accountDeletionHelper';
 import { useAppSelector } from '@/redux/hooks';
 
 const useConfirmLogoutModal = () => {
@@ -28,7 +28,7 @@ const useConfirmLogoutModal = () => {
                         const handleLogout = async () => {
                                 close();
                                 if (isGuestUser) {
-                                        await deleteGuestAccountAndCredentials(profile?.id);
+                                        await deleteOwnAccount({ profileId: profile?.id, isGuest: true });
                                 }
                                 await performLogout(dispatch, router);
                         };

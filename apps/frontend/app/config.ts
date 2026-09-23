@@ -139,7 +139,8 @@ export function getVersionPatch() {
         // 53: guest account shown in settings, onboarding offered again after
         //     logout/account deletion, no backend logout without a session
         // 54: guests delete their account instead of logging out
-        return 54;
+        // 55: deleting an account deletes profile and user (not only the profile)
+        return 55;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

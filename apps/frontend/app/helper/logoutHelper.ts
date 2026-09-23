@@ -37,7 +37,7 @@ import { markOnboardingShouldBeShownAfterLogin } from '@/helper/onboardingIntent
 // forget to wire it in here - the data then silently leaks into the next user's
 // session on a shared/kiosk device.
 // Not cleared here: the guest account credentials (helper/guestAccountHelper.ts). Guests
-// don't log out - they delete their account via deleteGuestAccountAndCredentials(), which
+// don't log out - they delete their account via deleteOwnAccount() (helper/accountDeletionHelper.ts), which
 // clears them. Other ways to the login screen (e.g. switching the server) keep them.
 export const performLogout = async (
 	dispatch: Dispatch,
