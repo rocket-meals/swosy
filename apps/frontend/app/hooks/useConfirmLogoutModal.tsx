@@ -12,6 +12,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import useLogoutButtonTranslation from './useLogoutButtonTranslation';
 import { deleteGuestAccountAndCredentials } from '@/helper/guestAccountHelper';
+import { useAppSelector } from '@/redux/hooks';
 
 const useConfirmLogoutModal = () => {
         const { show, close } = useMyScrollViewModal();
@@ -20,13 +21,14 @@ const useConfirmLogoutModal = () => {
         const { translate } = useLanguage();
         const { theme } = useTheme();
         const { buttonLabel, modalDescription, isGuestUser } = useLogoutButtonTranslation();
+        const { profile } = useAppSelector((state) => state.authReducer);
 
         const openConfirmLogoutModal = useCallback(
                 () => {
                         const handleLogout = async () => {
                                 close();
                                 if (isGuestUser) {
-                                        await deleteGuestAccountAndCredentials();
+                                        await deleteGuestAccountAndCredentials(profile?.id);
                                 }
                                 await performLogout(dispatch, router);
                         };
@@ -63,7 +65,7 @@ const useConfirmLogoutModal = () => {
                                 {}
                         );
                 },
-                [buttonLabel, close, dispatch, isGuestUser, modalDescription, router, show, theme.screen.text, translate]
+                [buttonLabel, close, dispatch, isGuestUser, modalDescription, profile?.id, router, show, theme.screen.text, translate]
         );
 
         return { openConfirmLogoutModal, closeConfirmLogoutModal: close };

@@ -1,6 +1,6 @@
-import { authentication, AuthenticationClient, AuthenticationConfig, AuthenticationData, AuthenticationStorage, createDirectus, customEndpoint, deleteUser, DirectusClient, graphql, GraphqlClient, readMe, readPolicies, readProviders, readRoles, rest, RestClient, serverInfo, ServerInfoOutput } from '@directus/sdk';
+import { authentication, AuthenticationClient, AuthenticationConfig, AuthenticationData, AuthenticationStorage, createDirectus, deleteUser, DirectusClient, graphql, GraphqlClient, readMe, readPolicies, readProviders, readRoles, rest, RestClient, serverInfo, ServerInfoOutput } from '@directus/sdk';
 
-import { DatabaseTypes, GuestAccountHelper } from 'repo-depkit-common';
+import { DatabaseTypes } from 'repo-depkit-common';
 
 import { UrlHelper } from '@/constants/UrlHelper';
 import ServerConfiguration from '@/constants/ServerUrl';
@@ -194,11 +194,6 @@ export class ServerAPI {
 	static async deleteMe() {
 		const me = await this.getMe();
 		return this.getClient().request(deleteUser(me.id));
-	}
-
-	/** Deletes the signed-in guest account (user and profile) on the server. */
-	static async deleteOwnGuestAccount() {
-		return this.getClient().request(customEndpoint({ path: '/' + GuestAccountHelper.ENDPOINT_ID + '/me', method: 'DELETE' }));
 	}
 
 	static async logout() {

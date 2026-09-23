@@ -112,9 +112,9 @@ const Index = () => {
 		if (profile?.id) {
 			setLoading(true);
 			if (GuestAccountHelper.isGuestEmail(user?.email)) {
-				// Guests: delete the whole account (user and profile) and forget its credentials,
+				// Guests: delete the whole account (profile and user) and forget its credentials,
 				// the next "continue as guest" creates a fresh one.
-				await deleteGuestAccountAndCredentials();
+				await deleteGuestAccountAndCredentials(profile.id);
 			} else {
 				await deleteProfileRemote(profile.id);
 			}

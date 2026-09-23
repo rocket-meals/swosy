@@ -4,6 +4,7 @@ import { GuestAccountCredentials, GuestAccountHelper } from 'repo-depkit-common'
 import { getValue, removeValue, setValue } from '@/constants/AsyncStorageHelper';
 import { createGuestAccountCredentials } from '@/redux/actions/ApiService/ApiService';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
+import { deleteProfileRemote } from '@/redux/actions/Profile/Profile';
 
 // The generated credentials are the only way back into a guest account. A guest
 // cannot log out and come back: "logging out" as a guest deletes the account
@@ -62,16 +63,24 @@ export const createAndStoreGuestAccount = async (): Promise<GuestAccountCredenti
 };
 
 /**
- * What "log out" means for a guest: try to delete the account on the server and in
- * any case forget the credentials on this device. Without them nobody can sign in
- * to the account any more, so a failed server deletion only leaves an unreachable
- * account behind instead of blocking the user.
+ * What "log out" means for a guest: delete the account on the server - profile first,
+ * then the user (the User policy allows both for the own account) - and in any case
+ * forget the credentials on this device. Without them nobody can sign in to the account
+ * any more, so a failed server deletion only leaves an unreachable account behind
+ * instead of blocking the user.
  */
-export const deleteGuestAccountAndCredentials = async (): Promise<void> => {
+export const deleteGuestAccountAndCredentials = async (profileId: string | number | null | undefined): Promise<void> => {
+	if (profileId) {
+		try {
+			await deleteProfileRemote(profileId);
+		} catch (error) {
+			console.warn('Could not delete guest profile on the server:', error);
+		}
+	}
 	try {
-		await ServerAPI.deleteOwnGuestAccount();
+		await ServerAPI.deleteMe();
 	} catch (error) {
-		console.warn('Could not delete guest account on the server:', error);
+		console.warn('Could not delete guest user on the server:', error);
 	}
 	await clearStoredGuestAccountCredentials();
 };
