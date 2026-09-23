@@ -4109,15 +4109,15 @@
     "tr": "Yönetim Girişi",
     "zh": "管理登录"
   },
-  "continue_as_guest": {
-    "de": "Als Gast fortfahren",
-    "en": "Continue as guest",
-    "ar": "المتابعة كضيف",
-    "es": "Continuar como invitado",
-    "fr": "Continuer en tant qu'invité",
-    "ru": "Продолжить как гость",
-    "tr": "Misafir olarak devam et",
-    "zh": "以访客身份继续"
+  "sign_in_as_guest": {
+    "de": "Anmelden als: Gast",
+    "en": "Sign in as: Guest",
+    "ar": "تسجيل الدخول كـ: ضيف",
+    "es": "Iniciar sesión como: Invitado",
+    "fr": "Se connecter en tant que : Invité",
+    "ru": "Войти как: Гость",
+    "tr": "Giriş yap: Misafir",
+    "zh": "登录身份：访客"
   },
   "guest_account_creation_failed": {
     "de": "Das Gast-Profil konnte nicht angelegt werden. Bitte versuche es später erneut.",
@@ -4138,6 +4138,16 @@
     "ru": "Продолжить без аккаунта",
     "tr": "Hesap olmadan devam et",
     "zh": "无需账户继续"
+  },
+  "without_account_question": {
+    "de": "Lieber anonym bleiben?",
+    "en": "Prefer to stay anonymous?",
+    "ar": "تفضّل البقاء مجهول الهوية؟",
+    "es": "¿Prefieres permanecer en el anonimato?",
+    "fr": "Vous préférez rester anonyme ?",
+    "ru": "Хотите остаться анонимным?",
+    "tr": "Anonim kalmayı mı tercih edersin?",
+    "zh": "想保持匿名吗？"
   },
   "continue_without_rating": {
     "de": "Weiter ohne Bewertung",

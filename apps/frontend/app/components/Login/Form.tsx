@@ -178,30 +178,27 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, onGuestLogin, sh
 						<View style={{ ...styles.leftIcon, backgroundColor: primaryColor }}>
 							<MaterialCommunityIcons name="account-outline" size={26} color={contrastColor} />
 						</View>
-						<Text style={{ ...styles.buttonLabel, color: theme.login.text }}>{translate(TranslationKeys.continue_as_guest)}</Text>
+						<Text style={{ ...styles.buttonLabel, color: theme.login.text }}>{translate(TranslationKeys.sign_in_as_guest)}</Text>
 						<View style={{ width: 50 }} />
 					</TouchableOpacity>
 				)}
-				<TouchableOpacity
-					style={{
-						...styles.button,
-						...styles.incognito,
-						borderColor: theme.login.border,
-					}}
-					onPress={() => requireAgb(openAttentionSheet)}
-					id={ComponentIds.LOGIN_CONTINUE_WITHOUT_ACCOUNT}
-				>
-					<View style={{ ...styles.leftIcon, backgroundColor: primaryColor }}>
-						<MaterialCommunityIcons name="incognito" size={28} color={contrastColor} />
-					</View>
-					<Text style={{ ...styles.buttonLabel, color: theme.login.text }}>{translate(TranslationKeys.continue_without_account)}</Text>
-					<View style={{ width: 50 }} />
-				</TouchableOpacity>
 			</View>
 
 			<View style={styles.managementLogin}>
+				<Text style={{ ...styles.fromManagement, color: theme.login.text }}>{translate(TranslationKeys.without_account_question)}</Text>
+				<TouchableOpacity
+					style={styles.linkTouchTarget}
+					onPress={() => requireAgb(openAttentionSheet)}
+					accessibilityRole="link"
+					id={ComponentIds.LOGIN_CONTINUE_WITHOUT_ACCOUNT}
+				>
+					<Text style={{ ...styles.loginText, color: theme.screen.text, textDecorationLine: 'underline' }}>{translate(TranslationKeys.continue_without_account)}</Text>
+				</TouchableOpacity>
+			</View>
+			<View style={{ ...styles.managementLogin, marginTop: 0 }}>
 				<Text style={{ ...styles.fromManagement, color: theme.login.text }}>{translate(TranslationKeys.management_login_question)}</Text>
 				<TouchableOpacity
+					style={styles.linkTouchTarget}
 					onPress={() => requireAgb(openSheet)}
 					accessibilityRole="link"
 				>

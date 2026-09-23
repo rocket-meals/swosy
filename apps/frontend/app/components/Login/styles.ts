@@ -59,10 +59,6 @@ export const styles = StyleSheet.create({
 	apple: {
 		width: '49%',
 	},
-	incognito: {
-		width: '100%',
-		marginTop: 10,
-	},
 	buttonLabel: {
 		fontSize: 16,
 		fontFamily: 'Poppins_400Regular',
@@ -82,6 +78,12 @@ export const styles = StyleSheet.create({
 	loginText: {
 		fontSize: 12,
 		fontFamily: 'Poppins_700Bold',
+	},
+	// WCAG 2.2 AA (2.5.8): text links need a touch target of at least 24px
+	linkTouchTarget: {
+		minHeight: 24,
+		paddingVertical: 4,
+		justifyContent: 'center',
 	},
 	section: {
 		flexDirection: 'row',

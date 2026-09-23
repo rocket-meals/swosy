@@ -17,6 +17,8 @@ const Footer = () => {
 						return (
 							<React.Fragment key={wiki.custom_id}>
 								<TouchableOpacity
+									style={styles.linkTouchTarget}
+									accessibilityRole="link"
 									onPress={() =>
 										router.push({
 											pathname: '/wikis',

@@ -137,7 +137,9 @@ export function getVersionPatch() {
         //     users with a button to the login screen
         // 52: guest accounts use guest.example.com - Directus rejects .invalid on login
         // 53: login buttons are 50px tall instead of 58px
-        return 53;
+        // 54: "Anmelden als: Gast"; "Ohne Account fortfahren" is a text link now,
+        //     login links get a 24px touch target
+        return 54;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
