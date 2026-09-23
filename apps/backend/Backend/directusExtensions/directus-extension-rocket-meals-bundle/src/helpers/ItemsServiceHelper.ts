@@ -80,7 +80,7 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     return await itemsService.updateMany(primary_keys, update, opts);
   }
 
-  private getOptsCustom(optsCustom?: OptsCustomType): QueryOptions {
+  protected getOptsCustom(optsCustom?: OptsCustomType): QueryOptions {
     let opts: QueryOptions = {};
     if (optsCustom?.disableEventEmit) {
       opts.emitEvents = false;

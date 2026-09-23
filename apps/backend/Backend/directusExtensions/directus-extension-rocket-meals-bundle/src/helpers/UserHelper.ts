@@ -1,10 +1,22 @@
-import { Accountability } from '@directus/types';
+import { Accountability, PrimaryKey } from '@directus/types';
 import { DatabaseTypes } from 'repo-depkit-common';
-import {ItemsServiceHelper} from "./ItemsServiceHelper";
+import {ItemsServiceHelper, OptsCustomType} from "./ItemsServiceHelper";
 
 const HELPER_NAME = 'UserHelper';
 
 export class UserHelper extends ItemsServiceHelper<DatabaseTypes.DirectusUsers> {
+  /**
+   * Legt einen Nutzer an, ohne den Status zu überschreiben.
+   *
+   * `ItemsServiceHelper.createOne` setzt für Inhalte `status = 'published'`. Bei `directus_users`
+   * wäre das kein gültiger Status: Directus lässt nur Nutzer mit `status = 'active'` einloggen und
+   * antwortet sonst mit „Invalid user credentials“.
+   */
+  override async createOne(create: Partial<DatabaseTypes.DirectusUsers>, optsCustom?: OptsCustomType): Promise<PrimaryKey> {
+    const itemsService = await this.getItemsService();
+    return await itemsService.createOne(create, this.getOptsCustom(optsCustom));
+  }
+
   isAdminAccountability(accountability?: Accountability | null): boolean {
     if (!accountability) {
       return false;
