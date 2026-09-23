@@ -133,7 +133,9 @@ export function getVersionPatch() {
         //     hook's own pdf generation - the app only asks and shows
         // 50: safe file names come from common's FileNameHelper, and every call
         //     to our own backend goes through the authorized fetch wrapper
-        return 50;
+        // 51: guest profiles on the login screen, popup events only for anonymous
+        //     users with a button to the login screen
+        return 51;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

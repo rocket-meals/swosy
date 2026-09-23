@@ -19,7 +19,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { useAppSelector } from '@/redux/hooks';
 import { ComponentIds } from '@/constants/ComponentIds';
 
-const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionSheet, providers }) => {
+const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, onGuestLogin, showGuestLogin, openAttentionSheet, providers }) => {
 	const [isChecked, setChecked] = useState(false);
 	const [agbError, setAgbError] = useState(false);
 	const { theme } = useTheme();
@@ -165,6 +165,23 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 							</TouchableOpacity>
 						))}
 				</View>
+				{showGuestLogin && (
+					<TouchableOpacity
+						style={{
+							...styles.button,
+							marginTop: 10,
+							borderColor: theme.login.border,
+						}}
+						onPress={() => requireAgb(onGuestLogin)}
+						id={ComponentIds.LOGIN_CONTINUE_AS_GUEST}
+					>
+						<View style={{ ...styles.leftIcon, backgroundColor: primaryColor }}>
+							<MaterialCommunityIcons name="account-outline" size={26} color={contrastColor} />
+						</View>
+						<Text style={{ ...styles.buttonLabel, color: theme.login.text }}>{translate(TranslationKeys.continue_as_guest)}</Text>
+						<View style={{ width: 58 }} />
+					</TouchableOpacity>
+				)}
 				<TouchableOpacity
 					style={{
 						...styles.button,

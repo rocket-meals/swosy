@@ -453,6 +453,8 @@ export const TranslationKeys = {
 	like_status: 'like_status',
 	show_login_for_management_with_email_and_password: 'show_login_for_management_with_email_and_password',
 	management_login_description: 'management_login_description',
+	continue_as_guest: 'continue_as_guest',
+	guest_account_creation_failed: 'guest_account_creation_failed',
 	continue_without_account: 'continue_without_account',
 	continue_without_rating: 'continue_without_rating',
 	access_limited: 'access_limited',

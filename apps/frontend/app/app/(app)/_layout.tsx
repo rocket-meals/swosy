@@ -499,7 +499,7 @@ export default function Layout() {
                                 // dismissed, making them pop back up.
                                 const previousIsOpenById = new Map(popupEvents.map((e: any) => [String(e.id), Boolean(e.isOpen)]));
 
-                                const filteredEvents = filterPopupEvents(response, platformKey, new Date(), getVersion()).map((event, index) => ({
+                                const filteredEvents = filterPopupEvents(response, platformKey, new Date(), getVersion(), UserHelper.isAnonymousUser(user)).map((event, index) => ({
                                         ...event,
                                         isOpen: previousIsOpenById.get(String(event.id)) ?? false,
                                         isCurrent: index === 0,

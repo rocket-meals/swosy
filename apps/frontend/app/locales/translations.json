@@ -4109,6 +4109,26 @@
     "tr": "Yönetim Girişi",
     "zh": "管理登录"
   },
+  "continue_as_guest": {
+    "de": "Als Gast fortfahren",
+    "en": "Continue as guest",
+    "ar": "المتابعة كضيف",
+    "es": "Continuar como invitado",
+    "fr": "Continuer en tant qu'invité",
+    "ru": "Продолжить как гость",
+    "tr": "Misafir olarak devam et",
+    "zh": "以访客身份继续"
+  },
+  "guest_account_creation_failed": {
+    "de": "Das Gast-Profil konnte nicht angelegt werden. Bitte versuche es später erneut.",
+    "en": "The guest profile could not be created. Please try again later.",
+    "ar": "تعذر إنشاء ملف الضيف. يرجى المحاولة مرة أخرى لاحقًا.",
+    "es": "No se pudo crear el perfil de invitado. Inténtalo de nuevo más tarde.",
+    "fr": "Le profil invité n'a pas pu être créé. Veuillez réessayer plus tard.",
+    "ru": "Не удалось создать гостевой профиль. Пожалуйста, попробуйте позже.",
+    "tr": "Misafir profili oluşturulamadı. Lütfen daha sonra tekrar deneyin.",
+    "zh": "无法创建访客资料，请稍后再试。"
+  },
   "continue_without_account": {
     "de": "Ohne Account fortfahren",
     "en": "Continue without account",

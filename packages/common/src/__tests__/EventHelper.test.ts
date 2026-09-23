@@ -75,6 +75,22 @@ describe('Popup event helper', () => {
     expect(filtered.map((event) => event.id)).toEqual(['1']);
   });
 
+  it('shows events restricted to anonymous users only to anonymous users', () => {
+    const events: DatabaseTypes.PopupEvents[] = [
+      { ...baseEvent, id: 'everyone' },
+      { ...baseEvent, id: 'anonymous-only', show_only_anonymous_users: true },
+      { ...baseEvent, id: 'explicitly-everyone', show_only_anonymous_users: false },
+    ];
+
+    const forAnonymousUser = filterPopupEvents(events, 'show_on_web', referenceDate, undefined, true);
+    const forUserWithAccount = filterPopupEvents(events, 'show_on_web', referenceDate, undefined, false);
+    const withoutUserInformation = filterPopupEvents(events, 'show_on_web', referenceDate);
+
+    expect(forAnonymousUser.map((event) => event.id)).toEqual(['everyone', 'anonymous-only', 'explicitly-everyone']);
+    expect(forUserWithAccount.map((event) => event.id)).toEqual(['everyone', 'explicitly-everyone']);
+    expect(withoutUserInformation.map((event) => event.id)).toEqual(['everyone', 'explicitly-everyone']);
+  });
+
   describe('doesAppVersionMatchConstraint', () => {
     it('shows the event on every version when no constraint is set', () => {
       expect(doesAppVersionMatchConstraint(null, '20.200.0')).toBe(true);

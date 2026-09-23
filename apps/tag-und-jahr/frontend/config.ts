@@ -52,7 +52,8 @@ export function getVersionPatch() {
 	// 23: master merged back in - shared common-ui changes from the housing
 	//     analytics reports
 	// 24: common: FileNameHelper for file names that survive http headers and file systems
-	return 24;
+	// 25: common: GuestAccountHelper and popup events restricted to anonymous users
+	return 25;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

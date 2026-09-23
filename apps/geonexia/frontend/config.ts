@@ -60,7 +60,8 @@ export function getVersionPatch() {
 	// 33: form PDF: letterhead carries only the logo, the issuer in the footer
 	// 34: master merged back in - PrintHidden next to the form PDF letterhead
 	// 35: common: FileNameHelper for file names that survive http headers and file systems
-	return 35;
+	// 36: common: GuestAccountHelper and popup events restricted to anonymous users
+	return 36;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
