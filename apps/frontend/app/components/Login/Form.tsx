@@ -161,7 +161,7 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, onGuestLogin, sh
 									<MaterialCommunityIcons name={provider?.icon} size={22} color={contrastColor} />
 								</View>
 								<Text style={{ ...styles.buttonLabel, color: theme.login.text }}>{`${translate(TranslationKeys.sign_in_with)}: ${provider?.label || provider?.name?.charAt(0)?.toUpperCase() + provider?.name?.slice(1)?.toLowerCase()}`}</Text>
-								<View style={{ width: 58 }} />
+								<View style={{ width: 50 }} />
 							</TouchableOpacity>
 						))}
 				</View>
@@ -179,7 +179,7 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, onGuestLogin, sh
 							<MaterialCommunityIcons name="account-outline" size={26} color={contrastColor} />
 						</View>
 						<Text style={{ ...styles.buttonLabel, color: theme.login.text }}>{translate(TranslationKeys.continue_as_guest)}</Text>
-						<View style={{ width: 58 }} />
+						<View style={{ width: 50 }} />
 					</TouchableOpacity>
 				)}
 				<TouchableOpacity
@@ -195,7 +195,7 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, onGuestLogin, sh
 						<MaterialCommunityIcons name="incognito" size={28} color={contrastColor} />
 					</View>
 					<Text style={{ ...styles.buttonLabel, color: theme.login.text }}>{translate(TranslationKeys.continue_without_account)}</Text>
-					<View style={{ width: 58 }} />
+					<View style={{ width: 50 }} />
 				</TouchableOpacity>
 			</View>
 

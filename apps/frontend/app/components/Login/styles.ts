@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
 	},
 	button: {
 		width: '100%',
-		height: 58,
+		height: 50,
 		borderRadius: 10,
 		borderWidth: 1,
 		flexDirection: 'row',
@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 	},
 	leftIcon: {
-		width: 58,
+		width: 50,
 		height: '100%',
 		justifyContent: 'center',
 		alignItems: 'center',

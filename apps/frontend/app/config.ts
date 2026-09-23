@@ -136,7 +136,8 @@ export function getVersionPatch() {
         // 51: guest profiles on the login screen, popup events only for anonymous
         //     users with a button to the login screen
         // 52: guest accounts use guest.example.com - Directus rejects .invalid on login
-        return 52;
+        // 53: login buttons are 50px tall instead of 58px
+        return 53;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
