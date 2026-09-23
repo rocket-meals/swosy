@@ -204,6 +204,11 @@
         "source": "src/form-pdf-preview-endpoint/index.ts"
       },
       {
+        "type": "endpoint",
+        "name": "guest-account-endpoint",
+        "source": "src/guest-account-endpoint/index.ts"
+      },
+      {
         "type": "hook",
         "name": "users-avatar-delete-hook",
         "source": "src/users-avatar-delete-hook/index.ts"
