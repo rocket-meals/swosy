@@ -5,7 +5,7 @@
  * lokal und meldet sich damit ganz normal per E-Mail und Passwort an. Ab da ist ein Gast für den
  * Server ein gewöhnlicher Nutzer mit der Rolle `User`: Profil (über den `profile-create-hook`),
  * Bewertungen, Kommentare, Chats und Push-Benachrichtigungen laufen über dieselben Policies wie bei
- * registrierten Nutzern. Erkennbar ist ein Gast nur an seiner E-Mail-Adresse unter `guest.invalid`
+ * registrierten Nutzern. Erkennbar ist ein Gast nur an seiner E-Mail-Adresse unter `guest.example.com`
  * (siehe `GuestAccountHelper`).
  *
  * Die eingebaute Directus-Registrierung (`/users/register`) ist ausgeschaltet und verlangt eine

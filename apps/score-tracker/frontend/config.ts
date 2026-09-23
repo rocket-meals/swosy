@@ -58,7 +58,8 @@ export function getVersionPatch() {
 	// 28: master merged back in - PrintHidden next to the form PDF letterhead
 	// 29: common: FileNameHelper for file names that survive http headers and file systems
 	// 30: common: GuestAccountHelper and popup events restricted to anonymous users
-	return 30;
+	// 31: common: guest accounts use guest.example.com (Directus rejects .invalid on login)
+	return 31;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
