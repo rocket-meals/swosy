@@ -140,7 +140,10 @@ export function getVersionPatch() {
         //     logout/account deletion, no backend logout without a session
         // 54: guests delete their account instead of logging out
         // 55: deleting an account deletes profile and user (not only the profile)
-        return 55;
+        // 56: login buttons are 50px tall instead of 58px, "Anmelden als: Gast",
+        //     "Ohne Account fortfahren" is a text link now, login links get a
+        //     24px touch target
+        return 56;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

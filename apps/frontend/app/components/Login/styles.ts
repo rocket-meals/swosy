@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
 	},
 	button: {
 		width: '100%',
-		height: 58,
+		height: 50,
 		borderRadius: 10,
 		borderWidth: 1,
 		flexDirection: 'row',
@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 	},
 	leftIcon: {
-		width: 58,
+		width: 50,
 		height: '100%',
 		justifyContent: 'center',
 		alignItems: 'center',
@@ -58,10 +58,6 @@ export const styles = StyleSheet.create({
 	},
 	apple: {
 		width: '49%',
-	},
-	incognito: {
-		width: '100%',
-		marginTop: 10,
 	},
 	buttonLabel: {
 		fontSize: 16,
@@ -82,6 +78,12 @@ export const styles = StyleSheet.create({
 	loginText: {
 		fontSize: 12,
 		fontFamily: 'Poppins_700Bold',
+	},
+	// WCAG 2.2 AA (2.5.8): text links need a touch target of at least 24px
+	linkTouchTarget: {
+		minHeight: 24,
+		paddingVertical: 4,
+		justifyContent: 'center',
 	},
 	section: {
 		flexDirection: 'row',
