@@ -5,6 +5,8 @@ export type FormProps = {
 	openSheet: () => void;
 	openAttentionSheet: () => void;
 	onSuccess: (token: string) => void;
+	onGuestLogin: () => void;
+	showGuestLogin: boolean;
 	providers: import('@/redux/actions/Auth/Auth').AuthProvider[];
 }
 

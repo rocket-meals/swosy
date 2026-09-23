@@ -15,7 +15,7 @@ import { SET_APP_SETTINGS, SET_WIKIS, UPDATE_MANAGEMENT, UPDATE_PRIVACY_POLICY_D
 import AttentionSheet from '@/components/Login/AttentionSheet';
 import useToast from '@/hooks/useToast';
 import { updateLoginStatus } from '@/constants/HelperFunctions';
-import { DatabaseTypes, EmailHelper } from 'repo-depkit-common';
+import { DatabaseTypes, EmailHelper, GuestAccountCredentials } from 'repo-depkit-common';
 import { format } from 'date-fns';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
@@ -26,10 +26,13 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { completeLoginFromDeepLinkCode } from '@/helper/authHelper';
 import LoginDebugPanel from '@/components/Login/LoginDebugPanel';
+import { createAndStoreGuestAccount, getStoredGuestAccountCredentials } from '@/helper/guestAccountHelper';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function Login() {
 	useSetPageTitle(TranslationKeys.sign_in);
 	const toast = useToast();
+	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { deviceMock, code } = useGlobalSearchParams();
@@ -82,53 +85,90 @@ export default function Login() {
 		}
 	}, [deepLinkCode]);
 
-        const handleUserLogin = async (token?: string, email?: string, password?: string) => {
-                try {
-                        // Authenticate based on token or credentials
-                        setLoading(true);
-                        if (token) {
-                                await ServerAPI.authenticateWithAccessToken(token);
-                        } else if (email && password) {
-                                const trimmedEmail = EmailHelper.sanitize(email);
-                                const result = await ServerAPI.authenticateWithEmailAndPassword(
-                                        trimmedEmail,
-                                        password
-                                );
-                                if (!result) throw new Error('Invalid credentials');
-                        }
+	// Everything after a successful authentication: load the user, decide about
+	// management mode, store the login and open the app.
+	const completeLogin = async () => {
+		const user = await ServerAPI.getMe();
+		const roles = await ServerAPI.readRemoteRoles();
 
-			// Fetch and process user data
-			const user = await ServerAPI.getMe();
-			const roles = await ServerAPI.readRemoteRoles();
-
-			console.log('user: ', user);
-			console.log('roles: ', roles);
-			let usersRoleId = user?.role;
-			let isManagement = false;
-			if (usersRoleId) {
-				const role = roles.find(role => role.id === usersRoleId);
-				if (role && role.name !== 'User') {
-					isManagement = true;
-				}
+		console.log('user: ', user);
+		console.log('roles: ', roles);
+		let usersRoleId = user?.role;
+		let isManagement = false;
+		if (usersRoleId) {
+			const role = roles.find(role => role.id === usersRoleId);
+			if (role && role.name !== 'User') {
+				isManagement = true;
 			}
-			dispatch({ type: UPDATE_MANAGEMENT, payload: isManagement });
+		}
+		dispatch({ type: UPDATE_MANAGEMENT, payload: isManagement });
 
-			updateLoginStatus(dispatch, user as DatabaseTypes.DirectusUsers);
-			const currentDate = getCurrentDate();
+		updateLoginStatus(dispatch, user as DatabaseTypes.DirectusUsers);
+		const currentDate = getCurrentDate();
 
-			dispatch({
-				type: UPDATE_PRIVACY_POLICY_DATE,
-				payload: currentDate,
-			});
-			setLoading(false);
-			closeManagementModal();
-			router.replace('/(app)');
+		dispatch({
+			type: UPDATE_PRIVACY_POLICY_DATE,
+			payload: currentDate,
+		});
+		setLoading(false);
+		closeManagementModal();
+		router.replace('/(app)');
+	};
+
+	const handleUserLogin = async (token?: string, email?: string, password?: string) => {
+		try {
+			// Authenticate based on token or credentials
+			setLoading(true);
+			if (token) {
+				await ServerAPI.authenticateWithAccessToken(token);
+			} else if (email && password) {
+				const trimmedEmail = EmailHelper.sanitize(email);
+				const result = await ServerAPI.authenticateWithEmailAndPassword(trimmedEmail, password);
+				if (!result) throw new Error('Invalid credentials');
+			}
+
+			await completeLogin();
 		} catch (error) {
 			console.error('Error during login: ', error);
 			if (!token) {
 				toast('Invalid credentials', 'error');
 				setLoading(false);
 			}
+		}
+	};
+
+	const authenticateWithGuestAccountCredentials = async (credentials: GuestAccountCredentials): Promise<boolean> => {
+		try {
+			const result = await ServerAPI.authenticateWithEmailAndPassword(credentials.email, credentials.password);
+			return !!result;
+		} catch (error) {
+			console.error('Guest login failed: ', error);
+			return false;
+		}
+	};
+
+	// Signs in to the guest account stored on this device. Without one (or when
+	// it no longer exists on the server) the server creates a new guest account.
+	const handleGuestLogin = async () => {
+		if (loading) {
+			return;
+		}
+		setLoading(true);
+		try {
+			const storedCredentials = await getStoredGuestAccountCredentials();
+			let authenticated = !!storedCredentials && (await authenticateWithGuestAccountCredentials(storedCredentials));
+			if (!authenticated) {
+				const newCredentials = await createAndStoreGuestAccount();
+				authenticated = await authenticateWithGuestAccountCredentials(newCredentials);
+			}
+			if (!authenticated) {
+				throw new Error('Could not sign in to the guest account');
+			}
+			await completeLogin();
+		} catch (error) {
+			console.error('Error during guest login: ', error);
+			toast(translate(TranslationKeys.guest_account_creation_failed), 'error');
+			setLoading(false);
 		}
 	};
 
@@ -258,7 +298,14 @@ export default function Login() {
 					}}
 				>
 					<Header onLogoLongPress={() => setShowLoginDebug(current => !current)} />
-					<Form openSheet={openSheet} openAttentionSheet={openAttentionSheet} onSuccess={handleUserLogin} providers={providers} />
+					<Form
+						openSheet={openSheet}
+						openAttentionSheet={openAttentionSheet}
+						onSuccess={handleUserLogin}
+						onGuestLogin={handleGuestLogin}
+						showGuestLogin={!!appSettings?.guest_profiles_enabled}
+						providers={providers}
+					/>
 					{!isWeb && showLoginDebug && <LoginDebugPanel />}
 					<Footer />
 				</View>

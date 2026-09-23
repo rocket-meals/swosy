@@ -39,6 +39,7 @@ export enum AppComponentIds {
 
 	// Login / Onboarding
 	LOGIN_ACCEPT_PRIVACY = 'login-accept-privacy',
+	LOGIN_CONTINUE_AS_GUEST = 'login-continue-as-guest',
 	LOGIN_CONTINUE_WITHOUT_ACCOUNT = 'login-continue-without-account',
 	LOGIN_ATTENTION_TITLE = 'login-attention-title',
 	LOGIN_ATTENTION_CONFIRM = 'login-attention-confirm',

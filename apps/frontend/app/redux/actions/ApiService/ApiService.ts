@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Server from '@/constants/ServerUrl';
+import { GuestAccountHelper } from 'repo-depkit-common';
 
 const api = axios.create({
 	baseURL: Server.ServerUrl,
@@ -19,6 +20,13 @@ export const fetchToken = async (codeVerifier: string, code: string) => {
 		code_verifier: codeVerifier,
 		code,
 	});
+	return data;
+};
+
+// Guest account: the server creates a user and returns its generated credentials
+export const createGuestAccountCredentials = async (): Promise<unknown> => {
+	const endpoint = '/' + GuestAccountHelper.ENDPOINT_ID;
+	const { data } = await api.post(endpoint);
 	return data;
 };
 

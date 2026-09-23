@@ -35,6 +35,9 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 // clearAppDownloadBannerDismissed() below for the two established patterns) and
 // forget to wire it in here - the data then silently leaks into the next user's
 // session on a shared/kiosk device.
+// Intentionally NOT cleared: the guest account credentials (helper/guestAccountHelper.ts).
+// They are the only way back into a guest account, so "continue as guest" signs in to
+// the same account again after a logout instead of creating a new, empty one.
 export const performLogout = async (
 	dispatch: Dispatch,
 	router: any

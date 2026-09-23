@@ -14,6 +14,10 @@ import { AppRatingPromptSources } from '@/helper/AppUsageEventHelper';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { getVersion } from '@/config';
+import { useDispatch } from 'react-redux';
+import { useRouter } from 'expo-router';
+import { performLogout } from '@/helper/logoutHelper';
+import { UserHelper } from '@/helper/UserHelper';
 
 const styles = StyleSheet.create({
 	container: {
@@ -64,6 +68,12 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, eventData
 	const { theme } = useTheme();
 	const { language } = useAppSelector((state) => state.settings);
 	const { translate } = useLanguage();
+	const dispatch = useDispatch();
+	const router = useRouter();
+	const { user } = useAppSelector((state) => state.authReducer);
+	// Leaving the app for the login screen only makes sense without an account -
+	// for a signed-in user it would mean logging out.
+	const showLoginScreenButton = !!eventData?.show_login_screen_button && UserHelper.isAnonymousUser(user);
 	const title = eventData?.translations ? getTitleFromTranslation(eventData?.translations, language) : '';
 	const rawText = eventData?.translations ? getTextFromTranslation(eventData?.translations, language) : '';
 
@@ -105,6 +115,17 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, eventData
 			{eventData?.show_app_rating_button ? (
 				<View style={{ width: '100%', marginTop: 20 }}>
 					<RateAppSettingsItem groupPosition="single" showSeparator={false} ratingPromptSource={AppRatingPromptSources.POPUP_EVENT_SHEET} />
+				</View>
+			) : null}
+			{showLoginScreenButton ? (
+				<View style={{ width: '100%', marginTop: 20, alignItems: 'center' }}>
+					<ProjectButton
+						text={`${translate(TranslationKeys.sign_in)} / ${translate(TranslationKeys.create_account)}`}
+						onPress={() => {
+							closeSheet();
+							void performLogout(dispatch, router);
+						}}
+					/>
 				</View>
 			) : null}
 			{eventData?.show_on_app_version ? (

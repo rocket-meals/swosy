@@ -87,16 +87,29 @@ export const doesAppVersionMatchConstraint = (
   }
 };
 
+/**
+ * show_only_anonymous_users restricts an event to users without an account (the app's
+ * "continue without account" mode). Guests and registered users have an account and don't see it.
+ */
+export const doesPopupEventMatchUser = (event: DatabaseTypes.PopupEvents, isAnonymousUser: boolean): boolean => {
+  if (event.show_only_anonymous_users) {
+    return isAnonymousUser;
+  }
+  return true;
+};
+
 export const filterPopupEvents = (
   events: DatabaseTypes.PopupEvents[],
   platformKey: PopupEventPlatformKey,
   referenceDate: Date = new Date(),
-  currentAppVersion?: string | null
+  currentAppVersion?: string | null,
+  isAnonymousUser: boolean = false
 ): DatabaseTypes.PopupEvents[] => {
   return events.filter(
     (event) =>
       isPopupEventActive(event, referenceDate) &&
       Boolean((event as any)[platformKey]) &&
-      doesAppVersionMatchConstraint(event.show_on_app_version, currentAppVersion)
+      doesAppVersionMatchConstraint(event.show_on_app_version, currentAppVersion) &&
+      doesPopupEventMatchUser(event, isAnonymousUser)
   );
 };
