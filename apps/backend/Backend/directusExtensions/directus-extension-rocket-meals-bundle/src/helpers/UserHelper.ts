@@ -17,6 +17,22 @@ export class UserHelper extends ItemsServiceHelper<DatabaseTypes.DirectusUsers> 
     return await itemsService.createOne(create, this.getOptsCustom(optsCustom));
   }
 
+  /**
+   * Deletes a user through Directus' `UsersService` instead of the plain `ItemsService`: it also
+   * detaches comments, notifications and versions of the user, clears its sessions and refuses to
+   * delete the last admin. The `users.delete` hooks run either way.
+   */
+  async deleteOneWithUsersService(userId: PrimaryKey): Promise<void> {
+    const { UsersService } = this.apiContext.services;
+    const schema = this.eventContext?.schema || (await this.apiContext.getSchema());
+    const usersService = new UsersService({
+      accountability: null, // this makes us admin
+      knex: this.eventContext?.database || this.apiContext.database,
+      schema: schema,
+    });
+    await usersService.deleteOne(userId);
+  }
+
   isAdminAccountability(accountability?: Accountability | null): boolean {
     if (!accountability) {
       return false;
