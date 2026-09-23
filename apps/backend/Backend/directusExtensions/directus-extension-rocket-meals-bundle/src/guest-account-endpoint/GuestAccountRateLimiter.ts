@@ -5,7 +5,9 @@
  * der Datenbank. Für den Schutz gegen massenhaftes Anlegen reicht das.
  */
 export class GuestAccountRateLimiter {
-  static readonly DEFAULT_MAX_ACCOUNTS_PER_WINDOW = 5;
+  /** Kein Limit. Nutzer im selben Uni-WLAN teilen sich per NAT eine IP, ein niedriges Limit würde sie aussperren. */
+  static readonly UNLIMITED = -1;
+  static readonly DEFAULT_MAX_ACCOUNTS_PER_WINDOW = GuestAccountRateLimiter.UNLIMITED;
   static readonly DEFAULT_WINDOW_MS = 60 * 60 * 1000;
 
   private readonly timestampsByKey = new Map<string, number[]>();
@@ -17,6 +19,9 @@ export class GuestAccountRateLimiter {
 
   /** Zählt einen Versuch für `key` und sagt, ob er noch im Limit liegt. */
   tryConsume(key: string, now: number = Date.now()): boolean {
+    if (this.maxAccountsPerWindow === GuestAccountRateLimiter.UNLIMITED) {
+      return true;
+    }
     this.removeExpired(now);
 
     const timestamps = this.timestampsByKey.get(key) ?? [];

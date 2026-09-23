@@ -13,7 +13,8 @@
  *
  * Schutz:
  * - Nur wenn `app_settings.guest_profiles_enabled` an ist.
- * - Rate-Limit pro IP im Speicher dieses Prozesses. Die IP wird nicht gespeichert.
+ * - Rate-Limit pro IP im Speicher dieses Prozesses, aktuell unbegrenzt (-1): Im Uni-WLAN teilen sich
+ *   viele Nutzer per NAT eine IP. Ein passendes Limit ist in Issue #4423 offen. Die IP wird nicht gespeichert.
  * - Das Passwort verlässt den Server genau einmal; gespeichert wird nur der Hash (Directus-Feld `hash`).
  */
 

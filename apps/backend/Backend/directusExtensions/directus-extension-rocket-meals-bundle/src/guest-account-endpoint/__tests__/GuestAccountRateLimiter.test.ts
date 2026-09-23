@@ -22,4 +22,18 @@ describe('GuestAccountRateLimiter', () => {
     expect(limiter.tryConsume('1.2.3.4', 999)).toBe(false);
     expect(limiter.tryConsume('1.2.3.4', 1001)).toBe(true);
   });
+
+  it('never blocks when unlimited', () => {
+    const limiter = new GuestAccountRateLimiter(GuestAccountRateLimiter.UNLIMITED, 1000);
+    for (let i = 0; i < 1000; i++) {
+      expect(limiter.tryConsume('1.2.3.4', i)).toBe(true);
+    }
+  });
+
+  it('is unlimited by default', () => {
+    const limiter = new GuestAccountRateLimiter();
+    for (let i = 0; i < 1000; i++) {
+      expect(limiter.tryConsume('1.2.3.4', i)).toBe(true);
+    }
+  });
 });
