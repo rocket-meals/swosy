@@ -115,6 +115,7 @@ export type AppSettings = {
   foods_settings: string;
   friends_enabled?: boolean | null;
   friends_settings: string;
+  guest_profiles_enabled?: boolean | null;
   housing_area_color?: string | null;
   housing_before_element?: string | AppElements | null;
   housing_enabled?: boolean | null;
@@ -1803,10 +1804,12 @@ export type PopupEvents = {
   image_thumb_hash?: string | null;
   send_notification?: boolean | null;
   show_app_rating_button?: boolean | null;
+  show_login_screen_button?: boolean | null;
   show_on_android?: boolean | null;
   show_on_app_version?: string | null;
   show_on_ios?: boolean | null;
   show_on_web?: boolean | null;
+  show_only_anonymous_users?: boolean | null;
   sort?: number | null;
   status?: string | null;
   translations: any[] | PopupEventsTranslations[];

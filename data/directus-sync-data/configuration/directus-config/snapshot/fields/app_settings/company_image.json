@@ -17,7 +17,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 22,
+    "sort": 23,
     "special": [
       "file"
     ],
