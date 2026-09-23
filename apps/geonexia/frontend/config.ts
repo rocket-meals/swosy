@@ -62,7 +62,8 @@ export function getVersionPatch() {
 	// 35: common: FileNameHelper for file names that survive http headers and file systems
 	// 36: common: GuestAccountHelper and popup events restricted to anonymous users
 	// 37: common: guest accounts use guest.example.com (Directus rejects .invalid on login)
-	return 37;
+	// 38: common: default nickname Guest_<YYMMDDHHmm> for guest profiles
+	return 38;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

@@ -198,6 +198,12 @@ export class ServerAPI {
 
 	static async logout() {
 		try {
+			// Without a refresh token (e.g. "continue without account") there is no server
+			// session to end - Directus would only answer 400 "refresh token is required".
+			const authData = await this.simpleAuthentificationStorage?.get();
+			if (!authData?.refresh_token) {
+				return;
+			}
 			await this.getClient().logout();
 		} catch (err) {
 			console.error('Backend logout failed (local logout will proceed):', err);

@@ -28,7 +28,7 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { ServerAPI } from '@/redux/actions';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { CollectibleAt, DatabaseTypes, ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
+import { CollectibleAt, DatabaseTypes, ApartmentSortOption, CampusSortOption, FoodSortOption, GuestAccountHelper } from 'repo-depkit-common';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
@@ -96,6 +96,7 @@ const Settings = () => {
         const { openUpdateCheckModal } = useUpdateCheckModal();
         const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
+        const isGuestUser = isRegisteredUser && GuestAccountHelper.isGuestEmail(user?.email);
         const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
         const { openLanguageModal } = useLanguageModal();
         const { openFoodofferSortingModal } = useFoodofferSortingModal();
@@ -845,8 +846,12 @@ const Settings = () => {
 				<View style={sectionStyle}>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_account)}</SettingsGroupTitle>
 					<View style={groupStyle}>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={isRegisteredUser ? 'top' : 'single'} />
-						{isRegisteredUser && (
+						{isGuestUser && (
+							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="account-clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={translate(TranslationKeys.guest_account)} groupPosition="top" nativeID={ComponentIds.SETTINGS_GUEST_ACCOUNT} />
+						)}
+						{/* Guests can't log out and come back - their "log out" deletes the account (see useConfirmLogoutModal). */}
+						<SettingsList iconBgColor={primaryColor} leftIcon={isGuestUser ? <AntDesign name="user-delete" size={22} color={theme.screen.icon} /> : <Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={isGuestUser ? <Octicons name="chevron-right" size={24} color={theme.screen.icon} /> : <Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={isGuestUser ? 'bottom' : isRegisteredUser ? 'top' : 'single'} />
+						{isRegisteredUser && !isGuestUser && (
 							<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="bottom" />
 						)}
 					</View>
@@ -953,7 +958,7 @@ const Settings = () => {
 							handleFunction={showDebugRatingModal}
 							groupPosition="middle"
 						/>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="bottom" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? (isGuestUser ? translate(TranslationKeys.guest_account) : user?.id) : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="bottom" />
 					</View>
 					<View style={groupStyle}>
 						<SettingsList
