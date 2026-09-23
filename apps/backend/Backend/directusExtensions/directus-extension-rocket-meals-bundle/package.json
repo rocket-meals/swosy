@@ -209,6 +209,11 @@
         "source": "src/guest-account-endpoint/index.ts"
       },
       {
+        "type": "endpoint",
+        "name": "bundle-health-endpoint",
+        "source": "src/bundle-health-endpoint/index.ts"
+      },
+      {
         "type": "hook",
         "name": "users-avatar-delete-hook",
         "source": "src/users-avatar-delete-hook/index.ts"

@@ -74,13 +74,28 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
    * einem Zeichen. Das Beispiel-PDF zeigt damit denselben Fall wie der Betrieb, und dass der
    * Briefkopf ein breites Logo verträgt, ist am erzeugten Beispiel zu sehen.
    */
-  private static readonly EXAMPLE_ORGANIZATION_LOGO_PATH = path.join(__dirname, 'form', '__tests__', 'data', 'example_organization_logo_wide.svg');
+  private static getExampleOrganizationLogoPath(): string {
+    return MyDatabaseTestableHelper.getExampleDataPath('example_organization_logo_wide.svg');
+  }
 
   /** Die Datei-ID des quadratischen Beispiel-Logos – der zweite Fall, den der Briefkopf trägt. */
   public static readonly EXAMPLE_SQUARE_COMPANY_IMAGE_FILE_ID = '2f7b1d9f-5c3e-4d8b-8b5a-1c2d3e4f5a6b';
 
   /** Ein quadratisches Beispiel-Logo (180 × 180), damit auch diese Form geprüft bleibt. */
-  private static readonly EXAMPLE_SQUARE_ORGANIZATION_LOGO_PATH = path.join(__dirname, 'form', '__tests__', 'data', 'example_organization_logo.svg');
+  private static getExampleSquareOrganizationLogoPath(): string {
+    return MyDatabaseTestableHelper.getExampleDataPath('example_organization_logo.svg');
+  }
+
+  /**
+   * Pfad zu einer Beispiel-Datei aus den Testdaten. Bewusst eine Funktion und kein statisches
+   * Feld: Diese Klasse landet mit im Extension-Bundle, und das Bundle ist ein ES-Modul, in dem
+   * es kein `__dirname` gibt. Ein statisches Feld würde beim Laden ausgewertet und das ganze
+   * Bundle (alle Hooks und Endpoints) mit „__dirname is not defined in ES module scope“ abbrechen.
+   * Aufgerufen wird das nur in Tests, dort gibt es `__dirname`.
+   */
+  private static getExampleDataPath(fileName: string): string {
+    return path.join(__dirname, 'form', '__tests__', 'data', fileName);
+  }
 
   private cachedServerInfo: ServerInfo | undefined = undefined;
   private cachedClient: (DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>) | undefined = undefined;
@@ -180,7 +195,7 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
   public static getExampleOrganizationLogoMockImageFile(): MockImageFile {
     return {
       urlPart: MyDatabaseTestableHelper.EXAMPLE_COMPANY_IMAGE_FILE_ID,
-      filePath: MyDatabaseTestableHelper.EXAMPLE_ORGANIZATION_LOGO_PATH,
+      filePath: MyDatabaseTestableHelper.getExampleOrganizationLogoPath(),
       contentType: 'image/svg+xml',
     };
   }
@@ -189,7 +204,7 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
   public static getExampleSquareOrganizationLogoMockImageFile(): MockImageFile {
     return {
       urlPart: MyDatabaseTestableHelper.EXAMPLE_SQUARE_COMPANY_IMAGE_FILE_ID,
-      filePath: MyDatabaseTestableHelper.EXAMPLE_SQUARE_ORGANIZATION_LOGO_PATH,
+      filePath: MyDatabaseTestableHelper.getExampleSquareOrganizationLogoPath(),
       contentType: 'image/svg+xml',
     };
   }
