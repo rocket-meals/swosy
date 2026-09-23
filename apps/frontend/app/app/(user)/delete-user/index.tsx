@@ -14,8 +14,9 @@ import { replaceLottieColors } from '@/helper/animationHelper';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
-import { deleteProfileRemote } from '@/redux/actions/Profile/Profile';
 import { performLogout } from '@/helper/logoutHelper';
+import { deleteOwnAccount } from '@/helper/accountDeletionHelper';
+import { GuestAccountHelper } from 'repo-depkit-common';
 import { TranslationKeys } from '@/locales/keys';
 
 const Index = () => {
@@ -107,14 +108,20 @@ const Index = () => {
 	};
 
 	const handleDeleteAccount = async () => {
-		if (profile?.id) {
-			setLoading(true);
-			await deleteProfileRemote(profile.id);
-			await performLogout(dispatch, router);
+		setLoading(true);
+		const isGuest = GuestAccountHelper.isGuestEmail(user?.email);
+		// Profile and user - see deleteOwnAccount. Guests also forget their credentials, the
+		// next "continue as guest" creates a fresh account.
+		const userDeleted = await deleteOwnAccount({ profileId: profile?.id, isGuest });
+		if (!userDeleted && !isGuest) {
+			// Registered users stay signed in so they can try again instead of believing
+			// their account is gone.
+			toast(translate(TranslationKeys.error), 'error');
 			setLoading(false);
-		} else {
-			setLoading(false);
+			return;
 		}
+		await performLogout(dispatch, router);
+		setLoading(false);
 	};
 
 	return (

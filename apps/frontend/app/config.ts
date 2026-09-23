@@ -136,10 +136,14 @@ export function getVersionPatch() {
         // 51: guest profiles on the login screen, popup events only for anonymous
         //     users with a button to the login screen
         // 52: guest accounts use guest.example.com - Directus rejects .invalid on login
-        // 53: login buttons are 50px tall instead of 58px
-        // 54: "Anmelden als: Gast"; "Ohne Account fortfahren" is a text link now,
-        //     login links get a 24px touch target
-        return 54;
+        // 53: guest account shown in settings, onboarding offered again after
+        //     logout/account deletion, no backend logout without a session
+        // 54: guests delete their account instead of logging out
+        // 55: deleting an account deletes profile and user (not only the profile)
+        // 56: login buttons are 50px tall instead of 58px, "Anmelden als: Gast",
+        //     "Ohne Account fortfahren" is a text link now, login links get a
+        //     24px touch target
+        return 56;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

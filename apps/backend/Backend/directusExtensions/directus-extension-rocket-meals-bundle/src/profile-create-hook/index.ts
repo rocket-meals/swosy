@@ -2,6 +2,7 @@ import { EventHelper } from '../helpers/EventHelper';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { CollectionNames } from 'repo-depkit-common';
 import {MyDefineHook} from "../helpers/MyDefineHook";
+import { getInitialProfileForUser } from './InitialProfileHelper';
 
 const SCHEDULE_NAME = 'profile_create';
 
@@ -27,7 +28,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       console.log('Users without profiles: ' + users.length);
       for (let user of users) {
         try {
-          let profile_id = await profiles_service.createOne({}); //create a profile
+          let profile_id = await profiles_service.createOne(getInitialProfileForUser(user)); //create a profile
           if (profile_id && typeof profile_id === 'string') {
             console.log('Created profile for user: ' + user.id);
             await users_service.updateOne(user.id, {
@@ -69,7 +70,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
         //create a profile for the user
         try {
           console.log('Creating profile for user: ' + userId);
-          let profile_id = await profiles_service.createOne({}); //create a profile
+          let profile_id = await profiles_service.createOne(getInitialProfileForUser(existingUser)); //create a profile
           console.log('Created profile for user: ' + userId);
           if (profile_id && typeof profile_id === 'string') {
             console.log('New profile id: ' + profile_id);

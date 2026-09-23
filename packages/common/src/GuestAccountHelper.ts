@@ -34,6 +34,26 @@ export class GuestAccountHelper {
     return normalizedEmail.startsWith(GuestAccountHelper.EMAIL_PREFIX) && normalizedEmail.endsWith('@' + GuestAccountHelper.EMAIL_DOMAIN);
   }
 
+  private static readonly DEFAULT_NICKNAME_PREFIX = 'Guest_';
+
+  /**
+   * Spitzname, den ein Gast-Profil beim Anlegen bekommt: `Guest_<YYMMDDHHmm>` in der
+   * angegebenen Zeitzone, z. B. `Guest_2609232151` für den 23.09.2026, 21:51 Uhr.
+   */
+  static buildDefaultNickname(date: Date, timeZone: string = 'Europe/Berlin'): string {
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone,
+      year: '2-digit',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    }).formatToParts(date);
+    const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(p => p.type === type)?.value ?? '00';
+    return GuestAccountHelper.DEFAULT_NICKNAME_PREFIX + part('year') + part('month') + part('day') + part('hour') + part('minute');
+  }
+
   static isValidCredentials(value: unknown): value is GuestAccountCredentials {
     if (typeof value !== 'object' || value === null) {
       return false;

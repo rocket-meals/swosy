@@ -25,6 +25,7 @@ import { persistor } from '@/redux/store';
 import { clearChatReadStatus } from '@/helper/chatReadStatus';
 import { clearAppDownloadBannerDismissed } from '@/helper/appDownloadBannerStorage';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
+import { markOnboardingShouldBeShownAfterLogin } from '@/helper/onboardingIntentHelper';
 
 // ⚠️ Reminder: this function is the single place that resets app state on logout.
 // If you add a new persisted storage key - a redux slice backed by redux-persist,
@@ -35,9 +36,9 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 // clearAppDownloadBannerDismissed() below for the two established patterns) and
 // forget to wire it in here - the data then silently leaks into the next user's
 // session on a shared/kiosk device.
-// Intentionally NOT cleared: the guest account credentials (helper/guestAccountHelper.ts).
-// They are the only way back into a guest account, so "continue as guest" signs in to
-// the same account again after a logout instead of creating a new, empty one.
+// Not cleared here: the guest account credentials (helper/guestAccountHelper.ts). Guests
+// don't log out - they delete their account via deleteOwnAccount() (helper/accountDeletionHelper.ts), which
+// clears them. Other ways to the login screen (e.g. switching the server) keep them.
 export const performLogout = async (
 	dispatch: Dispatch,
 	router: any
@@ -73,6 +74,10 @@ export const performLogout = async (
 		await sqliteKeyValueStorage.multiRemove(['auth_data', 'persist:root']);
 
 		persistor.purge();
+		// Like every other way to the login screen (app/index.tsx, (app)/_layout.tsx): the next
+		// login - possibly a different or brand-new account - must be offered onboarding
+		// (canteen, price group, eating habits) again if its profile is incomplete.
+		markOnboardingShouldBeShownAfterLogin();
 		router.replace({ pathname: '/(auth)/login', params: { logout: 'true' } });
 	} catch (error) {
 		console.error('Error during logout:', error);

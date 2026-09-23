@@ -4,11 +4,12 @@ import { GuestAccountCredentials, GuestAccountHelper } from 'repo-depkit-common'
 import { getValue, removeValue, setValue } from '@/constants/AsyncStorageHelper';
 import { createGuestAccountCredentials } from '@/redux/actions/ApiService/ApiService';
 
-// The generated credentials are the only way back into a guest account. They
-// intentionally survive a logout (see helper/logoutHelper.ts): "continue as
-// guest" then signs in to the same guest account again instead of creating a
-// new, empty one. Native keeps them in the keychain/keystore, web has no secure
-// storage and falls back to the regular key/value storage.
+// The generated credentials are the only way back into a guest account. A guest
+// cannot log out and come back: "logging out" as a guest deletes the account
+// (deleteOwnAccount in helper/accountDeletionHelper.ts). Until then the credentials stay on
+// the device - on iOS the keychain even keeps them across a reinstall, so the
+// guest gets the same account back. Native keeps them in the keychain/keystore,
+// web has no secure storage and falls back to the regular key/value storage.
 const GUEST_ACCOUNT_CREDENTIALS_STORAGE_KEY = 'guest_account_credentials';
 
 const isSecureStoreUsable = () => Platform.OS !== 'web';

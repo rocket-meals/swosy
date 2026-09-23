@@ -4119,6 +4119,36 @@
     "tr": "Giriş yap: Misafir",
     "zh": "登录身份：访客"
   },
+  "guest_account": {
+    "de": "Gast-Account",
+    "en": "Guest account",
+    "ar": "حساب ضيف",
+    "es": "Cuenta de invitado",
+    "fr": "Compte invité",
+    "ru": "Гостевой аккаунт",
+    "tr": "Misafir hesabı",
+    "zh": "访客账户"
+  },
+  "guest_account_delete": {
+    "de": "Gast-Account löschen",
+    "en": "Delete guest account",
+    "ar": "حذف حساب الضيف",
+    "es": "Eliminar cuenta de invitado",
+    "fr": "Supprimer le compte invité",
+    "ru": "Удалить гостевой аккаунт",
+    "tr": "Misafir hesabını sil",
+    "zh": "删除访客账户"
+  },
+  "guest_account_delete_description": {
+    "de": "Ein Gast-Account ist nur auf diesem Gerät gespeichert. Wenn du dich abmeldest, wird er gelöscht – mit deinen Bewertungen, Kommentaren und Einstellungen. Das kann nicht rückgängig gemacht werden.",
+    "en": "A guest account is only stored on this device. If you sign out, it will be deleted – including your ratings, comments and settings. This cannot be undone.",
+    "ar": "يتم حفظ حساب الضيف على هذا الجهاز فقط. إذا قمت بتسجيل الخروج، فسيتم حذفه مع تقييماتك وتعليقاتك وإعداداتك. لا يمكن التراجع عن ذلك.",
+    "es": "Una cuenta de invitado solo se guarda en este dispositivo. Si cierras la sesión, se eliminará junto con tus valoraciones, comentarios y ajustes. Esta acción no se puede deshacer.",
+    "fr": "Un compte invité est uniquement enregistré sur cet appareil. Si tu te déconnectes, il sera supprimé, avec tes évaluations, commentaires et paramètres. Cette action est irréversible.",
+    "ru": "Гостевой аккаунт хранится только на этом устройстве. Если ты выйдешь, он будет удалён вместе с твоими оценками, комментариями и настройками. Это действие нельзя отменить.",
+    "tr": "Misafir hesabı yalnızca bu cihazda saklanır. Çıkış yaparsan hesap; değerlendirmelerin, yorumların ve ayarlarınla birlikte silinir. Bu işlem geri alınamaz.",
+    "zh": "访客账户仅保存在此设备上。退出登录后，该账户将被删除，包括你的评分、评论和设置。此操作无法撤销。"
+  },
   "guest_account_creation_failed": {
     "de": "Das Gast-Profil konnte nicht angelegt werden. Bitte versuche es später erneut.",
     "en": "The guest profile could not be created. Please try again later.",

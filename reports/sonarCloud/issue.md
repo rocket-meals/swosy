@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
 | 🐛 Reliability | 30 | 30 |
-| 🔧 Maintainability | 280 | 19 |
+| 🔧 Maintainability | 283 | 19 |
 
-**Total issues:** 311 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 314 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -140,7 +140,7 @@
   packages/common/src/form/IbanValidationHelper.ts:124
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanValidationHelper.ts#L124
 
-## 🔧 Maintainability (19/280)
+## 🔧 Maintainability (19/283)
 
 - **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172
@@ -182,6 +182,18 @@
   apps/frontend/app/app/(app)/housing-analytics/[report].tsx:64
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/housing-analytics/[report].tsx#L64
 
+- **Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.**
+  apps/frontend/app/app/(app)/settings/index.tsx:619
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L619
+
+- **Extract this nested ternary operation into an independent statement.**
+  apps/frontend/app/app/(app)/settings/index.tsx:853
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L853
+
+- **Extract this nested ternary operation into an independent statement.**
+  apps/frontend/app/app/(app)/settings/index.tsx:961
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L961
+
 - **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
   apps/frontend/app/components/OcrCamera/index.tsx:73
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/OcrCamera/index.tsx#L73
@@ -205,16 +217,4 @@
 - **The empty object is useless.**
   apps/frontend/app/helper/authorizedFetch.ts:24
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/authorizedFetch.ts#L24
-
-- **Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.**
-  apps/frontend/app/helper/downloadTextFileOnWeb.ts:14
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/downloadTextFileOnWeb.ts#L14
-
-- **Prefer `String#replaceAll()` over `String#split().join()`.**
-  apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts:50
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts#L50
-
-- **Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.**
-  apps/frontend/app/helper/housingAnalytics/HousingAnalyticsReports.ts:451
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/housingAnalytics/HousingAnalyticsReports.ts#L451
 

@@ -16,6 +16,9 @@
  * - Rate-Limit pro IP im Speicher dieses Prozesses, aktuell unbegrenzt (-1): Im Uni-WLAN teilen sich
  *   viele Nutzer per NAT eine IP. Ein passendes Limit ist in Issue #4423 offen. Die IP wird nicht gespeichert.
  * - Das Passwort verlässt den Server genau einmal; gespeichert wird nur der Hash (Directus-Feld `hash`).
+ *
+ * Löschen braucht keinen eigenen Endpoint: Die Policy `User` erlaubt jedem Nutzer, sein Profil und
+ * seinen eigenen `directus_users`-Eintrag zu löschen (siehe `deleteOwnAccount` in `apps/frontend/app/helper/accountDeletionHelper.ts`).
  */
 
 import { defineEndpoint } from '@directus/extensions-sdk';
