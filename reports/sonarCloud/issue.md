@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
 | 🐛 Reliability | 30 | 30 |
-| 🔧 Maintainability | 287 | 19 |
+| 🔧 Maintainability | 288 | 19 |
 
-**Total issues:** 318 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 319 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -140,7 +140,7 @@
   packages/common/src/form/IbanValidationHelper.ts:124
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanValidationHelper.ts#L124
 
-## 🔧 Maintainability (19/287)
+## 🔧 Maintainability (19/288)
 
 - **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172

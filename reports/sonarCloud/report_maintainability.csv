@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AaDUJIjlD_duj2hKKWO-","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useAccountRequiredModal.tsx",27
 "AaDSbjqvYMAIwe1A19_u","Move async function 'readUnverifiedProfile' to the outer scope.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-guest-restriction-hook/index.ts",33
 "AaDSOnTRn13SQjxfKkFZ","`new Error()` is too unspecific for a type check. Use `new TypeError()` instead.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupHelper.ts",22
 "AaDSOnTRn13SQjxfKkFa","Use the opposite operator (<) instead.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupHelper.ts",24
