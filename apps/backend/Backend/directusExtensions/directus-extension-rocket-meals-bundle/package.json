@@ -115,6 +115,11 @@
       },
       {
         "type": "hook",
+        "name": "food-feedback-guest-restriction-hook",
+        "source": "src/food-feedback-guest-restriction-hook/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "food-feedback-report-schedule",
         "source": "src/food-feedback-report-schedule/index.ts"
       },

@@ -16,6 +16,8 @@ interface FoodHeaderProps extends FoodDetailsSectionBaseProps {
     screenWidth: number;
     openFullScreenImage: () => void;
     rateFood: (rating: number) => void;
+    // false hides the rating row, e.g. for guests when app_settings.foods_ratings_guests_enabled is off
+    canRate?: boolean;
     appSettings: any;
     defaultImage?: string | null;
     initialImageAssetId?: string | number | null;
@@ -125,6 +127,7 @@ const FoodHeader = ({
     screenWidth,
     openFullScreenImage,
     rateFood,
+    canRate = true,
     previousFeedback,
     appSettings,
     foodsAreaColor,
@@ -214,6 +217,7 @@ const FoodHeader = ({
                                 starSize={22}
                             />
                         </View>
+                        {canRate && (
                         <View style={webLayout.ratingListWrapperStyle}>
                             <SettingsList
                                 leftIcon={<MaterialIcons name="star" size={22} />}
@@ -226,6 +230,7 @@ const FoodHeader = ({
                                 onAccountRequired={onAccountRequired}
                             />
                         </View>
+                        )}
                     </View>
                 </View>
                 <View style={webLayout.featuredContainerStyle}>
@@ -273,6 +278,7 @@ const FoodHeader = ({
             >
                 {foodDetails?.name}
             </Text>
+            {canRate && (
             <View style={styles.marginTopMedium}>
                 {/* groupPosition="top" so the rating item visually groups with the notification item below (no gap, "bottom" position on mobile) */}
                 <SettingsList
@@ -286,6 +292,7 @@ const FoodHeader = ({
                     onAccountRequired={onAccountRequired}
                 />
             </View>
+            )}
         </View>
     );
 };
@@ -299,6 +306,7 @@ export default memo(FoodHeader, (prevProps, nextProps) => {
         prevProps.theme === nextProps.theme &&
         prevProps.defaultImage === nextProps.defaultImage &&
         prevProps.isAccountRequired === nextProps.isAccountRequired &&
+        prevProps.canRate === nextProps.canRate &&
         prevProps.initialImageAssetId === nextProps.initialImageAssetId &&
         prevProps.initialImageRemoteUrl === nextProps.initialImageRemoteUrl
     );

@@ -20,6 +20,7 @@ export * from './src/ChatConversationState';
 export * from './src/CronHelper';
 export * from './src/EmailHelper';
 export * from './src/GuestAccountHelper';
+export * from './src/FoodFeedbackPermissionHelper';
 export * from './src/EventHelper';
 export * from './src/form/FormHelperCommon';
 export * from './src/form/IbanRecognitionHelper';

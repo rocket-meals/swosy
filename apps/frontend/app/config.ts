@@ -143,7 +143,10 @@ export function getVersionPatch() {
         // 56: login buttons are 50px tall instead of 58px, "Anmelden als: Gast",
         //     "Ohne Account fortfahren" is a text link now, login links get a
         //     24px touch target
-        return 56;
+        // 57: guests can be kept from rating and commenting foods via
+        //     app_settings.foods_ratings_guests_enabled and
+        //     foods_feedbacks_comments_type_guests
+        return 57;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

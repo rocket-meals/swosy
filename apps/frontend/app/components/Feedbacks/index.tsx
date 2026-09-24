@@ -18,6 +18,7 @@ import SettingsListTextInput from '@/components/SettingsListTextInput';
 import { TranslationKeys } from '@/locales/keys';
 import { FeedbacksProps } from './types';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
+import useFoodFeedbackPermissions from '@/hooks/useFoodFeedbackPermissions';
 
 const loadingState = {
 	submitLoading: false,
@@ -49,7 +50,8 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
 
-	const [commentType, setCommentType] = useState('');
+	// Guests may have a different comments type than registered users, see useFoodFeedbackPermissions.
+	const { commentsType: commentType } = useFoodFeedbackPermissions();
 	const [loading, setLoading] = useState(loadingState);
 	const [comment, setComment] = useState('');
 	const [adminFeedbacks, setAdminFeedbacks] = useState<DatabaseTypes.FoodsFeedbacks[]>([]);
@@ -67,12 +69,6 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 	}, [ownFoodFeedbacks, foodId]);
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-
-	useEffect(() => {
-		if (appSettings?.foods_feedbacks_comments_type) {
-			setCommentType(appSettings?.foods_feedbacks_comments_type);
-		}
-	}, [appSettings?.foods_feedbacks_comments_type]);
 
 	useEffect(() => {
 		if (!isManagement || !foodId) return;

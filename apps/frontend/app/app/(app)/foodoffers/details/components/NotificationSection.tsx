@@ -10,6 +10,8 @@ import type { FoodDetailsSectionBaseProps } from './types';
 interface NotificationSectionProps extends FoodDetailsSectionBaseProps {
     containerWidth: string | number;
     updateNotification: () => void;
+    // On mobile the rating row sits directly above and forms one group with this item.
+    isGroupedWithRating?: boolean;
 }
 
 const NotificationSection = ({
@@ -21,6 +23,7 @@ const NotificationSection = ({
     foodsAreaColor,
     isAccountRequired,
     onAccountRequired,
+    isGroupedWithRating = true,
 }: NotificationSectionProps) => {
     const isNotifyEnabled = !!previousFeedback?.notify;
 
@@ -46,7 +49,7 @@ const NotificationSection = ({
                 valueActive={translate(TranslationKeys.active)}
                 valueInactive={translate(TranslationKeys.inactive)}
                 showSeparator={false}
-                groupPosition={isWeb ? "single" : "bottom"}
+                groupPosition={isWeb || !isGroupedWithRating ? "single" : "bottom"}
                 isAccountRequired={isAccountRequired}
                 onAccountRequired={onAccountRequired}
             />
@@ -60,6 +63,7 @@ export default memo(NotificationSection, (prevProps, nextProps) => {
         prevProps.containerWidth === nextProps.containerWidth &&
         prevProps.previousFeedback === nextProps.previousFeedback &&
         prevProps.foodsAreaColor === nextProps.foodsAreaColor &&
-        prevProps.isAccountRequired === nextProps.isAccountRequired
+        prevProps.isAccountRequired === nextProps.isAccountRequired &&
+        prevProps.isGroupedWithRating === nextProps.isGroupedWithRating
     );
 });
