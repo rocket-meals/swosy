@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       server_preset:
-        description: 'Backend server (preset)'
+        description: 'Backend server (preset); "all" deploys to every preset server'
         required: true
         type: choice
         default: 'test.rocket-meals.de'
@@ -12,6 +12,7 @@ on:
           - test.rocket-meals.de
           - swosy.rocket-meals.de
           - studi-futter.rocket-meals.de
+          - all
           - custom
       server_host:
         description: 'Custom backend host (overrides preset when set)'
@@ -20,30 +21,51 @@ on:
         default: ''
 
 jobs:
+  resolve-hosts:
+    name: "🔍 Resolve target hosts"
+    runs-on: ubuntu-latest
+    outputs:
+      hosts: ${{ steps.resolve-hosts.outputs.hosts }}
+    steps:
+      - name: "🔍 Resolve target hosts"
+        id: resolve-hosts
+        env:
+          CUSTOM: ${{ github.event.inputs.server_host }}
+          PRESET: ${{ github.event.inputs.server_preset }}
+          # Keep in sync with the preset options above
+          ALL_HOSTS: '["test.rocket-meals.de","swosy.rocket-meals.de","studi-futter.rocket-meals.de"]'
+        run: |
+          if [ -n "$CUSTOM" ]; then
+            HOSTS=$(jq -cn --arg host "$CUSTOM" '[$host]')
+            echo "ℹ️ Using custom host: $CUSTOM"
+          elif [ "$PRESET" = "all" ]; then
+            HOSTS="$ALL_HOSTS"
+            echo "ℹ️ Using all preset hosts: $ALL_HOSTS"
+          elif [ "$PRESET" = "custom" ]; then
+            echo "❌ Preset 'custom' requires a custom backend host"
+            exit 1
+          else
+            HOSTS=$(jq -cn --arg host "$PRESET" '[$host]')
+            echo "ℹ️ Using preset host: $PRESET"
+          fi
+          echo "hosts=$HOSTS" >> "$GITHUB_OUTPUT"
+
   deploy:
-    name: "🚀 Deploy Backend Server"
+    name: "🚀 Deploy ${{ matrix.host }}"
+    needs: resolve-hosts
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        host: ${{ fromJSON(needs.resolve-hosts.outputs.hosts) }}
     steps:
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "🔍 Resolve target host"
-        id: resolve-host
-        run: |
-          CUSTOM="${{ github.event.inputs.server_host }}"
-          PRESET="${{ github.event.inputs.server_preset }}"
-          if [ -n "$CUSTOM" ]; then
-            echo "host=$CUSTOM" >> $GITHUB_OUTPUT
-            echo "ℹ️ Using custom host: $CUSTOM"
-          else
-            echo "host=$PRESET" >> $GITHUB_OUTPUT
-            echo "ℹ️ Using preset host: $PRESET"
-          fi
-
-      - name: "🚀 Deploy to ${{ steps.resolve-host.outputs.host }}"
+      - name: "🚀 Deploy to ${{ matrix.host }}"
         uses: ./.github/actions/deploy-server
         with:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_SERVER_HOST: ${{ steps.resolve-host.outputs.host }}
+          DEPLOY_SERVER_HOST: ${{ matrix.host }}
