@@ -1,57 +1,41 @@
 {
   "collection": "app_settings",
-  "field": "foods_ratings_type",
+  "field": "foods_ratings_type_for_unverified",
   "type": "string",
   "meta": {
     "collection": "app_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "foods_ratings_type",
+    "field": "foods_ratings_type_for_unverified",
     "group": "foods_settings",
     "hidden": false,
     "interface": "select-dropdown",
-    "note": "Wie sollen die Bewertungen angezeigt werden? Sterne, Daumen, ...",
+    "note": "Wie für unverifizierte Nutzer (Gast-Accounts)?",
     "options": {
       "allowNone": true,
       "allowOther": true,
       "choices": [
         {
+          "icon": "link",
+          "text": "Erben: Wie verifizierte Nutzer",
+          "value": "inherit"
+        },
+        {
           "icon": "block",
-          "text": "disabled",
+          "text": "Ausgeschaltet",
           "value": "disabled"
-        },
-        {
-          "icon": "star",
-          "text": "stars",
-          "value": "stars"
-        },
-        {
-          "icon": "star",
-          "text": "favorite",
-          "value": "favorite"
-        },
-        {
-          "icon": "heart_plus",
-          "text": "hearts",
-          "value": "hearts"
-        },
-        {
-          "icon": "thumbs_up_down",
-          "text": "likes",
-          "value": "likes"
         }
-      ],
-      "icon": "star"
+      ]
     },
     "readonly": false,
     "required": false,
-    "sort": 12,
+    "sort": 13,
     "special": null,
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Speise Bewertung Typ Schnittstelle"
+        "translation": "Gast: Speise Bewertung Typ (unverifiziert)"
       }
     ],
     "validation": null,
@@ -59,10 +43,10 @@
     "width": "half"
   },
   "schema": {
-    "name": "foods_ratings_type",
+    "name": "foods_ratings_type_for_unverified",
     "table": "app_settings",
     "data_type": "character varying",
-    "default_value": "stars",
+    "default_value": "inherit",
     "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,

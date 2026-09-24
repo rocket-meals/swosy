@@ -32,7 +32,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 15,
+    "sort": 16,
     "special": null,
     "translations": [
       {
@@ -42,7 +42,7 @@
     ],
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
     "name": "foods_feedbacks_labels_type",
