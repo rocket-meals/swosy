@@ -30,7 +30,8 @@
           "text": "Schreiben und Lesen",
           "value": "readAndWrite"
         }
-      ]
+      ],
+      "icon": "comment"
     },
     "readonly": false,
     "required": false,

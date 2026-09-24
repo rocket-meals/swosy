@@ -17,26 +17,32 @@
       "allowOther": true,
       "choices": [
         {
+          "icon": "block",
           "text": "disabled",
           "value": "disabled"
         },
         {
+          "icon": "star",
+          "text": "stars",
+          "value": "stars"
+        },
+        {
+          "icon": "star",
           "text": "favorite",
           "value": "favorite"
         },
         {
+          "icon": "heart_plus",
           "text": "hearts",
           "value": "hearts"
         },
         {
+          "icon": "thumbs_up_down",
           "text": "likes",
           "value": "likes"
-        },
-        {
-          "text": "stars",
-          "value": "stars"
         }
-      ]
+      ],
+      "icon": "star"
     },
     "readonly": false,
     "required": false,

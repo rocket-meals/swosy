@@ -1,28 +1,41 @@
 {
   "collection": "app_settings",
-  "field": "foods_ratings_enabled_for_unverified",
-  "type": "boolean",
+  "field": "foods_ratings_type_for_unverified",
+  "type": "string",
   "meta": {
     "collection": "app_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "foods_ratings_enabled_for_unverified",
+    "field": "foods_ratings_type_for_unverified",
     "group": "foods_settings",
     "hidden": false,
-    "interface": "boolean",
-    "note": null,
-    "options": null,
+    "interface": "select-dropdown",
+    "note": "Wie für unverifizierte Nutzer (Gast-Accounts)?",
+    "options": {
+      "allowNone": true,
+      "allowOther": true,
+      "choices": [
+        {
+          "icon": "link",
+          "text": "Erben: Wie verifizierte Nutzer",
+          "value": "inherit"
+        },
+        {
+          "icon": "block",
+          "text": "Ausgeschaltet",
+          "value": "disabled"
+        }
+      ]
+    },
     "readonly": false,
     "required": false,
     "sort": 13,
-    "special": [
-      "cast-boolean"
-    ],
+    "special": null,
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Gast Speise Bewertungen (unverifizierte Nutzer)"
+        "translation": "Gast: Speise Bewertung Typ (unverifiziert)"
       }
     ],
     "validation": null,
@@ -30,11 +43,11 @@
     "width": "half"
   },
   "schema": {
-    "name": "foods_ratings_enabled_for_unverified",
+    "name": "foods_ratings_type_for_unverified",
     "table": "app_settings",
-    "data_type": "boolean",
-    "default_value": true,
-    "max_length": null,
+    "data_type": "character varying",
+    "default_value": "inherit",
+    "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

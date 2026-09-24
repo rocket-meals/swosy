@@ -11,7 +11,7 @@
     "group": "foods_settings",
     "hidden": false,
     "interface": "select-dropdown",
-    "note": null,
+    "note": "Wie für unverifizierte Nutzer (Gast-Accounts)?",
     "options": {
       "choices": [
         {
