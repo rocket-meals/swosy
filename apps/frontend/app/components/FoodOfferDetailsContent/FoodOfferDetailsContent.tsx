@@ -92,7 +92,13 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const selectedCanteen = useSelectedCanteen();
     const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
     const { openAccountRequiredModal } = useAccountRequiredModal();
-    const { canRate } = useFoodFeedbackPermissions();
+    const { canRate, showRating, ratingRequiresVerifiedAccount } = useFoodFeedbackPermissions();
+    // Anonymous users and, when only verified accounts may rate, unverified profiles (guests)
+    // see the rating locked; the modal tells them whether a guest account is enough.
+    const isRatingLocked = !user?.id || !canRate;
+    const openRatingLockedModal = useCallback(() => {
+        openAccountRequiredModal({ verifiedAccountRequired: ratingRequiresVerifiedAccount });
+    }, [openAccountRequiredModal, ratingRequiresVerifiedAccount]);
     const { openNotificationConfirmModal, openNotificationPermissionModal } = useFoodNotificationModal();
 
     // Initialisierung mit dem zuletzt gespeicherten Reiter.
@@ -201,8 +207,8 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     }, [activeTab, FeedbacksContent, DetailsContent, LabelsContent]);
 
     const rateFood = useCallback((rating: number) => {
-        if (!user?.id) {
-            openAccountRequiredModal();
+        if (isRatingLocked) {
+            openRatingLockedModal();
             return;
         }
         const newRating = previousFeedback?.rating === rating ? null : rating;
@@ -218,7 +224,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             previousFeedback,
             dispatch,
         });
-    }, [user, previousFeedback, foodDetails, profile, foodOfferCanteenId, dispatch, openAccountRequiredModal, addPointsForFoodRating5Stars]);
+    }, [user, previousFeedback, foodDetails, profile, foodOfferCanteenId, dispatch, isRatingLocked, openRatingLockedModal, addPointsForFoodRating5Stars]);
 
     const updateFoodFeedbackNotification = useCallback(async () => {
         try {
@@ -364,15 +370,15 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
                         screenWidth={screenWidth}
                         openFullScreenImage={openFullScreenImage}
                         rateFood={rateFood}
-                        canRate={canRate}
+                        showRating={showRating}
                         previousFeedback={previousFeedback}
                         appSettings={appSettings}
                         foodsAreaColor={foods_area_color}
                         theme={theme}
                         translate={translate}
                         defaultImage={defaultImage}
-                        isAccountRequired={!user?.id}
-                        onAccountRequired={openAccountRequiredModal}
+                        isAccountRequired={isRatingLocked}
+                        onAccountRequired={openRatingLockedModal}
                         containerWidth={getContainerWidth}
                         initialImageAssetId={initialImageAssetId}
                         initialImageRemoteUrl={initialImageRemoteUrl}
@@ -384,7 +390,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
                         translate={translate}
                         previousFeedback={previousFeedback}
                         updateNotification={updateNotification}
-                        isGroupedWithRating={canRate}
+                        isGroupedWithRating={showRating}
                         foodsAreaColor={foods_area_color}
                         isAccountRequired={!user?.id}
                         onAccountRequired={openAccountRequiredModal}

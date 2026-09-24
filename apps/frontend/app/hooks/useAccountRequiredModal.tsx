@@ -10,6 +10,12 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { performLogout } from '@/helper/logoutHelper';
 
+export type AccountRequiredModalOptions = {
+	// The feature is only open to verified accounts (app_settings.*_for_unverified = disabled):
+	// adds the hint that a guest account is not enough.
+	verifiedAccountRequired?: boolean;
+};
+
 const useAccountRequiredModal = () => {
 	const { show, close, closeAll } = useMyScrollViewModal();
 	const { translate } = useLanguage();
@@ -17,7 +23,9 @@ const useAccountRequiredModal = () => {
 	const router = useRouter();
 	const dispatch = useDispatch();
 
-	const openAccountRequiredModal = useCallback(() => {
+	// Also used directly as onPress handler, so the argument may be a press event.
+	const openAccountRequiredModal = useCallback((options?: AccountRequiredModalOptions | unknown) => {
+		const verifiedAccountRequired = (options as AccountRequiredModalOptions | undefined)?.verifiedAccountRequired === true;
 		const handleLogin = () => {
 			void performLogout(dispatch, router);
 		};
@@ -33,6 +41,11 @@ const useAccountRequiredModal = () => {
 					<Text style={{ color: theme.sheet.text }}>
 						{translate(TranslationKeys.limited_access_description)}
 					</Text>
+					{verifiedAccountRequired && (
+						<Text style={{ color: theme.sheet.text }}>
+							{translate(TranslationKeys.verified_account_required_hint)}
+						</Text>
+					)}
 					<ProjectButton
 						text={`${translate(TranslationKeys.sign_in)} / ${translate(TranslationKeys.create_account)}`}
 						onPress={() => {

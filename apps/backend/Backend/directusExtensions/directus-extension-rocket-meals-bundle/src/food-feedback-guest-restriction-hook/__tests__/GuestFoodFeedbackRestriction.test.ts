@@ -4,8 +4,8 @@ import { FoodFeedbackPermissionHelper } from 'repo-depkit-common';
 import { findGuestFoodFeedbackViolation } from '../GuestFoodFeedbackRestriction';
 import { BackendTranslationKeys } from '../../helpers/translations';
 
-const nothingAllowed = FoodFeedbackPermissionHelper.getPermissions({ foods_ratings_enabled_for_unverified: false, foods_feedbacks_comments_type_for_unverified: 'read' }, true);
-const everythingAllowed = FoodFeedbackPermissionHelper.getPermissions({ foods_ratings_enabled_for_unverified: true, foods_feedbacks_comments_type_for_unverified: 'readAndWrite' }, true);
+const nothingAllowed = FoodFeedbackPermissionHelper.getPermissions({ foods_ratings_type_for_unverified: 'disabled', foods_feedbacks_comments_type_for_unverified: 'read' }, true);
+const everythingAllowed = FoodFeedbackPermissionHelper.getPermissions({ foods_ratings_type_for_unverified: 'inherit', foods_feedbacks_comments_type_for_unverified: 'readAndWrite' }, true);
 
 describe('findGuestFoodFeedbackViolation', () => {
   it('allows everything the settings allow', () => {

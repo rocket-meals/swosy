@@ -139,8 +139,13 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       [likedMarkings.length, currentRating]
     );
 
-    // Unverified profiles may be kept from rating; the average stays visible.
-    const canRate = FoodFeedbackPermissionHelper.canRate(appSettings, profile?.verified === false);
+    // foods_ratings_type = disabled hides the rating (the average stays visible). If only
+    // foods_ratings_type_for_unverified is disabled, guests see it locked like anonymous users.
+    const { showRating, canRate, ratingRequiresVerifiedAccount } = FoodFeedbackPermissionHelper.getPermissions(appSettings, profile?.verified === false);
+    const isRatingLocked = !user?.id || !canRate;
+    const openRatingLockedModal = useCallback(() => {
+      openAccountRequiredModal({ verifiedAccountRequired: ratingRequiresVerifiedAccount });
+    }, [openAccountRequiredModal, ratingRequiresVerifiedAccount]);
 
     const showAverageOnCard = appSettings?.foods_ratings_average_display === true && appSettings?.foods_ratings_average_display_on_card === true;
 
@@ -219,8 +224,8 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
 
     const updateRating = useCallback(
       async (rating: number | null) => {
-        if (!user?.id) {
-          openAccountRequiredModal();
+        if (isRatingLocked) {
+          openRatingLockedModal();
           return;
         }
 
@@ -249,7 +254,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
           }
         }
       },
-      [foodItem?.id, profile?.id, canteen?.id, previousFeedback, dispatch, user?.id, toast, openAccountRequiredModal, currentRating]
+      [foodItem?.id, profile?.id, canteen?.id, previousFeedback, dispatch, user?.id, toast, openAccountRequiredModal, currentRating, isRatingLocked, openRatingLockedModal]
     );
 
     const openMarkingLabel = useCallback(
@@ -371,17 +376,17 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                   )}
 
                   <View style={styles.overlayActionsContainer}>
-                    {(canRate || averageRatingDisplay !== null) && (
+                    {(showRating || averageRatingDisplay !== null) && (
                     <TouchableOpacity
-                      disabled={!canRate}
+                      disabled={!showRating}
                       style={[
                         styles.favContainer,
                         averageRatingDisplay !== null && styles.favContainerOval,
-                        !user?.id && accountRequiredStyles.wrapper,
-                        !user?.id && { borderWidth: 2, borderColor: foods_area_color },
+                        showRating && isRatingLocked && accountRequiredStyles.wrapper,
+                        showRating && isRatingLocked && { borderWidth: 2, borderColor: foods_area_color },
                       ]}
-                      onPress={!user?.id
-                        ? openAccountRequiredModal
+                      onPress={isRatingLocked
+                        ? openRatingLockedModal
                         : () => updateRating(RatingHelper.isMaxRating(currentRating) ? null : RatingHelper.MAX_RATING)
                       }
                     >
@@ -393,7 +398,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                       ) : (
                         <MaterialIcons name="star" size={20} color="white" />
                       )}
-                      {!user?.id && (
+                      {showRating && isRatingLocked && (
                         <View
                           pointerEvents="none"
                           style={[StyleSheet.absoluteFill, accountRequiredStyles.dimOverlay, { borderRadius: 50 }]}

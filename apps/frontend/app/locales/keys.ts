@@ -463,6 +463,7 @@ export const TranslationKeys = {
 	continue_without_rating: 'continue_without_rating',
 	access_limited: 'access_limited',
 	limited_access_description: 'limited_access_description',
+	verified_account_required_hint: 'verified_account_required_hint',
 	rating_requires_account_title: 'rating_requires_account_title',
 	rating_requires_account_description: 'rating_requires_account_description',
 	sign_in_with: 'sign_in_with',
