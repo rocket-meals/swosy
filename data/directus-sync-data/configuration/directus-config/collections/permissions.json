@@ -2324,8 +2324,7 @@
       "notifiy_on_free_apartments",
       "avatar",
       "credit_balance_last_transaction",
-      "credit_balance_date_updated",
-      "verified"
+      "credit_balance_date_updated"
     ],
     "presets": null,
     "validation": null,
