@@ -39,6 +39,9 @@ export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 		// Update profile data
 		// remove "foods_feedbacks" so that it doesn't get updated/overwritten
 		delete profileData.foods_feedbacks;
+		// "verified" is readable but not writable for users (set by the server/admins);
+		// sending it back would reject the whole update with 403
+		delete profileData.verified;
 
 		await this.updateItem(profileData?.id, profileData);
 
