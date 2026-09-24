@@ -13,10 +13,13 @@ export const FoodsFeedbacksCommentsTypes = {
 export type FoodsFeedbacksCommentsType = (typeof FoodsFeedbacksCommentsTypes)[keyof typeof FoodsFeedbacksCommentsTypes];
 
 /**
- * Zusätzlicher Wert nur für `foods_feedbacks_comments_type_for_unverified`: nicht verifizierte Profile
- * bekommen denselben Kommentar-Typ wie verifizierte (`foods_feedbacks_comments_type`).
+ * Wert der `*_for_unverified`-Einstellungen: nicht verifizierte Profile bekommen dieselbe
+ * Einstellung wie verifizierte.
  */
-export const FOODS_FEEDBACKS_COMMENTS_TYPE_INHERIT = 'inherit';
+export const FOOD_FEEDBACK_SETTING_INHERIT = 'inherit';
+
+/** Wert von `app_settings.foods_ratings_type` (und `..._for_unverified`), der Bewertungen ausschaltet. */
+export const FOODS_RATINGS_TYPE_DISABLED = 'disabled';
 
 export type FoodFeedbackPermissions = {
   canRate: boolean;
@@ -25,16 +28,18 @@ export type FoodFeedbackPermissions = {
   canReadComments: boolean;
 };
 
-type FoodFeedbackAppSettings = Pick<AppSettings, 'foods_feedbacks_comments_type' | 'foods_feedbacks_comments_type_for_unverified' | 'foods_ratings_enabled_for_unverified'>;
+type FoodFeedbackAppSettings = Pick<AppSettings, 'foods_feedbacks_comments_type' | 'foods_feedbacks_comments_type_for_unverified' | 'foods_ratings_type' | 'foods_ratings_type_for_unverified'>;
 
 /**
- * Was ein Nutzer bei Speisen-Rückmeldungen darf. Für nicht verifizierte Profile
- * (`profiles.verified === false`, z. B. Gäste ohne eigene E-Mail-Adresse) gelten eigene Einstellungen:
+ * Was ein Nutzer bei Speisen-Rückmeldungen darf.
  *
- * - `foods_ratings_enabled_for_unverified`: Dürfen nicht verifizierte Profile bewerten? Leer (`null`) = ja.
- * - `foods_feedbacks_comments_type_for_unverified`: Kommentar-Typ für nicht verifizierte Profile.
- *   `inherit` (`FOODS_FEEDBACKS_COMMENTS_TYPE_INHERIT`) oder leer (`null`) = derselbe Typ wie
- *   `foods_feedbacks_comments_type`.
+ * - `foods_ratings_type`: `disabled` schaltet Bewertungen (Sterne, Quick-Action auf der Karte) für alle aus.
+ * - `foods_feedbacks_comments_type`: Kommentar-Typ.
+ *
+ * Für nicht verifizierte Profile (`profiles.verified === false`, z. B. Gäste ohne eigene E-Mail-Adresse)
+ * gelten zusätzlich `foods_ratings_type_for_unverified` und `foods_feedbacks_comments_type_for_unverified`.
+ * `inherit` (`FOOD_FEEDBACK_SETTING_INHERIT`) oder leer (`null`) = dieselbe Einstellung wie für verifizierte
+ * Profile; `disabled` schaltet für sie aus, auch wenn verifizierte Profile dürfen.
  *
  * Wird im Frontend (was angezeigt wird) und im Backend (was gespeichert werden darf) genutzt.
  */
@@ -59,10 +64,12 @@ export class FoodFeedbackPermissionHelper {
   }
 
   static canRate(appSettings: FoodFeedbackAppSettings | null | undefined, isUnverified: boolean): boolean {
+    const verifiedCanRate = appSettings?.foods_ratings_type !== FOODS_RATINGS_TYPE_DISABLED;
     if (!isUnverified) {
-      return true;
+      return verifiedCanRate;
     }
-    return appSettings?.foods_ratings_enabled_for_unverified !== false;
+    // `inherit`, empty and unknown values all follow verified profiles.
+    return appSettings?.foods_ratings_type_for_unverified !== FOODS_RATINGS_TYPE_DISABLED && verifiedCanRate;
   }
 
   static canWriteComments(commentsType: FoodsFeedbacksCommentsType): boolean {

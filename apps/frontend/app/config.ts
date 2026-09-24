@@ -151,7 +151,9 @@ export function getVersionPatch() {
         //     foods_feedbacks_comments_type_for_unverified
         // 60: profile updates no longer send the read-only field "verified"
         // 61: foods_feedbacks_comments_type_for_unverified = "inherit" follows the regular comments type
-        return 61;
+        // 62: foods_ratings_type "disabled" hides the stars and the rating quick action;
+        //     foods_ratings_type_for_unverified (inherit/disabled) for unverified profiles
+        return 62;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

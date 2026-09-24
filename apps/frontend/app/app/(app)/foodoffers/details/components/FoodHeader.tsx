@@ -16,7 +16,7 @@ interface FoodHeaderProps extends FoodDetailsSectionBaseProps {
     screenWidth: number;
     openFullScreenImage: () => void;
     rateFood: (rating: number) => void;
-    // false hides the rating row, e.g. for unverified profiles when app_settings.foods_ratings_enabled_for_unverified is off
+    // false hides the rating row (app_settings.foods_ratings_type or foods_ratings_type_for_unverified is disabled)
     canRate?: boolean;
     appSettings: any;
     defaultImage?: string | null;

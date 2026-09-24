@@ -139,7 +139,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       [likedMarkings.length, currentRating]
     );
 
-    // Unverified profiles may be kept from rating; the average stays visible.
+    // foods_ratings_type (and ..._for_unverified) can switch rating off; the average stays visible.
     const canRate = FoodFeedbackPermissionHelper.canRate(appSettings, profile?.verified === false);
 
     const showAverageOnCard = appSettings?.foods_ratings_average_display === true && appSettings?.foods_ratings_average_display_on_card === true;
