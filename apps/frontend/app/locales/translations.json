@@ -4209,6 +4209,16 @@
     "tr": "Kişiselleştirilmiş bir deneyim için lütfen giriş yapın veya hesap oluşturun. Alternatif olarak sınırlı özelliklerle misafir olarak devam edebilirsiniz.",
     "zh": "要获得个性化体验，请登录或创建帐户。或者，您可以以访客身份继续，但功能受限。"
   },
+  "verified_account_required_hint": {
+    "de": "Für diese Funktion reicht ein Gast-Account nicht aus. Melde dich bitte mit einem Account mit eigener E-Mail-Adresse an.",
+    "en": "A guest account is not enough for this feature. Please sign in with an account that has its own email address.",
+    "ar": "حساب الضيف لا يكفي لهذه الميزة. يرجى تسجيل الدخول بحساب له عنوان بريد إلكتروني خاص به.",
+    "es": "Para esta función no basta con una cuenta de invitado. Inicia sesión con una cuenta que tenga su propia dirección de correo electrónico.",
+    "fr": "Un compte invité ne suffit pas pour cette fonction. Veuillez vous connecter avec un compte disposant de sa propre adresse e-mail.",
+    "ru": "Для этой функции гостевого аккаунта недостаточно. Войдите в аккаунт с собственным адресом электронной почты.",
+    "tr": "Bu özellik için misafir hesabı yeterli değildir. Lütfen kendi e-posta adresi olan bir hesapla giriş yapın.",
+    "zh": "访客帐户无法使用此功能。请使用拥有自己电子邮箱地址的帐户登录。"
+  },
   "rating_requires_account_title": {
     "de": "Bewerten nur mit Account",
     "en": "Ratings require an account",

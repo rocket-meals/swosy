@@ -50,12 +50,16 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
 
-	// Guests may have a different comments type than registered users, see useFoodFeedbackPermissions.
-	const { commentsType: commentType } = useFoodFeedbackPermissions();
+	// Unverified profiles (guests) may have a different comments type, see useFoodFeedbackPermissions.
+	// The input is shown whenever verified accounts may write; for anyone who may not (anonymous
+	// users, guests when only verified accounts may write) it is locked.
+	const { commentsType: commentType, canWriteComments, showCommentInput, writingCommentsRequiresVerifiedAccount } = useFoodFeedbackPermissions();
 	const [loading, setLoading] = useState(loadingState);
 	const [comment, setComment] = useState('');
 	const [adminFeedbacks, setAdminFeedbacks] = useState<DatabaseTypes.FoodsFeedbacks[]>([]);
 	const { openAccountRequiredModal } = useAccountRequiredModal();
+	const isCommentInputLocked = !user?.id || !canWriteComments;
+	const openCommentLockedModal = () => openAccountRequiredModal({ verifiedAccountRequired: writingCommentsRequiresVerifiedAccount });
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 
 	// Optimized Selectors
@@ -88,8 +92,9 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 	}, [isManagement, foodId, foodFeedbackHelper]);
 
 	const submitCommentFeedback = async (string: string | null) => {
-		if (!user?.id) {
-			openAccountRequiredModal();
+		// Deleting the own comment (null) stays possible, writing needs the right to write.
+		if (!user?.id || (string !== null && !canWriteComments)) {
+			openCommentLockedModal();
 			return;
 		}
 
@@ -215,7 +220,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 					<FeedbackLabel key={label.id} label={label.translations} icon={label.icon ? label.icon : undefined} imageUrl={label.image ? label.image : undefined} labelEntries={labelEntries} foodId={foodDetails?.id} offerId={offerId} groupPosition={groupPosition} isAccountRequired={!user?.id} />
 				);
 			})}
-			{commentType !== 'disabled' && commentType !== 'read' && (
+			{showCommentInput && (
 				<View style={styles.commentSectionContainer}>
 					<SettingsListTextInput
 						label={translate(TranslationKeys.your_comment)}
@@ -230,8 +235,8 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 						groupPosition="single"
 						saveLabel={translate(TranslationKeys.save_comment)}
 						checkTextInput={(value) => ({ isValid: value.length <= 120, value })}
-						isAccountRequired={!user?.id}
-						onAccountRequired={openAccountRequiredModal}
+						isAccountRequired={isCommentInputLocked}
+						onAccountRequired={openCommentLockedModal}
 					/>
 				</View>
 			)}

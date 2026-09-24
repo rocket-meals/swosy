@@ -16,8 +16,9 @@ interface FoodHeaderProps extends FoodDetailsSectionBaseProps {
     screenWidth: number;
     openFullScreenImage: () => void;
     rateFood: (rating: number) => void;
-    // false hides the rating row (app_settings.foods_ratings_type or foods_ratings_type_for_unverified is disabled)
-    canRate?: boolean;
+    // false hides the rating row (app_settings.foods_ratings_type is disabled). A rating that the
+    // current user may not use stays visible and is locked via isAccountRequired.
+    showRating?: boolean;
     appSettings: any;
     defaultImage?: string | null;
     initialImageAssetId?: string | number | null;
@@ -127,7 +128,7 @@ const FoodHeader = ({
     screenWidth,
     openFullScreenImage,
     rateFood,
-    canRate = true,
+    showRating = true,
     previousFeedback,
     appSettings,
     foodsAreaColor,
@@ -217,7 +218,7 @@ const FoodHeader = ({
                                 starSize={22}
                             />
                         </View>
-                        {canRate && (
+                        {showRating && (
                         <View style={webLayout.ratingListWrapperStyle}>
                             <SettingsList
                                 leftIcon={<MaterialIcons name="star" size={22} />}
@@ -278,7 +279,7 @@ const FoodHeader = ({
             >
                 {foodDetails?.name}
             </Text>
-            {canRate && (
+            {showRating && (
             <View style={styles.marginTopMedium}>
                 {/* groupPosition="top" so the rating item visually groups with the notification item below (no gap, "bottom" position on mobile) */}
                 <SettingsList
@@ -306,7 +307,8 @@ export default memo(FoodHeader, (prevProps, nextProps) => {
         prevProps.theme === nextProps.theme &&
         prevProps.defaultImage === nextProps.defaultImage &&
         prevProps.isAccountRequired === nextProps.isAccountRequired &&
-        prevProps.canRate === nextProps.canRate &&
+        prevProps.showRating === nextProps.showRating &&
+        prevProps.onAccountRequired === nextProps.onAccountRequired &&
         prevProps.initialImageAssetId === nextProps.initialImageAssetId &&
         prevProps.initialImageRemoteUrl === nextProps.initialImageRemoteUrl
     );

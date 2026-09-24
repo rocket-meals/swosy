@@ -153,7 +153,9 @@ export function getVersionPatch() {
         // 61: foods_feedbacks_comments_type_for_unverified = "inherit" follows the regular comments type
         // 62: foods_ratings_type "disabled" hides the stars and the rating quick action;
         //     foods_ratings_type_for_unverified (inherit/disabled) for unverified profiles
-        return 62;
+        // 63: rating/comment input locked for guests when only verified accounts may use it,
+        //     with the hint that a guest account is not enough
+        return 63;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
