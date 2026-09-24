@@ -10,6 +10,11 @@ describe('getInitialProfileForUser', () => {
     expect(profile.nickname).toMatch(/^Guest_\d{10}$/);
   });
 
+  it('marks guests as not verified, because the database default of profiles.verified is true', () => {
+    const profile = getInitialProfileForUser({ email: GuestAccountHelper.buildEmail('abc') }, now);
+    expect(profile.verified).toBe(false);
+  });
+
   it('leaves profiles of other users empty', () => {
     expect(getInitialProfileForUser({ email: 'someone@example.com' }, now)).toEqual({});
     expect(getInitialProfileForUser({ email: null }, now)).toEqual({});
