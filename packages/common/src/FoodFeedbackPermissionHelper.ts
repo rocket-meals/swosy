@@ -12,6 +12,12 @@ export const FoodsFeedbacksCommentsTypes = {
 } as const;
 export type FoodsFeedbacksCommentsType = (typeof FoodsFeedbacksCommentsTypes)[keyof typeof FoodsFeedbacksCommentsTypes];
 
+/**
+ * Zusätzlicher Wert nur für `foods_feedbacks_comments_type_for_unverified`: nicht verifizierte Profile
+ * bekommen denselben Kommentar-Typ wie verifizierte (`foods_feedbacks_comments_type`).
+ */
+export const FOODS_FEEDBACKS_COMMENTS_TYPE_INHERIT = 'inherit';
+
 export type FoodFeedbackPermissions = {
   canRate: boolean;
   commentsType: FoodsFeedbacksCommentsType;
@@ -27,7 +33,8 @@ type FoodFeedbackAppSettings = Pick<AppSettings, 'foods_feedbacks_comments_type'
  *
  * - `foods_ratings_enabled_for_unverified`: Dürfen nicht verifizierte Profile bewerten? Leer (`null`) = ja.
  * - `foods_feedbacks_comments_type_for_unverified`: Kommentar-Typ für nicht verifizierte Profile.
- *   Leer (`null`) = derselbe Typ wie `foods_feedbacks_comments_type`.
+ *   `inherit` (`FOODS_FEEDBACKS_COMMENTS_TYPE_INHERIT`) oder leer (`null`) = derselbe Typ wie
+ *   `foods_feedbacks_comments_type`.
  *
  * Wird im Frontend (was angezeigt wird) und im Backend (was gespeichert werden darf) genutzt.
  */
@@ -47,6 +54,7 @@ export class FoodFeedbackPermissionHelper {
     if (!isUnverified) {
       return verifiedType;
     }
+    // `inherit`, empty and unknown values all follow the type of verified profiles.
     return FoodFeedbackPermissionHelper.parseCommentsType(appSettings?.foods_feedbacks_comments_type_for_unverified) ?? verifiedType;
   }
 

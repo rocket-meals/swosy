@@ -1,4 +1,4 @@
-import { FoodFeedbackPermissionHelper, FoodsFeedbacksCommentsTypes } from '../FoodFeedbackPermissionHelper';
+import { FOODS_FEEDBACKS_COMMENTS_TYPE_INHERIT, FoodFeedbackPermissionHelper, FoodsFeedbacksCommentsTypes } from '../FoodFeedbackPermissionHelper';
 
 describe('FoodFeedbackPermissionHelper', () => {
   it('always lets verified profiles rate', () => {
@@ -25,6 +25,12 @@ describe('FoodFeedbackPermissionHelper', () => {
   it('falls back to the regular comments type when no unverified type is set', () => {
     const appSettings = { foods_feedbacks_comments_type: 'write', foods_feedbacks_comments_type_for_unverified: null };
     expect(FoodFeedbackPermissionHelper.getCommentsType(appSettings, true)).toBe(FoodsFeedbacksCommentsTypes.write);
+  });
+
+  it('follows the regular comments type when the unverified type is inherit', () => {
+    const appSettings = { foods_feedbacks_comments_type: 'readAndWrite', foods_feedbacks_comments_type_for_unverified: FOODS_FEEDBACKS_COMMENTS_TYPE_INHERIT };
+    expect(FoodFeedbackPermissionHelper.getCommentsType(appSettings, true)).toBe(FoodsFeedbacksCommentsTypes.readAndWrite);
+    expect(FoodFeedbackPermissionHelper.getCommentsType({ ...appSettings, foods_feedbacks_comments_type: 'disabled' }, true)).toBe(FoodsFeedbacksCommentsTypes.disabled);
   });
 
   it('treats a missing or unknown comments type as disabled', () => {
