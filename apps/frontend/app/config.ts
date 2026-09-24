@@ -146,7 +146,9 @@ export function getVersionPatch() {
         // 57: guests can be kept from rating and commenting foods via
         //     app_settings.foods_ratings_guests_enabled and
         //     foods_feedbacks_comments_type_guests
-        return 57;
+        // 58: guest restrictions do not apply when the profile is verified
+        //     through another, non-guest account (profiles.verified)
+        return 58;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

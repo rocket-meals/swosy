@@ -120,6 +120,11 @@
       },
       {
         "type": "hook",
+        "name": "profile-verified-hook",
+        "source": "src/profile-verified-hook/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "food-feedback-report-schedule",
         "source": "src/food-feedback-report-schedule/index.ts"
       },

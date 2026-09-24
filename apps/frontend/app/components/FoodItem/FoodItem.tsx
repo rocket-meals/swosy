@@ -140,7 +140,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     );
 
     // Guests may be kept from rating (app_settings.foods_ratings_guests_enabled); the average stays visible.
-    const canRate = FoodFeedbackPermissionHelper.canRate(appSettings, GuestAccountHelper.isGuestEmail(user?.email));
+    const canRate = FoodFeedbackPermissionHelper.canRate(appSettings, GuestAccountHelper.isRestrictedGuest(user?.email, profile?.verified));
 
     const showAverageOnCard = appSettings?.foods_ratings_average_display === true && appSettings?.foods_ratings_average_display_on_card === true;
 

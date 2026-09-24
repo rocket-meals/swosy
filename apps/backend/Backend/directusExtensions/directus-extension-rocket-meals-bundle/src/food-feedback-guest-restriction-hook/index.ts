@@ -3,7 +3,9 @@
  * serverseitig durch.
  *
  * Gäste (siehe `GuestAccountHelper`) haben dieselbe Rolle `User` wie registrierte Nutzer, die
- * Directus-Policies können sie also nicht unterscheiden. Deshalb prüft dieser Hook beim Anlegen und
+ * Directus-Policies können sie also nicht unterscheiden. Ein Gast, dessen Profil über einen weiteren,
+ * echten Account verifiziert ist (`profiles.verified`, gepflegt vom `profile-verified-hook`), wird
+ * wie ein registrierter Nutzer behandelt. Deshalb prüft dieser Hook beim Anlegen und
  * Ändern von `foods_feedbacks`, ob ein Gast gerade eine Bewertung oder einen Kommentar setzt, obwohl
  * `app_settings.foods_ratings_guests_enabled` bzw. `app_settings.foods_feedbacks_comments_type_guests`
  * das verbieten (Auswertung in `FoodFeedbackPermissionHelper`). Die App blendet die Eingaben für
@@ -21,7 +23,7 @@ import { findGuestFoodFeedbackViolation } from './GuestFoodFeedbackRestriction';
 const HOOK_NAME = 'food-feedback-guest-restriction-hook';
 
 export default defineHook(async ({ filter }, apiContext) => {
-  async function readActingGuest(myDatabaseHelper: MyDatabaseHelper, accountability: Accountability | null | undefined): Promise<DatabaseTypes.DirectusUsers | undefined> {
+  async function readActingRestrictedGuest(myDatabaseHelper: MyDatabaseHelper, accountability: Accountability | null | undefined): Promise<DatabaseTypes.DirectusUsers | undefined> {
     const userId = accountability?.user;
     if (!userId) {
       // Internal calls without a user (other hooks, schedules) are never guests.
@@ -29,9 +31,10 @@ export default defineHook(async ({ filter }, apiContext) => {
     }
     const user = await myDatabaseHelper.getUsersHelper().readOne(userId, {
       // The profile carries the language the error message has to be rendered in.
-      fields: ['id', 'email', 'profile.language'],
+      fields: ['id', 'email', 'profile.language', 'profile.verified'],
     });
-    return GuestAccountHelper.isGuestEmail(user?.email) ? user : undefined;
+    const profile = typeof user?.profile === 'object' ? user.profile : undefined;
+    return GuestAccountHelper.isRestrictedGuest(user?.email, profile?.verified) ? user : undefined;
   }
 
   async function readExistingFeedbacks(myDatabaseHelper: MyDatabaseHelper, keys: PrimaryKey[]): Promise<DatabaseTypes.FoodsFeedbacks[]> {
@@ -50,7 +53,7 @@ export default defineHook(async ({ filter }, apiContext) => {
     }
 
     const myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
-    const guest = await readActingGuest(myDatabaseHelper, eventContext?.accountability);
+    const guest = await readActingRestrictedGuest(myDatabaseHelper, eventContext?.accountability);
     if (!guest) {
       return;
     }

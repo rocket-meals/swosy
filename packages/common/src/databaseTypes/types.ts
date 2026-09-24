@@ -1862,6 +1862,7 @@ export type Profiles = {
   status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+  verified?: boolean | null;
 };
 
 export type ProfilesBuildingsFavorites = {
