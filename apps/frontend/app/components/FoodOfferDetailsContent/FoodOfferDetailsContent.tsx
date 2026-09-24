@@ -27,6 +27,7 @@ import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
+import useFoodFeedbackPermissions from '@/hooks/useFoodFeedbackPermissions';
 import useFoodNotificationModal from '@/hooks/useFoodNotificationModal';
 import FoodHeader from '@/app/(app)/foodoffers/details/components/FoodHeader';
 import NotificationSection from '@/app/(app)/foodoffers/details/components/NotificationSection';
@@ -91,6 +92,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const selectedCanteen = useSelectedCanteen();
     const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
     const { openAccountRequiredModal } = useAccountRequiredModal();
+    const { canRate } = useFoodFeedbackPermissions();
     const { openNotificationConfirmModal, openNotificationPermissionModal } = useFoodNotificationModal();
 
     // Initialisierung mit dem zuletzt gespeicherten Reiter.
@@ -362,6 +364,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
                         screenWidth={screenWidth}
                         openFullScreenImage={openFullScreenImage}
                         rateFood={rateFood}
+                        canRate={canRate}
                         previousFeedback={previousFeedback}
                         appSettings={appSettings}
                         foodsAreaColor={foods_area_color}
@@ -381,6 +384,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
                         translate={translate}
                         previousFeedback={previousFeedback}
                         updateNotification={updateNotification}
+                        isGroupedWithRating={canRate}
                         foodsAreaColor={foods_area_color}
                         isAccountRequired={!user?.id}
                         onAccountRequired={openAccountRequiredModal}

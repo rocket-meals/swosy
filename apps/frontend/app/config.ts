@@ -146,7 +146,10 @@ export function getVersionPatch() {
         // 57: "Lieber anonym bleiben?" replaced by a neutral "Alternativ:", so the
         //     guest account is not pushed aside by the anonymous option
         // 58: the link after it reads "Eingeschränkt ohne Account weiter"
-        return 58;
+        // 59: unverified profiles (profiles.verified) can be kept from rating and
+        //     commenting foods via foods_ratings_enabled_for_unverified and
+        //     foods_feedbacks_comments_type_for_unverified
+        return 59;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -41,6 +41,8 @@ export const BackendTranslationKeys = {
   dashboard_system_panel_edit_forbidden: 'dashboard_system_panel_edit_forbidden',
   dashboard_system_delete_forbidden: 'dashboard_system_delete_forbidden',
   dashboard_system_marker_forbidden: 'dashboard_system_marker_forbidden',
+  food_feedback_guest_rating_forbidden: 'food_feedback_guest_rating_forbidden',
+  food_feedback_guest_comment_forbidden: 'food_feedback_guest_comment_forbidden',
 } as const;
 
 export type BackendTranslationKeys = (typeof BackendTranslationKeys)[keyof typeof BackendTranslationKeys];
