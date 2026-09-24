@@ -63,10 +63,7 @@ export function getVersionPatch() {
 	// 36: common: GuestAccountHelper and popup events restricted to anonymous users
 	// 37: common: guest accounts use guest.example.com (Directus rejects .invalid on login)
 	// 38: common: default nickname Guest_<YYMMDDHHmm> for guest profiles
-	// 39: common: FoodFeedbackPermissionHelper (separate rating/comment settings for guests)
-	// 40: common: GuestAccountHelper.isVerifiedProfile/isRestrictedGuest, profiles.verified
-	// 41: common: FoodFeedbackPermissionHelper uses the *_for_unverified app settings
-	return 41;
+	return 38;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
