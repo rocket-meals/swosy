@@ -8,12 +8,17 @@
     "display": null,
     "display_options": null,
     "field": "foods_feedbacks_comments_type_for_unverified",
-    "group": null,
+    "group": "foods_settings",
     "hidden": false,
     "interface": "select-dropdown",
     "note": null,
     "options": {
       "choices": [
+        {
+          "icon": "link",
+          "text": "Wie verifizierte Profile",
+          "value": "inherit"
+        },
         {
           "text": "Ausgeschaltet",
           "value": "disabled"
@@ -34,23 +39,23 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 29,
+    "sort": 15,
     "special": null,
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Speise Kommentare Typ"
+        "translation": "Speise Kommentare Typ (unverifizierte Nutzer)"
       }
     ],
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
     "name": "foods_feedbacks_comments_type_for_unverified",
     "table": "app_settings",
     "data_type": "character varying",
-    "default_value": "disabled",
+    "default_value": "inherit",
     "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,

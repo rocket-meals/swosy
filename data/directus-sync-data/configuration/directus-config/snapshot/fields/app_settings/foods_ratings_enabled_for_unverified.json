@@ -8,21 +8,26 @@
     "display": null,
     "display_options": null,
     "field": "foods_ratings_enabled_for_unverified",
-    "group": null,
+    "group": "foods_settings",
     "hidden": false,
     "interface": "boolean",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 28,
+    "sort": 13,
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Gast Speise Bewertungen (unverifizierte Nutzer)"
+      }
+    ],
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
     "name": "foods_ratings_enabled_for_unverified",

@@ -40,7 +40,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 13,
+    "sort": 12,
     "special": null,
     "translations": [
       {
@@ -50,7 +50,7 @@
     ],
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
     "name": "foods_ratings_type",
