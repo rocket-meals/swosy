@@ -143,7 +143,10 @@ export function getVersionPatch() {
         // 56: login buttons are 50px tall instead of 58px, "Anmelden als: Gast",
         //     "Ohne Account fortfahren" is a text link now, login links get a
         //     24px touch target
-        return 56;
+        // 57: "Lieber anonym bleiben?" replaced by a neutral "Alternativ:", so the
+        //     guest account is not pushed aside by the anonymous option
+        // 58: the link after it reads "Eingeschränkt ohne Account weiter"
+        return 58;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
