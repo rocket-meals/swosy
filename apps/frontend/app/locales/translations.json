@@ -4160,14 +4160,14 @@
     "zh": "无法创建访客资料，请稍后再试。"
   },
   "continue_without_account": {
-    "de": "Ohne Account fortfahren",
-    "en": "Continue without account",
-    "ar": "المتابعة بدون حساب",
-    "es": "Continuar sin cuenta",
-    "fr": "Continuer sans compte",
-    "ru": "Продолжить без аккаунта",
-    "tr": "Hesap olmadan devam et",
-    "zh": "无需账户继续"
+    "de": "Eingeschränkt ohne Account weiter",
+    "en": "Continue with limited features, no account",
+    "ar": "المتابعة بميزات محدودة بدون حساب",
+    "es": "Continuar con funciones limitadas sin cuenta",
+    "fr": "Continuer en mode limité sans compte",
+    "ru": "Продолжить с ограничениями без аккаунта",
+    "tr": "Hesap olmadan sınırlı devam et",
+    "zh": "无需账户，以受限模式继续"
   },
   "without_account_question": {
     "de": "Alternativ:",

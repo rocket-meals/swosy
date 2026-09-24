@@ -145,7 +145,8 @@ export function getVersionPatch() {
         //     24px touch target
         // 57: "Lieber anonym bleiben?" replaced by a neutral "Alternativ:", so the
         //     guest account is not pushed aside by the anonymous option
-        return 57;
+        // 58: the link after it reads "Eingeschränkt ohne Account weiter"
+        return 58;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
