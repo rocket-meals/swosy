@@ -4170,14 +4170,14 @@
     "zh": "无需账户继续"
   },
   "without_account_question": {
-    "de": "Lieber anonym bleiben?",
-    "en": "Prefer to stay anonymous?",
-    "ar": "تفضّل البقاء مجهول الهوية؟",
-    "es": "¿Prefieres permanecer en el anonimato?",
-    "fr": "Vous préférez rester anonyme ?",
-    "ru": "Хотите остаться анонимным?",
-    "tr": "Anonim kalmayı mı tercih edersin?",
-    "zh": "想保持匿名吗？"
+    "de": "Alternativ:",
+    "en": "Alternatively:",
+    "ar": "أو بدلاً من ذلك:",
+    "es": "Alternativamente:",
+    "fr": "Sinon :",
+    "ru": "Или:",
+    "tr": "Alternatif olarak:",
+    "zh": "或者："
   },
   "continue_without_rating": {
     "de": "Weiter ohne Bewertung",
