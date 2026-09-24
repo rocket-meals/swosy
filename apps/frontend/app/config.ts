@@ -149,7 +149,8 @@ export function getVersionPatch() {
         // 59: unverified profiles (profiles.verified) can be kept from rating and
         //     commenting foods via foods_ratings_enabled_for_unverified and
         //     foods_feedbacks_comments_type_for_unverified
-        return 59;
+        // 60: profile updates no longer send the read-only field "verified"
+        return 60;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
