@@ -1,36 +1,31 @@
 {
   "collection": "app_settings",
-  "field": "foods_ratings_guests_enabled",
+  "field": "foods_ratings_enabled_for_unverified",
   "type": "boolean",
   "meta": {
     "collection": "app_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "foods_ratings_guests_enabled",
-    "group": "foods_settings",
+    "field": "foods_ratings_enabled_for_unverified",
+    "group": null,
     "hidden": false,
     "interface": "boolean",
-    "note": "Dürfen Gäste (Nutzer ohne eigene E-Mail-Adresse) Speisen bewerten?",
+    "note": null,
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 18,
+    "sort": 28,
     "special": [
       "cast-boolean"
     ],
-    "translations": [
-      {
-        "language": "de-DE",
-        "translation": "Speise Bewertungen durch Gäste erlauben"
-      }
-    ],
+    "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
-    "name": "foods_ratings_guests_enabled",
+    "name": "foods_ratings_enabled_for_unverified",
     "table": "app_settings",
     "data_type": "boolean",
     "default_value": true,

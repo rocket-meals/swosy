@@ -1,29 +1,29 @@
 import { FoodFeedbackPermissionHelper, FoodsFeedbacksCommentsTypes } from '../FoodFeedbackPermissionHelper';
 
 describe('FoodFeedbackPermissionHelper', () => {
-  it('always lets registered users rate', () => {
-    expect(FoodFeedbackPermissionHelper.canRate({ foods_ratings_guests_enabled: false }, false)).toBe(true);
+  it('always lets verified profiles rate', () => {
+    expect(FoodFeedbackPermissionHelper.canRate({ foods_ratings_enabled_for_unverified: false }, false)).toBe(true);
   });
 
-  it('lets guests rate unless it is switched off explicitly', () => {
+  it('lets unverified profiles rate unless it is switched off explicitly', () => {
     expect(FoodFeedbackPermissionHelper.canRate(null, true)).toBe(true);
-    expect(FoodFeedbackPermissionHelper.canRate({ foods_ratings_guests_enabled: null }, true)).toBe(true);
-    expect(FoodFeedbackPermissionHelper.canRate({ foods_ratings_guests_enabled: true }, true)).toBe(true);
-    expect(FoodFeedbackPermissionHelper.canRate({ foods_ratings_guests_enabled: false }, true)).toBe(false);
+    expect(FoodFeedbackPermissionHelper.canRate({ foods_ratings_enabled_for_unverified: null }, true)).toBe(true);
+    expect(FoodFeedbackPermissionHelper.canRate({ foods_ratings_enabled_for_unverified: true }, true)).toBe(true);
+    expect(FoodFeedbackPermissionHelper.canRate({ foods_ratings_enabled_for_unverified: false }, true)).toBe(false);
   });
 
-  it('uses the regular comments type for registered users', () => {
-    const appSettings = { foods_feedbacks_comments_type: 'readAndWrite', foods_feedbacks_comments_type_guests: 'disabled' };
+  it('uses the regular comments type for verified profiles', () => {
+    const appSettings = { foods_feedbacks_comments_type: 'readAndWrite', foods_feedbacks_comments_type_for_unverified: 'disabled' };
     expect(FoodFeedbackPermissionHelper.getCommentsType(appSettings, false)).toBe(FoodsFeedbacksCommentsTypes.readAndWrite);
   });
 
-  it('uses the guest comments type for guests', () => {
-    const appSettings = { foods_feedbacks_comments_type: 'readAndWrite', foods_feedbacks_comments_type_guests: 'read' };
+  it('uses the unverified comments type for unverified profiles', () => {
+    const appSettings = { foods_feedbacks_comments_type: 'readAndWrite', foods_feedbacks_comments_type_for_unverified: 'read' };
     expect(FoodFeedbackPermissionHelper.getCommentsType(appSettings, true)).toBe(FoodsFeedbacksCommentsTypes.read);
   });
 
-  it('falls back to the regular comments type when no guest type is set', () => {
-    const appSettings = { foods_feedbacks_comments_type: 'write', foods_feedbacks_comments_type_guests: null };
+  it('falls back to the regular comments type when no unverified type is set', () => {
+    const appSettings = { foods_feedbacks_comments_type: 'write', foods_feedbacks_comments_type_for_unverified: null };
     expect(FoodFeedbackPermissionHelper.getCommentsType(appSettings, true)).toBe(FoodsFeedbacksCommentsTypes.write);
   });
 
@@ -33,13 +33,13 @@ describe('FoodFeedbackPermissionHelper', () => {
   });
 
   it('derives read and write rights from the comments type', () => {
-    expect(FoodFeedbackPermissionHelper.getPermissions({ foods_feedbacks_comments_type_guests: 'write' }, true)).toEqual({
+    expect(FoodFeedbackPermissionHelper.getPermissions({ foods_feedbacks_comments_type_for_unverified: 'write' }, true)).toEqual({
       canRate: true,
       commentsType: 'write',
       canWriteComments: true,
       canReadComments: false,
     });
-    expect(FoodFeedbackPermissionHelper.getPermissions({ foods_feedbacks_comments_type_guests: 'read', foods_ratings_guests_enabled: false }, true)).toEqual({
+    expect(FoodFeedbackPermissionHelper.getPermissions({ foods_feedbacks_comments_type_for_unverified: 'read', foods_ratings_enabled_for_unverified: false }, true)).toEqual({
       canRate: false,
       commentsType: 'read',
       canWriteComments: false,

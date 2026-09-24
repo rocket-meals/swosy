@@ -4,19 +4,19 @@ import { FoodFeedbackPermissionHelper } from 'repo-depkit-common';
 import { findGuestFoodFeedbackViolation } from '../GuestFoodFeedbackRestriction';
 import { BackendTranslationKeys } from '../../helpers/translations';
 
-const nothingAllowed = FoodFeedbackPermissionHelper.getPermissions({ foods_ratings_guests_enabled: false, foods_feedbacks_comments_type_guests: 'read' }, true);
-const everythingAllowed = FoodFeedbackPermissionHelper.getPermissions({ foods_ratings_guests_enabled: true, foods_feedbacks_comments_type_guests: 'readAndWrite' }, true);
+const nothingAllowed = FoodFeedbackPermissionHelper.getPermissions({ foods_ratings_enabled_for_unverified: false, foods_feedbacks_comments_type_for_unverified: 'read' }, true);
+const everythingAllowed = FoodFeedbackPermissionHelper.getPermissions({ foods_ratings_enabled_for_unverified: true, foods_feedbacks_comments_type_for_unverified: 'readAndWrite' }, true);
 
 describe('findGuestFoodFeedbackViolation', () => {
   it('allows everything the settings allow', () => {
     expect(findGuestFoodFeedbackViolation({ rating: 5, comment: 'Lecker' }, [], everythingAllowed)).toBeNull();
   });
 
-  it('blocks a new rating when guests may not rate', () => {
+  it('blocks a new rating when unverified profiles may not rate', () => {
     expect(findGuestFoodFeedbackViolation({ rating: 5 }, [], nothingAllowed)).toBe(BackendTranslationKeys.food_feedback_guest_rating_forbidden);
   });
 
-  it('blocks a new comment when guests may not write comments', () => {
+  it('blocks a new comment when unverified profiles may not write comments', () => {
     expect(findGuestFoodFeedbackViolation({ comment: 'Lecker' }, [], nothingAllowed)).toBe(BackendTranslationKeys.food_feedback_guest_comment_forbidden);
   });
 

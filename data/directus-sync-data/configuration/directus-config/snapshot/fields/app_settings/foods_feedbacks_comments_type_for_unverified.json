@@ -1,17 +1,17 @@
 {
   "collection": "app_settings",
-  "field": "foods_feedbacks_comments_type_guests",
+  "field": "foods_feedbacks_comments_type_for_unverified",
   "type": "string",
   "meta": {
     "collection": "app_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "foods_feedbacks_comments_type_guests",
-    "group": "foods_settings",
+    "field": "foods_feedbacks_comments_type_for_unverified",
+    "group": null,
     "hidden": false,
     "interface": "select-dropdown",
-    "note": "Kommentar-Typ für Gäste (Nutzer ohne eigene E-Mail-Adresse). Leer = wie bei registrierten Nutzern.",
+    "note": null,
     "options": {
       "choices": [
         {
@@ -30,28 +30,27 @@
           "text": "Schreiben und Lesen",
           "value": "readAndWrite"
         }
-      ],
-      "allowNone": true
+      ]
     },
     "readonly": false,
     "required": false,
-    "sort": 19,
+    "sort": 29,
     "special": null,
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Speise Kommentare Typ für Gäste"
+        "translation": "Speise Kommentare Typ"
       }
     ],
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
-    "name": "foods_feedbacks_comments_type_guests",
+    "name": "foods_feedbacks_comments_type_for_unverified",
     "table": "app_settings",
     "data_type": "character varying",
-    "default_value": null,
+    "default_value": "disabled",
     "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,

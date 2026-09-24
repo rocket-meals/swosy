@@ -62,7 +62,8 @@ export function getVersionPatch() {
 	// 32: common: default nickname Guest_<YYMMDDHHmm> for guest profiles
 	// 33: common: FoodFeedbackPermissionHelper (separate rating/comment settings for guests)
 	// 34: common: GuestAccountHelper.isVerifiedProfile/isRestrictedGuest, profiles.verified
-	return 34;
+	// 35: common: FoodFeedbackPermissionHelper uses the *_for_unverified app settings
+	return 35;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

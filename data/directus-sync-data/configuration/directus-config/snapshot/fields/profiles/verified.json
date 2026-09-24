@@ -11,29 +11,24 @@
     "group": null,
     "hidden": false,
     "interface": "boolean",
-    "note": "Wird automatisch gesetzt: ja, sobald mindestens ein Account dieses Profils kein Gast-Account ist (eigene E-Mail-Adresse oder SSO).",
+    "note": null,
     "options": null,
-    "readonly": true,
+    "readonly": false,
     "required": false,
     "sort": 27,
     "special": [
       "cast-boolean"
     ],
-    "translations": [
-      {
-        "language": "de-DE",
-        "translation": "Verifiziert"
-      }
-    ],
+    "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
     "name": "verified",
     "table": "profiles",
     "data_type": "boolean",
-    "default_value": null,
+    "default_value": true,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,

@@ -143,12 +143,11 @@ export function getVersionPatch() {
         // 56: login buttons are 50px tall instead of 58px, "Anmelden als: Gast",
         //     "Ohne Account fortfahren" is a text link now, login links get a
         //     24px touch target
-        // 57: guests can be kept from rating and commenting foods via
-        //     app_settings.foods_ratings_guests_enabled and
-        //     foods_feedbacks_comments_type_guests
-        // 58: guest restrictions do not apply when the profile is verified
-        //     through another, non-guest account (profiles.verified)
-        return 58;
+        // 57: unverified profiles can be kept from rating and commenting foods
+        // 58: restriction depends on profiles.verified
+        // 59: settings renamed to foods_ratings_enabled_for_unverified and
+        //     foods_feedbacks_comments_type_for_unverified
+        return 59;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
