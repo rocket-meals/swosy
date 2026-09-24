@@ -4,7 +4,21 @@
   "type": "string",
   "meta": {
     "collection": "app_settings",
-    "conditions": null,
+    "conditions": [
+      {
+        "name": "Inherit Rule",
+        "readonly": true,
+        "rule": {
+          "_and": [
+            {
+              "foods_feedbacks_comments_type": {
+                "_eq": "disabled"
+              }
+            }
+          ]
+        }
+      }
+    ],
     "display": null,
     "display_options": null,
     "field": "foods_feedbacks_comments_type_for_unverified",

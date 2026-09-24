@@ -4,7 +4,22 @@
   "type": "string",
   "meta": {
     "collection": "app_settings",
-    "conditions": null,
+    "conditions": [
+      {
+        "hidden": false,
+        "name": "Inherit Rule",
+        "readonly": true,
+        "rule": {
+          "_and": [
+            {
+              "foods_ratings_type": {
+                "_eq": "disabled"
+              }
+            }
+          ]
+        }
+      }
+    ],
     "display": null,
     "display_options": null,
     "field": "foods_ratings_type_for_unverified",
