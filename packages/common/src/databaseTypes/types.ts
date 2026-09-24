@@ -103,6 +103,7 @@ export type AppSettings = {
   foods_area_color?: string | null;
   foods_enabled?: boolean | null;
   foods_feedbacks_comments_type?: string | null;
+  foods_feedbacks_comments_type_for_unverified?: string | null;
   foods_feedbacks_custom_url?: string | null;
   foods_feedbacks_labels_type?: string | null;
   foods_image_ai_generation_enabled?: boolean | null;
@@ -111,6 +112,7 @@ export type AppSettings = {
   foods_placeholder_image_thumb_hash?: string | null;
   foods_ratings_amount_display?: boolean | null;
   foods_ratings_average_display?: boolean | null;
+  foods_ratings_enabled_for_unverified?: boolean | null;
   foods_ratings_type?: string | null;
   foods_settings: string;
   friends_enabled?: boolean | null;
@@ -1860,6 +1862,7 @@ export type Profiles = {
   status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+  verified?: boolean | null;
 };
 
 export type ProfilesBuildingsFavorites = {
