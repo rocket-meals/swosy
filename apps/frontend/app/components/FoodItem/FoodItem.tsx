@@ -9,7 +9,7 @@ import { FoodItemProps } from './types';
 import { excerpt, getImageUrl, getpreviousFeedback, numToOneDecimal, showPrice } from '@/constants/HelperFunctions';
 import { getDescriptionFromTranslation, getFoodOfferName } from '@/helper/resourceHelper';
 import { applyFunModeTransformation, applyPirateTransformation } from '@/hooks/useLanguage';
-import { DatabaseTypes, FoodFeedbackPermissionHelper, GuestAccountHelper, RatingHelper, type TranslationLanguage } from 'repo-depkit-common';
+import { DatabaseTypes, FoodFeedbackPermissionHelper, RatingHelper, type TranslationLanguage } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { SET_MARKING_DETAILS } from '@/redux/Types/types';
@@ -139,8 +139,8 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       [likedMarkings.length, currentRating]
     );
 
-    // Guests may be kept from rating (app_settings.foods_ratings_guests_enabled); the average stays visible.
-    const canRate = FoodFeedbackPermissionHelper.canRate(appSettings, GuestAccountHelper.isRestrictedGuest(user?.email, profile?.verified));
+    // Unverified profiles may be kept from rating; the average stays visible.
+    const canRate = FoodFeedbackPermissionHelper.canRate(appSettings, profile?.verified === false);
 
     const showAverageOnCard = appSettings?.foods_ratings_average_display === true && appSettings?.foods_ratings_average_display_on_card === true;
 

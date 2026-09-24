@@ -10,13 +10,8 @@ describe('getInitialProfileForUser', () => {
     expect(profile.nickname).toMatch(/^Guest_\d{10}$/);
   });
 
-  it('marks guest profiles as not verified', () => {
-    expect(getInitialProfileForUser({ email: GuestAccountHelper.buildEmail('abc') }, now).verified).toBe(false);
-  });
-
-  it('gives other users an empty, verified profile', () => {
-    expect(getInitialProfileForUser({ email: 'someone@example.com' }, now)).toEqual({ verified: true });
-    // SSO accounts have no email
-    expect(getInitialProfileForUser({ email: null }, now)).toEqual({ verified: true });
+  it('leaves profiles of other users empty', () => {
+    expect(getInitialProfileForUser({ email: 'someone@example.com' }, now)).toEqual({});
+    expect(getInitialProfileForUser({ email: null }, now)).toEqual({});
   });
 });

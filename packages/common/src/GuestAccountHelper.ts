@@ -34,23 +34,6 @@ export class GuestAccountHelper {
     return normalizedEmail.startsWith(GuestAccountHelper.EMAIL_PREFIX) && normalizedEmail.endsWith('@' + GuestAccountHelper.EMAIL_DOMAIN);
   }
 
-  /**
-   * Ein Profil ist verifiziert, sobald mindestens einer seiner Accounts kein Gast ist – also eine
-   * eigene E-Mail-Adresse hat oder per SSO angemeldet ist (SSO-Accounts haben keine E-Mail).
-   * Das Ergebnis steht in `profiles.verified` und wird vom Backend gepflegt.
-   */
-  static isVerifiedProfile(linkedAccountEmails: (string | null | undefined)[]): boolean {
-    return linkedAccountEmails.some(email => !GuestAccountHelper.isGuestEmail(email));
-  }
-
-  /**
-   * Gilt für diesen Nutzer die Gast-Einschränkung? Nur wenn er mit einem Gast-Account angemeldet
-   * ist und sein Profil nicht über einen weiteren, echten Account verifiziert ist.
-   */
-  static isRestrictedGuest(email: string | null | undefined, profileVerified: boolean | null | undefined): boolean {
-    return GuestAccountHelper.isGuestEmail(email) && profileVerified !== true;
-  }
-
   private static readonly DEFAULT_NICKNAME_PREFIX = 'Guest_';
 
   /**

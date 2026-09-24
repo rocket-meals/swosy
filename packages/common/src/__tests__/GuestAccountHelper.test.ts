@@ -44,19 +44,4 @@ describe('GuestAccountHelper', () => {
     const date = new Date('2027-01-02T23:05:00Z');
     expect(GuestAccountHelper.buildDefaultNickname(date, 'Europe/Berlin')).toBe('Guest_2701030005');
   });
-
-  it('treats a profile as verified as soon as one linked account is not a guest', () => {
-    expect(GuestAccountHelper.isVerifiedProfile([])).toBe(false);
-    expect(GuestAccountHelper.isVerifiedProfile(['guest-abc@guest.example.com'])).toBe(false);
-    expect(GuestAccountHelper.isVerifiedProfile(['guest-abc@guest.example.com', 'max@example.org'])).toBe(true);
-    // SSO accounts have no email and are verified by their provider
-    expect(GuestAccountHelper.isVerifiedProfile(['guest-abc@guest.example.com', null])).toBe(true);
-  });
-
-  it('restricts guests only while their profile is not verified', () => {
-    expect(GuestAccountHelper.isRestrictedGuest('guest-abc@guest.example.com', null)).toBe(true);
-    expect(GuestAccountHelper.isRestrictedGuest('guest-abc@guest.example.com', false)).toBe(true);
-    expect(GuestAccountHelper.isRestrictedGuest('guest-abc@guest.example.com', true)).toBe(false);
-    expect(GuestAccountHelper.isRestrictedGuest('max@example.org', false)).toBe(false);
-  });
 });
