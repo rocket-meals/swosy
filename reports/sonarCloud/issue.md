@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
 | 🐛 Reliability | 30 | 30 |
-| 🔧 Maintainability | 283 | 19 |
+| 🔧 Maintainability | 286 | 19 |
 
-**Total issues:** 314 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 317 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -140,7 +140,7 @@
   packages/common/src/form/IbanValidationHelper.ts:124
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanValidationHelper.ts#L124
 
-## 🔧 Maintainability (19/283)
+## 🔧 Maintainability (19/286)
 
 - **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172
@@ -169,6 +169,18 @@
 - **Prefer using an optional chain expression instead, as it's more concise and easier to read.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts:386
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts#L386
+
+- **`new Error()` is too unspecific for a type check. Use `new TypeError()` instead.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupHelper.ts:22
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupHelper.ts#L22
+
+- **Use the opposite operator (<) instead.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupHelper.ts:24
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupHelper.ts#L24
+
+- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupWorkflow.ts:17
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupWorkflow.ts#L17
 
 - **Unnecessary use of conditional expression for default assignment.**
   apps/frontend/app/app/(app)/experimentell/inventory-items/create/index.tsx:112
@@ -205,16 +217,4 @@
 - **'value' may use Object's default stringification format ('[object Object]') when stringified.**
   apps/frontend/app/helper/appStateForFeedback.ts:103
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/appStateForFeedback.ts#L103
-
-- **Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.**
-  apps/frontend/app/helper/AppUsageEventHelper.ts:84
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/AppUsageEventHelper.ts#L84
-
-- **The empty object is useless.**
-  apps/frontend/app/helper/AppUsageEventHelper.ts:113
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/AppUsageEventHelper.ts#L113
-
-- **The empty object is useless.**
-  apps/frontend/app/helper/authorizedFetch.ts:24
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/authorizedFetch.ts#L24
 

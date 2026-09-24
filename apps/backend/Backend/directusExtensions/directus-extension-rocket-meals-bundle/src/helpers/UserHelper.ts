@@ -17,6 +17,22 @@ export class UserHelper extends ItemsServiceHelper<DatabaseTypes.DirectusUsers> 
     return await itemsService.createOne(create, this.getOptsCustom(optsCustom));
   }
 
+  /**
+   * Deletes a user through Directus' `UsersService` instead of the plain `ItemsService`: it also
+   * detaches comments, notifications and versions of the user, clears its sessions and refuses to
+   * delete the last admin. The `users.delete` hooks run either way.
+   */
+  async deleteOneWithUsersService(userId: PrimaryKey): Promise<void> {
+    const { UsersService } = this.apiContext.services;
+    const schema = this.eventContext?.schema || (await this.apiContext.getSchema());
+    const usersService = new UsersService({
+      accountability: null, // this makes us admin
+      knex: this.eventContext?.database || this.apiContext.database,
+      schema: schema,
+    });
+    await usersService.deleteOne(userId);
+  }
+
   isAdminAccountability(accountability?: Accountability | null): boolean {
     if (!accountability) {
       return false;
@@ -32,10 +48,13 @@ export class UserHelper extends ItemsServiceHelper<DatabaseTypes.DirectusUsers> 
   async isAdminUser(userId: string): Promise<boolean> {
     try {
       const user = await this.readOne(userId, {
-        fields: ['id', 'policies.policy.admin_access', 'policies.directus_policies_id.admin_access'],
+        fields: ['id', 'policies.policy.admin_access', 'policies.directus_policies_id.admin_access', 'role.policies.policy.admin_access'],
       });
 
-      const policies = (user?.policies || []) as unknown[];
+      // Admin access comes from a policy on the user itself or on its role (e.g. "Administrator")
+      const role = user?.role as DatabaseTypes.DirectusRoles | string | null | undefined;
+      const rolePolicies = typeof role === 'object' && role !== null ? role.policies || [] : [];
+      const policies = [...(user?.policies || []), ...rolePolicies] as unknown[];
 
       return policies.some(policyEntry => {
         if (typeof policyEntry !== 'object' || policyEntry === null) {

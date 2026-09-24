@@ -143,9 +143,11 @@ export function getVersionPatch() {
         // 56: login buttons are 50px tall instead of 58px, "Anmelden als: Gast",
         //     "Ohne Account fortfahren" is a text link now, login links get a
         //     24px touch target
-        // 57: unverified profiles can be kept from rating and commenting foods
-        // 58: restriction depends on profiles.verified
-        // 59: settings renamed to foods_ratings_enabled_for_unverified and
+        // 57: "Lieber anonym bleiben?" replaced by a neutral "Alternativ:", so the
+        //     guest account is not pushed aside by the anonymous option
+        // 58: the link after it reads "Eingeschränkt ohne Account weiter"
+        // 59: unverified profiles (profiles.verified) can be kept from rating and
+        //     commenting foods via foods_ratings_enabled_for_unverified and
         //     foods_feedbacks_comments_type_for_unverified
         return 59;
 }
