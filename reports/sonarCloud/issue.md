@@ -215,6 +215,6 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L961
 
 - **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
-  apps/frontend/app/components/OcrCamera/index.tsx:71
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/OcrCamera/index.tsx#L71
+  apps/frontend/app/components/OcrCamera/index.tsx:73
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/OcrCamera/index.tsx#L73
 
