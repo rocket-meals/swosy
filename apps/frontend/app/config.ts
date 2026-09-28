@@ -160,7 +160,10 @@ export function getVersionPatch() {
         //     Android; form screens get an error page instead of closing the app
         // 65: a failed text recognition ends the scan with one modal: the error to
         //     copy, or reported to support in one tap (app feedback filled in by the app)
-        return 65;
+        // 66: text recognition runs on onnxruntime's WebAssembly build on every
+        //     platform - on a device inside a WebView - instead of the native
+        //     binding that crashed Android on the first scan
+        return 66;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

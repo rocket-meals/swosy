@@ -15,7 +15,10 @@ const APP_DIRECTORY = path.join(__dirname, '..');
 const ENGINE_DIRECTORY = path.join(APP_DIRECTORY, 'public', ENGINE_DIRECTORY_NAME);
 
 /** The files that decide where the engine is loaded from. */
-const SOURCE_FILES = ['helper/TextRecognitionShared.ts', 'hooks/useTextRecognition.tsx', 'hooks/useTextRecognition.web.tsx'];
+const SOURCE_FILES = ['helper/TextRecognitionShared.ts', 'hooks/useTextRecognition.tsx', 'hooks/useTextRecognition.web.tsx', 'helper/textRecognitionPage/page.ts', 'helper/textRecognitionPage/preparePageFile.ts', 'helper/textRecognitionPage/buildPageHtml.ts'];
+
+/** The page bundle the device's WebView runs, as the build script writes it. */
+const PAGE_BUNDLE = path.join(ENGINE_DIRECTORY, 'text-recognition-page.webviewjs');
 
 describe('the bundled text recognition engine', () => {
 	it.each(Object.values(ENGINE_FILE_NAMES))('ships the model file %s', (fileName) => {
@@ -52,20 +55,44 @@ describe('the bundled text recognition engine', () => {
 
 	it('hands the engine every model path, leaving none to its own default', () => {
 		// `ppu-paddle-ocr` falls back to a Hugging Face URL per model. All three
-		// have to be passed, on both platforms.
-		for (const relativePath of ['hooks/useTextRecognition.tsx', 'hooks/useTextRecognition.web.tsx']) {
+		// have to be passed, in the browser and on the page a device runs.
+		for (const relativePath of ['helper/textRecognitionPage/page.ts', 'hooks/useTextRecognition.web.tsx']) {
 			const source = fs.readFileSync(path.join(APP_DIRECTORY, relativePath), 'utf-8');
-			expect(source).toMatch(/detection:/);
-			expect(source).toMatch(/recognition:/);
-			expect(source).toMatch(/charactersDictionary:/);
+			expect(source).toMatch(/\bdetection\b/);
+			expect(source).toMatch(/\brecognition\b/);
+			expect(source).toMatch(/\bcharactersDictionary\b/);
 		}
 	});
 
-	it('reads the models off the device rather than fetching them, on native', () => {
-		// `fetch` cannot read a `file://` URI in React Native, so a path would send
-		// the engine looking on the network. The bytes are handed over instead.
-		const source = fs.readFileSync(path.join(APP_DIRECTORY, 'hooks/useTextRecognition.tsx'), 'utf-8');
-		expect(source).toMatch(/arrayBuffer\(\)/);
-		expect(source).not.toMatch(/fetch\(/);
+	it('hands the page its WebAssembly as bytes and leaves it no path to load one from', () => {
+		// With `wasmBinary` set and `wasmPaths` cleared, onnxruntime uses the
+		// loader bundled into the page and never asks for a file. `ppu-paddle-ocr`
+		// fills `wasmPaths` with a CDN address on import, so clearing it is not
+		// optional.
+		const source = fs.readFileSync(path.join(APP_DIRECTORY, 'helper/textRecognitionPage/page.ts'), 'utf-8');
+		expect(source).toMatch(/\.env\.wasm\.wasmBinary\s*=/);
+		expect(source).toMatch(/\.env\.wasm\.wasmPaths\s*=\s*undefined/);
+		expect(source).toMatch(/\.env\.wasm\.numThreads\s*=\s*1/);
+	});
+
+	it('reads the engine off the device rather than fetching it, on native', () => {
+		// The page is composed from bundled assets and everything it needs is
+		// inlined into it; nothing is fetched on the way there or afterwards.
+		for (const relativePath of ['hooks/useTextRecognition.tsx', 'helper/textRecognitionPage/preparePageFile.ts']) {
+			const source = fs.readFileSync(path.join(APP_DIRECTORY, relativePath), 'utf-8');
+			expect(source).not.toMatch(/fetch\(/);
+		}
+		const preparePage = fs.readFileSync(path.join(APP_DIRECTORY, 'helper/textRecognitionPage/preparePageFile.ts'), 'utf-8');
+		expect(preparePage).toMatch(/\.base64\(\)/);
+	});
+
+	it('ships the page bundle the device runs, built from page.ts', () => {
+		expect(fs.existsSync(PAGE_BUNDLE)).toBe(true);
+		const bundle = fs.readFileSync(PAGE_BUNDLE, 'utf-8');
+		expect(bundle.startsWith('/* Built by scripts/build-text-recognition-page.mjs')).toBe(true);
+		// The page installs itself under this name; the app injects calls to it.
+		expect(bundle).toContain('__textRecognitionPage');
+		// Inlined into a <script>, so it must not close one.
+		expect(bundle).not.toContain('</script');
 	});
 });

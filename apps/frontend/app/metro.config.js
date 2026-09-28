@@ -10,9 +10,11 @@ module.exports = (() => {
 		...transformer,
 		babelTransformerPath: require.resolve('react-native-svg-transformer/expo'),
 	};
-	// The bundled text recognition models (public/paddleocr): the two .ort
-	// networks and the character dictionary beside them.
-	const engineAssetExts = ['ort', 'txt'];
+	// The bundled text recognition engine (public/paddleocr): the two .ort
+	// networks, the character dictionary, onnxruntime's WebAssembly and the
+	// page bundle the WebView runs it in. `.webviewjs` is JavaScript that Metro
+	// must ship as a file rather than compile — hence the extension of its own.
+	const engineAssetExts = ['ort', 'txt', 'wasm', 'webviewjs'];
 
 	// onnxruntime-web is served as a plain script instead of being bundled: its
 	// published bundles call import(someVariable) for their WebAssembly loader,
