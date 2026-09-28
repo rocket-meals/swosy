@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
-| 🐛 Reliability | 30 | 30 |
-| 🔧 Maintainability | 288 | 19 |
+| 🐛 Reliability | 31 | 31 |
+| 🔧 Maintainability | 292 | 18 |
 
-**Total issues:** 319 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 324 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -18,11 +18,15 @@
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:10
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L10
 
-## 🐛 Reliability (30/30)
+## 🐛 Reliability (31/31)
 
 - **Prefer `String#replaceAll()` over `String#split().join()`.**
   apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts:50
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts#L50
+
+- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
+  apps/frontend/app/helper/textRecognitionPage/page.ts:68
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/textRecognitionPage/page.ts#L68
 
 - **Do not use "SharedArrayBuffer" to declare a variable - use another name.**
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:2
@@ -140,7 +144,7 @@
   packages/common/src/form/IbanValidationHelper.ts:124
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanValidationHelper.ts#L124
 
-## 🔧 Maintainability (19/288)
+## 🔧 Maintainability (18/292)
 
 - **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172
@@ -213,8 +217,4 @@
 - **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
   apps/frontend/app/components/OcrCamera/index.tsx:71
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/OcrCamera/index.tsx#L71
-
-- **Compare with `undefined` directly instead of using `typeof`.**
-  apps/frontend/app/helper/appStateForFeedback.ts:98
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/appStateForFeedback.ts#L98
 
