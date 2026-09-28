@@ -46,8 +46,6 @@ export interface OcrCameraProps {
 	 * whatever is in front of the lens is only hindered by a frame.
 	 */
 	showFrame?: boolean;
-	/** Whatever the engine has to say about itself, shown under the preview. */
-	engineError?: string | null;
 }
 
 /**
@@ -70,7 +68,7 @@ export interface OcrCameraProps {
  * of the picture itself. None of them carries a caption — a shutter that has to
  * explain itself is in the wrong place.
  */
-export const OcrCamera: React.FC<OcrCameraProps> = ({ recognizeImage, isAutomatic, onRecognized, hint, showFrame = false, engineError }) => {
+export const OcrCamera: React.FC<OcrCameraProps> = ({ recognizeImage, isAutomatic, onRecognized, hint, showFrame = false }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
@@ -327,16 +325,6 @@ export const OcrCamera: React.FC<OcrCameraProps> = ({ recognizeImage, isAutomati
 			</View>
 
 			{hint !== undefined && <Text style={[styles.hintText, styles.belowCamera, { color: theme.screen.text }]}>{hint}</Text>}
-
-			{engineError !== null && engineError !== undefined && (
-				<View style={[styles.failureContainer, styles.belowCamera]}>
-					<MaterialCommunityIcons name="alert-circle-outline" size={40} color={theme.screen.icon} />
-					<Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.ocr_engine_failed)}</Text>
-					<Text selectable style={[styles.errorText, { color: theme.screen.text }]}>
-						{engineError}
-					</Text>
-				</View>
-			)}
 		</View>
 	);
 };
@@ -465,22 +453,10 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontFamily: 'Poppins_400Regular',
 	},
-	failureContainer: {
-		width: '100%',
-		alignItems: 'center',
-		gap: 10,
-		paddingVertical: 16,
-	},
 	hintText: {
 		fontSize: 14,
 		fontFamily: 'Poppins_400Regular',
 		textAlign: 'center',
-	},
-	errorText: {
-		fontSize: 12,
-		fontFamily: 'Poppins_400Regular',
-		textAlign: 'center',
-		opacity: 0.8,
 	},
 });
 

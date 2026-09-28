@@ -6519,16 +6519,6 @@
     "tr": "Metin tanındı, ancak aranan metin değil.",
     "zh": "已识别到文字，但不是要找的内容。"
   },
-  "ocr_engine_failed": {
-    "de": "Die Texterkennung konnte nicht gestartet werden.",
-    "en": "Text recognition could not be started.",
-    "ar": "تعذر بدء التعرف على النص.",
-    "es": "No se ha podido iniciar el reconocimiento de texto.",
-    "fr": "La reconnaissance de texte n'a pas pu démarrer.",
-    "ru": "Не удалось запустить распознавание текста.",
-    "tr": "Metin tanıma başlatılamadı.",
-    "zh": "无法启动文字识别。"
-  },
   "ocr_camera_permission_required": {
     "de": "Für die Texterkennung wird Zugriff auf die Kamera gebraucht.",
     "en": "Text recognition needs access to the camera.",
@@ -7438,5 +7428,95 @@
     "ru": "Попробовать снова",
     "tr": "Tekrar dene",
     "zh": "重试"
+  },
+  "ocr_error_title": {
+    "de": "Texterkennung",
+    "en": "Text recognition",
+    "ar": "التعرف على النص",
+    "es": "Reconocimiento de texto",
+    "fr": "Reconnaissance de texte",
+    "ru": "Распознавание текста",
+    "tr": "Metin tanıma",
+    "zh": "文字识别"
+  },
+  "ocr_error_description": {
+    "de": "Es gab ein Problem beim Laden der Texterkennung.",
+    "en": "There was a problem loading the text recognition.",
+    "ar": "حدثت مشكلة أثناء تحميل التعرف على النص.",
+    "es": "Hubo un problema al cargar el reconocimiento de texto.",
+    "fr": "Un problème est survenu lors du chargement de la reconnaissance de texte.",
+    "ru": "Возникла проблема при загрузке распознавания текста.",
+    "tr": "Metin tanıma yüklenirken bir sorun oluştu.",
+    "zh": "加载文字识别时出现问题。"
+  },
+  "ocr_error_copy": {
+    "de": "Fehlermeldung kopieren",
+    "en": "Copy error message",
+    "ar": "نسخ رسالة الخطأ",
+    "es": "Copiar mensaje de error",
+    "fr": "Copier le message d'erreur",
+    "ru": "Скопировать сообщение об ошибке",
+    "tr": "Hata mesajını kopyala",
+    "zh": "复制错误信息"
+  },
+  "ocr_error_copied": {
+    "de": "Fehlermeldung kopiert",
+    "en": "Error message copied",
+    "ar": "تم نسخ رسالة الخطأ",
+    "es": "Mensaje de error copiado",
+    "fr": "Message d'erreur copié",
+    "ru": "Сообщение об ошибке скопировано",
+    "tr": "Hata mesajı kopyalandı",
+    "zh": "错误信息已复制"
+  },
+  "ocr_error_copy_failed": {
+    "de": "Fehlermeldung konnte nicht kopiert werden",
+    "en": "The error message could not be copied",
+    "ar": "تعذر نسخ رسالة الخطأ",
+    "es": "No se pudo copiar el mensaje de error",
+    "fr": "Le message d'erreur n'a pas pu être copié",
+    "ru": "Не удалось скопировать сообщение об ошибке",
+    "tr": "Hata mesajı kopyalanamadı",
+    "zh": "无法复制错误信息"
+  },
+  "ocr_error_report": {
+    "de": "Fehler melden",
+    "en": "Report error",
+    "ar": "الإبلاغ عن الخطأ",
+    "es": "Informar del error",
+    "fr": "Signaler l'erreur",
+    "ru": "Сообщить об ошибке",
+    "tr": "Hatayı bildir",
+    "zh": "报告错误"
+  },
+  "ocr_error_report_sent": {
+    "de": "Fehler gemeldet – danke!",
+    "en": "Error reported – thank you!",
+    "ar": "تم الإبلاغ عن الخطأ – شكرًا!",
+    "es": "Error informado – ¡gracias!",
+    "fr": "Erreur signalée – merci !",
+    "ru": "Об ошибке сообщено – спасибо!",
+    "tr": "Hata bildirildi – teşekkürler!",
+    "zh": "错误已报告 – 谢谢！"
+  },
+  "ocr_error_report_failed": {
+    "de": "Fehler konnte nicht gemeldet werden",
+    "en": "The error could not be reported",
+    "ar": "تعذر الإبلاغ عن الخطأ",
+    "es": "No se pudo informar del error",
+    "fr": "L'erreur n'a pas pu être signalée",
+    "ru": "Не удалось сообщить об ошибке",
+    "tr": "Hata bildirilemedi",
+    "zh": "无法报告错误"
+  },
+  "ocr_error_report_title": {
+    "de": "Fehlerbericht: Texterkennung",
+    "en": "Error report: text recognition",
+    "ar": "تقرير خطأ: التعرف على النص",
+    "es": "Informe de error: reconocimiento de texto",
+    "fr": "Rapport d'erreur : reconnaissance de texte",
+    "ru": "Отчёт об ошибке: распознавание текста",
+    "tr": "Hata raporu: metin tanıma",
+    "zh": "错误报告：文字识别"
   }
 }

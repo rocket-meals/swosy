@@ -6,9 +6,11 @@ import * as ImagePicker from 'expo-image-picker';
 import SettingsList from '@/components/SettingsList';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { OcrCamera } from '@/components/OcrCamera';
+import { OcrErrorSheet } from '@/components/OcrErrorSheet';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTextRecognition } from '@/hooks/useTextRecognition';
+import { RecognitionImage } from '@/helper/TextRecognitionShared';
 import { TranslationKeys } from '@/locales/keys';
 
 /**
@@ -64,13 +66,11 @@ const PICKED_PHOTO_QUALITY = 1;
 export const useOcr = () => {
 	const { show, close } = useMyScrollViewModal();
 	const { translate } = useLanguage();
-	const { recognizeImage, errorMessage } = useTextRecognition();
+	const { recognizeImage } = useTextRecognition();
 
 	/** The engine, as the sheet below should see it right now. */
 	const recognizeImageRef = useRef(recognizeImage);
 	recognizeImageRef.current = recognizeImage;
-	const errorMessageRef = useRef(errorMessage);
-	errorMessageRef.current = errorMessage;
 
 	/**
 	 * How many modals this scan currently has on the global stack.
@@ -122,6 +122,41 @@ export const useOcr = () => {
 				options.onRecognized(reading);
 			};
 
+			/**
+			 * Whether this scan has already failed. A failure ends the scan: the
+			 * automatic camera would otherwise run into the same error on every
+			 * frame, and the user would be left in front of a preview that can never
+			 * read anything.
+			 */
+			let hasFailed = false;
+
+			/**
+			 * Replaces the scan with the one modal that says text recognition could
+			 * not be loaded - with the error to copy or to send to support.
+			 */
+			const showFailure = (error: unknown) => {
+				if (hasFailed) {
+					return;
+				}
+				hasFailed = true;
+				const message = error instanceof Error ? error.message : String(error);
+				closeOwnLevels();
+				show({
+					title: translate(TranslationKeys.ocr_error_title),
+					children: <OcrErrorSheet errorMessage={message} />,
+				});
+			};
+
+			/** Reads one image; a failure ends the scan with the error modal and is rethrown. */
+			const recognize = async (image: RecognitionImage) => {
+				try {
+					return await recognizeImageRef.current(image);
+				} catch (error) {
+					showFailure(error);
+					throw error;
+				}
+			};
+
 			/** Handed every reading; says whether that was enough to stop. */
 			const handleLines = (lines: string[]): boolean => {
 				if (lines.length === 0) {
@@ -148,8 +183,13 @@ export const useOcr = () => {
 				showLevel(
 					// The camera, the file system and a native engine can all fail in
 					// ways this app cannot control. None of them may take it down.
-					<ErrorBoundary>
-						<OcrCamera recognizeImage={(image) => recognizeImageRef.current(image)} isAutomatic={isAutomatic} onRecognized={handleLines} hint={options.hint} showFrame={options.showFrame} engineError={errorMessageRef.current} />
+					<ErrorBoundary
+						onError={(error) => {
+							// Not from within React's error handling: it swaps modals.
+							setTimeout(() => showFailure(error), 0);
+						}}
+					>
+						<OcrCamera recognizeImage={recognize} isAutomatic={isAutomatic} onRecognized={handleLines} hint={options.hint} showFrame={options.showFrame} />
 					</ErrorBoundary>,
 					true,
 				);
@@ -167,7 +207,7 @@ export const useOcr = () => {
 				}
 				const asset = picked.assets[0];
 				try {
-					const result = await recognizeImageRef.current({ uri: asset.uri, width: asset.width });
+					const result = await recognize({ uri: asset.uri, width: asset.width });
 					// One picture, one answer: a photo the user chose deliberately is
 					// read once, and whatever it says is the outcome — there is no next
 					// frame to hope for.
@@ -175,8 +215,7 @@ export const useOcr = () => {
 						finish(result.lines, null);
 					}
 				} catch {
-					// The engine has already said what went wrong. Leave the sheet open
-					// so the user can try another picture.
+					// `recognize` has already replaced the scan with the error modal.
 				}
 			};
 
@@ -217,7 +256,7 @@ export const useOcr = () => {
 		[close, show, translate],
 	);
 
-	return { openOcr, closeOcr: close, ocrErrorMessage: errorMessage };
+	return { openOcr, closeOcr: close };
 };
 
 export default useOcr;
