@@ -211,8 +211,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L961
 
 - **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
-  apps/frontend/app/components/OcrCamera/index.tsx:73
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/OcrCamera/index.tsx#L73
+  apps/frontend/app/components/OcrCamera/index.tsx:71
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/OcrCamera/index.tsx#L71
 
 - **Compare with `undefined` directly instead of using `typeof`.**
   apps/frontend/app/helper/appStateForFeedback.ts:98

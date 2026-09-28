@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AaDneNJT3xCja_Dt3rkR","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/OcrCamera/index.tsx",71
 "AaDUJIjlD_duj2hKKWO-","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useAccountRequiredModal.tsx",27
 "AaDSbjqvYMAIwe1A19_u","Move async function 'readUnverifiedProfile' to the outer scope.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-guest-restriction-hook/index.ts",33
 "AaDSOnTRn13SQjxfKkFZ","`new Error()` is too unspecific for a type check. Use `new TypeError()` instead.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupHelper.ts",22
@@ -16,11 +17,10 @@ Key,Message,Component,Line
 "AaDIyBvwvP9HY8oxPbTG","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/inventory-items/create/index.tsx",112
 "AaDAKJTemOQ488DYDbhD","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts",357
 "AaDAKJTemOQ488DYDbhE","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts",386
-"AaC_XuUiynaeS38RlKKI","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/OcrCamera/index.tsx",73
 "AaC_XtnSynaeS38RlKKH","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:packages/common/src/form/IbanValidationHelper.ts",124
-"AaC0s5wzhkA3gTKRIozs","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",198
-"AaC0s5wzhkA3gTKRIozt","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",211
-"AaC0s5wzhkA3gTKRIozu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",211
+"AaC0s5wzhkA3gTKRIozs","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",237
+"AaC0s5wzhkA3gTKRIozt","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",250
+"AaC0s5wzhkA3gTKRIozu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useOcr.tsx",250
 "AaC0s50_hkA3gTKRIo3w","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/app/metro.config.js",1
 "AaC0s5zthkA3gTKRIoz0","Extract the assignment of ""k"" from this expression.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",1
 "AaC0s5zthkA3gTKRIozv","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",1
