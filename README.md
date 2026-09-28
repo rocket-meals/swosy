@@ -3,6 +3,7 @@
 </div>
 
 [![🚀 CI](https://github.com/rocket-meals/rocket-meals/actions/workflows/ci.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/ci.yml)
+[![🩺 Backend Health](https://github.com/rocket-meals/rocket-meals/actions/workflows/backend-daily-health-check.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/backend-daily-health-check.yml)
 [![Screenshots CI](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_screenshot.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_screenshot.yml)
 
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=rocket-meals_rocket-meals&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=rocket-meals_rocket-meals)
@@ -287,8 +288,9 @@ Geplante GitHub-Läufe starten oft einige Minuten verspätet.
 
 Um **20:00 Uhr** prüft `🩺 Daily Backend Health Check` (`.github/workflows/backend-daily-health-check.yml`), ob alle
 Backend-Server gesund erreichbar sind (`/rocket-meals/api/server/health` antwortet mit HTTP 200 und Status `ok` oder
-`warn`; drei Versuche im Abstand von einer Minute). Ist ein Server nicht erreichbar, wird eine Mail verschickt und der
-Lauf schlägt fehl. Dafür werden diese Repository-Secrets gebraucht:
+`warn`; drei Versuche im Abstand von einer Minute). Ist ein Server nicht erreichbar, schlägt der Lauf fehl und das
+Badge `🩺 Backend Health` oben wird rot. Eine Mail kommt zusätzlich nur, wenn diese **optionalen** Repository-Secrets
+gesetzt sind (ohne sie wird die Mail übersprungen, der Lauf schlägt trotzdem fehl):
 
 | Secret | Inhalt |
 | --- | --- |
@@ -297,3 +299,6 @@ Lauf schlägt fehl. Dafür werden diese Repository-Secrets gebraucht:
 | `SMTP_USERNAME` / `SMTP_PASSWORD` | Zugangsdaten |
 | `HEALTHCHECK_MAIL_TO` | Empfänger, mehrere durch Komma getrennt |
 | `HEALTHCHECK_MAIL_FROM` | optional, Absender (Standard: `SMTP_USERNAME`) |
+
+Das Badge zeigt immer den letzten Lauf. Der zweite, zeitlich nicht passende Zeitplan-Lauf (Sommer-/Winterzeit) prüft
+deshalb nichts, sondern übernimmt das Ergebnis des letzten echten Checks.

@@ -3,14 +3,19 @@ name: "🩺 Daily Backend Health Check"
 # Checks every backend server daily at 20:00 German time, one hour after the
 # daily restart (backend-daily-restart.yml). A server counts as healthy when
 # Directus' /server/health answers HTTP 200 with status "ok" or "warn". If any
-# server is unhealthy or unreachable, a mail is sent and the run fails.
+# server is unhealthy or unreachable, the run fails - and a mail is sent when
+# the mail secrets are configured.
 #
-# Required repository secrets for the mail (the run still fails without them,
-# which triggers GitHub's own failure notification):
-#   SMTP_HOST, SMTP_PORT (465 = implicit TLS, anything else = STARTTLS),
-#   SMTP_USERNAME, SMTP_PASSWORD,
+# Optional repository secrets for the mail. Without them no mail is sent, the
+# run still fails (red badge, GitHub's own failure notification):
+#   SMTP_HOST, SMTP_PORT (465 = implicit TLS, anything else = STARTTLS,
+#   default 587), SMTP_USERNAME, SMTP_PASSWORD,
 #   HEALTHCHECK_MAIL_TO   - recipient(s), comma separated
 #   HEALTHCHECK_MAIL_FROM - optional sender, defaults to SMTP_USERNAME
+#
+# The README badge shows the latest run of this workflow. The off-season
+# duplicate of the schedule therefore repeats the result of the last real
+# check (mirror-last-result) instead of finishing green without checking.
 #
 # Only runs on rocket-meals/rocket-meals, not in forks.
 
@@ -112,7 +117,7 @@ jobs:
           echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
           echo "report-file=$REPORT_FILE" >> "$GITHUB_OUTPUT"
 
-      - name: "📧 Send failure mail"
+      - name: "📧 Send failure mail (when configured)"
         if: steps.check.outputs.failed == 'true'
         shell: bash
         env:
@@ -126,9 +131,16 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
-          if [ -z "$SMTP_HOST" ] || [ -z "$SMTP_USERNAME" ] || [ -z "$SMTP_PASSWORD" ] || [ -z "$MAIL_TO" ]; then
-            echo "::error::Mail not sent: secrets SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD and HEALTHCHECK_MAIL_TO must be configured."
-            exit 1
+          # The mail is optional: without the secrets, skip it - the next step
+          # still fails the run.
+          MISSING=""
+          [ -n "$SMTP_HOST" ] || MISSING="$MISSING SMTP_HOST"
+          [ -n "$SMTP_USERNAME" ] || MISSING="$MISSING SMTP_USERNAME"
+          [ -n "$SMTP_PASSWORD" ] || MISSING="$MISSING SMTP_PASSWORD"
+          [ -n "$MAIL_TO" ] || MISSING="$MISSING HEALTHCHECK_MAIL_TO"
+          if [ -n "$MISSING" ]; then
+            echo "::warning::No failure mail sent - mail is not configured (missing secrets:$MISSING)."
+            exit 0
           fi
           MAIL_FROM="${MAIL_FROM:-$SMTP_USERNAME}"
           SMTP_PORT="${SMTP_PORT:-587}"
@@ -170,3 +182,32 @@ jobs:
       - name: "❌ Fail run when a server is unhealthy"
         if: steps.check.outputs.failed == 'true'
         run: exit 1
+
+  # Off-season duplicate of the schedule (e.g. 21:00 in summer): nothing is
+  # checked, but the run repeats the last real result so the badge keeps it.
+  mirror-last-result:
+    name: "🪞 Keep last result (off-season schedule)"
+    runs-on: ubuntu-latest
+    needs: schedule-gate
+    if: needs.schedule-gate.outputs.run == 'false'
+    permissions:
+      actions: read
+    steps:
+      - name: "🪞 Repeat conclusion of the last completed run"
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          # This run is still in progress, so the latest completed run is the
+          # last real check (the duplicate always runs after or long before it).
+          LAST="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow backend-daily-health-check.yml \
+            --branch "$BRANCH" --status completed --limit 1 --json conclusion,url \
+            --jq '.[0] | "\(.conclusion) \(.url)"')"
+          CONCLUSION="${LAST%% *}"
+          echo "ℹ️ Last completed run: ${LAST:-none}"
+          if [ "$CONCLUSION" = "failure" ]; then
+            echo "::error::The last health check failed - keeping this run red for the badge. See ${LAST#* }"
+            exit 1
+          fi
