@@ -1,0 +1,172 @@
+name: "🩺 Daily Backend Health Check"
+
+# Checks every backend server daily at 20:00 German time, one hour after the
+# daily restart (backend-daily-restart.yml). A server counts as healthy when
+# Directus' /server/health answers HTTP 200 with status "ok" or "warn". If any
+# server is unhealthy or unreachable, a mail is sent and the run fails.
+#
+# Required repository secrets for the mail (the run still fails without them,
+# which triggers GitHub's own failure notification):
+#   SMTP_HOST, SMTP_PORT (465 = implicit TLS, anything else = STARTTLS),
+#   SMTP_USERNAME, SMTP_PASSWORD,
+#   HEALTHCHECK_MAIL_TO   - recipient(s), comma separated
+#   HEALTHCHECK_MAIL_FROM - optional sender, defaults to SMTP_USERNAME
+#
+# Only runs on rocket-meals/rocket-meals, not in forks.
+
+on:
+  # GitHub cron is UTC without daylight saving time, so both variants are
+  # scheduled and the schedule-gate job keeps only the one matching Berlin time.
+  schedule:
+    - cron: '0 18 * * *' # 20:00 CEST
+    - cron: '0 19 * * *' # 20:00 CET
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  schedule-gate:
+    name: "🕰️ Schedule Gate (Berlin time)"
+    runs-on: ubuntu-latest
+    if: github.repository == 'rocket-meals/rocket-meals'
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+      - name: "🕰️ Check Berlin Time"
+        id: gate
+        uses: ./.github/actions/berlin-time-schedule-gate
+        with:
+          cron-summer: '0 18 * * *'
+          cron-winter: '0 19 * * *'
+
+  health-check:
+    name: "🩺 Check backend servers"
+    runs-on: ubuntu-latest
+    needs: schedule-gate
+    if: needs.schedule-gate.outputs.run == 'true'
+    permissions:
+      contents: read
+    env:
+      # Keep in sync with ALL_HOSTS in deploy-backend-manual.yml and the
+      # matrix in backend-daily-restart.yml.
+      HOSTS: "test.rocket-meals.de swosy.rocket-meals.de studi-futter.rocket-meals.de"
+      HEALTH_PATH: "/rocket-meals/api/server/health"
+      ATTEMPTS: 3
+      RETRY_DELAY_SECONDS: 60
+    steps:
+      - name: "🩺 Check /server/health"
+        id: check
+        shell: bash
+        run: |
+          set -uo pipefail
+          REPORT_FILE="$RUNNER_TEMP/health-report.txt"
+          : > "$REPORT_FILE"
+          FAILED=false
+
+          for HOST in $HOSTS; do
+            URL="https://${HOST}${HEALTH_PATH}"
+            RESULT=""
+            for ATTEMPT in $(seq 1 "$ATTEMPTS"); do
+              BODY_FILE="$RUNNER_TEMP/body.json"
+              rm -f "$BODY_FILE"
+              HTTP_CODE="$(curl -sS -m 30 -o "$BODY_FILE" -w '%{http_code}' "$URL" 2>"$RUNNER_TEMP/curl.err")" || true
+              STATUS="$(jq -r '.status // empty' "$BODY_FILE" 2>/dev/null || true)"
+              if [ "$HTTP_CODE" = "200" ] && { [ "$STATUS" = "ok" ] || [ "$STATUS" = "warn" ]; }; then
+                RESULT="ok"
+                break
+              fi
+              ERROR="$(head -c 200 "$RUNNER_TEMP/curl.err" 2>/dev/null || true)"
+              RESULT="HTTP ${HTTP_CODE:-000}, status '${STATUS:-none}' ${ERROR}"
+              echo "⚠️ $HOST attempt $ATTEMPT/$ATTEMPTS failed: $RESULT"
+              if [ "$ATTEMPT" -lt "$ATTEMPTS" ]; then
+                sleep "$RETRY_DELAY_SECONDS"
+              fi
+            done
+
+            if [ "$RESULT" = "ok" ]; then
+              if [ "$STATUS" = "warn" ]; then
+                echo "::warning::$HOST is reachable but reports status 'warn'"
+                LINE="🟡 $HOST: reachable, status 'warn'"
+              else
+                LINE="✅ $HOST: ok"
+              fi
+            else
+              FAILED=true
+              echo "::error::$HOST is not healthy: $RESULT"
+              LINE="❌ $HOST: $RESULT ($URL)"
+            fi
+            echo "$LINE"
+            echo "$LINE" >> "$REPORT_FILE"
+          done
+
+          {
+            echo "## 🩺 Backend Health Check"
+            echo
+            sed 's/^/- /' "$REPORT_FILE"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
+          echo "report-file=$REPORT_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: "📧 Send failure mail"
+        if: steps.check.outputs.failed == 'true'
+        shell: bash
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          MAIL_TO: ${{ secrets.HEALTHCHECK_MAIL_TO }}
+          MAIL_FROM: ${{ secrets.HEALTHCHECK_MAIL_FROM }}
+          REPORT_FILE: ${{ steps.check.outputs.report-file }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          if [ -z "$SMTP_HOST" ] || [ -z "$SMTP_USERNAME" ] || [ -z "$SMTP_PASSWORD" ] || [ -z "$MAIL_TO" ]; then
+            echo "::error::Mail not sent: secrets SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD and HEALTHCHECK_MAIL_TO must be configured."
+            exit 1
+          fi
+          MAIL_FROM="${MAIL_FROM:-$SMTP_USERNAME}"
+          SMTP_PORT="${SMTP_PORT:-587}"
+
+          MAIL_FILE="$RUNNER_TEMP/mail.txt"
+          {
+            echo "From: Rocket Meals Health Check <$MAIL_FROM>"
+            echo "To: $MAIL_TO"
+            echo "Subject: Rocket Meals: backend health check failed"
+            echo "Date: $(date -R)"
+            echo "MIME-Version: 1.0"
+            echo "Content-Type: text/plain; charset=UTF-8"
+            echo
+            echo "Mindestens ein Backend-Server ist nicht gesund erreichbar:"
+            echo
+            cat "$REPORT_FILE"
+            echo
+            echo "Workflow-Lauf: $RUN_URL"
+          } > "$MAIL_FILE"
+
+          if [ "$SMTP_PORT" = "465" ]; then
+            SMTP_ARGS=(--url "smtps://$SMTP_HOST:$SMTP_PORT")
+          else
+            SMTP_ARGS=(--url "smtp://$SMTP_HOST:$SMTP_PORT" --ssl-reqd)
+          fi
+          RCPT_ARGS=()
+          IFS=',' read -ra RECIPIENTS <<< "$MAIL_TO"
+          for RCPT in "${RECIPIENTS[@]}"; do
+            RCPT="$(echo "$RCPT" | xargs)"
+            [ -n "$RCPT" ] && RCPT_ARGS+=(--mail-rcpt "$RCPT")
+          done
+
+          curl -sS -m 60 "${SMTP_ARGS[@]}" \
+            --user "$SMTP_USERNAME:$SMTP_PASSWORD" \
+            --mail-from "$MAIL_FROM" "${RCPT_ARGS[@]}" \
+            --upload-file "$MAIL_FILE"
+          echo "📧 Failure mail sent."
+
+      - name: "❌ Fail run when a server is unhealthy"
+        if: steps.check.outputs.failed == 'true'
+        run: exit 1

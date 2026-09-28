@@ -284,3 +284,16 @@ die Kunden-Server (`rocket-meals/swosy`, `rocket-meals/studi-futter`) beim Neust
 GitHub-Cron rechnet in UTC ohne Sommerzeit. Beide Workflows planen deshalb die Sommer- und die Winterzeit-Variante
 ein; die Action `.github/actions/berlin-time-schedule-gate` lässt nur die zur aktuellen Berliner Zeit passende durch.
 Geplante GitHub-Läufe starten oft einige Minuten verspätet.
+
+Um **20:00 Uhr** prüft `🩺 Daily Backend Health Check` (`.github/workflows/backend-daily-health-check.yml`), ob alle
+Backend-Server gesund erreichbar sind (`/rocket-meals/api/server/health` antwortet mit HTTP 200 und Status `ok` oder
+`warn`; drei Versuche im Abstand von einer Minute). Ist ein Server nicht erreichbar, wird eine Mail verschickt und der
+Lauf schlägt fehl. Dafür werden diese Repository-Secrets gebraucht:
+
+| Secret | Inhalt |
+| --- | --- |
+| `SMTP_HOST` | SMTP-Server |
+| `SMTP_PORT` | `465` (TLS) oder z. B. `587` (STARTTLS), Standard `587` |
+| `SMTP_USERNAME` / `SMTP_PASSWORD` | Zugangsdaten |
+| `HEALTHCHECK_MAIL_TO` | Empfänger, mehrere durch Komma getrennt |
+| `HEALTHCHECK_MAIL_FROM` | optional, Absender (Standard: `SMTP_USERNAME`) |
