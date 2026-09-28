@@ -1,11 +1,11 @@
 # Accessibility Report
 
-> Generated: 2026-09-21T03:12:55.976Z | axe-core 4.12.1 | Rules: wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice | Viewport: 1280x900
+> Generated: 2026-09-28T03:15:57.933Z | axe-core 4.12.1 | Rules: wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice | Viewport: 1280x900
 > Base URL: http://localhost:8081/rocket-meals
 
 ## Summary
 
-Total violations (affected elements): **203** — 🟥 Critical: 1, 🟧 Serious: 8, 🟨 Moderate: 194, 🟦 Minor: 0
+Total violations (affected elements): **208** — 🟥 Critical: 1, 🟧 Serious: 8, 🟨 Moderate: 199, 🟦 Minor: 0
 
 | Screen | 🟥 Critical | 🟧 Serious | 🟨 Moderate | 🟦 Minor | Total | Passes |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -13,6 +13,7 @@ Total violations (affected elements): **203** — 🟥 Critical: 1, 🟧 Serious
 | foodPlanList | 0 | 0 | 7 | 0 | 7 | 28 |
 | login | 0 | 0 | 5 | 0 | 5 | 8 |
 | price-group | 0 | 0 | 5 | 0 | 5 | 8 |
+| form-submissions | 0 | 0 | 5 | 0 | 5 | 31 |
 | leaflet-map | 0 | 0 | 5 | 0 | 5 | 8 |
 | faq-food | 0 | 1 | 3 | 0 | 4 | 28 |
 | faq-living | 0 | 1 | 3 | 0 | 4 | 28 |
@@ -33,9 +34,9 @@ Total violations (affected elements): **203** — 🟥 Critical: 1, 🟧 Serious
 | experimentell | 0 | 0 | 2 | 0 | 2 | 17 |
 | forms | 0 | 0 | 2 | 0 | 2 | 17 |
 | form-categories | 0 | 0 | 2 | 0 | 2 | 29 |
-| form-submissions | 0 | 0 | 2 | 0 | 2 | 21 |
 | form-submission | 0 | 0 | 2 | 0 | 2 | 17 |
 | delete-user | 0 | 1 | 1 | 0 | 2 | 11 |
+| inventory-items | 0 | 0 | 2 | 0 | 2 | 18 |
 | notification | 0 | 0 | 2 | 0 | 2 | 17 |
 | vertical-image-scroll | 0 | 0 | 2 | 0 | 2 | 17 |
 | bigScreen | 0 | 1 | 1 | 0 | 2 | 14 |
@@ -53,7 +54,7 @@ Total violations (affected elements): **203** — 🟥 Critical: 1, 🟧 Serious
 
 | Rule | Impact | Elements | Screens | Help |
 | --- | --- | ---: | ---: | --- |
-| `region` | 🟨 moderate | 189 | 38 | [All page content should be contained by landmarks](https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer) |
+| `region` | 🟨 moderate | 194 | 39 | [All page content should be contained by landmarks](https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer) |
 | `document-title` | 🟧 serious | 5 | 5 | [Documents must have <title> element to aid in navigation](https://dequeuniversity.com/rules/axe/4.12/document-title?application=axe-puppeteer) |
 | `landmark-one-main` | 🟨 moderate | 4 | 4 | [Document should have one main landmark](https://dequeuniversity.com/rules/axe/4.12/landmark-one-main?application=axe-puppeteer) |
 | `page-has-heading-one` | 🟨 moderate | 1 | 1 | [Page should contain a level-one heading](https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=axe-puppeteer) |
@@ -115,6 +116,17 @@ URL: `http://localhost:8081/rocket-meals/price-group?kioskMode=true`
   - `p:nth-child(2)`
   - `p:nth-child(3)`
   - … and 1 more (see JSON report)
+
+### form-submissions
+
+URL: `http://localhost:8081/rocket-meals/form-submissions?kioskMode=true`
+
+- 🟨 **region** (moderate) — 5 element(s)
+  - All page content should be contained by landmarks ([docs](https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer))
+  - `.r-dnmrzs`
+  - `.r-1udh08x.r-1d2f490.r-u8s1d > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx > .css-g5y9jx > .css-g5y9jx:nth-child(1)`
+  - `.r-dd0y9b > .r-u9wvl5.r-13qz1uu.r-1awozwy`
+  - … and 2 more (see JSON report)
 
 ### leaflet-map
 
@@ -220,7 +232,7 @@ URL: `http://localhost:8081/rocket-meals/foodoffers?kioskMode=true`
 
 - 🟨 **region** (moderate) — 2 element(s)
   - All page content should be contained by landmarks ([docs](https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer))
-  - `.r-dnmrzs.r-1p0dtai.r-ipm5af`
+  - `.r-1p0dtai.r-ipm5af.r-dnmrzs`
   - `.r-13awgt0.r-18u37iz.css-g5y9jx > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx > .r-1d2f490.r-zchlnj.r-1p0dtai > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx`
 
 ### eating-habits
@@ -331,15 +343,6 @@ URL: `http://localhost:8081/rocket-meals/form-categories?kioskMode=true`
   - `.r-dnmrzs`
   - `.r-18u37iz.r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx`
 
-### form-submissions
-
-URL: `http://localhost:8081/rocket-meals/form-submissions?kioskMode=true`
-
-- 🟨 **region** (moderate) — 2 element(s)
-  - All page content should be contained by landmarks ([docs](https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer))
-  - `.r-dnmrzs`
-  - `.r-18u37iz.r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx`
-
 ### form-submission
 
 URL: `http://localhost:8081/rocket-meals/form-submission?kioskMode=true`
@@ -360,6 +363,15 @@ URL: `http://localhost:8081/rocket-meals/delete-user?kioskMode=true`
 - 🟨 **region** (moderate) — 1 element(s)
   - All page content should be contained by landmarks ([docs](https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer))
   - `.r-13awgt0.css-g5y9jx > .css-g5y9jx > .css-g5y9jx > .css-g5y9jx > .r-13awgt0.css-g5y9jx`
+
+### inventory-items
+
+URL: `http://localhost:8081/rocket-meals/inventory-items?kioskMode=true`
+
+- 🟨 **region** (moderate) — 2 element(s)
+  - All page content should be contained by landmarks ([docs](https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer))
+  - `.r-dnmrzs.r-1p0dtai.r-ipm5af`
+  - `.r-1udh08x.r-1d2f490.r-u8s1d:nth-child(1)`
 
 ### notification
 

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-21T03:12:55.976Z",
+  "generatedAt": "2026-09-28T03:15:57.933Z",
   "baseUrl": "http://localhost:8081/rocket-meals",
   "axeCoreVersion": "4.12.1",
   "tags": [
@@ -16,9 +16,9 @@
   "totals": {
     "critical": 1,
     "serious": 8,
-    "moderate": 194,
+    "moderate": 199,
     "minor": 0,
-    "violations": 203,
+    "violations": 208,
     "screensWithErrors": 0
   },
   "screens": [
@@ -91,7 +91,7 @@
           "nodeCount": 2,
           "nodes": [
             {
-              "target": ".r-dnmrzs.r-1p0dtai.r-ipm5af",
+              "target": ".r-1p0dtai.r-ipm5af.r-dnmrzs",
               "html": "<div class=\"css-g5y9jx r-1p0dtai...\" style=\"position: absolute; ...\">",
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             },
@@ -1413,7 +1413,7 @@
           "help": "All page content should be contained by landmarks",
           "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer",
           "wcagTags": [],
-          "nodeCount": 2,
+          "nodeCount": 5,
           "nodes": [
             {
               "target": ".r-dnmrzs",
@@ -1421,14 +1421,29 @@
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             },
             {
-              "target": ".r-18u37iz.r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx",
-              "html": "<div class=\"css-g5y9jx r-13awgt0\">",
+              "target": ".r-1udh08x.r-1d2f490.r-u8s1d > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx > .css-g5y9jx > .css-g5y9jx:nth-child(1)",
+              "html": "<div class=\"css-g5y9jx\" style=\"width: 100%; height: 60px; justify-content: center; gap: 20px; background-color: rgb(255, 255, 255); padding-right: 20px; padding-left: 20px;\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-dd0y9b > .r-u9wvl5.r-13qz1uu.r-1awozwy",
+              "html": "<div class=\"css-g5y9jx r-1awozwy r-u9wvl5 r-13qz1uu\"><div dir=\"auto\" class=\"css-146c3p1\" style=\"font-size: 30px; font-family: Poppins_700Bold; color: rgb(0, 0, 0); margin-bottom: 0px;\">Status: Entwurf</div></div>",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": "input",
+              "html": "<input placeholder=\"Suche in Titel und F...\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" enterkeyhint=\"search\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" aria-label=\"Suche in Titel und F...\" class=\"css-11aywtz r-6taxm2\" value=\"\" ...>",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-13awgt0.css-g5y9jx > .css-g5y9jx > .css-g5y9jx:nth-child(3)",
+              "html": "<div class=\"css-g5y9jx\" style=\"flex: 1 1 0%; width: 100%; margin-top: 10px; align-items: center;\">",
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             }
           ]
         }
       ],
-      "passCount": 21,
+      "passCount": 31,
       "incompleteCount": 2
     },
     {
@@ -1502,6 +1517,35 @@
       ],
       "passCount": 11,
       "incompleteCount": 1
+    },
+    {
+      "screen": "inventory-items",
+      "url": "http://localhost:8081/rocket-meals/inventory-items?kioskMode=true",
+      "violations": [
+        {
+          "id": "region",
+          "impact": "moderate",
+          "description": "Ensure all page content is contained by landmarks",
+          "help": "All page content should be contained by landmarks",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer",
+          "wcagTags": [],
+          "nodeCount": 2,
+          "nodes": [
+            {
+              "target": ".r-dnmrzs.r-1p0dtai.r-ipm5af",
+              "html": "<div class=\"css-g5y9jx r-1p0dtai...\" style=\"position: absolute; ...\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-1udh08x.r-1d2f490.r-u8s1d:nth-child(1)",
+              "html": "<div class=\"css-g5y9jx r-13awgt0 r-1udh08x r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af\" style=\"pointer-events: auto; display: flex; z-index: 0;\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            }
+          ]
+        }
+      ],
+      "passCount": 18,
+      "incompleteCount": 2
     },
     {
       "screen": "leaflet-map",
