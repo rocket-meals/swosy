@@ -1,14 +1,15 @@
 /**
- * What the two text recognition hooks share.
+ * What the two text recognition hooks and the WebView page share.
  *
- * The engine is PaddleOCR (PP-OCRv6 tiny) running on onnxruntime: WebAssembly
- * in the browser, the native runtime on a device. Both read the same models out
- * of `public/paddleocr/`, so nothing is ever fetched from a third party — see
+ * The engine is PaddleOCR (PP-OCRv6 tiny) running on onnxruntime's
+ * WebAssembly build — on the page itself in the browser, inside a WebView on a
+ * device (`textRecognitionPage/`). One build, one set of models out of
+ * `public/paddleocr/`, and nothing is ever fetched from a third party — see
  * the README there.
  */
 
 /** What the experimental screen prints under "Texterkennung". */
-export const ENGINE_NAME = 'PaddleOCR PP-OCRv6 tiny (onnxruntime)';
+export const ENGINE_NAME = 'PaddleOCR PP-OCRv6 tiny (onnxruntime WebAssembly)';
 
 /** The models and the character dictionary, as they are named on disk. */
 export const ENGINE_FILE_NAMES = {
@@ -18,10 +19,12 @@ export const ENGINE_FILE_NAMES = {
 } as const;
 
 /**
- * The WebAssembly onnxruntime loads in the browser, and the glue beside it.
+ * The WebAssembly onnxruntime runs on, and the glue beside it.
  *
- * onnxruntime-web points at a CDN by default. These are the same two files,
- * served from this app instead — see `getEngineDirectoryUrl` in the web hook.
+ * onnxruntime-web points at a CDN by default. These are the same files, served
+ * from this app instead — see `getEngineDirectoryUrl` in the web hook. On a
+ * device the `.wasm` is bundled as an asset and handed to the page as bytes;
+ * the loader is part of the page bundle there.
  */
 export const ONNXRUNTIME_FILE_NAMES = {
 	// The wasm-only build, on purpose: the all-backends bundle reaches for a

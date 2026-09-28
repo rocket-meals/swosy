@@ -41,6 +41,7 @@ import ExpoUpdateLoader from '@/components/ExpoUpdateLoader/ExpoUpdateLoader';
 import ExpoUpdateChecker from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import {ModalContextProvider, ModalRenderer} from '@/components/GlobalModal/ModalProvider';
 import AppDownloadBanner from '@/components/AppDownloadBanner';
+import TextRecognitionWebViewHost from '@/components/TextRecognitionWebView';
 import { ConfigCustomerEnum, getCompanyLogoLocalSaved, getCustomerConfig, getCustomerConfigsDict, getCustomerEnumForConfig } from '@/config';
 import { SET_SELECTED_CUSTOMER } from '@/redux/Types/types';
 import { SettingsProvider } from 'repo-depkit-common-ui';
@@ -202,6 +203,8 @@ export default function Layout() {
 															<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }} edges={pathname?.includes('image-full-screen') ? ['bottom'] : ['top', 'bottom']}>
 																<AppDownloadBanner />
 																<Slot />
+																{/* The WebView the text recognition runs in on a device; renders nothing until a scan asks for it. */}
+																<TextRecognitionWebViewHost />
 															</SafeAreaView>
 														</KeyboardAvoidingView>
 													</ExpoUpdateChecker>

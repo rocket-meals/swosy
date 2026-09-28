@@ -26,3 +26,14 @@ declare module '*.txt' {
 	const content: number;
 	export default content;
 }
+
+// onnxruntime's WebAssembly and the text recognition page bundle, likewise.
+declare module '*.wasm' {
+	const content: number;
+	export default content;
+}
+
+declare module '*.webviewjs' {
+	const content: number;
+	export default content;
+}

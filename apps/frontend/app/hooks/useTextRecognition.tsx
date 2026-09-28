@@ -1,182 +1,77 @@
-import { useCallback, useRef, useState } from 'react';
-import { Asset } from 'expo-asset';
+import { useCallback, useState } from 'react';
 import { File } from 'expo-file-system';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
-import type { PaddleOcrService } from 'ppu-paddle-ocr/mobile';
 
-import { MAX_RECOGNITION_IMAGE_WIDTH, RECOGNITION_IMAGE_COMPRESSION, RecognitionImage, RecognitionResult, SHARPNESS_MEASUREMENT_WIDTH, TextRecognitionApi, describeReading, measureImageSharpness } from '@/helper/TextRecognitionShared';
+import { MAX_RECOGNITION_IMAGE_WIDTH, RECOGNITION_IMAGE_COMPRESSION, RecognitionImage, RecognitionResult, TextRecognitionApi, describeReading } from '@/helper/TextRecognitionShared';
+import { textRecognitionBridge } from '@/helper/textRecognitionPage/bridge';
 
-/**
- * The models, as Metro assets.
- *
- * Resolved when first needed rather than at import time: a `require` that fails
- * at module level takes the whole screen down with it, and an engine that
- * cannot be found should show a message in the sheet instead.
- */
-const loadModelModules = (): { detection: number; recognition: number; charactersDictionary: number } => ({
-	detection: require('@/public/paddleocr/PP-OCRv6_tiny_det.ort'),
-	recognition: require('@/public/paddleocr/PP-OCRv6_tiny_rec.ort'),
-	charactersDictionary: require('@/public/paddleocr/ppocrv6_tiny_dict.txt'),
-});
-
-/**
- * The engine and Skia, loaded when text is first read rather than on import.
- *
- * Both are native modules, and `onnxruntime-react-native` installs its JSI
- * binding the moment it is imported. Imported at module level, that ran
- * whenever a screen merely *contained* an IBAN field (the form screens do) -
- * and when the binding fails, as it did on Android, the whole form went down
- * with it although nobody had asked for a scan. Required here, a failure only
- * reaches the sheet that wanted to read something, and says so there.
- */
-const loadPaddleOcr = (): typeof import('ppu-paddle-ocr/mobile') => require('ppu-paddle-ocr/mobile');
-const loadSkia = (): typeof import('@shopify/react-native-skia') => require('@shopify/react-native-skia');
+/** The frames are handed over as JPEG; the page needs to know. */
+const FRAME_MIME_TYPE = 'image/jpeg';
 
 /** The message of whatever was thrown, prefixed with the step that threw it. */
 const describeFailure = (step: string, error: unknown): string => `${step}: ${error instanceof Error ? error.message : String(error)}`;
 
 /**
- * Reads one bundled asset into memory.
- *
- * The engine takes the model bytes, not a path: `fetch` cannot read a `file://`
- * URI in React Native, so handing it a URL would send it looking on the network
- * — which is exactly what must not happen.
- */
-const readAsset = async (assetModule: number): Promise<ArrayBuffer> => {
-	const asset = Asset.fromModule(assetModule);
-	await asset.downloadAsync();
-	if (!asset.localUri) {
-		throw new Error('it has no local copy on this device');
-	}
-	return new File(asset.localUri).arrayBuffer();
-};
-
-/**
- * How sharp the photo is, or `null` when it could not be measured.
- *
- * Decoding is Skia's, which the engine brings along anyway. A failure here is
- * not worth reporting: the measurement exists to explain an empty reading, and
- * an explanation that cannot be produced simply is not given.
- */
-const measureSharpness = async (imageUri: string): Promise<number | null> => {
-	try {
-		const { Skia } = loadSkia();
-		const data = await Skia.Data.fromURI(imageUri);
-		const encoded = Skia.Image.MakeImageFromEncoded(data);
-		if (!encoded) {
-			return null;
-		}
-		// Scaled to the same width the browser measures at, so the number means
-		// the same thing on both sides.
-		const width = Math.min(SHARPNESS_MEASUREMENT_WIDTH, encoded.width());
-		const height = Math.max(1, Math.round((encoded.height() / encoded.width()) * width));
-		const surface = Skia.Surface.MakeOffscreen(width, height);
-		if (!surface) {
-			return null;
-		}
-		surface.getCanvas().drawImageRect(encoded, { x: 0, y: 0, width: encoded.width(), height: encoded.height() }, { x: 0, y: 0, width, height }, Skia.Paint());
-		surface.flush();
-		const pixels = surface.makeImageSnapshot().readPixels();
-		if (!pixels || pixels instanceof Float32Array) {
-			return null;
-		}
-		return measureImageSharpness(new Uint8ClampedArray(pixels.buffer, pixels.byteOffset, pixels.byteLength), width, height);
-	} catch {
-		return null;
-	}
-};
-
-/**
  * Text recognition (OCR) on a device.
  *
- * PaddleOCR on onnxruntime's native runtime, with Skia doing the image work.
- * Both models are bundled with the app and read off the device, so this works
- * offline and tells no one about it.
+ * The same engine the browser runs — PaddleOCR on onnxruntime's WebAssembly
+ * build, reading the models bundled in `public/paddleocr/` — inside a WebView
+ * that `TextRecognitionWebViewHost` keeps at the root of the app. This hook
+ * only prepares the frame and hands it across `textRecognitionBridge`; the
+ * page does the reading and posts the text back. Nothing native is loaded for
+ * it, nothing is fetched, and the picture never leaves the device.
  *
  * Taking the picture is somebody else's job. What arrives here is a finished
  * image; the camera is the platform's own and this file knows nothing about it.
  */
 export const useTextRecognition = (): TextRecognitionApi => {
-	const servicePromise = useRef<Promise<PaddleOcrService> | null>(null);
 	const [progress, setProgress] = useState<number | null>(null);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-	const getService = useCallback((): Promise<PaddleOcrService> => {
-		if (servicePromise.current === null) {
-			setProgress(0);
-			servicePromise.current = (async () => {
-				let modules: ReturnType<typeof loadModelModules>;
-				try {
-					modules = loadModelModules();
-				} catch (error) {
-					throw new Error(describeFailure('the text recognition models are not bundled with this app version', error));
-				}
-				let model: { detection: ArrayBuffer; recognition: ArrayBuffer; charactersDictionary: ArrayBuffer };
-				try {
-					model = {
-						detection: await readAsset(modules.detection),
-						recognition: await readAsset(modules.recognition),
-						charactersDictionary: await readAsset(modules.charactersDictionary),
-					};
-				} catch (error) {
-					throw new Error(describeFailure('the text recognition models could not be unpacked', error));
-				}
-				try {
-					const { PaddleOcrService } = loadPaddleOcr();
-					const service = new PaddleOcrService({ model });
-					await service.initialize();
-					setProgress(null);
-					return service;
-				} catch (error) {
-					throw new Error(describeFailure('the text recognition engine could not be started', error));
-				}
-			})().catch((error: unknown) => {
-				// A failed load must not be remembered as the engine, or every
-				// later attempt would hand back the same rejection.
-				servicePromise.current = null;
-				setProgress(null);
-				throw error;
-			});
-		}
-		return servicePromise.current;
-	}, []);
-
 	/**
-	 * Scales the frame down and hands back its bytes. A full-resolution photo
-	 * would cost the engine time and memory it has no use for.
+	 * Scales the frame down and hands back its bytes, base64-encoded for the
+	 * trip into the WebView. A full-resolution photo would cost the engine
+	 * time and memory it has no use for, and the bridge a string it cannot
+	 * carry comfortably.
 	 */
-	const prepareFrame = useCallback(async (image: RecognitionImage): Promise<{ bytes: ArrayBuffer; uri: string }> => {
+	const prepareFrame = useCallback(async (image: RecognitionImage): Promise<string> => {
 		const context = ImageManipulator.manipulate(image.uri);
 		if (image.width === undefined || image.width > MAX_RECOGNITION_IMAGE_WIDTH) {
 			context.resize({ width: MAX_RECOGNITION_IMAGE_WIDTH });
 		}
 		const rendered = await context.renderAsync();
 		const saved = await rendered.saveAsync({ compress: RECOGNITION_IMAGE_COMPRESSION, format: SaveFormat.JPEG });
-		return { bytes: await new File(saved.uri).arrayBuffer(), uri: saved.uri };
+		return new File(saved.uri).base64();
 	}, []);
 
 	const recognizeImage = useCallback(
 		async (image: RecognitionImage): Promise<RecognitionResult> => {
-			let prepared: { bytes: ArrayBuffer; uri: string };
+			let imageBase64: string;
 			try {
-				prepared = await prepareFrame(image);
+				imageBase64 = await prepareFrame(image);
 			} catch (error) {
 				const message = describeFailure('the photo could not be prepared for reading', error);
 				setErrorMessage(message);
 				throw new Error(message);
 			}
 			try {
-				const service = await getService();
-				const result = await service.recognize(prepared.bytes, { flatten: true });
+				// The first frame is what starts the engine; the bridge says so
+				// through its status, and the progress is shown until it is up.
+				if (textRecognitionBridge.getStatus() !== 'ready') {
+					setProgress(0);
+				}
+				const reading = await textRecognitionBridge.recognize(imageBase64, FRAME_MIME_TYPE);
+				setProgress(null);
 				setErrorMessage(null);
-				return describeReading(result.text ?? '', await measureSharpness(prepared.uri));
+				return describeReading(reading.text, reading.sharpness);
 			} catch (error) {
+				setProgress(null);
 				const message = error instanceof Error ? error.message : String(error);
 				setErrorMessage(message);
 				throw new Error(message);
 			}
 		},
-		[getService, prepareFrame],
+		[prepareFrame],
 	);
 
 	return { recognizeImage, progress, errorMessage };

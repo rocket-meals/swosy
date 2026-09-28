@@ -14682,7 +14682,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:~0.25.0":
+"esbuild@npm:^0.25.12, esbuild@npm:~0.25.0":
   version: 0.25.12
   resolution: "esbuild@npm:0.25.12"
   dependencies:
@@ -22968,6 +22968,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"playwright-core@npm:1.63.0":
+  version: 1.63.0
+  resolution: "playwright-core@npm:1.63.0"
+  bin:
+    playwright-core: cli.js
+  checksum: 10c0/39c1ebae4029ca2e9371e00a5588d962038e24b6e0bdb7d0d27374dde04838f349b83ae0c8b3b648653d0935cba7fb9011f1201adaab9dd0db7801ad6c75e9aa
+  languageName: node
+  linkType: hard
+
 "playwright@npm:1.59.1":
   version: 1.59.1
   resolution: "playwright@npm:1.59.1"
@@ -22980,6 +22989,17 @@ __metadata:
   bin:
     playwright: cli.js
   checksum: 10c0/dfe38396e616e5c4f98825ce90037bb96e477c5a2bd9258a24854f8ce72a8a41427b19098863866f85aa0216e70287dd537c4438d761aca93995e31ae099c533
+  languageName: node
+  linkType: hard
+
+"playwright@npm:^1.59.1":
+  version: 1.63.0
+  resolution: "playwright@npm:1.63.0"
+  dependencies:
+    playwright-core: "npm:1.63.0"
+  bin:
+    playwright: cli.js
+  checksum: 10c0/d1fd048a89be27c9aba6757dc4f70eff4a5163b49f439ad691767be8b2a482327d0dd1928b4f73c8fe0d8b33aab2c9dc2670424ab60f112d9e98e91b94e3b090
   languageName: node
   linkType: hard
 
@@ -25551,6 +25571,7 @@ __metadata:
     axios: "npm:^1.7.7"
     cpx: "npm:^1.5.0"
     date-fns: "npm:^4.1.0"
+    esbuild: "npm:^0.25.12"
     expo: "npm:57.0.11"
     expo-blur: "npm:~57.0.2"
     expo-build-properties: "npm:~57.0.9"
@@ -25597,6 +25618,7 @@ __metadata:
     nanoid: "npm:^5.1.5"
     onnxruntime-react-native: "patch:onnxruntime-react-native@npm%3A1.24.3#~/.yarn/patches/onnxruntime-react-native-npm-1.24.3-ac3e341e40.patch"
     onnxruntime-web: "npm:^1.30.0"
+    playwright: "npm:^1.59.1"
     ppu-paddle-ocr: "npm:^6.6.0"
     prop-types: "npm:^15.8.1"
     qrcode: "npm:^1.5.4"
