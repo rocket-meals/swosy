@@ -1551,4 +1551,8 @@ const Index = () => {
 	);
 };
 
+// Guard rail: a screen that throws is replaced by an error page with "try
+// again" and "back" instead of closing the app.
+export { ScreenErrorBoundary as ErrorBoundary } from '@/components/ScreenErrorBoundary';
+
 export default Index;

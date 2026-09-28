@@ -7418,5 +7418,25 @@
     "ru": "Открыть ссылку",
     "tr": "Bağlantıyı aç",
     "zh": "打开链接"
+  },
+  "screen_error_description": {
+    "de": "Diese Seite konnte nicht angezeigt werden.",
+    "en": "This page could not be displayed.",
+    "ar": "تعذر عرض هذه الصفحة.",
+    "es": "No se pudo mostrar esta página.",
+    "fr": "Cette page n'a pas pu être affichée.",
+    "ru": "Не удалось отобразить эту страницу.",
+    "tr": "Bu sayfa görüntülenemedi.",
+    "zh": "无法显示此页面。"
+  },
+  "screen_error_retry": {
+    "de": "Erneut versuchen",
+    "en": "Try again",
+    "ar": "حاول مرة أخرى",
+    "es": "Inténtalo de nuevo",
+    "fr": "Réessayer",
+    "ru": "Попробовать снова",
+    "tr": "Tekrar dene",
+    "zh": "重试"
   }
 }

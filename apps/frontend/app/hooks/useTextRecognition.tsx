@@ -2,8 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { Asset } from 'expo-asset';
 import { File } from 'expo-file-system';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
-import { Skia } from '@shopify/react-native-skia';
-import { PaddleOcrService } from 'ppu-paddle-ocr/mobile';
+import type { PaddleOcrService } from 'ppu-paddle-ocr/mobile';
 
 import { MAX_RECOGNITION_IMAGE_WIDTH, RECOGNITION_IMAGE_COMPRESSION, RecognitionImage, RecognitionResult, SHARPNESS_MEASUREMENT_WIDTH, TextRecognitionApi, describeReading, measureImageSharpness } from '@/helper/TextRecognitionShared';
 
@@ -19,6 +18,19 @@ const loadModelModules = (): { detection: number; recognition: number; character
 	recognition: require('@/public/paddleocr/PP-OCRv6_tiny_rec.ort'),
 	charactersDictionary: require('@/public/paddleocr/ppocrv6_tiny_dict.txt'),
 });
+
+/**
+ * The engine and Skia, loaded when text is first read rather than on import.
+ *
+ * Both are native modules, and `onnxruntime-react-native` installs its JSI
+ * binding the moment it is imported. Imported at module level, that ran
+ * whenever a screen merely *contained* an IBAN field (the form screens do) -
+ * and when the binding fails, as it did on Android, the whole form went down
+ * with it although nobody had asked for a scan. Required here, a failure only
+ * reaches the sheet that wanted to read something, and says so there.
+ */
+const loadPaddleOcr = (): typeof import('ppu-paddle-ocr/mobile') => require('ppu-paddle-ocr/mobile');
+const loadSkia = (): typeof import('@shopify/react-native-skia') => require('@shopify/react-native-skia');
 
 /** The message of whatever was thrown, prefixed with the step that threw it. */
 const describeFailure = (step: string, error: unknown): string => `${step}: ${error instanceof Error ? error.message : String(error)}`;
@@ -48,6 +60,7 @@ const readAsset = async (assetModule: number): Promise<ArrayBuffer> => {
  */
 const measureSharpness = async (imageUri: string): Promise<number | null> => {
 	try {
+		const { Skia } = loadSkia();
 		const data = await Skia.Data.fromURI(imageUri);
 		const encoded = Skia.Image.MakeImageFromEncoded(data);
 		if (!encoded) {
@@ -109,6 +122,7 @@ export const useTextRecognition = (): TextRecognitionApi => {
 					throw new Error(describeFailure('the text recognition models could not be unpacked', error));
 				}
 				try {
+					const { PaddleOcrService } = loadPaddleOcr();
 					const service = new PaddleOcrService({ model });
 					await service.initialize();
 					setProgress(null);
