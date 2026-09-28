@@ -270,3 +270,17 @@ Optional kannst du Zeitplan/Logpfad überschreiben:
 ```bash
 CRON_SCHEDULE="30 21 * * 6" CRON_LOG_FILE="/workspace/rocket-meals/logs/update-and-generate-env.log" ./scripts/setup-weekly-update-cron.sh
 ```
+
+### 3) Automatisch täglich per GitHub Action
+
+Der Workflow `🔁 Daily Backend Restart` (`.github/workflows/backend-daily-restart.yml`) führt das Skript
+**täglich um 19:00 Uhr deutscher Zeit** per SSH auf allen Backend-Servern aus (`test`, `swosy`, `studi-futter`),
+also Update + Neustart. Er läuft nur im Repository `rocket-meals/rocket-meals`, nicht in Forks, und lässt sich
+zusätzlich manuell starten.
+
+Eine Stunde vorher, um **18:00 Uhr**, läuft die Fork-Synchronisierung (`.github/workflows/sync-fork.yml`), damit
+die Kunden-Server (`rocket-meals/swosy`, `rocket-meals/studi-futter`) beim Neustart den aktuellen Stand holen.
+
+GitHub-Cron rechnet in UTC ohne Sommerzeit. Beide Workflows planen deshalb die Sommer- und die Winterzeit-Variante
+ein; die Action `.github/actions/berlin-time-schedule-gate` lässt nur die zur aktuellen Berliner Zeit passende durch.
+Geplante GitHub-Läufe starten oft einige Minuten verspätet.
