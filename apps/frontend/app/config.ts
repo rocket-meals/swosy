@@ -155,7 +155,12 @@ export function getVersionPatch() {
         //     foods_ratings_type_for_unverified (inherit/disabled) for unverified profiles
         // 63: rating/comment input locked for guests when only verified accounts may use it,
         //     with the hint that a guest account is not enough
-        return 63;
+        // 64: the OCR engine (onnxruntime, Skia) is loaded when a scan starts, not
+        //     when a form with an IBAN field opens - the form screens crashed on
+        //     Android; form screens get an error page instead of closing the app
+        // 65: a failed text recognition ends the scan with one modal: the error to
+        //     copy, or reported to support in one tap (app feedback filled in by the app)
+        return 65;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

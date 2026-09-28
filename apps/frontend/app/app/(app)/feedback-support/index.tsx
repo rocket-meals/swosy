@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Dimensions, KeyboardTypeOptions, PixelRatio, Platform, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, KeyboardTypeOptions, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { deviceData, feedbackData } from '../../../constants/FeedbackSupportData';
 import { useLanguage } from '@/hooks/useLanguage';
-import * as DeviceInfo from 'expo-device';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { AppFeedback } from '@/redux/actions/AppFeedback/AppFeedback';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
@@ -17,6 +16,7 @@ import { AppFeedbackContentHelper, DatabaseTypes, EmailHelper, StringHelper } fr
 import { useAppSelector } from '@/redux/hooks';
 import { configureStore } from '@/redux/store';
 import { buildAppStateJsonForFeedback } from '@/helper/appStateForFeedback';
+import { collectDeviceFeedbackFields } from '@/helper/errorReport';
 import { myContrastColor } from '@/helper/ColorHelper';
 import SettingsList from '@/components/SettingsList';
 import SettingsListEditable from '@/components/SettingsListEditable';
@@ -120,33 +120,12 @@ const FeedbackScreen = () => {
 	);
 
 	const fetchDeviceInfo = async () => {
-		const windowWidth = Dimensions.get('screen').width;
-		const windowHeight = Dimensions.get('screen').height;
-		const windowScale = Dimensions.get('screen').scale;
-		const brand = DeviceInfo.brand;
-		let platform: string;
-		if (Platform.OS === 'web') {
-			platform = 'Web';
-		} else if (Platform.OS === 'ios') {
-			platform = 'iOS';
-		} else {
-			platform = 'Android';
-		}
-		const systemVersion = DeviceInfo.osVersion;
-
 		setInputValues({
 			title: '',
 			content: '',
 			email: '',
 			positive: false,
-			device_brand: brand,
-			device_system_version: systemVersion,
-			device_platform: platform,
-			display_height: windowHeight,
-			display_width: windowWidth,
-			display_fontscale: PixelRatio?.getFontScale(),
-			display_pixelratio: PixelRatio?.get(),
-			display_scale: windowScale,
+			...collectDeviceFeedbackFields(),
 		});
 		setErrorMessage(null);
 		setErrorJson(null);
