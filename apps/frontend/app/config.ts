@@ -163,7 +163,9 @@ export function getVersionPatch() {
         // 66: text recognition runs on onnxruntime's WebAssembly build on every
         //     platform - on a device inside a WebView - instead of the native
         //     binding that crashed Android on the first scan
-        return 66;
+        // 67: the camera preview fills the sheet's full width (no black strip on
+        //     the right), the giro card frame has a card's shape and is white
+        return 67;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

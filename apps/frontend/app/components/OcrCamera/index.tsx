@@ -21,6 +21,8 @@ const CAPTURE_QUALITY = 0.8;
 const PREVIEW_ASPECT_RATIO = 3 / 4;
 /** How much of the window the preview may take, so the controls stay in view. */
 const MAX_PREVIEW_HEIGHT_RATIO = 0.55;
+/** Width over height of a bank card (ISO/IEC 7810 ID-1, 85.60 mm × 53.98 mm). */
+const CARD_ASPECT_RATIO = 85.6 / 53.98;
 
 /** What the controls are drawn on, whatever is behind them. Deliberately not themed: a camera is black. */
 const CONTROL_BACKGROUND_COLOR = '#000000';
@@ -73,7 +75,7 @@ export const OcrCamera: React.FC<OcrCameraProps> = ({ recognizeImage, isAutomati
 	const { translate } = useLanguage();
 	const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
 	const contrastColor = myContrastColor(primaryColor, theme, selectedTheme === 'dark');
-	const { height: windowHeight } = useWindowDimensions();
+	const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
 	const [permission, requestPermission] = useCameraPermissions();
 	const [isCameraReady, setIsCameraReady] = useState(false);
@@ -270,17 +272,29 @@ export const OcrCamera: React.FC<OcrCameraProps> = ({ recognizeImage, isAutomati
 	// `onLayout` on this container) looked equivalent and was not: inside the
 	// bottom sheet the callback never arrived, and the preview stayed at zero
 	// height with only the controls under it showing.
-	const maxPreviewHeight = windowHeight * MAX_PREVIEW_HEIGHT_RATIO;
+	// The height is set outright rather than left to `aspectRatio` with a
+	// `maxHeight`: when that cap kicked in, the layout engine shrank the width to
+	// keep the ratio, and the preview stopped short of the right edge with a black
+	// strip beside it. Now the width is always the sheet's; when the cap applies
+	// the preview is merely a little wider than 3:4, and the camera fills it by
+	// cropping, the way a phone camera does.
+	const previewHeight = Math.min(windowWidth / PREVIEW_ASPECT_RATIO, windowHeight * MAX_PREVIEW_HEIGHT_RATIO);
 
 	return (
 		<View style={styles.container}>
-			<View style={[styles.preview, { maxHeight: maxPreviewHeight }]}>
+			<View style={[styles.preview, { height: previewHeight }]}>
 				{/* One or the other, never both: the still replaces the preview
 				    rather than covering it, so no camera is left running underneath
 				    while the engine reads. */}
 				{isCameraActive ? <CameraView ref={cameraRef} style={styles.fill} facing={facing} animateShutter={false} enableTorch={isTorchEnabled} onCameraReady={() => setIsCameraReady(true)} /> : <Image source={{ uri: capturedImage.uri }} style={styles.fill} resizeMode="cover" accessibilityLabel={translate(TranslationKeys.ocr_take_photo)} />}
 
-				{showFrame && <View pointerEvents="none" style={[styles.frame, { borderColor: contrastColor }]} />}
+				{/* White, not themed: it is drawn on a camera picture, where a dark
+				    theme's contrast colour disappears into the shadows. */}
+				{showFrame && (
+					<View pointerEvents="none" style={styles.frameContainer}>
+						<View style={styles.frame} />
+					</View>
+				)}
 
 				<View pointerEvents="none" style={styles.statusPill}>
 					{isBusy && <ActivityIndicator size="small" color={CONTROL_FOREGROUND_COLOR} />}
@@ -343,7 +357,6 @@ const styles = StyleSheet.create({
 	},
 	preview: {
 		width: '100%',
-		aspectRatio: PREVIEW_ASPECT_RATIO,
 		backgroundColor: CONTROL_BACKGROUND_COLOR,
 		overflow: 'hidden',
 	},
@@ -354,15 +367,23 @@ const styles = StyleSheet.create({
 		bottom: 0,
 		left: 0,
 	},
-	frame: {
+	frameContainer: {
 		position: 'absolute',
-		top: '18%',
-		left: '8%',
-		right: '8%',
-		bottom: '18%',
+		top: 0,
+		right: 0,
+		bottom: 0,
+		left: 0,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	frame: {
+		// The shape of the card itself, so it is obvious how to hold it.
+		width: '86%',
+		aspectRatio: CARD_ASPECT_RATIO,
 		borderWidth: 2,
-		borderRadius: 10,
-		opacity: 0.7,
+		borderRadius: 12,
+		borderColor: CONTROL_FOREGROUND_COLOR,
+		opacity: 0.85,
 	},
 	statusPill: {
 		position: 'absolute',
