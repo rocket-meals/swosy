@@ -1,2 +1,3 @@
 Key,Message,Component,Line
 "AaC0s5zuhkA3gTKRIo3v","Code Injection via unsanitized user input","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",10
+"AaDsCkqojjI_XBnxawIT","Move this write permission from workflow level to job level.","rocket-meals_rocket-meals:.github/workflows/sync-fork.yml",4

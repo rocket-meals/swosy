@@ -4,15 +4,19 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 1 | 1 |
+| 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 31 | 31 |
-| 🔧 Maintainability | 292 | 18 |
+| 🔧 Maintainability | 292 | 17 |
 
-**Total issues:** 324 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 325 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (1/1)
+## 🔒 Security (2/2)
+
+- **Move this write permission from workflow level to job level.**
+  .github/workflows/sync-fork.yml:4
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/sync-fork.yml#L4
 
 - **Code Injection via unsanitized user input**
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:10
@@ -144,7 +148,7 @@
   packages/common/src/form/IbanValidationHelper.ts:124
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanValidationHelper.ts#L124
 
-## 🔧 Maintainability (18/292)
+## 🔧 Maintainability (17/292)
 
 - **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172
@@ -213,8 +217,4 @@
 - **Extract this nested ternary operation into an independent statement.**
   apps/frontend/app/app/(app)/settings/index.tsx:961
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L961
-
-- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
-  apps/frontend/app/components/OcrCamera/index.tsx:73
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/OcrCamera/index.tsx#L73
 
