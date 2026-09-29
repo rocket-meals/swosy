@@ -60,6 +60,11 @@ jobs:
       fail-fast: false
       matrix:
         host: ${{ fromJSON(needs.resolve-hosts.outputs.hosts) }}
+    # Shared with backend-daily-restart.yml: never run two deploys on the same
+    # server at once.
+    concurrency:
+      group: deploy-backend-${{ matrix.host }}
+      cancel-in-progress: false
     steps:
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4

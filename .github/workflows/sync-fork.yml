@@ -4,12 +4,15 @@ permissions:
   contents: write
 
 on:
-  # Run daily at 13:00 UTC (15:00 CEST / 14:00 CET) as a safety net for syncs
-  # that could not be detected immediately (see the note on [skip ci] at the
-  # push trigger). Midday on purpose: a nightly run would collide with work
-  # still being pushed to the upstream repository until ~02:00 local time.
+  # Run daily at 18:00 German time as a safety net for syncs that could not be
+  # detected immediately (see the note on [skip ci] at the push trigger).
+  # 18:00 on purpose: one hour before the daily backend restart at 19:00
+  # (backend-daily-restart.yml), so the customer servers pull a fresh fork.
+  # GitHub cron is UTC without daylight saving time, so both variants are
+  # scheduled and the schedule-gate job keeps only the one matching Berlin time.
   schedule:
-    - cron: '0 13 * * *'
+    - cron: '0 16 * * *' # 18:00 CEST
+    - cron: '0 17 * * *' # 18:00 CET
 
   # Allow manual triggering
   workflow_dispatch:
@@ -31,12 +34,28 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  schedule-gate:
+    name: 🕰️ Schedule Gate (Berlin time)
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+    steps:
+      - name: 🔄 Checkout Repository
+        uses: actions/checkout@v4
+      - name: 🕰️ Check Berlin Time
+        id: gate
+        uses: ./.github/actions/berlin-time-schedule-gate
+        with:
+          cron-summer: '0 16 * * *'
+          cron-winter: '0 17 * * *'
+
   sync-fork:
     name: 🔄 Sync Fork with Upstream
     runs-on: ubuntu-latest
+    needs: schedule-gate
     # Pushes on the upstream repository itself are none of this workflow's
     # business - only forks need to react to the "Sync fork" button.
-    if: github.event_name != 'push' || github.repository != 'rocket-meals/rocket-meals'
+    if: needs.schedule-gate.outputs.run == 'true' && (github.event_name != 'push' || github.repository != 'rocket-meals/rocket-meals')
 
     env:
       # Tag on the fork that records the last commit the Combined CI has been

@@ -1,0 +1,70 @@
+name: "🔁 Daily Backend Restart"
+
+# Restarts every backend server daily at 19:00 German time by running the same
+# SSH deploy as "🚀 Deploy Backend (Manual)": scripts/update-and-generate-env.sh
+# pulls the server's repository, regenerates .env, rebuilds and restarts all
+# containers. The fork sync (sync-fork.yml) runs one hour earlier at 18:00,
+# so the swosy and studi-futter servers pick up the latest upstream state.
+#
+# Only runs on rocket-meals/rocket-meals - forks receive this file through the
+# fork sync, but must never restart the servers themselves.
+
+on:
+  # GitHub cron is UTC without daylight saving time, so both variants are
+  # scheduled and the schedule-gate job keeps only the one matching Berlin time.
+  schedule:
+    - cron: '0 17 * * *' # 19:00 CEST
+    - cron: '0 18 * * *' # 19:00 CET
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  schedule-gate:
+    name: "🕰️ Schedule Gate (Berlin time)"
+    runs-on: ubuntu-latest
+    if: github.repository == 'rocket-meals/rocket-meals'
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+      - name: "🕰️ Check Berlin Time"
+        id: gate
+        uses: ./.github/actions/berlin-time-schedule-gate
+        with:
+          cron-summer: '0 17 * * *'
+          cron-winter: '0 18 * * *'
+
+  restart:
+    name: "🔁 Restart ${{ matrix.host }}"
+    runs-on: ubuntu-latest
+    needs: schedule-gate
+    if: needs.schedule-gate.outputs.run == 'true'
+    permissions:
+      contents: read
+    strategy:
+      # One unreachable server must not cancel the restart of the others.
+      fail-fast: false
+      matrix:
+        # Keep in sync with ALL_HOSTS in deploy-backend-manual.yml.
+        host:
+          - test.rocket-meals.de
+          - swosy.rocket-meals.de
+          - studi-futter.rocket-meals.de
+    # Shared with deploy-backend-manual.yml: never run two deploys on the same
+    # server at once.
+    concurrency:
+      group: deploy-backend-${{ matrix.host }}
+      cancel-in-progress: false
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "🔁 Restart ${{ matrix.host }}"
+        uses: ./.github/actions/deploy-server
+        with:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SERVER_HOST: ${{ matrix.host }}
