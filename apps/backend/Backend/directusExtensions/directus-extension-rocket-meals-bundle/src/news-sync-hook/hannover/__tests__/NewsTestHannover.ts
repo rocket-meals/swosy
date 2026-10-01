@@ -19,20 +19,21 @@ describe('NewsTestHannover', () => {
   });
 
   it('test date from news article', async () => {
-    //console.log("Testing date extraction from news article");
-    let articleUrl = 'https://www.studentenwerk-hannover.de/unternehmen/news/detail/neu-co2-kennzeichnung-fuer-unsere-gerichte';
-
-    //console.log("Article URL: " + articleUrl);
+    // Take an article that is currently listed instead of a fixed URL: old articles get removed (404) over time.
+    let news = await newsParser.getRealNewsItems(undefined, 5);
+    let articleUrl = news.find(newsItem => !!newsItem.basicNews.url)?.basicNews.url ?? undefined;
+    expect(articleUrl).toBeDefined();
 
     let response = await StudentenwerkHannoverNewsParser.fetchArticleDate(articleUrl);
-    //console.log("Response: " + response);
-    //console.log(response);
-    expect(response).toBeDefined();
+    expect(response).not.toBeNull();
 
-    let expectedDateObj = new Date(2025, 1, 14);
-    expectedDateObj.setHours(12, 0, 0);
-
-    expect(response).toBe(expectedDateObj.toISOString());
+    let dateObj = new Date(response as string);
+    expect(Number.isNaN(dateObj.getTime())).toBe(false);
+    expect(dateObj.toISOString()).toBe(response);
+    // the parser sets every article date to 12:00 local time
+    expect(dateObj.getHours()).toBe(12);
+    expect(dateObj.getMinutes()).toBe(0);
+    expect(dateObj.getTime()).toBeLessThanOrEqual(Date.now() + 24 * 60 * 60 * 1000);
   });
 
   it('real news', async () => {
