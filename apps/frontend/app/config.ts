@@ -167,7 +167,8 @@ export function getVersionPatch() {
         //     the right), the giro card frame has a card's shape and is white
         // 68: opening a food offer the food import replaced since shows a translated
         //     hint and reloads the list instead of "Request failed with status code 403"
-        return 68;
+        // 69: logout clears the cached food offers (sqlite food_offers_cache_*)
+        return 69;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

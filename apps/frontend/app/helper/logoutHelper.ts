@@ -24,6 +24,7 @@ import {
 import { persistor } from '@/redux/store';
 import { clearChatReadStatus } from '@/helper/chatReadStatus';
 import { clearAppDownloadBannerDismissed } from '@/helper/appDownloadBannerStorage';
+import { clearFoodOffersCache } from '@/helper/FoodOffersCacheHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 import { markOnboardingShouldBeShownAfterLogin } from '@/helper/onboardingIntentHelper';
 
@@ -63,6 +64,7 @@ export const performLogout = async (
                 dispatch({ type: CLEAR_CHATS });
                 await clearChatReadStatus();
                 clearAppDownloadBannerDismissed();
+                await clearFoodOffersCache();
                 dispatch({ type: CLEAR_SETTINGS });
 		// Explicitly drop the popup events incl. their isOpen "already dismissed"
 		// flags. CLEAR_FOODS above resets them too as part of wiping the whole food

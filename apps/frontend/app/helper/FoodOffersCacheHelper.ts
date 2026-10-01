@@ -164,6 +164,19 @@ export async function cacheFoodOffers(
     }
 }
 
+/**
+ * Removes every cached food offer entry together with the tracker and the cache meta.
+ * Called on logout, so the next session loads the offers fresh from the server.
+ */
+export async function clearFoodOffersCache(): Promise<void> {
+    try {
+        await clearTrackedCache(await getTracker());
+        await sqliteKeyValueStorage.multiRemove([TRACKER_KEY, META_KEY]);
+    } catch (e) {
+        console.error('FoodOffersCacheHelper: Error clearing food offers cache', e);
+    }
+}
+
 export interface CachedFoodOffersResult {
     offers: DatabaseTypes.Foodoffers[];
     hash: string;
