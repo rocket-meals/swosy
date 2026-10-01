@@ -165,7 +165,9 @@ export function getVersionPatch() {
         //     binding that crashed Android on the first scan
         // 67: the camera preview fills the sheet's full width (no black strip on
         //     the right), the giro card frame has a card's shape and is white
-        return 67;
+        // 68: opening a food offer the food import replaced since shows a translated
+        //     hint and reloads the list instead of "Request failed with status code 403"
+        return 68;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -681,6 +681,7 @@ export const TranslationKeys = {
 	ocr_error_report_sent: 'ocr_error_report_sent',
 	ocr_error_report_failed: 'ocr_error_report_failed',
 	ocr_error_report_title: 'ocr_error_report_title',
+	foodoffer_outdated_list_reloaded: 'foodoffer_outdated_list_reloaded',
 	screen_error_description: 'screen_error_description',
 	screen_error_retry: 'screen_error_retry',
 	ocr_camera_permission_required: 'ocr_camera_permission_required',

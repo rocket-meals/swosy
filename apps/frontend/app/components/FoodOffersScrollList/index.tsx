@@ -29,6 +29,7 @@ import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { CanteenVisitsDateRow } from '@/components/CanteenVisitsDateRow';
 import FoodOffersLoadingBar from '@/components/FoodOffersLoadingBar';
 import { cacheFoodOffers, getCachedFoodOffers, computeFoodOffersHash } from '@/helper/FoodOffersCacheHelper';
+import { subscribeFoodOffersInvalidation } from '@/helper/foodOffersInvalidation';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -449,6 +450,16 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			init();
 		}, [init])
 	);
+
+	// The details view reports an offer that no longer exists (the food import replaced
+	// it by a new one): the shown days are outdated, so reload them from the server.
+	const initRef = useRef(init);
+	useEffect(() => {
+		initRef.current = init;
+	}, [init]);
+	useEffect(() => subscribeFoodOffersInvalidation(() => {
+		initRef.current(true);
+	}), []);
 
 	// Scroll to top when the selected date changes so that cached dates (e.g. today)
 	// behave the same as freshly loaded dates which reset scroll via the loading indicator.

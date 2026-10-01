@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { runAfterInteractions } from '@/helper/interactionHelper';
-import { fetchFoodDetailsById, fetchFoodOffersDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
+import { fetchFoodDetailsById, fetchFoodOffersDetailsById, isFoodOfferNotFoundError } from '@/redux/actions/FoodOffers/FoodOffers';
+import { invalidateFoodOffers } from '@/helper/foodOffersInvalidation';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
@@ -103,7 +104,13 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
             }
         } catch (e: any) {
             console.error('Error fetching food details: ', e);
-            toast(e.message || translate(TranslationKeys.somethingWentWrong), 'error');
+            if (id && isFoodOfferNotFoundError(e)) {
+                // The list still held an offer the food import has replaced since - reload it
+                toast(translate(TranslationKeys.foodoffer_outdated_list_reloaded), 'info');
+                invalidateFoodOffers();
+            } else {
+                toast(translate(TranslationKeys.somethingWentWrong), 'error');
+            }
         } finally {
             setLoading(false);
         }
