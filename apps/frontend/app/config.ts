@@ -168,7 +168,8 @@ export function getVersionPatch() {
         // 68: opening a food offer the food import replaced since shows a translated
         //     hint and reloads the list instead of "Request failed with status code 403"
         // 69: logout clears the cached food offers (sqlite food_offers_cache_*)
-        return 69;
+        // 70: logout also clears the food offer list's in-memory cache
+        return 70;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

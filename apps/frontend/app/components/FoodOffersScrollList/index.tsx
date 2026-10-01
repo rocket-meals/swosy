@@ -28,7 +28,7 @@ import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem'
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { CanteenVisitsDateRow } from '@/components/CanteenVisitsDateRow';
 import FoodOffersLoadingBar from '@/components/FoodOffersLoadingBar';
-import { cacheFoodOffers, getCachedFoodOffers, computeFoodOffersHash } from '@/helper/FoodOffersCacheHelper';
+import { cacheFoodOffers, getCachedFoodOffers, computeFoodOffersHash, foodOffersMemoryCache, FoodOffersDay } from '@/helper/FoodOffersCacheHelper';
 import { subscribeFoodOffersInvalidation } from '@/helper/foodOffersInvalidation';
 
 interface FoodOffersScrollListProps {
@@ -36,10 +36,7 @@ interface FoodOffersScrollListProps {
 	startDate: string;
 }
 
-interface DayData {
-	date: string;
-	offers: DatabaseTypes.Foodoffers[];
-}
+type DayData = FoodOffersDay;
 
 interface DayItem {
 	foodoffer: DatabaseTypes.Foodoffers | null;
@@ -47,7 +44,8 @@ interface DayItem {
 }
 
 const EMPTY_FEEDBACKS: any[] = [];
-const daysCache: Record<string, DayData[]> = {};
+// Lives in FoodOffersCacheHelper, so logout can clear it (clearFoodOffersCache)
+const daysCache = foodOffersMemoryCache;
 const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
 
 interface RefreshFoodOffersInBackgroundOptions {
