@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
-| 🐛 Reliability | 31 | 31 |
-| 🔧 Maintainability | 292 | 17 |
+| 🐛 Reliability | 367 | 48 |
+| 🔧 Maintainability | 633 | 0 |
 
-**Total issues:** 325 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1002 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -22,199 +22,197 @@
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:10
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L10
 
-## 🐛 Reliability (31/31)
+## 🐛 Reliability (48/367)
 
-- **Prefer `String#replaceAll()` over `String#split().join()`.**
-  apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts:50
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts#L50
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/accessibilityTester/src/index.ts:104
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/index.ts#L104
 
-- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  apps/frontend/app/helper/textRecognitionPage/page.ts:68
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/textRecognitionPage/page.ts#L68
+- **Async function 'refreshSecret' has no 'await' expression.**
+  apps/backend-sync/src/apple-secret-rotator/index.ts:82
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L82
 
-- **Do not use "SharedArrayBuffer" to declare a variable - use another name.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L2
+- **Async arrow function 'shutdown' has no 'await' expression.**
+  apps/backend-sync/src/CronHelperManager.ts:23
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/CronHelperManager.ts#L23
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:3
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L3
+- **Async method 'copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder' has no 'await' expression.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:131
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L131
 
-- **Use `new Error()` instead of `Error()`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:4
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L4
+- **Async function 'findFileUpwards' has no 'await' expression.**
+  apps/backend-sync/src/EnvFileFinder.ts:4
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/EnvFileFinder.ts#L4
 
-- **Expected the Promise rejection reason to be an Error.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:4
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L4
+- **Static async method 'fetch' has no 'await' expression.**
+  apps/backend-sync/src/FetchIgnoreSelfSignedCertHelper.ts:5
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/FetchIgnoreSelfSignedCertHelper.ts#L5
 
-- **Either remove this useless object instantiation of "Uint16Array" or use it.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:8
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L8
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/backend-sync/src/index.ts:77
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/index.ts#L77
 
-- **Either remove this useless object instantiation of "BigUint64Array" or use it.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:8
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L8
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/backend-sync/src/SyncDatabaseSchemaProgramm.ts:23
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/SyncDatabaseSchemaProgramm.ts#L23
 
-- **Review this usage of "c" as it can only be empty here.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:19
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L19
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/activity-auto-cleanup-schedule/index.ts:6
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/activity-auto-cleanup-schedule/index.ts#L6
 
-- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:24
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L24
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/admin-password-setup-from-env/index.ts:8
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/admin-password-setup-from-env/index.ts#L8
 
-- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:24
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L24
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts:110
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts#L110
 
-- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:24
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L24
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apple-secret-rotator/index.ts:4
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apple-secret-rotator/index.ts#L4
 
-- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:25
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L25
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apple-secret-rotator/index.ts:5
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apple-secret-rotator/index.ts#L5
 
-- **Introduce a new variable or use its initial value before reassigning "d".**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:28
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L28
+- **Async method 'getAuthKey' has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/AutoTranslatorSettings.ts:34
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/AutoTranslatorSettings.ts#L34
 
-- **Prefer `Number.NaN` over `NaN`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:29
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L29
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/index.ts:102
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/index.ts#L102
 
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:29
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L29
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/index.ts:43
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/index.ts#L43
 
-- **Prefer `Number.NaN` over `NaN`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:31
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L31
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/index.ts:70
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/index.ts#L70
 
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:31
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L31
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts:11
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts#L11
 
-- **Was "-=" meant instead?**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:31
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L31
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-hook/index.ts:26
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-hook/index.ts#L26
 
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:32
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L32
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-hook/index.ts:30
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-hook/index.ts#L30
 
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:33
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L33
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts:157
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts#L157
 
-- **Prefer `Number.isNaN` over `isNaN`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:34
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L34
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts:160
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts#L160
 
-- **Expected an assignment or function call and instead saw an expression.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:35
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L35
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collections-last-update-hook/index.ts:8
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collections-last-update-hook/index.ts#L8
 
-- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:39
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L39
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:34
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L34
 
-- **Use `new Error()` instead of `Error()`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:40
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L40
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts:349
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts#L349
 
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:41
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L41
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts:345
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts#L345
 
-- **Use `new Error()` instead of `Error()`.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:42
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L42
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/files-without-folder-report-schedule/index.ts:117
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/files-without-folder-report-schedule/index.ts#L117
 
-- **Expected an assignment or function call and instead saw an expression.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:58
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L58
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-guest-restriction-hook/index.ts:32
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-guest-restriction-hook/index.ts#L32
 
-- **Expected an assignment or function call and instead saw an expression.**
-  apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:58
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L58
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-rating-calculate-hook/FoodRatingCalculator.ts:34
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-rating-calculate-hook/FoodRatingCalculator.ts#L34
 
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  packages/common/src/FoodofferPriceHelper.ts:227
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/FoodofferPriceHelper.ts#L227
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-rating-calculate-hook/index.ts:7
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-rating-calculate-hook/index.ts#L7
 
-- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  packages/common/src/form/IbanValidationHelper.ts:124
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanValidationHelper.ts#L124
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/index.ts:7
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/index.ts#L7
 
-## 🔧 Maintainability (17/292)
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-image-ai-generation-hook/index.ts:195
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-image-ai-generation-hook/index.ts#L195
 
-- **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L172
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-image-ai-generation-hook/index.ts:199
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-image-ai-generation-hook/index.ts#L199
 
-- **Move function 'isProtectionActiveFor' to the outer scope.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:63
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L63
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/index.ts:32
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/index.ts#L32
 
-- **Move function 'buildForbiddenError' to the outer scope.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:67
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L67
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/index.ts:35
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/index.ts#L35
 
-- **Move async function 'readUnverifiedProfile' to the outer scope.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-guest-restriction-hook/index.ts:33
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-guest-restriction-hook/index.ts#L33
+- **Async method 'getHtmlFilesForCanteens' has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParser_RawReportTestReaderAachen.ts:15
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParser_RawReportTestReaderAachen.ts#L15
 
-- **Complete the task associated to this "TODO" comment.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts:81
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts#L81
+- **Async method 'getRawFoodofferJSONListFromRawReport' has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts:294
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts#L294
 
-- **Do not call `Array#push()` multiple times.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts:459
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts#L459
+- **Async method 'getCanteensList' has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts:182
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts#L182
 
-- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts:357
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts#L357
+- **Async method 'getFoodoffersForParser' has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts:229
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts#L229
 
-- **Prefer using an optional chain expression instead, as it's more concise and easier to read.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts:386
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormPdfDocumentHelper.ts#L386
+- **Async method 'getFoodsListForParser' has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts:125
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts#L125
 
-- **`new Error()` is too unspecific for a type check. Use `new TypeError()` instead.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupHelper.ts:22
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupHelper.ts#L22
+- **Async method 'getMarkingsJSONList' has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:484
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L484
 
-- **Use the opposite operator (<) instead.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupHelper.ts:24
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupHelper.ts#L24
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts:116
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts#L116
 
-- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupWorkflow.ts:17
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupWorkflow.ts#L17
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts:119
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts#L119
 
-- **Unnecessary use of conditional expression for default assignment.**
-  apps/frontend/app/app/(app)/experimentell/inventory-items/create/index.tsx:112
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/inventory-items/create/index.tsx#L112
+- **Async method 'getMarkingsJSONList' has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts:28
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts#L28
 
-- **Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.**
-  apps/frontend/app/app/(app)/form-submission/index.tsx:645
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submission/index.tsx#L645
+- **Async method 'getSavedRawReport' has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserRawReportTestReaderOsnabrueck.ts:42
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserRawReportTestReaderOsnabrueck.ts#L42
 
-- **Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.**
-  apps/frontend/app/app/(app)/housing-analytics/[report].tsx:64
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/housing-analytics/[report].tsx#L64
+- **Async method 'getFoodsService' has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:292
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L292
 
-- **Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.**
-  apps/frontend/app/app/(app)/settings/index.tsx:619
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L619
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foodoffers-components-hook/index.ts:7
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foodoffers-components-hook/index.ts#L7
 
-- **Extract this nested ternary operation into an independent statement.**
-  apps/frontend/app/app/(app)/settings/index.tsx:853
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L853
-
-- **Extract this nested ternary operation into an independent statement.**
-  apps/frontend/app/app/(app)/settings/index.tsx:961
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L961
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:528
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts#L528
 
