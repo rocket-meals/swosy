@@ -7518,5 +7518,15 @@
     "ru": "Отчёт об ошибке: распознавание текста",
     "tr": "Hata raporu: metin tanıma",
     "zh": "错误报告：文字识别"
+  },
+  "foodoffer_outdated_list_reloaded": {
+    "de": "Dieses Angebot wurde inzwischen aktualisiert. Die Speiseliste wird neu geladen – bitte öffne das Gericht erneut.",
+    "en": "This offer has been updated in the meantime. The menu is being reloaded – please open the dish again.",
+    "ar": "تم تحديث هذا العرض في هذه الأثناء. يتم الآن إعادة تحميل قائمة الطعام – يرجى فتح الطبق مرة أخرى.",
+    "es": "Esta oferta se ha actualizado mientras tanto. El menú se está recargando: vuelve a abrir el plato.",
+    "fr": "Cette offre a été mise à jour entre-temps. Le menu est en cours de rechargement – veuillez rouvrir le plat.",
+    "ru": "Это предложение тем временем было обновлено. Меню загружается заново – пожалуйста, откройте блюдо ещё раз.",
+    "tr": "Bu teklif bu arada güncellendi. Menü yeniden yükleniyor – lütfen yemeği tekrar açın.",
+    "zh": "该餐品已在此期间更新。菜单正在重新加载——请重新打开该菜品。"
   }
 }

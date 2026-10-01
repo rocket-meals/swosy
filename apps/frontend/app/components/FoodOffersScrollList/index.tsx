@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Dimensions, FlatList, RefreshControl, Text, View } from 'react-native';
+import { ActivityIndicator, AppState, Dimensions, FlatList, RefreshControl, Text, View } from 'react-native';
 import { addDays, format } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
@@ -28,17 +28,15 @@ import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem'
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { CanteenVisitsDateRow } from '@/components/CanteenVisitsDateRow';
 import FoodOffersLoadingBar from '@/components/FoodOffersLoadingBar';
-import { cacheFoodOffers, getCachedFoodOffers, computeFoodOffersHash } from '@/helper/FoodOffersCacheHelper';
+import { cacheFoodOffers, getCachedFoodOffers, computeFoodOffersHash, foodOffersMemoryCache, FoodOffersDay } from '@/helper/FoodOffersCacheHelper';
+import { subscribeFoodOffersInvalidation } from '@/helper/foodOffersInvalidation';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
 	startDate: string;
 }
 
-interface DayData {
-	date: string;
-	offers: DatabaseTypes.Foodoffers[];
-}
+type DayData = FoodOffersDay;
 
 interface DayItem {
 	foodoffer: DatabaseTypes.Foodoffers | null;
@@ -46,7 +44,8 @@ interface DayItem {
 }
 
 const EMPTY_FEEDBACKS: any[] = [];
-const daysCache: Record<string, DayData[]> = {};
+// Lives in FoodOffersCacheHelper, so logout can clear it (clearFoodOffersCache)
+const daysCache = foodOffersMemoryCache;
 const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
 
 interface RefreshFoodOffersInBackgroundOptions {
@@ -384,9 +383,23 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 	const init = useCallback(
 		async (forceReload = false) => {
-			if (!forceReload && daysCache[cacheKey]) {
-				setDays(daysCache[cacheKey]);
+			const memoryCachedDays = daysCache[cacheKey];
+			if (!forceReload && memoryCachedDays) {
+				setDays(memoryCachedDays);
 				setLoading(false);
+				// Show the in-memory days right away, but ask the server too: the food import
+				// replaces changed offers by new ones with new ids, and an app kept alive in the
+				// background for days would otherwise keep showing - and opening - the old ids.
+				await refreshFoodOffersInBackground({
+					datesToLoad: memoryCachedDays.map(day => day.date),
+					loadDay,
+					dayHashesRef,
+					serverLoadingTimerRef,
+					setDays,
+					updateCache,
+					setServerLoading,
+					setIsOffline,
+				});
 				return;
 			}
 
@@ -449,6 +462,26 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			init();
 		}, [init])
 	);
+
+	// The details view reports an offer that no longer exists (the food import replaced
+	// it by a new one): the shown days are outdated, so reload them from the server.
+	const initRef = useRef(init);
+	useEffect(() => {
+		initRef.current = init;
+	}, [init]);
+	useEffect(() => subscribeFoodOffersInvalidation(() => {
+		initRef.current(true);
+	}), []);
+
+	// The app coming back from the background does not focus the screen again - refresh here
+	useEffect(() => {
+		const subscription = AppState.addEventListener('change', (state) => {
+			if (state === 'active') {
+				initRef.current();
+			}
+		});
+		return () => subscription.remove();
+	}, []);
 
 	// Scroll to top when the selected date changes so that cached dates (e.g. today)
 	// behave the same as freshly loaded dates which reset scroll via the loading indicator.

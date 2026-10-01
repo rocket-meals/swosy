@@ -165,7 +165,15 @@ export function getVersionPatch() {
         //     binding that crashed Android on the first scan
         // 67: the camera preview fills the sheet's full width (no black strip on
         //     the right), the giro card frame has a card's shape and is white
-        return 67;
+        // 68: opening a food offer the food import replaced since shows a translated
+        //     hint and reloads the list instead of "Request failed with status code 403"
+        // 69: logout clears the cached food offers (sqlite food_offers_cache_*)
+        // 70: logout also clears the food offer list's in-memory cache
+        // 71: the details of a food offer that no longer exists close themselves
+        // 72: the food offer list asks the server again on focus and when the app returns
+        //     from the background (in-memory days were served without it); a dish opened
+        //     from a chat shows the food when its offer no longer exists
+        return 72;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

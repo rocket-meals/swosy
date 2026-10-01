@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { SafeAreaView } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -16,6 +16,15 @@ export default function FoodDetailsScreen() {
 
     const { theme } = useTheme();
 
+    // The offer no longer exists (the food import replaced it): leave the outdated details
+    const leaveOutdatedDetails = useCallback(() => {
+        if (router.canGoBack()) {
+            router.back();
+        } else {
+            router.replace('/(app)/foodoffers');
+        }
+    }, []);
+
     return (
         <SafeAreaView
             style={[styles.safeArea, { backgroundColor: theme.screen.background }]}
@@ -23,6 +32,8 @@ export default function FoodDetailsScreen() {
             <FoodOfferDetailsContent
                 offerId={offerId}
                 foodId={initialFoodId}
+                onOfferNoLongerAvailable={leaveOutdatedDetails}
+                showFoodWhenOfferMissing
             />
         </SafeAreaView>
     );

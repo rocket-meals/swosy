@@ -10,10 +10,10 @@ const useFoodOfferDetailsModal = () => {
     const openFoodOfferDetailsModal = useCallback((offerId?: string, foodId?: string, initialImageAssetId?: string | number | null, initialImageRemoteUrl?: string | null) => {
         addPointsForDetailsOpen();
         show({
-            children: <FoodOfferDetailsContent offerId={offerId} foodId={foodId} initialImageAssetId={initialImageAssetId} initialImageRemoteUrl={initialImageRemoteUrl} />,
+            children: <FoodOfferDetailsContent offerId={offerId} foodId={foodId} initialImageAssetId={initialImageAssetId} initialImageRemoteUrl={initialImageRemoteUrl} onOfferNoLongerAvailable={close} />,
             disableHorizontalPadding: true,
         });
-    }, [show, addPointsForDetailsOpen]);
+    }, [show, close, addPointsForDetailsOpen]);
 
     return { openFoodOfferDetailsModal, closeFoodOfferDetailsModal: close };
 };

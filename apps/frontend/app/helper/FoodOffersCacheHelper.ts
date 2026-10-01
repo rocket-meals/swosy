@@ -14,6 +14,19 @@ function compareCodeUnits(a: string, b: string): number {
 const TRACKER_KEY = 'food_offers_cache_tracker';
 const META_KEY = 'food_offers_cache_meta';
 
+/** One day of food offers as the food offer list shows it. */
+export interface FoodOffersDay {
+    date: string;
+    offers: DatabaseTypes.Foodoffers[];
+}
+
+/**
+ * In-memory cache of the food offer list (key: `${canteenId}_${startDate}`). It lives
+ * for the app's lifetime, so the list does not flash a loading state when the screen
+ * gains focus again. Cleared together with the persistent cache by clearFoodOffersCache().
+ */
+export const foodOffersMemoryCache: Record<string, FoodOffersDay[]> = {};
+
 /**
  * Generates a simple hash string for an array of food offers.
  * Used to compare cached vs. server data to avoid unnecessary re-renders.
@@ -161,6 +174,23 @@ export async function cacheFoodOffers(
         await setMeta({ canteenId, day: today });
     } catch (e) {
         console.error('FoodOffersCacheHelper: Error caching food offers', e);
+    }
+}
+
+/**
+ * Removes every cached food offer entry - in memory and in storage - together with
+ * the tracker and the cache meta.
+ * Called on logout, so the next session loads the offers fresh from the server.
+ */
+export async function clearFoodOffersCache(): Promise<void> {
+    Object.keys(foodOffersMemoryCache).forEach((key) => {
+        delete foodOffersMemoryCache[key];
+    });
+    try {
+        await clearTrackedCache(await getTracker());
+        await sqliteKeyValueStorage.multiRemove([TRACKER_KEY, META_KEY]);
+    } catch (e) {
+        console.error('FoodOffersCacheHelper: Error clearing food offers cache', e);
     }
 }
 

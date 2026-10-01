@@ -20,7 +20,7 @@ jest.mock('@/redux/storage/sqliteStorage', () => {
 });
 
 import { sqliteKeyValueStorage } from '@/redux/storage/sqliteStorage';
-import { cacheFoodOffers, getCachedFoodOffers } from './FoodOffersCacheHelper';
+import { cacheFoodOffers, clearFoodOffersCache, foodOffersMemoryCache, getCachedFoodOffers } from './FoodOffersCacheHelper';
 
 describe('FoodOffersCacheHelper', () => {
 	beforeEach(async () => {
@@ -66,5 +66,19 @@ describe('FoodOffersCacheHelper', () => {
 
 		expect(await getCachedFoodOffers('canteenA', '2026-07-16')).toBeNull();
 		expect((await getCachedFoodOffers('canteenA', '2026-07-17'))?.offers).toEqual([{ id: '2' }]);
+	});
+
+	it('clears every cached entry, the in-memory cache, the tracker and the meta', async () => {
+		foodOffersMemoryCache['canteenA_2026-07-16'] = [{ date: '2026-07-16', offers: [{ id: '1' } as any] }];
+		await cacheFoodOffers('canteenA', '2026-07-16', [{ id: '1' } as any]);
+		await cacheFoodOffers('canteenA', '2026-07-17', [{ id: '2' } as any]);
+
+		await clearFoodOffersCache();
+
+		expect(await getCachedFoodOffers('canteenA', '2026-07-16')).toBeNull();
+		expect(await getCachedFoodOffers('canteenA', '2026-07-17')).toBeNull();
+		expect(await sqliteKeyValueStorage.getItem('food_offers_cache_tracker')).toBeNull();
+		expect(await sqliteKeyValueStorage.getItem('food_offers_cache_meta')).toBeNull();
+		expect(foodOffersMemoryCache).toEqual({});
 	});
 });

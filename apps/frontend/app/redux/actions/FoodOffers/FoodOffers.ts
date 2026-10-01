@@ -4,6 +4,28 @@ import { DatabaseTypes, DirectusItemStatus } from 'repo-depkit-common';
 const TIMEOUT_MS = 15000;
 const MAX_RETRIES = 3;
 
+/** Error of a food offer request that keeps the HTTP status of the failed response. */
+export class FoodOffersRequestError extends Error {
+	readonly status?: number;
+
+	constructor(message: string, status?: number) {
+		super(message);
+		this.name = 'FoodOffersRequestError';
+		this.status = status;
+	}
+}
+
+/**
+ * True when the requested food offer does not exist (anymore). Directus answers 403
+ * instead of 404 for an item that is missing, so it does not reveal which ids exist.
+ * This happens when the food import replaced the offer by a new one with a new id.
+ */
+export const isFoodOfferNotFoundError = (error: unknown): boolean => {
+	// Reads the field instead of `instanceof`: transpiled subclasses of Error do not always keep their prototype
+	const status = (error as FoodOffersRequestError | null | undefined)?.status;
+	return status === 403 || status === 404;
+};
+
 const fetchWithRetry = async (url: string, config: any) => {
 	let lastError;
 	for (let i = 0; i < MAX_RETRIES; i++) {
@@ -211,7 +233,7 @@ export const fetchFoodOffersDetailsById = async (id: string, languageCode?: stri
 		});
 		return response.data;
 	} catch (error) {
-		throw new Error(`Error fetching Food Offers: ${(error as Error).message}`);
+		throw new FoodOffersRequestError(`Error fetching Food Offers: ${(error as Error).message}`, (error as any)?.response?.status);
 	}
 };
 

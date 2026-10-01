@@ -44,6 +44,10 @@ export interface FoodOfferDetailsContentProps {
     foodId?: string;
     initialImageAssetId?: string | number | null;
     initialImageRemoteUrl?: string | null;
+    /** Closes these details when the offer no longer exists (the food import replaced it) */
+    onOfferNoLongerAvailable?: () => void;
+    /** Shows the food's details when the offer no longer exists but a food id is known */
+    showFoodWhenOfferMissing?: boolean;
 }
 
 const selectFoodState = (state: RootState) => state.food;
@@ -51,7 +55,7 @@ const selectOwnFoodFeedbacks = createSelector([selectFoodState], foodState => fo
 
 const VALID_FOOD_TABS = Object.values(FoodOfferDetailTab);
 
-const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offerId, foodId: initialFoodId, initialImageAssetId, initialImageRemoteUrl }) => {
+const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offerId, foodId: initialFoodId, initialImageAssetId, initialImageRemoteUrl, onOfferNoLongerAvailable, showFoodWhenOfferMissing }) => {
     const { theme } = useTheme();
     const { translate, language } = useLanguage();
     const dispatch = useDispatch();
@@ -81,7 +85,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const profileHelper = useMemo(() => new ProfileHelper(), []);
     const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 
-    const { foodDetails, foodAttributes, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId });
+    const { foodDetails, foodAttributes, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId, onOfferNoLongerAvailable, showFoodWhenOfferMissing });
     const { groupedAttributes } = useFoodAttributes({ foodAttributes, foodDetails });
 
     const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
