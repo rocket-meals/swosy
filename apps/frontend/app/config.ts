@@ -169,7 +169,8 @@ export function getVersionPatch() {
         //     hint and reloads the list instead of "Request failed with status code 403"
         // 69: logout clears the cached food offers (sqlite food_offers_cache_*)
         // 70: logout also clears the food offer list's in-memory cache
-        return 70;
+        // 71: the details of a food offer that no longer exists close themselves
+        return 71;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

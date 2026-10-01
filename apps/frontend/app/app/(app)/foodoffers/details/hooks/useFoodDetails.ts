@@ -10,6 +10,8 @@ import { TranslationKeys } from '@/locales/keys';
 interface UseFoodDetailsProps {
     offerId?: string | string[];
     initialFoodId?: string | string[];
+    /** Called when the offer no longer exists, so the caller can close the outdated details */
+    onOfferNoLongerAvailable?: () => void;
 }
 
 type TranslationWithName = {
@@ -80,7 +82,7 @@ const applyFoodDetailsResponse = (
     }
 };
 
-export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) => {
+export const useFoodDetails = ({ offerId, initialFoodId, onOfferNoLongerAvailable }: UseFoodDetailsProps) => {
     const { language: languageCode, translate, translateDynamic } = useLanguage();
     const toast = useToast();
     const [foodDetails, setFoodDetails] = useState<any>(null);
@@ -108,13 +110,14 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
                 // The list still held an offer the food import has replaced since - reload it
                 toast(translate(TranslationKeys.foodoffer_outdated_list_reloaded), 'info');
                 invalidateFoodOffers();
+                onOfferNoLongerAvailable?.();
             } else {
                 toast(translate(TranslationKeys.somethingWentWrong), 'error');
             }
         } finally {
             setLoading(false);
         }
-    }, [offerId, initialFoodId, languageCode, translateDynamic, toast, translate]);
+    }, [offerId, initialFoodId, languageCode, translateDynamic, toast, translate, onOfferNoLongerAvailable]);
 
     useEffect(() => {
         runAfterInteractions(() => {
