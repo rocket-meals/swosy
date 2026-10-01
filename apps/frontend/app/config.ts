@@ -170,7 +170,10 @@ export function getVersionPatch() {
         // 69: logout clears the cached food offers (sqlite food_offers_cache_*)
         // 70: logout also clears the food offer list's in-memory cache
         // 71: the details of a food offer that no longer exists close themselves
-        return 71;
+        // 72: the food offer list asks the server again on focus and when the app returns
+        //     from the background (in-memory days were served without it); a dish opened
+        //     from a chat shows the food when its offer no longer exists
+        return 72;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

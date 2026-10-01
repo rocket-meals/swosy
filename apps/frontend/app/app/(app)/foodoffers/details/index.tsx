@@ -33,6 +33,7 @@ export default function FoodDetailsScreen() {
                 offerId={offerId}
                 foodId={initialFoodId}
                 onOfferNoLongerAvailable={leaveOutdatedDetails}
+                showFoodWhenOfferMissing
             />
         </SafeAreaView>
     );

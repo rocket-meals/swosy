@@ -12,6 +12,11 @@ interface UseFoodDetailsProps {
     initialFoodId?: string | string[];
     /** Called when the offer no longer exists, so the caller can close the outdated details */
     onOfferNoLongerAvailable?: () => void;
+    /**
+     * When the offer no longer exists but a food id is known, show the food's details
+     * instead (e.g. a dish shared in a chat days ago - its offer is long replaced)
+     */
+    showFoodWhenOfferMissing?: boolean;
 }
 
 type TranslationWithName = {
@@ -82,7 +87,7 @@ const applyFoodDetailsResponse = (
     }
 };
 
-export const useFoodDetails = ({ offerId, initialFoodId, onOfferNoLongerAvailable }: UseFoodDetailsProps) => {
+export const useFoodDetails = ({ offerId, initialFoodId, onOfferNoLongerAvailable, showFoodWhenOfferMissing }: UseFoodDetailsProps) => {
     const { language: languageCode, translate, translateDynamic } = useLanguage();
     const toast = useToast();
     const [foodDetails, setFoodDetails] = useState<any>(null);
@@ -95,14 +100,25 @@ export const useFoodDetails = ({ offerId, initialFoodId, onOfferNoLongerAvailabl
 
         if (!id && !foodId) return;
 
+        const loadFood = async (foodIdToLoad: string) => {
+            const foodData = await fetchFoodDetailsById(foodIdToLoad);
+            applyFoodDetailsResponse(foodData, languageCode, translateDynamic, setFoodDetails, setFoodAttributes);
+        };
+
         setLoading(true);
         try {
             if (id) {
-                const foodData = await fetchFoodOffersDetailsById(id.toString(), languageCode);
-                applyFoodOfferDetailsResponse(foodData, languageCode, translateDynamic, setFoodDetails, setFoodAttributes);
+                try {
+                    const foodData = await fetchFoodOffersDetailsById(id.toString(), languageCode);
+                    applyFoodOfferDetailsResponse(foodData, languageCode, translateDynamic, setFoodDetails, setFoodAttributes);
+                } catch (offerError) {
+                    if (!(showFoodWhenOfferMissing && foodId && isFoodOfferNotFoundError(offerError))) {
+                        throw offerError;
+                    }
+                    await loadFood(foodId.toString());
+                }
             } else if (foodId) {
-                const foodData = await fetchFoodDetailsById(foodId.toString());
-                applyFoodDetailsResponse(foodData, languageCode, translateDynamic, setFoodDetails, setFoodAttributes);
+                await loadFood(foodId.toString());
             }
         } catch (e: any) {
             console.error('Error fetching food details: ', e);
@@ -117,7 +133,7 @@ export const useFoodDetails = ({ offerId, initialFoodId, onOfferNoLongerAvailabl
         } finally {
             setLoading(false);
         }
-    }, [offerId, initialFoodId, languageCode, translateDynamic, toast, translate, onOfferNoLongerAvailable]);
+    }, [offerId, initialFoodId, languageCode, translateDynamic, toast, translate, onOfferNoLongerAvailable, showFoodWhenOfferMissing]);
 
     useEffect(() => {
         runAfterInteractions(() => {
