@@ -3041,18 +3041,6 @@
     "validation": null,
     "permissions": null,
     "action": "read",
-    "collection": "directus_activity",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "de4cb445-eb8f-4866-af99-025847e87d60"
-  },
-  {
-    "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
     "collection": "directus_collections",
     "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
     "_syncId": "188d4d29-ea6d-4251-92d1-c02511ed7374"
@@ -3068,18 +3056,6 @@
     "collection": "directus_dashboards",
     "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
     "_syncId": "3298a0b0-a5e6-4b3f-81c2-eb9b1345cd3e"
-  },
-  {
-    "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
-    "collection": "directus_extensions",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "3339e3f1-1ebd-47d3-8591-d7728d80c63d"
   },
   {
     "fields": [
@@ -3106,7 +3082,7 @@
             {
               "folder": {
                 "name": {
-                  "_eq": "Public Images"
+                  "_istarts_with": "Public Images"
                 }
               }
             },
@@ -3114,7 +3090,7 @@
               "folder": {
                 "parent": {
                   "name": {
-                    "_eq": "Public Images"
+                    "_istarts_with": "Public Images"
                   }
                 }
               }
@@ -3136,45 +3112,9 @@
     "validation": null,
     "permissions": null,
     "action": "read",
-    "collection": "directus_flows",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "07bc92b4-0e9c-4700-8718-596bb213ae33"
-  },
-  {
-    "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
     "collection": "directus_folders",
     "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
     "_syncId": "c45bc19a-ef85-4015-9c97-d1aeb6da5c1f"
-  },
-  {
-    "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
-    "collection": "directus_migrations",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "7f8a8a54-47f6-4f61-8e51-cd5e61ae9620"
-  },
-  {
-    "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
-    "collection": "directus_notifications",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "14248561-f0cc-4153-92ef-28cf9e92a72f"
   },
   {
     "fields": [
@@ -3256,33 +3196,9 @@
     "validation": null,
     "permissions": null,
     "action": "read",
-    "collection": "directus_revisions",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "80280e29-edd9-4ce6-b454-71ee0d045972"
-  },
-  {
-    "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
     "collection": "directus_roles",
     "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
     "_syncId": "813cf2a6-04d1-48f7-9856-69a3c163b0eb"
-  },
-  {
-    "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
-    "collection": "directus_sessions",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "8c0d13b7-7de1-461f-810d-3e8873176a12"
   },
   {
     "fields": [
@@ -3304,25 +3220,19 @@
     "validation": null,
     "permissions": null,
     "action": "read",
-    "collection": "directus_shares",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "f16ccec6-c07e-48d9-a972-46ce7840d9b8"
-  },
-  {
-    "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
     "collection": "directus_translations",
     "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
     "_syncId": "1b95d775-6cbf-4ca1-9065-d8086a2015ab"
   },
   {
     "fields": [
-      "*"
+      "profile",
+      "avatar",
+      "language",
+      "status",
+      "role",
+      "policies",
+      "id"
     ],
     "presets": null,
     "validation": null,
@@ -3331,30 +3241,6 @@
     "collection": "directus_users",
     "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
     "_syncId": "44569754-b71b-41ee-9a26-5d397969cd56"
-  },
-  {
-    "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
-    "collection": "directus_versions",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "0a3636c0-ae24-4962-a82e-a37f1a91df3c"
-  },
-  {
-    "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
-    "collection": "directus_webhooks",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "4c1c667b-ceb3-4438-8621-52990a4aa8c7"
   },
   {
     "fields": [
