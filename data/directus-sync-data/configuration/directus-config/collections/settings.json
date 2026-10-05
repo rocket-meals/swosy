@@ -50,11 +50,6 @@
         "type": "module",
         "id": "generate-types",
         "enabled": true
-      },
-      {
-        "type": "module",
-        "id": "flow-manager",
-        "enabled": false
       }
     ],
     "project_descriptor": null,

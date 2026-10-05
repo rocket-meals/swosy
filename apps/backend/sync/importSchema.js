@@ -19,7 +19,7 @@ const httpsAgent = new https.Agent({
 /**
  * Configuration for collections and modules
  */
-const requiredModules = new Set(['flow-manager', 'schema-management-module', 'generate-types']);
+const requiredModules = new Set(['generate-types']);
 const collectionsToSkip = new Set(['2-wikis.json']);
 
 // Load directus .env file
