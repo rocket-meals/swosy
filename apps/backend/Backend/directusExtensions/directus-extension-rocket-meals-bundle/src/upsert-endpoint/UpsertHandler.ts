@@ -8,6 +8,7 @@
  *   die der Aufrufer nicht sehen darf.
  * - Fehler gehen an Directus statt als unbehandelte Promise-Rejection verloren.
  * - `data` enthält den Primärschlüssel des angelegten bzw. aktualisierten Eintrags.
+ * - Dieselbe Logik steht Extensions über `ItemsServiceHelper.upsertByFilter` zur Verfügung.
  */
 
 export type UpsertFilter = Record<string, unknown>;
@@ -49,11 +50,13 @@ export class UpsertHandler {
     return { _and: conditions };
   }
 
-  static async upsert(service: UpsertItemsService, primaryKeyField: string, requestBody: UpsertRequestBody | undefined): Promise<UpsertResponse> {
-    const { filter = {}, body = {} } = requestBody || {};
-
+  /**
+   * Sucht den ersten Eintrag, auf den `filter` passt, und aktualisiert ihn mit `data` – oder legt `data` neu an.
+   * Wird vom Endpoint und von `ItemsServiceHelper.upsertByFilter` genutzt.
+   */
+  static async upsertByFilter(service: UpsertItemsService, primaryKeyField: string, filter: UpsertFilter, data: Record<string, unknown>): Promise<{ id: string | number; created: boolean }> {
     if (!filter || typeof filter !== 'object' || Object.keys(filter).length === 0) {
-      return { success: false, msg: 'Missing filter', code: 400, data: null };
+      throw new Error('upsertByFilter: filter must not be empty, otherwise any item would match.');
     }
 
     const existing = await service.readByQuery({
@@ -64,11 +67,22 @@ export class UpsertHandler {
     const existingKey = existing[0]?.[primaryKeyField];
 
     if (existingKey !== undefined && existingKey !== null) {
-      const id = await service.updateOne(existingKey, body);
-      return { success: true, msg: 'Update Success', code: 200, data: { id } };
+      return { id: await service.updateOne(existingKey, data), created: false };
+    }
+    return { id: await service.createOne(data), created: true };
+  }
+
+  static async upsert(service: UpsertItemsService, primaryKeyField: string, requestBody: UpsertRequestBody | undefined): Promise<UpsertResponse> {
+    const { filter = {}, body = {} } = requestBody || {};
+
+    if (!filter || typeof filter !== 'object' || Object.keys(filter).length === 0) {
+      return { success: false, msg: 'Missing filter', code: 400, data: null };
     }
 
-    const id = await service.createOne(body);
-    return { success: true, msg: 'Create Success', code: 201, data: { id } };
+    const { id, created } = await UpsertHandler.upsertByFilter(service, primaryKeyField, filter, body);
+    if (created) {
+      return { success: true, msg: 'Create Success', code: 201, data: { id } };
+    }
+    return { success: true, msg: 'Update Success', code: 200, data: { id } };
   }
 }

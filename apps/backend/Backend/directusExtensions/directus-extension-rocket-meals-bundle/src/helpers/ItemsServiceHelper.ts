@@ -6,6 +6,7 @@ import { ContentTranslationHelper } from './ContentTranslationHelper';
 import { Knex } from 'knex';
 import { MyDatabaseHelperInterface } from './MyDatabaseHelperInterface';
 import { DeepCopyHelper } from 'repo-depkit-common';
+import { UpsertHandler } from '../upsert-endpoint/UpsertHandler';
 
 export type OptsCustomType = {
   disableEventEmit: boolean;
@@ -51,6 +52,29 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     let itemsService = await this.getItemsService();
     let opts = this.getOptsCustom(optsCustom);
     return await itemsService.upsertOne(upsert, opts);
+  }
+
+  /**
+   * Upsert über beliebige Felder statt über den Primärschlüssel (dafür gibt es `upsertOne`):
+   * Passt `search` auf einen Eintrag, wird der erste davon mit `data` aktualisiert, sonst wird `data` angelegt
+   * (wie bei `createOne` mit `status: published`). Dieselbe Logik wie der Endpoint `POST /upsert/:collection`.
+   *
+   * @example
+   * await myDatabaseHelper.getFoodsHelper().upsertByFilter({ alias: 'pizza' }, { alias: 'pizza', price: 3 });
+   */
+  async upsertByFilter(search: Partial<T>, data: Partial<T>, optsCustom?: OptsCustomType): Promise<{ id: PrimaryKey; created: boolean }> {
+    const itemsService = await this.getItemsService();
+    const primaryKeyField: string = (itemsService as any).schema?.collections?.[this.tablename]?.primary ?? 'id';
+    return await UpsertHandler.upsertByFilter(
+      {
+        readByQuery: query => this.readByQuery(query as Query) as Promise<Record<string, any>[]>,
+        createOne: create => this.createOne(create as Partial<T>, optsCustom),
+        updateOne: (key, update) => this.updateOne(key, update as Partial<T>, optsCustom),
+      },
+      primaryKeyField,
+      search as Record<string, unknown>,
+      data as Record<string, unknown>
+    );
   }
 
   async updateOne(primary_key: PrimaryKey, update: Partial<T>, optsCustom?: OptsCustomType): Promise<PrimaryKey> {

@@ -42,3 +42,16 @@ describe('UpsertHandler', () => {
     expect(result).toEqual({ success: true, msg: 'Update Success', code: 200, data: { id: 'existing-id' } });
   });
 });
+
+describe('UpsertHandler.upsertByFilter', () => {
+  it('reports whether the item was created or updated', async () => {
+    expect(await UpsertHandler.upsertByFilter(createService([]), 'id', { key: 'a' }, { key: 'a' })).toEqual({ id: 'new-id', created: true });
+    expect(await UpsertHandler.upsertByFilter(createService([{ id: 7 }]), 'id', { key: 'a' }, { value: 1 })).toEqual({ id: 7, created: false });
+  });
+
+  it('refuses an empty filter instead of updating an arbitrary item', async () => {
+    const service = createService([{ id: 7 }]);
+    await expect(UpsertHandler.upsertByFilter(service, 'id', {}, { value: 1 })).rejects.toThrow();
+    expect(service.updateOne).not.toHaveBeenCalled();
+  });
+});
