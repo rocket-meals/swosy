@@ -537,9 +537,9 @@ Key,Message,Component,Line
 "AaD3G-rBTd3UR4iHDm-Q","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/index.ts",123
 "AaD3G-rBTd3UR4iHDm-P","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/index.ts",79
 "AaD3G9jRTd3UR4iHDm6S","Async method 'isNfcSupported' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts",12
-"AaD3G-usTd3UR4iHDm-a","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",122
-"AaD3G-usTd3UR4iHDm-b","Async method 'copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",135
-"AaD3G-usTd3UR4iHDm-c","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",370
+"AaD3G-usTd3UR4iHDm-a","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",128
+"AaD3G-usTd3UR4iHDm-b","Async method 'copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",141
+"AaD3G-usTd3UR4iHDm-c","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",351
 "AaD3G-ubTd3UR4iHDm-Z","Static async method 'fetch' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend-sync/src/FetchIgnoreSelfSignedCertHelper.ts",5
 "AaD3G-tJTd3UR4iHDm-X","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DockerContainerManager.ts",88
 "AaD3G-s1Td3UR4iHDm-W","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DockerDirectusPingHelper.ts",54
@@ -629,9 +629,9 @@ Key,Message,Component,Line
 "AaD3G9B8Td3UR4iHDm2x","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",1496
 "AaD3G9L-Td3UR4iHDm33","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/NewsParseSchedule.ts",93
 "AaD3G9LkTd3UR4iHDm3x","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collections-last-update-hook/index.ts",37
-"AaD3G9YnTd3UR4iHDm56","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",434
-"AaD3G9YnTd3UR4iHDm57","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",526
-"AaD3G9YnTd3UR4iHDm58","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",571
+"AaD3G9YnTd3UR4iHDm56","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",427
+"AaD3G9YnTd3UR4iHDm57","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",519
+"AaD3G9YnTd3UR4iHDm58","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",564
 "AaD3G9Q7Td3UR4iHDm42","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",46
 "AaD3G9Q7Td3UR4iHDm44","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",52
 "AaD3G9B8Td3UR4iHDm2y","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",1504

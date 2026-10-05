@@ -37,8 +37,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/CronHelperManager.ts#L23
 
 - **Async method 'copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder' has no 'await' expression.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:135
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L135
+  apps/backend-sync/src/DirectusDatabaseSync.ts:141
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L141
 
 - **Async function 'findFileUpwards' has no 'await' expression.**
   apps/backend-sync/src/EnvFileFinder.ts:4
