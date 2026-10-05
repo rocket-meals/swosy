@@ -259,7 +259,7 @@
         "source": "src/foods-translation-fix-missing-schedule/index.ts"
       }
     ],
-    "host": "^10.10.0"
+    "host": "^11.0.0"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -274,9 +274,9 @@
     "add": "directus-extension add"
   },
   "devDependencies": {
-    "@directus/api": "28.0.3",
-    "@directus/extensions-sdk": "14.0.0",
-    "@directus/types": "13.2.0",
+    "@directus/api": "35.2.0",
+    "@directus/extensions-sdk": "17.1.4",
+    "@directus/types": "15.0.3",
     "@types/fs-extra": "^11.0.4",
     "@types/jest": "^29.5.12",
     "@types/js-yaml": "^4.0.9",
@@ -295,7 +295,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@directus/memory": "3.0.6",
+    "@directus/memory": "3.1.8",
     "@directus/sdk": "^18.0.0",
     "@types/moment": "^2.13.0",
     "@types/object-hash": "^3.0.6",

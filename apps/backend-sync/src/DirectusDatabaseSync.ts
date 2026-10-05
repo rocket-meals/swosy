@@ -8,6 +8,7 @@ import FormData from 'form-data';
 import { createRequire } from 'node:module';
 import { FetchIgnoreSelfSignedCertHelper } from './FetchIgnoreSelfSignedCertHelper';
 import { DirectusConnectionOptions } from './DirectusConnectionOptions';
+import { migrateSettingsSyncIdToPlaceholder } from './DirectusSyncSettingsIdMigration';
 
 const require = createRequire(import.meta.url);
 
@@ -83,6 +84,7 @@ export class DirectusDatabaseSync {
     const headers = await this.setupDirectusConnectionAndGetHeaders();
     await this.copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
     await this.enableRequiredSettings(headers);
+    await migrateSettingsSyncIdToPlaceholder(this.config.directusInstanceUrl, headers.get('cookie') ?? '');
     await this.pushDirectusSyncSchemas();
     await this.uploadSchemas(headers);
   }
@@ -93,6 +95,8 @@ export class DirectusDatabaseSync {
     console.log('NOW saving collections');
     await this.saveCollections(headers);
     console.log('NOW pulling directus sync schema');
+    // Also before a pull - otherwise a pull from a not yet migrated instance writes the legacy settings sync id back into the dump
+    await migrateSettingsSyncIdToPlaceholder(this.config.directusInstanceUrl, headers.get('cookie') ?? '');
     await this.pullDirectusSyncSchema();
     console.log('NOW copying overwrite files');
     await this.copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();

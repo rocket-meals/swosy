@@ -1,5 +1,5 @@
 import { ItemsService, ItemsServiceCreator, QueryOptions } from './ItemsServiceCreator';
-import type { Filter } from '@directus/types/dist/filter';
+import type { Filter } from '@directus/types';
 import { ApiContext } from './ApiContext';
 import { Accountability, EventContext, PrimaryKey, Query } from '@directus/types';
 import { ContentTranslationHelper } from './ContentTranslationHelper';

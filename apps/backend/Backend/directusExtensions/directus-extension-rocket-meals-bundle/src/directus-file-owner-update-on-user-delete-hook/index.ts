@@ -1,8 +1,9 @@
 import { defineHook } from '@directus/extensions-sdk';
 import { FileServiceCreator } from '../helpers/ItemsServiceCreator';
 import { EventHelper } from '../helpers/EventHelper';
-import { Filter } from '@directus/types/dist/filter';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { Filter } from '@directus/types';
+import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { DeletePermissionHelper } from '../helpers/DeletePermissionHelper';
 
 export default defineHook(async ({ action, filter }, apiContext) => {
   const fileServiceCreator = new FileServiceCreator(apiContext);
@@ -10,6 +11,11 @@ export default defineHook(async ({ action, filter }, apiContext) => {
 
   filter(EventHelper.USERS_DELETE_EVENT, async (input, meta, context) => {
     const usersToDeleteIds: string[] = input as string[]; // [ 'e939cb0c-0ca5-42fd-ac8c-1ffaeae7f22b' ]
+
+    // Since Directus 11.13 this filter runs before the permission check - only reassign files if the delete is allowed
+    if (!(await DeletePermissionHelper.canDeleteAll(apiContext, context, CollectionNames.USERS, usersToDeleteIds))) {
+      return input;
+    }
 
     const userWhoDeletes = context.accountability?.user;
 

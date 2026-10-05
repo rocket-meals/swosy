@@ -1,6 +1,7 @@
 import { CollectionNames } from 'repo-depkit-common';
 import { FoodRatingCalculator } from './FoodRatingCalculator';
 import {MyDefineHook} from "../helpers/MyDefineHook";
+import { DeletePermissionHelper } from '../helpers/DeletePermissionHelper';
 
 const SCHEDULE_NAME = 'food_feedback_rating_calculate';
 
@@ -45,6 +46,8 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     // check if food_feedbacks_ids is an array and the object exists
     if (!food_feedbacks_ids || !Array.isArray(food_feedbacks_ids) || food_feedbacks_ids.length === 0) {
       // do nothing
+    } else if (!(await DeletePermissionHelper.canDeleteAll(apiContext, context, collection, food_feedbacks_ids))) {
+      // Since Directus 11.13 this filter runs before the permission check - a forbidden delete must not change the rating
     } else {
       let food_ids = await foodRatingCalculator.getFoodIdsFromFoodFeedbackIds(food_feedbacks_ids);
       let ignore_food_feedback_ids: string[] = food_feedbacks_ids; // ATTENTION: we want to ignore the deleted food_feedbacks.

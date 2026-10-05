@@ -1,5 +1,6 @@
 import { CollectionNames, DatabaseTypes, MailAdresses } from 'repo-depkit-common';
-import { EmailOptions, MailService as MailServiceType } from '@directus/api/dist/services/mail';
+import type { EmailOptions } from '@directus/types';
+import type { MailService as MailServiceType } from '../helpers/MyServiceClassHelpers';
 import { DEFAULT_HTML_TEMPLATE } from '../helpers/html/HtmlGenerator';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MailHelper } from '../helpers/mail/MailHelper';
@@ -246,8 +247,8 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       let data = MailHelper.getHtmlTemplateDataFromMail(input);
 
       let email_delivery = await sendMail({
-        to: input.recipient,
-        subject: input.subject,
+        to: input.recipient ?? undefined,
+        subject: input.subject ?? undefined,
         template: {
           name: input.template_name,
           data: data,
