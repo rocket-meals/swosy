@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 367 | 48 |
-| 🔧 Maintainability | 633 | 0 |
+| 🔧 Maintainability | 638 | 0 |
 
-**Total issues:** 1002 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1007 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -37,8 +37,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/CronHelperManager.ts#L23
 
 - **Async method 'copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder' has no 'await' expression.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:131
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L131
+  apps/backend-sync/src/DirectusDatabaseSync.ts:135
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L135
 
 - **Async function 'findFileUpwards' has no 'await' expression.**
   apps/backend-sync/src/EnvFileFinder.ts:4
@@ -141,8 +141,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-rating-calculate-hook/FoodRatingCalculator.ts#L34
 
 - **Async arrow function has no 'await' expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-rating-calculate-hook/index.ts:7
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-rating-calculate-hook/index.ts#L7
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-rating-calculate-hook/index.ts:8
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-rating-calculate-hook/index.ts#L8
 
 - **Async arrow function has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/index.ts:7
@@ -209,8 +209,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L292
 
 - **Async arrow function has no 'await' expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foodoffers-components-hook/index.ts:7
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foodoffers-components-hook/index.ts#L7
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foodoffers-components-hook/index.ts:8
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foodoffers-components-hook/index.ts#L8
 
 - **Async arrow function has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:528
