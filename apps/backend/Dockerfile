@@ -1,4 +1,4 @@
-FROM directus/directus:11.9.3
+FROM directus/directus:11.17.4
 
 
 # Switch to root user to install packages
@@ -33,5 +33,5 @@ USER node
 
 RUN corepack enable && \
     corepack prepare pnpm@8.6.12 --activate && \
-    pnpm install --ignore-scripts directus-extension-sync@3.0.3 && \
+    pnpm install --ignore-scripts directus-extension-sync@3.0.6 && \
     pnpm install --ignore-scripts directus-extension-flow-manager@1.4.1

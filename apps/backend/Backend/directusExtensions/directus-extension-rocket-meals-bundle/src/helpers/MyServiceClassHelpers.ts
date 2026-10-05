@@ -1,9 +1,9 @@
-import {
-    AssetsService as DirectusAssetsService,
-    SharesService as DirectusShareService,
-    FieldsService as DirectusFieldsService
-} from '@directus/api/dist/services';
+import type { ExtensionsServices } from '@directus/types';
 
-export class AssetsService extends DirectusAssetsService {}
-export class SharesService extends DirectusShareService {}
-export class FieldsService extends DirectusFieldsService {}
+// Instance types of the Directus services, taken from the public typings in @directus/types
+// (since Directus 11.10 the services handed to extensions are typed there; importing
+// the classes from '@directus/api/dist/services' is no longer supported).
+export type AssetsService = InstanceType<ExtensionsServices['AssetsService']>;
+export type SharesService = InstanceType<ExtensionsServices['SharesService']>;
+export type FieldsService = InstanceType<ExtensionsServices['FieldsService']>;
+export type MailService = InstanceType<ExtensionsServices['MailService']>;

@@ -119,7 +119,7 @@ export class FilesServiceHelper extends ItemsServiceHelper<DatabaseTypes.Directu
    */
   async readFileContent(id: PrimaryKey): Promise<Buffer> {
     console.log('FilesServiceHelper.readFileContent: ', id);
-    const AssetsService: AssetsService = this.apiContext.services.AssetsService;
+    const AssetsService = this.apiContext.services.AssetsService;
     let schema = await this.apiContext.getSchema();
     // @ts-ignore
     let assetsService = new AssetsService({
@@ -133,7 +133,7 @@ export class FilesServiceHelper extends ItemsServiceHelper<DatabaseTypes.Directu
       stream: Readable;
       file: any;
       stat: Stat;
-    } = await assetsService.getAsset(id, { transformationParams: {} }); // https://github.com/directus/directus/discussions/14318
+    } = await assetsService.getAsset(String(id), { transformationParams: {} }); // https://github.com/directus/directus/discussions/14318
 
     console.log(' - read the file buffer');
     let chunks: Buffer[] = [];

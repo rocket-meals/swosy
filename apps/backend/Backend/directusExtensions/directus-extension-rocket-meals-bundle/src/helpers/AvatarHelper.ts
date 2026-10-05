@@ -1,4 +1,5 @@
 import {MyDatabaseHelper} from './MyDatabaseHelper';
+import {FilesServiceHelper} from './FilesServiceHelper';
 
 export class AvatarHelper {
   /**
@@ -9,7 +10,8 @@ export class AvatarHelper {
   static async deleteAvatarOfUser(myDatabaseHelper: MyDatabaseHelper, userId: string) {
     const database = myDatabaseHelper?.eventContext?.database || myDatabaseHelper?.apiContext.database;
 
-    const filesService = myDatabaseHelper.getFilesHelper();
+    // As admin: the caller may delete the user (checked by the users.delete hook), but app users have no delete permission on directus_files
+    const filesService = new FilesServiceHelper(myDatabaseHelper, true);
     if (!userId) {
       throw new Error('deleteAvatarOfUser: No userId provided: ');
     }

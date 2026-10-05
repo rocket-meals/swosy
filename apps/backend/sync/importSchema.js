@@ -214,9 +214,47 @@ const mainPush = async () => {
   const headers = await setupDirectusConnectionAndGetHeaders();
   await copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
   await enableRequiredSettings(headers);
+  await migrateSettingsSyncIdToPlaceholder(headers);
   await pushDirectusSyncSchemas();
   //await uploadPublicPermissions(headers);
   await uploadSchemas(headers);
+};
+
+// Since directus-sync 3.4.1 the settings singleton is tracked in the id map under this placeholder.
+// Renames a legacy entry once (same as apps/backend-sync/src/DirectusSyncSettingsIdMigration.ts),
+// otherwise a push to a fresh instance fails with "Local id already exists".
+const SETTINGS_SYNC_ID_PLACEHOLDER = '_sync_default_settings';
+const migrateSettingsSyncIdToPlaceholder = async headers => {
+  const tableUrl = `${directus_url}/directus-extension-sync/table/settings`;
+  const requestHeaders = { Cookie: headers.get('cookie'), 'Content-Type': 'application/json' };
+  const listResponse = await fetch(tableUrl, { method: 'GET', agent: httpsAgent, headers: requestHeaders });
+  if (!listResponse.ok) {
+    throw new Error(`Could not read the directus-sync id map for settings: ${listResponse.status} ${listResponse.statusText}`);
+  }
+  const entries = await listResponse.json();
+  const legacyEntries = entries.filter(entry => entry.sync_id !== SETTINGS_SYNC_ID_PLACEHOLDER);
+  if (legacyEntries.length === 0) {
+    return;
+  }
+  const hasPlaceholder = entries.length !== legacyEntries.length;
+  for (const legacyEntry of legacyEntries) {
+    console.log(` -  Renaming directus-sync settings id map entry ${legacyEntry.sync_id} to ${SETTINGS_SYNC_ID_PLACEHOLDER}`);
+    const deleteResponse = await fetch(`${tableUrl}/sync_id/${encodeURIComponent(legacyEntry.sync_id)}`, { method: 'DELETE', agent: httpsAgent, headers: requestHeaders });
+    if (!deleteResponse.ok) {
+      throw new Error(`Could not remove legacy settings id map entry: ${deleteResponse.status} ${deleteResponse.statusText}`);
+    }
+  }
+  if (!hasPlaceholder) {
+    const createResponse = await fetch(tableUrl, {
+      method: 'POST',
+      agent: httpsAgent,
+      headers: requestHeaders,
+      body: JSON.stringify({ table: 'settings', sync_id: SETTINGS_SYNC_ID_PLACEHOLDER, local_id: String(legacyEntries[0].local_id) }),
+    });
+    if (!createResponse.ok) {
+      throw new Error(`Could not create settings id map placeholder: ${createResponse.status} ${createResponse.statusText}`);
+    }
+  }
 };
 
 // Function to enable required settings
@@ -451,6 +489,7 @@ const mainPull = async () => {
   const headers = await setupDirectusConnectionAndGetHeaders();
   await saveCollections(headers);
   //await savePublicRolePermissions(headers);
+  await migrateSettingsSyncIdToPlaceholder(headers);
   await pullDirectusSyncSchema();
   await copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
 };

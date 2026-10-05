@@ -1,15 +1,17 @@
 import {CollectionNames} from 'repo-depkit-common';
 import {MyDatabaseHelper} from '../helpers/MyDatabaseHelper';
 import {MyDefineHook} from '../helpers/MyDefineHook';
+import {DeletePermissionHelper} from '../helpers/DeletePermissionHelper';
 
 const SCHEDULE_NAME = 'foodoffers-components-hook';
 
 export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ filter }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
-  filter(CollectionNames.FOODOFFER_COMPONENTS + '.items.delete', async (payloadModifiable) => {
+  filter(CollectionNames.FOODOFFER_COMPONENTS + '.items.delete', async (payloadModifiable, _meta, eventContext) => {
     const junctionIds = payloadModifiable as number[];
-    if (junctionIds && Array.isArray(junctionIds) && junctionIds.length > 0) {
+    // Since Directus 11.13 this filter runs before the permission check - only delete the component foodoffers if the delete is allowed
+    if (junctionIds && Array.isArray(junctionIds) && junctionIds.length > 0 && (await DeletePermissionHelper.canDeleteAll(apiContext, eventContext, CollectionNames.FOODOFFER_COMPONENTS, junctionIds))) {
       try {
         const componentsHelper = myDatabaseHelper.getFoodofferComponentsHelper();
         const junctionRows = await componentsHelper.readByQuery({
