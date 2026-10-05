@@ -261,24 +261,17 @@ const migrateSettingsSyncIdToPlaceholder = async headers => {
 const enableRequiredSettings = async headers => {
   console.log('Enabling required settings...');
 
-  // Patch settings with an empty object
-  console.log(' -  Patching with empty');
-  await fetch(`${getUrlSettings()}`, {
-    method: 'PATCH',
-    agent: httpsAgent,
-    headers: {
-      Cookie: headers.get('cookie'),
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ module_bar: [] }),
-  });
-
   // Fetch the current settings
   console.log(' -  Fetching settings');
   const settings = await fetchGetResponseJson(`${getUrlSettings()}`, headers);
 
+  // Do not reset the module bar to [] first: if the directus-sync push afterwards reads a cached
+  // settings response it does not restore it, and the module bar stays empty.
   const modules = settings.data.module_bar;
-  if (!modules) throw new Error('Failed to fetch modules!');
+  if (!modules) {
+    console.log(' -  No module bar set, keeping the Directus default');
+    return;
+  }
 
   // Enable required modules
   for (const moduleIndex in modules) {

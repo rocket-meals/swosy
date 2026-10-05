@@ -17,8 +17,8 @@
       },
       {
         "type": "module",
-        "id": "users",
-        "enabled": true
+        "id": "deployments",
+        "enabled": false
       },
       {
         "type": "module",
@@ -31,14 +31,6 @@
         "enabled": true
       },
       {
-        "type": "link",
-        "id": "docs",
-        "name": "Documentation",
-        "url": "https://docs.directus.io",
-        "icon": "help",
-        "enabled": true
-      },
-      {
         "type": "module",
         "id": "settings",
         "enabled": true,
@@ -46,17 +38,12 @@
       },
       {
         "type": "module",
-        "id": "flow-manager",
+        "id": "users",
         "enabled": true
       },
       {
         "type": "module",
-        "id": "schema-management-module",
-        "enabled": true
-      },
-      {
-        "type": "module",
-        "id": "schema-management-module",
+        "id": "visual",
         "enabled": false
       },
       {

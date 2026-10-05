@@ -9,6 +9,7 @@ import { createRequire } from 'node:module';
 import { FetchIgnoreSelfSignedCertHelper } from './FetchIgnoreSelfSignedCertHelper';
 import { DirectusConnectionOptions } from './DirectusConnectionOptions';
 import { migrateSettingsSyncIdToPlaceholder } from './DirectusSyncSettingsIdMigration';
+import { cleanSettingsDumpFile, mergeOverwriteItems } from './DirectusSettingsDumpHelper';
 
 const require = createRequire(import.meta.url);
 
@@ -23,7 +24,6 @@ export interface DirectusDatabaseSyncOptions extends DirectusConnectionOptions {
 
 const DirectusSyncVersion = version;
 
-const requiredModules = new Set(['flow-manager', 'schema-management-module', 'generate-types']);
 const collectionsToSkip = new Set(['2-wikis.json']);
 
 export class DirectusDatabaseSync {
@@ -83,9 +83,10 @@ export class DirectusDatabaseSync {
     console.log('Starting Push Sync');
     const headers = await this.setupDirectusConnectionAndGetHeaders();
     await this.copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
-    await this.enableRequiredSettings(headers);
+    const moduleBar = cleanSettingsDumpFile(this.getSettingsDumpFilePath());
     await migrateSettingsSyncIdToPlaceholder(this.config.directusInstanceUrl, headers.get('cookie') ?? '');
     await this.pushDirectusSyncSchemas();
+    await this.applyModuleBar(headers, moduleBar);
     await this.uploadSchemas(headers);
   }
 
@@ -100,6 +101,11 @@ export class DirectusDatabaseSync {
     await this.pullDirectusSyncSchema();
     console.log('NOW copying overwrite files');
     await this.copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
+    cleanSettingsDumpFile(this.getSettingsDumpFilePath());
+  }
+
+  private getSettingsDumpFilePath() {
+    return path.resolve(this.directusConfigCollectionsPath, 'settings.json');
   }
 
   private async pullDirectusSyncSchema() {
@@ -143,7 +149,14 @@ export class DirectusDatabaseSync {
       }
       const source = path.resolve(absolutePathCollections, file);
       const destination = path.resolve(__dirname, this.directusConfigCollectionsPath, file);
-      fs.copyFileSync(source, destination);
+      if (file.endsWith('.json') && fs.existsSync(destination)) {
+        // Merge field by field instead of replacing the file, so pulled fields that the overwrite
+        // file does not set (e.g. the project owner or the module bar) are kept.
+        const merged = mergeOverwriteItems(JSON.parse(fs.readFileSync(destination, 'utf8')), JSON.parse(fs.readFileSync(source, 'utf8')));
+        fs.writeFileSync(destination, JSON.stringify(merged, null, 2) + '\n');
+      } else {
+        fs.copyFileSync(source, destination);
+      }
     }
   }
 
@@ -218,61 +231,29 @@ export class DirectusDatabaseSync {
     return await response.json();
   }
 
-  // Function to enable required settings
-  private async enableRequiredSettings(headers: any) {
-    console.log('Enabling required settings...');
-
-    // Patch settings with an empty object
-    console.log(' -  Patching with empty');
-    await FetchIgnoreSelfSignedCertHelper.fetch(`${this.getUrlSettings()}`, {
-      method: 'PATCH',
-      headers: {
-        Cookie: headers.get('cookie'),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ module_bar: [] }),
-    });
-
-    // Fetch the current settings
-    console.log(' -  Fetching settings');
-    const settings = await this.fetchGetResponseJson(`${this.getUrlSettings()}`, headers);
-
-    const modules = settings.data.module_bar;
-    if (!modules) throw new Error('Failed to fetch modules!');
-
-    // Enable required modules
-    for (const moduleIndex in modules) {
-      const module = modules[moduleIndex];
-      // module.id comes from the Directus API response; strip control/newline characters
-      // before logging so it can't be used to forge fake log lines (log injection).
-      const safeModuleId = String(module.id).replace(/[\x00-\x1f]/g, '');
-      if (requiredModules.has(module.id)) {
-        if (module.enabled) {
-          console.log(` -  ${safeModuleId} already enabled`);
-        } else {
-          console.log(` -  Enabling ${safeModuleId}`);
-          modules[moduleIndex].enabled = true;
-        }
-      } else {
-        console.log(` -  ${safeModuleId} not required`);
-      }
+  // Writes the module bar from the dump explicitly after the directus-sync push. directus-sync only
+  // updates settings it sees as changed - with a cached settings response that diff can miss, and
+  // the module bar used to stay empty after a push.
+  private async applyModuleBar(headers: any, moduleBar: unknown[] | null) {
+    if (!moduleBar) {
+      console.log(' -  No module bar in the settings dump, keeping the current one');
+      return;
     }
-
-    // Patch updated settings
+    console.log('Applying module bar from the settings dump...');
     const response = await FetchIgnoreSelfSignedCertHelper.fetch(`${this.getUrlSettings()}`, {
       method: 'PATCH',
       headers: {
         Cookie: headers.get('cookie'),
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ module_bar: modules }),
+      body: JSON.stringify({ module_bar: moduleBar }),
     });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status} message: ${response.statusText}`);
     }
 
-    console.log(' -  Enabled required settings');
+    console.log(' -  Applied module bar');
   }
 
   // Validates a CLI-controlled value against an anchored allowlist pattern before it is
