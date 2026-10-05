@@ -74,6 +74,7 @@ services:
       # Directus synchronization configuration
       SYNCHRONIZATION_STORE: "redis" # Multiple instances of Directus need to communicate with each other to not trigger the same event multiple times - https://docs.directus.io/self-hosted/config-options.html#synchronization
       MARKETPLACE_TRUST: "all" # Trust all marketplace extensions - Directus Marketplace does not support extensions that require a database connection out of the box
+      MCP_ENABLED: "true" # Built-in MCP endpoint at <PUBLIC_URL>/mcp - additionally needs "mcp_enabled" in the settings (synced via directus-sync). Auth via static token of a Directus user (OAuth only from Directus 12)
 
       EMAIL_TEMPLATES_PATH: "/directus/extensions/templates" # https://docs.directus.io/self-hosted/email-templates.html
 
