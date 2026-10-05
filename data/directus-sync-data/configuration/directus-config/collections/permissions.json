@@ -3322,7 +3322,15 @@
   },
   {
     "fields": [
-      "*"
+      "first_name",
+      "profile",
+      "last_name",
+      "avatar",
+      "language",
+      "status",
+      "role",
+      "policies",
+      "id"
     ],
     "presets": null,
     "validation": null,
