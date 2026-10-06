@@ -1,4 +1,6 @@
 Key,Message,Component,Line
+"AaEQnkw_-6tQcR7ajnBm","`optionalDependencies` should be a `Set`, and use `optionalDependencies.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/extension.config.mjs",66
+"AaEQnkw_-6tQcR7ajnBn","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/extension.config.mjs",71
 "AaELnIZujAhCW6tGPtFP","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusSyncSettingsIdMigration.ts",33
 "AaELnE2JjAhCW6tGPtFL","Handle this exception, don't catch it at all, or explain in a comment why it is ignored.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DeletePermissionHelper.ts",45
 "AaELnFk-jAhCW6tGPtFN","Refactor this function to not always return the same value.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-avatar-delete-hook/index.ts",14
