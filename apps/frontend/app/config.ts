@@ -175,7 +175,8 @@ export function getVersionPatch() {
         //     from a chat shows the food when its offer no longer exists
         // 73: common: shared chat rules (ChatHelper) - chat messages sorted by the shared helper
         // 74: public links under /public/ (give feedback, app download, app download management) and the new MCP instruction screen /public/mcp-instruction; app download cards show an external-link icon
-        return 74;
+        // 75: MCP instruction screen shows the fixed public MCP token without asking the server
+        return 75;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

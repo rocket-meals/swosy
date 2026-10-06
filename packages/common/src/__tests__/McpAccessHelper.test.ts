@@ -1,8 +1,7 @@
 import { McpAccessHelper } from '../McpAccessHelper';
 
 describe('McpAccessHelper', () => {
-  it('builds the endpoint paths', () => {
-    expect(McpAccessHelper.getEndpointPath(McpAccessHelper.ROUTE_PUBLIC_TOKEN)).toBe('/mcp-access/public-token');
+  it('builds the endpoint path', () => {
     expect(McpAccessHelper.getEndpointPath(McpAccessHelper.ROUTE_MY_TOKEN)).toBe('/mcp-access/my-token');
   });
 
@@ -34,6 +33,10 @@ describe('McpAccessHelper', () => {
     expect(McpAccessHelper.isValidTokenStatus({ has_token: true })).toBe(true);
     expect(McpAccessHelper.isValidTokenStatus({ has_token: 'yes' })).toBe(false);
     expect(McpAccessHelper.isValidTokenStatus(undefined)).toBe(false);
+  });
+
+  it('uses the same fixed token for the public user on every server', () => {
+    expect(McpAccessHelper.PUBLIC_USER_TOKEN).toBe('PUBLIC-TOKEN');
   });
 
   it('uses a reserved domain for the public user', () => {

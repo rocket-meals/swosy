@@ -65,7 +65,8 @@ export function getVersionPatch() {
 	// 38: common: default nickname Guest_<YYMMDDHHmm> for guest profiles
 	// 39: common: shared chat and food feedback rules (ChatHelper, FoodFeedbackChatStatusHelper, RelationHelper)
 	// 40: common: McpAccessHelper for the MCP server access (public and personal tokens)
-	return 40;
+	// 41: common: the public MCP user has a fixed token (McpAccessHelper.PUBLIC_USER_TOKEN)
+	return 41;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

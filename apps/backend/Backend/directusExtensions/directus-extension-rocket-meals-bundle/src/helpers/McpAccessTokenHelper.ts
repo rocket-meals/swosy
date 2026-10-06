@@ -39,13 +39,14 @@ export class McpAccessTokenHelper {
   }
 
   /**
-   * Legt den öffentlichen MCP-User an, falls es ihn noch nicht gibt, und gibt sein Token zurück.
+   * Legt den öffentlichen MCP-User an, falls es ihn noch nicht gibt, und hält ihn auf dem Stand:
+   * festes Token (`McpAccessHelper.PUBLIC_USER_TOKEN`), aktiv, **keine Rolle**.
    *
-   * Der User hat **keine Rolle**: Directus gibt Nutzern ohne Rolle die Rechte der Public-Policy
-   * (plus Policies, die direkt am User hängen – hier keine). Bekommt er doch eine Rolle, wird sie
-   * wieder entfernt, damit das öffentlich angezeigte Token nie mehr darf als die Public-Policy.
+   * Directus gibt Nutzern ohne Rolle die Rechte der Public-Policy (plus Policies, die direkt am
+   * User hängen – hier keine). Bekommt er doch eine Rolle, wird sie beim nächsten Start wieder
+   * entfernt, damit das öffentlich bekannte Token nie mehr darf als die Public-Policy.
    */
-  async ensurePublicUserToken(): Promise<string> {
+  async ensurePublicUser(): Promise<void> {
     const usersHelper = this.myDatabaseHelper.getUsersHelper();
     const existingUsers = await usersHelper.readByQuery({
       filter: { email: { _eq: McpAccessHelper.PUBLIC_USER_EMAIL } },
@@ -55,23 +56,21 @@ export class McpAccessTokenHelper {
     const existingUser = existingUsers[0];
 
     if (!existingUser) {
-      const token = await McpAccessTokenHelper.generateToken();
       await usersHelper.createOne({
         email: McpAccessHelper.PUBLIC_USER_EMAIL,
         first_name: McpAccessHelper.PUBLIC_USER_NAME,
         role: null,
         status: 'active',
         provider: 'default',
-        token,
+        token: McpAccessHelper.PUBLIC_USER_TOKEN,
       });
       console.log(HELPER_NAME + ': created public MCP user ' + McpAccessHelper.PUBLIC_USER_NAME);
-      return token;
+      return;
     }
 
-    if (existingUser.role || existingUser.status !== 'active') {
-      await usersHelper.updateOne(existingUser.id, { role: null, status: 'active' });
+    const currentToken = await this.readToken(existingUser.id);
+    if (existingUser.role || existingUser.status !== 'active' || currentToken !== McpAccessHelper.PUBLIC_USER_TOKEN) {
+      await usersHelper.updateOne(existingUser.id, { role: null, status: 'active', token: McpAccessHelper.PUBLIC_USER_TOKEN });
     }
-
-    return await this.getOrCreateToken(existingUser.id);
   }
 }

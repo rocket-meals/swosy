@@ -81,11 +81,6 @@ async function readTokenResponse(response: Response): Promise<string> {
 	return body.token;
 }
 
-/** The token of the public MCP user - no login, and on purpose without the user's own token. */
-async function fetchPublicMcpToken(): Promise<string> {
-	return await readTokenResponse(await fetch(Server.ServerUrl + McpAccessHelper.getEndpointPath(McpAccessHelper.ROUTE_PUBLIC_TOKEN)));
-}
-
 async function fetchHasPersonalMcpToken(): Promise<boolean> {
 	const response = await authorizedFetch(McpAccessHelper.getEndpointPath(McpAccessHelper.ROUTE_MY_TOKEN));
 	if (!response.ok) {
@@ -122,17 +117,16 @@ const McpInstruction = () => {
 
 	useEffect(() => {
 		let cancelled = false;
-		setToken(null);
 		setHasPersonalToken(null);
+		// The public MCP user has the same fixed token on every server - nothing to ask for.
+		setToken(hasPersonalAccess ? null : McpAccessHelper.PUBLIC_USER_TOKEN);
+		if (!hasPersonalAccess) {
+			return;
+		}
 		const load = async () => {
 			try {
-				if (hasPersonalAccess) {
-					const hasToken = await fetchHasPersonalMcpToken();
-					if (!cancelled) setHasPersonalToken(hasToken);
-				} else {
-					const publicToken = await fetchPublicMcpToken();
-					if (!cancelled) setToken(publicToken);
-				}
+				const hasToken = await fetchHasPersonalMcpToken();
+				if (!cancelled) setHasPersonalToken(hasToken);
 			} catch (error) {
 				console.error('Could not load the MCP token:', error);
 				if (!cancelled) toast(translate(TranslationKeys.mcp_access_token_load_failed), 'error');

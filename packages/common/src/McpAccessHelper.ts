@@ -7,13 +7,15 @@
  *
  * Es gibt zwei Arten von Tokens:
  * - **Öffentlich:** Der Directus-User `MCP_Public` wird auf jedem Server automatisch angelegt.
- *   Er hat keine Rolle und damit nur die Rechte der Public-Policy – sein Token ist kein Geheimnis
- *   und wird jedem angezeigt, auch ohne Anmeldung.
+ *   Er hat keine Rolle und damit nur die Rechte der Public-Policy. Sein Token ist deshalb kein
+ *   Geheimnis und auf allen Servern gleich (`PUBLIC_USER_TOKEN`) – die App zeigt es jedem an,
+ *   ohne Anmeldung und ohne Anfrage an den Server.
  * - **Persönlich:** Ein angemeldeter Nutzer kann sich ein eigenes Token erzeugen lassen (Feld
  *   `token` an seinem `directus_users`-Eintrag). Damit sieht der MCP-Client genau, was der
  *   Nutzer auch in der App sehen darf.
  *
- * Beide liefert der Endpoint `mcp-access` im Backend-Bundle.
+ * Das persönliche Token liefert der Endpoint `mcp-access` im Backend-Bundle, den öffentlichen
+ * User legt der `mcp-public-user-hook` beim Start an.
  */
 
 export type McpAccessTokenResponse = {
@@ -28,9 +30,6 @@ export class McpAccessHelper {
   /** Pfad des Endpoints im Backend-Bundle. */
   static readonly ENDPOINT_ID = 'mcp-access';
 
-  /** `GET` – Token des öffentlichen MCP-Users, ohne Anmeldung. */
-  static readonly ROUTE_PUBLIC_TOKEN = '/public-token';
-
   /** `GET` – ob der angemeldete Nutzer schon ein Token hat. `POST` – Token holen, bei Bedarf erzeugen. */
   static readonly ROUTE_MY_TOKEN = '/my-token';
 
@@ -39,6 +38,12 @@ export class McpAccessHelper {
 
   /** `example.com` ist reserviert (RFC 2606) – an diese Adresse geht nie eine Mail. */
   static readonly PUBLIC_USER_EMAIL = 'mcp-public@mcp.example.com';
+
+  /**
+   * Festes Token des öffentlichen MCP-Users, auf jedem Server dasselbe. Unbedenklich, weil der
+   * User nur die Rechte der Public-Policy hat – dieselben Daten liefert die API auch ohne Token.
+   */
+  static readonly PUBLIC_USER_TOKEN = 'PUBLIC-TOKEN';
 
   static readonly MCP_PATH = '/mcp';
 
