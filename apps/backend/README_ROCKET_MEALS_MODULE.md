@@ -10,10 +10,10 @@ aus `repo-depkit-common` und der Übersetzungskatalog.
 
 ## Seiten
 
-| Seite            | Pfad                                     | Was sie kann                                                                                                                                                                                                     |
-| ---------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Speise-Feedbacks | `/admin/rocket-meals/food-feedbacks`     | Neueste Speise-Feedbacks mit Kommentar, Filter nach Status (Offen, Neu, Wartet auf Antwort, Beantwortet, Erledigt, Alle) mit Anzahl, Suche, Seitenweise. „Antworten“ / „Zum Chat“ öffnet den Chat mit dem Autor. |
-| Chat             | `/admin/rocket-meals/food-feedbacks/:id` | Kommentar als erste Nachricht, Verlauf, Antwort schreiben (Strg/⌘+Enter sendet), als erledigt markieren / wieder öffnen, Link zum Datensatz. Neue Nachrichten des Nutzers erscheinen ohne Neuladen (alle 20 s).  |
+| Seite            | Pfad                                     | Was sie kann                                                                                                                                                                                                                                                                                                                       |
+| ---------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Speise-Feedbacks | `/admin/rocket-meals/food-feedbacks`     | Neueste Speise-Feedbacks mit Kommentar, Filter nach Status (Offen, Neu, Wartet auf Antwort, Beantwortet, Erledigt, Alle) mit Anzahl, Suche, Seitenweise. „Antworten“ / „Zum Chat“ öffnet den Chat mit dem Autor.                                                                                                                   |
+| Chat             | `/admin/rocket-meals/food-feedbacks/:id` | Kommentar als erste Nachricht, Verlauf, Antwort schreiben (Eingabe wie im Claude-Chat: Enter sendet, Shift+Enter neue Zeile, auf dem Handy Senden-Knopf), Status über den Status-Chip ändern (Wartet auf Antwort / Beantwortet / Erledigt), Link zum Datensatz. Neue Nachrichten des Nutzers erscheinen ohne Neuladen (alle 20 s). |
 
 ### Status eines Speise-Feedbacks
 
@@ -25,6 +25,10 @@ aus `repo-depkit-common` und der Übersetzungskatalog.
 | Erledigt           | Von Hand abgeschlossen                  | `chats.conversation_state = resolved`            |
 
 „Offen“ fasst „Neu“ und „Wartet auf Antwort“ zusammen – alles, worum sich jemand kümmern muss.
+
+Der Status lässt sich im Chat über den Status-Chip von Hand setzen. Hat ein Feedback noch keinen
+Chat, wird er dabei angelegt (der Status steht in `chats.conversation_state`) – der Autor sieht den
+Chat dann in der App, auch ohne Antwort. „Neu“ ist nicht wählbar: es bedeutet nur „noch kein Chat“.
 
 ### Was beim ersten Antworten passiert
 
@@ -62,6 +66,14 @@ Neue Logik, die auch eine App brauchen könnte, gehört dorthin (mit Test unter
 `packages/common/src/__tests__/`). Code, der in die Directus-Oberfläche gebündelt wird, importiert
 sie per Deep-Import (`repo-depkit-common/src/ChatHelper`), damit der Paket-Index nicht
 moment-timezone und Co. in den Browser zieht.
+
+## Sprache
+
+Alle Texte des Moduls und der `[Erweitert]`-Panels erscheinen in der Sprache, in der Directus selbst
+gerade angezeigt wird – nicht in der Sprache des Browsers. Directus nimmt die Sprache aus dem
+Benutzerprofil (`Sprache`), sonst die Projekt-Standardsprache (Einstellungen → Projekt) und schreibt
+sie nach `<html lang>`; `useAppExtensionTranslate()` liest genau das und wechselt bei einer Änderung
+sofort mit.
 
 ## Neue Seite hinzufügen
 

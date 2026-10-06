@@ -183,7 +183,8 @@ export function getVersionPatch() {
         // 79: MCP personal token: random string from Directus saved via PATCH /users/me; an existing token can only be replaced
         // 80: MCP instruction screen: provider and account sections fold away once chosen, the steps
         //     appear after the account choice, every step links to support ("?title=" prefills the form)
-        return 80;
+        // 81: common: food feedback status can be set by hand (FoodFeedbackChatStatusHelper)
+        return 81;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

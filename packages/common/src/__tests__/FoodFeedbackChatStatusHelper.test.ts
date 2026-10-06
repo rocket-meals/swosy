@@ -93,4 +93,19 @@ describe('FoodFeedbackChatStatusHelper', () => {
       conversation_state: ChatConversationState.WAITING_FOR_SUPPORT,
     });
   });
+
+  describe('status selection', () => {
+    it('offers every status except new, which only means "no chat yet"', () => {
+      expect(FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES).toEqual([FoodFeedbackChatStatus.WAITING_FOR_SUPPORT, FoodFeedbackChatStatus.WAITING_FOR_USER, FoodFeedbackChatStatus.RESOLVED]);
+    });
+
+    it('maps a status to the conversation state of the chat and back', () => {
+      for (const status of FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES) {
+        const state = FoodFeedbackChatStatusHelper.getConversationStateForStatus(status);
+        expect(state).toBeDefined();
+        expect(FoodFeedbackChatStatusHelper.getStatus({ chat: { id: 'c', conversation_state: state } })).toBe(status);
+      }
+      expect(FoodFeedbackChatStatusHelper.getConversationStateForStatus(FoodFeedbackChatStatus.NEW)).toBeUndefined();
+    });
+  });
 });

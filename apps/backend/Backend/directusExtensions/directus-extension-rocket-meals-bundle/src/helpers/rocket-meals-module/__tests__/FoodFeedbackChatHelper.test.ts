@@ -88,3 +88,22 @@ describe('AppExtensionLanguageHelper.formatDateTime', () => {
     expect(AppExtensionLanguageHelper.formatDateTime(null, 'de-DE')).toBe('');
   });
 });
+
+describe('AppExtensionLanguageHelper.resolveUiLanguage', () => {
+  it('follows the language Directus renders (<html lang>) first', () => {
+    expect(AppExtensionLanguageHelper.resolveUiLanguage({ htmlLanguage: 'de-DE', userLanguage: 'en-US', projectDefaultLanguage: 'fr-FR', browserLanguage: 'tr-TR' })).toBe('de-DE');
+  });
+
+  it('falls back like Directus: user language, project default, then the browser', () => {
+    expect(AppExtensionLanguageHelper.resolveUiLanguage({ userLanguage: 'en-US', projectDefaultLanguage: 'de-DE' })).toBe('en-US');
+    expect(AppExtensionLanguageHelper.resolveUiLanguage({ userLanguage: null, projectDefaultLanguage: 'de-DE', browserLanguage: 'en-US' })).toBe('de-DE');
+    expect(AppExtensionLanguageHelper.resolveUiLanguage({ browserLanguage: 'en-US' })).toBe('en-US');
+    expect(AppExtensionLanguageHelper.resolveUiLanguage({})).toBeUndefined();
+  });
+
+  it('translates the navigation entry in the resolved language', () => {
+    const navigationLabel = (language: string) => AppExtensionLanguageHelper.translate(BackendTranslationKeys.rocket_meals_module_food_feedbacks, language);
+    expect(navigationLabel('de-DE')).toBe('Speise-Feedbacks');
+    expect(navigationLabel('en-US')).toBe('Dish feedback');
+  });
+});
