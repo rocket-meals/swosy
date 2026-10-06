@@ -94,6 +94,23 @@ export const BackendTranslationKeys = {
   rocket_meals_module_open_feedback_item: 'rocket_meals_module_open_feedback_item',
   rocket_meals_module_food_feedback_chat_alias: 'rocket_meals_module_food_feedback_chat_alias',
   rocket_meals_module_unknown_food: 'rocket_meals_module_unknown_food',
+  rocket_meals_module_mark_resolved: 'rocket_meals_module_mark_resolved',
+  rocket_meals_module_mark_selected_resolved: 'rocket_meals_module_mark_selected_resolved',
+  rocket_meals_module_mark_resolved_failed: 'rocket_meals_module_mark_resolved_failed',
+  rocket_meals_module_selected_count: 'rocket_meals_module_selected_count',
+  rocket_meals_module_select_all_on_page: 'rocket_meals_module_select_all_on_page',
+  rocket_meals_module_search_food: 'rocket_meals_module_search_food',
+  rocket_meals_module_all_canteens: 'rocket_meals_module_all_canteens',
+  rocket_meals_module_rating_all: 'rocket_meals_module_rating_all',
+  rocket_meals_module_rating_bad: 'rocket_meals_module_rating_bad',
+  rocket_meals_module_rating_medium: 'rocket_meals_module_rating_medium',
+  rocket_meals_module_rating_good: 'rocket_meals_module_rating_good',
+  rocket_meals_module_rating_none: 'rocket_meals_module_rating_none',
+  rocket_meals_module_sort_newest: 'rocket_meals_module_sort_newest',
+  rocket_meals_module_sort_oldest: 'rocket_meals_module_sort_oldest',
+  rocket_meals_module_sort_rating_worst: 'rocket_meals_module_sort_rating_worst',
+  rocket_meals_module_sort_rating_best: 'rocket_meals_module_sort_rating_best',
+  rocket_meals_module_items_per_page: 'rocket_meals_module_items_per_page',
 } as const;
 
 export type BackendTranslationKeys = (typeof BackendTranslationKeys)[keyof typeof BackendTranslationKeys];

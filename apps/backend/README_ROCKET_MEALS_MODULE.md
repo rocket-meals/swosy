@@ -12,7 +12,7 @@ aus `repo-depkit-common` und der Übersetzungskatalog.
 
 | Seite            | Pfad                                     | Was sie kann                                                                                                                                                                                                                                                                                                                       |
 | ---------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Speise-Feedbacks | `/admin/rocket-meals/food-feedbacks`     | Neueste Speise-Feedbacks mit Kommentar, Filter nach Status (Offen, Neu, Wartet auf Antwort, Beantwortet, Erledigt, Alle) mit Anzahl, Suche, Seitenweise. „Antworten“ / „Zum Chat“ öffnet den Chat mit dem Autor.                                                                                                                   |
+| Speise-Feedbacks | `/admin/rocket-meals/food-feedbacks`     | Neueste Speise-Feedbacks mit Kommentar und Bild der Speise. Filter nach Status (Offen, Neu, Wartet auf Antwort, Beantwortet, Erledigt, Alle) mit Anzahl, nach Mensen (Mehrfachauswahl), Speise (Name) und Bewertung (Schlecht 1–2, Mittel 3, Gut 4–5, Ohne); Sortierung nach Datum oder Bewertung; Suche im Kommentar; Seitengröße 10/25/50/100. Mensen, Sortierung und Seitengröße merkt sich der Browser. „Als erledigt markieren“ direkt in der Liste, per Checkbox auch mehrere auf einmal. „Antworten“ / „Zum Chat“ öffnet den Chat mit dem Autor. |
 | Chat             | `/admin/rocket-meals/food-feedbacks/:id` | Kommentar als erste Nachricht, Verlauf, Antwort schreiben (Eingabe wie im Claude-Chat: Enter sendet, Shift+Enter neue Zeile, auf dem Handy Senden-Knopf), Status über den Status-Chip ändern (Wartet auf Antwort / Beantwortet / Erledigt), Link zum Datensatz. Neue Nachrichten des Nutzers erscheinen ohne Neuladen (alle 20 s). |
 
 ### Status eines Speise-Feedbacks
@@ -26,7 +26,9 @@ aus `repo-depkit-common` und der Übersetzungskatalog.
 
 „Offen“ fasst „Neu“ und „Wartet auf Antwort“ zusammen – alles, worum sich jemand kümmern muss.
 
-Der Status lässt sich im Chat über den Status-Chip von Hand setzen. Hat ein Feedback noch keinen
+Der Status lässt sich im Chat über den Status-Chip von Hand setzen, „Erledigt“ auch direkt in der
+Liste (einzeln oder für alle ausgewählten; bestehende Chats in einem Request, siehe
+`src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts`). Hat ein Feedback noch keinen
 Chat, wird er dabei angelegt (der Status steht in `chats.conversation_state`) – der Autor sieht den
 Chat dann in der App, auch ohne Antwort. „Neu“ ist nicht wählbar: es bedeutet nur „noch kein Chat“.
 

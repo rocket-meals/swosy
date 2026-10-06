@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common';
-import { FoodFeedbackChatHelper } from '../FoodFeedbackChatHelper';
+import { FoodFeedbackChatHelper, FoodFeedbackListSort, FoodFeedbackRatingFilter } from '../FoodFeedbackChatHelper';
+import { FoodFeedbackChatActions } from '../FoodFeedbackChatActions';
 import { RocketMealsModulePages } from '../RocketMealsModulePages';
 import { AppExtensionLanguageHelper } from '../../app-extensions/AppExtensionLanguageHelper';
 import { BackendTranslationKeys } from '../../translations/BackendTranslationKeys';
@@ -39,6 +40,62 @@ describe('FoodFeedbackChatHelper', () => {
     expect(FoodFeedbackChatHelper.getPageCount(0)).toBe(1);
     expect(FoodFeedbackChatHelper.getPageCount(25)).toBe(1);
     expect(FoodFeedbackChatHelper.getPageCount(26)).toBe(2);
+    expect(FoodFeedbackChatHelper.getPageCount(26, 10)).toBe(3);
+  });
+
+  it('only accepts offered page sizes', () => {
+    expect(FoodFeedbackChatHelper.getPageSize(50)).toBe(50);
+    expect(FoodFeedbackChatHelper.getPageSize(7)).toBe(FoodFeedbackChatHelper.PAGE_SIZE);
+    expect(FoodFeedbackChatHelper.getPageSize(null)).toBe(FoodFeedbackChatHelper.PAGE_SIZE);
+    expect(FoodFeedbackChatHelper.buildListQuery(FoodFeedbackChatFilter.ALL, 1, null, { pageSize: 100 }).limit).toBe(100);
+  });
+
+  it('sorts by date or rating, ties newest first', () => {
+    expect(FoodFeedbackChatHelper.getSortParameter(undefined)).toBe('-date_created');
+    expect(FoodFeedbackChatHelper.getSortParameter(FoodFeedbackListSort.OLDEST)).toBe('date_created');
+    expect(FoodFeedbackChatHelper.getSortParameter(FoodFeedbackListSort.RATING_WORST)).toBe('rating,-date_created');
+    expect(FoodFeedbackChatHelper.buildListQuery(FoodFeedbackChatFilter.ALL, 1, null, { sort: FoodFeedbackListSort.RATING_BEST }).sort).toBe('-rating,-date_created');
+  });
+
+  it('combines the status filter with canteens, food and rating', () => {
+    const statusFilter = FoodFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.OPEN);
+    expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.OPEN)).toEqual(statusFilter);
+    expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.OPEN, { canteenIds: [], foodSearch: '  ', rating: FoodFeedbackRatingFilter.ALL })).toEqual(statusFilter);
+    expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.OPEN, { canteenIds: ['a', 'b'], foodSearch: ' Pasta ', rating: FoodFeedbackRatingFilter.BAD })).toEqual({
+      _and: [statusFilter, { canteen: { _in: ['a', 'b'] } }, { food: { alias: { _icontains: 'Pasta' } } }, { rating: { _between: [1, 2] } }],
+    });
+    expect(FoodFeedbackChatHelper.buildRatingFilter(FoodFeedbackRatingFilter.GOOD)).toEqual({ rating: { _between: [4, 5] } });
+    expect(FoodFeedbackChatHelper.buildRatingFilter(FoodFeedbackRatingFilter.NONE)).toEqual({ rating: { _null: true } });
+  });
+
+  it('counts with the same filters and search as the list', () => {
+    const options = { canteenIds: ['a'], rating: FoodFeedbackRatingFilter.MEDIUM };
+    const query = FoodFeedbackChatHelper.buildCountQuery(FoodFeedbackChatFilter.NEW, options, ' kalt ');
+    expect(query.filter).toBe(JSON.stringify(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.NEW, options)));
+    expect(query.search).toBe('kalt');
+  });
+
+  it('has a label for every sort and rating filter', () => {
+    for (const sort of FoodFeedbackChatHelper.SORTS) {
+      expect(AppExtensionLanguageHelper.translate(FoodFeedbackChatHelper.getSortLabelKey(sort), 'de-DE').length).toBeGreaterThan(0);
+    }
+    for (const rating of FoodFeedbackChatHelper.RATING_FILTERS) {
+      expect(AppExtensionLanguageHelper.translate(FoodFeedbackChatHelper.getRatingFilterLabelKey(rating), 'de-DE').length).toBeGreaterThan(0);
+    }
+  });
+
+  it('shows the food image as thumbnail, else the remote url', () => {
+    expect(FoodFeedbackChatHelper.getFoodImageUrl({ food: { id: 'f', image: 'file-1' } }, '/rocket-meals/api/')).toBe('/rocket-meals/api/assets/file-1?width=128&height=128&fit=cover&quality=80');
+    expect(FoodFeedbackChatHelper.getFoodImageUrl({ food: { id: 'f', image: { id: 'file-2' } } }, '/api')).toBe('/api/assets/file-2?width=128&height=128&fit=cover&quality=80');
+    expect(FoodFeedbackChatHelper.getFoodImageUrl({ food: { id: 'f', image: null, image_remote_url: 'https://x/y.jpg' } })).toBe('https://x/y.jpg');
+    expect(FoodFeedbackChatHelper.getFoodImageUrl({ food: { id: 'f' } })).toBeUndefined();
+    expect(FoodFeedbackChatHelper.getFoodImageUrl({ food: 'f' })).toBeUndefined();
+  });
+
+  it('can mark open feedbacks with an author as done', () => {
+    expect(FoodFeedbackChatHelper.canMarkResolved({ id: '1', comment: 'x', profile: 'p', chat: null })).toBe(true);
+    expect(FoodFeedbackChatHelper.canMarkResolved({ id: '1', comment: 'x', profile: null, chat: null })).toBe(false);
+    expect(FoodFeedbackChatHelper.canMarkResolved({ id: '1', comment: 'x', chat: { id: 'c', conversation_state: 'resolved' } })).toBe(false);
   });
 
   it('has a label, icon and colour for every status and a label for every filter', () => {
@@ -70,6 +127,39 @@ describe('FoodFeedbackChatHelper', () => {
     expect(FoodFeedbackChatHelper.getSupportAuthorName({ id: 'm', user_created: { id: 'u', first_name: 'Nils', last_name: 'B' } })).toBe('Nils B');
     expect(FoodFeedbackChatHelper.getSupportAuthorName({ id: 'm', user_created: { id: 'u', email: 'a@b.de' } })).toBe('a@b.de');
     expect(FoodFeedbackChatHelper.getSupportAuthorName({ id: 'm', user_created: 'u' })).toBeUndefined();
+  });
+});
+
+describe('FoodFeedbackChatActions.markResolved', () => {
+  function createApi() {
+    const calls: { method: string; url: string; data: unknown }[] = [];
+    let nextChatId = 100;
+    const api = {
+      post: async (url: string, data?: unknown) => {
+        calls.push({ method: 'post', url, data });
+        return { data: { data: { id: String(nextChatId++) } } };
+      },
+      patch: async (url: string, data?: unknown) => {
+        calls.push({ method: 'patch', url, data });
+        return { data: {} };
+      },
+    };
+    return { api, calls };
+  }
+
+  it('updates existing chats at once and creates chats for new feedbacks', async () => {
+    const { api, calls } = createApi();
+    const result = await FoodFeedbackChatActions.markResolved(api, [
+      { id: 'f1', comment: 'a', chat: { id: 'c1', conversation_state: 'waiting_for_support' } },
+      { id: 'f2', comment: 'b', chat: 'c2' },
+      { id: 'f3', comment: 'c', profile: { id: 'p3', language: 'de-DE' }, food: { id: 'food', alias: 'Pasta' }, chat: null },
+      { id: 'f4', comment: 'd', profile: null, chat: null },
+    ]);
+    expect(result.resolvedIds.sort()).toEqual(['f1', 'f2', 'f3']);
+    expect(result.failedIds).toEqual(['f4']);
+    expect(calls[0]).toEqual({ method: 'patch', url: FoodFeedbackChatHelper.CHATS_ENDPOINT, data: { keys: ['c1', 'c2'], data: { conversation_state: 'resolved' } } });
+    expect(calls.some(call => call.method === 'patch' && call.url === `${FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT}/f3`)).toBe(true);
+    expect(calls[calls.length - 1]).toEqual({ method: 'patch', url: `${FoodFeedbackChatHelper.CHATS_ENDPOINT}/100`, data: { conversation_state: 'resolved' } });
   });
 });
 
