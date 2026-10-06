@@ -7928,5 +7928,45 @@
     "ru": "Создать новый токен",
     "tr": "Yeni belirteç oluştur",
     "zh": "创建新令牌"
+  },
+  "mcp_provider": {
+    "de": "Anbieter",
+    "en": "Provider",
+    "ar": "المزوّد",
+    "es": "Proveedor",
+    "fr": "Fournisseur",
+    "ru": "Сервис",
+    "tr": "Sağlayıcı",
+    "zh": "服务提供方"
+  },
+  "mcp_account": {
+    "de": "Account",
+    "en": "Account",
+    "ar": "الحساب",
+    "es": "Cuenta",
+    "fr": "Compte",
+    "ru": "Аккаунт",
+    "tr": "Hesap",
+    "zh": "账户"
+  },
+  "mcp_step": {
+    "de": "Schritt",
+    "en": "Step",
+    "ar": "الخطوة",
+    "es": "Paso",
+    "fr": "Étape",
+    "ru": "Шаг",
+    "tr": "Adım",
+    "zh": "步骤"
+  },
+  "mcp_step_problems": {
+    "de": "Probleme? Support kontaktieren",
+    "en": "Problems? Contact support",
+    "ar": "مشاكل؟ تواصل مع الدعم",
+    "es": "¿Problemas? Contactar con soporte",
+    "fr": "Un problème ? Contacter le support",
+    "ru": "Проблемы? Связаться с поддержкой",
+    "tr": "Sorun mu var? Destekle iletişime geç",
+    "zh": "遇到问题？联系支持"
   }
 }

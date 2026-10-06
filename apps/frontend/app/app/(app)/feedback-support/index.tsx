@@ -68,7 +68,9 @@ const FeedbackScreen = () => {
 	const { theme } = useTheme();
 	const toast = useToast();
 	const appFeedback = new AppFeedback();
-	const { app_feedbacks_id } = useLocalSearchParams();
+	// `?title=` prefills the title, e.g. from the MCP instruction's "Probleme?" links.
+	const { app_feedbacks_id, title: titleParam } = useLocalSearchParams();
+	const prefilledTitle = typeof titleParam === 'string' ? titleParam : '';
     const { profile } = useAppSelector((state) => state.authReducer);
     const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
@@ -85,7 +87,7 @@ const FeedbackScreen = () => {
 	useFocusEffect(
 		useCallback(() => {
 			fetchDeviceInfo();
-		}, [])
+		}, [prefilledTitle])
 	);
 
 	const fetchFeedbackById = async () => {
@@ -121,7 +123,7 @@ const FeedbackScreen = () => {
 
 	const fetchDeviceInfo = async () => {
 		setInputValues({
-			title: '',
+			title: prefilledTitle,
 			content: '',
 			email: '',
 			positive: false,
