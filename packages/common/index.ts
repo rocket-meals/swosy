@@ -23,6 +23,7 @@ export * from './src/FoodFeedbackChatStatusHelper';
 export * from './src/CronHelper';
 export * from './src/EmailHelper';
 export * from './src/GuestAccountHelper';
+export * from './src/McpAccessHelper';
 export * from './src/FoodFeedbackPermissionHelper';
 export * from './src/EventHelper';
 export * from './src/form/FormHelperCommon';

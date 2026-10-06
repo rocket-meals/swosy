@@ -6,6 +6,14 @@ Currently when we want to apply a change we need to move the extension out of th
 folder and then back in to the directusExtensions folder. Then start directus, remove the not found
 extension, stop the server and then move the extension back in and start the server again.
 
+## Verbotene Pakete
+
+Diese Pakete/Module dürfen im Bundle **nicht** importiert werden:
+
+| Paket | Stattdessen |
+| --- | --- |
+| `node:crypto` / `crypto` | Zufällige IDs und Tokens über unseren eigenen Helper `src/helpers/NanoidHelper.ts` (`NanoidHelper.getNanoid(länge)`) oder über den Directus-Endpoint `GET <PUBLIC_URL>/utils/random/string` (z. B. `https://test.rocket-meals.de/rocket-meals/api/utils/random/string`). |
+
 # Rocket Meals Extension
 
 https://docs.directus.io/extensions/bundles.html

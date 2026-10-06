@@ -61,7 +61,10 @@ export function getVersionPatch() {
 	// 31: common: guest accounts use guest.example.com (Directus rejects .invalid on login)
 	// 32: common: default nickname Guest_<YYMMDDHHmm> for guest profiles
 	// 33: common: shared chat and food feedback rules (ChatHelper, FoodFeedbackChatStatusHelper, RelationHelper)
-	return 33;
+	// 34: common: McpAccessHelper for the MCP server access (public and personal tokens)
+	// 35: common: the public MCP user has a fixed token (McpAccessHelper.PUBLIC_USER_TOKEN)
+	// 36: common: McpAccessHelper - personal MCP tokens come from /utils/random/string (no backend endpoint)
+	return 36;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

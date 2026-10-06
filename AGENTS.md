@@ -187,6 +187,11 @@ Gilt für **alle Apps** (`apps/frontend`, `apps/geonexia`, `apps/score-tracker`)
   - common-ui: `SettingsListTextInput`, `SettingsListNumberInput`, `SettingsListDate` folgen dem Muster bereits.
 - `TextInput` auf normalen Screens (außerhalb von Sheets) ist in Ordnung. **Achtung umgekehrt:** `BottomSheetTextInput` wirft auf Native außerhalb eines BottomSheet — Komponenten, die sowohl auf Screens als auch in Sheets verwendet werden, brauchen einen Opt-in-Prop (siehe `insideBottomSheet` in `apps/frontend/app/components/SingleLineInput/SingleLineInput.tsx`).
 
+## Verbotene Pakete im Backend
+
+- **Niemals `node:crypto` (bzw. `crypto`) importieren.** Für zufällige IDs und Tokens unseren `NanoidHelper` (`apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/NanoidHelper.ts`) oder den Directus-Endpoint `GET <PUBLIC_URL>/utils/random/string` verwenden.
+- Die vollständige Liste steht in `apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/README.md` unter „Verbotene Pakete“.
+
 ## String replacement
 
 - **Never use `String.prototype.replaceAll()` or `String.prototype.replace()` for simple substitutions.** Use `StringHelper` from `repo-depkit-common` instead:

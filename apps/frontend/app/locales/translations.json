@@ -7528,5 +7528,405 @@
     "ru": "Это предложение тем временем было обновлено. Меню загружается заново – пожалуйста, откройте блюдо ещё раз.",
     "tr": "Bu teklif bu arada güncellendi. Menü yeniden yükleniyor – lütfen yemeği tekrar açın.",
     "zh": "该餐品已在此期间更新。菜单正在重新加载——请重新打开该菜品。"
+  },
+  "mcp_instruction": {
+    "de": "KI-Assistenten verbinden (MCP)",
+    "en": "Connect AI assistants (MCP)",
+    "ar": "ربط مساعدي الذكاء الاصطناعي (MCP)",
+    "es": "Conectar asistentes de IA (MCP)",
+    "fr": "Connecter des assistants IA (MCP)",
+    "ru": "Подключить ИИ-ассистентов (MCP)",
+    "tr": "Yapay zekâ asistanlarını bağla (MCP)",
+    "zh": "连接 AI 助手（MCP）"
+  },
+  "mcp_instruction_intro": {
+    "de": "Über den **MCP-Server** (Model Context Protocol) kannst du KI-Assistenten wie ChatGPT oder Claude mit den Daten dieser App verbinden. Danach kannst du sie zum Beispiel fragen, was es heute in der Mensa gibt.",
+    "en": "With the **MCP server** (Model Context Protocol) you can connect AI assistants such as ChatGPT or Claude to the data of this app. Afterwards you can ask them, for example, what the canteen is serving today.",
+    "ar": "باستخدام **خادم MCP** (Model Context Protocol) يمكنك ربط مساعدي الذكاء الاصطناعي مثل ChatGPT أو Claude ببيانات هذا التطبيق. بعد ذلك يمكنك أن تسألهم مثلًا عمّا يُقدَّم اليوم في المطعم.",
+    "es": "Con el **servidor MCP** (Model Context Protocol) puedes conectar asistentes de IA como ChatGPT o Claude con los datos de esta app. Después puedes preguntarles, por ejemplo, qué hay hoy en el comedor.",
+    "fr": "Avec le **serveur MCP** (Model Context Protocol), tu peux connecter des assistants IA comme ChatGPT ou Claude aux données de cette application. Tu peux ensuite leur demander, par exemple, ce qu’il y a aujourd’hui au restaurant universitaire.",
+    "ru": "С помощью **MCP-сервера** (Model Context Protocol) ты можешь подключить ИИ-ассистентов, например ChatGPT или Claude, к данным этого приложения. После этого можно, например, спросить их, что сегодня в столовой.",
+    "tr": "**MCP sunucusu** (Model Context Protocol) ile ChatGPT veya Claude gibi yapay zekâ asistanlarını bu uygulamanın verilerine bağlayabilirsin. Ardından onlara örneğin bugün yemekhanede ne olduğunu sorabilirsin.",
+    "zh": "通过 **MCP 服务器**（Model Context Protocol），你可以将 ChatGPT 或 Claude 等 AI 助手连接到本应用的数据。之后你可以问它们，例如今天食堂有什么菜。"
+  },
+  "mcp_choose_provider": {
+    "de": "Womit möchtest du den MCP-Server verbinden?",
+    "en": "Which assistant do you want to connect the MCP server to?",
+    "ar": "بأي مساعد تريد ربط خادم MCP؟",
+    "es": "¿Con qué asistente quieres conectar el servidor MCP?",
+    "fr": "À quel assistant veux-tu connecter le serveur MCP ?",
+    "ru": "С каким ассистентом ты хочешь подключить MCP-сервер?",
+    "tr": "MCP sunucusunu hangi asistana bağlamak istiyorsun?",
+    "zh": "你想将 MCP 服务器连接到哪个助手？"
+  },
+  "mcp_provider_other": {
+    "de": "Andere",
+    "en": "Other",
+    "ar": "غير ذلك",
+    "es": "Otro",
+    "fr": "Autre",
+    "ru": "Другой",
+    "tr": "Diğer",
+    "zh": "其他"
+  },
+  "mcp_access_token": {
+    "de": "Zugangstoken",
+    "en": "Access token",
+    "ar": "رمز الوصول",
+    "es": "Token de acceso",
+    "fr": "Jeton d’accès",
+    "ru": "Токен доступа",
+    "tr": "Erişim belirteci",
+    "zh": "访问令牌"
+  },
+  "mcp_access_token_public_hint": {
+    "de": "Du nutzt den **öffentlichen Zugang** – damit sieht der KI-Assistent nur öffentliche Daten wie Speisepläne.",
+    "en": "You use the **public access** – the AI assistant only sees public data such as menus.",
+    "ar": "أنت تستخدم **الوصول العام** – لا يرى مساعد الذكاء الاصطناعي إلا البيانات العامة مثل قوائم الطعام.",
+    "es": "Usas el **acceso público**: el asistente de IA solo ve datos públicos como los menús.",
+    "fr": "Tu utilises l’**accès public** : l’assistant IA ne voit que les données publiques comme les menus.",
+    "ru": "Ты используешь **общий доступ** – ИИ-ассистент видит только общедоступные данные, например меню.",
+    "tr": "**Herkese açık erişimi** kullanıyorsun – yapay zekâ asistanı yalnızca menüler gibi herkese açık verileri görür.",
+    "zh": "你正在使用**公共访问**——AI 助手只能看到菜单等公开数据。"
+  },
+  "mcp_access_token_personal_hint": {
+    "de": "Dein **persönliches Token** gibt dem KI-Assistenten Zugriff mit deinen Rechten. Gib es nicht weiter. Es wird nur direkt nach dem Erstellen angezeigt – kopiere es dann gleich in deinen KI-Assistenten.",
+    "en": "Your **personal token** gives the AI assistant access with your permissions. Do not share it. It is only shown right after it has been created – copy it into your AI assistant straight away.",
+    "ar": "يمنح **رمزك الشخصي** المساعدَ وصولًا بصلاحياتك. لا تشاركه مع أحد. لا يُعرض إلا مباشرة بعد إنشائه – انسخه فورًا إلى مساعد الذكاء الاصطناعي.",
+    "es": "Tu **token personal** da al asistente de IA acceso con tus permisos. No lo compartas. Solo se muestra justo después de crearlo: cópialo enseguida en tu asistente de IA.",
+    "fr": "Ton **jeton personnel** donne à l’assistant IA un accès avec tes droits. Ne le partage pas. Il ne s’affiche que juste après sa création – copie-le aussitôt dans ton assistant IA.",
+    "ru": "Твой **личный токен** даёт ИИ-ассистенту доступ с твоими правами. Никому его не передавай. Он показывается только сразу после создания – сразу скопируй его в своего ИИ-ассистента.",
+    "tr": "**Kişisel belirtecin**, yapay zekâ asistanına senin yetkilerinle erişim verir. Kimseyle paylaşma. Yalnızca oluşturulduktan hemen sonra gösterilir – hemen yapay zekâ asistanına kopyala.",
+    "zh": "你的**个人令牌**会让 AI 助手以你的权限进行访问。请勿分享。它只会在创建后立即显示——请马上将其复制到你的 AI 助手中。"
+  },
+  "mcp_access_token_create": {
+    "de": "Token erstellen",
+    "en": "Create token",
+    "ar": "إنشاء الرمز",
+    "es": "Crear token",
+    "fr": "Créer le jeton",
+    "ru": "Создать токен",
+    "tr": "Belirteç oluştur",
+    "zh": "创建令牌"
+  },
+  "mcp_access_token_load_failed": {
+    "de": "Das Token konnte nicht geladen werden.",
+    "en": "The token could not be loaded.",
+    "ar": "تعذّر تحميل الرمز.",
+    "es": "No se pudo cargar el token.",
+    "fr": "Le jeton n’a pas pu être chargé.",
+    "ru": "Не удалось загрузить токен.",
+    "tr": "Belirteç yüklenemedi.",
+    "zh": "无法加载令牌。"
+  },
+  "mcp_access_token_required": {
+    "de": "Wähle oben zuerst einen Zugang und lass dir das Token anzeigen.",
+    "en": "First choose an access above and show the token.",
+    "ar": "اختر أولًا طريقة وصول في الأعلى واعرض الرمز.",
+    "es": "Primero elige un acceso arriba y muestra el token.",
+    "fr": "Choisis d’abord un accès ci-dessus et affiche le jeton.",
+    "ru": "Сначала выбери доступ выше и покажи токен.",
+    "tr": "Önce yukarıda bir erişim seç ve belirteci göster.",
+    "zh": "请先在上方选择访问方式并显示令牌。"
+  },
+  "mcp_app_name": {
+    "de": "Name",
+    "en": "Name",
+    "ar": "الاسم",
+    "es": "Nombre",
+    "fr": "Nom",
+    "ru": "Название",
+    "tr": "Ad",
+    "zh": "名称"
+  },
+  "mcp_server_url": {
+    "de": "MCP-Server-URL",
+    "en": "MCP server URL",
+    "ar": "عنوان URL لخادم MCP",
+    "es": "URL del servidor MCP",
+    "fr": "URL du serveur MCP",
+    "ru": "URL MCP-сервера",
+    "tr": "MCP sunucu URL’si",
+    "zh": "MCP 服务器 URL"
+  },
+  "mcp_server_url_with_token": {
+    "de": "MCP-Server-URL mit Token",
+    "en": "MCP server URL with token",
+    "ar": "عنوان URL لخادم MCP مع الرمز",
+    "es": "URL del servidor MCP con token",
+    "fr": "URL du serveur MCP avec jeton",
+    "ru": "URL MCP-сервера с токеном",
+    "tr": "Belirteçli MCP sunucu URL’si",
+    "zh": "带令牌的 MCP 服务器 URL"
+  },
+  "mcp_authorization_header_value": {
+    "de": "Wert für „authorization“",
+    "en": "Value for \"authorization\"",
+    "ar": "قيمة \"authorization\"",
+    "es": "Valor de «authorization»",
+    "fr": "Valeur de « authorization »",
+    "ru": "Значение «authorization»",
+    "tr": "\"authorization\" değeri",
+    "zh": "“authorization” 的值"
+  },
+  "mcp_steps_title": {
+    "de": "So geht’s",
+    "en": "How it works",
+    "ar": "طريقة الإعداد",
+    "es": "Cómo se hace",
+    "fr": "Comment faire",
+    "ru": "Как это сделать",
+    "tr": "Nasıl yapılır",
+    "zh": "操作步骤"
+  },
+  "mcp_claude_step_open_connectors": {
+    "de": "Öffne die Claude-App und gehe zu „`Einstellungen → Konnektoren`“.",
+    "en": "Open the Claude app and go to “`Settings → Connectors`”.",
+    "ar": "افتح تطبيق Claude وانتقل إلى «`الإعدادات ← الموصلات`».",
+    "es": "Abre la app de Claude y ve a «`Ajustes → Conectores`».",
+    "fr": "Ouvre l’application Claude et va dans « `Paramètres → Connecteurs` ».",
+    "ru": "Открой приложение Claude и перейди в «`Настройки → Коннекторы`».",
+    "tr": "Claude uygulamasını aç ve “`Ayarlar → Bağlayıcılar`” bölümüne git.",
+    "zh": "打开 Claude 应用，进入“`设置 → 连接器`”。"
+  },
+  "mcp_claude_step_add_custom": {
+    "de": "Tippe auf „`Hinzufügen`“ und dann auf „`Benutzerdefinierten Connector hinzufügen`“.",
+    "en": "Tap “`Add`” and then “`Add custom connector`”.",
+    "ar": "اضغط على «`إضافة`» ثم على «`إضافة موصل مخصص`».",
+    "es": "Pulsa «`Añadir`» y luego «`Añadir conector personalizado`».",
+    "fr": "Appuie sur « `Ajouter` », puis sur « `Ajouter un connecteur personnalisé` ».",
+    "ru": "Нажми «`Добавить`», затем «`Добавить пользовательский коннектор`».",
+    "tr": "“`Ekle`”’ye, ardından “`Özel bağlayıcı ekle`”’ye dokun.",
+    "zh": "点击“`添加`”，然后点击“`添加自定义连接器`”。"
+  },
+  "mcp_claude_step_name": {
+    "de": "Trage bei „`Name`“ den Namen der App ein:",
+    "en": "Enter the name of the app under “`Name`”:",
+    "ar": "أدخل اسم التطبيق في حقل «`الاسم`»:",
+    "es": "Introduce el nombre de la app en «`Nombre`»:",
+    "fr": "Saisis le nom de l’application dans « `Nom` » :",
+    "ru": "Введи название приложения в поле «`Название`»:",
+    "tr": "“`Ad`” alanına uygulamanın adını gir:",
+    "zh": "在“`名称`”中填写应用名称："
+  },
+  "mcp_claude_step_url": {
+    "de": "Trage bei „`MCP-Server-URL`“ diese Adresse ein:",
+    "en": "Enter this address under “`MCP server URL`”:",
+    "ar": "أدخل هذا العنوان في «`عنوان URL لخادم MCP`»:",
+    "es": "Introduce esta dirección en «`URL del servidor MCP`»:",
+    "fr": "Saisis cette adresse dans « `URL du serveur MCP` » :",
+    "ru": "Введи этот адрес в поле «`URL MCP-сервера`»:",
+    "tr": "“`MCP sunucu URL’si`” alanına bu adresi gir:",
+    "zh": "在 “`MCP 服务器 URL`” 中填写以下地址："
+  },
+  "mcp_claude_step_continue": {
+    "de": "Tippe auf „`Weiter`“. Der Server wird dabei als nicht erreichbar angezeigt – das ist normal. Tippe auf „`Trotzdem fortfahren`“.",
+    "en": "Tap “`Continue`”. The server is shown as not reachable – that is expected. Tap “`Continue anyway`”.",
+    "ar": "اضغط على «`متابعة`». سيظهر الخادم على أنه غير متاح – هذا أمر طبيعي. اضغط على «`المتابعة على أي حال`».",
+    "es": "Pulsa «`Continuar`». El servidor aparecerá como no accesible; es normal. Pulsa «`Continuar de todos modos`».",
+    "fr": "Appuie sur « `Continuer` ». Le serveur s’affiche comme injoignable – c’est normal. Appuie sur « `Continuer quand même` ».",
+    "ru": "Нажми «`Далее`». Сервер будет показан как недоступный – это нормально. Нажми «`Всё равно продолжить`».",
+    "tr": "“`Devam`”’a dokun. Sunucu erişilemez olarak gösterilir – bu normaldir. “`Yine de devam et`”’e dokun.",
+    "zh": "点击“`继续`”。服务器会显示为无法访问——这是正常的。点击“`仍然继续`”。"
+  },
+  "mcp_claude_step_authentication": {
+    "de": "Wähle bei „`Authentifizierung`“ die Option „`Keine Anmeldung`“.",
+    "en": "Under “`Authentication`” choose “`No authentication`”.",
+    "ar": "في «`المصادقة`» اختر «`بدون تسجيل دخول`».",
+    "es": "En «`Autenticación`» elige «`Sin inicio de sesión`».",
+    "fr": "Sous « `Authentification` », choisis « `Aucune connexion` ».",
+    "ru": "В разделе «`Аутентификация`» выбери «`Без входа`».",
+    "tr": "“`Kimlik doğrulama`” bölümünde “`Oturum açma yok`” seçeneğini seç.",
+    "zh": "在“`身份验证`”中选择“`无需登录`”。"
+  },
+  "mcp_claude_step_header": {
+    "de": "Tippe bei „`Request-Header`“ auf „`+ Header hinzufügen`“, wähle im Dropdown „`authorization`“ und trage als Wert ein:",
+    "en": "Under “`Request headers`” tap “`+ Add header`”, choose “`authorization`” in the dropdown and enter this value:",
+    "ar": "في «`ترويسات الطلب`» اضغط على «`+ إضافة ترويسة`»، واختر «`authorization`» من القائمة، ثم أدخل هذه القيمة:",
+    "es": "En «`Encabezados de la solicitud`» pulsa «`+ Añadir encabezado`», elige «`authorization`» en el desplegable e introduce este valor:",
+    "fr": "Sous « `En-têtes de requête` », appuie sur « `+ Ajouter un en-tête` », choisis « `authorization` » dans la liste et saisis cette valeur :",
+    "ru": "В разделе «`Заголовки запроса`» нажми «`+ Добавить заголовок`», выбери «`authorization`» в списке и введи значение:",
+    "tr": "“`İstek başlıkları`” bölümünde “`+ Başlık ekle`”’ye dokun, açılır listeden “`authorization`”’ı seç ve şu değeri gir:",
+    "zh": "在“`请求标头`”中点击 “`+ 添加标头`”，在下拉菜单中选择 “`authorization`”，并填写以下值："
+  },
+  "mcp_claude_step_finish": {
+    "de": "Tippe auf „`Hinzufügen`“ – fertig. Du kannst den Connector jetzt in deinen Chats verwenden.",
+    "en": "Tap “`Add`” – done. You can now use the connector in your chats.",
+    "ar": "اضغط على «`إضافة`» – انتهى. يمكنك الآن استخدام الموصل في محادثاتك.",
+    "es": "Pulsa «`Añadir`» y listo. Ya puedes usar el conector en tus chats.",
+    "fr": "Appuie sur « `Ajouter` » – c’est fait. Tu peux maintenant utiliser le connecteur dans tes discussions.",
+    "ru": "Нажми «`Добавить`» – готово. Теперь коннектор можно использовать в чатах.",
+    "tr": "“`Ekle`”’ye dokun – bitti. Artık bağlayıcıyı sohbetlerinde kullanabilirsin.",
+    "zh": "点击“`添加`”——完成。现在你可以在聊天中使用该连接器。"
+  },
+  "mcp_openai_step_open_settings": {
+    "de": "Öffne in ChatGPT die „`Einstellungen`“.",
+    "en": "Open the “`Settings`” in ChatGPT.",
+    "ar": "افتح «`الإعدادات`» في ChatGPT.",
+    "es": "Abre los «`Ajustes`» en ChatGPT.",
+    "fr": "Ouvre les « `Paramètres` » dans ChatGPT.",
+    "ru": "Открой «`Настройки`» в ChatGPT.",
+    "tr": "ChatGPT’de “`Ayarlar`”’ı aç.",
+    "zh": "在 ChatGPT 中打开“`设置`”。"
+  },
+  "mcp_openai_step_plugins": {
+    "de": "Gehe zu „`Plugins`“ (ggf. über die Suche) und tippe auf „`Katalog durchsuchen`“.",
+    "en": "Go to “`Plugins`” (use the search if needed) and tap “`Browse catalog`”.",
+    "ar": "انتقل إلى «`الإضافات`» (استخدم البحث إذا لزم الأمر) واضغط على «`تصفح الكتالوج`».",
+    "es": "Ve a «`Plugins`» (usa la búsqueda si hace falta) y pulsa «`Explorar catálogo`».",
+    "fr": "Va dans « `Plugins` » (utilise la recherche si besoin) et appuie sur « `Parcourir le catalogue` ».",
+    "ru": "Перейди в «`Плагины`» (при необходимости через поиск) и нажми «`Просмотреть каталог`».",
+    "tr": "“`Eklentiler`”’e git (gerekirse aramayı kullan) ve “`Kataloğa göz at`”’a dokun.",
+    "zh": "进入“`插件`”（必要时使用搜索），点击“`浏览目录`”。"
+  },
+  "mcp_openai_step_add": {
+    "de": "Tippe oben rechts auf „`Hinzufügen`“ und dann auf „`Benutzerdefinierten MCP-Server erstellen`“.",
+    "en": "Tap “`Add`” in the top right and then “`Create custom MCP server`”.",
+    "ar": "اضغط على «`إضافة`» في أعلى اليمين ثم على «`إنشاء خادم MCP مخصص`».",
+    "es": "Pulsa «`Añadir`» arriba a la derecha y luego «`Crear servidor MCP personalizado`».",
+    "fr": "Appuie sur « `Ajouter` » en haut à droite, puis sur « `Créer un serveur MCP personnalisé` ».",
+    "ru": "Нажми «`Добавить`» справа вверху, затем «`Создать пользовательский MCP-сервер`».",
+    "tr": "Sağ üstte “`Ekle`”’ye, ardından “`Özel MCP sunucusu oluştur`”’a dokun.",
+    "zh": "点击右上角的“`添加`”，然后点击“`创建自定义 MCP 服务器`”。"
+  },
+  "mcp_openai_step_name": {
+    "de": "Wähle einen beliebigen „`Namen`“, zum Beispiel:",
+    "en": "Choose any “`name`”, for example:",
+    "ar": "اختر أي «`اسم`»، على سبيل المثال:",
+    "es": "Elige cualquier «`nombre`», por ejemplo:",
+    "fr": "Choisis un « `nom` » au choix, par exemple :",
+    "ru": "Выбери любое «`название`», например:",
+    "tr": "İstediğin bir “`ad`” seç, örneğin:",
+    "zh": "任选一个“`名称`”，例如："
+  },
+  "mcp_openai_step_url": {
+    "de": "Trage bei „`Verbindung`“ diese Adresse ein – sie enthält dein Token:",
+    "en": "Enter this address under “`Connection`” – it contains your token:",
+    "ar": "أدخل هذا العنوان في «`الاتصال`» – فهو يحتوي على رمزك:",
+    "es": "Introduce esta dirección en «`Conexión`»; contiene tu token:",
+    "fr": "Saisis cette adresse dans « `Connexion` » – elle contient ton jeton :",
+    "ru": "Введи этот адрес в поле «`Подключение`» – он содержит твой токен:",
+    "tr": "“`Bağlantı`” alanına bu adresi gir – belirtecini içerir:",
+    "zh": "在“`连接`”中填写以下地址——其中包含你的令牌："
+  },
+  "mcp_openai_step_authentication": {
+    "de": "Wähle bei „`Authentifizierung`“ die Option „`Keine`“, setze den Haken bei der Bestätigung und speichere.",
+    "en": "Under “`Authentication`” choose “`None`”, tick the confirmation checkbox and save.",
+    "ar": "في «`المصادقة`» اختر «`بدون`»، وحدّد مربع التأكيد ثم احفظ.",
+    "es": "En «`Autenticación`» elige «`Ninguna`», marca la casilla de confirmación y guarda.",
+    "fr": "Sous « `Authentification` », choisis « `Aucune` », coche la case de confirmation et enregistre.",
+    "ru": "В разделе «`Аутентификация`» выбери «`Нет`», отметь флажок подтверждения и сохрани.",
+    "tr": "“`Kimlik doğrulama`” bölümünde “`Yok`”’u seç, onay kutusunu işaretle ve kaydet.",
+    "zh": "在“`身份验证`”中选择“`无`”，勾选确认复选框并保存。"
+  },
+  "mcp_openai_step_use": {
+    "de": "Starte einen neuen Chat und sprich den Server mit „`@Name`“ an.",
+    "en": "Start a new chat and address the server with “`@Name`”.",
+    "ar": "ابدأ محادثة جديدة وخاطب الخادم باستخدام «`@الاسم`».",
+    "es": "Empieza un chat nuevo y menciona el servidor con «`@Nombre`».",
+    "fr": "Démarre une nouvelle discussion et adresse-toi au serveur avec « `@Nom` ».",
+    "ru": "Начни новый чат и обратись к серверу через «`@Название`».",
+    "tr": "Yeni bir sohbet başlat ve sunucuya “`@Ad`” ile seslen.",
+    "zh": "开始新的聊天，并使用 “`@名称`” 来调用该服务器。"
+  },
+  "mcp_other_step_url": {
+    "de": "Trage in deinem MCP-Client diese Server-Adresse ein:",
+    "en": "Enter this server address in your MCP client:",
+    "ar": "أدخل عنوان الخادم هذا في عميل MCP الخاص بك:",
+    "es": "Introduce esta dirección del servidor en tu cliente MCP:",
+    "fr": "Saisis cette adresse de serveur dans ton client MCP :",
+    "ru": "Введи этот адрес сервера в своём MCP-клиенте:",
+    "tr": "MCP istemcine bu sunucu adresini gir:",
+    "zh": "在你的 MCP 客户端中填写以下服务器地址："
+  },
+  "mcp_other_step_header": {
+    "de": "Setze den Header „`Authorization`“ auf diesen Wert (`Bearer <Token>`):",
+    "en": "Set the “`Authorization`” header to this value (`Bearer <Token>`):",
+    "ar": "اضبط ترويسة «`Authorization`» على هذه القيمة (`Bearer <Token>`):",
+    "es": "Establece el encabezado «`Authorization`» con este valor (`Bearer <Token>`):",
+    "fr": "Définis l’en-tête « `Authorization` » sur cette valeur (`Bearer <Token>`) :",
+    "ru": "Установи заголовок «`Authorization`» в это значение (`Bearer <Token>`):",
+    "tr": "“`Authorization`” başlığını bu değere ayarla (`Bearer <Token>`):",
+    "zh": "将 “`Authorization`” 标头设置为以下值（`Bearer <Token>`）："
+  },
+  "mcp_other_step_url_with_token": {
+    "de": "Kann dein Client keine Header setzen, nutze stattdessen diese Adresse – sie enthält das Token bereits:",
+    "en": "If your client cannot set headers, use this address instead – it already contains the token:",
+    "ar": "إذا كان عميلك لا يستطيع ضبط الترويسات، فاستخدم هذا العنوان بدلًا من ذلك – فهو يحتوي على الرمز بالفعل:",
+    "es": "Si tu cliente no puede definir encabezados, usa esta dirección; ya contiene el token:",
+    "fr": "Si ton client ne peut pas définir d’en-têtes, utilise plutôt cette adresse – elle contient déjà le jeton :",
+    "ru": "Если клиент не умеет задавать заголовки, используй этот адрес – токен уже в нём:",
+    "tr": "İstemcin başlık ayarlayamıyorsa bunun yerine bu adresi kullan – belirteci zaten içerir:",
+    "zh": "如果你的客户端无法设置标头，请改用以下地址——其中已包含令牌："
+  },
+  "mcp_access_choice_question": {
+    "de": "Möchtest du den KI-Assistenten mit deinem Account verbinden? Dann sieht er alles, was du auch in der App sehen darfst. Ohne persönlichen Account sieht er nur öffentliche Daten wie Speisepläne.",
+    "en": "Do you want to connect the AI assistant with your account? Then it sees everything you are allowed to see in the app. Without a personal account it only sees public data such as menus.",
+    "ar": "هل تريد ربط مساعد الذكاء الاصطناعي بحسابك؟ عندها سيرى كل ما يُسمح لك برؤيته في التطبيق. بدون حساب شخصي لن يرى إلا البيانات العامة مثل قوائم الطعام.",
+    "es": "¿Quieres conectar el asistente de IA con tu cuenta? Así verá todo lo que tú puedes ver en la app. Sin una cuenta personal solo verá datos públicos como los menús.",
+    "fr": "Veux-tu connecter l’assistant IA à ton compte ? Il verra alors tout ce que tu peux voir dans l’application. Sans compte personnel, il ne voit que les données publiques comme les menus.",
+    "ru": "Хочешь подключить ИИ-ассистента к своему аккаунту? Тогда он увидит всё, что ты можешь видеть в приложении. Без личного аккаунта он видит только общедоступные данные, например меню.",
+    "tr": "Yapay zekâ asistanını hesabınla bağlamak ister misin? O zaman uygulamada görmene izin verilen her şeyi görür. Kişisel hesap olmadan yalnızca menüler gibi herkese açık verileri görür.",
+    "zh": "你想用你的账户连接 AI 助手吗？这样它就能看到你在应用中可以看到的所有内容。不使用个人账户时，它只能看到菜单等公开数据。"
+  },
+  "mcp_access_no_account_hint": {
+    "de": "Du bist nicht mit einem Account angemeldet. Melde dich an oder lege dir einen Account an, um den KI-Assistenten mit deinem persönlichen Zugang zu verbinden. Ohne persönlichen Account sieht er nur öffentliche Daten wie Speisepläne.",
+    "en": "You are not logged in with an account. Log in or create an account to connect the AI assistant with your personal access. Without a personal account it only sees public data such as menus.",
+    "ar": "أنت غير مسجّل الدخول بحساب. سجّل الدخول أو أنشئ حسابًا لربط مساعد الذكاء الاصطناعي بوصولك الشخصي. بدون حساب شخصي لن يرى إلا البيانات العامة مثل قوائم الطعام.",
+    "es": "No has iniciado sesión con una cuenta. Inicia sesión o crea una cuenta para conectar el asistente de IA con tu acceso personal. Sin una cuenta personal solo verá datos públicos como los menús.",
+    "fr": "Tu n’es pas connecté·e avec un compte. Connecte-toi ou crée un compte pour connecter l’assistant IA avec ton accès personnel. Sans compte personnel, il ne voit que les données publiques comme les menus.",
+    "ru": "Ты не вошёл в аккаунт. Войди или создай аккаунт, чтобы подключить ИИ-ассистента со своим личным доступом. Без личного аккаунта он видит только общедоступные данные, например меню.",
+    "tr": "Bir hesapla giriş yapmadın. Yapay zekâ asistanını kişisel erişiminle bağlamak için giriş yap veya bir hesap oluştur. Kişisel hesap olmadan yalnızca menüler gibi herkese açık verileri görür.",
+    "zh": "你尚未使用账户登录。请登录或创建账户，以便用你的个人访问权限连接 AI 助手。不使用个人账户时，它只能看到菜单等公开数据。"
+  },
+  "mcp_connect_with_account": {
+    "de": "Mit meinem Account verbinden",
+    "en": "Connect with my account",
+    "ar": "الربط بحسابي",
+    "es": "Conectar con mi cuenta",
+    "fr": "Connecter avec mon compte",
+    "ru": "Подключить с моим аккаунтом",
+    "tr": "Hesabımla bağla",
+    "zh": "使用我的账户连接"
+  },
+  "mcp_continue_without_account": {
+    "de": "Ohne persönlichen Account fortfahren",
+    "en": "Continue without a personal account",
+    "ar": "المتابعة بدون حساب شخصي",
+    "es": "Continuar sin cuenta personal",
+    "fr": "Continuer sans compte personnel",
+    "ru": "Продолжить без личного аккаунта",
+    "tr": "Kişisel hesap olmadan devam et",
+    "zh": "不使用个人账户继续"
+  },
+  "mcp_trademark_notice": {
+    "de": "OpenAI, ChatGPT und das OpenAI-Logo sind Marken von OpenAI. Claude und das Claude-Logo sind Marken von Anthropic. Die Logos werden nur verwendet, um den jeweiligen Dienst zu kennzeichnen – diese App ist kein Angebot von OpenAI oder Anthropic und wird von ihnen weder unterstützt noch empfohlen.",
+    "en": "OpenAI, ChatGPT and the OpenAI logo are trademarks of OpenAI. Claude and the Claude logo are trademarks of Anthropic. The logos are only used to identify the respective service – this app is not offered, endorsed or sponsored by OpenAI or Anthropic.",
+    "ar": "إن OpenAI وChatGPT وشعار OpenAI علامات تجارية لشركة OpenAI. وإن Claude وشعار Claude علامتان تجاريتان لشركة Anthropic. تُستخدم الشعارات فقط للإشارة إلى الخدمة المعنية – هذا التطبيق ليس من تقديم OpenAI أو Anthropic ولا تدعمه أو توصي به أيٌّ منهما.",
+    "es": "OpenAI, ChatGPT y el logotipo de OpenAI son marcas de OpenAI. Claude y el logotipo de Claude son marcas de Anthropic. Los logotipos solo se usan para identificar el servicio correspondiente: esta app no la ofrecen, respaldan ni patrocinan OpenAI ni Anthropic.",
+    "fr": "OpenAI, ChatGPT et le logo OpenAI sont des marques d’OpenAI. Claude et le logo Claude sont des marques d’Anthropic. Les logos servent uniquement à identifier le service concerné – cette application n’est ni proposée, ni soutenue, ni recommandée par OpenAI ou Anthropic.",
+    "ru": "OpenAI, ChatGPT и логотип OpenAI являются товарными знаками OpenAI. Claude и логотип Claude являются товарными знаками Anthropic. Логотипы используются только для обозначения соответствующего сервиса – это приложение не предлагается, не поддерживается и не рекомендуется OpenAI или Anthropic.",
+    "tr": "OpenAI, ChatGPT ve OpenAI logosu OpenAI’nin ticari markalarıdır. Claude ve Claude logosu Anthropic’in ticari markalarıdır. Logolar yalnızca ilgili hizmeti belirtmek için kullanılır – bu uygulama OpenAI veya Anthropic tarafından sunulmamakta, desteklenmemekte ya da önerilmemektedir.",
+    "zh": "OpenAI、ChatGPT 和 OpenAI 标志是 OpenAI 的商标。Claude 和 Claude 标志是 Anthropic 的商标。这些标志仅用于标识相应的服务——本应用并非由 OpenAI 或 Anthropic 提供，也未获得其支持或推荐。"
+  },
+  "mcp_access_token_exists_hint": {
+    "de": "Du hast bereits ein Token. Aus Sicherheitsgründen kann es nicht noch einmal angezeigt werden. Erstellst du ein neues, funktionieren bisher eingerichtete Verbindungen nicht mehr.",
+    "en": "You already have a token. For security reasons it cannot be shown again. If you create a new one, connections you have already set up stop working.",
+    "ar": "لديك رمز بالفعل. لأسباب أمنية لا يمكن عرضه مرة أخرى. إذا أنشأت رمزًا جديدًا، فستتوقف الاتصالات التي أعددتها سابقًا عن العمل.",
+    "es": "Ya tienes un token. Por motivos de seguridad no se puede volver a mostrar. Si creas uno nuevo, las conexiones que ya configuraste dejarán de funcionar.",
+    "fr": "Tu as déjà un jeton. Pour des raisons de sécurité, il ne peut pas être affiché à nouveau. Si tu en crées un nouveau, les connexions déjà configurées ne fonctionneront plus.",
+    "ru": "У тебя уже есть токен. По соображениям безопасности его нельзя показать ещё раз. Если создать новый, уже настроенные подключения перестанут работать.",
+    "tr": "Zaten bir belirtecin var. Güvenlik nedeniyle tekrar gösterilemez. Yeni bir tane oluşturursan, daha önce kurduğun bağlantılar artık çalışmaz.",
+    "zh": "你已经有一个令牌。出于安全原因，它无法再次显示。如果创建新令牌，之前设置的连接将无法继续使用。"
+  },
+  "mcp_access_token_regenerate": {
+    "de": "Neues Token erstellen",
+    "en": "Create new token",
+    "ar": "إنشاء رمز جديد",
+    "es": "Crear nuevo token",
+    "fr": "Créer un nouveau jeton",
+    "ru": "Создать новый токен",
+    "tr": "Yeni belirteç oluştur",
+    "zh": "创建新令牌"
   }
 }

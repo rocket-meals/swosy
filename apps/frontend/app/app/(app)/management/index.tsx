@@ -12,6 +12,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsList from '@/components/SettingsList';
 import { HOUSING_ANALYTICS_ROUTE } from '@/helper/housingAnalytics/HousingAnalyticsRoutes';
+import { PUBLIC_ROUTES } from '@/helper/publicRoutes';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.role_management);
@@ -168,7 +169,7 @@ const Index = () => {
                                                 label={translate(TranslationKeys.rueckmeldung_geben)}
                                                 rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
                                                 onPress={() => {
-                                                        router.navigate('/give-feedback');
+                                                        router.navigate(PUBLIC_ROUTES.GIVE_FEEDBACK);
                                                 }}
                                                 groupPosition="top"
                                         />
@@ -177,7 +178,16 @@ const Index = () => {
                                                 label={translate(TranslationKeys.app_download)}
                                                 rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
                                                 onPress={() => {
-                                                        router.navigate('/app-download-management');
+                                                        router.navigate(PUBLIC_ROUTES.APP_DOWNLOAD_MANAGEMENT);
+                                                }}
+                                                groupPosition="middle"
+                                        />
+                                        <SettingsList
+                                                leftIcon={<MaterialCommunityIcons name="robot-outline" size={24} />}
+                                                label={translate(TranslationKeys.mcp_instruction)}
+                                                rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+                                                onPress={() => {
+                                                        router.navigate(PUBLIC_ROUTES.MCP_INSTRUCTION);
                                                 }}
                                                 groupPosition="bottom"
                                         />

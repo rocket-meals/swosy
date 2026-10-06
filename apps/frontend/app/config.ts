@@ -174,7 +174,14 @@ export function getVersionPatch() {
         //     from the background (in-memory days were served without it); a dish opened
         //     from a chat shows the food when its offer no longer exists
         // 73: common: shared chat rules (ChatHelper) - chat messages sorted by the shared helper
-        return 73;
+        // 74: public links under /public/ (give feedback, app download, app download management) and the new MCP instruction screen /public/mcp-instruction; app download cards show an external-link icon
+        // 75: MCP instruction screen shows the fixed public MCP token without asking the server
+        // 76: MCP instruction screen: ?ai-agent=claude|openai|other preselects the assistant, the user
+        //     picks personal or public access (login button without an account), UI labels quoted in monospace
+        // 77: the MCP instruction screen's preselect parameter is ?assistant= (?ai-agent= still read)
+        // 78: MCP instruction screen shows the OpenAI and Claude symbols (unchanged brand assets) with a trademark notice
+        // 79: MCP personal token: random string from Directus saved via PATCH /users/me; an existing token can only be replaced
+        return 79;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
