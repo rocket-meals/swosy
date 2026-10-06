@@ -98,19 +98,21 @@ async function fetchOrCreatePersonalMcpToken(): Promise<string> {
 	return await readTokenResponse(await authorizedFetch(McpAccessHelper.getEndpointPath(McpAccessHelper.ROUTE_MY_TOKEN), { method: 'POST' }));
 }
 
-/** `?ai-agent=claude` preselects the assistant, so a link can lead straight to its steps. */
-const AI_AGENT_PARAM = 'ai-agent';
+/** `?assistant=claude` preselects the assistant, so a link can lead straight to its steps. */
+const ASSISTANT_PARAM = 'assistant';
+/** Former name of `assistant` - still read, so links shared with it keep working. */
+const LEGACY_ASSISTANT_PARAM = 'ai-agent';
 
-const AI_AGENT_PARAM_VALUES: Record<string, McpProvider> = {
+const ASSISTANT_PARAM_VALUES: Record<string, McpProvider> = {
 	claude: 'claude',
 	openai: 'openai',
 	chatgpt: 'openai',
 	other: 'other',
 };
 
-function parseAiAgentParam(value: string | string[] | undefined): McpProvider | null {
+function parseAssistantParam(value: string | string[] | undefined): McpProvider | null {
 	const raw = Array.isArray(value) ? value[0] : value;
-	return raw ? (AI_AGENT_PARAM_VALUES[raw.trim().toLowerCase()] ?? null) : null;
+	return raw ? (ASSISTANT_PARAM_VALUES[raw.trim().toLowerCase()] ?? null) : null;
 }
 
 /** Whether the AI assistant connects with the user's own account or with the public MCP user. */
@@ -135,8 +137,9 @@ const McpInstruction = () => {
 	// Anonymous users ("continue without account") have no Directus user and thus no own token.
 	const hasAccount = loggedIn && UserHelper.isRegisteredUser(user);
 
-	const { [AI_AGENT_PARAM]: aiAgentParam } = useLocalSearchParams();
-	const [provider, setProvider] = useState<McpProvider | null>(() => parseAiAgentParam(aiAgentParam));
+	const { [ASSISTANT_PARAM]: assistantParamValue, [LEGACY_ASSISTANT_PARAM]: legacyAssistantParamValue } = useLocalSearchParams();
+	const assistantParam = assistantParamValue ?? legacyAssistantParamValue;
+	const [provider, setProvider] = useState<McpProvider | null>(() => parseAssistantParam(assistantParam));
 	const [accessMode, setAccessMode] = useState<McpAccessMode | null>(null);
 	const [personalToken, setPersonalToken] = useState<string | null>(null);
 	const [hasPersonalToken, setHasPersonalToken] = useState<boolean | null>(null);
@@ -148,11 +151,11 @@ const McpInstruction = () => {
 	const token = accessMode === 'public' ? McpAccessHelper.PUBLIC_USER_TOKEN : accessMode === 'personal' ? personalToken : null;
 
 	useEffect(() => {
-		const providerFromParam = parseAiAgentParam(aiAgentParam);
+		const providerFromParam = parseAssistantParam(assistantParam);
 		if (providerFromParam) {
 			setProvider(providerFromParam);
 		}
-	}, [aiAgentParam]);
+	}, [assistantParam]);
 
 	// Logging out (or in as someone else) must not leave the previous user's token on screen.
 	useEffect(() => {
@@ -184,7 +187,7 @@ const McpInstruction = () => {
 	const selectProvider = (selected: McpProvider) => {
 		setProvider(selected);
 		// Keeps the choice in the url, so the page can be shared or bookmarked as it is.
-		router.setParams({ [AI_AGENT_PARAM]: selected });
+		router.setParams({ [ASSISTANT_PARAM]: selected, [LEGACY_ASSISTANT_PARAM]: undefined });
 	};
 
 	const openLogin = () => {

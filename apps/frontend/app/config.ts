@@ -178,7 +178,8 @@ export function getVersionPatch() {
         // 75: MCP instruction screen shows the fixed public MCP token without asking the server
         // 76: MCP instruction screen: ?ai-agent=claude|openai|other preselects the assistant, the user
         //     picks personal or public access (login button without an account), UI labels quoted in monospace
-        return 76;
+        // 77: the MCP instruction screen's preselect parameter is ?assistant= (?ai-agent= still read)
+        return 77;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
