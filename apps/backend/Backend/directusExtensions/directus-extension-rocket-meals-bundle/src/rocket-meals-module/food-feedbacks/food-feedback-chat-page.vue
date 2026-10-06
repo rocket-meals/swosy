@@ -145,29 +145,60 @@ async function sendMessage() {
   }
 }
 
-async function toggleResolved() {
-  if (!chatId.value || updatingState.value) {
+/**
+ * Sets the status by hand. A feedback without chat gets one first – the status lives in
+ * `chats.conversation_state`. Note: the author then sees the (still empty) chat in the app.
+ */
+async function changeStatus(nextStatus: FoodFeedbackChatStatus) {
+  const nextState = FoodFeedbackChatStatusHelper.getConversationStateForStatus(nextStatus);
+  if (!nextState || nextStatus === status.value || updatingState.value || !canWrite.value) {
     return;
   }
   updatingState.value = true;
   try {
-    const nextState = status.value === FoodFeedbackChatStatus.RESOLVED ? ChatConversationState.WAITING_FOR_SUPPORT : ChatConversationState.RESOLVED;
+    if (!chatId.value) {
+      await ensureChat();
+      await loadFeedback();
+    }
     await setConversationState(nextState);
     await loadFeedback();
   } catch (error) {
     console.error('[rocket-meals-module] updating chat state failed', error);
-    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_send_failed), type: 'error' });
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_status_change_failed), type: 'error' });
   } finally {
     updatingState.value = false;
   }
 }
 
+/**
+ * Like the chat of Claude: Enter sends, Shift+Enter starts a new line. On touch devices Enter
+ * stays a new line – there is a send button right next to it. Ctrl/⌘+Enter always sends.
+ */
 function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+  if (event.key !== 'Enter' || event.isComposing) {
+    return;
+  }
+  const isTouchDevice = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
+  if (event.ctrlKey || event.metaKey || (!event.shiftKey && !isTouchDevice)) {
     event.preventDefault();
     sendMessage();
   }
 }
+
+/** The input grows with its text up to a maximum height, then scrolls. */
+const composerInput = ref<HTMLTextAreaElement>();
+const COMPOSER_MAX_HEIGHT_PX = 240;
+function resizeComposer() {
+  const input = composerInput.value;
+  if (!input) {
+    return;
+  }
+  input.style.height = 'auto';
+  input.style.height = `${Math.min(input.scrollHeight, COMPOSER_MAX_HEIGHT_PX)}px`;
+}
+watch(newMessage, () => nextTick(resizeComposer));
+
+
 
 function scrollToBottom() {
   nextTick(() => {
@@ -213,9 +244,6 @@ watch(() => props.feedbackId, load);
       <v-button v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_refresh)" rounded icon secondary :loading="loading" @click="load">
         <v-icon name="refresh" />
       </v-button>
-      <v-button v-if="chatId" v-tooltip.bottom="status === FoodFeedbackChatStatus.RESOLVED ? translate(BackendTranslationKeys.rocket_meals_module_reopen) : translate(BackendTranslationKeys.rocket_meals_module_mark_resolved)" rounded icon :secondary="status !== FoodFeedbackChatStatus.RESOLVED" :loading="updatingState" @click="toggleResolved">
-        <v-icon :name="status === FoodFeedbackChatStatus.RESOLVED ? 'replay' : 'task_alt'" />
-      </v-button>
     </template>
 
     <div class="chat-page">
@@ -223,7 +251,36 @@ watch(() => props.feedbackId, load);
 
       <template v-else-if="feedback">
         <div class="feedback-info">
-          <food-feedback-status-chip :status="status" />
+          <v-menu show-arrow placement="bottom-start" :disabled="!canWrite || updatingState">
+            <template #activator="{ toggle }">
+              <button
+                v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_change_status)"
+                class="status-button"
+                :disabled="!canWrite || updatingState"
+                :aria-label="translate(BackendTranslationKeys.rocket_meals_module_change_status)"
+                @click="toggle"
+              >
+                <food-feedback-status-chip :status="status" />
+                <v-progress-circular v-if="updatingState" indeterminate x-small />
+                <v-icon v-else-if="canWrite" name="expand_more" small />
+              </button>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="selectableStatus in FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES"
+                :key="selectableStatus"
+                clickable
+                :active="selectableStatus === status"
+                @click="changeStatus(selectableStatus)"
+              >
+                <v-list-item-icon>
+                  <v-icon :name="FoodFeedbackChatHelper.getStatusPresentation(selectableStatus).icon" small />
+                </v-list-item-icon>
+                <v-list-item-content>{{ translate(FoodFeedbackChatHelper.getStatusPresentation(selectableStatus).labelKey) }}</v-list-item-content>
+                <v-list-item-icon v-if="selectableStatus === status"><v-icon name="check" small /></v-list-item-icon>
+              </v-list-item>
+            </v-list>
+          </v-menu>
           <span class="type-label">{{ foodName }}</span>
           <food-feedback-rating :rating="feedback.rating" />
           <span class="spacer" />
@@ -257,12 +314,29 @@ watch(() => props.feedbackId, load);
           </div>
         </div>
 
-        <div class="composer">
-          <v-textarea v-model="newMessage" class="composer-input" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_message_placeholder)" :disabled="!canWrite || sending" @keydown="onKeydown" />
-          <v-button :disabled="!canWrite || newMessage.trim().length === 0" :loading="sending" @click="sendMessage">
-            <v-icon name="send" left />
-            {{ translate(BackendTranslationKeys.send) }}
-          </v-button>
+        <div class="composer" :class="{ disabled: !canWrite }" @click="composerInput?.focus()">
+          <textarea
+            ref="composerInput"
+            v-model="newMessage"
+            class="composer-input"
+            rows="1"
+            :placeholder="translate(BackendTranslationKeys.rocket_meals_module_message_placeholder)"
+            :disabled="!canWrite || sending"
+            @keydown="onKeydown"
+          />
+          <div class="composer-actions">
+            <span class="composer-hint type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_send_hint) }}</span>
+            <button
+              v-tooltip.top="translate(BackendTranslationKeys.send)"
+              class="send-button"
+              :disabled="!canWrite || sending || newMessage.trim().length === 0"
+              :aria-label="translate(BackendTranslationKeys.send)"
+              @click.stop="sendMessage"
+            >
+              <v-progress-circular v-if="sending" indeterminate x-small />
+              <v-icon v-else name="arrow_upward" small />
+            </button>
+          </div>
         </div>
       </template>
 
@@ -345,14 +419,103 @@ watch(() => props.feedbackId, load);
   text-align: center;
 }
 
+.status-button {
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+  padding: 0;
+  color: var(--theme--foreground-subdued);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.status-button:disabled {
+  cursor: default;
+}
+
+/* Input like the chat of Claude: one rounded box, text on top, round send button bottom right. */
 .composer {
   display: flex;
-  gap: 0.75rem;
-  align-items: flex-end;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 0.75rem 0.625rem 1rem;
+  background: var(--theme--background-subdued);
+  border: var(--theme--border-width) solid var(--theme--border-color);
+  border-radius: 1.5rem;
+  cursor: text;
+  transition: border-color var(--fast) var(--transition);
+}
+
+.composer:focus-within {
+  border-color: var(--theme--primary);
+}
+
+.composer.disabled {
+  cursor: default;
+  opacity: 0.6;
 }
 
 .composer-input {
-  flex: 1;
-  --v-textarea-min-height: 5rem;
+  inline-size: 100%;
+  min-block-size: 1.5rem;
+  max-block-size: 15rem;
+  padding: 0.25rem 0;
+  color: var(--theme--foreground);
+  font: inherit;
+  line-height: 1.5;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+}
+
+.composer-input::placeholder {
+  color: var(--theme--foreground-subdued);
+}
+
+.composer-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.composer-hint {
+  margin-inline-end: auto;
+}
+
+.send-button {
+  --v-icon-color: var(--foreground-inverted, #fff);
+
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  background: var(--theme--primary);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    background var(--fast) var(--transition),
+    opacity var(--fast) var(--transition);
+}
+
+.send-button:hover:not(:disabled) {
+  background: var(--theme--primary-accent);
+}
+
+.send-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+@media (pointer: coarse) {
+  /* On touch devices Enter makes a new line, so the keyboard hint would be wrong. */
+  .composer-hint {
+    visibility: hidden;
+  }
 }
 </style>

@@ -181,7 +181,8 @@ export function getVersionPatch() {
         // 77: the MCP instruction screen's preselect parameter is ?assistant= (?ai-agent= still read)
         // 78: MCP instruction screen shows the OpenAI and Claude symbols (unchanged brand assets) with a trademark notice
         // 79: MCP personal token: random string from Directus saved via PATCH /users/me; an existing token can only be replaced
-        return 79;
+        // 80: common: food feedback status can be set by hand (FoodFeedbackChatStatusHelper)
+        return 80;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -43,6 +43,30 @@ export class FoodFeedbackChatStatusHelper {
   /** Order in which filters are offered. */
   public static readonly FILTERS: readonly FoodFeedbackChatFilter[] = [FoodFeedbackChatFilter.OPEN, FoodFeedbackChatFilter.NEW, FoodFeedbackChatFilter.WAITING_FOR_SUPPORT, FoodFeedbackChatFilter.WAITING_FOR_USER, FoodFeedbackChatFilter.RESOLVED, FoodFeedbackChatFilter.ALL];
 
+  /**
+   * The states support can set by hand. `new` is not among them: it only means "no chat yet", and
+   * a chat, once created, cannot go back to that.
+   */
+  public static readonly SELECTABLE_STATUSES: readonly FoodFeedbackChatStatus[] = [
+    FoodFeedbackChatStatus.WAITING_FOR_SUPPORT,
+    FoodFeedbackChatStatus.WAITING_FOR_USER,
+    FoodFeedbackChatStatus.RESOLVED,
+  ];
+
+  /** The `chats.conversation_state` behind a status, or `undefined` for `new` (= no chat). */
+  static getConversationStateForStatus(status: FoodFeedbackChatStatus): ChatConversationState | undefined {
+    switch (status) {
+      case FoodFeedbackChatStatus.WAITING_FOR_SUPPORT:
+        return ChatConversationState.WAITING_FOR_SUPPORT;
+      case FoodFeedbackChatStatus.WAITING_FOR_USER:
+        return ChatConversationState.WAITING_FOR_USER;
+      case FoodFeedbackChatStatus.RESOLVED:
+        return ChatConversationState.RESOLVED;
+      case FoodFeedbackChatStatus.NEW:
+        return undefined;
+    }
+  }
+
   /** A comment that only consists of whitespace is no comment. */
   static hasComment(feedback: Pick<FoodFeedbackWithChat, 'comment'>): boolean {
     return (feedback.comment ?? '').trim().length > 0;
