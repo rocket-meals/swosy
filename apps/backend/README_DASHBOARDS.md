@@ -90,3 +90,29 @@ System-Dashboards trotzdem.
 1. Auf dem Testsystem als `ADMIN_EMAIL`-User anlegen (der Marker wird automatisch ergänzt).
 2. `yarn workspace backend-sync sync:pull-from-test-system`
 3. Änderungen an `data/directus-sync-data` committen und ausrollen.
+
+## Eigene Panels: `[Erweitert]`
+
+Die eingebauten Panels von Directus (Liste, Metrik, Diagramme, …) sind Teil der Directus-App und
+lassen sich nicht erweitern. Wo Kunden mehr brauchen, liefern wir eigene Panels im Bundle aus. Sie
+tragen den Marker `[Erweitert]` im Namen, damit man sie in der Panel-Auswahl sofort von den
+eingebauten unterscheiden kann - genau wie `[System]` bei Dashboards. Single source of truth für den
+Marker ist `ExtendedPanelHelper` in
+`Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/`.
+
+| Panel                           | Quelle                    | Was es kann                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Liste [Erweitert]`             | `src/list-extended-panel` | Wie das eingebaute Listen-Panel (gleiche Optionen, Dashboard-Variablen, Auto-Aktualisierung, Schnellbearbeitung) plus Download-Button oben rechts: CSV (mit BOM, damit Excel Umlaute korrekt zeigt), JSON, XML, YAML. Standardmäßig alle Einträge, die zum Filter passen - nicht nur das Limit. Optional andere Felder für den Export. |
+| `Seite exportieren [Erweitert]` | `src/page-export-panel`   | Button „Diese Seite exportieren": lädt das gesamte Dashboard als PDF (A4 quer, bei langen Dashboards mehrseitig) oder als PNG herunter. Das Panel selbst taucht im Export nicht auf.                                                                                                                                                   |
+
+Hinweise:
+
+- Der Export läuft über die normale REST-API (`?export=csv_utf8` usw.) mit den Rechten des
+  eingeloggten Nutzers - wer eine Collection nicht lesen darf, kann sie auch nicht exportieren.
+- Die Texte der Panels kommen aus dem Backend-Übersetzungskatalog (`extended_panel_*`) und folgen
+  der Sprache der Directus-Oberfläche. Der Marker `[Erweitert]` bleibt in jeder Sprache gleich.
+- Das Seiten-Export rendert das Dashboard im Browser zu einem Bild (`html-to-image`) und legt es per
+  `jspdf` ins PDF. Texte im PDF sind daher nicht markierbar; für die Daten gibt es den
+  Listen-Export.
+- Vorhandene eingebaute Listen-Panels lassen sich mit denselben Einstellungen als
+  `Liste [Erweitert]` neu anlegen.
