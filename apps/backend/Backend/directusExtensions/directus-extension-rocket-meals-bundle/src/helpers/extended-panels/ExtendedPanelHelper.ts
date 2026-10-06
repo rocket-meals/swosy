@@ -15,7 +15,7 @@
 // Not the package index: this file is bundled into the Directus app, see BackendTranslator.ts.
 import { DashboardNameHelper } from 'repo-depkit-common/src/DashboardNameHelper';
 import { FileNameHelper } from 'repo-depkit-common/src/FileNameHelper';
-import { BackendTranslator } from '../translations/BackendTranslator';
+import { AppExtensionLanguageHelper } from '../app-extensions/AppExtensionLanguageHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 
 export type ExtendedPanelSortDirection = 'asc' | 'desc';
@@ -89,25 +89,12 @@ export class ExtendedPanelHelper {
    * Unknown languages fall back to German, like everywhere else in the backend.
    */
   static translate(key: BackendTranslationKeys, language?: string | null): string {
-    return BackendTranslator.translate(key, language ?? undefined);
+    return AppExtensionLanguageHelper.translate(key, language);
   }
 
-  /**
-   * The language the Directus UI is shown in right now (`de-DE`, `en-US`, …).
-   *
-   * Directus writes it to `<html lang>` whenever the language changes, right before it re-reads
-   * the names and option labels of all panels. The panel definitions therefore expose their texts
-   * as getters that call this, so `Liste [Erweitert]` follows the UI language instead of the
-   * language the extension happened to be loaded in. Falls back to the browser language.
-   */
+  /** See {@link AppExtensionLanguageHelper.getUiLanguage}. */
   static getUiLanguage(): string | undefined {
-    if (typeof document !== 'undefined' && document.documentElement?.lang) {
-      return document.documentElement.lang;
-    }
-    if (typeof navigator !== 'undefined') {
-      return navigator.language;
-    }
-    return undefined;
+    return AppExtensionLanguageHelper.getUiLanguage();
   }
 
   /** `{{ rating_average }} ({{food.alias}})` → `['rating_average', 'food.alias']`. */

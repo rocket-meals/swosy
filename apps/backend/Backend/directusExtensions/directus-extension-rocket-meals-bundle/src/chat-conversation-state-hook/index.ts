@@ -1,4 +1,4 @@
-import {ChatConversationState, CollectionNames, DatabaseTypes, DateHelper, MailAdresses} from 'repo-depkit-common';
+import {ChatHelper, CollectionNames, DatabaseTypes, DateHelper, MailAdresses} from 'repo-depkit-common';
 import {ItemsServiceHelper} from '../helpers/ItemsServiceHelper';
 import {MyDatabaseHelper} from '../helpers/MyDatabaseHelper';
 import {PushNotificationHelper} from '../helpers/PushNotificationHelper';
@@ -37,8 +37,10 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
       return;
     }
 
-    let messageFromAdmin = AccountabilityHelper.isAdminAccountability(eventContext?.accountability || null);
-    console.log(`${HOOK_NAME}: Message from admin (accountability check):`, messageFromAdmin);
+    // Support answers from the Directus app (e.g. the module "Rocket Meals" → "Speise-Feedbacks"),
+    // which is not only used by admins but also by staff roles with app access.
+    let messageFromAdmin = AccountabilityHelper.isAppAccessAccountability(eventContext?.accountability || null);
+    console.log(`${HOOK_NAME}: Message from admin or backend user (accountability check):`, messageFromAdmin);
 
     if (!messageFromAdmin) {
       const creatorId = message?.user_created as string | undefined;
@@ -47,9 +49,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
       }
     }
 
-    const conversationState = messageFromAdmin
-      ? ChatConversationState.WAITING_FOR_USER
-      : ChatConversationState.WAITING_FOR_SUPPORT;
+    const conversationState = ChatHelper.getConversationStateAfterMessage(messageFromAdmin);
 
     console.log(`${HOOK_NAME}: Conversation state:`, conversationState);
 
