@@ -7908,5 +7908,15 @@
     "ru": "Продолжить без личного аккаунта",
     "tr": "Kişisel hesap olmadan devam et",
     "zh": "不使用个人账户继续"
+  },
+  "mcp_trademark_notice": {
+    "de": "OpenAI, ChatGPT und das OpenAI-Logo sind Marken von OpenAI. Claude und das Claude-Logo sind Marken von Anthropic. Die Logos werden nur verwendet, um den jeweiligen Dienst zu kennzeichnen – diese App ist kein Angebot von OpenAI oder Anthropic und wird von ihnen weder unterstützt noch empfohlen.",
+    "en": "OpenAI, ChatGPT and the OpenAI logo are trademarks of OpenAI. Claude and the Claude logo are trademarks of Anthropic. The logos are only used to identify the respective service – this app is not offered, endorsed or sponsored by OpenAI or Anthropic.",
+    "ar": "إن OpenAI وChatGPT وشعار OpenAI علامات تجارية لشركة OpenAI. وإن Claude وشعار Claude علامتان تجاريتان لشركة Anthropic. تُستخدم الشعارات فقط للإشارة إلى الخدمة المعنية – هذا التطبيق ليس من تقديم OpenAI أو Anthropic ولا تدعمه أو توصي به أيٌّ منهما.",
+    "es": "OpenAI, ChatGPT y el logotipo de OpenAI son marcas de OpenAI. Claude y el logotipo de Claude son marcas de Anthropic. Los logotipos solo se usan para identificar el servicio correspondiente: esta app no la ofrecen, respaldan ni patrocinan OpenAI ni Anthropic.",
+    "fr": "OpenAI, ChatGPT et le logo OpenAI sont des marques d’OpenAI. Claude et le logo Claude sont des marques d’Anthropic. Les logos servent uniquement à identifier le service concerné – cette application n’est ni proposée, ni soutenue, ni recommandée par OpenAI ou Anthropic.",
+    "ru": "OpenAI, ChatGPT и логотип OpenAI являются товарными знаками OpenAI. Claude и логотип Claude являются товарными знаками Anthropic. Логотипы используются только для обозначения соответствующего сервиса – это приложение не предлагается, не поддерживается и не рекомендуется OpenAI или Anthropic.",
+    "tr": "OpenAI, ChatGPT ve OpenAI logosu OpenAI’nin ticari markalarıdır. Claude ve Claude logosu Anthropic’in ticari markalarıdır. Logolar yalnızca ilgili hizmeti belirtmek için kullanılır – bu uygulama OpenAI veya Anthropic tarafından sunulmamakta, desteklenmemekte ya da önerilmemektedir.",
+    "zh": "OpenAI、ChatGPT 和 OpenAI 标志是 OpenAI 的商标。Claude 和 Claude 标志是 Anthropic 的商标。这些标志仅用于标识相应的服务——本应用并非由 OpenAI 或 Anthropic 提供，也未获得其支持或推荐。"
   }
 }

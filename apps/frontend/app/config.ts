@@ -179,7 +179,8 @@ export function getVersionPatch() {
         // 76: MCP instruction screen: ?ai-agent=claude|openai|other preselects the assistant, the user
         //     picks personal or public access (login button without an account), UI labels quoted in monospace
         // 77: the MCP instruction screen's preselect parameter is ?assistant= (?ai-agent= still read)
-        return 77;
+        // 78: MCP instruction screen shows the OpenAI and Claude symbols (unchanged brand assets) with a trademark notice
+        return 78;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

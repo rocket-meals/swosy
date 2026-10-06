@@ -815,6 +815,7 @@ export const TranslationKeys = {
 	mcp_access_no_account_hint: 'mcp_access_no_account_hint',
 	mcp_connect_with_account: 'mcp_connect_with_account',
 	mcp_continue_without_account: 'mcp_continue_without_account',
+	mcp_trademark_notice: 'mcp_trademark_notice',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];

@@ -20,6 +20,8 @@ import { UserHelper } from '@/helper/UserHelper';
 import { authorizedFetch } from '@/helper/authorizedFetch';
 import { myContrastColor } from '@/helper/ColorHelper';
 import Server from '@/constants/ServerUrl';
+import ClaudeSymbol from '@/assets/icons/brands/claude-symbol.svg';
+import OpenAiSymbol from '@/assets/icons/brands/openai-symbol.svg';
 import { performLogout } from '@/helper/logoutHelper';
 
 type McpProvider = 'claude' | 'openai' | 'other';
@@ -32,11 +34,22 @@ type McpStep = {
 	copy?: CopyValueKind;
 };
 
-const PROVIDER_OPTIONS: { provider: McpProvider; label: string | TranslationKeys; icon: React.ComponentProps<typeof MaterialCommunityIcons>['name'] }[] = [
+type ProviderLogoProps = { size: number; color: string };
+
+/**
+ * Brand symbols, used exactly as the companies provide them and only to identify their service
+ * (OpenAI/Anthropic brand rules) - not recolored, not on our primary color. OpenAI's symbol has no
+ * own color: OpenAI offers it in black and in white, so it takes the text color of the theme.
+ */
+const PROVIDER_OPTIONS: { provider: McpProvider; label: string | TranslationKeys; renderLogo: (props: ProviderLogoProps) => React.ReactNode }[] = [
 	// Brand names, not translated.
-	{ provider: 'openai', label: 'OpenAI (ChatGPT)', icon: 'chat-processing-outline' },
-	{ provider: 'claude', label: 'Claude', icon: 'creation' },
-	{ provider: 'other', label: TranslationKeys.mcp_provider_other, icon: 'dots-horizontal-circle-outline' },
+	{ provider: 'openai', label: 'OpenAI (ChatGPT)', renderLogo: ({ size, color }) => <OpenAiSymbol width={size} height={size} fill={color} /> },
+	{ provider: 'claude', label: 'Claude', renderLogo: ({ size }) => <ClaudeSymbol width={size} height={size} /> },
+	{
+		provider: 'other',
+		label: TranslationKeys.mcp_provider_other,
+		renderLogo: ({ size, color }) => <MaterialCommunityIcons name="dots-horizontal-circle-outline" size={size} color={color} />,
+	},
 ];
 
 const STEPS_BY_PROVIDER: Record<McpProvider, McpStep[]> = {
@@ -324,7 +337,8 @@ const McpInstruction = () => {
 						return (
 							<SettingsList
 								key={option.provider}
-								leftIcon={<MaterialCommunityIcons name={option.icon} size={24} color={theme.screen.icon} />}
+								iconBgColor="transparent"
+								leftIcon={option.renderLogo({ size: 24, color: theme.screen.text })}
 								title={option.provider === 'other' ? translate(option.label) : option.label}
 								rightIcon={renderRadioIcon(option.provider === provider)}
 								handleFunction={() => selectProvider(option.provider)}
@@ -360,6 +374,8 @@ const McpInstruction = () => {
 						</View>
 					</>
 				) : null}
+
+				<Text style={[styles.trademarkNotice, { color: theme.modal.placeholder }]}>{translate(TranslationKeys.mcp_trademark_notice)}</Text>
 			</View>
 		</ScrollView>
 	);
@@ -378,6 +394,11 @@ const styles = StyleSheet.create({
 	},
 	choiceGroup: {
 		marginBottom: 12,
+	},
+	trademarkNotice: {
+		fontSize: 12,
+		fontFamily: 'Poppins_400Regular',
+		marginTop: 10,
 	},
 	step: {
 		marginBottom: 14,
