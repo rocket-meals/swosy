@@ -38,7 +38,18 @@ describe('McpAccessHelper', () => {
   });
 
   it('uses the same fixed token for the public user on every server', () => {
-    expect(McpAccessHelper.PUBLIC_USER_TOKEN).toBe('PUBLIC-TOKEN');
+    expect(McpAccessHelper.PUBLIC_USER_TOKEN).toBe('PUBLIC');
+  });
+
+  it('asks the backend bundle for the public user', () => {
+    expect(McpAccessHelper.buildPublicUserPath()).toBe('/mcp-public-user');
+  });
+
+  it('reads the public token from the endpoint response', () => {
+    expect(McpAccessHelper.parsePublicUserResponse({ token: 'PUBLIC' })).toBe('PUBLIC');
+    expect(McpAccessHelper.parsePublicUserResponse({ token: '' })).toBeNull();
+    expect(McpAccessHelper.parsePublicUserResponse({ data: 'PUBLIC' })).toBeNull();
+    expect(McpAccessHelper.parsePublicUserResponse(null)).toBeNull();
   });
 
   it('uses a reserved domain for the public user', () => {

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
@@ -16,6 +16,8 @@ import { useAppSelector } from '@/redux/hooks';
 import SettingsList from '@/components/SettingsList';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import MyMarkdownProjectColored from '@/components/MyMarkdownProjectColored';
+import ProjectButton from '@/components/ProjectButton';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { UserHelper } from '@/helper/UserHelper';
 import { authorizedFetch } from '@/helper/authorizedFetch';
@@ -27,7 +29,7 @@ import { performLogout } from '@/helper/logoutHelper';
 
 type McpProvider = 'claude' | 'openai' | 'other';
 
-/** Values the steps offer to copy. The token-based ones exist only once a token is loaded. */
+/** Values the steps offer to copy. The token-based ones exist only once a token (or its placeholder) is known. */
 type CopyValueKind = 'appName' | 'serverUrl' | 'authorizationHeader' | 'serverUrlWithToken';
 
 type McpStep = {
@@ -80,13 +82,6 @@ const STEPS_BY_PROVIDER: Record<McpProvider, McpStep[]> = {
 	],
 };
 
-const COPY_VALUE_LABELS: Record<CopyValueKind, TranslationKeys> = {
-	appName: TranslationKeys.mcp_app_name,
-	serverUrl: TranslationKeys.mcp_server_url,
-	authorizationHeader: TranslationKeys.mcp_authorization_header_value,
-	serverUrlWithToken: TranslationKeys.mcp_server_url_with_token,
-};
-
 /**
  * Whether the user already has a token. Directus returns a set token concealed (`**********`),
  * so the app can tell that one exists, but never show it again.
@@ -99,10 +94,19 @@ async function fetchHasPersonalMcpToken(): Promise<boolean> {
 	return McpAccessHelper.hasTokenInOwnUserResponse(await response.json());
 }
 
-/**
- * Sets a new token for the user: a random string from Directus, saved on the user's own
- * `directus_users` entry (the `User` policy may write `token`). Replaces an existing token.
- */
+/** Saves `token` on the user's own `directus_users` entry (the `User` policy may write `token`); `null` revokes it. */
+async function saveOwnMcpToken(token: string | null): Promise<void> {
+	const response = await authorizedFetch(McpAccessHelper.OWN_TOKEN_PATH, {
+		method: 'PATCH',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ token }),
+	});
+	if (!response.ok) {
+		throw new Error('Saving the MCP token failed with status ' + response.status);
+	}
+}
+
+/** Sets a new token for the user: a random string from Directus. Replaces an existing token. */
 async function createPersonalMcpToken(): Promise<string> {
 	const randomResponse = await authorizedFetch(McpAccessHelper.buildRandomStringPath());
 	if (!randomResponse.ok) {
@@ -112,13 +116,22 @@ async function createPersonalMcpToken(): Promise<string> {
 	if (!token) {
 		throw new Error('Random string response is invalid');
 	}
-	const saveResponse = await authorizedFetch(McpAccessHelper.OWN_TOKEN_PATH, {
-		method: 'PATCH',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ token }),
-	});
-	if (!saveResponse.ok) {
-		throw new Error('Saving the MCP token failed with status ' + saveResponse.status);
+	await saveOwnMcpToken(token);
+	return token;
+}
+
+/**
+ * Asks the server to make sure the public MCP user exists and returns its current token. No login
+ * needed - the token is public anyway.
+ */
+async function ensurePublicMcpUser(): Promise<string> {
+	const response = await fetch(Server.ServerUrl + McpAccessHelper.buildPublicUserPath(), { method: 'POST' });
+	if (!response.ok) {
+		throw new Error('Public MCP user request failed with status ' + response.status);
+	}
+	const token = McpAccessHelper.parsePublicUserResponse(await response.json());
+	if (!token) {
+		throw new Error('Public MCP user response is invalid');
 	}
 	return token;
 }
@@ -145,7 +158,7 @@ type McpAccessMode = 'personal' | 'public';
 
 /** Tokens have no spaces - zero-width spaces let a long one wrap inside its row. Display only, the copy keeps the raw value. */
 function makeWrappable(value: string): string {
-	return value.match(/.{1,16}/g)?.join('\u200B') ?? value;
+	return value.match(/.{1,16}/g)?.join('​') ?? value;
 }
 
 const McpInstruction = () => {
@@ -156,6 +169,7 @@ const McpInstruction = () => {
 	const router = useRouter();
 	const dispatch = useDispatch();
 	const customerConfig = useCustomerConfig();
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { serverInfo, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const { loggedIn, user } = useAppSelector((state) => state.authReducer);
@@ -170,14 +184,25 @@ const McpInstruction = () => {
 	// folded) and can be opened again by hand. Without a pick it always stays open.
 	const [isProviderSectionCollapsed, setIsProviderSectionCollapsed] = useState(() => parseAssistantParam(assistantParam) !== null);
 	const [isAccountSectionCollapsed, setIsAccountSectionCollapsed] = useState(false);
+	// Only set right after it was created - Directus never shows a saved token again.
 	const [personalToken, setPersonalToken] = useState<string | null>(null);
 	const [hasPersonalToken, setHasPersonalToken] = useState<boolean | null>(null);
+	// The user still knows the saved token: the steps show `<TOKEN>` where it belongs.
+	const [usesKnownToken, setUsesKnownToken] = useState(false);
 	const [isLoadingToken, setIsLoadingToken] = useState(false);
+	// The fixed token is the same on every server; the server is still asked, in case it changed.
+	const [publicToken, setPublicToken] = useState<string>(McpAccessHelper.PUBLIC_USER_TOKEN);
+	const hasEnsuredPublicUser = useRef(false);
 
 	const appName = ServerInfoHelper.getServerName(serverInfo || {}, customerConfig);
 	const serverUrl = McpAccessHelper.buildServerUrl(Server.ServerUrl);
-	// The public MCP user has the same fixed token on every server - nothing to ask the server for.
-	const token = accessMode === 'public' ? McpAccessHelper.PUBLIC_USER_TOKEN : accessMode === 'personal' ? personalToken : null;
+	let token: string | null = null;
+	if (accessMode === 'public') {
+		token = publicToken;
+	} else if (accessMode === 'personal') {
+		token = personalToken ?? (usesKnownToken ? McpAccessHelper.TOKEN_PLACEHOLDER : null);
+	}
+	const isTokenPlaceholder = accessMode === 'personal' && !personalToken && usesKnownToken;
 
 	useEffect(() => {
 		const providerFromParam = parseAssistantParam(assistantParam);
@@ -191,28 +216,56 @@ const McpInstruction = () => {
 	useEffect(() => {
 		setPersonalToken(null);
 		setHasPersonalToken(null);
+		setUsesKnownToken(false);
 		setAccessMode((current) => (current === 'personal' ? null : current));
 	}, [hasAccount, user?.id]);
 
+	// Choosing the account creates and saves a token right away - unless there already is one,
+	// then the user is asked whether they still know it.
 	useEffect(() => {
-		if (accessMode !== 'personal' || !hasAccount) {
+		if (accessMode !== 'personal' || !hasAccount || personalToken || usesKnownToken) {
 			return;
 		}
 		let cancelled = false;
 		const load = async () => {
 			try {
 				const hasToken = await fetchHasPersonalMcpToken();
-				if (!cancelled) setHasPersonalToken(hasToken);
+				if (cancelled) return;
+				setHasPersonalToken(hasToken);
+				if (!hasToken) {
+					setIsLoadingToken(true);
+					const createdToken = await createPersonalMcpToken();
+					if (cancelled) return;
+					setPersonalToken(createdToken);
+					setHasPersonalToken(true);
+				}
 			} catch (error) {
 				console.error('Could not load the MCP token:', error);
 				if (!cancelled) toast(translate(TranslationKeys.mcp_access_token_load_failed), 'error');
+			} finally {
+				if (!cancelled) setIsLoadingToken(false);
 			}
 		};
 		void load();
 		return () => {
 			cancelled = true;
 		};
+		// Runs on the choice only - not again once the token is there.
 	}, [accessMode, hasAccount]);
+
+	// Without an account the server makes sure the public MCP user exists and names its token.
+	useEffect(() => {
+		if (accessMode !== 'public' || hasEnsuredPublicUser.current) {
+			return;
+		}
+		hasEnsuredPublicUser.current = true;
+		ensurePublicMcpUser()
+			.then(setPublicToken)
+			.catch((error) => {
+				// The fixed token from McpAccessHelper stays in place - it is right on every up-to-date server.
+				console.error('Could not ensure the public MCP user:', error);
+			});
+	}, [accessMode]);
 
 	const selectProvider = (selected: McpProvider) => {
 		setProvider(selected);
@@ -229,11 +282,11 @@ const McpInstruction = () => {
 		setIsAccountSectionCollapsed(true);
 	};
 
-	/** Opens the support form with the step already named in the title, so a ticket says where it got stuck. */
-	const openSupportForStep = (stepNumber: number) => {
+	/** Opens the support form with the assistant already named in the title, so a ticket says where it got stuck. */
+	const openSupport = () => {
 		const providerOption = PROVIDER_OPTIONS.find((option) => option.provider === provider);
 		const providerLabel = providerOption ? getProviderLabel(providerOption) : '';
-		const title = `${translate(TranslationKeys.mcp_instruction)} – ${providerLabel} – ${translate(TranslationKeys.mcp_step)} ${stepNumber}`;
+		const title = `${translate(TranslationKeys.mcp_instruction)} – ${providerLabel}`;
 		router.push({ pathname: '/feedback-support', params: { title } });
 	};
 
@@ -251,6 +304,7 @@ const McpInstruction = () => {
 		try {
 			setPersonalToken(await createPersonalMcpToken());
 			setHasPersonalToken(true);
+			setUsesKnownToken(false);
 		} catch (error) {
 			console.error('Could not create the MCP token:', error);
 			toast(translate(TranslationKeys.mcp_access_token_load_failed), 'error');
@@ -258,6 +312,41 @@ const McpInstruction = () => {
 			setIsLoadingToken(false);
 		}
 	}, [toast, translate]);
+
+	const revokePersonalToken = useCallback(async () => {
+		closeModal();
+		setIsLoadingToken(true);
+		try {
+			await saveOwnMcpToken(null);
+			setPersonalToken(null);
+			setHasPersonalToken(false);
+			setUsesKnownToken(false);
+			// Without a token the steps are gone - the account choice opens again for a new start.
+			setAccessMode(null);
+			setIsAccountSectionCollapsed(false);
+			toast(translate(TranslationKeys.mcp_access_token_revoked), 'success');
+		} catch (error) {
+			console.error('Could not revoke the MCP token:', error);
+			toast(translate(TranslationKeys.mcp_access_token_revoke_failed), 'error');
+		} finally {
+			setIsLoadingToken(false);
+		}
+	}, [closeModal, toast, translate]);
+
+	const confirmRevokePersonalToken = () => {
+		showModal({
+			title: translate(TranslationKeys.mcp_access_token_revoke),
+			children: (
+				<View style={styles.modalContent}>
+					<Text style={[styles.modalText, { color: theme.screen.text }]}>{translate(TranslationKeys.mcp_access_token_revoke_confirm)}</Text>
+					<ProjectButton text={translate(TranslationKeys.mcp_access_token_revoke)} onPress={() => void revokePersonalToken()} style={styles.modalButton} />
+					<TouchableOpacity onPress={closeModal} style={styles.modalCancel}>
+						<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>
+					</TouchableOpacity>
+				</View>
+			),
+		});
+	};
 
 	const copyToClipboard = useCallback(
 		async (value: string) => {
@@ -280,16 +369,17 @@ const McpInstruction = () => {
 		}
 	};
 
-	const renderCopyRow = (label: string, value: string | null, groupPosition: 'top' | 'middle' | 'bottom' | 'single' = 'single') => (
-		<SettingsList
-			title={label}
-			value={value ? makeWrappable(value) : translate(TranslationKeys.mcp_access_token_required)}
-			valueColor={value ? undefined : theme.modal.placeholder}
-			stackedValue
-			leftIcon={<MaterialCommunityIcons name={value ? 'content-copy' : 'key-outline'} size={22} color={theme.screen.icon} />}
-			handleFunction={value ? () => void copyToClipboard(value) : undefined}
-			groupPosition={groupPosition}
-		/>
+	/** Just the value and a copy icon on the right - the step text above already says what it is for. */
+	const renderCopyRow = (value: string, showTapHint: boolean) => (
+		<>
+			<SettingsList
+				title={makeWrappable(value)}
+				rightIcon={<MaterialCommunityIcons name="content-copy" size={22} color={theme.screen.icon} />}
+				handleFunction={() => void copyToClipboard(value)}
+				groupPosition="single"
+			/>
+			{showTapHint ? <Text style={[styles.tapHint, { color: theme.modal.placeholder }]}>{translate(TranslationKeys.mcp_tap_to_copy)}</Text> : null}
+		</>
 	);
 
 	const renderRadioIcon = (isSelected: boolean) => (
@@ -353,38 +443,112 @@ const McpInstruction = () => {
 		</>
 	);
 
-	const renderToken = () => {
-		if (accessMode === 'public') {
+	/** With the account chosen: a spinner while the token is checked or created, or the question whether the saved one is still known. */
+	const renderPersonalTokenState = () => {
+		if (accessMode !== 'personal' || personalToken) {
+			return null;
+		}
+		if (hasPersonalToken === null || (isLoadingToken && !hasPersonalToken)) {
 			return (
-				<>
-					<MyMarkdownProjectColored content={translate(TranslationKeys.mcp_access_token_public_hint)} />
-					{renderCopyRow(translate(TranslationKeys.mcp_access_token), McpAccessHelper.PUBLIC_USER_TOKEN)}
-				</>
+				<View style={styles.sectionContent}>
+					<ActivityIndicator color={theme.screen.text} />
+				</View>
 			);
 		}
-		if (accessMode === 'personal') {
-			return (
-				<>
-					<MyMarkdownProjectColored content={translate(TranslationKeys.mcp_access_token_personal_hint)} />
+		if (!hasPersonalToken) {
+			return null;
+		}
+		return (
+			<View style={styles.sectionContent}>
+				<MyMarkdownProjectColored content={translate(TranslationKeys.mcp_access_token_exists_hint)} />
+				<View style={styles.choiceGroup}>
+					<SettingsList
+						leftIcon={<MaterialCommunityIcons name="key-outline" size={24} color={theme.screen.icon} />}
+						title={translate(TranslationKeys.mcp_access_token_known_yes)}
+						rightIcon={renderRadioIcon(usesKnownToken)}
+						handleFunction={() => setUsesKnownToken(true)}
+						groupPosition="top"
+					/>
+					<SettingsList
+						leftIcon={<MaterialCommunityIcons name="key-change" size={24} color={theme.screen.icon} />}
+						title={translate(TranslationKeys.mcp_access_token_known_no)}
+						rightIcon={isLoadingToken ? <ActivityIndicator color={theme.screen.text} /> : renderRadioIcon(false)}
+						handleFunction={isLoadingToken ? undefined : () => void createPersonalToken()}
+						groupPosition="bottom"
+					/>
+				</View>
+			</View>
+		);
+	};
+
+	const renderSteps = () => {
+		if (!provider || token === null) {
+			return null;
+		}
+		const firstCopyIndex = STEPS_BY_PROVIDER[provider].findIndex((step) => step.copy);
+		return (
+			<>
+				<SettingsGroupTitle>{translate(TranslationKeys.mcp_steps_title)}</SettingsGroupTitle>
+				{isTokenPlaceholder ? (
+					<View style={styles.placeholderHint}>
+						<MyMarkdownProjectColored content={translate(TranslationKeys.mcp_access_token_placeholder_hint)} />
+					</View>
+				) : null}
+				<View style={styles.groupContainer}>
+					{STEPS_BY_PROVIDER[provider].map((step, index) => {
+						const copyValue = step.copy ? getCopyValue(step.copy) : null;
+						return (
+							<View key={step.textKey} style={styles.step}>
+								<View style={styles.stepRow}>
+									<View style={[styles.stepNumber, { backgroundColor: primaryColor }]}>
+										<Text style={[styles.stepNumberText, { color: contrastColor }]}>{index + 1}</Text>
+									</View>
+									<View style={styles.stepText}>
+										<MyMarkdownProjectColored content={translate(step.textKey)} />
+									</View>
+								</View>
+								{copyValue ? <View style={styles.stepCopy}>{renderCopyRow(copyValue, index === firstCopyIndex)}</View> : null}
+							</View>
+						);
+					})}
+					<TouchableOpacity style={styles.support} onPress={openSupport} accessibilityRole="link">
+						<MaterialCommunityIcons name="lifebuoy" size={16} color={theme.modal.placeholder} />
+						<Text style={[styles.supportText, { color: theme.modal.placeholder }]}>{translate(TranslationKeys.mcp_step_problems)}</Text>
+					</TouchableOpacity>
+				</View>
+			</>
+		);
+	};
+
+	/** The personal token, shown once after creating it, and the way to revoke it. Nothing for the public token. */
+	const renderPersonalTokenManagement = () => {
+		if (accessMode !== 'personal' || !hasPersonalToken) {
+			return null;
+		}
+		return (
+			<>
+				<SettingsGroupTitle>{translate(TranslationKeys.mcp_access_token)}</SettingsGroupTitle>
+				<View style={styles.groupContainer}>
 					{personalToken ? (
-						renderCopyRow(translate(TranslationKeys.mcp_access_token), personalToken)
-					) : (
 						<>
-							{hasPersonalToken ? <MyMarkdownProjectColored content={translate(TranslationKeys.mcp_access_token_exists_hint)} /> : null}
-							<SettingsList
-								iconBgColor={primaryColor}
-								leftIcon={<MaterialCommunityIcons name={hasPersonalToken ? 'key-change' : 'key-plus'} size={24} color={theme.screen.icon} />}
-								title={translate(hasPersonalToken ? TranslationKeys.mcp_access_token_regenerate : TranslationKeys.mcp_access_token_create)}
-								rightIcon={isLoadingToken || hasPersonalToken === null ? <ActivityIndicator color={theme.screen.text} /> : undefined}
-								handleFunction={isLoadingToken || hasPersonalToken === null ? undefined : () => void createPersonalToken()}
-								groupPosition="single"
-							/>
+							<MyMarkdownProjectColored content={translate(TranslationKeys.mcp_access_token_personal_hint)} />
+							<View style={styles.tokenCopy}>{renderCopyRow(personalToken, false)}</View>
 						</>
+					) : (
+						<MyMarkdownProjectColored content={translate(TranslationKeys.mcp_access_token_unknown_hint)} />
 					)}
-				</>
-			);
-		}
-		return null;
+					<View style={styles.tokenCopy}>
+						<SettingsList
+							leftIcon={<MaterialCommunityIcons name="key-remove" size={24} color={theme.screen.icon} />}
+							title={translate(TranslationKeys.mcp_access_token_revoke)}
+							rightIcon={isLoadingToken ? <ActivityIndicator color={theme.screen.text} /> : undefined}
+							handleFunction={isLoadingToken ? undefined : confirmRevokePersonalToken}
+							groupPosition="single"
+						/>
+					</View>
+				</View>
+			</>
+		);
 	};
 
 	return (
@@ -439,34 +603,13 @@ const McpInstruction = () => {
 						<CollapsibleView collapsed={isAccountCollapsed}>
 							<View style={styles.sectionContent}>{renderAccessChoice()}</View>
 						</CollapsibleView>
-						{accessMode ? <View style={styles.sectionContent}>{renderToken()}</View> : null}
+						{renderPersonalTokenState()}
 					</View>
 				) : null}
 
-				{provider && accessMode ? (
-					<>
-						<SettingsGroupTitle>{translate(TranslationKeys.mcp_steps_title)}</SettingsGroupTitle>
-						<View style={styles.groupContainer}>
-							{STEPS_BY_PROVIDER[provider].map((step, index) => (
-								<View key={step.textKey} style={styles.step}>
-									<View style={styles.stepRow}>
-										<View style={[styles.stepNumber, { backgroundColor: primaryColor }]}>
-											<Text style={[styles.stepNumberText, { color: contrastColor }]}>{index + 1}</Text>
-										</View>
-										<View style={styles.stepText}>
-											<MyMarkdownProjectColored content={translate(step.textKey)} />
-										</View>
-									</View>
-									{step.copy ? <View style={styles.stepCopy}>{renderCopyRow(translate(COPY_VALUE_LABELS[step.copy]), getCopyValue(step.copy))}</View> : null}
-									<TouchableOpacity style={styles.stepProblems} onPress={() => openSupportForStep(index + 1)} accessibilityRole="link">
-										<MaterialCommunityIcons name="lifebuoy" size={16} color={theme.modal.placeholder} />
-										<Text style={[styles.stepProblemsText, { color: theme.modal.placeholder }]}>{translate(TranslationKeys.mcp_step_problems)}</Text>
-									</TouchableOpacity>
-								</View>
-							))}
-						</View>
-					</>
-				) : null}
+				{renderSteps()}
+
+				{renderPersonalTokenManagement()}
 
 				<Text style={[styles.trademarkNotice, { color: theme.modal.placeholder }]}>{translate(TranslationKeys.mcp_trademark_notice)}</Text>
 			</View>
@@ -491,19 +634,30 @@ const styles = StyleSheet.create({
 	sectionContent: {
 		paddingTop: 12,
 	},
-	stepProblems: {
+	placeholderHint: {
+		marginBottom: 12,
+	},
+	support: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 6,
-		marginTop: 8,
-		marginLeft: 40,
+		marginTop: 4,
 		alignSelf: 'flex-start',
 		paddingVertical: 4,
 	},
-	stepProblemsText: {
+	supportText: {
 		fontSize: 13,
 		fontFamily: 'Poppins_400Regular',
 		textDecorationLine: 'underline',
+	},
+	tapHint: {
+		fontSize: 12,
+		fontFamily: 'Poppins_400Regular',
+		marginTop: 4,
+		marginLeft: 4,
+	},
+	tokenCopy: {
+		marginTop: 8,
 	},
 	trademarkNotice: {
 		fontSize: 12,
@@ -536,6 +690,20 @@ const styles = StyleSheet.create({
 	stepCopy: {
 		marginTop: 8,
 		marginLeft: 40,
+	},
+	modalContent: {
+		gap: 12,
+	},
+	modalText: {
+		fontSize: 16,
+		fontFamily: 'Poppins_400Regular',
+	},
+	modalButton: {
+		marginVertical: 0,
+	},
+	modalCancel: {
+		alignSelf: 'center',
+		paddingVertical: 6,
 	},
 });
 

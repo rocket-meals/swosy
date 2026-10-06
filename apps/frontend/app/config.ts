@@ -184,7 +184,11 @@ export function getVersionPatch() {
         // 80: MCP instruction screen: provider and account sections fold away once chosen, the steps
         //     appear after the account choice, every step links to support ("?title=" prefills the form)
         // 81: common: food feedback status can be set by hand (FoodFeedbackChatStatusHelper)
-        return 81;
+        // 82: MCP instruction screen: token created on "connect with my account", steps only once a token
+        //     (or <TOKEN> placeholder) exists, copy rows show only the value, one support link at the end,
+        //     token shown and revocable at the bottom; public MCP user ensured via POST /mcp-public-user
+        //     (token now "PUBLIC"); common-ui: inline code in markdown renders monospace
+        return 82;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { DimensionValue, Image, Linking, Text, View, useWindowDimensions } from 'react-native';
-import RenderHtml, { CustomBlockRenderer, HTMLContentModel, HTMLElementModel } from 'react-native-render-html';
+import { DimensionValue, Image, Linking, Platform, Text, View, useWindowDimensions } from 'react-native';
+import RenderHtml, { CustomBlockRenderer, HTMLContentModel, HTMLElementModel, defaultSystemFonts } from 'react-native-render-html';
 import { MarkdownBlockNode, parseMarkdownToBlocks } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
@@ -116,6 +116,14 @@ function makeSupRenderer(fontSize: number, textColor: string) {
 	};
 }
 
+/**
+ * Font for `code` (inline `backticks` and code blocks). react-native-render-html drops every
+ * font that is not in `systemFonts`, and the generic `monospace` only exists on Android and web -
+ * on iOS inline code would fall back to the normal text font. Menlo ships with every iOS.
+ */
+const MONOSPACE_FONT = Platform.select({ ios: 'Menlo', default: 'monospace' });
+const SYSTEM_FONTS = [...defaultSystemFonts, MONOSPACE_FONT];
+
 const HTML_ELEMENT_MODELS = {
 	sub: HTMLElementModel.fromCustomModel({ tagName: 'sub', contentModel: HTMLContentModel.textual }),
 	sup: HTMLElementModel.fromCustomModel({ tagName: 'sup', contentModel: HTMLContentModel.textual }),
@@ -163,6 +171,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({
 			td: { borderColor: theme.screen.border, borderWidth: 1 },
 			th: { borderColor: theme.screen.border, borderWidth: 1 },
 			a: { color: accent },
+			code: { fontFamily: MONOSPACE_FONT },
 		}),
 		[theme.screen.border, accent],
 	);
@@ -204,6 +213,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({
 							renderers={customRenderers}
 							defaultTextProps={defaultTextProps}
 							customHTMLElementModels={HTML_ELEMENT_MODELS}
+							systemFonts={SYSTEM_FONTS}
 							tagsStyles={tagsStyles}
 							source={{ html: block.html }}
 						/>
