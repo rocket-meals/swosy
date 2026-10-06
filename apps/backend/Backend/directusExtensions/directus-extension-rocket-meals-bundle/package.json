@@ -225,6 +225,11 @@
       },
       {
         "type": "endpoint",
+        "name": "mcp-public-user-endpoint",
+        "source": "src/mcp-public-user-endpoint/index.ts"
+      },
+      {
+        "type": "endpoint",
         "name": "bundle-health-endpoint",
         "source": "src/bundle-health-endpoint/index.ts"
       },

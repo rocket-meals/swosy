@@ -65,7 +65,8 @@ export function getVersionPatch() {
 	// 35: common: the public MCP user has a fixed token (McpAccessHelper.PUBLIC_USER_TOKEN)
 	// 36: common: McpAccessHelper - personal MCP tokens come from /utils/random/string (no backend endpoint)
 	// 37: common: food feedback status can be set by hand (FoodFeedbackChatStatusHelper)
-	return 37;
+	// 38: common: McpAccessHelper public token "PUBLIC" + /mcp-public-user endpoint; common-ui: monospace inline code in markdown
+	return 38;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

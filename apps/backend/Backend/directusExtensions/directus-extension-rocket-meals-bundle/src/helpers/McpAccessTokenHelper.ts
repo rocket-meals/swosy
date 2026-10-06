@@ -30,8 +30,10 @@ export class McpAccessTokenHelper {
    * Directus gibt Nutzern ohne Rolle die Rechte der Public-Policy (plus Policies, die direkt am
    * User hängen – hier keine). Bekommt er doch eine Rolle, wird sie beim nächsten Start wieder
    * entfernt, damit das öffentlich bekannte Token nie mehr darf als die Public-Policy.
+   *
+   * Gibt das Token zurück, mit dem der User jetzt erreichbar ist.
    */
-  async ensurePublicUser(): Promise<void> {
+  async ensurePublicUser(): Promise<string> {
     const usersHelper = this.myDatabaseHelper.getUsersHelper();
     const existingUsers = await usersHelper.readByQuery({
       filter: { email: { _eq: McpAccessHelper.PUBLIC_USER_EMAIL } },
@@ -50,12 +52,13 @@ export class McpAccessTokenHelper {
         token: McpAccessHelper.PUBLIC_USER_TOKEN,
       });
       console.log(HELPER_NAME + ': created public MCP user ' + McpAccessHelper.PUBLIC_USER_NAME);
-      return;
+      return McpAccessHelper.PUBLIC_USER_TOKEN;
     }
 
     const currentToken = await this.readToken(existingUser.id);
     if (existingUser.role || existingUser.status !== 'active' || currentToken !== McpAccessHelper.PUBLIC_USER_TOKEN) {
       await usersHelper.updateOne(existingUser.id, { role: null, status: 'active', token: McpAccessHelper.PUBLIC_USER_TOKEN });
     }
+    return McpAccessHelper.PUBLIC_USER_TOKEN;
   }
 }

@@ -8,8 +8,9 @@
  * Es gibt zwei Arten von Tokens:
  * - **Öffentlich:** Der Directus-User `MCP_Public` wird auf jedem Server automatisch angelegt.
  *   Er hat keine Rolle und damit nur die Rechte der Public-Policy. Sein Token ist deshalb kein
- *   Geheimnis und auf allen Servern gleich (`PUBLIC_USER_TOKEN`) – die App zeigt es jedem an,
- *   ohne Anmeldung und ohne Anfrage an den Server.
+ *   Geheimnis und auf allen Servern gleich (`PUBLIC_USER_TOKEN`). Die App fragt trotzdem
+ *   `POST /mcp-public-user` an: Der Endpoint legt den User an, falls er fehlt, und antwortet mit
+ *   dem aktuellen Token – so stimmt die Anleitung auch, wenn sich das Token einmal ändert.
  * - **Persönlich:** Ein angemeldeter Nutzer setzt sich selbst ein Token (Feld `token` an seinem
  *   `directus_users`-Eintrag, die Policy `User` darf es schreiben). Die App holt dafür einen
  *   Zufallsstring von Directus (`GET /utils/random/string`) und speichert ihn per
@@ -17,7 +18,8 @@
  *   Directus liefert `token` beim Lesen nur verdeckt (`**********`) – ein Token lässt sich also
  *   nur direkt nach dem Erzeugen anzeigen, danach nur noch durch ein neues ersetzen.
  *
- * Den öffentlichen User legt der `mcp-public-user-hook` im Backend-Bundle beim Start an.
+ * Den öffentlichen User legt der `mcp-public-user-hook` im Backend-Bundle beim Start an, der
+ * `mcp-public-user-endpoint` stellt ihn auf Anfrage der App sicher.
  */
 
 export class McpAccessHelper {
@@ -31,7 +33,16 @@ export class McpAccessHelper {
    * Festes Token des öffentlichen MCP-Users, auf jedem Server dasselbe. Unbedenklich, weil der
    * User nur die Rechte der Public-Policy hat – dieselben Daten liefert die API auch ohne Token.
    */
-  static readonly PUBLIC_USER_TOKEN = 'PUBLIC-TOKEN';
+  static readonly PUBLIC_USER_TOKEN = 'PUBLIC';
+
+  /** Pfad des Endpoints `POST /mcp-public-user` im Backend-Bundle. */
+  static readonly PUBLIC_USER_ENDPOINT_ID = 'mcp-public-user';
+
+  /**
+   * Steht in der Anleitung statt des persönlichen Tokens, wenn der Nutzer schon eins hat: Directus
+   * zeigt ein gesetztes Token nie wieder an, der Nutzer setzt dann sein eigenes ein.
+   */
+  static readonly TOKEN_PLACEHOLDER = '<TOKEN>';
 
   static readonly MCP_PATH = '/mcp';
 
@@ -59,6 +70,19 @@ export class McpAccessHelper {
     }
     const data = (value as { data?: unknown }).data;
     return typeof data === 'string' && data.length > 0 ? data : null;
+  }
+
+  static buildPublicUserPath(): string {
+    return '/' + McpAccessHelper.PUBLIC_USER_ENDPOINT_ID;
+  }
+
+  /** Liest das Token aus der Antwort von `POST /mcp-public-user` (`{ token: string }`), sonst `null`. */
+  static parsePublicUserResponse(value: unknown): string | null {
+    if (typeof value !== 'object' || value === null) {
+      return null;
+    }
+    const token = (value as { token?: unknown }).token;
+    return typeof token === 'string' && token.length > 0 ? token : null;
   }
 
   /**

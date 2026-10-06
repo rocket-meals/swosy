@@ -7579,35 +7579,15 @@
     "tr": "Erişim belirteci",
     "zh": "访问令牌"
   },
-  "mcp_access_token_public_hint": {
-    "de": "Du nutzt den **öffentlichen Zugang** – damit sieht der KI-Assistent nur öffentliche Daten wie Speisepläne.",
-    "en": "You use the **public access** – the AI assistant only sees public data such as menus.",
-    "ar": "أنت تستخدم **الوصول العام** – لا يرى مساعد الذكاء الاصطناعي إلا البيانات العامة مثل قوائم الطعام.",
-    "es": "Usas el **acceso público**: el asistente de IA solo ve datos públicos como los menús.",
-    "fr": "Tu utilises l’**accès public** : l’assistant IA ne voit que les données publiques comme les menus.",
-    "ru": "Ты используешь **общий доступ** – ИИ-ассистент видит только общедоступные данные, например меню.",
-    "tr": "**Herkese açık erişimi** kullanıyorsun – yapay zekâ asistanı yalnızca menüler gibi herkese açık verileri görür.",
-    "zh": "你正在使用**公共访问**——AI 助手只能看到菜单等公开数据。"
-  },
   "mcp_access_token_personal_hint": {
-    "de": "Dein **persönliches Token** gibt dem KI-Assistenten Zugriff mit deinen Rechten. Gib es nicht weiter. Es wird nur direkt nach dem Erstellen angezeigt – kopiere es dann gleich in deinen KI-Assistenten.",
-    "en": "Your **personal token** gives the AI assistant access with your permissions. Do not share it. It is only shown right after it has been created – copy it into your AI assistant straight away.",
-    "ar": "يمنح **رمزك الشخصي** المساعدَ وصولًا بصلاحياتك. لا تشاركه مع أحد. لا يُعرض إلا مباشرة بعد إنشائه – انسخه فورًا إلى مساعد الذكاء الاصطناعي.",
-    "es": "Tu **token personal** da al asistente de IA acceso con tus permisos. No lo compartas. Solo se muestra justo después de crearlo: cópialo enseguida en tu asistente de IA.",
-    "fr": "Ton **jeton personnel** donne à l’assistant IA un accès avec tes droits. Ne le partage pas. Il ne s’affiche que juste après sa création – copie-le aussitôt dans ton assistant IA.",
-    "ru": "Твой **личный токен** даёт ИИ-ассистенту доступ с твоими правами. Никому его не передавай. Он показывается только сразу после создания – сразу скопируй его в своего ИИ-ассистента.",
-    "tr": "**Kişisel belirtecin**, yapay zekâ asistanına senin yetkilerinle erişim verir. Kimseyle paylaşma. Yalnızca oluşturulduktan hemen sonra gösterilir – hemen yapay zekâ asistanına kopyala.",
-    "zh": "你的**个人令牌**会让 AI 助手以你的权限进行访问。请勿分享。它只会在创建后立即显示——请马上将其复制到你的 AI 助手中。"
-  },
-  "mcp_access_token_create": {
-    "de": "Token erstellen",
-    "en": "Create token",
-    "ar": "إنشاء الرمز",
-    "es": "Crear token",
-    "fr": "Créer le jeton",
-    "ru": "Создать токен",
-    "tr": "Belirteç oluştur",
-    "zh": "创建令牌"
+    "de": "Das ist dein **persönliches Token**. Es gibt dem KI-Assistenten Zugriff mit deinen Rechten. Gib es nicht weiter. Es wird nur jetzt angezeigt.",
+    "en": "This is your **personal token**. It gives the AI assistant access with your permissions. Do not share it. It is only shown now.",
+    "ar": "هذا هو **رمزك الشخصي**. يمنح مساعد الذكاء الاصطناعي الوصول بصلاحياتك. لا تشاركه مع أحد. يُعرض الآن فقط.",
+    "es": "Este es tu **token personal**. Da al asistente de IA acceso con tus permisos. No lo compartas. Solo se muestra ahora.",
+    "fr": "Voici ton **jeton personnel**. Il donne à l’assistant IA un accès avec tes droits. Ne le partage pas. Il n’est affiché que maintenant.",
+    "ru": "Это твой **личный токен**. Он даёт ИИ-ассистенту доступ с твоими правами. Никому его не передавай. Он показывается только сейчас.",
+    "tr": "Bu senin **kişisel belirtecin**. Yapay zekâ asistanına senin yetkilerinle erişim verir. Kimseyle paylaşma. Yalnızca şimdi gösterilir.",
+    "zh": "这是你的**个人令牌**。它让 AI 助手以你的权限访问数据。请勿分享。它只在现在显示。"
   },
   "mcp_access_token_load_failed": {
     "de": "Das Token konnte nicht geladen werden.",
@@ -7618,56 +7598,6 @@
     "ru": "Не удалось загрузить токен.",
     "tr": "Belirteç yüklenemedi.",
     "zh": "无法加载令牌。"
-  },
-  "mcp_access_token_required": {
-    "de": "Wähle oben zuerst einen Zugang und lass dir das Token anzeigen.",
-    "en": "First choose an access above and show the token.",
-    "ar": "اختر أولًا طريقة وصول في الأعلى واعرض الرمز.",
-    "es": "Primero elige un acceso arriba y muestra el token.",
-    "fr": "Choisis d’abord un accès ci-dessus et affiche le jeton.",
-    "ru": "Сначала выбери доступ выше и покажи токен.",
-    "tr": "Önce yukarıda bir erişim seç ve belirteci göster.",
-    "zh": "请先在上方选择访问方式并显示令牌。"
-  },
-  "mcp_app_name": {
-    "de": "Name",
-    "en": "Name",
-    "ar": "الاسم",
-    "es": "Nombre",
-    "fr": "Nom",
-    "ru": "Название",
-    "tr": "Ad",
-    "zh": "名称"
-  },
-  "mcp_server_url": {
-    "de": "MCP-Server-URL",
-    "en": "MCP server URL",
-    "ar": "عنوان URL لخادم MCP",
-    "es": "URL del servidor MCP",
-    "fr": "URL du serveur MCP",
-    "ru": "URL MCP-сервера",
-    "tr": "MCP sunucu URL’si",
-    "zh": "MCP 服务器 URL"
-  },
-  "mcp_server_url_with_token": {
-    "de": "MCP-Server-URL mit Token",
-    "en": "MCP server URL with token",
-    "ar": "عنوان URL لخادم MCP مع الرمز",
-    "es": "URL del servidor MCP con token",
-    "fr": "URL du serveur MCP avec jeton",
-    "ru": "URL MCP-сервера с токеном",
-    "tr": "Belirteçli MCP sunucu URL’si",
-    "zh": "带令牌的 MCP 服务器 URL"
-  },
-  "mcp_authorization_header_value": {
-    "de": "Wert für „authorization“",
-    "en": "Value for \"authorization\"",
-    "ar": "قيمة \"authorization\"",
-    "es": "Valor de «authorization»",
-    "fr": "Valeur de « authorization »",
-    "ru": "Значение «authorization»",
-    "tr": "\"authorization\" değeri",
-    "zh": "“authorization” 的值"
   },
   "mcp_steps_title": {
     "de": "So geht’s",
@@ -7720,14 +7650,14 @@
     "zh": "在 “`MCP 服务器 URL`” 中填写以下地址："
   },
   "mcp_claude_step_continue": {
-    "de": "Tippe auf „`Weiter`“. Der Server wird dabei als nicht erreichbar angezeigt – das ist normal. Tippe auf „`Trotzdem fortfahren`“.",
-    "en": "Tap “`Continue`”. The server is shown as not reachable – that is expected. Tap “`Continue anyway`”.",
-    "ar": "اضغط على «`متابعة`». سيظهر الخادم على أنه غير متاح – هذا أمر طبيعي. اضغط على «`المتابعة على أي حال`».",
-    "es": "Pulsa «`Continuar`». El servidor aparecerá como no accesible; es normal. Pulsa «`Continuar de todos modos`».",
-    "fr": "Appuie sur « `Continuer` ». Le serveur s’affiche comme injoignable – c’est normal. Appuie sur « `Continuer quand même` ».",
-    "ru": "Нажми «`Далее`». Сервер будет показан как недоступный – это нормально. Нажми «`Всё равно продолжить`».",
-    "tr": "“`Devam`”’a dokun. Sunucu erişilemez olarak gösterilir – bu normaldir. “`Yine de devam et`”’e dokun.",
-    "zh": "点击“`继续`”。服务器会显示为无法访问——这是正常的。点击“`仍然继续`”。"
+    "de": "Tippe auf „`Weiter`“. Der Server wird dabei als nicht erreichbar angezeigt. Das ist normal. Tippe auf „`Trotzdem fortfahren`“.",
+    "en": "Tap “`Continue`”. The server is shown as not reachable. That is expected. Tap “`Continue anyway`”.",
+    "ar": "اضغط على «`متابعة`». سيظهر الخادم على أنه غير متاح. هذا أمر طبيعي. اضغط على «`المتابعة على أي حال`».",
+    "es": "Pulsa «`Continuar`». El servidor aparecerá como no accesible. Es normal. Pulsa «`Continuar de todos modos`».",
+    "fr": "Appuie sur « `Continuer` ». Le serveur s’affiche comme injoignable. C’est normal. Appuie sur « `Continuer quand même` ».",
+    "ru": "Нажми «`Далее`». Сервер будет показан как недоступный. Это нормально. Нажми «`Всё равно продолжить`».",
+    "tr": "“`Devam`”’a dokun. Sunucu erişilemez olarak gösterilir. Bu normaldir. “`Yine de devam et`”’e dokun.",
+    "zh": "点击“`继续`”。服务器会显示为无法访问，这是正常的。点击“`仍然继续`”。"
   },
   "mcp_claude_step_authentication": {
     "de": "Wähle bei „`Authentifizierung`“ die Option „`Keine Anmeldung`“.",
@@ -7750,14 +7680,14 @@
     "zh": "在“`请求标头`”中点击 “`+ 添加标头`”，在下拉菜单中选择 “`authorization`”，并填写以下值："
   },
   "mcp_claude_step_finish": {
-    "de": "Tippe auf „`Hinzufügen`“ – fertig. Du kannst den Connector jetzt in deinen Chats verwenden.",
-    "en": "Tap “`Add`” – done. You can now use the connector in your chats.",
-    "ar": "اضغط على «`إضافة`» – انتهى. يمكنك الآن استخدام الموصل في محادثاتك.",
-    "es": "Pulsa «`Añadir`» y listo. Ya puedes usar el conector en tus chats.",
-    "fr": "Appuie sur « `Ajouter` » – c’est fait. Tu peux maintenant utiliser le connecteur dans tes discussions.",
-    "ru": "Нажми «`Добавить`» – готово. Теперь коннектор можно использовать в чатах.",
-    "tr": "“`Ekle`”’ye dokun – bitti. Artık bağlayıcıyı sohbetlerinde kullanabilirsin.",
-    "zh": "点击“`添加`”——完成。现在你可以在聊天中使用该连接器。"
+    "de": "Tippe auf „`Hinzufügen`“. Fertig! Du kannst den Connector jetzt in deinen Chats verwenden.",
+    "en": "Tap “`Add`”. Done! You can now use the connector in your chats.",
+    "ar": "اضغط على «`إضافة`». انتهى! يمكنك الآن استخدام الموصل في محادثاتك.",
+    "es": "Pulsa «`Añadir`». ¡Listo! Ya puedes usar el conector en tus chats.",
+    "fr": "Appuie sur « `Ajouter` ». C’est fait ! Tu peux maintenant utiliser le connecteur dans tes discussions.",
+    "ru": "Нажми «`Добавить`». Готово! Теперь коннектор можно использовать в чатах.",
+    "tr": "“`Ekle`”’ye dokun. Bitti! Artık bağlayıcıyı sohbetlerinde kullanabilirsin.",
+    "zh": "点击“`添加`”。完成！现在你可以在聊天中使用该连接器。"
   },
   "mcp_openai_step_open_settings": {
     "de": "Öffne in ChatGPT die „`Einstellungen`“.",
@@ -7800,14 +7730,14 @@
     "zh": "任选一个“`名称`”，例如："
   },
   "mcp_openai_step_url": {
-    "de": "Trage bei „`Verbindung`“ diese Adresse ein – sie enthält dein Token:",
-    "en": "Enter this address under “`Connection`” – it contains your token:",
-    "ar": "أدخل هذا العنوان في «`الاتصال`» – فهو يحتوي على رمزك:",
-    "es": "Introduce esta dirección en «`Conexión`»; contiene tu token:",
-    "fr": "Saisis cette adresse dans « `Connexion` » – elle contient ton jeton :",
-    "ru": "Введи этот адрес в поле «`Подключение`» – он содержит твой токен:",
-    "tr": "“`Bağlantı`” alanına bu adresi gir – belirtecini içerir:",
-    "zh": "在“`连接`”中填写以下地址——其中包含你的令牌："
+    "de": "Trage bei „`Verbindung`“ diese Adresse ein. Sie enthält dein Token:",
+    "en": "Enter this address under “`Connection`”. It contains your token:",
+    "ar": "أدخل هذا العنوان في «`الاتصال`». فهو يحتوي على رمزك:",
+    "es": "Introduce esta dirección en «`Conexión`». Contiene tu token:",
+    "fr": "Saisis cette adresse dans « `Connexion` ». Elle contient ton jeton :",
+    "ru": "Введи этот адрес в поле «`Подключение`». Он содержит твой токен:",
+    "tr": "“`Bağlantı`” alanına bu adresi gir. Belirtecini içerir:",
+    "zh": "在“`连接`”中填写以下地址。其中包含你的令牌："
   },
   "mcp_openai_step_authentication": {
     "de": "Wähle bei „`Authentifizierung`“ die Option „`Keine`“, setze den Haken bei der Bestätigung und speichere.",
@@ -7850,14 +7780,14 @@
     "zh": "将 “`Authorization`” 标头设置为以下值（`Bearer <Token>`）："
   },
   "mcp_other_step_url_with_token": {
-    "de": "Kann dein Client keine Header setzen, nutze stattdessen diese Adresse – sie enthält das Token bereits:",
-    "en": "If your client cannot set headers, use this address instead – it already contains the token:",
-    "ar": "إذا كان عميلك لا يستطيع ضبط الترويسات، فاستخدم هذا العنوان بدلًا من ذلك – فهو يحتوي على الرمز بالفعل:",
-    "es": "Si tu cliente no puede definir encabezados, usa esta dirección; ya contiene el token:",
-    "fr": "Si ton client ne peut pas définir d’en-têtes, utilise plutôt cette adresse – elle contient déjà le jeton :",
-    "ru": "Если клиент не умеет задавать заголовки, используй этот адрес – токен уже в нём:",
-    "tr": "İstemcin başlık ayarlayamıyorsa bunun yerine bu adresi kullan – belirteci zaten içerir:",
-    "zh": "如果你的客户端无法设置标头，请改用以下地址——其中已包含令牌："
+    "de": "Kann dein Client keine Header setzen, nutze stattdessen diese Adresse. Sie enthält das Token bereits:",
+    "en": "If your client cannot set headers, use this address instead. It already contains the token:",
+    "ar": "إذا كان عميلك لا يستطيع ضبط الترويسات، فاستخدم هذا العنوان بدلًا من ذلك. فهو يحتوي على الرمز بالفعل:",
+    "es": "Si tu cliente no puede definir encabezados, usa esta dirección. Ya contiene el token:",
+    "fr": "Si ton client ne peut pas définir d’en-têtes, utilise plutôt cette adresse. Elle contient déjà le jeton :",
+    "ru": "Если клиент не умеет задавать заголовки, используй этот адрес. Токен уже в нём:",
+    "tr": "İstemcin başlık ayarlayamıyorsa bunun yerine bu adresi kullan. Belirteci zaten içerir:",
+    "zh": "如果你的客户端无法设置标头，请改用以下地址。其中已包含令牌："
   },
   "mcp_access_choice_question": {
     "de": "Möchtest du den KI-Assistenten mit deinem Account verbinden? Dann sieht er alles, was du auch in der App sehen darfst. Ohne persönlichen Account sieht er nur öffentliche Daten wie Speisepläne.",
@@ -7910,24 +7840,14 @@
     "zh": "OpenAI、ChatGPT 和 OpenAI 标志是 OpenAI 的商标。Claude 和 Claude 标志是 Anthropic 的商标。这些标志仅用于标识相应的服务——本应用并非由 OpenAI 或 Anthropic 提供，也未获得其支持或推荐。"
   },
   "mcp_access_token_exists_hint": {
-    "de": "Du hast bereits ein Token. Aus Sicherheitsgründen kann es nicht noch einmal angezeigt werden. Erstellst du ein neues, funktionieren bisher eingerichtete Verbindungen nicht mehr.",
-    "en": "You already have a token. For security reasons it cannot be shown again. If you create a new one, connections you have already set up stop working.",
-    "ar": "لديك رمز بالفعل. لأسباب أمنية لا يمكن عرضه مرة أخرى. إذا أنشأت رمزًا جديدًا، فستتوقف الاتصالات التي أعددتها سابقًا عن العمل.",
-    "es": "Ya tienes un token. Por motivos de seguridad no se puede volver a mostrar. Si creas uno nuevo, las conexiones que ya configuraste dejarán de funcionar.",
-    "fr": "Tu as déjà un jeton. Pour des raisons de sécurité, il ne peut pas être affiché à nouveau. Si tu en crées un nouveau, les connexions déjà configurées ne fonctionneront plus.",
-    "ru": "У тебя уже есть токен. По соображениям безопасности его нельзя показать ещё раз. Если создать новый, уже настроенные подключения перестанут работать.",
-    "tr": "Zaten bir belirtecin var. Güvenlik nedeniyle tekrar gösterilemez. Yeni bir tane oluşturursan, daha önce kurduğun bağlantılar artık çalışmaz.",
-    "zh": "你已经有一个令牌。出于安全原因，它无法再次显示。如果创建新令牌，之前设置的连接将无法继续使用。"
-  },
-  "mcp_access_token_regenerate": {
-    "de": "Neues Token erstellen",
-    "en": "Create new token",
-    "ar": "إنشاء رمز جديد",
-    "es": "Crear nuevo token",
-    "fr": "Créer un nouveau jeton",
-    "ru": "Создать новый токен",
-    "tr": "Yeni belirteç oluştur",
-    "zh": "创建新令牌"
+    "de": "Du hast bereits ein **persönliches Token**. Aus Sicherheitsgründen kann es nicht noch einmal angezeigt werden. Kennst du es noch?",
+    "en": "You already have a **personal token**. For security reasons it cannot be shown again. Do you still know it?",
+    "ar": "لديك بالفعل **رمز شخصي**. لأسباب أمنية لا يمكن عرضه مرة أخرى. هل ما زلت تعرفه؟",
+    "es": "Ya tienes un **token personal**. Por motivos de seguridad no se puede volver a mostrar. ¿Todavía lo conoces?",
+    "fr": "Tu as déjà un **jeton personnel**. Pour des raisons de sécurité, il ne peut plus être affiché. Le connais-tu encore ?",
+    "ru": "У тебя уже есть **личный токен**. По соображениям безопасности его нельзя показать ещё раз. Ты его помнишь?",
+    "tr": "Zaten bir **kişisel belirtecin** var. Güvenlik nedeniyle tekrar gösterilemez. Hâlâ biliyor musun?",
+    "zh": "你已经有一个**个人令牌**。出于安全原因，它无法再次显示。你还记得它吗？"
   },
   "mcp_provider": {
     "de": "Anbieter",
@@ -7949,16 +7869,6 @@
     "tr": "Hesap",
     "zh": "账户"
   },
-  "mcp_step": {
-    "de": "Schritt",
-    "en": "Step",
-    "ar": "الخطوة",
-    "es": "Paso",
-    "fr": "Étape",
-    "ru": "Шаг",
-    "tr": "Adım",
-    "zh": "步骤"
-  },
   "mcp_step_problems": {
     "de": "Probleme? Support kontaktieren",
     "en": "Problems? Contact support",
@@ -7968,5 +7878,95 @@
     "ru": "Проблемы? Связаться с поддержкой",
     "tr": "Sorun mu var? Destekle iletişime geç",
     "zh": "遇到问题？联系支持"
+  },
+  "mcp_access_token_known_yes": {
+    "de": "Ja, ich kenne mein Token",
+    "en": "Yes, I know my token",
+    "ar": "نعم، أعرف رمزي",
+    "es": "Sí, conozco mi token",
+    "fr": "Oui, je connais mon jeton",
+    "ru": "Да, я знаю свой токен",
+    "tr": "Evet, belirtecimi biliyorum",
+    "zh": "是的，我知道我的令牌"
+  },
+  "mcp_access_token_known_no": {
+    "de": "Nein, neues Token erstellen",
+    "en": "No, create a new token",
+    "ar": "لا، أنشئ رمزًا جديدًا",
+    "es": "No, crear un token nuevo",
+    "fr": "Non, créer un nouveau jeton",
+    "ru": "Нет, создать новый токен",
+    "tr": "Hayır, yeni belirteç oluştur",
+    "zh": "不，创建新令牌"
+  },
+  "mcp_access_token_placeholder_hint": {
+    "de": "Setze dein persönliches Token überall dort ein, wo `<TOKEN>` steht.",
+    "en": "Insert your personal token wherever it says `<TOKEN>`.",
+    "ar": "ضع رمزك الشخصي في كل مكان يظهر فيه `<TOKEN>`.",
+    "es": "Pon tu token personal en todos los lugares donde aparece `<TOKEN>`.",
+    "fr": "Insère ton jeton personnel partout où il est écrit `<TOKEN>`.",
+    "ru": "Подставь свой личный токен везде, где написано `<TOKEN>`.",
+    "tr": "`<TOKEN>` yazan her yere kişisel belirtecini yaz.",
+    "zh": "在所有显示 `<TOKEN>` 的地方填入你的个人令牌。"
+  },
+  "mcp_access_token_unknown_hint": {
+    "de": "Dein persönliches Token ist gespeichert. Aus Sicherheitsgründen kann es nicht noch einmal angezeigt werden.",
+    "en": "Your personal token is saved. For security reasons it cannot be shown again.",
+    "ar": "تم حفظ رمزك الشخصي. لأسباب أمنية لا يمكن عرضه مرة أخرى.",
+    "es": "Tu token personal está guardado. Por motivos de seguridad no se puede volver a mostrar.",
+    "fr": "Ton jeton personnel est enregistré. Pour des raisons de sécurité, il ne peut plus être affiché.",
+    "ru": "Твой личный токен сохранён. По соображениям безопасности его нельзя показать ещё раз.",
+    "tr": "Kişisel belirtecin kaydedildi. Güvenlik nedeniyle tekrar gösterilemez.",
+    "zh": "你的个人令牌已保存。出于安全原因，它无法再次显示。"
+  },
+  "mcp_tap_to_copy": {
+    "de": "Zum Kopieren antippen",
+    "en": "Tap to copy",
+    "ar": "اضغط للنسخ",
+    "es": "Toca para copiar",
+    "fr": "Appuie pour copier",
+    "ru": "Нажми, чтобы скопировать",
+    "tr": "Kopyalamak için dokun",
+    "zh": "轻点即可复制"
+  },
+  "mcp_access_token_revoke": {
+    "de": "Token widerrufen",
+    "en": "Revoke token",
+    "ar": "إلغاء الرمز",
+    "es": "Revocar token",
+    "fr": "Révoquer le jeton",
+    "ru": "Отозвать токен",
+    "tr": "Belirteci iptal et",
+    "zh": "撤销令牌"
+  },
+  "mcp_access_token_revoke_confirm": {
+    "de": "Möchtest du dein persönliches Token widerrufen? Alle KI-Assistenten, die damit verbunden sind, verlieren den Zugriff.",
+    "en": "Do you want to revoke your personal token? All AI assistants connected with it lose their access.",
+    "ar": "هل تريد إلغاء رمزك الشخصي؟ سيفقد جميع مساعدي الذكاء الاصطناعي المتصلين به إمكانية الوصول.",
+    "es": "¿Quieres revocar tu token personal? Todos los asistentes de IA conectados con él perderán el acceso.",
+    "fr": "Veux-tu révoquer ton jeton personnel ? Tous les assistants IA connectés avec lui perdent leur accès.",
+    "ru": "Отозвать личный токен? Все ИИ-ассистенты, подключённые с ним, потеряют доступ.",
+    "tr": "Kişisel belirtecini iptal etmek istiyor musun? Onunla bağlı tüm yapay zekâ asistanları erişimini kaybeder.",
+    "zh": "要撤销你的个人令牌吗？所有使用它连接的 AI 助手都将失去访问权限。"
+  },
+  "mcp_access_token_revoked": {
+    "de": "Das Token wurde widerrufen.",
+    "en": "The token has been revoked.",
+    "ar": "تم إلغاء الرمز.",
+    "es": "El token ha sido revocado.",
+    "fr": "Le jeton a été révoqué.",
+    "ru": "Токен отозван.",
+    "tr": "Belirteç iptal edildi.",
+    "zh": "令牌已撤销。"
+  },
+  "mcp_access_token_revoke_failed": {
+    "de": "Das Token konnte nicht widerrufen werden.",
+    "en": "The token could not be revoked.",
+    "ar": "تعذّر إلغاء الرمز.",
+    "es": "No se ha podido revocar el token.",
+    "fr": "Le jeton n’a pas pu être révoqué.",
+    "ru": "Не удалось отозвать токен.",
+    "tr": "Belirteç iptal edilemedi.",
+    "zh": "无法撤销令牌。"
   }
 }
