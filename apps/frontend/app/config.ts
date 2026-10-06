@@ -188,7 +188,8 @@ export function getVersionPatch() {
         //     (or <TOKEN> placeholder) exists, copy rows show only the value, one support link at the end,
         //     token shown and revocable at the bottom; public MCP user ensured via POST /mcp-public-user
         //     (token now "PUBLIC"); common-ui: inline code in markdown renders monospace
-        return 82;
+        // 83: MCP instruction: providers, steps and token flow from common McpInstructionHelper, texts in commonTranslations
+        return 83;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
