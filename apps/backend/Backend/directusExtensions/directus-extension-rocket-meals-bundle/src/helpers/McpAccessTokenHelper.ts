@@ -1,11 +1,11 @@
-import { randomBytes } from 'node:crypto';
 import { PrimaryKey } from '@directus/types';
 import { McpAccessHelper } from 'repo-depkit-common';
 import { MyDatabaseHelper } from './MyDatabaseHelper';
+import { NanoidHelper } from './NanoidHelper';
 
 const HELPER_NAME = 'McpAccessTokenHelper';
 
-const TOKEN_BYTES = 32;
+const TOKEN_LENGTH = 64;
 
 /**
  * Statische Directus-Tokens für den MCP-Server (`<PUBLIC_URL>/mcp`).
@@ -17,8 +17,8 @@ const TOKEN_BYTES = 32;
 export class McpAccessTokenHelper {
   constructor(private readonly myDatabaseHelper: MyDatabaseHelper) {}
 
-  static generateToken(): string {
-    return randomBytes(TOKEN_BYTES).toString('base64url');
+  static async generateToken(): Promise<string> {
+    return await NanoidHelper.getNanoid(TOKEN_LENGTH);
   }
 
   async readToken(userId: PrimaryKey): Promise<string | null> {
@@ -33,7 +33,7 @@ export class McpAccessTokenHelper {
     if (existingToken) {
       return existingToken;
     }
-    const token = McpAccessTokenHelper.generateToken();
+    const token = await McpAccessTokenHelper.generateToken();
     await this.myDatabaseHelper.getUsersHelper().updateOne(userId, { token });
     return token;
   }
@@ -55,7 +55,7 @@ export class McpAccessTokenHelper {
     const existingUser = existingUsers[0];
 
     if (!existingUser) {
-      const token = McpAccessTokenHelper.generateToken();
+      const token = await McpAccessTokenHelper.generateToken();
       await usersHelper.createOne({
         email: McpAccessHelper.PUBLIC_USER_EMAIL,
         first_name: McpAccessHelper.PUBLIC_USER_NAME,
