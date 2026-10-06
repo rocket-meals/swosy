@@ -13,8 +13,8 @@ import { ChatConversationState } from 'repo-depkit-common/src/ChatConversationSt
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
-import { AppExtensionLanguageHelper } from '../../helpers/app-extensions/AppExtensionLanguageHelper';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
+import { FoodFeedbackChatActions } from '../../helpers/rocket-meals-module/FoodFeedbackChatActions';
 import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage, type FoodFeedbackListItem } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
@@ -92,34 +92,17 @@ async function load() {
 
 /** Creates the chat on the first answer and links it to the feedback. */
 async function ensureChat(): Promise<string> {
-  const current = feedback.value;
-  if (!current) {
+  if (!feedback.value) {
     throw new Error('feedback not loaded');
   }
-  if (chatId.value) {
-    return chatId.value;
-  }
-  const profileId = RelationHelper.getId(current.profile);
-  if (!profileId) {
-    throw new Error('feedback has no profile');
-  }
-  // The author sees the chat title in the app, so it is written in the author's language.
-  const authorLanguage = FoodFeedbackChatStatusHelper.getAuthorLanguage(current);
-  const food = foodName.value || AppExtensionLanguageHelper.translate(BackendTranslationKeys.rocket_meals_module_unknown_food, authorLanguage);
-  const alias = AppExtensionLanguageHelper.translate(BackendTranslationKeys.rocket_meals_module_food_feedback_chat_alias, authorLanguage, { food });
-
-  const chatResponse = await api.post(FoodFeedbackChatHelper.CHATS_ENDPOINT, FoodFeedbackChatStatusHelper.buildChatForFeedback(current, alias));
-  const createdChatId = String(chatResponse.data?.data?.id);
-  await api.post(FoodFeedbackChatHelper.CHATS_PARTICIPANTS_ENDPOINT, ChatHelper.buildParticipant(createdChatId, profileId));
-  await api.patch(`${FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT}/${current.id}`, { chat: createdChatId });
-  return createdChatId;
+  return FoodFeedbackChatActions.ensureChat(api, feedback.value);
 }
 
 async function setConversationState(state: ChatConversationState) {
   if (!chatId.value) {
     return;
   }
-  await api.patch(`${FoodFeedbackChatHelper.CHATS_ENDPOINT}/${chatId.value}`, { conversation_state: state });
+  await FoodFeedbackChatActions.setConversationState(api, String(chatId.value), state);
 }
 
 async function sendMessage() {
