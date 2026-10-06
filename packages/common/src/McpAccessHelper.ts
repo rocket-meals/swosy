@@ -10,29 +10,17 @@
  *   Er hat keine Rolle und damit nur die Rechte der Public-Policy. Sein Token ist deshalb kein
  *   Geheimnis und auf allen Servern gleich (`PUBLIC_USER_TOKEN`) – die App zeigt es jedem an,
  *   ohne Anmeldung und ohne Anfrage an den Server.
- * - **Persönlich:** Ein angemeldeter Nutzer kann sich ein eigenes Token erzeugen lassen (Feld
- *   `token` an seinem `directus_users`-Eintrag). Damit sieht der MCP-Client genau, was der
- *   Nutzer auch in der App sehen darf.
+ * - **Persönlich:** Ein angemeldeter Nutzer setzt sich selbst ein Token (Feld `token` an seinem
+ *   `directus_users`-Eintrag, die Policy `User` darf es schreiben). Die App holt dafür einen
+ *   Zufallsstring von Directus (`GET /utils/random/string`) und speichert ihn per
+ *   `PATCH /users/me`. Damit sieht der MCP-Client genau, was der Nutzer auch in der App sieht.
+ *   Directus liefert `token` beim Lesen nur verdeckt (`**********`) – ein Token lässt sich also
+ *   nur direkt nach dem Erzeugen anzeigen, danach nur noch durch ein neues ersetzen.
  *
- * Das persönliche Token liefert der Endpoint `mcp-access` im Backend-Bundle, den öffentlichen
- * User legt der `mcp-public-user-hook` beim Start an.
+ * Den öffentlichen User legt der `mcp-public-user-hook` im Backend-Bundle beim Start an.
  */
 
-export type McpAccessTokenResponse = {
-  token: string;
-};
-
-export type McpAccessTokenStatus = {
-  has_token: boolean;
-};
-
 export class McpAccessHelper {
-  /** Pfad des Endpoints im Backend-Bundle. */
-  static readonly ENDPOINT_ID = 'mcp-access';
-
-  /** `GET` – ob der angemeldete Nutzer schon ein Token hat. `POST` – Token holen, bei Bedarf erzeugen. */
-  static readonly ROUTE_MY_TOKEN = '/my-token';
-
   /** Name des öffentlichen MCP-Users, analog zum Gast-Nutzer. */
   static readonly PUBLIC_USER_NAME = 'MCP_Public';
 
@@ -51,8 +39,42 @@ export class McpAccessHelper {
 
   static readonly AUTHORIZATION_HEADER_NAME = 'authorization';
 
-  static getEndpointPath(route: string): string {
-    return '/' + McpAccessHelper.ENDPOINT_ID + route;
+  /** Länge eines persönlichen Tokens. */
+  static readonly PERSONAL_TOKEN_LENGTH = 64;
+
+  /** Directus-Endpoint für Zufallsstrings (nanoid), antwortet mit `{ data: string }`. */
+  static readonly RANDOM_STRING_PATH = '/utils/random/string';
+
+  /** Pfad zum Lesen und Schreiben des eigenen Tokens. */
+  static readonly OWN_TOKEN_PATH = '/users/me?fields=token';
+
+  static buildRandomStringPath(length: number = McpAccessHelper.PERSONAL_TOKEN_LENGTH): string {
+    return McpAccessHelper.RANDOM_STRING_PATH + '?length=' + length;
+  }
+
+  /** Liest den String aus der Antwort von `GET /utils/random/string`, sonst `null`. */
+  static parseRandomStringResponse(value: unknown): string | null {
+    if (typeof value !== 'object' || value === null) {
+      return null;
+    }
+    const data = (value as { data?: unknown }).data;
+    return typeof data === 'string' && data.length > 0 ? data : null;
+  }
+
+  /**
+   * Ob die Antwort von `GET /users/me?fields=token` ein Token enthält. Directus liefert ein
+   * gesetztes Token verdeckt (`**********`), ein fehlendes als `null`.
+   */
+  static hasTokenInOwnUserResponse(value: unknown): boolean {
+    if (typeof value !== 'object' || value === null) {
+      return false;
+    }
+    const data = (value as { data?: unknown }).data;
+    if (typeof data !== 'object' || data === null) {
+      return false;
+    }
+    const token = (data as { token?: unknown }).token;
+    return typeof token === 'string' && token.length > 0;
   }
 
   /** `https://host/backend` → `https://host/backend/mcp` */
@@ -71,20 +93,5 @@ export class McpAccessHelper {
 
   static buildAuthorizationHeaderValue(token: string): string {
     return 'Bearer ' + token;
-  }
-
-  static isValidTokenResponse(value: unknown): value is McpAccessTokenResponse {
-    if (typeof value !== 'object' || value === null) {
-      return false;
-    }
-    const token = (value as { token?: unknown }).token;
-    return typeof token === 'string' && token.length > 0;
-  }
-
-  static isValidTokenStatus(value: unknown): value is McpAccessTokenStatus {
-    if (typeof value !== 'object' || value === null) {
-      return false;
-    }
-    return typeof (value as { has_token?: unknown }).has_token === 'boolean';
   }
 }

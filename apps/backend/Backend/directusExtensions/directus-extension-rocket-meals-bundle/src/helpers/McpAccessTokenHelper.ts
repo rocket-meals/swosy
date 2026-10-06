@@ -1,41 +1,26 @@
 import { PrimaryKey } from '@directus/types';
 import { McpAccessHelper } from 'repo-depkit-common';
 import { MyDatabaseHelper } from './MyDatabaseHelper';
-import { NanoidHelper } from './NanoidHelper';
 
 const HELPER_NAME = 'McpAccessTokenHelper';
 
-const TOKEN_LENGTH = 64;
-
 /**
- * Statische Directus-Tokens für den MCP-Server (`<PUBLIC_URL>/mcp`).
+ * Der öffentliche MCP-User `MCP_Public` für den MCP-Server (`<PUBLIC_URL>/mcp`).
+ *
+ * Persönliche Tokens setzt die App selbst (Zufallsstring von `/utils/random/string`, gespeichert
+ * per `PATCH /users/me`, die Policy `User` darf `token` schreiben) – dafür braucht es hier nichts.
  *
  * Gelesen wird das Token direkt aus `directus_users` über Knex: Die Services von Directus geben
- * das Feld `token` verdeckt (`**********`) zurück, die App muss aber das echte Token anzeigen
- * können. Geschrieben wird über den `UsersService` (Prüfung auf Eindeutigkeit, Hooks, Activity).
+ * das Feld `token` verdeckt (`**********`) zurück. Geschrieben wird über den `UsersService`
+ * (Prüfung auf Eindeutigkeit, Hooks, Activity).
  */
 export class McpAccessTokenHelper {
   constructor(private readonly myDatabaseHelper: MyDatabaseHelper) {}
-
-  static async generateToken(): Promise<string> {
-    return await NanoidHelper.getNanoid(TOKEN_LENGTH);
-  }
 
   async readToken(userId: PrimaryKey): Promise<string | null> {
     const row = await this.myDatabaseHelper.apiContext.database('directus_users').select('token').where('id', userId).first();
     const token = row?.token;
     return typeof token === 'string' && token.length > 0 ? token : null;
-  }
-
-  /** Gibt das vorhandene Token des Nutzers zurück oder erzeugt eines. */
-  async getOrCreateToken(userId: PrimaryKey): Promise<string> {
-    const existingToken = await this.readToken(userId);
-    if (existingToken) {
-      return existingToken;
-    }
-    const token = await McpAccessTokenHelper.generateToken();
-    await this.myDatabaseHelper.getUsersHelper().updateOne(userId, { token });
-    return token;
   }
 
   /**

@@ -7590,14 +7590,14 @@
     "zh": "你正在使用**公共访问**——AI 助手只能看到菜单等公开数据。"
   },
   "mcp_access_token_personal_hint": {
-    "de": "Dein **persönliches Token** gibt dem KI-Assistenten Zugriff mit deinen Rechten. Gib es nicht weiter. Es wird erst auf Knopfdruck angezeigt.",
-    "en": "Your **personal token** gives the AI assistant access with your permissions. Do not share it. It is only shown when you press the button.",
-    "ar": "يمنح **رمزك الشخصي** المساعدَ وصولًا بصلاحياتك. لا تشاركه مع أحد. لا يُعرض إلا عند الضغط على الزر.",
-    "es": "Tu **token personal** da al asistente de IA acceso con tus permisos. No lo compartas. Solo se muestra al pulsar el botón.",
-    "fr": "Ton **jeton personnel** donne à l’assistant IA un accès avec tes droits. Ne le partage pas. Il ne s’affiche qu’en appuyant sur le bouton.",
-    "ru": "Твой **личный токен** даёт ИИ-ассистенту доступ с твоими правами. Никому его не передавай. Он показывается только по нажатию кнопки.",
-    "tr": "**Kişisel belirtecin**, yapay zekâ asistanına senin yetkilerinle erişim verir. Kimseyle paylaşma. Yalnızca düğmeye bastığında gösterilir.",
-    "zh": "你的**个人令牌**会让 AI 助手以你的权限进行访问。请勿分享。只有点击按钮后才会显示。"
+    "de": "Dein **persönliches Token** gibt dem KI-Assistenten Zugriff mit deinen Rechten. Gib es nicht weiter. Es wird nur direkt nach dem Erstellen angezeigt – kopiere es dann gleich in deinen KI-Assistenten.",
+    "en": "Your **personal token** gives the AI assistant access with your permissions. Do not share it. It is only shown right after it has been created – copy it into your AI assistant straight away.",
+    "ar": "يمنح **رمزك الشخصي** المساعدَ وصولًا بصلاحياتك. لا تشاركه مع أحد. لا يُعرض إلا مباشرة بعد إنشائه – انسخه فورًا إلى مساعد الذكاء الاصطناعي.",
+    "es": "Tu **token personal** da al asistente de IA acceso con tus permisos. No lo compartas. Solo se muestra justo después de crearlo: cópialo enseguida en tu asistente de IA.",
+    "fr": "Ton **jeton personnel** donne à l’assistant IA un accès avec tes droits. Ne le partage pas. Il ne s’affiche que juste après sa création – copie-le aussitôt dans ton assistant IA.",
+    "ru": "Твой **личный токен** даёт ИИ-ассистенту доступ с твоими правами. Никому его не передавай. Он показывается только сразу после создания – сразу скопируй его в своего ИИ-ассистента.",
+    "tr": "**Kişisel belirtecin**, yapay zekâ asistanına senin yetkilerinle erişim verir. Kimseyle paylaşma. Yalnızca oluşturulduktan hemen sonra gösterilir – hemen yapay zekâ asistanına kopyala.",
+    "zh": "你的**个人令牌**会让 AI 助手以你的权限进行访问。请勿分享。它只会在创建后立即显示——请马上将其复制到你的 AI 助手中。"
   },
   "mcp_access_token_create": {
     "de": "Token erstellen",
@@ -7608,16 +7608,6 @@
     "ru": "Создать токен",
     "tr": "Belirteç oluştur",
     "zh": "创建令牌"
-  },
-  "mcp_access_token_show": {
-    "de": "Token anzeigen",
-    "en": "Show token",
-    "ar": "عرض الرمز",
-    "es": "Mostrar token",
-    "fr": "Afficher le jeton",
-    "ru": "Показать токен",
-    "tr": "Belirteci göster",
-    "zh": "显示令牌"
   },
   "mcp_access_token_load_failed": {
     "de": "Das Token konnte nicht geladen werden.",
@@ -7918,5 +7908,25 @@
     "ru": "OpenAI, ChatGPT и логотип OpenAI являются товарными знаками OpenAI. Claude и логотип Claude являются товарными знаками Anthropic. Логотипы используются только для обозначения соответствующего сервиса – это приложение не предлагается, не поддерживается и не рекомендуется OpenAI или Anthropic.",
     "tr": "OpenAI, ChatGPT ve OpenAI logosu OpenAI’nin ticari markalarıdır. Claude ve Claude logosu Anthropic’in ticari markalarıdır. Logolar yalnızca ilgili hizmeti belirtmek için kullanılır – bu uygulama OpenAI veya Anthropic tarafından sunulmamakta, desteklenmemekte ya da önerilmemektedir.",
     "zh": "OpenAI、ChatGPT 和 OpenAI 标志是 OpenAI 的商标。Claude 和 Claude 标志是 Anthropic 的商标。这些标志仅用于标识相应的服务——本应用并非由 OpenAI 或 Anthropic 提供，也未获得其支持或推荐。"
+  },
+  "mcp_access_token_exists_hint": {
+    "de": "Du hast bereits ein Token. Aus Sicherheitsgründen kann es nicht noch einmal angezeigt werden. Erstellst du ein neues, funktionieren bisher eingerichtete Verbindungen nicht mehr.",
+    "en": "You already have a token. For security reasons it cannot be shown again. If you create a new one, connections you have already set up stop working.",
+    "ar": "لديك رمز بالفعل. لأسباب أمنية لا يمكن عرضه مرة أخرى. إذا أنشأت رمزًا جديدًا، فستتوقف الاتصالات التي أعددتها سابقًا عن العمل.",
+    "es": "Ya tienes un token. Por motivos de seguridad no se puede volver a mostrar. Si creas uno nuevo, las conexiones que ya configuraste dejarán de funcionar.",
+    "fr": "Tu as déjà un jeton. Pour des raisons de sécurité, il ne peut pas être affiché à nouveau. Si tu en crées un nouveau, les connexions déjà configurées ne fonctionneront plus.",
+    "ru": "У тебя уже есть токен. По соображениям безопасности его нельзя показать ещё раз. Если создать новый, уже настроенные подключения перестанут работать.",
+    "tr": "Zaten bir belirtecin var. Güvenlik nedeniyle tekrar gösterilemez. Yeni bir tane oluşturursan, daha önce kurduğun bağlantılar artık çalışmaz.",
+    "zh": "你已经有一个令牌。出于安全原因，它无法再次显示。如果创建新令牌，之前设置的连接将无法继续使用。"
+  },
+  "mcp_access_token_regenerate": {
+    "de": "Neues Token erstellen",
+    "en": "Create new token",
+    "ar": "إنشاء رمز جديد",
+    "es": "Crear nuevo token",
+    "fr": "Créer un nouveau jeton",
+    "ru": "Создать новый токен",
+    "tr": "Yeni belirteç oluştur",
+    "zh": "创建新令牌"
   }
 }

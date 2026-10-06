@@ -219,6 +219,11 @@
         "source": "src/guest-account-endpoint/index.ts"
       },
       {
+        "type": "hook",
+        "name": "mcp-public-user-hook",
+        "source": "src/mcp-public-user-hook/index.ts"
+      },
+      {
         "type": "endpoint",
         "name": "bundle-health-endpoint",
         "source": "src/bundle-health-endpoint/index.ts"

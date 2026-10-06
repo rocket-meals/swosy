@@ -86,29 +86,40 @@ const COPY_VALUE_LABELS: Record<CopyValueKind, TranslationKeys> = {
 	serverUrlWithToken: TranslationKeys.mcp_server_url_with_token,
 };
 
-async function readTokenResponse(response: Response): Promise<string> {
-	if (!response.ok) {
-		throw new Error('MCP token request failed with status ' + response.status);
-	}
-	const body: unknown = await response.json();
-	if (!McpAccessHelper.isValidTokenResponse(body)) {
-		throw new Error('MCP token response is invalid');
-	}
-	return body.token;
-}
-
+/**
+ * Whether the user already has a token. Directus returns a set token concealed (`**********`),
+ * so the app can tell that one exists, but never show it again.
+ */
 async function fetchHasPersonalMcpToken(): Promise<boolean> {
-	const response = await authorizedFetch(McpAccessHelper.getEndpointPath(McpAccessHelper.ROUTE_MY_TOKEN));
+	const response = await authorizedFetch(McpAccessHelper.OWN_TOKEN_PATH);
 	if (!response.ok) {
 		throw new Error('MCP token status request failed with status ' + response.status);
 	}
-	const body: unknown = await response.json();
-	return McpAccessHelper.isValidTokenStatus(body) && body.has_token;
+	return McpAccessHelper.hasTokenInOwnUserResponse(await response.json());
 }
 
-/** Returns the user's token, the server creates it on the first call. */
-async function fetchOrCreatePersonalMcpToken(): Promise<string> {
-	return await readTokenResponse(await authorizedFetch(McpAccessHelper.getEndpointPath(McpAccessHelper.ROUTE_MY_TOKEN), { method: 'POST' }));
+/**
+ * Sets a new token for the user: a random string from Directus, saved on the user's own
+ * `directus_users` entry (the `User` policy may write `token`). Replaces an existing token.
+ */
+async function createPersonalMcpToken(): Promise<string> {
+	const randomResponse = await authorizedFetch(McpAccessHelper.buildRandomStringPath());
+	if (!randomResponse.ok) {
+		throw new Error('Random string request failed with status ' + randomResponse.status);
+	}
+	const token = McpAccessHelper.parseRandomStringResponse(await randomResponse.json());
+	if (!token) {
+		throw new Error('Random string response is invalid');
+	}
+	const saveResponse = await authorizedFetch(McpAccessHelper.OWN_TOKEN_PATH, {
+		method: 'PATCH',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ token }),
+	});
+	if (!saveResponse.ok) {
+		throw new Error('Saving the MCP token failed with status ' + saveResponse.status);
+	}
+	return token;
 }
 
 /** `?assistant=claude` preselects the assistant, so a link can lead straight to its steps. */
@@ -212,10 +223,10 @@ const McpInstruction = () => {
 		}
 	};
 
-	const revealPersonalToken = useCallback(async () => {
+	const createPersonalToken = useCallback(async () => {
 		setIsLoadingToken(true);
 		try {
-			setPersonalToken(await fetchOrCreatePersonalMcpToken());
+			setPersonalToken(await createPersonalMcpToken());
 			setHasPersonalToken(true);
 		} catch (error) {
 			console.error('Could not create the MCP token:', error);
@@ -310,14 +321,17 @@ const McpInstruction = () => {
 					{personalToken ? (
 						renderCopyRow(translate(TranslationKeys.mcp_access_token), personalToken)
 					) : (
-						<SettingsList
-							iconBgColor={primaryColor}
-							leftIcon={<MaterialCommunityIcons name={hasPersonalToken ? 'eye-outline' : 'key-plus'} size={24} color={theme.screen.icon} />}
-							title={translate(hasPersonalToken ? TranslationKeys.mcp_access_token_show : TranslationKeys.mcp_access_token_create)}
-							rightIcon={isLoadingToken || hasPersonalToken === null ? <ActivityIndicator color={theme.screen.text} /> : undefined}
-							handleFunction={isLoadingToken || hasPersonalToken === null ? undefined : () => void revealPersonalToken()}
-							groupPosition="single"
-						/>
+						<>
+							{hasPersonalToken ? <MyMarkdownProjectColored content={translate(TranslationKeys.mcp_access_token_exists_hint)} /> : null}
+							<SettingsList
+								iconBgColor={primaryColor}
+								leftIcon={<MaterialCommunityIcons name={hasPersonalToken ? 'key-change' : 'key-plus'} size={24} color={theme.screen.icon} />}
+								title={translate(hasPersonalToken ? TranslationKeys.mcp_access_token_regenerate : TranslationKeys.mcp_access_token_create)}
+								rightIcon={isLoadingToken || hasPersonalToken === null ? <ActivityIndicator color={theme.screen.text} /> : undefined}
+								handleFunction={isLoadingToken || hasPersonalToken === null ? undefined : () => void createPersonalToken()}
+								groupPosition="single"
+							/>
+						</>
 					)}
 				</>
 			);

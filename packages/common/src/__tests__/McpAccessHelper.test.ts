@@ -1,10 +1,6 @@
 import { McpAccessHelper } from '../McpAccessHelper';
 
 describe('McpAccessHelper', () => {
-  it('builds the endpoint path', () => {
-    expect(McpAccessHelper.getEndpointPath(McpAccessHelper.ROUTE_MY_TOKEN)).toBe('/mcp-access/my-token');
-  });
-
   it('appends /mcp to the backend url, with or without trailing slashes', () => {
     expect(McpAccessHelper.buildServerUrl('https://test.rocket-meals.de/rocket-meals/api')).toBe('https://test.rocket-meals.de/rocket-meals/api/mcp');
     expect(McpAccessHelper.buildServerUrl('https://test.rocket-meals.de/rocket-meals/api//')).toBe('https://test.rocket-meals.de/rocket-meals/api/mcp');
@@ -20,19 +16,25 @@ describe('McpAccessHelper', () => {
     expect(McpAccessHelper.buildAuthorizationHeaderValue('abc')).toBe('Bearer abc');
   });
 
-  it('validates token responses', () => {
-    expect(McpAccessHelper.isValidTokenResponse({ token: 'abc' })).toBe(true);
-    expect(McpAccessHelper.isValidTokenResponse({ token: '' })).toBe(false);
-    expect(McpAccessHelper.isValidTokenResponse({ token: 1 })).toBe(false);
-    expect(McpAccessHelper.isValidTokenResponse(null)).toBe(false);
-    expect(McpAccessHelper.isValidTokenResponse('abc')).toBe(false);
+  it('asks Directus for a random string of the personal token length', () => {
+    expect(McpAccessHelper.buildRandomStringPath()).toBe('/utils/random/string?length=64');
+    expect(McpAccessHelper.buildRandomStringPath(32)).toBe('/utils/random/string?length=32');
   });
 
-  it('validates token status responses', () => {
-    expect(McpAccessHelper.isValidTokenStatus({ has_token: false })).toBe(true);
-    expect(McpAccessHelper.isValidTokenStatus({ has_token: true })).toBe(true);
-    expect(McpAccessHelper.isValidTokenStatus({ has_token: 'yes' })).toBe(false);
-    expect(McpAccessHelper.isValidTokenStatus(undefined)).toBe(false);
+  it('reads the random string from the Directus response', () => {
+    expect(McpAccessHelper.parseRandomStringResponse({ data: 'abc' })).toBe('abc');
+    expect(McpAccessHelper.parseRandomStringResponse({ data: '' })).toBeNull();
+    expect(McpAccessHelper.parseRandomStringResponse({ data: 1 })).toBeNull();
+    expect(McpAccessHelper.parseRandomStringResponse(null)).toBeNull();
+    expect(McpAccessHelper.parseRandomStringResponse('abc')).toBeNull();
+  });
+
+  it('detects a set token in the concealed users/me response', () => {
+    expect(McpAccessHelper.hasTokenInOwnUserResponse({ data: { token: '**********' } })).toBe(true);
+    expect(McpAccessHelper.hasTokenInOwnUserResponse({ data: { token: null } })).toBe(false);
+    expect(McpAccessHelper.hasTokenInOwnUserResponse({ data: {} })).toBe(false);
+    expect(McpAccessHelper.hasTokenInOwnUserResponse({ data: null })).toBe(false);
+    expect(McpAccessHelper.hasTokenInOwnUserResponse(undefined)).toBe(false);
   });
 
   it('uses the same fixed token for the public user on every server', () => {
