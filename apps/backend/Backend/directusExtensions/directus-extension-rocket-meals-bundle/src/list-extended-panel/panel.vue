@@ -9,7 +9,7 @@
  * (manually or via auto refresh), so it behaves like the built-in one.
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { ExtendedPanelHelper, type ExtendedPanelExportFormat, type ExtendedPanelSortDirection } from '../helpers/extended-panels/ExtendedPanelHelper';
 import { BackendTranslationKeys } from '../helpers/translations/BackendTranslationKeys';
 
@@ -51,6 +51,19 @@ const notificationsStore = useNotificationsStore();
 
 const language = computed<string | undefined>(() => userStore.currentUser?.language ?? settingsStore.settings?.default_language ?? ExtendedPanelHelper.getUiLanguage());
 const translate = (key: BackendTranslationKeys) => ExtendedPanelHelper.translate(key, language.value);
+
+const root = ref<HTMLElement>();
+/**
+ * The header of the tile (icon + panel name) belongs to Directus' workspace tile, not to this
+ * panel, and the tile clips everything outside its content area. The export button is therefore
+ * teleported into that header. Without a header (title hidden) it floats in the panel instead.
+ */
+const headerTarget = ref<HTMLElement | null>(null);
+
+function findHeaderTarget() {
+  const tile = root.value?.closest('.v-workspace-tile');
+  headerTarget.value = props.showHeader ? (tile?.querySelector<HTMLElement>(':scope > .header') ?? null) : null;
+}
 
 const rows = ref<Record<string, any>[]>([]);
 const loading = ref(false);
@@ -180,26 +193,38 @@ watch(
   }
 );
 onBeforeUnmount(() => clearTimeout(refreshTimeout));
+
+onMounted(findHeaderTarget);
+watch(
+  () => props.showHeader,
+  async () => {
+    headerTarget.value = null;
+    await nextTick();
+    findHeaderTarget();
+  }
+);
 </script>
 
 <template>
-  <div class="list-extended" :class="{ 'has-header': showHeader }">
-    <div class="toolbar">
-      <v-progress-circular v-if="loading" class="loading-indicator" indeterminate x-small />
-      <v-menu show-arrow placement="bottom-end" :disabled="!collection || exporting">
-        <template #activator="{ toggle }">
-          <v-button v-tooltip="translate(BackendTranslationKeys.extended_panel_export)" :class="ExtendedPanelHelper.PAGE_EXPORT_EXCLUDE_CLASS" :aria-label="translate(BackendTranslationKeys.extended_panel_export)" :disabled="!collection" :loading="exporting" icon secondary x-small @click="toggle">
-            <v-icon name="download" small />
-          </v-button>
-        </template>
-        <v-list>
-          <v-list-item v-for="exportFormat in ExtendedPanelHelper.EXPORT_FORMATS" :key="exportFormat.format" clickable @click="exportAs(exportFormat)">
-            <v-list-item-icon><v-icon name="description" small /></v-list-item-icon>
-            <v-list-item-content>{{ translate(exportFormat.labelKey) }}</v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </div>
+  <div ref="root" class="list-extended" :class="{ 'has-header': showHeader }">
+    <Teleport :to="headerTarget ?? 'body'" :disabled="!headerTarget">
+      <div class="toolbar" :class="{ 'in-header': !!headerTarget }">
+        <v-progress-circular v-if="loading" class="loading-indicator" indeterminate x-small />
+        <v-menu show-arrow placement="bottom-end" :disabled="!collection || exporting">
+          <template #activator="{ toggle }">
+            <v-button v-tooltip="translate(BackendTranslationKeys.extended_panel_export)" :class="ExtendedPanelHelper.PAGE_EXPORT_EXCLUDE_CLASS" :aria-label="translate(BackendTranslationKeys.extended_panel_export)" :disabled="!collection" :loading="exporting" icon secondary x-small @click="toggle">
+              <v-icon name="download" small />
+            </v-button>
+          </template>
+          <v-list>
+            <v-list-item v-for="exportFormat in ExtendedPanelHelper.EXPORT_FORMATS" :key="exportFormat.format" clickable @click="exportAs(exportFormat)">
+              <v-list-item-icon><v-icon name="description" small /></v-list-item-icon>
+              <v-list-item-content>{{ translate(exportFormat.labelKey) }}</v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+    </Teleport>
 
     <div class="content">
       <div v-if="loadError" class="state type-note">
@@ -236,7 +261,13 @@ onBeforeUnmount(() => clearTimeout(refreshTimeout));
   padding: 0 0.6875rem;
 }
 
-/* Floats in the top right corner so the list keeps the full height of the panel. */
+/* In the tile header next to the panel name, see headerTarget. */
+.toolbar.in-header {
+  position: static;
+  margin-inline-start: 0.5rem;
+}
+
+/* Without a header: floats in the top right corner so the list keeps its full height. */
 .toolbar {
   position: absolute;
   inset-block-start: 0.4375rem;
