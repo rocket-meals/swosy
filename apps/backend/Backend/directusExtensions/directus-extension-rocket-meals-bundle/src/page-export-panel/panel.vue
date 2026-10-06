@@ -12,6 +12,7 @@ import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { computed, ref } from 'vue';
 import { ExtendedPanelHelper } from '../helpers/extended-panels/ExtendedPanelHelper';
+import { useAppExtensionTranslate } from '../helpers/app-extensions/useAppExtensionTranslate';
 import { BackendTranslationKeys } from '../helpers/translations/BackendTranslationKeys';
 import { BackendTranslator } from '../helpers/translations/BackendTranslator';
 
@@ -23,14 +24,12 @@ const props = defineProps<{
   showHeader?: boolean;
 }>();
 
-const { useInsightsStore, useUserStore, useSettingsStore, useNotificationsStore } = useStores();
+const { useInsightsStore, useNotificationsStore } = useStores();
 const insightsStore = useInsightsStore();
-const userStore = useUserStore();
-const settingsStore = useSettingsStore();
 const notificationsStore = useNotificationsStore();
 
-const language = computed<string | undefined>(() => userStore.currentUser?.language ?? settingsStore.settings?.default_language ?? ExtendedPanelHelper.getUiLanguage());
-const translate = (key: BackendTranslationKeys) => ExtendedPanelHelper.translate(key, language.value);
+// Same language as the Directus UI, see useAppExtensionTranslate.
+const { language, translate } = useAppExtensionTranslate();
 
 const root = ref<HTMLElement>();
 const exporting = ref(false);

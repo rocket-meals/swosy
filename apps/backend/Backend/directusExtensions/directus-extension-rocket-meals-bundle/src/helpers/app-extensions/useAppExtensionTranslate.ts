@@ -1,20 +1,44 @@
 /**
  * Vue composable for the Directus app extensions of this bundle: a `translate` function bound to
- * the language of the logged-in backend user. Only usable inside a component `setup`.
+ * the language the Directus UI is shown in. Only usable inside a component `setup`.
+ *
+ * Directus writes its UI language to `<html lang>` whenever it changes (user profile, project
+ * default). Watching that attribute keeps our texts in the same language as Directus' own –
+ * including a switch of the language while a page is open.
  */
 
 import { useStores } from '@directus/extensions-sdk';
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, ref } from 'vue';
 import type { TranslationParams } from 'repo-depkit-common/src/translations';
 import { AppExtensionLanguageHelper } from './AppExtensionLanguageHelper';
 import type { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 
-export function useAppExtensionTranslate() {
-  const { useUserStore, useSettingsStore } = useStores();
-  const userStore = useUserStore();
-  const settingsStore = useSettingsStore();
+function readHtmlLanguage(): string | undefined {
+  return typeof document !== 'undefined' ? document.documentElement?.lang || undefined : undefined;
+}
 
-  const language = computed<string | undefined>(() => AppExtensionLanguageHelper.resolveUserLanguage(userStore.currentUser?.language, settingsStore.settings?.default_language));
+export function useAppExtensionTranslate() {
+  const { useUserStore, useServerStore } = useStores();
+  const userStore = useUserStore();
+  const serverStore = useServerStore();
+
+  const htmlLanguage = ref<string | undefined>(readHtmlLanguage());
+  if (typeof MutationObserver !== 'undefined' && typeof document !== 'undefined') {
+    const observer = new MutationObserver(() => {
+      htmlLanguage.value = readHtmlLanguage();
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    onBeforeUnmount(() => observer.disconnect());
+  }
+
+  const language = computed<string | undefined>(() =>
+    AppExtensionLanguageHelper.resolveUiLanguage({
+      htmlLanguage: htmlLanguage.value,
+      userLanguage: userStore.currentUser?.language,
+      projectDefaultLanguage: serverStore.info?.project?.default_language,
+      browserLanguage: typeof navigator !== 'undefined' ? navigator.language : undefined,
+    })
+  );
 
   const translate = (key: BackendTranslationKeys, params?: TranslationParams) => AppExtensionLanguageHelper.translate(key, language.value, params);
 

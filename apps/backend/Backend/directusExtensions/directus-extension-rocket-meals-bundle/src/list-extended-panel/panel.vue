@@ -11,6 +11,7 @@
 import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { ExtendedPanelHelper, type ExtendedPanelExportFormat, type ExtendedPanelSortDirection } from '../helpers/extended-panels/ExtendedPanelHelper';
+import { useAppExtensionTranslate } from '../helpers/app-extensions/useAppExtensionTranslate';
 import { BackendTranslationKeys } from '../helpers/translations/BackendTranslationKeys';
 
 const props = withDefaults(
@@ -42,15 +43,13 @@ const props = withDefaults(
 );
 
 const api = useApi();
-const { useFieldsStore, useInsightsStore, useUserStore, useSettingsStore, useNotificationsStore } = useStores();
+const { useFieldsStore, useInsightsStore, useNotificationsStore } = useStores();
 const fieldsStore = useFieldsStore();
 const insightsStore = useInsightsStore();
-const userStore = useUserStore();
-const settingsStore = useSettingsStore();
 const notificationsStore = useNotificationsStore();
 
-const language = computed<string | undefined>(() => userStore.currentUser?.language ?? settingsStore.settings?.default_language ?? ExtendedPanelHelper.getUiLanguage());
-const translate = (key: BackendTranslationKeys) => ExtendedPanelHelper.translate(key, language.value);
+// Same language as the Directus UI, see useAppExtensionTranslate.
+const { translate } = useAppExtensionTranslate();
 
 const root = ref<HTMLElement>();
 /**

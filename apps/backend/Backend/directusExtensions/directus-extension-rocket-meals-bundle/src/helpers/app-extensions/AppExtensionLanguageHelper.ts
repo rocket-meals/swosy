@@ -41,11 +41,16 @@ export class AppExtensionLanguageHelper {
   }
 
   /**
-   * The language of a backend user: their own choice, else the project default, else the UI.
-   * Mirrors how Directus itself picks the UI language.
+   * The language our texts are shown in – always the one the Directus UI is shown in right now:
+   *
+   * 1. `<html lang>`, which Directus sets to exactly the language it renders (`setLanguage`).
+   * 2. Before Directus has set it: the same rule Directus uses – the user's own language
+   *    (`directus_users.language`), else the project default (`server/info` →
+   *    `project.default_language`, readable for every user, unlike `directus_settings`).
+   * 3. The browser language.
    */
-  static resolveUserLanguage(userLanguage?: string | null, projectDefaultLanguage?: string | null): string | undefined {
-    return userLanguage || projectDefaultLanguage || AppExtensionLanguageHelper.getUiLanguage();
+  static resolveUiLanguage(options: { htmlLanguage?: string | null; userLanguage?: string | null; projectDefaultLanguage?: string | null; browserLanguage?: string | null }): string | undefined {
+    return options.htmlLanguage || options.userLanguage || options.projectDefaultLanguage || options.browserLanguage || undefined;
   }
 
   /** `06.10.2026, 09:45` / `Oct 6, 2026, 9:45 AM` – date and time in the user's language. */

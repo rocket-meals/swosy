@@ -67,6 +67,14 @@ Neue Logik, die auch eine App brauchen könnte, gehört dorthin (mit Test unter
 sie per Deep-Import (`repo-depkit-common/src/ChatHelper`), damit der Paket-Index nicht
 moment-timezone und Co. in den Browser zieht.
 
+## Sprache
+
+Alle Texte des Moduls und der `[Erweitert]`-Panels erscheinen in der Sprache, in der Directus selbst
+gerade angezeigt wird – nicht in der Sprache des Browsers. Directus nimmt die Sprache aus dem
+Benutzerprofil (`Sprache`), sonst die Projekt-Standardsprache (Einstellungen → Projekt) und schreibt
+sie nach `<html lang>`; `useAppExtensionTranslate()` liest genau das und wechselt bei einer Änderung
+sofort mit.
+
 ## Neue Seite hinzufügen
 
 1. Eintrag in `RocketMealsModulePages.PAGES`
