@@ -173,7 +173,8 @@ export function getVersionPatch() {
         // 72: the food offer list asks the server again on focus and when the app returns
         //     from the background (in-memory days were served without it); a dish opened
         //     from a chat shows the food when its offer no longer exists
-        return 72;
+        // 73: common: shared chat rules (ChatHelper) - chat messages sorted by the shared helper
+        return 73;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

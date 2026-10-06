@@ -3,16 +3,19 @@
  * Chat with the author of a food feedback.
  *
  * The comment of the feedback opens the conversation. The first answer creates the chat (see
- * `FoodFeedbackChatHelper.buildChatForFeedback`), adds the author as participant and links it to
+ * `FoodFeedbackChatStatusHelper.buildChatForFeedback`), adds the author as participant and links it to
  * the feedback, so the author finds it in the app. Messages written here carry no profile – that
  * is how the app and `chat-conversation-state-hook` tell support messages from user messages.
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { ChatConversationState } from 'repo-depkit-common/src/ChatConversationState';
+import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
+import { FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
+import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
 import { AppExtensionLanguageHelper } from '../../helpers/app-extensions/AppExtensionLanguageHelper';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
-import { FoodFeedbackChatHelper, FoodFeedbackChatStatus, type FoodFeedbackChatMessage, type FoodFeedbackListItem } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage, type FoodFeedbackListItem } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
@@ -40,9 +43,9 @@ const updatingState = ref(false);
 const newMessage = ref('');
 const messagesContainer = ref<HTMLElement>();
 
-const chatId = computed(() => FoodFeedbackChatHelper.getId(feedback.value?.chat));
-const status = computed(() => (feedback.value ? FoodFeedbackChatHelper.getStatus(feedback.value) : FoodFeedbackChatStatus.NEW));
-const canWrite = computed(() => !!feedback.value && FoodFeedbackChatHelper.canStartChat(feedback.value));
+const chatId = computed(() => RelationHelper.getId(feedback.value?.chat));
+const status = computed(() => (feedback.value ? FoodFeedbackChatStatusHelper.getStatus(feedback.value) : FoodFeedbackChatStatus.NEW));
+const canWrite = computed(() => !!feedback.value && FoodFeedbackChatStatusHelper.canStartChat(feedback.value));
 const foodName = computed(() => (feedback.value ? FoodFeedbackChatHelper.getFoodName(feedback.value) : undefined));
 const title = computed(() => foodName.value || translate(page.labelKey));
 
@@ -67,7 +70,7 @@ async function loadMessages() {
     },
   });
   const previousCount = messages.value.length;
-  messages.value = FoodFeedbackChatHelper.sortMessages(response.data?.data ?? []);
+  messages.value = ChatHelper.sortMessagesChronologically(response.data?.data ?? []);
   if (messages.value.length !== previousCount) {
     scrollToBottom();
   }
@@ -96,18 +99,18 @@ async function ensureChat(): Promise<string> {
   if (chatId.value) {
     return chatId.value;
   }
-  const profileId = FoodFeedbackChatHelper.getId(current.profile);
+  const profileId = RelationHelper.getId(current.profile);
   if (!profileId) {
     throw new Error('feedback has no profile');
   }
   // The author sees the chat title in the app, so it is written in the author's language.
-  const authorLanguage = FoodFeedbackChatHelper.getAuthorLanguage(current);
+  const authorLanguage = FoodFeedbackChatStatusHelper.getAuthorLanguage(current);
   const food = foodName.value || AppExtensionLanguageHelper.translate(BackendTranslationKeys.rocket_meals_module_unknown_food, authorLanguage);
   const alias = AppExtensionLanguageHelper.translate(BackendTranslationKeys.rocket_meals_module_food_feedback_chat_alias, authorLanguage, { food });
 
-  const chatResponse = await api.post(FoodFeedbackChatHelper.CHATS_ENDPOINT, FoodFeedbackChatHelper.buildChatForFeedback(current, alias));
+  const chatResponse = await api.post(FoodFeedbackChatHelper.CHATS_ENDPOINT, FoodFeedbackChatStatusHelper.buildChatForFeedback(current, alias));
   const createdChatId = String(chatResponse.data?.data?.id);
-  await api.post(FoodFeedbackChatHelper.CHATS_PARTICIPANTS_ENDPOINT, { chats_id: createdChatId, profiles_id: profileId });
+  await api.post(FoodFeedbackChatHelper.CHATS_PARTICIPANTS_ENDPOINT, ChatHelper.buildParticipant(createdChatId, profileId));
   await api.patch(`${FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT}/${current.id}`, { chat: createdChatId });
   return createdChatId;
 }
@@ -131,7 +134,7 @@ async function sendMessage() {
     newMessage.value = '';
     await loadFeedback();
     // Set explicitly as well: the hook only recognises support by the app access of the writer.
-    await setConversationState(ChatConversationState.WAITING_FOR_USER);
+    await setConversationState(ChatHelper.getConversationStateAfterMessage(true));
     await loadFeedback();
     await loadMessages();
   } catch (error) {
@@ -237,9 +240,9 @@ watch(() => props.feedbackId, load);
             <div class="message-date type-note">{{ formatDateTime(feedback.date_created) }}</div>
           </div>
 
-          <div v-for="message in messages" :key="message.id" class="message" :class="FoodFeedbackChatHelper.isMessageFromSupport(message) ? 'from-support' : 'from-user'">
+          <div v-for="message in messages" :key="message.id" class="message" :class="ChatHelper.isSupportMessage(message) ? 'from-support' : 'from-user'">
             <div class="message-author type-note">
-              <template v-if="FoodFeedbackChatHelper.isMessageFromSupport(message)">
+              <template v-if="ChatHelper.isSupportMessage(message)">
                 {{ translate(BackendTranslationKeys.rocket_meals_module_support) }}
                 <template v-if="FoodFeedbackChatHelper.getSupportAuthorName(message)"> · {{ FoodFeedbackChatHelper.getSupportAuthorName(message) }}</template>
               </template>

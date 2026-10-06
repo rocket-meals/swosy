@@ -12,7 +12,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { ChatMessagesHelper } from '@/redux/actions/Chats/ChatMessages';
 import { useLanguage } from '@/hooks/useLanguage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { AppFeedbackContentHelper, DatabaseTypes, DateHelper } from 'repo-depkit-common';
+import { AppFeedbackContentHelper, ChatHelper, DatabaseTypes, DateHelper } from 'repo-depkit-common';
 import SettingsList from '@/components/SettingsList';
 import MyImage from '@/components/MyImage';
 import { getFoodName } from '@/helper/resourceHelper';
@@ -143,13 +143,7 @@ const ChatDetailsScreen = () => {
         const chatInitialMessage = (chat as { initial_message?: string } | undefined)?.initial_message;
         const initialMessage = typeof chatInitialMessage === 'string' ? chatInitialMessage.trim() : undefined;
 
-        const sortedMessages = useMemo(() => {
-                return [...messages].sort((a, b) => {
-                        const da = a.date_created || a.date_updated || '';
-                        const db = b.date_created || b.date_updated || '';
-                        return da < db ? -1 : 1;
-                });
-        }, [messages]);
+        const sortedMessages = useMemo(() => ChatHelper.sortMessagesChronologically(messages), [messages]);
 
         const latestMessageTimestamp = useMemo(() => {
                 if (sortedMessages.length > 0) {

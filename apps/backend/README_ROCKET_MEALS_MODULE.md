@@ -45,6 +45,24 @@ Der `chat-conversation-state-hook` erkennt Support jetzt an der App-Berechtigung
 (`accountability.app`) und nicht mehr nur an Admin-Rechten – so werden auch Antworten von
 Mensa-Mitarbeitenden mit eigener Rolle richtig als Support gewertet.
 
+## Gemeinsame Logik in `repo-depkit-common`
+
+Die Regeln hinter den Chats stehen nicht im Modul, sondern in `packages/common` – so rechnen App,
+Directus-Hooks und Modul garantiert gleich. Im Bundle bleibt nur, was Directus-spezifisch ist
+(Darstellung, Icons, Endpunkte, Feldlisten:
+`src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts`).
+
+| Helper (`repo-depkit-common`)  | Was er regelt                                                                                                                                   | Genutzt von                                                           |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `ChatHelper`                   | Support- vs. Nutzer-Nachricht, Status nach einer Nachricht, Sortierung, neuer Support-Chat, Teilnehmer                                          | `chat-conversation-state-hook`, `app-feedbacks-hook`, Modul, App-Chat |
+| `FoodFeedbackChatStatusHelper` | Status eines Speise-Feedbacks, Filter (Directus-Filter und im Speicher), wer beantwortet werden kann, Sprache des Autors, Chat für ein Feedback | Modul; für eine Ansicht in der App direkt nutzbar                     |
+| `RelationHelper`               | ID einer Relation, egal ob als Schlüssel oder als ausgeklappte Zeile geladen                                                                    | Modul, Chat-Logik                                                     |
+
+Neue Logik, die auch eine App brauchen könnte, gehört dorthin (mit Test unter
+`packages/common/src/__tests__/`). Code, der in die Directus-Oberfläche gebündelt wird, importiert
+sie per Deep-Import (`repo-depkit-common/src/ChatHelper`), damit der Paket-Index nicht
+moment-timezone und Co. in den Browser zieht.
+
 ## Neue Seite hinzufügen
 
 1. Eintrag in `RocketMealsModulePages.PAGES`
@@ -53,7 +71,8 @@ Mensa-Mitarbeitenden mit eigener Rolle richtig als Support gewertet.
 2. Route in `src/rocket-meals-module/index.ts`, Komponente unter `src/rocket-meals-module/<seite>/`.
 3. Texte als Keys `rocket_meals_module_*` im Backend-Katalog (alle Sprachen), in Komponenten über
    `useAppExtensionTranslate()`.
-4. Logik ohne Vue in `src/helpers/rocket-meals-module/` mit Test – die Bundle-Tests laufen in Node.
+4. Fachlogik nach `packages/common` (siehe oben), Directus-spezifische Logik ohne Vue in
+   `src/helpers/rocket-meals-module/` – beides mit Test, die Tests laufen in Node.
 
 Ideen für weitere Seiten: Wohnheim-Verwaltung, Renner/Penner-Listen der Speisen.
 

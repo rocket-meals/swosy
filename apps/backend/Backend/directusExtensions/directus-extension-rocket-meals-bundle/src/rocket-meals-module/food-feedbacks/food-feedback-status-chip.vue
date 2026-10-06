@@ -2,7 +2,8 @@
 /** Coloured chip with the chat status of a food feedback. */
 import { computed } from 'vue';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
-import { FoodFeedbackChatHelper, type FoodFeedbackChatStatus } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import type { FoodFeedbackChatStatus } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
+import { FoodFeedbackChatHelper } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 
 const props = defineProps<{ status: FoodFeedbackChatStatus }>();
 

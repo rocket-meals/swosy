@@ -1,4 +1,4 @@
-import {ChatConversationState, CollectionNames, DatabaseTypes, DateHelper, MailAdresses} from 'repo-depkit-common';
+import {ChatHelper, CollectionNames, DatabaseTypes, DateHelper, MailAdresses} from 'repo-depkit-common';
 import {ItemsServiceHelper} from '../helpers/ItemsServiceHelper';
 import {MyDatabaseHelper} from '../helpers/MyDatabaseHelper';
 import {PushNotificationHelper} from '../helpers/PushNotificationHelper';
@@ -49,9 +49,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
       }
     }
 
-    const conversationState = messageFromAdmin
-      ? ChatConversationState.WAITING_FOR_USER
-      : ChatConversationState.WAITING_FOR_SUPPORT;
+    const conversationState = ChatHelper.getConversationStateAfterMessage(messageFromAdmin);
 
     console.log(`${HOOK_NAME}: Conversation state:`, conversationState);
 

@@ -7,7 +7,8 @@ import { useApi } from '@directus/extensions-sdk';
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
-import { FoodFeedbackChatHelper, FoodFeedbackChatStatus, FoodFeedbackListFilter, type FoodFeedbackListItem } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
+import { FoodFeedbackChatHelper, type FoodFeedbackListItem } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
@@ -20,12 +21,12 @@ const { translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.FOOD_FEEDBACKS;
 
-const activeFilter = ref<FoodFeedbackListFilter>(FoodFeedbackListFilter.OPEN);
+const activeFilter = ref<FoodFeedbackChatFilter>(FoodFeedbackChatFilter.OPEN);
 const search = ref('');
 const currentPage = ref(1);
 const feedbacks = ref<FoodFeedbackListItem[]>([]);
 const total = ref(0);
-const counts = ref<Partial<Record<FoodFeedbackListFilter, number>>>({});
+const counts = ref<Partial<Record<FoodFeedbackChatFilter, number>>>({});
 const loading = ref(false);
 const loadError = ref(false);
 
@@ -58,7 +59,7 @@ async function loadFeedbacks() {
 
 async function loadCounts() {
   const entries = await Promise.all(
-    FoodFeedbackChatHelper.FILTERS.map(async filter => {
+    FoodFeedbackChatStatusHelper.FILTERS.map(async filter => {
       try {
         const response = await api.get(FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT, {
           params: FoodFeedbackChatHelper.buildCountQuery(filter),
@@ -77,7 +78,7 @@ function reload() {
   loadCounts();
 }
 
-function selectFilter(filter: FoodFeedbackListFilter) {
+function selectFilter(filter: FoodFeedbackChatFilter) {
   activeFilter.value = filter;
   currentPage.value = 1;
 }
@@ -121,7 +122,7 @@ onMounted(reload);
 
     <div class="food-feedbacks">
       <div class="filters">
-        <button v-for="filter in FoodFeedbackChatHelper.FILTERS" :key="filter" class="filter" :class="{ active: filter === activeFilter }" @click="selectFilter(filter)">
+        <button v-for="filter in FoodFeedbackChatStatusHelper.FILTERS" :key="filter" class="filter" :class="{ active: filter === activeFilter }" @click="selectFilter(filter)">
           {{ translate(FoodFeedbackChatHelper.getFilterLabelKey(filter)) }}
           <span v-if="counts[filter] !== undefined" class="count">{{ counts[filter] }}</span>
         </button>
@@ -136,7 +137,7 @@ onMounted(reload);
       <div v-else class="list" :class="{ loading }">
         <div v-for="feedback in feedbacks" :key="feedback.id" class="feedback" @click="openChat(feedback)">
           <div class="feedback-header">
-            <food-feedback-status-chip :status="FoodFeedbackChatHelper.getStatus(feedback)" />
+            <food-feedback-status-chip :status="FoodFeedbackChatStatusHelper.getStatus(feedback)" />
             <span class="food type-label">{{ FoodFeedbackChatHelper.getFoodName(feedback) }}</span>
             <food-feedback-rating :rating="feedback.rating" />
             <span class="spacer" />
@@ -147,9 +148,9 @@ onMounted(reload);
           </div>
           <div class="comment">{{ feedback.comment }}</div>
           <div class="feedback-actions">
-            <v-button small :secondary="FoodFeedbackChatHelper.getStatus(feedback) !== FoodFeedbackChatStatus.NEW" :disabled="!FoodFeedbackChatHelper.canStartChat(feedback)" @click.stop="openChat(feedback)">
+            <v-button small :secondary="FoodFeedbackChatStatusHelper.getStatus(feedback) !== FoodFeedbackChatStatus.NEW" :disabled="!FoodFeedbackChatStatusHelper.canStartChat(feedback)" @click.stop="openChat(feedback)">
               <v-icon name="forum" left small />
-              {{ FoodFeedbackChatHelper.getStatus(feedback) === FoodFeedbackChatStatus.NEW ? translate(BackendTranslationKeys.rocket_meals_module_reply) : translate(BackendTranslationKeys.rocket_meals_module_to_chat) }}
+              {{ FoodFeedbackChatStatusHelper.getStatus(feedback) === FoodFeedbackChatStatus.NEW ? translate(BackendTranslationKeys.rocket_meals_module_reply) : translate(BackendTranslationKeys.rocket_meals_module_to_chat) }}
             </v-button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import {
   AppFeedbackContentHelper,
-  ChatConversationState,
+  ChatHelper,
   CollectionNames,
   DatabaseTypes,
   DateHelper,
@@ -91,16 +91,14 @@ async function createChatForAppFeedback(
   );
   const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 
-  const chatId = await chatsHelper.createOne({
-    alias: getChatAliasForAppFeedback(app_feedback),
-    initial_message: getChatInitialMessageForAppFeedback(app_feedback),
-    conversation_state: ChatConversationState.WAITING_FOR_SUPPORT,
-  });
+  const chatId = await chatsHelper.createOne(
+    ChatHelper.buildSupportChat({
+      alias: getChatAliasForAppFeedback(app_feedback),
+      initialMessage: getChatInitialMessageForAppFeedback(app_feedback),
+    })
+  );
 
-  await chatsParticipantsHelper.createOne({
-    chats_id: String(chatId),
-    profiles_id: String(profileId),
-  });
+  await chatsParticipantsHelper.createOne(ChatHelper.buildParticipant(String(chatId), String(profileId)));
 
   await appFeedbacksHelper.updateOne(app_feedback.id, { chat: String(chatId) });
 
