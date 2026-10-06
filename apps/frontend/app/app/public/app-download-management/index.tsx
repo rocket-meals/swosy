@@ -15,8 +15,9 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 import {useLanguage} from '@/hooks/useLanguage';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
+import {isFullscreenParam, PUBLIC_FULLSCREEN_PARAM, PUBLIC_ROUTES} from '@/helper/publicRoutes';
 
-const ROUTE_PATH = '/app-download-management';
+const ROUTE_PATH = PUBLIC_ROUTES.APP_DOWNLOAD_MANAGEMENT;
 
 const AppDownloadManagement = () => {
 	useSetPageTitle(TranslationKeys.app_download);
@@ -28,8 +29,7 @@ const AppDownloadManagement = () => {
 	const isDebugMode = useDebugMode();
 	const {width: screenWidth} = useWindowDimensions();
 
-	// useLocalSearchParams may return a string or string[] depending on the router
-	const isFullscreen = Array.isArray(fullscreen) ? fullscreen.includes('true') : fullscreen === 'true';
+	const isFullscreen = isFullscreenParam(fullscreen);
 
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
@@ -41,7 +41,8 @@ const AppDownloadManagement = () => {
 
 	const projectName = ServerInfoHelper.getServerName(serverInfo || {}, customerConfig);
 	const projectDescriptor = serverInfo?.info?.project?.project_descriptor || '';
-	const appDownloadUrl = `https://rocket-meals.de${baseUrl}/experimentell/app-download${isFullscreen ? '?fullscreen=true' : ''}`;
+	// The QR code always opens the store selection in fullscreen - it is scanned from a poster or monitor.
+	const appDownloadUrl = `https://rocket-meals.de${baseUrl}${PUBLIC_ROUTES.APP_DOWNLOAD}?${PUBLIC_FULLSCREEN_PARAM}=true`;
 
 	const qrSize = Math.min(screenWidth * 0.6, 280);
 
@@ -52,7 +53,7 @@ const AppDownloadManagement = () => {
 		}
 		router.replace({
 			pathname: ROUTE_PATH,
-			params: {fullscreen: 'true'},
+			params: {[PUBLIC_FULLSCREEN_PARAM]: 'true'},
 		});
 	};
 

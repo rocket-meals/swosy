@@ -14,4 +14,9 @@ export interface DownloadItemProps {
 	 * the label.
 	 */
 	qrValue?: string | null;
+	/**
+	 * Shows an external-link icon next to the label, for cards that open a
+	 * page outside the app (e.g. an app store).
+	 */
+	showExternalLinkIcon?: boolean;
 }

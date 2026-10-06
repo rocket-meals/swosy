@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, useWindowDimensions, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import CardWithText from '../CardWithText/CardWithText';
 import { DownloadItemProps } from './types';
 import styles from './styles';
@@ -9,7 +10,7 @@ import { useAppSelector } from '@/redux/hooks';
 import QrCode from '@/components/QrCode';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 
-const DownloadItem: React.FC<DownloadItemProps> = ({ label, imageSource, onPress, containerStyle, qrValue }) => {
+const DownloadItem: React.FC<DownloadItemProps> = ({ label, imageSource, onPress, containerStyle, qrValue, showExternalLinkIcon }) => {
 	const { theme } = useTheme();
 	const { primaryColor, amountColumnsForcard } = useAppSelector(state => state.settings);
 	const { width: screenWidth } = useWindowDimensions();
@@ -29,7 +30,17 @@ const DownloadItem: React.FC<DownloadItemProps> = ({ label, imageSource, onPress
 					</View>
 				) : undefined
 			}
-			bottomContent={<Text style={[styles.label, { color: theme.screen.text }]}>{label}</Text>}
+			bottomContent={
+				<Text style={[styles.label, { color: theme.screen.text }]}>
+					{label}
+					{showExternalLinkIcon ? (
+						<>
+							{' '}
+							<MaterialCommunityIcons name="open-in-new" size={16} color={theme.screen.text} />
+						</>
+					) : null}
+				</Text>
+			}
 		/>
 	);
 };

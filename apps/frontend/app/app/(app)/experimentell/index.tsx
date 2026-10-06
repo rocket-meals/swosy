@@ -10,6 +10,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import SettingsList from '@/components/SettingsList';
+import { PUBLIC_ROUTES } from '@/helper/publicRoutes';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.experimentell);
@@ -95,7 +96,7 @@ const Index = () => {
 			key: 'app-download',
 			label: translate(TranslationKeys.app_download_selection),
 			leftIcon: <MaterialCommunityIcons name="download" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/app-download'),
+			onPress: () => router.push(PUBLIC_ROUTES.APP_DOWNLOAD),
 		},
 		{
 			key: 'giro-card-iban',
