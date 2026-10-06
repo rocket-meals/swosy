@@ -176,7 +176,9 @@ export function getVersionPatch() {
         // 73: common: shared chat rules (ChatHelper) - chat messages sorted by the shared helper
         // 74: public links under /public/ (give feedback, app download, app download management) and the new MCP instruction screen /public/mcp-instruction; app download cards show an external-link icon
         // 75: MCP instruction screen shows the fixed public MCP token without asking the server
-        return 75;
+        // 76: MCP instruction screen: ?ai-agent=claude|openai|other preselects the assistant, the user
+        //     picks personal or public access (login button without an account), UI labels quoted in monospace
+        return 76;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

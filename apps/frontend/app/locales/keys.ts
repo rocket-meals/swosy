@@ -811,6 +811,10 @@ export const TranslationKeys = {
 	mcp_other_step_url: 'mcp_other_step_url',
 	mcp_other_step_header: 'mcp_other_step_header',
 	mcp_other_step_url_with_token: 'mcp_other_step_url_with_token',
+	mcp_access_choice_question: 'mcp_access_choice_question',
+	mcp_access_no_account_hint: 'mcp_access_no_account_hint',
+	mcp_connect_with_account: 'mcp_connect_with_account',
+	mcp_continue_without_account: 'mcp_continue_without_account',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];

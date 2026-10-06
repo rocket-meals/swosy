@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useDispatch } from 'react-redux';
 import { McpAccessHelper } from 'repo-depkit-common';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -18,6 +20,7 @@ import { UserHelper } from '@/helper/UserHelper';
 import { authorizedFetch } from '@/helper/authorizedFetch';
 import { myContrastColor } from '@/helper/ColorHelper';
 import Server from '@/constants/ServerUrl';
+import { performLogout } from '@/helper/logoutHelper';
 
 type McpProvider = 'claude' | 'openai' | 'other';
 
@@ -95,34 +98,74 @@ async function fetchOrCreatePersonalMcpToken(): Promise<string> {
 	return await readTokenResponse(await authorizedFetch(McpAccessHelper.getEndpointPath(McpAccessHelper.ROUTE_MY_TOKEN), { method: 'POST' }));
 }
 
+/** `?ai-agent=claude` preselects the assistant, so a link can lead straight to its steps. */
+const AI_AGENT_PARAM = 'ai-agent';
+
+const AI_AGENT_PARAM_VALUES: Record<string, McpProvider> = {
+	claude: 'claude',
+	openai: 'openai',
+	chatgpt: 'openai',
+	other: 'other',
+};
+
+function parseAiAgentParam(value: string | string[] | undefined): McpProvider | null {
+	const raw = Array.isArray(value) ? value[0] : value;
+	return raw ? (AI_AGENT_PARAM_VALUES[raw.trim().toLowerCase()] ?? null) : null;
+}
+
+/** Whether the AI assistant connects with the user's own account or with the public MCP user. */
+type McpAccessMode = 'personal' | 'public';
+
+/** Tokens have no spaces - zero-width spaces let a long one wrap inside its row. Display only, the copy keeps the raw value. */
+function makeWrappable(value: string): string {
+	return value.match(/.{1,16}/g)?.join('\u200B') ?? value;
+}
+
 const McpInstruction = () => {
 	useSetPageTitle(TranslationKeys.mcp_instruction);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const toast = useToast();
+	const router = useRouter();
+	const dispatch = useDispatch();
 	const customerConfig = useCustomerConfig();
 	const { serverInfo, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const { loggedIn, user } = useAppSelector((state) => state.authReducer);
 	// Anonymous users ("continue without account") have no Directus user and thus no own token.
-	const hasPersonalAccess = loggedIn && UserHelper.isRegisteredUser(user);
+	const hasAccount = loggedIn && UserHelper.isRegisteredUser(user);
 
-	const [provider, setProvider] = useState<McpProvider | null>(null);
-	const [token, setToken] = useState<string | null>(null);
+	const { [AI_AGENT_PARAM]: aiAgentParam } = useLocalSearchParams();
+	const [provider, setProvider] = useState<McpProvider | null>(() => parseAiAgentParam(aiAgentParam));
+	const [accessMode, setAccessMode] = useState<McpAccessMode | null>(null);
+	const [personalToken, setPersonalToken] = useState<string | null>(null);
 	const [hasPersonalToken, setHasPersonalToken] = useState<boolean | null>(null);
 	const [isLoadingToken, setIsLoadingToken] = useState(false);
 
 	const appName = ServerInfoHelper.getServerName(serverInfo || {}, customerConfig);
 	const serverUrl = McpAccessHelper.buildServerUrl(Server.ServerUrl);
+	// The public MCP user has the same fixed token on every server - nothing to ask the server for.
+	const token = accessMode === 'public' ? McpAccessHelper.PUBLIC_USER_TOKEN : accessMode === 'personal' ? personalToken : null;
 
 	useEffect(() => {
-		let cancelled = false;
+		const providerFromParam = parseAiAgentParam(aiAgentParam);
+		if (providerFromParam) {
+			setProvider(providerFromParam);
+		}
+	}, [aiAgentParam]);
+
+	// Logging out (or in as someone else) must not leave the previous user's token on screen.
+	useEffect(() => {
+		setPersonalToken(null);
 		setHasPersonalToken(null);
-		// The public MCP user has the same fixed token on every server - nothing to ask for.
-		setToken(hasPersonalAccess ? null : McpAccessHelper.PUBLIC_USER_TOKEN);
-		if (!hasPersonalAccess) {
+		setAccessMode((current) => (current === 'personal' ? null : current));
+	}, [hasAccount, user?.id]);
+
+	useEffect(() => {
+		if (accessMode !== 'personal' || !hasAccount) {
 			return;
 		}
+		let cancelled = false;
 		const load = async () => {
 			try {
 				const hasToken = await fetchHasPersonalMcpToken();
@@ -136,12 +179,27 @@ const McpInstruction = () => {
 		return () => {
 			cancelled = true;
 		};
-	}, [hasPersonalAccess]);
+	}, [accessMode, hasAccount]);
+
+	const selectProvider = (selected: McpProvider) => {
+		setProvider(selected);
+		// Keeps the choice in the url, so the page can be shared or bookmarked as it is.
+		router.setParams({ [AI_AGENT_PARAM]: selected });
+	};
+
+	const openLogin = () => {
+		if (loggedIn) {
+			// Anonymous users are "logged in" without an account - same way to the login screen as the popup events take.
+			void performLogout(dispatch, router);
+		} else {
+			router.push('/(auth)/login');
+		}
+	};
 
 	const revealPersonalToken = useCallback(async () => {
 		setIsLoadingToken(true);
 		try {
-			setToken(await fetchOrCreatePersonalMcpToken());
+			setPersonalToken(await fetchOrCreatePersonalMcpToken());
 			setHasPersonalToken(true);
 		} catch (error) {
 			console.error('Could not create the MCP token:', error);
@@ -175,7 +233,7 @@ const McpInstruction = () => {
 	const renderCopyRow = (label: string, value: string | null, groupPosition: 'top' | 'middle' | 'bottom' | 'single' = 'single') => (
 		<SettingsList
 			title={label}
-			value={value ?? translate(TranslationKeys.mcp_access_token_required)}
+			value={value ? makeWrappable(value) : translate(TranslationKeys.mcp_access_token_required)}
 			valueColor={value ? undefined : theme.modal.placeholder}
 			stackedValue
 			leftIcon={<MaterialCommunityIcons name={value ? 'content-copy' : 'key-outline'} size={22} color={theme.screen.icon} />}
@@ -184,32 +242,71 @@ const McpInstruction = () => {
 		/>
 	);
 
-	const renderTokenSection = () => {
-		if (!hasPersonalAccess) {
+	const renderRadioIcon = (isSelected: boolean) => (
+		<MaterialCommunityIcons name={isSelected ? 'radiobox-marked' : 'radiobox-blank'} size={24} color={isSelected ? primaryColor : theme.screen.icon} />
+	);
+
+	const renderAccessChoice = () => (
+		<>
+			<MyMarkdownProjectColored content={translate(hasAccount ? TranslationKeys.mcp_access_choice_question : TranslationKeys.mcp_access_no_account_hint)} />
+			<View style={styles.choiceGroup}>
+				{hasAccount ? (
+					<SettingsList
+						leftIcon={<MaterialCommunityIcons name="account-key" size={24} color={theme.screen.icon} />}
+						title={translate(TranslationKeys.mcp_connect_with_account)}
+						rightIcon={renderRadioIcon(accessMode === 'personal')}
+						handleFunction={() => setAccessMode('personal')}
+						groupPosition="top"
+					/>
+				) : (
+					<SettingsList
+						leftIcon={<MaterialCommunityIcons name="login" size={24} color={theme.screen.icon} />}
+						title={`${translate(TranslationKeys.sign_in)} / ${translate(TranslationKeys.create_account)}`}
+						rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+						handleFunction={openLogin}
+						groupPosition="top"
+					/>
+				)}
+				<SettingsList
+					leftIcon={<MaterialCommunityIcons name="earth" size={24} color={theme.screen.icon} />}
+					title={translate(TranslationKeys.mcp_continue_without_account)}
+					rightIcon={renderRadioIcon(accessMode === 'public')}
+					handleFunction={() => setAccessMode('public')}
+					groupPosition="bottom"
+				/>
+			</View>
+		</>
+	);
+
+	const renderToken = () => {
+		if (accessMode === 'public') {
 			return (
 				<>
 					<MyMarkdownProjectColored content={translate(TranslationKeys.mcp_access_token_public_hint)} />
-					{token ? renderCopyRow(translate(TranslationKeys.mcp_access_token), token) : <ActivityIndicator color={theme.screen.text} />}
+					{renderCopyRow(translate(TranslationKeys.mcp_access_token), McpAccessHelper.PUBLIC_USER_TOKEN)}
 				</>
 			);
 		}
-		return (
-			<>
-				<MyMarkdownProjectColored content={translate(TranslationKeys.mcp_access_token_personal_hint)} />
-				{token ? (
-					renderCopyRow(translate(TranslationKeys.mcp_access_token), token)
-				) : (
-					<SettingsList
-						iconBgColor={primaryColor}
-						leftIcon={<MaterialCommunityIcons name={hasPersonalToken ? 'eye-outline' : 'key-plus'} size={24} color={theme.screen.icon} />}
-						title={translate(hasPersonalToken ? TranslationKeys.mcp_access_token_show : TranslationKeys.mcp_access_token_create)}
-						rightIcon={isLoadingToken || hasPersonalToken === null ? <ActivityIndicator color={theme.screen.text} /> : undefined}
-						handleFunction={isLoadingToken || hasPersonalToken === null ? undefined : () => void revealPersonalToken()}
-						groupPosition="single"
-					/>
-				)}
-			</>
-		);
+		if (accessMode === 'personal') {
+			return (
+				<>
+					<MyMarkdownProjectColored content={translate(TranslationKeys.mcp_access_token_personal_hint)} />
+					{personalToken ? (
+						renderCopyRow(translate(TranslationKeys.mcp_access_token), personalToken)
+					) : (
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name={hasPersonalToken ? 'eye-outline' : 'key-plus'} size={24} color={theme.screen.icon} />}
+							title={translate(hasPersonalToken ? TranslationKeys.mcp_access_token_show : TranslationKeys.mcp_access_token_create)}
+							rightIcon={isLoadingToken || hasPersonalToken === null ? <ActivityIndicator color={theme.screen.text} /> : undefined}
+							handleFunction={isLoadingToken || hasPersonalToken === null ? undefined : () => void revealPersonalToken()}
+							groupPosition="single"
+						/>
+					)}
+				</>
+			);
+		}
+		return null;
 	};
 
 	return (
@@ -220,15 +317,14 @@ const McpInstruction = () => {
 				<SettingsGroupTitle>{translate(TranslationKeys.mcp_choose_provider)}</SettingsGroupTitle>
 				<View style={styles.groupContainer}>
 					{PROVIDER_OPTIONS.map((option, index) => {
-						const isSelected = option.provider === provider;
 						const groupPosition = index === 0 ? 'top' : index === PROVIDER_OPTIONS.length - 1 ? 'bottom' : 'middle';
 						return (
 							<SettingsList
 								key={option.provider}
 								leftIcon={<MaterialCommunityIcons name={option.icon} size={24} color={theme.screen.icon} />}
 								title={option.provider === 'other' ? translate(option.label) : option.label}
-								rightIcon={<MaterialCommunityIcons name={isSelected ? 'radiobox-marked' : 'radiobox-blank'} size={24} color={isSelected ? primaryColor : theme.screen.icon} />}
-								handleFunction={() => setProvider(option.provider)}
+								rightIcon={renderRadioIcon(option.provider === provider)}
+								handleFunction={() => selectProvider(option.provider)}
 								groupPosition={groupPosition}
 							/>
 						);
@@ -238,7 +334,10 @@ const McpInstruction = () => {
 				{provider ? (
 					<>
 						<SettingsGroupTitle>{translate(TranslationKeys.mcp_access_token)}</SettingsGroupTitle>
-						<View style={styles.groupContainer}>{renderTokenSection()}</View>
+						<View style={styles.groupContainer}>
+							{renderAccessChoice()}
+							{renderToken()}
+						</View>
 
 						<SettingsGroupTitle>{translate(TranslationKeys.mcp_steps_title)}</SettingsGroupTitle>
 						<View style={styles.groupContainer}>
@@ -273,6 +372,9 @@ const styles = StyleSheet.create({
 	},
 	groupContainer: {
 		marginBottom: 20,
+	},
+	choiceGroup: {
+		marginBottom: 12,
 	},
 	step: {
 		marginBottom: 14,

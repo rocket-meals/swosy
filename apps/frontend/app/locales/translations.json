@@ -7580,14 +7580,14 @@
     "zh": "访问令牌"
   },
   "mcp_access_token_public_hint": {
-    "de": "Du bist nicht angemeldet. Du nutzt deshalb den **öffentlichen Zugang** – damit sieht der KI-Assistent nur öffentliche Daten wie Speisepläne. Melde dich an, um einen persönlichen Zugang zu erhalten.",
-    "en": "You are not logged in, so you use the **public access** – the AI assistant only sees public data such as menus. Log in to get a personal access.",
-    "ar": "أنت غير مسجّل الدخول، لذلك تستخدم **الوصول العام** – لا يرى المساعد إلا البيانات العامة مثل قوائم الطعام. سجّل الدخول للحصول على وصول شخصي.",
-    "es": "No has iniciado sesión, así que usas el **acceso público**: el asistente de IA solo ve datos públicos como los menús. Inicia sesión para obtener un acceso personal.",
-    "fr": "Tu n’es pas connecté·e, tu utilises donc l’**accès public** : l’assistant IA ne voit que les données publiques comme les menus. Connecte-toi pour obtenir un accès personnel.",
-    "ru": "Ты не вошёл в систему, поэтому используешь **общий доступ** – ИИ-ассистент видит только общедоступные данные, например меню. Войди, чтобы получить личный доступ.",
-    "tr": "Giriş yapmadın, bu yüzden **herkese açık erişimi** kullanıyorsun – yapay zekâ asistanı yalnızca menüler gibi herkese açık verileri görür. Kişisel erişim için giriş yap.",
-    "zh": "你尚未登录，因此使用的是**公共访问**——AI 助手只能看到菜单等公开数据。登录即可获得个人访问权限。"
+    "de": "Du nutzt den **öffentlichen Zugang** – damit sieht der KI-Assistent nur öffentliche Daten wie Speisepläne.",
+    "en": "You use the **public access** – the AI assistant only sees public data such as menus.",
+    "ar": "أنت تستخدم **الوصول العام** – لا يرى مساعد الذكاء الاصطناعي إلا البيانات العامة مثل قوائم الطعام.",
+    "es": "Usas el **acceso público**: el asistente de IA solo ve datos públicos como los menús.",
+    "fr": "Tu utilises l’**accès public** : l’assistant IA ne voit que les données publiques comme les menus.",
+    "ru": "Ты используешь **общий доступ** – ИИ-ассистент видит только общедоступные данные, например меню.",
+    "tr": "**Herkese açık erişimi** kullanıyorsun – yapay zekâ asistanı yalnızca menüler gibi herkese açık verileri görür.",
+    "zh": "你正在使用**公共访问**——AI 助手只能看到菜单等公开数据。"
   },
   "mcp_access_token_personal_hint": {
     "de": "Dein **persönliches Token** gibt dem KI-Assistenten Zugriff mit deinen Rechten. Gib es nicht weiter. Es wird erst auf Knopfdruck angezeigt.",
@@ -7630,14 +7630,14 @@
     "zh": "无法加载令牌。"
   },
   "mcp_access_token_required": {
-    "de": "Erstelle oder zeige oben zuerst dein Token an.",
-    "en": "Create or show your token above first.",
-    "ar": "أنشئ رمزك أو اعرضه في الأعلى أولًا.",
-    "es": "Primero crea o muestra tu token arriba.",
-    "fr": "Crée ou affiche d’abord ton jeton ci-dessus.",
-    "ru": "Сначала создай или покажи свой токен выше.",
-    "tr": "Önce yukarıda belirtecini oluştur veya göster.",
-    "zh": "请先在上方创建或显示你的令牌。"
+    "de": "Wähle oben zuerst einen Zugang und lass dir das Token anzeigen.",
+    "en": "First choose an access above and show the token.",
+    "ar": "اختر أولًا طريقة وصول في الأعلى واعرض الرمز.",
+    "es": "Primero elige un acceso arriba y muestra el token.",
+    "fr": "Choisis d’abord un accès ci-dessus et affiche le jeton.",
+    "ru": "Сначала выбери доступ выше и покажи токен.",
+    "tr": "Önce yukarıda bir erişim seç ve belirteci göster.",
+    "zh": "请先在上方选择访问方式并显示令牌。"
   },
   "mcp_app_name": {
     "de": "Name",
@@ -7690,154 +7690,154 @@
     "zh": "操作步骤"
   },
   "mcp_claude_step_open_connectors": {
-    "de": "Öffne die Claude-App und gehe zu **Einstellungen → Konnektoren**.",
-    "en": "Open the Claude app and go to **Settings → Connectors**.",
-    "ar": "افتح تطبيق Claude وانتقل إلى **الإعدادات ← الموصلات**.",
-    "es": "Abre la app de Claude y ve a **Ajustes → Conectores**.",
-    "fr": "Ouvre l’application Claude et va dans **Paramètres → Connecteurs**.",
-    "ru": "Открой приложение Claude и перейди в **Настройки → Коннекторы**.",
-    "tr": "Claude uygulamasını aç ve **Ayarlar → Bağlayıcılar** bölümüne git.",
-    "zh": "打开 Claude 应用，进入**设置 → 连接器**。"
+    "de": "Öffne die Claude-App und gehe zu „`Einstellungen → Konnektoren`“.",
+    "en": "Open the Claude app and go to “`Settings → Connectors`”.",
+    "ar": "افتح تطبيق Claude وانتقل إلى «`الإعدادات ← الموصلات`».",
+    "es": "Abre la app de Claude y ve a «`Ajustes → Conectores`».",
+    "fr": "Ouvre l’application Claude et va dans « `Paramètres → Connecteurs` ».",
+    "ru": "Открой приложение Claude и перейди в «`Настройки → Коннекторы`».",
+    "tr": "Claude uygulamasını aç ve “`Ayarlar → Bağlayıcılar`” bölümüne git.",
+    "zh": "打开 Claude 应用，进入“`设置 → 连接器`”。"
   },
   "mcp_claude_step_add_custom": {
-    "de": "Tippe auf **Hinzufügen** und dann auf **Benutzerdefinierten Connector hinzufügen**.",
-    "en": "Tap **Add** and then **Add custom connector**.",
-    "ar": "اضغط على **إضافة** ثم على **إضافة موصل مخصص**.",
-    "es": "Pulsa **Añadir** y luego **Añadir conector personalizado**.",
-    "fr": "Appuie sur **Ajouter**, puis sur **Ajouter un connecteur personnalisé**.",
-    "ru": "Нажми **Добавить**, затем **Добавить пользовательский коннектор**.",
-    "tr": "**Ekle**’ye, ardından **Özel bağlayıcı ekle**’ye dokun.",
-    "zh": "点击**添加**，然后点击**添加自定义连接器**。"
+    "de": "Tippe auf „`Hinzufügen`“ und dann auf „`Benutzerdefinierten Connector hinzufügen`“.",
+    "en": "Tap “`Add`” and then “`Add custom connector`”.",
+    "ar": "اضغط على «`إضافة`» ثم على «`إضافة موصل مخصص`».",
+    "es": "Pulsa «`Añadir`» y luego «`Añadir conector personalizado`».",
+    "fr": "Appuie sur « `Ajouter` », puis sur « `Ajouter un connecteur personnalisé` ».",
+    "ru": "Нажми «`Добавить`», затем «`Добавить пользовательский коннектор`».",
+    "tr": "“`Ekle`”’ye, ardından “`Özel bağlayıcı ekle`”’ye dokun.",
+    "zh": "点击“`添加`”，然后点击“`添加自定义连接器`”。"
   },
   "mcp_claude_step_name": {
-    "de": "Trage bei **Name** den Namen der App ein:",
-    "en": "Enter the name of the app under **Name**:",
-    "ar": "أدخل اسم التطبيق في حقل **الاسم**:",
-    "es": "Introduce el nombre de la app en **Nombre**:",
-    "fr": "Saisis le nom de l’application dans **Nom** :",
-    "ru": "Введи название приложения в поле **Название**:",
-    "tr": "**Ad** alanına uygulamanın adını gir:",
-    "zh": "在**名称**中填写应用名称："
+    "de": "Trage bei „`Name`“ den Namen der App ein:",
+    "en": "Enter the name of the app under “`Name`”:",
+    "ar": "أدخل اسم التطبيق في حقل «`الاسم`»:",
+    "es": "Introduce el nombre de la app en «`Nombre`»:",
+    "fr": "Saisis le nom de l’application dans « `Nom` » :",
+    "ru": "Введи название приложения в поле «`Название`»:",
+    "tr": "“`Ad`” alanına uygulamanın adını gir:",
+    "zh": "在“`名称`”中填写应用名称："
   },
   "mcp_claude_step_url": {
-    "de": "Trage bei **MCP-Server-URL** diese Adresse ein:",
-    "en": "Enter this address under **MCP server URL**:",
-    "ar": "أدخل هذا العنوان في **عنوان URL لخادم MCP**:",
-    "es": "Introduce esta dirección en **URL del servidor MCP**:",
-    "fr": "Saisis cette adresse dans **URL du serveur MCP** :",
-    "ru": "Введи этот адрес в поле **URL MCP-сервера**:",
-    "tr": "**MCP sunucu URL’si** alanına bu adresi gir:",
-    "zh": "在 **MCP 服务器 URL** 中填写以下地址："
+    "de": "Trage bei „`MCP-Server-URL`“ diese Adresse ein:",
+    "en": "Enter this address under “`MCP server URL`”:",
+    "ar": "أدخل هذا العنوان في «`عنوان URL لخادم MCP`»:",
+    "es": "Introduce esta dirección en «`URL del servidor MCP`»:",
+    "fr": "Saisis cette adresse dans « `URL du serveur MCP` » :",
+    "ru": "Введи этот адрес в поле «`URL MCP-сервера`»:",
+    "tr": "“`MCP sunucu URL’si`” alanına bu adresi gir:",
+    "zh": "在 “`MCP 服务器 URL`” 中填写以下地址："
   },
   "mcp_claude_step_continue": {
-    "de": "Tippe auf **Weiter**. Der Server wird dabei als nicht erreichbar angezeigt – das ist normal. Tippe auf **Trotzdem fortfahren**.",
-    "en": "Tap **Continue**. The server is shown as not reachable – that is expected. Tap **Continue anyway**.",
-    "ar": "اضغط على **متابعة**. سيظهر الخادم على أنه غير متاح – هذا أمر طبيعي. اضغط على **المتابعة على أي حال**.",
-    "es": "Pulsa **Continuar**. El servidor aparecerá como no accesible; es normal. Pulsa **Continuar de todos modos**.",
-    "fr": "Appuie sur **Continuer**. Le serveur s’affiche comme injoignable – c’est normal. Appuie sur **Continuer quand même**.",
-    "ru": "Нажми **Далее**. Сервер будет показан как недоступный – это нормально. Нажми **Всё равно продолжить**.",
-    "tr": "**Devam**’a dokun. Sunucu erişilemez olarak gösterilir – bu normaldir. **Yine de devam et**’e dokun.",
-    "zh": "点击**继续**。服务器会显示为无法访问——这是正常的。点击**仍然继续**。"
+    "de": "Tippe auf „`Weiter`“. Der Server wird dabei als nicht erreichbar angezeigt – das ist normal. Tippe auf „`Trotzdem fortfahren`“.",
+    "en": "Tap “`Continue`”. The server is shown as not reachable – that is expected. Tap “`Continue anyway`”.",
+    "ar": "اضغط على «`متابعة`». سيظهر الخادم على أنه غير متاح – هذا أمر طبيعي. اضغط على «`المتابعة على أي حال`».",
+    "es": "Pulsa «`Continuar`». El servidor aparecerá como no accesible; es normal. Pulsa «`Continuar de todos modos`».",
+    "fr": "Appuie sur « `Continuer` ». Le serveur s’affiche comme injoignable – c’est normal. Appuie sur « `Continuer quand même` ».",
+    "ru": "Нажми «`Далее`». Сервер будет показан как недоступный – это нормально. Нажми «`Всё равно продолжить`».",
+    "tr": "“`Devam`”’a dokun. Sunucu erişilemez olarak gösterilir – bu normaldir. “`Yine de devam et`”’e dokun.",
+    "zh": "点击“`继续`”。服务器会显示为无法访问——这是正常的。点击“`仍然继续`”。"
   },
   "mcp_claude_step_authentication": {
-    "de": "Wähle bei **Authentifizierung** die Option **Keine Anmeldung**.",
-    "en": "Under **Authentication** choose **No authentication**.",
-    "ar": "في **المصادقة** اختر **بدون تسجيل دخول**.",
-    "es": "En **Autenticación** elige **Sin inicio de sesión**.",
-    "fr": "Sous **Authentification**, choisis **Aucune connexion**.",
-    "ru": "В разделе **Аутентификация** выбери **Без входа**.",
-    "tr": "**Kimlik doğrulama** bölümünde **Oturum açma yok** seçeneğini seç.",
-    "zh": "在**身份验证**中选择**无需登录**。"
+    "de": "Wähle bei „`Authentifizierung`“ die Option „`Keine Anmeldung`“.",
+    "en": "Under “`Authentication`” choose “`No authentication`”.",
+    "ar": "في «`المصادقة`» اختر «`بدون تسجيل دخول`».",
+    "es": "En «`Autenticación`» elige «`Sin inicio de sesión`».",
+    "fr": "Sous « `Authentification` », choisis « `Aucune connexion` ».",
+    "ru": "В разделе «`Аутентификация`» выбери «`Без входа`».",
+    "tr": "“`Kimlik doğrulama`” bölümünde “`Oturum açma yok`” seçeneğini seç.",
+    "zh": "在“`身份验证`”中选择“`无需登录`”。"
   },
   "mcp_claude_step_header": {
-    "de": "Tippe bei **Request-Header** auf **+ Header hinzufügen**, wähle im Dropdown **authorization** und trage als Wert ein:",
-    "en": "Under **Request headers** tap **+ Add header**, choose **authorization** in the dropdown and enter this value:",
-    "ar": "في **ترويسات الطلب** اضغط على **+ إضافة ترويسة**، واختر **authorization** من القائمة، ثم أدخل هذه القيمة:",
-    "es": "En **Encabezados de la solicitud** pulsa **+ Añadir encabezado**, elige **authorization** en el desplegable e introduce este valor:",
-    "fr": "Sous **En-têtes de requête**, appuie sur **+ Ajouter un en-tête**, choisis **authorization** dans la liste et saisis cette valeur :",
-    "ru": "В разделе **Заголовки запроса** нажми **+ Добавить заголовок**, выбери **authorization** в списке и введи значение:",
-    "tr": "**İstek başlıkları** bölümünde **+ Başlık ekle**’ye dokun, açılır listeden **authorization**’ı seç ve şu değeri gir:",
-    "zh": "在**请求标头**中点击 **+ 添加标头**，在下拉菜单中选择 **authorization**，并填写以下值："
+    "de": "Tippe bei „`Request-Header`“ auf „`+ Header hinzufügen`“, wähle im Dropdown „`authorization`“ und trage als Wert ein:",
+    "en": "Under “`Request headers`” tap “`+ Add header`”, choose “`authorization`” in the dropdown and enter this value:",
+    "ar": "في «`ترويسات الطلب`» اضغط على «`+ إضافة ترويسة`»، واختر «`authorization`» من القائمة، ثم أدخل هذه القيمة:",
+    "es": "En «`Encabezados de la solicitud`» pulsa «`+ Añadir encabezado`», elige «`authorization`» en el desplegable e introduce este valor:",
+    "fr": "Sous « `En-têtes de requête` », appuie sur « `+ Ajouter un en-tête` », choisis « `authorization` » dans la liste et saisis cette valeur :",
+    "ru": "В разделе «`Заголовки запроса`» нажми «`+ Добавить заголовок`», выбери «`authorization`» в списке и введи значение:",
+    "tr": "“`İstek başlıkları`” bölümünde “`+ Başlık ekle`”’ye dokun, açılır listeden “`authorization`”’ı seç ve şu değeri gir:",
+    "zh": "在“`请求标头`”中点击 “`+ 添加标头`”，在下拉菜单中选择 “`authorization`”，并填写以下值："
   },
   "mcp_claude_step_finish": {
-    "de": "Tippe auf **Hinzufügen** – fertig. Du kannst den Connector jetzt in deinen Chats verwenden.",
-    "en": "Tap **Add** – done. You can now use the connector in your chats.",
-    "ar": "اضغط على **إضافة** – انتهى. يمكنك الآن استخدام الموصل في محادثاتك.",
-    "es": "Pulsa **Añadir** y listo. Ya puedes usar el conector en tus chats.",
-    "fr": "Appuie sur **Ajouter** – c’est fait. Tu peux maintenant utiliser le connecteur dans tes discussions.",
-    "ru": "Нажми **Добавить** – готово. Теперь коннектор можно использовать в чатах.",
-    "tr": "**Ekle**’ye dokun – bitti. Artık bağlayıcıyı sohbetlerinde kullanabilirsin.",
-    "zh": "点击**添加**——完成。现在你可以在聊天中使用该连接器。"
+    "de": "Tippe auf „`Hinzufügen`“ – fertig. Du kannst den Connector jetzt in deinen Chats verwenden.",
+    "en": "Tap “`Add`” – done. You can now use the connector in your chats.",
+    "ar": "اضغط على «`إضافة`» – انتهى. يمكنك الآن استخدام الموصل في محادثاتك.",
+    "es": "Pulsa «`Añadir`» y listo. Ya puedes usar el conector en tus chats.",
+    "fr": "Appuie sur « `Ajouter` » – c’est fait. Tu peux maintenant utiliser le connecteur dans tes discussions.",
+    "ru": "Нажми «`Добавить`» – готово. Теперь коннектор можно использовать в чатах.",
+    "tr": "“`Ekle`”’ye dokun – bitti. Artık bağlayıcıyı sohbetlerinde kullanabilirsin.",
+    "zh": "点击“`添加`”——完成。现在你可以在聊天中使用该连接器。"
   },
   "mcp_openai_step_open_settings": {
-    "de": "Öffne in ChatGPT die **Einstellungen**.",
-    "en": "Open the **Settings** in ChatGPT.",
-    "ar": "افتح **الإعدادات** في ChatGPT.",
-    "es": "Abre los **Ajustes** en ChatGPT.",
-    "fr": "Ouvre les **Paramètres** dans ChatGPT.",
-    "ru": "Открой **Настройки** в ChatGPT.",
-    "tr": "ChatGPT’de **Ayarlar**’ı aç.",
-    "zh": "在 ChatGPT 中打开**设置**。"
+    "de": "Öffne in ChatGPT die „`Einstellungen`“.",
+    "en": "Open the “`Settings`” in ChatGPT.",
+    "ar": "افتح «`الإعدادات`» في ChatGPT.",
+    "es": "Abre los «`Ajustes`» en ChatGPT.",
+    "fr": "Ouvre les « `Paramètres` » dans ChatGPT.",
+    "ru": "Открой «`Настройки`» в ChatGPT.",
+    "tr": "ChatGPT’de “`Ayarlar`”’ı aç.",
+    "zh": "在 ChatGPT 中打开“`设置`”。"
   },
   "mcp_openai_step_plugins": {
-    "de": "Gehe zu **Plugins** (ggf. über die Suche) und tippe auf **Katalog durchsuchen**.",
-    "en": "Go to **Plugins** (use the search if needed) and tap **Browse catalog**.",
-    "ar": "انتقل إلى **الإضافات** (استخدم البحث إذا لزم الأمر) واضغط على **تصفح الكتالوج**.",
-    "es": "Ve a **Plugins** (usa la búsqueda si hace falta) y pulsa **Explorar catálogo**.",
-    "fr": "Va dans **Plugins** (utilise la recherche si besoin) et appuie sur **Parcourir le catalogue**.",
-    "ru": "Перейди в **Плагины** (при необходимости через поиск) и нажми **Просмотреть каталог**.",
-    "tr": "**Eklentiler**’e git (gerekirse aramayı kullan) ve **Kataloğa göz at**’a dokun.",
-    "zh": "进入**插件**（必要时使用搜索），点击**浏览目录**。"
+    "de": "Gehe zu „`Plugins`“ (ggf. über die Suche) und tippe auf „`Katalog durchsuchen`“.",
+    "en": "Go to “`Plugins`” (use the search if needed) and tap “`Browse catalog`”.",
+    "ar": "انتقل إلى «`الإضافات`» (استخدم البحث إذا لزم الأمر) واضغط على «`تصفح الكتالوج`».",
+    "es": "Ve a «`Plugins`» (usa la búsqueda si hace falta) y pulsa «`Explorar catálogo`».",
+    "fr": "Va dans « `Plugins` » (utilise la recherche si besoin) et appuie sur « `Parcourir le catalogue` ».",
+    "ru": "Перейди в «`Плагины`» (при необходимости через поиск) и нажми «`Просмотреть каталог`».",
+    "tr": "“`Eklentiler`”’e git (gerekirse aramayı kullan) ve “`Kataloğa göz at`”’a dokun.",
+    "zh": "进入“`插件`”（必要时使用搜索），点击“`浏览目录`”。"
   },
   "mcp_openai_step_add": {
-    "de": "Tippe oben rechts auf **Hinzufügen** und dann auf **Benutzerdefinierten MCP-Server erstellen**.",
-    "en": "Tap **Add** in the top right and then **Create custom MCP server**.",
-    "ar": "اضغط على **إضافة** في أعلى اليمين ثم على **إنشاء خادم MCP مخصص**.",
-    "es": "Pulsa **Añadir** arriba a la derecha y luego **Crear servidor MCP personalizado**.",
-    "fr": "Appuie sur **Ajouter** en haut à droite, puis sur **Créer un serveur MCP personnalisé**.",
-    "ru": "Нажми **Добавить** справа вверху, затем **Создать пользовательский MCP-сервер**.",
-    "tr": "Sağ üstte **Ekle**’ye, ardından **Özel MCP sunucusu oluştur**’a dokun.",
-    "zh": "点击右上角的**添加**，然后点击**创建自定义 MCP 服务器**。"
+    "de": "Tippe oben rechts auf „`Hinzufügen`“ und dann auf „`Benutzerdefinierten MCP-Server erstellen`“.",
+    "en": "Tap “`Add`” in the top right and then “`Create custom MCP server`”.",
+    "ar": "اضغط على «`إضافة`» في أعلى اليمين ثم على «`إنشاء خادم MCP مخصص`».",
+    "es": "Pulsa «`Añadir`» arriba a la derecha y luego «`Crear servidor MCP personalizado`».",
+    "fr": "Appuie sur « `Ajouter` » en haut à droite, puis sur « `Créer un serveur MCP personnalisé` ».",
+    "ru": "Нажми «`Добавить`» справа вверху, затем «`Создать пользовательский MCP-сервер`».",
+    "tr": "Sağ üstte “`Ekle`”’ye, ardından “`Özel MCP sunucusu oluştur`”’a dokun.",
+    "zh": "点击右上角的“`添加`”，然后点击“`创建自定义 MCP 服务器`”。"
   },
   "mcp_openai_step_name": {
-    "de": "Wähle einen beliebigen **Namen**, zum Beispiel:",
-    "en": "Choose any **name**, for example:",
-    "ar": "اختر أي **اسم**، على سبيل المثال:",
-    "es": "Elige cualquier **nombre**, por ejemplo:",
-    "fr": "Choisis un **nom** au choix, par exemple :",
-    "ru": "Выбери любое **название**, например:",
-    "tr": "İstediğin bir **ad** seç, örneğin:",
-    "zh": "任选一个**名称**，例如："
+    "de": "Wähle einen beliebigen „`Namen`“, zum Beispiel:",
+    "en": "Choose any “`name`”, for example:",
+    "ar": "اختر أي «`اسم`»، على سبيل المثال:",
+    "es": "Elige cualquier «`nombre`», por ejemplo:",
+    "fr": "Choisis un « `nom` » au choix, par exemple :",
+    "ru": "Выбери любое «`название`», например:",
+    "tr": "İstediğin bir “`ad`” seç, örneğin:",
+    "zh": "任选一个“`名称`”，例如："
   },
   "mcp_openai_step_url": {
-    "de": "Trage bei **Verbindung** diese Adresse ein – sie enthält dein Token:",
-    "en": "Enter this address under **Connection** – it contains your token:",
-    "ar": "أدخل هذا العنوان في **الاتصال** – فهو يحتوي على رمزك:",
-    "es": "Introduce esta dirección en **Conexión**; contiene tu token:",
-    "fr": "Saisis cette adresse dans **Connexion** – elle contient ton jeton :",
-    "ru": "Введи этот адрес в поле **Подключение** – он содержит твой токен:",
-    "tr": "**Bağlantı** alanına bu adresi gir – belirtecini içerir:",
-    "zh": "在**连接**中填写以下地址——其中包含你的令牌："
+    "de": "Trage bei „`Verbindung`“ diese Adresse ein – sie enthält dein Token:",
+    "en": "Enter this address under “`Connection`” – it contains your token:",
+    "ar": "أدخل هذا العنوان في «`الاتصال`» – فهو يحتوي على رمزك:",
+    "es": "Introduce esta dirección en «`Conexión`»; contiene tu token:",
+    "fr": "Saisis cette adresse dans « `Connexion` » – elle contient ton jeton :",
+    "ru": "Введи этот адрес в поле «`Подключение`» – он содержит твой токен:",
+    "tr": "“`Bağlantı`” alanına bu adresi gir – belirtecini içerir:",
+    "zh": "在“`连接`”中填写以下地址——其中包含你的令牌："
   },
   "mcp_openai_step_authentication": {
-    "de": "Wähle bei **Authentifizierung** die Option **Keine**, setze den Haken bei der Bestätigung und speichere.",
-    "en": "Under **Authentication** choose **None**, tick the confirmation checkbox and save.",
-    "ar": "في **المصادقة** اختر **بدون**، وحدّد مربع التأكيد ثم احفظ.",
-    "es": "En **Autenticación** elige **Ninguna**, marca la casilla de confirmación y guarda.",
-    "fr": "Sous **Authentification**, choisis **Aucune**, coche la case de confirmation et enregistre.",
-    "ru": "В разделе **Аутентификация** выбери **Нет**, отметь флажок подтверждения и сохрани.",
-    "tr": "**Kimlik doğrulama** bölümünde **Yok**’u seç, onay kutusunu işaretle ve kaydet.",
-    "zh": "在**身份验证**中选择**无**，勾选确认复选框并保存。"
+    "de": "Wähle bei „`Authentifizierung`“ die Option „`Keine`“, setze den Haken bei der Bestätigung und speichere.",
+    "en": "Under “`Authentication`” choose “`None`”, tick the confirmation checkbox and save.",
+    "ar": "في «`المصادقة`» اختر «`بدون`»، وحدّد مربع التأكيد ثم احفظ.",
+    "es": "En «`Autenticación`» elige «`Ninguna`», marca la casilla de confirmación y guarda.",
+    "fr": "Sous « `Authentification` », choisis « `Aucune` », coche la case de confirmation et enregistre.",
+    "ru": "В разделе «`Аутентификация`» выбери «`Нет`», отметь флажок подтверждения и сохрани.",
+    "tr": "“`Kimlik doğrulama`” bölümünde “`Yok`”’u seç, onay kutusunu işaretle ve kaydet.",
+    "zh": "在“`身份验证`”中选择“`无`”，勾选确认复选框并保存。"
   },
   "mcp_openai_step_use": {
-    "de": "Starte einen neuen Chat und sprich den Server mit **@Name** an.",
-    "en": "Start a new chat and address the server with **@Name**.",
-    "ar": "ابدأ محادثة جديدة وخاطب الخادم باستخدام **@الاسم**.",
-    "es": "Empieza un chat nuevo y menciona el servidor con **@Nombre**.",
-    "fr": "Démarre une nouvelle discussion et adresse-toi au serveur avec **@Nom**.",
-    "ru": "Начни новый чат и обратись к серверу через **@Название**.",
-    "tr": "Yeni bir sohbet başlat ve sunucuya **@Ad** ile seslen.",
-    "zh": "开始新的聊天，并使用 **@名称** 来调用该服务器。"
+    "de": "Starte einen neuen Chat und sprich den Server mit „`@Name`“ an.",
+    "en": "Start a new chat and address the server with “`@Name`”.",
+    "ar": "ابدأ محادثة جديدة وخاطب الخادم باستخدام «`@الاسم`».",
+    "es": "Empieza un chat nuevo y menciona el servidor con «`@Nombre`».",
+    "fr": "Démarre une nouvelle discussion et adresse-toi au serveur avec « `@Nom` ».",
+    "ru": "Начни новый чат и обратись к серверу через «`@Название`».",
+    "tr": "Yeni bir sohbet başlat ve sunucuya “`@Ad`” ile seslen.",
+    "zh": "开始新的聊天，并使用 “`@名称`” 来调用该服务器。"
   },
   "mcp_other_step_url": {
     "de": "Trage in deinem MCP-Client diese Server-Adresse ein:",
@@ -7850,14 +7850,14 @@
     "zh": "在你的 MCP 客户端中填写以下服务器地址："
   },
   "mcp_other_step_header": {
-    "de": "Setze den Header **Authorization** auf diesen Wert (`Bearer <Token>`):",
-    "en": "Set the **Authorization** header to this value (`Bearer <Token>`):",
-    "ar": "اضبط ترويسة **Authorization** على هذه القيمة (`Bearer <Token>`):",
-    "es": "Establece el encabezado **Authorization** con este valor (`Bearer <Token>`):",
-    "fr": "Définis l’en-tête **Authorization** sur cette valeur (`Bearer <Token>`) :",
-    "ru": "Установи заголовок **Authorization** в это значение (`Bearer <Token>`):",
-    "tr": "**Authorization** başlığını bu değere ayarla (`Bearer <Token>`):",
-    "zh": "将 **Authorization** 标头设置为以下值（`Bearer <Token>`）："
+    "de": "Setze den Header „`Authorization`“ auf diesen Wert (`Bearer <Token>`):",
+    "en": "Set the “`Authorization`” header to this value (`Bearer <Token>`):",
+    "ar": "اضبط ترويسة «`Authorization`» على هذه القيمة (`Bearer <Token>`):",
+    "es": "Establece el encabezado «`Authorization`» con este valor (`Bearer <Token>`):",
+    "fr": "Définis l’en-tête « `Authorization` » sur cette valeur (`Bearer <Token>`) :",
+    "ru": "Установи заголовок «`Authorization`» в это значение (`Bearer <Token>`):",
+    "tr": "“`Authorization`” başlığını bu değere ayarla (`Bearer <Token>`):",
+    "zh": "将 “`Authorization`” 标头设置为以下值（`Bearer <Token>`）："
   },
   "mcp_other_step_url_with_token": {
     "de": "Kann dein Client keine Header setzen, nutze stattdessen diese Adresse – sie enthält das Token bereits:",
@@ -7868,5 +7868,45 @@
     "ru": "Если клиент не умеет задавать заголовки, используй этот адрес – токен уже в нём:",
     "tr": "İstemcin başlık ayarlayamıyorsa bunun yerine bu adresi kullan – belirteci zaten içerir:",
     "zh": "如果你的客户端无法设置标头，请改用以下地址——其中已包含令牌："
+  },
+  "mcp_access_choice_question": {
+    "de": "Möchtest du den KI-Assistenten mit deinem Account verbinden? Dann sieht er alles, was du auch in der App sehen darfst. Ohne persönlichen Account sieht er nur öffentliche Daten wie Speisepläne.",
+    "en": "Do you want to connect the AI assistant with your account? Then it sees everything you are allowed to see in the app. Without a personal account it only sees public data such as menus.",
+    "ar": "هل تريد ربط مساعد الذكاء الاصطناعي بحسابك؟ عندها سيرى كل ما يُسمح لك برؤيته في التطبيق. بدون حساب شخصي لن يرى إلا البيانات العامة مثل قوائم الطعام.",
+    "es": "¿Quieres conectar el asistente de IA con tu cuenta? Así verá todo lo que tú puedes ver en la app. Sin una cuenta personal solo verá datos públicos como los menús.",
+    "fr": "Veux-tu connecter l’assistant IA à ton compte ? Il verra alors tout ce que tu peux voir dans l’application. Sans compte personnel, il ne voit que les données publiques comme les menus.",
+    "ru": "Хочешь подключить ИИ-ассистента к своему аккаунту? Тогда он увидит всё, что ты можешь видеть в приложении. Без личного аккаунта он видит только общедоступные данные, например меню.",
+    "tr": "Yapay zekâ asistanını hesabınla bağlamak ister misin? O zaman uygulamada görmene izin verilen her şeyi görür. Kişisel hesap olmadan yalnızca menüler gibi herkese açık verileri görür.",
+    "zh": "你想用你的账户连接 AI 助手吗？这样它就能看到你在应用中可以看到的所有内容。不使用个人账户时，它只能看到菜单等公开数据。"
+  },
+  "mcp_access_no_account_hint": {
+    "de": "Du bist nicht mit einem Account angemeldet. Melde dich an oder lege dir einen Account an, um den KI-Assistenten mit deinem persönlichen Zugang zu verbinden. Ohne persönlichen Account sieht er nur öffentliche Daten wie Speisepläne.",
+    "en": "You are not logged in with an account. Log in or create an account to connect the AI assistant with your personal access. Without a personal account it only sees public data such as menus.",
+    "ar": "أنت غير مسجّل الدخول بحساب. سجّل الدخول أو أنشئ حسابًا لربط مساعد الذكاء الاصطناعي بوصولك الشخصي. بدون حساب شخصي لن يرى إلا البيانات العامة مثل قوائم الطعام.",
+    "es": "No has iniciado sesión con una cuenta. Inicia sesión o crea una cuenta para conectar el asistente de IA con tu acceso personal. Sin una cuenta personal solo verá datos públicos como los menús.",
+    "fr": "Tu n’es pas connecté·e avec un compte. Connecte-toi ou crée un compte pour connecter l’assistant IA avec ton accès personnel. Sans compte personnel, il ne voit que les données publiques comme les menus.",
+    "ru": "Ты не вошёл в аккаунт. Войди или создай аккаунт, чтобы подключить ИИ-ассистента со своим личным доступом. Без личного аккаунта он видит только общедоступные данные, например меню.",
+    "tr": "Bir hesapla giriş yapmadın. Yapay zekâ asistanını kişisel erişiminle bağlamak için giriş yap veya bir hesap oluştur. Kişisel hesap olmadan yalnızca menüler gibi herkese açık verileri görür.",
+    "zh": "你尚未使用账户登录。请登录或创建账户，以便用你的个人访问权限连接 AI 助手。不使用个人账户时，它只能看到菜单等公开数据。"
+  },
+  "mcp_connect_with_account": {
+    "de": "Mit meinem Account verbinden",
+    "en": "Connect with my account",
+    "ar": "الربط بحسابي",
+    "es": "Conectar con mi cuenta",
+    "fr": "Connecter avec mon compte",
+    "ru": "Подключить с моим аккаунтом",
+    "tr": "Hesabımla bağla",
+    "zh": "使用我的账户连接"
+  },
+  "mcp_continue_without_account": {
+    "de": "Ohne persönlichen Account fortfahren",
+    "en": "Continue without a personal account",
+    "ar": "المتابعة بدون حساب شخصي",
+    "es": "Continuar sin cuenta personal",
+    "fr": "Continuer sans compte personnel",
+    "ru": "Продолжить без личного аккаунта",
+    "tr": "Kişisel hesap olmadan devam et",
+    "zh": "不使用个人账户继续"
   }
 }
