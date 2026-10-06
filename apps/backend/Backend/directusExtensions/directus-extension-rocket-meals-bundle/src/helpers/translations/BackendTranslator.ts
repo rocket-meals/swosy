@@ -25,17 +25,20 @@
  * ```
  */
 
+import type { DatabaseTypes } from 'repo-depkit-common';
+// Imported from the translations module directly instead of the package index: this file is also
+// bundled into the Directus app (the "[Erweitert]" Insights panels), and the index would drag
+// moment-timezone and friends into the browser bundle.
 import {
   commonTranslations,
   createTranslator,
-  DatabaseTypes,
   mergeTranslationResources,
   normalizeTranslationLanguage,
   TranslationLanguage,
   type TranslationParams,
   type TranslationResources,
   type Translator,
-} from 'repo-depkit-common';
+} from 'repo-depkit-common/src/translations';
 
 import { BackendTranslationKeys } from './BackendTranslationKeys';
 import { backendTranslations } from './backendTranslations';

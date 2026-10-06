@@ -16,7 +16,8 @@
  * 3. Render it with a translator from `BackendTranslator.ts`, never with a string literal.
  */
 
-import { CommonTranslationKeys } from 'repo-depkit-common';
+// Not the package index – see the note in BackendTranslator.ts.
+import { CommonTranslationKeys } from 'repo-depkit-common/src/translations';
 
 export const BackendTranslationKeys = {
   ...CommonTranslationKeys,
@@ -43,6 +44,27 @@ export const BackendTranslationKeys = {
   dashboard_system_marker_forbidden: 'dashboard_system_marker_forbidden',
   food_feedback_guest_rating_forbidden: 'food_feedback_guest_rating_forbidden',
   food_feedback_guest_comment_forbidden: 'food_feedback_guest_comment_forbidden',
+
+  // Insights panels shipped by Rocket Meals ("[Erweitert]", see helpers/extended-panels)
+  extended_panel_list_name: 'extended_panel_list_name',
+  extended_panel_list_description: 'extended_panel_list_description',
+  extended_panel_page_export_name: 'extended_panel_page_export_name',
+  extended_panel_page_export_description: 'extended_panel_page_export_description',
+  extended_panel_option_export_all_items: 'extended_panel_option_export_all_items',
+  extended_panel_option_export_all_items_note: 'extended_panel_option_export_all_items_note',
+  extended_panel_option_export_fields: 'extended_panel_option_export_fields',
+  extended_panel_option_export_fields_note: 'extended_panel_option_export_fields_note',
+  extended_panel_export: 'extended_panel_export',
+  extended_panel_export_failed: 'extended_panel_export_failed',
+  extended_panel_load_failed: 'extended_panel_load_failed',
+  extended_panel_export_format_csv: 'extended_panel_export_format_csv',
+  extended_panel_export_format_json: 'extended_panel_export_format_json',
+  extended_panel_export_format_xml: 'extended_panel_export_format_xml',
+  extended_panel_export_format_yaml: 'extended_panel_export_format_yaml',
+  extended_panel_page_export_button: 'extended_panel_page_export_button',
+  extended_panel_page_export_format_pdf: 'extended_panel_page_export_format_pdf',
+  extended_panel_page_export_format_png: 'extended_panel_page_export_format_png',
+  extended_panel_page_export_running: 'extended_panel_page_export_running',
 } as const;
 
 export type BackendTranslationKeys = (typeof BackendTranslationKeys)[keyof typeof BackendTranslationKeys];

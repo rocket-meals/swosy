@@ -262,6 +262,16 @@
         "type": "hook",
         "name": "foods-translation-fix-missing-schedule",
         "source": "src/foods-translation-fix-missing-schedule/index.ts"
+      },
+      {
+        "type": "panel",
+        "name": "list-extended-panel",
+        "source": "src/list-extended-panel/index.ts"
+      },
+      {
+        "type": "panel",
+        "name": "page-export-panel",
+        "source": "src/page-export-panel/index.ts"
       }
     ],
     "host": "^11.0.0"
@@ -309,10 +319,12 @@
     "chardet": "^2.0.0",
     "cheerio": "^1.0.0-rc.12",
     "deepl-node": "^1.13.1",
+    "html-to-image": "^1.11.13",
     "iconv-lite": "^0.6.3",
     "ioredis": "^5.6.1",
     "js-yaml": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
+    "jspdf": "^3.0.3",
     "markdown-it": "^14.1.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.47",
