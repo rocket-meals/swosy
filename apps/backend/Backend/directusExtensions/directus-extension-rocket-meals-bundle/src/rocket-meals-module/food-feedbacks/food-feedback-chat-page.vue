@@ -198,8 +198,6 @@ function resizeComposer() {
 }
 watch(newMessage, () => nextTick(resizeComposer));
 
-
-
 function scrollToBottom() {
   nextTick(() => {
     const container = messagesContainer.value;
@@ -253,26 +251,14 @@ watch(() => props.feedbackId, load);
         <div class="feedback-info">
           <v-menu show-arrow placement="bottom-start" :disabled="!canWrite || updatingState">
             <template #activator="{ toggle }">
-              <button
-                v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_change_status)"
-                class="status-button"
-                :disabled="!canWrite || updatingState"
-                :aria-label="translate(BackendTranslationKeys.rocket_meals_module_change_status)"
-                @click="toggle"
-              >
+              <button v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_change_status)" class="status-button" :disabled="!canWrite || updatingState" :aria-label="translate(BackendTranslationKeys.rocket_meals_module_change_status)" @click="toggle">
                 <food-feedback-status-chip :status="status" />
                 <v-progress-circular v-if="updatingState" indeterminate x-small />
                 <v-icon v-else-if="canWrite" name="expand_more" small />
               </button>
             </template>
             <v-list>
-              <v-list-item
-                v-for="selectableStatus in FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES"
-                :key="selectableStatus"
-                clickable
-                :active="selectableStatus === status"
-                @click="changeStatus(selectableStatus)"
-              >
+              <v-list-item v-for="selectableStatus in FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES" :key="selectableStatus" clickable :active="selectableStatus === status" @click="changeStatus(selectableStatus)">
                 <v-list-item-icon>
                   <v-icon :name="FoodFeedbackChatHelper.getStatusPresentation(selectableStatus).icon" small />
                 </v-list-item-icon>
@@ -315,24 +301,10 @@ watch(() => props.feedbackId, load);
         </div>
 
         <div class="composer" :class="{ disabled: !canWrite }" @click="composerInput?.focus()">
-          <textarea
-            ref="composerInput"
-            v-model="newMessage"
-            class="composer-input"
-            rows="1"
-            :placeholder="translate(BackendTranslationKeys.rocket_meals_module_message_placeholder)"
-            :disabled="!canWrite || sending"
-            @keydown="onKeydown"
-          />
+          <textarea ref="composerInput" v-model="newMessage" class="composer-input" rows="1" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_message_placeholder)" :disabled="!canWrite || sending" @keydown="onKeydown" />
           <div class="composer-actions">
             <span class="composer-hint type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_send_hint) }}</span>
-            <button
-              v-tooltip.top="translate(BackendTranslationKeys.send)"
-              class="send-button"
-              :disabled="!canWrite || sending || newMessage.trim().length === 0"
-              :aria-label="translate(BackendTranslationKeys.send)"
-              @click.stop="sendMessage"
-            >
+            <button v-tooltip.top="translate(BackendTranslationKeys.send)" class="send-button" :disabled="!canWrite || sending || newMessage.trim().length === 0" :aria-label="translate(BackendTranslationKeys.send)" @click.stop="sendMessage">
               <v-progress-circular v-if="sending" indeterminate x-small />
               <v-icon v-else name="arrow_upward" small />
             </button>
@@ -516,6 +488,11 @@ watch(() => props.feedbackId, load);
   /* On touch devices Enter makes a new line, so the keyboard hint would be wrong. */
   .composer-hint {
     visibility: hidden;
+  }
+
+  /* iOS Safari zooms into inputs with a font smaller than 16px. */
+  .composer-input {
+    font-size: 16px;
   }
 }
 </style>

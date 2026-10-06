@@ -47,11 +47,7 @@ export class FoodFeedbackChatStatusHelper {
    * The states support can set by hand. `new` is not among them: it only means "no chat yet", and
    * a chat, once created, cannot go back to that.
    */
-  public static readonly SELECTABLE_STATUSES: readonly FoodFeedbackChatStatus[] = [
-    FoodFeedbackChatStatus.WAITING_FOR_SUPPORT,
-    FoodFeedbackChatStatus.WAITING_FOR_USER,
-    FoodFeedbackChatStatus.RESOLVED,
-  ];
+  public static readonly SELECTABLE_STATUSES: readonly FoodFeedbackChatStatus[] = [FoodFeedbackChatStatus.WAITING_FOR_SUPPORT, FoodFeedbackChatStatus.WAITING_FOR_USER, FoodFeedbackChatStatus.RESOLVED];
 
   /** The `chats.conversation_state` behind a status, or `undefined` for `new` (= no chat). */
   static getConversationStateForStatus(status: FoodFeedbackChatStatus): ChatConversationState | undefined {

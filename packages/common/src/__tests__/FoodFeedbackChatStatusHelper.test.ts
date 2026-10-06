@@ -96,11 +96,7 @@ describe('FoodFeedbackChatStatusHelper', () => {
 
   describe('status selection', () => {
     it('offers every status except new, which only means "no chat yet"', () => {
-      expect(FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES).toEqual([
-        FoodFeedbackChatStatus.WAITING_FOR_SUPPORT,
-        FoodFeedbackChatStatus.WAITING_FOR_USER,
-        FoodFeedbackChatStatus.RESOLVED,
-      ]);
+      expect(FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES).toEqual([FoodFeedbackChatStatus.WAITING_FOR_SUPPORT, FoodFeedbackChatStatus.WAITING_FOR_USER, FoodFeedbackChatStatus.RESOLVED]);
     });
 
     it('maps a status to the conversation state of the chat and back', () => {
