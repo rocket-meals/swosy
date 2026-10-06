@@ -374,6 +374,7 @@ const McpInstruction = () => {
 		<>
 			<SettingsList
 				title={makeWrappable(value)}
+				noIconIndent
 				rightIcon={<MaterialCommunityIcons name="content-copy" size={22} color={theme.screen.icon} />}
 				handleFunction={() => void copyToClipboard(value)}
 				groupPosition="single"
