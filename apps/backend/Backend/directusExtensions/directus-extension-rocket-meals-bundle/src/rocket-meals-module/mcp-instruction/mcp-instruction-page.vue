@@ -47,6 +47,12 @@ const appName = computed(() => serverStore.info?.project?.project_name || Rocket
 const assistantParam = route.query[McpInstructionHelper.ASSISTANT_PARAM] ?? route.query[McpInstructionHelper.LEGACY_ASSISTANT_PARAM];
 const provider = ref<McpProvider | null>(McpInstructionHelper.parseAssistantParam(assistantParam as string | string[] | undefined));
 const accessMode = ref<McpAccessMode | null>(null);
+// Like in the app: a section folds itself away once something is picked in it (a preselected
+// assistant starts folded) and can be opened again by hand. Without a pick it always stays open.
+const providerSectionCollapsed = ref(provider.value !== null);
+const accountSectionCollapsed = ref(false);
+const isProviderCollapsed = computed(() => providerSectionCollapsed.value && provider.value !== null);
+const isAccountCollapsed = computed(() => accountSectionCollapsed.value && accessMode.value !== null);
 // Only set right after it was created – Directus never shows a saved token again.
 const personalToken = ref<string | null>(null);
 const hasPersonalToken = ref<boolean | null>(null);
@@ -82,8 +88,19 @@ function getProviderLabel(option: McpProviderOption) {
   return option.brandName ?? (option.labelKey ? translate(option.labelKey) : option.provider);
 }
 
+const selectedProviderLabel = computed(() => {
+  const option = McpInstructionHelper.getProviderOption(provider.value);
+  return option ? getProviderLabel(option) : undefined;
+});
+const accessModeLabels = computed<Record<McpAccessMode, string>>(() => ({
+  personal: translate(BackendTranslationKeys.mcp_connect_with_account),
+  public: translate(BackendTranslationKeys.mcp_continue_without_account),
+}));
+const ACCESS_MODE_ICONS: Record<McpAccessMode, string> = { personal: 'key', public: 'public' };
+
 function selectProvider(selected: McpProvider) {
   provider.value = selected;
+  providerSectionCollapsed.value = true;
   // Keeps the choice in the url, so the page can be shared or bookmarked as it is.
   router.replace({ query: { ...route.query, [McpInstructionHelper.ASSISTANT_PARAM]: selected, [McpInstructionHelper.LEGACY_ASSISTANT_PARAM]: undefined } });
 }
@@ -124,6 +141,11 @@ async function ensurePublicUser() {
   }
 }
 
+function selectAccessMode(selected: McpAccessMode) {
+  accessMode.value = selected;
+  accountSectionCollapsed.value = true;
+}
+
 watch(accessMode, mode => {
   if (mode === 'personal') loadOrCreatePersonalToken();
   if (mode === 'public') ensurePublicUser();
@@ -152,6 +174,7 @@ async function revokePersonalToken() {
     usesKnownToken.value = false;
     // Without a token the steps are gone – the account choice starts over.
     accessMode.value = null;
+    accountSectionCollapsed.value = false;
     notificationsStore.add({ title: translate(BackendTranslationKeys.mcp_access_token_revoked), type: 'success' });
   } catch (error) {
     notifyError(BackendTranslationKeys.mcp_access_token_revoke_failed, error);
@@ -184,29 +207,47 @@ async function copyToClipboard(value: string) {
       <p class="markdown" v-html="renderMarkdown(translate(BackendTranslationKeys.mcp_instruction_intro))" />
 
       <section class="section">
-        <div class="type-title">{{ translate(BackendTranslationKeys.mcp_provider) }}</div>
-        <p class="markdown" v-html="renderMarkdown(translate(BackendTranslationKeys.mcp_choose_provider))" />
-        <div class="choices">
-          <button v-for="option in McpInstructionHelper.PROVIDERS" :key="option.provider" class="choice" :class="{ active: option.provider === provider }" @click="selectProvider(option.provider)">
-            <v-icon :name="option.provider === provider ? 'radio_button_checked' : 'radio_button_unchecked'" />
-            {{ getProviderLabel(option) }}
-          </button>
-        </div>
+        <button class="section-header" :aria-expanded="!isProviderCollapsed" @click="providerSectionCollapsed = !isProviderCollapsed">
+          <v-icon name="smart_toy" />
+          <span class="section-header-text">
+            <span class="type-label">{{ translate(BackendTranslationKeys.mcp_provider) }}</span>
+            <span v-if="selectedProviderLabel" class="type-note">{{ selectedProviderLabel }}</span>
+          </span>
+          <v-icon :name="isProviderCollapsed ? 'expand_more' : 'expand_less'" />
+        </button>
+        <template v-if="!isProviderCollapsed">
+          <p class="markdown" v-html="renderMarkdown(translate(BackendTranslationKeys.mcp_choose_provider))" />
+          <div class="choices">
+            <button v-for="option in McpInstructionHelper.PROVIDERS" :key="option.provider" class="choice" :class="{ active: option.provider === provider }" @click="selectProvider(option.provider)">
+              <v-icon :name="option.provider === provider ? 'radio_button_checked' : 'radio_button_unchecked'" />
+              {{ getProviderLabel(option) }}
+            </button>
+          </div>
+        </template>
       </section>
 
       <section v-if="provider" class="section">
-        <div class="type-title">{{ translate(BackendTranslationKeys.mcp_account) }}</div>
-        <p class="markdown" v-html="renderMarkdown(translate(BackendTranslationKeys.mcp_access_choice_question))" />
-        <div class="choices">
-          <button class="choice" :class="{ active: accessMode === 'personal' }" @click="accessMode = 'personal'">
-            <v-icon :name="accessMode === 'personal' ? 'radio_button_checked' : 'radio_button_unchecked'" />
-            {{ translate(BackendTranslationKeys.mcp_connect_with_account) }}
-          </button>
-          <button class="choice" :class="{ active: accessMode === 'public' }" @click="accessMode = 'public'">
-            <v-icon :name="accessMode === 'public' ? 'radio_button_checked' : 'radio_button_unchecked'" />
-            {{ translate(BackendTranslationKeys.mcp_continue_without_account) }}
-          </button>
-        </div>
+        <button class="section-header" :aria-expanded="!isAccountCollapsed" @click="accountSectionCollapsed = !isAccountCollapsed">
+          <v-icon :name="accessMode ? ACCESS_MODE_ICONS[accessMode] : 'person'" />
+          <span class="section-header-text">
+            <span class="type-label">{{ translate(BackendTranslationKeys.mcp_account) }}</span>
+            <span v-if="accessMode" class="type-note">{{ accessModeLabels[accessMode] }}</span>
+          </span>
+          <v-icon :name="isAccountCollapsed ? 'expand_more' : 'expand_less'" />
+        </button>
+        <template v-if="!isAccountCollapsed">
+          <p class="markdown" v-html="renderMarkdown(translate(BackendTranslationKeys.mcp_access_choice_question))" />
+          <div class="choices">
+            <button class="choice" :class="{ active: accessMode === 'personal' }" @click="selectAccessMode('personal')">
+              <v-icon :name="accessMode === 'personal' ? 'radio_button_checked' : 'radio_button_unchecked'" />
+              {{ translate(BackendTranslationKeys.mcp_connect_with_account) }}
+            </button>
+            <button class="choice" :class="{ active: accessMode === 'public' }" @click="selectAccessMode('public')">
+              <v-icon :name="accessMode === 'public' ? 'radio_button_checked' : 'radio_button_unchecked'" />
+              {{ translate(BackendTranslationKeys.mcp_continue_without_account) }}
+            </button>
+          </div>
+        </template>
 
         <template v-if="accessMode === 'personal' && !personalToken">
           <v-progress-circular v-if="hasPersonalToken === null || (loadingToken && !hasPersonalToken)" indeterminate />
@@ -303,6 +344,30 @@ async function copyToClipboard(value: string) {
 
 .markdown :deep(code) {
   font-family: var(--theme--fonts--monospace--font-family, monospace);
+}
+
+.section-header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: var(--theme--foreground);
+  text-align: start;
+  background: var(--theme--background-subdued);
+  border: var(--theme--border-width) solid var(--theme--border-color-subdued);
+  border-radius: var(--theme--border-radius);
+  cursor: pointer;
+  transition: border-color var(--fast) var(--transition);
+}
+
+.section-header:hover {
+  border-color: var(--theme--primary);
+}
+
+.section-header-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 .choices {
