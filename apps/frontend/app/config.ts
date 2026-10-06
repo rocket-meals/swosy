@@ -189,7 +189,9 @@ export function getVersionPatch() {
         //     token shown and revocable at the bottom; public MCP user ensured via POST /mcp-public-user
         //     (token now "PUBLIC"); common-ui: inline code in markdown renders monospace
         // 83: MCP instruction: providers, steps and token flow from common McpInstructionHelper, texts in commonTranslations
-        return 83;
+        // 84: chat: the initial message (e.g. a food feedback comment) is shown as a labelled
+        //     context card instead of a bubble, so it is not taken for a message of either side
+        return 84;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
