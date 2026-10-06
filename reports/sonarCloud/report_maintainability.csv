@@ -1,8 +1,9 @@
 Key,Message,Component,Line
-"AaESKy6JygOMAbVLDWk1","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/public/mcp-instruction/index.tsx",308
-"AaESKy6JygOMAbVLDWk0","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/public/mcp-instruction/index.tsx",175
+"AaESdmqoPxsMSc1PerQ1","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/public/mcp-instruction/index.tsx",151
+"AaESKy6JygOMAbVLDWk1","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/public/mcp-instruction/index.tsx",356
+"AaESKy6JygOMAbVLDWk0","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/public/mcp-instruction/index.tsx",180
 "AaESKxMHygOMAbVLDWkz","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mcp-public-user-hook/index.ts",16
-"AaESKy6JygOMAbVLDWk2","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/public/mcp-instruction/index.tsx",350
+"AaESKy6JygOMAbVLDWk2","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/public/mcp-instruction/index.tsx",412
 "AaERrVvctla_SBaQ5Fc1","Consider removing 'undefined' type or '?' specifier, one of them is redundant.","rocket-meals_rocket-meals:packages/common/src/ChatHelper.ts",6
 "AaEQnkw_-6tQcR7ajnBm","`optionalDependencies` should be a `Set`, and use `optionalDependencies.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/extension.config.mjs",66
 "AaEQnkw_-6tQcR7ajnBn","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/extension.config.mjs",71
@@ -597,7 +598,7 @@ Key,Message,Component,Line
 "AaD3G9_ETd3UR4iHDm72","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/components/RssFeed/index.tsx",60
 "AaD3G9_ETd3UR4iHDm73","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/components/RssFeed/index.tsx",61
 "AaD3G88HTd3UR4iHDm15","Async method 'getServerInfoNoInternetTest' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts",120
-"AaD3G9q-Td3UR4iHDm6v","Async arrow function 'fetchDeviceInfo' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",122
+"AaD3G9q-Td3UR4iHDm6v","Async arrow function 'fetchDeviceInfo' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",124
 "AaD3G9k4Td3UR4iHDm6U","Async arrow function 'handleDeleteAccount' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",521
 "AaD3G-AzTd3UR4iHDm76","Static async method 'readRemoteRoles' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",143
 "AaD3G-AzTd3UR4iHDm77","Static async method 'readRemotePolicies' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",153
