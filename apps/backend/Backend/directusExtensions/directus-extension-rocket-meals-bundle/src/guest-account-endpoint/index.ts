@@ -22,16 +22,19 @@
  */
 
 import { defineEndpoint } from '@directus/extensions-sdk';
-import { randomBytes, randomUUID } from 'node:crypto';
 import { CollectionNames, DatabaseTypes, GuestAccountCredentials, GuestAccountHelper } from 'repo-depkit-common';
 import { ApiContext } from '../helpers/ApiContext';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
+import { NanoidHelper } from '../helpers/NanoidHelper';
 import { GuestAccountRateLimiter } from './GuestAccountRateLimiter';
 
 /** Name der Rolle, die Gäste bekommen – dieselbe wie bei registrierten App-Nutzern. */
 const GUEST_ROLE_NAME = 'User';
 
-const PASSWORD_BYTES = 32;
+/** Länge der zufälligen Kennung in der E-Mail-Adresse (wird klein geschrieben). */
+const EMAIL_ID_LENGTH = 32;
+
+const PASSWORD_LENGTH = 64;
 
 const rateLimiter = new GuestAccountRateLimiter();
 
@@ -71,9 +74,10 @@ export default defineEndpoint({
           return res.status(500).json({ error: 'Could not create guest account.' });
         }
 
+        // Kein node:crypto (siehe „Verbotene Pakete“ im README) – Zufall kommt aus dem NanoidHelper.
         const credentials: GuestAccountCredentials = {
-          email: GuestAccountHelper.buildEmail(randomUUID()),
-          password: randomBytes(PASSWORD_BYTES).toString('base64url'),
+          email: GuestAccountHelper.buildEmail(await NanoidHelper.getNanoid(EMAIL_ID_LENGTH)),
+          password: await NanoidHelper.getNanoid(PASSWORD_LENGTH),
         };
 
         await myDatabaseHelper.getUsersHelper().createOne({
