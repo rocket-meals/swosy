@@ -32,6 +32,11 @@
       },
       {
         "type": "module",
+        "id": "rocket-meals",
+        "enabled": true
+      },
+      {
+        "type": "module",
         "id": "settings",
         "enabled": true,
         "locked": true

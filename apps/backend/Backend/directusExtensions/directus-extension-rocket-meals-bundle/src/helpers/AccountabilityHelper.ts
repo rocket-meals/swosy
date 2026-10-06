@@ -24,4 +24,16 @@ export class AccountabilityHelper {
 
     return (accountability as { adminAccess?: boolean }).adminAccess === true;
   }
+
+  /**
+   * Whether the request comes from someone who may use the Directus app (the backend UI) – admins,
+   * but also e.g. canteen staff with a role that has app access. App users of Rocket Meals only
+   * use the API and never have app access, so this tells backend users from app users.
+   */
+  public static isAppAccessAccountability(accountability?: Accountability | null): boolean {
+    if (!accountability) {
+      return false;
+    }
+    return AccountabilityHelper.isAdminAccountability(accountability) || accountability.app === true;
+  }
 }

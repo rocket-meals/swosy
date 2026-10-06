@@ -272,6 +272,11 @@
         "type": "panel",
         "name": "page-export-panel",
         "source": "src/page-export-panel/index.ts"
+      },
+      {
+        "type": "module",
+        "name": "rocket-meals-module",
+        "source": "src/rocket-meals-module/index.ts"
       }
     ],
     "host": "^11.0.0"
