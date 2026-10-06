@@ -30,6 +30,15 @@ services:
       traefik.http.routers.rocket-meals-directus-secure.tls.certresolver: "${RESOLVER}"
       traefik.http.services.rocket-meals-directus-secure.loadbalancer.server.port: ${DIRECTUS_PORT}
       traefik.http.middlewares.rocket-meals-directus-stripprefix.stripprefix.prefixes: /${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}
+      traefik.http.routers.rocket-meals-directus-secure.service: rocket-meals-directus-secure
+
+      # The built-in Directus AI Assistant ignores the sub path of PUBLIC_URL and posts to `/ai/chat` on the host root
+      # (instead of `/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}/ai/chat`). Route those requests to Directus as well.
+      traefik.http.routers.rocket-meals-directus-ai-secure.entrypoints: websecure
+      traefik.http.routers.rocket-meals-directus-ai-secure.rule: Host(`${MYHOST}`) && PathPrefix(`/ai/`)
+      traefik.http.routers.rocket-meals-directus-ai-secure.service: rocket-meals-directus-secure
+      traefik.http.routers.rocket-meals-directus-ai-secure.tls: "true"
+      traefik.http.routers.rocket-meals-directus-ai-secure.tls.certresolver: "${RESOLVER}"
 
       # network: traefik
     volumes:
