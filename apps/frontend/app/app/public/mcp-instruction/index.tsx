@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { McpAccessHelper } from 'repo-depkit-common';
+import { CollapsibleView } from 'repo-depkit-common-ui';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
@@ -165,6 +166,10 @@ const McpInstruction = () => {
 	const assistantParam = assistantParamValue ?? legacyAssistantParamValue;
 	const [provider, setProvider] = useState<McpProvider | null>(() => parseAssistantParam(assistantParam));
 	const [accessMode, setAccessMode] = useState<McpAccessMode | null>(null);
+	// A section folds itself away once something is picked in it (a preselected assistant starts
+	// folded) and can be opened again by hand. Without a pick it always stays open.
+	const [isProviderSectionCollapsed, setIsProviderSectionCollapsed] = useState(() => parseAssistantParam(assistantParam) !== null);
+	const [isAccountSectionCollapsed, setIsAccountSectionCollapsed] = useState(false);
 	const [personalToken, setPersonalToken] = useState<string | null>(null);
 	const [hasPersonalToken, setHasPersonalToken] = useState<boolean | null>(null);
 	const [isLoadingToken, setIsLoadingToken] = useState(false);
@@ -178,6 +183,7 @@ const McpInstruction = () => {
 		const providerFromParam = parseAssistantParam(assistantParam);
 		if (providerFromParam) {
 			setProvider(providerFromParam);
+			setIsProviderSectionCollapsed(true);
 		}
 	}, [assistantParam]);
 
@@ -210,8 +216,25 @@ const McpInstruction = () => {
 
 	const selectProvider = (selected: McpProvider) => {
 		setProvider(selected);
+		setIsProviderSectionCollapsed(true);
 		// Keeps the choice in the url, so the page can be shared or bookmarked as it is.
 		router.setParams({ [ASSISTANT_PARAM]: selected, [LEGACY_ASSISTANT_PARAM]: undefined });
+	};
+
+	// Brand names stay as they are, only "Andere" is translated.
+	const getProviderLabel = (option: (typeof PROVIDER_OPTIONS)[number]) => (option.provider === 'other' ? translate(option.label) : option.label);
+
+	const selectAccessMode = (selected: McpAccessMode) => {
+		setAccessMode(selected);
+		setIsAccountSectionCollapsed(true);
+	};
+
+	/** Opens the support form with the step already named in the title, so a ticket says where it got stuck. */
+	const openSupportForStep = (stepNumber: number) => {
+		const providerOption = PROVIDER_OPTIONS.find((option) => option.provider === provider);
+		const providerLabel = providerOption ? getProviderLabel(providerOption) : '';
+		const title = `${translate(TranslationKeys.mcp_instruction)} – ${providerLabel} – ${translate(TranslationKeys.mcp_step)} ${stepNumber}`;
+		router.push({ pathname: '/feedback-support', params: { title } });
 	};
 
 	const openLogin = () => {
@@ -273,6 +296,31 @@ const McpInstruction = () => {
 		<MaterialCommunityIcons name={isSelected ? 'radiobox-marked' : 'radiobox-blank'} size={24} color={isSelected ? primaryColor : theme.screen.icon} />
 	);
 
+	const renderSectionHeader = (title: string, value: string | undefined, leftIcon: React.ReactNode, isCollapsed: boolean, toggle: () => void) => (
+		<SettingsList
+			iconBgColor="transparent"
+			leftIcon={leftIcon}
+			title={title}
+			value={value}
+			stackedValue
+			rightIcon={<MaterialCommunityIcons name={isCollapsed ? 'chevron-down' : 'chevron-up'} size={26} color={theme.screen.icon} />}
+			handleFunction={toggle}
+			groupPosition="single"
+		/>
+	);
+
+	const selectedProviderOption = PROVIDER_OPTIONS.find((option) => option.provider === provider);
+	const accessModeLabels: Record<McpAccessMode, string> = {
+		personal: translate(TranslationKeys.mcp_connect_with_account),
+		public: translate(TranslationKeys.mcp_continue_without_account),
+	};
+	const accessModeIcons: Record<McpAccessMode, React.ComponentProps<typeof MaterialCommunityIcons>['name']> = {
+		personal: 'account-key',
+		public: 'earth',
+	};
+	const isProviderCollapsed = isProviderSectionCollapsed && provider !== null;
+	const isAccountCollapsed = isAccountSectionCollapsed && accessMode !== null;
+
 	const renderAccessChoice = () => (
 		<>
 			<MyMarkdownProjectColored content={translate(hasAccount ? TranslationKeys.mcp_access_choice_question : TranslationKeys.mcp_access_no_account_hint)} />
@@ -282,7 +330,7 @@ const McpInstruction = () => {
 						leftIcon={<MaterialCommunityIcons name="account-key" size={24} color={theme.screen.icon} />}
 						title={translate(TranslationKeys.mcp_connect_with_account)}
 						rightIcon={renderRadioIcon(accessMode === 'personal')}
-						handleFunction={() => setAccessMode('personal')}
+						handleFunction={() => selectAccessMode('personal')}
 						groupPosition="top"
 					/>
 				) : (
@@ -298,7 +346,7 @@ const McpInstruction = () => {
 					leftIcon={<MaterialCommunityIcons name="earth" size={24} color={theme.screen.icon} />}
 					title={translate(TranslationKeys.mcp_continue_without_account)}
 					rightIcon={renderRadioIcon(accessMode === 'public')}
-					handleFunction={() => setAccessMode('public')}
+					handleFunction={() => selectAccessMode('public')}
 					groupPosition="bottom"
 				/>
 			</View>
@@ -344,32 +392,59 @@ const McpInstruction = () => {
 			<View style={styles.content}>
 				<MyMarkdownProjectColored content={translate(TranslationKeys.mcp_instruction_intro)} />
 
-				<SettingsGroupTitle>{translate(TranslationKeys.mcp_choose_provider)}</SettingsGroupTitle>
 				<View style={styles.groupContainer}>
-					{PROVIDER_OPTIONS.map((option, index) => {
-						const groupPosition = index === 0 ? 'top' : index === PROVIDER_OPTIONS.length - 1 ? 'bottom' : 'middle';
-						return (
-							<SettingsList
-								key={option.provider}
-								iconBgColor="transparent"
-								leftIcon={option.renderLogo({ size: 24, color: theme.screen.text })}
-								title={option.provider === 'other' ? translate(option.label) : option.label}
-								rightIcon={renderRadioIcon(option.provider === provider)}
-								handleFunction={() => selectProvider(option.provider)}
-								groupPosition={groupPosition}
-							/>
-						);
-					})}
+					{renderSectionHeader(
+						translate(TranslationKeys.mcp_provider),
+						selectedProviderOption ? getProviderLabel(selectedProviderOption) : undefined,
+						selectedProviderOption ? (
+							selectedProviderOption.renderLogo({ size: 24, color: theme.screen.text })
+						) : (
+							<MaterialCommunityIcons name="robot-outline" size={24} color={theme.screen.text} />
+						),
+						isProviderCollapsed,
+						() => setIsProviderSectionCollapsed(!isProviderCollapsed)
+					)}
+					<CollapsibleView collapsed={isProviderCollapsed}>
+						<View style={styles.sectionContent}>
+							<MyMarkdownProjectColored content={translate(TranslationKeys.mcp_choose_provider)} />
+							<View style={styles.choiceGroup}>
+								{PROVIDER_OPTIONS.map((option, index) => {
+									const groupPosition = index === 0 ? 'top' : index === PROVIDER_OPTIONS.length - 1 ? 'bottom' : 'middle';
+									return (
+										<SettingsList
+											key={option.provider}
+											iconBgColor="transparent"
+											leftIcon={option.renderLogo({ size: 24, color: theme.screen.text })}
+											title={getProviderLabel(option)}
+											rightIcon={renderRadioIcon(option.provider === provider)}
+											handleFunction={() => selectProvider(option.provider)}
+											groupPosition={groupPosition}
+										/>
+									);
+								})}
+							</View>
+						</View>
+					</CollapsibleView>
 				</View>
 
 				{provider ? (
-					<>
-						<SettingsGroupTitle>{translate(TranslationKeys.mcp_access_token)}</SettingsGroupTitle>
-						<View style={styles.groupContainer}>
-							{renderAccessChoice()}
-							{renderToken()}
-						</View>
+					<View style={styles.groupContainer}>
+						{renderSectionHeader(
+							translate(TranslationKeys.mcp_account),
+							accessMode ? accessModeLabels[accessMode] : undefined,
+							<MaterialCommunityIcons name={accessMode ? accessModeIcons[accessMode] : 'account-question-outline'} size={24} color={theme.screen.text} />,
+							isAccountCollapsed,
+							() => setIsAccountSectionCollapsed(!isAccountCollapsed)
+						)}
+						<CollapsibleView collapsed={isAccountCollapsed}>
+							<View style={styles.sectionContent}>{renderAccessChoice()}</View>
+						</CollapsibleView>
+						{accessMode ? <View style={styles.sectionContent}>{renderToken()}</View> : null}
+					</View>
+				) : null}
 
+				{provider && accessMode ? (
+					<>
 						<SettingsGroupTitle>{translate(TranslationKeys.mcp_steps_title)}</SettingsGroupTitle>
 						<View style={styles.groupContainer}>
 							{STEPS_BY_PROVIDER[provider].map((step, index) => (
@@ -383,6 +458,10 @@ const McpInstruction = () => {
 										</View>
 									</View>
 									{step.copy ? <View style={styles.stepCopy}>{renderCopyRow(translate(COPY_VALUE_LABELS[step.copy]), getCopyValue(step.copy))}</View> : null}
+									<TouchableOpacity style={styles.stepProblems} onPress={() => openSupportForStep(index + 1)} accessibilityRole="link">
+										<MaterialCommunityIcons name="lifebuoy" size={16} color={theme.modal.placeholder} />
+										<Text style={[styles.stepProblemsText, { color: theme.modal.placeholder }]}>{translate(TranslationKeys.mcp_step_problems)}</Text>
+									</TouchableOpacity>
 								</View>
 							))}
 						</View>
@@ -408,6 +487,23 @@ const styles = StyleSheet.create({
 	},
 	choiceGroup: {
 		marginBottom: 12,
+	},
+	sectionContent: {
+		paddingTop: 12,
+	},
+	stepProblems: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+		marginTop: 8,
+		marginLeft: 40,
+		alignSelf: 'flex-start',
+		paddingVertical: 4,
+	},
+	stepProblemsText: {
+		fontSize: 13,
+		fontFamily: 'Poppins_400Regular',
+		textDecorationLine: 'underline',
 	},
 	trademarkNotice: {
 		fontSize: 12,
