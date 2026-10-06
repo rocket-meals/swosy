@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AaERrVvctla_SBaQ5Fc1","Consider removing 'undefined' type or '?' specifier, one of them is redundant.","rocket-meals_rocket-meals:packages/common/src/ChatHelper.ts",6
 "AaEQnkw_-6tQcR7ajnBm","`optionalDependencies` should be a `Set`, and use `optionalDependencies.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/extension.config.mjs",66
 "AaEQnkw_-6tQcR7ajnBn","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/extension.config.mjs",71
 "AaELnIZujAhCW6tGPtFP","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusSyncSettingsIdMigration.ts",33
@@ -489,7 +490,7 @@ Key,Message,Component,Line
 "AaD3G9D9Td3UR4iHDm26","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",104
 "AaD3G9D9Td3UR4iHDm27","Async method 'getMarkingsJSONList' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",484
 "AaD3G9OtTd3UR4iHDm4d","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/activity-auto-cleanup-schedule/index.ts",6
-"AaD3G9PyTd3UR4iHDm4u","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts",110
+"AaD3G9PyTd3UR4iHDm4u","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts",108
 "AaD3G9KBTd3UR4iHDm3r","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/index.ts",102
 "AaD3G9BhTd3UR4iHDm2D","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/index.ts",43
 "AaD3G9M3Td3UR4iHDm4D","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",11
