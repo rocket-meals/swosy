@@ -800,9 +800,19 @@ export const TranslationKeys = {
 	course_timetable_reset: 'course_timetable_reset',
 	course_timetable_reset_confirm: 'course_timetable_reset_confirm',
 	course_timetable_reimport: 'course_timetable_reimport',
-	course_timetable_import_unavailable: 'course_timetable_import_unavailable',
 	course_timetable_load_demo: 'course_timetable_load_demo',
-	course_timetable_reimport_confirm: 'course_timetable_reimport_confirm',
+	course_timetable_import_university: 'course_timetable_import_university',
+	course_timetable_import_login: 'course_timetable_import_login',
+	course_timetable_import_username: 'course_timetable_import_username',
+	course_timetable_import_privacy_hint: 'course_timetable_import_privacy_hint',
+	course_timetable_import_replace_hint: 'course_timetable_import_replace_hint',
+	course_timetable_import_web_hint: 'course_timetable_import_web_hint',
+	course_timetable_import_start: 'course_timetable_import_start',
+	course_timetable_import_success: 'course_timetable_import_success',
+	course_timetable_import_empty: 'course_timetable_import_empty',
+	course_timetable_import_error_credentials: 'course_timetable_import_error_credentials',
+	course_timetable_import_error_network: 'course_timetable_import_error_network',
+	course_timetable_import_error_unexpected: 'course_timetable_import_error_unexpected',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];

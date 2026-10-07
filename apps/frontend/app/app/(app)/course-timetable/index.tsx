@@ -14,10 +14,11 @@ import CourseEventDetailsSheet, { NEW_COURSE_EVENT_ID, createCourseEventDraft, s
 import CourseTimetableDayView, { minutesOfDay } from '@/components/CourseTimetableViews/CourseTimetableDayView';
 import CourseTimetableWeekView, { WeekViewDay } from '@/components/CourseTimetableViews/CourseTimetableWeekView';
 import LunchSuggestionCard from '@/components/CourseTimetableViews/LunchSuggestionCard';
+import StudipImportSheet from '@/components/CourseTimetableViews/StudipImportSheet';
+import ProjectButton from '@/components/ProjectButton';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import useToast from '@/hooks/useToast';
 import useCourseTimetable from '@/hooks/useCourseTimetable';
 import useCourseTimetableLunchSuggestions, { LunchSuggestionDay } from '@/hooks/useCourseTimetableLunchSuggestions';
 import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
@@ -67,7 +68,6 @@ const CourseTimetableScreen = () => {
 	const isDark = theme === darkTheme;
 	const { translate } = useLanguage();
 	const router = useRouter();
-	const toast = useToast();
 	const { width } = useWindowDimensions();
 	const { show } = useMyScrollViewModal();
 	const { openDatePickerModal } = useMyScrollviewModalDatePicker();
@@ -76,6 +76,7 @@ const CourseTimetableScreen = () => {
 	const { primaryColor, appSettings, firstDayOfTheWeek } = useAppSelector(state => state.settings);
 	const accentColor = appSettings?.course_timetable_area_color || primaryColor;
 	const accentText = myContrastColor(accentColor, theme, isDark);
+	const primaryText = myContrastColor(primaryColor, theme, isDark);
 
 	const isWide = width >= WEEK_VIEW_MIN_WIDTH;
 	const showSidePanel = width >= SIDE_PANEL_MIN_WIDTH;
@@ -183,10 +184,12 @@ const CourseTimetableScreen = () => {
 		[lunches, show, translate]
 	);
 
+	const openImport = useCallback(() => {
+		show({ title: translate(TranslationKeys.course_timetable_reimport), children: <StudipImportSheet /> });
+	}, [show, translate]);
+
 	const { openCourseTimetableOptionsModal } = useMyScrollviewModalCourseTimetableOptions({
-		// No import source yet (Stud.IP follows); the action explains that instead of overwriting.
-		reimportAvailable: false,
-		onReimport: () => toast(translate(TranslationKeys.course_timetable_import_unavailable), 'info'),
+		onReimport: openImport,
 		onReset: () => saveEvents([]),
 		onLoadDemo: () => saveEvents(createCourseTimetableDemoEvents()),
 		onFirstDayOfWeek: openFirstDayOfWeekModal,
@@ -248,6 +251,7 @@ const CourseTimetableScreen = () => {
 				{events.length === 0 ? (
 					<View style={[styles.emptyInfo, { backgroundColor: theme.screen.iconBg }]}>
 						<MyMarkdownProjectColored content={translate(TranslationKeys.courseTimetableDescriptionEmpty)} />
+						<ProjectButton text={translate(TranslationKeys.course_timetable_reimport)} onPress={openImport} iconLeft={<MaterialCommunityIcons name="cloud-download-outline" size={20} color={primaryText} />} style={styles.importButton} />
 					</View>
 				) : null}
 				{viewMode === 'week' ? (
@@ -338,6 +342,9 @@ const styles = StyleSheet.create({
 	contentWide: {
 		padding: 20,
 		paddingBottom: 120,
+	},
+	importButton: {
+		marginVertical: 8,
 	},
 	emptyInfo: {
 		borderRadius: 16,

@@ -7750,24 +7750,14 @@
     "zh": "所有日程都将被删除，且无法撤销。"
   },
   "course_timetable_reimport": {
-    "de": "Neu importieren (ersetzt den Stundenplan)",
-    "en": "Import again (replaces the timetable)",
-    "ar": "إعادة الاستيراد (يستبدل الجدول)",
-    "es": "Importar de nuevo (reemplaza el horario)",
-    "fr": "Réimporter (remplace l’emploi du temps)",
-    "ru": "Импортировать заново (заменяет расписание)",
-    "tr": "Yeniden içe aktar (ders programının yerine geçer)",
-    "zh": "重新导入（替换课程表）"
-  },
-  "course_timetable_import_unavailable": {
-    "de": "Der Import ist noch nicht verfügbar.",
-    "en": "Importing is not available yet.",
-    "ar": "الاستيراد غير متاح بعد.",
-    "es": "La importación aún no está disponible.",
-    "fr": "L’importation n’est pas encore disponible.",
-    "ru": "Импорт пока недоступен.",
-    "tr": "İçe aktarma henüz kullanılamıyor.",
-    "zh": "导入功能暂不可用。"
+    "de": "Aus Stud.IP importieren (ersetzt den Stundenplan)",
+    "en": "Import from Stud.IP (replaces the timetable)",
+    "ar": "الاستيراد من Stud.IP (يستبدل الجدول)",
+    "es": "Importar desde Stud.IP (reemplaza el horario)",
+    "fr": "Importer depuis Stud.IP (remplace l’emploi du temps)",
+    "ru": "Импорт из Stud.IP (заменяет расписание)",
+    "tr": "Stud.IP’den içe aktar (ders programının yerine geçer)",
+    "zh": "从 Stud.IP 导入（替换课程表）"
   },
   "course_timetable_load_demo": {
     "de": "Beispiel-Stundenplan laden (überschreibt)",
@@ -7779,14 +7769,124 @@
     "tr": "Örnek ders programını yükle (üzerine yazar)",
     "zh": "加载示例课程表（覆盖）"
   },
-  "course_timetable_reimport_confirm": {
-    "de": "Dein Stundenplan wird durch einen neuen Import ersetzt. Eigene Termine gehen dabei verloren.",
-    "en": "Your timetable will be replaced by a new import. Your own events will be lost.",
-    "ar": "سيتم استبدال جدولك باستيراد جديد. ستفقد مواعيدك الخاصة.",
-    "es": "Tu horario será reemplazado por una nueva importación. Se perderán tus eventos propios.",
-    "fr": "Votre emploi du temps sera remplacé par une nouvelle importation. Vos événements personnels seront perdus.",
-    "ru": "Ваше расписание будет заменено новым импортом. Ваши собственные события будут потеряны.",
-    "tr": "Ders programın yeni bir içe aktarmayla değiştirilecek. Kendi etkinliklerin silinecek.",
-    "zh": "你的课程表将被新的导入替换，自建日程将会丢失。"
+  "course_timetable_import_university": {
+    "de": "Hochschule",
+    "en": "University",
+    "ar": "الجامعة",
+    "es": "Universidad",
+    "fr": "Université",
+    "ru": "Университет",
+    "tr": "Üniversite",
+    "zh": "高校"
+  },
+  "course_timetable_import_login": {
+    "de": "Stud.IP-Zugang",
+    "en": "Stud.IP login",
+    "ar": "تسجيل الدخول إلى Stud.IP",
+    "es": "Acceso a Stud.IP",
+    "fr": "Connexion Stud.IP",
+    "ru": "Вход в Stud.IP",
+    "tr": "Stud.IP girişi",
+    "zh": "Stud.IP 登录"
+  },
+  "course_timetable_import_username": {
+    "de": "Nutzername",
+    "en": "Username",
+    "ar": "اسم المستخدم",
+    "es": "Nombre de usuario",
+    "fr": "Nom d’utilisateur",
+    "ru": "Имя пользователя",
+    "tr": "Kullanıcı adı",
+    "zh": "用户名"
+  },
+  "course_timetable_import_privacy_hint": {
+    "de": "Deine Zugangsdaten werden nicht an uns gesendet. Die App fragt deinen Stundenplan direkt bei Stud.IP ab und speichert Nutzername und Passwort nicht.",
+    "en": "Your login is not sent to us. The app requests your timetable directly from Stud.IP and does not store your username or password.",
+    "ar": "لا يتم إرسال بيانات الدخول إلينا. يطلب التطبيق جدولك مباشرة من Stud.IP ولا يحفظ اسم المستخدم أو كلمة المرور.",
+    "es": "Tus datos de acceso no se nos envían. La app consulta tu horario directamente en Stud.IP y no guarda tu usuario ni tu contraseña.",
+    "fr": "Vos identifiants ne nous sont pas envoyés. L’application récupère votre emploi du temps directement auprès de Stud.IP et n’enregistre ni votre nom d’utilisateur ni votre mot de passe.",
+    "ru": "Ваши данные для входа не передаются нам. Приложение запрашивает расписание напрямую в Stud.IP и не сохраняет имя пользователя и пароль.",
+    "tr": "Giriş bilgilerin bize gönderilmez. Uygulama ders programını doğrudan Stud.IP’den alır ve kullanıcı adını ile şifreni kaydetmez.",
+    "zh": "你的登录信息不会发送给我们。应用直接向 Stud.IP 获取你的课程表，不会保存用户名和密码。"
+  },
+  "course_timetable_import_replace_hint": {
+    "de": "Der Import ersetzt deinen aktuellen Stundenplan, auch eigene Termine.",
+    "en": "The import replaces your current timetable, including your own events.",
+    "ar": "يستبدل الاستيراد جدولك الحالي، بما في ذلك مواعيدك الخاصة.",
+    "es": "La importación reemplaza tu horario actual, incluidos tus eventos propios.",
+    "fr": "L’importation remplace votre emploi du temps actuel, y compris vos événements personnels.",
+    "ru": "Импорт заменит текущее расписание, включая ваши собственные события.",
+    "tr": "İçe aktarma, kendi etkinliklerin dahil mevcut ders programının yerine geçer.",
+    "zh": "导入会替换你当前的课程表，包括自建日程。"
+  },
+  "course_timetable_import_web_hint": {
+    "de": "Im Browser blockiert Stud.IP den Import. Bitte nutze die App für iOS oder Android.",
+    "en": "Stud.IP blocks the import in the browser. Please use the iOS or Android app.",
+    "ar": "يحظر Stud.IP الاستيراد في المتصفح. يرجى استخدام تطبيق iOS أو Android.",
+    "es": "Stud.IP bloquea la importación en el navegador. Usa la app para iOS o Android.",
+    "fr": "Stud.IP bloque l’importation dans le navigateur. Veuillez utiliser l’application iOS ou Android.",
+    "ru": "В браузере Stud.IP блокирует импорт. Пожалуйста, используйте приложение для iOS или Android.",
+    "tr": "Stud.IP tarayıcıda içe aktarmayı engelliyor. Lütfen iOS veya Android uygulamasını kullan.",
+    "zh": "Stud.IP 会在浏览器中阻止导入，请使用 iOS 或 Android 应用。"
+  },
+  "course_timetable_import_start": {
+    "de": "Importieren",
+    "en": "Import",
+    "ar": "استيراد",
+    "es": "Importar",
+    "fr": "Importer",
+    "ru": "Импортировать",
+    "tr": "İçe aktar",
+    "zh": "导入"
+  },
+  "course_timetable_import_success": {
+    "de": "Stundenplan importiert",
+    "en": "Timetable imported",
+    "ar": "تم استيراد الجدول",
+    "es": "Horario importado",
+    "fr": "Emploi du temps importé",
+    "ru": "Расписание импортировано",
+    "tr": "Ders programı içe aktarıldı",
+    "zh": "课程表已导入"
+  },
+  "course_timetable_import_empty": {
+    "de": "In Stud.IP wurden für das aktuelle Semester keine Termine gefunden. Dein Stundenplan bleibt unverändert.",
+    "en": "No events were found in Stud.IP for the current semester. Your timetable stays unchanged.",
+    "ar": "لم يتم العثور على مواعيد في Stud.IP للفصل الحالي. يبقى جدولك دون تغيير.",
+    "es": "No se encontraron eventos en Stud.IP para el semestre actual. Tu horario no cambia.",
+    "fr": "Aucun événement trouvé dans Stud.IP pour le semestre en cours. Votre emploi du temps reste inchangé.",
+    "ru": "В Stud.IP не найдено событий на текущий семестр. Ваше расписание не изменилось.",
+    "tr": "Stud.IP’de bu dönem için etkinlik bulunamadı. Ders programın değişmedi.",
+    "zh": "Stud.IP 中没有找到本学期的日程，你的课程表保持不变。"
+  },
+  "course_timetable_import_error_credentials": {
+    "de": "Nutzername oder Passwort ist falsch.",
+    "en": "Username or password is incorrect.",
+    "ar": "اسم المستخدم أو كلمة المرور غير صحيحة.",
+    "es": "El usuario o la contraseña no son correctos.",
+    "fr": "Nom d’utilisateur ou mot de passe incorrect.",
+    "ru": "Неверное имя пользователя или пароль.",
+    "tr": "Kullanıcı adı veya şifre yanlış.",
+    "zh": "用户名或密码错误。"
+  },
+  "course_timetable_import_error_network": {
+    "de": "Stud.IP ist gerade nicht erreichbar. Bitte prüfe deine Internetverbindung.",
+    "en": "Stud.IP cannot be reached right now. Please check your internet connection.",
+    "ar": "لا يمكن الوصول إلى Stud.IP حاليًا. يرجى التحقق من اتصالك بالإنترنت.",
+    "es": "No se puede acceder a Stud.IP en este momento. Comprueba tu conexión a internet.",
+    "fr": "Stud.IP est injoignable pour le moment. Veuillez vérifier votre connexion internet.",
+    "ru": "Stud.IP сейчас недоступен. Проверьте подключение к интернету.",
+    "tr": "Stud.IP’ye şu anda ulaşılamıyor. Lütfen internet bağlantını kontrol et.",
+    "zh": "目前无法连接 Stud.IP，请检查网络连接。"
+  },
+  "course_timetable_import_error_unexpected": {
+    "de": "Der Stundenplan konnte nicht aus Stud.IP gelesen werden.",
+    "en": "The timetable could not be read from Stud.IP.",
+    "ar": "تعذرت قراءة الجدول من Stud.IP.",
+    "es": "No se pudo leer el horario desde Stud.IP.",
+    "fr": "Impossible de lire l’emploi du temps depuis Stud.IP.",
+    "ru": "Не удалось прочитать расписание из Stud.IP.",
+    "tr": "Ders programı Stud.IP’den okunamadı.",
+    "zh": "无法从 Stud.IP 读取课程表。"
   }
 }

@@ -10,8 +10,7 @@ import useDebugMode from '@/hooks/useDebugMode';
 import { TranslationKeys } from '@/locales/keys';
 
 type CourseTimetableOptionsParams = {
-	/** False while no import source exists: the action then only explains that, without asking to overwrite. */
-	reimportAvailable: boolean;
+	/** Opens the Stud.IP import; the import sheet itself says that it replaces the timetable. */
 	onReimport: () => void;
 	onReset: () => void;
 	onLoadDemo: () => void;
@@ -67,13 +66,7 @@ export const useMyScrollviewModalCourseTimetableOptions = (params: CourseTimetab
 				key: 'reimport',
 				title: translate(TranslationKeys.course_timetable_reimport),
 				icon: <MaterialCommunityIcons name="cloud-download-outline" size={20} />,
-				onPress: () => {
-					if (!params.reimportAvailable) {
-						params.onReimport();
-						return;
-					}
-					confirm(translate(TranslationKeys.course_timetable_reimport), translate(TranslationKeys.course_timetable_reimport_confirm), params.onReimport);
-				},
+				onPress: params.onReimport,
 			},
 			{
 				key: 'reset',
