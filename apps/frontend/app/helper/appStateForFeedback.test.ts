@@ -140,6 +140,18 @@ describe('sanitizeAppStateForFeedback', () => {
 });
 
 describe('buildAppStateJsonForFeedback', () => {
+	it('adds the session flags as __session next to the summary', () => {
+		const session = { hasRefreshToken: false, hasAccessToken: false, accessTokenExpiresAt: null, accessTokenExpired: null };
+		const parsed = JSON.parse(buildAppStateJsonForFeedback({ authReducer: { loggedIn: true } }, { session }));
+
+		expect(parsed.__session).toEqual(session);
+		expect(parsed.authReducer).toEqual({ loggedIn: true });
+	});
+
+	it('leaves __session out when no session was passed', () => {
+		expect(JSON.parse(buildAppStateJsonForFeedback({ settings: {} }))).not.toHaveProperty('__session');
+	});
+
 	it('produces valid JSON with a summary of what was dropped', () => {
 		const json = buildAppStateJsonForFeedback({
 			canteenReducer: { buildings: buildBuildings(200) },

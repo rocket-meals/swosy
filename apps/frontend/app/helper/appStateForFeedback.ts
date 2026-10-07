@@ -35,6 +35,14 @@ export type AppStateSanitizeOptions = {
 	maxTotalLength?: number;
 };
 
+export type AppStateJsonForFeedbackOptions = AppStateSanitizeOptions & {
+	/**
+	 * Login session flags (see buildSessionDiagnostics), added as `__session`. The tokens are
+	 * not part of the redux state, so without this the snapshot cannot show a dead session.
+	 */
+	session?: unknown;
+};
+
 export type AppStateSanitizeSummary = {
 	/** How many `translations` / `*_translations` fields were dropped. */
 	removedTranslationFields: number;
@@ -204,11 +212,12 @@ export function sanitizeAppStateForFeedback(state: unknown, options?: AppStateSa
  * Serializes the sanitized app state for the feedback content. The result is capped at
  * `maxTotalLength` characters so a single report can never blow up the feedback mail again.
  */
-export function buildAppStateJsonForFeedback(state: unknown, options?: AppStateSanitizeOptions): string {
+export function buildAppStateJsonForFeedback(state: unknown, options?: AppStateJsonForFeedbackOptions): string {
 	const maxTotalLength = options?.maxTotalLength ?? DEFAULT_MAX_TOTAL_LENGTH;
 	const { state: sanitizedState, summary } = sanitizeAppStateForFeedback(state, options);
 	const isPlainState = sanitizedState !== null && typeof sanitizedState === 'object' && !Array.isArray(sanitizedState);
-	const json = JSON.stringify(isPlainState ? { __sanitized: summary, ...(sanitizedState as object) } : { __sanitized: summary, state: sanitizedState });
+	const meta = options?.session === undefined ? { __sanitized: summary } : { __sanitized: summary, __session: options.session };
+	const json = JSON.stringify(isPlainState ? { ...meta, ...(sanitizedState as object) } : { ...meta, state: sanitizedState });
 	if (json.length <= maxTotalLength) {
 		return json;
 	}

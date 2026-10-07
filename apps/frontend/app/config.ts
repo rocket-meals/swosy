@@ -193,7 +193,8 @@ export function getVersionPatch() {
         //     context card instead of a bubble, so it is not taken for a message of either side
         // 85: an expired login is detected (sign in again) instead of silently continuing as the
         //     public role; a failed token refresh while offline no longer drops the session
-        return 85;
+        // 86: feedback app-state snapshot carries __session (token flags and expiry, no values)
+        return 86;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

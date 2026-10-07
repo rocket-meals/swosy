@@ -6,7 +6,7 @@ import { UrlHelper } from '@/constants/UrlHelper';
 import ServerConfiguration from '@/constants/ServerUrl';
 import { setApiBaseUrl } from '@/redux/actions/ApiService/ApiService';
 import { setBaseURL } from '@/interceptor';
-import { hasRefreshToken, isAccessTokenExpiring, isSessionRejectedError } from '@/helper/authSessionHelper';
+import { buildSessionDiagnostics, hasRefreshToken, isAccessTokenExpiring, isSessionRejectedError, SessionDiagnostics } from '@/helper/authSessionHelper';
 
 interface ExtendedProperties {
 	project: {
@@ -166,6 +166,16 @@ export class ServerAPI {
 			console.warn('Server rejected the refresh token - the login session has expired');
 			await this.clearSession();
 			this.notifySessionInvalid();
+		}
+	}
+
+	/** Session flags for the feedback snapshot - never the token values themselves. */
+	static async getSessionDiagnostics(): Promise<SessionDiagnostics | null> {
+		try {
+			return buildSessionDiagnostics(await this.simpleAuthentificationStorage?.get());
+		} catch (err) {
+			console.warn('Could not read session diagnostics:', err);
+			return null;
 		}
 	}
 

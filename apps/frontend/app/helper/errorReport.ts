@@ -4,6 +4,7 @@ import { AppFeedbackContentHelper, DatabaseTypes } from 'repo-depkit-common';
 
 import { getVersionInternalForAppsettingsScreen } from '@/config';
 import { buildAppStateJsonForFeedback } from '@/helper/appStateForFeedback';
+import { ServerAPI } from '@/redux/actions/Auth/Auth';
 import { AppFeedback } from '@/redux/actions/AppFeedback/AppFeedback';
 import { configureStore } from '@/redux/store';
 
@@ -85,7 +86,8 @@ export const sendErrorReport = async (title: string, details: ErrorReportDetails
 		report.profile = profileId;
 	}
 	try {
-		report.data = AppFeedbackContentHelper.buildAppStateData(buildAppStateJsonForFeedback(state));
+		const session = await ServerAPI.getSessionDiagnostics();
+		report.data = AppFeedbackContentHelper.buildAppStateData(buildAppStateJsonForFeedback(state, { session }));
 	} catch (error) {
 		// The report is worth more than the snapshot: send it with the reason instead.
 		report.data = AppFeedbackContentHelper.buildAppStateErrorData(error);

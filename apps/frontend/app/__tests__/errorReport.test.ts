@@ -16,6 +16,9 @@ jest.mock('@/helper/appStateForFeedback', () => ({
 jest.mock('@/config', () => ({
 	getVersionInternalForAppsettingsScreen: () => '21.210.65',
 }));
+jest.mock('@/redux/actions/Auth/Auth', () => ({
+	ServerAPI: { getSessionDiagnostics: async () => ({ hasRefreshToken: false, hasAccessToken: false, accessTokenExpiresAt: null, accessTokenExpired: null }) },
+}));
 jest.mock('expo-device', () => ({ brand: 'google', modelName: 'Pixel 8', osVersion: '16' }));
 
 import { buildErrorReportText, sendErrorReport } from '../helper/errorReport';

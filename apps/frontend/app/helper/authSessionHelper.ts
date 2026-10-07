@@ -157,3 +157,26 @@ export function buildProfileRestoreAfterSessionExpiry(serverProfile: ProfileLike
 	if (Object.keys(updates).length === 0) return null;
 	return { ...serverProfile, ...updates };
 }
+
+/** Login session state for the feedback snapshot - flags and dates only, never token values. */
+export type SessionDiagnostics = {
+	hasRefreshToken: boolean;
+	hasAccessToken: boolean;
+	accessTokenExpiresAt: string | null;
+	accessTokenExpired: boolean | null;
+};
+
+/**
+ * The tokens live outside redux (`auth_data` in SQLite / localStorage), so the redux snapshot
+ * alone cannot tell whether the app still has a session - the case behind the feedback
+ * "Essgewohnheiten setzen sich immer zurück" (`loggedIn: true`, but no refresh token).
+ */
+export function buildSessionDiagnostics(data: StoredAuthData, now: number = Date.now()): SessionDiagnostics {
+	const expiresAt = typeof data?.expires_at === 'number' ? data.expires_at : null;
+	return {
+		hasRefreshToken: hasRefreshToken(data),
+		hasAccessToken: !!data?.access_token,
+		accessTokenExpiresAt: expiresAt === null ? null : new Date(expiresAt).toISOString(),
+		accessTokenExpired: expiresAt === null ? null : expiresAt < now,
+	};
+}

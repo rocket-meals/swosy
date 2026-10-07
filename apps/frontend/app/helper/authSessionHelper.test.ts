@@ -1,4 +1,4 @@
-import { buildProfileRestoreAfterSessionExpiry, isAccessTokenExpiring, isProfileReadAsOwner, isSessionRejectedError } from './authSessionHelper';
+import { buildProfileRestoreAfterSessionExpiry, buildSessionDiagnostics, isAccessTokenExpiring, isProfileReadAsOwner, isSessionRejectedError } from './authSessionHelper';
 
 const PROFILE_ID = '55639afd-678c-441f-a0f5-a2e099855e25';
 
@@ -94,5 +94,20 @@ describe('buildProfileRestoreAfterSessionExpiry', () => {
 		expect(buildProfileRestoreAfterSessionExpiry(serverProfile, { ...serverProfile, id: 'other' })).toBeNull();
 		expect(buildProfileRestoreAfterSessionExpiry(serverProfile, serverProfile)).toBeNull();
 		expect(buildProfileRestoreAfterSessionExpiry(serverProfile, null)).toBeNull();
+	});
+});
+
+describe('buildSessionDiagnostics', () => {
+	const now = Date.parse('2026-10-07T12:00:00.000Z');
+
+	it('shows a dead session: no tokens at all (real case behind the feedback)', () => {
+		expect(buildSessionDiagnostics(null, now)).toEqual({ hasRefreshToken: false, hasAccessToken: false, accessTokenExpiresAt: null, accessTokenExpired: null });
+	});
+
+	it('reports flags and expiry but never the token values', () => {
+		const diagnostics = buildSessionDiagnostics({ access_token: 'secret-access', refresh_token: 'secret-refresh', expires: 900000, expires_at: now - 60000 }, now);
+
+		expect(diagnostics).toEqual({ hasRefreshToken: true, hasAccessToken: true, accessTokenExpiresAt: '2026-10-07T11:59:00.000Z', accessTokenExpired: true });
+		expect(JSON.stringify(diagnostics)).not.toContain('secret');
 	});
 });
