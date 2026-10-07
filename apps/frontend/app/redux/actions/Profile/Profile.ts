@@ -51,6 +51,15 @@ export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 		// "verified" is readable but not writable for users (set by the server/admins);
 		// sending it back would reject the whole update with 403
 		delete profileData.verified;
+		// `display_group` is only a field group in the Directus layout, not a column. Tenants whose
+		// User policy does not list it reject the whole update with 403 (seen on SWOSY).
+		if (Array.isArray(profileData.devices)) {
+			profileData.devices = profileData.devices.map((device: any) => {
+				if (!device || typeof device !== 'object' || !('display_group' in device)) return device;
+				const { display_group, ...rest } = device;
+				return rest;
+			});
+		}
 
 		await this.updateItem(profileData?.id, profileData);
 

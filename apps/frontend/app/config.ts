@@ -197,7 +197,9 @@ export function getVersionPatch() {
         // 88: an expired login is detected (sign in again) instead of silently continuing as the
         //     public role; a failed token refresh while offline no longer drops the session
         // 89: feedback app-state snapshot carries __session (token flags and expiry, no values)
-        return 89;
+        // 90: logout no longer fails with "database is locked"; device updates no longer send the
+        //     display_group layout field (403 on tenants whose User policy does not list it)
+        return 90;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

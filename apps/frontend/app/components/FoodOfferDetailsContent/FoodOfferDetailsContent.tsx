@@ -274,7 +274,6 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             let deviceInformationsWithPushToken = {
                 ...deviceInformationsWithoutPushToken,
                 pushTokenObj: pushTokenObj,
-                display_group: '',
             };
 
             let newDevices = profile?.devices ? [...profile.devices] : [];
