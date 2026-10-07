@@ -15,6 +15,8 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { mergeImportedEvents } from '@/helper/courseTimetable/CourseTimetableModel';
 import { CorsProxyStatus, STUDIP_DEBUG_CORS_PROXY, STUDIP_DEBUG_CORS_PROXY_UNLOCK_LABEL, STUDIP_DEBUG_CORS_PROXY_UNLOCK_URL, STUDIP_INSTANCES, StudipImportError, checkCorsProxy, fetchStudipSchedule } from '@/helper/courseTimetable/StudipImporter';
 import useDebugMode from '@/hooks/useDebugMode';
+import StudipSsoLoginModal from './StudipSsoLoginModal';
+import type { CourseTimetableEvent } from '@/helper/courseTimetable/CourseTimetableModel';
 
 const ERROR_KEYS: Record<string, TranslationKeys> = {
 	unauthorized: TranslationKeys.course_timetable_import_error_credentials,
@@ -77,30 +79,47 @@ const StudipImportSheet: React.FC = () => {
 
 	const canSubmit = !!instance && username.trim().length > 0 && password.length > 0 && !loading && (!useCorsProxy || proxyStatus === 'ok');
 
+	const [ssoVisible, setSsoVisible] = useState(false);
+	const canUseSso = !isWeb && !!instance?.ssoLoginPath;
+
+	/** Replaces the timetable with the imported events; shared by both login ways. */
+	const applyImported = async (imported: CourseTimetableEvent[]) => {
+		if (imported.length === 0) {
+			// Nothing to import: keep the current timetable instead of wiping it.
+			setErrorText(translate(TranslationKeys.course_timetable_import_empty));
+			return;
+		}
+		await saveEvents(mergeImportedEvents(events, imported, true));
+		setPassword('');
+		toast(`${translate(TranslationKeys.course_timetable_import_success)} (${imported.length})`, 'success');
+		closeAll();
+	};
+
+	const showImportError = (error: unknown) => {
+		const code = error instanceof StudipImportError ? error.code : 'unexpected';
+		console.warn('Stud.IP import failed:', code, error instanceof Error ? error.message : '');
+		const message = translate(ERROR_KEYS[code] ?? TranslationKeys.course_timetable_import_error_unexpected);
+		// Developers get the technical reason too (e.g. the CORS proxy answering 403 while locked).
+		setErrorText(debugMode && error instanceof Error ? `${message} (${error.message})` : message);
+	};
+
 	const startImport = async () => {
 		if (!instance || !canSubmit) return;
 		setLoading(true);
 		setErrorText(null);
 		try {
 			const imported = await fetchStudipSchedule(instance, username, password, undefined, useCorsProxy ? { corsProxy: STUDIP_DEBUG_CORS_PROXY } : {});
-			if (imported.length === 0) {
-				// Nothing to import: keep the current timetable instead of wiping it.
-				setErrorText(translate(TranslationKeys.course_timetable_import_empty));
-				return;
-			}
-			await saveEvents(mergeImportedEvents(events, imported, true));
-			setPassword('');
-			toast(`${translate(TranslationKeys.course_timetable_import_success)} (${imported.length})`, 'success');
-			closeAll();
+			await applyImported(imported);
 		} catch (error) {
-			const code = error instanceof StudipImportError ? error.code : 'unexpected';
-			console.warn('Stud.IP import failed:', code, error instanceof Error ? error.message : '');
-			const message = translate(ERROR_KEYS[code] ?? TranslationKeys.course_timetable_import_error_unexpected);
-			// Developers get the technical reason too (e.g. the CORS proxy answering 403 while locked).
-			setErrorText(debugMode && error instanceof Error ? `${message} (${error.message})` : message);
+			showImportError(error);
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	const startSso = () => {
+		setErrorText(null);
+		setSsoVisible(true);
 	};
 
 	if (importBlockedOnWeb) {
@@ -126,9 +145,41 @@ const StudipImportSheet: React.FC = () => {
 				<SettingsListSelectOptionSingle key={entry.id} label={entry.name} isSelected={entry.id === instanceId} selectionColor={accentColor} onPress={() => setInstanceId(entry.id)} groupPosition={STUDIP_INSTANCES.length === 1 ? 'single' : index === 0 ? 'top' : index === STUDIP_INSTANCES.length - 1 ? 'bottom' : 'middle'} showSeparator={index !== STUDIP_INSTANCES.length - 1} />
 			))}
 
-			<SettingsListGroupTitle title={translate(TranslationKeys.course_timetable_import_login)} />
-			<SettingsListTextInputField placeholder={translate(TranslationKeys.course_timetable_import_username)} value={username} onChangeText={setUsername} autoCapitalize="none" autoCorrect={false} textContentType="username" returnKeyType="next" />
-			<SettingsListTextInputField placeholder={translate(TranslationKeys.password)} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoCorrect={false} textContentType="password" returnKeyType="done" onSubmitEditing={startImport} />
+			{canUseSso && instance ? (
+				<>
+					<SettingsListGroupTitle title={translate(TranslationKeys.course_timetable_import_sso_title)} />
+					<TouchableOpacity onPress={startSso} style={[styles.button, styles.ssoButton, { backgroundColor: accentColor }]} accessibilityRole="button">
+						<MaterialCommunityIcons name="school-outline" size={20} color={accentText} />
+						<Text style={[styles.buttonText, { color: accentText }]}>{translate(TranslationKeys.course_timetable_import_sso_button)}</Text>
+					</TouchableOpacity>
+					<StudipSsoLoginModal
+						instance={instance}
+						visible={ssoVisible}
+						onClose={() => setSsoVisible(false)}
+						onImported={imported => {
+							setSsoVisible(false);
+							applyImported(imported).catch(showImportError);
+						}}
+						onError={error => {
+							setSsoVisible(false);
+							showImportError(error);
+						}}
+					/>
+				</>
+			) : null}
+
+			{instance?.passwordLogin ? (
+				<>
+					<SettingsListGroupTitle title={translate(canUseSso ? TranslationKeys.course_timetable_import_or_password : TranslationKeys.course_timetable_import_login)} />
+					<SettingsListTextInputField placeholder={translate(TranslationKeys.course_timetable_import_username)} value={username} onChangeText={setUsername} autoCapitalize="none" autoCorrect={false} textContentType="username" returnKeyType="next" />
+					<SettingsListTextInputField placeholder={translate(TranslationKeys.password)} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoCorrect={false} textContentType="password" returnKeyType="done" onSubmitEditing={startImport} />
+
+					<TouchableOpacity onPress={startImport} disabled={!canSubmit} style={[styles.button, { backgroundColor: accentColor, opacity: canSubmit ? 1 : 0.5 }]} accessibilityRole="button" accessibilityState={{ disabled: !canSubmit, busy: loading }}>
+						{loading ? <ActivityIndicator color={accentText} /> : <MaterialCommunityIcons name="cloud-download-outline" size={20} color={accentText} />}
+						<Text style={[styles.buttonText, { color: accentText }]}>{translate(TranslationKeys.course_timetable_import_start)}</Text>
+					</TouchableOpacity>
+				</>
+			) : null}
 
 			<Text style={[styles.replaceHint, { color: theme.screen.placeholder }]}>{translate(TranslationKeys.course_timetable_import_replace_hint)}</Text>
 			{useCorsProxy ? (
@@ -149,11 +200,6 @@ const StudipImportSheet: React.FC = () => {
 				</View>
 			) : null}
 			{errorText ? <Text style={[styles.error, { color: theme.sheet.inputBorderInvalid }]}>{errorText}</Text> : null}
-
-			<TouchableOpacity onPress={startImport} disabled={!canSubmit} style={[styles.button, { backgroundColor: accentColor, opacity: canSubmit ? 1 : 0.5 }]} accessibilityRole="button" accessibilityState={{ disabled: !canSubmit, busy: loading }}>
-				{loading ? <ActivityIndicator color={accentText} /> : <MaterialCommunityIcons name="cloud-download-outline" size={20} color={accentText} />}
-				<Text style={[styles.buttonText, { color: accentText }]}>{translate(TranslationKeys.course_timetable_import_start)}</Text>
-			</TouchableOpacity>
 		</View>
 	);
 };
@@ -209,6 +255,9 @@ const styles = StyleSheet.create({
 	error: {
 		fontSize: 14,
 		fontFamily: 'Poppins_600SemiBold',
+	},
+	ssoButton: {
+		marginTop: 0,
 	},
 	button: {
 		flexDirection: 'row',

@@ -20,9 +20,25 @@ export type StudipInstance = {
 	/** Proper name of the university, shown as is. */
 	name: string;
 	baseUrl: string;
+	/**
+	 * Path of the university's central login (SSO) on its Stud.IP. The app opens it in a WebView;
+	 * once the user is logged in there, the schedule is read with that session (see
+	 * {@link buildStudipSessionScheduleScript}) – no OAuth client id needed.
+	 */
+	ssoLoginPath?: string;
+	/** Whether Stud.IP's own username/password check works for the university's students. */
+	passwordLogin: boolean;
 };
 
-export const STUDIP_INSTANCES: StudipInstance[] = [{ id: 'uni-osnabrueck', name: 'Universität Osnabrück', baseUrl: 'https://studip.uni-osnabrueck.de' }];
+export const STUDIP_INSTANCES: StudipInstance[] = [
+	{
+		id: 'uni-osnabrueck',
+		name: 'Universität Osnabrück',
+		baseUrl: 'https://studip.uni-osnabrueck.de',
+		ssoLoginPath: '/dispatch.php/login?again=yes&sso=oidc&cancel_login=1',
+		passwordLogin: true,
+	},
+];
 
 /**
  * Public CORS proxy, only for developers: in debug mode the web app routes the Stud.IP requests
@@ -176,5 +192,65 @@ export async function fetchStudipSchedule(instance: StudipInstance, username: st
 		throw new StudipImportError('unexpected', 'Stud.IP returned no user id');
 	}
 	const schedule = await getJson(fetchFn, `${apiBase}/users/${encodeURIComponent(userId)}/schedule`, authorization);
+	return mapStudipSchedule(schedule);
+}
+
+/** Message type the injected script posts back to the app. */
+export const STUDIP_SESSION_MESSAGE_TYPE = 'rocket-meals-studip-schedule';
+
+/**
+ * JavaScript injected into the Stud.IP page in the WebView after every page load. Once the
+ * user is logged in (`users/me` answers 200 with the session cookie), it loads the schedule
+ * from the same origin – so neither CORS nor an OAuth client is involved – and posts it to
+ * the app. Before the login it stays silent.
+ */
+export function buildStudipSessionScheduleScript(instance: StudipInstance): string {
+	const base = JSON.stringify(`${instance.baseUrl}/jsonapi.php/v1`);
+	const origin = JSON.stringify(new URL(instance.baseUrl).origin);
+	const type = JSON.stringify(STUDIP_SESSION_MESSAGE_TYPE);
+	return `(function () {
+	if (window.location.origin !== ${origin} || window.__rocketMealsStudipRunning) { return; }
+	window.__rocketMealsStudipRunning = true;
+	var headers = { Accept: 'application/vnd.api+json' };
+	var post = function (payload) { window.ReactNativeWebView.postMessage(JSON.stringify(payload)); };
+	fetch(${base} + '/users/me', { credentials: 'include', headers: headers })
+		.then(function (me) {
+			if (me.status !== 200) { window.__rocketMealsStudipRunning = false; return null; }
+			return me.json().then(function (json) {
+				var id = json && json.data && json.data.id;
+				return fetch(${base} + '/users/' + encodeURIComponent(id) + '/schedule', { credentials: 'include', headers: headers }).then(function (schedule) {
+					return schedule.text().then(function (body) { post({ type: ${type}, status: schedule.status, body: body }); });
+				});
+			});
+		})
+		.catch(function (error) { window.__rocketMealsStudipRunning = false; post({ type: ${type}, status: 0, body: String(error) }); });
+})();
+true;`;
+}
+
+/**
+ * Turns a message of the injected script into events. Returns null for messages that are not
+ * ours (the page may post its own); throws StudipImportError for a failed request.
+ */
+export function parseStudipSessionMessage(data: string): CourseTimetableEvent[] | null {
+	let message: { type?: unknown; status?: unknown; body?: unknown };
+	try {
+		message = JSON.parse(data);
+	} catch {
+		return null;
+	}
+	if (message?.type !== STUDIP_SESSION_MESSAGE_TYPE) return null;
+	if (message.status === 0) {
+		throw new StudipImportError('network', typeof message.body === 'string' ? message.body : 'Network error');
+	}
+	if (message.status !== 200 || typeof message.body !== 'string') {
+		throw new StudipImportError('unexpected', `Stud.IP responded with HTTP ${String(message.status)}`);
+	}
+	let schedule: unknown;
+	try {
+		schedule = JSON.parse(message.body);
+	} catch {
+		throw new StudipImportError('unexpected', 'Stud.IP sent no JSON');
+	}
 	return mapStudipSchedule(schedule);
 }

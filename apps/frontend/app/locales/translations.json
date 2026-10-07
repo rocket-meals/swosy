@@ -7948,5 +7948,45 @@
     "ru": "Проверить снова",
     "tr": "Tekrar kontrol et",
     "zh": "重新检查"
+  },
+  "course_timetable_import_sso_title": {
+    "de": "Zentrales Uni-Login",
+    "en": "Central university login",
+    "ar": "تسجيل الدخول المركزي للجامعة",
+    "es": "Inicio de sesión central de la universidad",
+    "fr": "Connexion centrale de l’université",
+    "ru": "Центральный вход университета",
+    "tr": "Üniversitenin merkezi girişi",
+    "zh": "学校统一登录"
+  },
+  "course_timetable_import_sso_button": {
+    "de": "Mit Uni-Login anmelden und importieren",
+    "en": "Sign in with university login and import",
+    "ar": "تسجيل الدخول بحساب الجامعة والاستيراد",
+    "es": "Iniciar sesión con la cuenta de la universidad e importar",
+    "fr": "Se connecter avec le compte universitaire et importer",
+    "ru": "Войти через университет и импортировать",
+    "tr": "Üniversite girişiyle oturum aç ve içe aktar",
+    "zh": "使用学校账号登录并导入"
+  },
+  "course_timetable_import_sso_hint": {
+    "de": "Melde dich auf der Seite deiner Hochschule an. Danach liest die App nur deinen Stundenplan aus; die Anmeldung wird beim Schließen beendet und nicht gespeichert.",
+    "en": "Sign in on your university’s page. The app then only reads your timetable; the session ends when this closes and is not stored.",
+    "ar": "سجّل الدخول في صفحة جامعتك. بعد ذلك يقرأ التطبيق جدولك فقط؛ تنتهي الجلسة عند الإغلاق ولا يتم حفظها.",
+    "es": "Inicia sesión en la página de tu universidad. Después la app solo lee tu horario; la sesión termina al cerrar y no se guarda.",
+    "fr": "Connectez-vous sur la page de votre université. L’application lit ensuite uniquement votre emploi du temps ; la session se termine à la fermeture et n’est pas enregistrée.",
+    "ru": "Войдите на странице своего университета. После этого приложение только считывает расписание; сеанс завершается при закрытии и не сохраняется.",
+    "tr": "Üniversitenin sayfasında giriş yap. Uygulama ardından yalnızca ders programını okur; oturum kapatıldığında sona erer ve kaydedilmez.",
+    "zh": "请在学校页面登录。之后应用只读取你的课程表；关闭后会话即结束，不会被保存。"
+  },
+  "course_timetable_import_or_password": {
+    "de": "Oder mit Stud.IP-Nutzername und Passwort",
+    "en": "Or with Stud.IP username and password",
+    "ar": "أو باسم مستخدم Stud.IP وكلمة المرور",
+    "es": "O con usuario y contraseña de Stud.IP",
+    "fr": "Ou avec le nom d’utilisateur et le mot de passe Stud.IP",
+    "ru": "Или с именем пользователя и паролем Stud.IP",
+    "tr": "Ya da Stud.IP kullanıcı adı ve şifresiyle",
+    "zh": "或使用 Stud.IP 用户名和密码"
   }
 }

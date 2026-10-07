@@ -1,4 +1,4 @@
-import { STUDIP_DEBUG_CORS_PROXY, checkCorsProxy, STUDIP_INSTANCES, StudipImportError, buildBasicAuthorization, fetchStudipSchedule, mapStudipSchedule, studipWeekdayToWeekday } from './StudipImporter';
+import { STUDIP_DEBUG_CORS_PROXY, STUDIP_SESSION_MESSAGE_TYPE, buildStudipSessionScheduleScript, checkCorsProxy, parseStudipSessionMessage, STUDIP_INSTANCES, StudipImportError, buildBasicAuthorization, fetchStudipSchedule, mapStudipSchedule, studipWeekdayToWeekday } from './StudipImporter';
 
 const instance = STUDIP_INSTANCES[0]!;
 
@@ -109,5 +109,28 @@ describe('StudipImporter', () => {
 			})
 		).rejects.toMatchObject({ code: 'network' });
 		await expect(fetchStudipSchedule(instance, 'max', 'x', async () => ({ status: 500, json: async () => ({}) }))).rejects.toMatchObject({ code: 'unexpected' });
+	});
+
+	describe('SSO login via the Stud.IP session', () => {
+		it('builds a script that only runs on the Stud.IP origin and posts the schedule', () => {
+			const script = buildStudipSessionScheduleScript(instance);
+			expect(script).toContain('"https://studip.uni-osnabrueck.de"');
+			expect(script).toContain('"https://studip.uni-osnabrueck.de/jsonapi.php/v1"');
+			expect(script).toContain(STUDIP_SESSION_MESSAGE_TYPE);
+			expect(script).toContain("credentials: 'include'");
+			expect(script.trim().endsWith('true;')).toBe(true);
+		});
+
+		it('turns the posted schedule into events', () => {
+			const events = parseStudipSessionMessage(JSON.stringify({ type: STUDIP_SESSION_MESSAGE_TYPE, status: 200, body: JSON.stringify(scheduleResponse) }));
+			expect(events).toHaveLength(4);
+		});
+
+		it('ignores foreign messages and reports failures', () => {
+			expect(parseStudipSessionMessage('not json')).toBeNull();
+			expect(parseStudipSessionMessage(JSON.stringify({ type: 'other' }))).toBeNull();
+			expect(() => parseStudipSessionMessage(JSON.stringify({ type: STUDIP_SESSION_MESSAGE_TYPE, status: 0, body: 'TypeError' }))).toThrow(expect.objectContaining({ code: 'network' }));
+			expect(() => parseStudipSessionMessage(JSON.stringify({ type: STUDIP_SESSION_MESSAGE_TYPE, status: 500, body: '' }))).toThrow(expect.objectContaining({ code: 'unexpected' }));
+		});
 	});
 });
