@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 3 | 3 |
-| 🐛 Reliability | 381 | 47 |
-| 🔧 Maintainability | 679 | 0 |
+| 🐛 Reliability | 382 | 47 |
+| 🔧 Maintainability | 680 | 0 |
 
-**Total issues:** 1063 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1065 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -19,14 +19,14 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/sync-fork.yml#L4
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/frontend/app/helper/courseTimetable/CourseTimetableModel.ts:160
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/courseTimetable/CourseTimetableModel.ts#L160
+  apps/frontend/app/helper/courseTimetable/CourseTimetableModel.ts:164
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/courseTimetable/CourseTimetableModel.ts#L164
 
 - **Code Injection via unsanitized user input**
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:10
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L10
 
-## 🐛 Reliability (47/381)
+## 🐛 Reliability (47/382)
 
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
   apps/accessibilityTester/src/index.ts:104

@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-07T18:12:59.927Z",
+  "report_timestamp": "2026-10-07T19:29:26.600Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,35 +8,35 @@
         "invertedFieldToClasses": {
           "median": 1.5,
           "maximum": 132,
-          "average": 1.5229885057471264,
-          "amountSavedValuesForKeys": 5300,
+          "average": 1.5235632183908046,
+          "amountSavedValuesForKeys": 5302,
           "amountKeys": 31
         },
         "invertedParameterToMethods": {
           "median": 1.5,
           "maximum": 80,
-          "average": 2.2822222222222224,
-          "amountSavedValuesForKeys": 2054,
+          "average": 2.2787610619469025,
+          "amountSavedValuesForKeys": 2060,
           "amountKeys": 23
         },
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 132,
-          "average": 1.5366772977674688,
-          "amountSavedValuesForKeys": 5300,
+          "average": 1.5372571759930416,
+          "amountSavedValuesForKeys": 5302,
           "amountKeys": 31
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 5770,
-        "detection_time_ms": 130,
+        "ast_generation_time_ms": 5614,
+        "detection_time_ms": 133,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 152.54,
-          "os_memory_free": 14803435520,
+          "os_uptime": 229.08,
+          "os_memory_free": 14795591680,
           "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -55,18 +55,18 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "928da2e4be100ea8ea6643cb74830187c4440899",
-    "project_commit_hash": "928da2e4be100ea8ea6643cb74830187c4440899",
+    "project_version": "b531797360f6c7297d2394bd579b50976e4721d1",
+    "project_commit_hash": "b531797360f6c7297d2394bd579b50976e4721d1",
     "project_tag": null,
-    "project_commit_date": "1791396636",
+    "project_commit_date": "1791401191",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 742,
     "number_of_classes_or_interfaces": 1633,
-    "number_of_methods": 1822,
-    "number_of_data_fields": 5300,
-    "number_of_method_parameters": 2054
+    "number_of_methods": 1826,
+    "number_of_data_fields": 5302,
+    "number_of_method_parameters": 2060
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -216,16 +216,16 @@
             "type": "FoodFeedbackChatFilter",
             "modifiers": [],
             "position": {
-              "startLine": 132,
+              "startLine": 135,
               "startColumn": 26,
-              "endLine": 132,
+              "endLine": 135,
               "endColumn": 56
             }
           },
           "position": {
-            "startLine": 115,
+            "startLine": 118,
             "startColumn": 25,
-            "endLine": 115,
+            "endLine": 118,
             "endColumn": 55
           }
         },
@@ -241,16 +241,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 132,
+              "startLine": 135,
               "startColumn": 96,
-              "endLine": 132,
+              "endLine": 135,
               "endColumn": 118
             }
           },
           "position": {
-            "startLine": 115,
+            "startLine": 118,
             "startColumn": 71,
-            "endLine": 115,
+            "endLine": 118,
             "endColumn": 93
           }
         },
@@ -266,16 +266,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper\").AppFeedbackListOptions",
             "modifiers": [],
             "position": {
-              "startLine": 132,
+              "startLine": 135,
               "startColumn": 58,
-              "endLine": 132,
+              "endLine": 135,
               "endColumn": 94
             }
           },
           "position": {
-            "startLine": 115,
+            "startLine": 118,
             "startColumn": 95,
-            "endLine": 115,
+            "endLine": 118,
             "endColumn": 131
           }
         }
@@ -320,9 +320,9 @@
             }
           },
           "position": {
-            "startLine": 115,
+            "startLine": 118,
             "startColumn": 25,
-            "endLine": 115,
+            "endLine": 118,
             "endColumn": 55
           }
         },
@@ -345,9 +345,9 @@
             }
           },
           "position": {
-            "startLine": 115,
+            "startLine": 118,
             "startColumn": 57,
-            "endLine": 115,
+            "endLine": 118,
             "endColumn": 69
           }
         },
@@ -370,9 +370,9 @@
             }
           },
           "position": {
-            "startLine": 115,
+            "startLine": 118,
             "startColumn": 71,
-            "endLine": 115,
+            "endLine": 118,
             "endColumn": 93
           }
         }
@@ -410,16 +410,16 @@
             "type": "FoodFeedbackChatFilter",
             "modifiers": [],
             "position": {
-              "startLine": 115,
+              "startLine": 118,
               "startColumn": 25,
-              "endLine": 115,
+              "endLine": 118,
               "endColumn": 55
             }
           },
           "position": {
-            "startLine": 132,
+            "startLine": 135,
             "startColumn": 26,
-            "endLine": 132,
+            "endLine": 135,
             "endColumn": 56
           }
         },
@@ -435,16 +435,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper\").AppFeedbackListOptions",
             "modifiers": [],
             "position": {
-              "startLine": 115,
+              "startLine": 118,
               "startColumn": 95,
-              "endLine": 115,
+              "endLine": 118,
               "endColumn": 131
             }
           },
           "position": {
-            "startLine": 132,
+            "startLine": 135,
             "startColumn": 58,
-            "endLine": 132,
+            "endLine": 135,
             "endColumn": 94
           }
         },
@@ -460,16 +460,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 115,
+              "startLine": 118,
               "startColumn": 71,
-              "endLine": 115,
+              "endLine": 118,
               "endColumn": 93
             }
           },
           "position": {
-            "startLine": 132,
+            "startLine": 135,
             "startColumn": 96,
-            "endLine": 132,
+            "endLine": 135,
             "endColumn": 118
           }
         }
@@ -604,9 +604,9 @@
             "type": "FoodFeedbackChatFilter",
             "modifiers": [],
             "position": {
-              "startLine": 115,
+              "startLine": 118,
               "startColumn": 25,
-              "endLine": 115,
+              "endLine": 118,
               "endColumn": 55
             }
           },
@@ -629,9 +629,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 115,
+              "startLine": 118,
               "startColumn": 57,
-              "endLine": 115,
+              "endLine": 118,
               "endColumn": 69
             }
           },
@@ -654,9 +654,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 115,
+              "startLine": 118,
               "startColumn": 71,
-              "endLine": 115,
+              "endLine": 118,
               "endColumn": 93
             }
           },
@@ -1462,9 +1462,9 @@
             }
           },
           "position": {
-            "startLine": 37,
+            "startLine": 39,
             "startColumn": 3,
-            "endLine": 37,
+            "endLine": 39,
             "endColumn": 32
           }
         },
@@ -1487,9 +1487,9 @@
             }
           },
           "position": {
-            "startLine": 39,
+            "startLine": 41,
             "startColumn": 3,
-            "endLine": 39,
+            "endLine": 41,
             "endColumn": 44
           }
         }
@@ -1559,9 +1559,9 @@
             }
           },
           "position": {
-            "startLine": 37,
+            "startLine": 39,
             "startColumn": 3,
-            "endLine": 37,
+            "endLine": 39,
             "endColumn": 32
           }
         },
@@ -1584,9 +1584,9 @@
             }
           },
           "position": {
-            "startLine": 38,
+            "startLine": 40,
             "startColumn": 3,
-            "endLine": 38,
+            "endLine": 40,
             "endColumn": 32
           }
         },
@@ -1609,9 +1609,9 @@
             }
           },
           "position": {
-            "startLine": 40,
+            "startLine": 42,
             "startColumn": 3,
-            "endLine": 40,
+            "endLine": 42,
             "endColumn": 107
           }
         }
@@ -1681,9 +1681,9 @@
             }
           },
           "position": {
-            "startLine": 37,
+            "startLine": 39,
             "startColumn": 3,
-            "endLine": 37,
+            "endLine": 39,
             "endColumn": 32
           }
         },
@@ -1706,9 +1706,9 @@
             }
           },
           "position": {
-            "startLine": 38,
+            "startLine": 40,
             "startColumn": 3,
-            "endLine": 38,
+            "endLine": 40,
             "endColumn": 32
           }
         }
@@ -1778,9 +1778,9 @@
             }
           },
           "position": {
-            "startLine": 37,
+            "startLine": 39,
             "startColumn": 3,
-            "endLine": 37,
+            "endLine": 39,
             "endColumn": 32
           }
         },
@@ -1803,9 +1803,9 @@
             }
           },
           "position": {
-            "startLine": 38,
+            "startLine": 40,
             "startColumn": 3,
-            "endLine": 38,
+            "endLine": 40,
             "endColumn": 32
           }
         }
@@ -1815,9 +1815,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat-titlecontentsource_identifierresponse": {
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat-titlecontentsource_identifierresponsestate": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat-titlecontentsource_identifierresponse",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat-titlecontentsource_identifierresponsestate",
       "probability": 1,
       "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
       "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
@@ -1930,6 +1930,31 @@
             "endLine": 33,
             "endColumn": 28
           }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/state": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/state",
+          "name": "state",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/state",
+            "name": "state",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 3,
+              "endLine": 16,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 35,
+            "startColumn": 3,
+            "endLine": 35,
+            "endColumn": 25
+          }
         }
       },
       "data_clump_type_additional": {
@@ -1990,9 +2015,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 37,
+              "startLine": 39,
               "startColumn": 3,
-              "endLine": 37,
+              "endLine": 39,
               "endColumn": 32
             }
           },
@@ -2015,9 +2040,9 @@
             "type": "{ id: string } | string | null",
             "modifiers": [],
             "position": {
-              "startLine": 39,
+              "startLine": 41,
               "startColumn": 3,
-              "endLine": 39,
+              "endLine": 41,
               "endColumn": 44
             }
           },
@@ -2087,9 +2112,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 37,
+              "startLine": 39,
               "startColumn": 3,
-              "endLine": 37,
+              "endLine": 39,
               "endColumn": 32
             }
           },
@@ -2112,9 +2137,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 38,
+              "startLine": 40,
               "startColumn": 3,
-              "endLine": 38,
+              "endLine": 40,
               "endColumn": 32
             }
           },
@@ -2137,9 +2162,9 @@
             "type": "{ id: string; conversation_state?: string | null; date_updated?: string | null } | string | null",
             "modifiers": [],
             "position": {
-              "startLine": 40,
+              "startLine": 42,
               "startColumn": 3,
-              "endLine": 40,
+              "endLine": 42,
               "endColumn": 107
             }
           },
@@ -2794,9 +2819,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 37,
+              "startLine": 39,
               "startColumn": 3,
-              "endLine": 37,
+              "endLine": 39,
               "endColumn": 32
             }
           },
@@ -2819,9 +2844,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 38,
+              "startLine": 40,
               "startColumn": 3,
-              "endLine": 38,
+              "endLine": 40,
               "endColumn": 32
             }
           },
@@ -3282,9 +3307,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 38,
+              "startLine": 40,
               "startColumn": 3,
-              "endLine": 38,
+              "endLine": 40,
               "endColumn": 32
             }
           },
@@ -3307,9 +3332,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 37,
+              "startLine": 39,
               "startColumn": 3,
-              "endLine": 37,
+              "endLine": 39,
               "endColumn": 32
             }
           },
@@ -4590,9 +4615,9 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-packages/common/src/AppFeedbackChatStatusHelper.ts-packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-titlecontentsource_identifierresponse": {
+    "fields_to_fields_data_clump-packages/common/src/AppFeedbackChatStatusHelper.ts-packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-titlecontentsource_identifierresponsestate": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common/src/AppFeedbackChatStatusHelper.ts-packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-titlecontentsource_identifierresponse",
+      "key": "fields_to_fields_data_clump-packages/common/src/AppFeedbackChatStatusHelper.ts-packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-titlecontentsource_identifierresponsestate",
       "probability": 1,
       "from_file_path": "packages/common/src/AppFeedbackChatStatusHelper.ts",
       "from_class_or_interface_key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat",
@@ -4704,6 +4729,31 @@
             "startColumn": 3,
             "endLine": 14,
             "endColumn": 28
+          }
+        },
+        "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/state": {
+          "key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/state",
+          "name": "state",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/state",
+            "name": "state",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 35,
+              "startColumn": 3,
+              "endLine": 35,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 3,
+            "endLine": 16,
+            "endColumn": 25
           }
         }
       },
