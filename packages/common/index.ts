@@ -20,6 +20,7 @@ export * from './src/ChatConversationState';
 export * from './src/RelationHelper';
 export * from './src/ChatHelper';
 export * from './src/FoodFeedbackChatStatusHelper';
+export * from './src/AppFeedbackChatStatusHelper';
 export * from './src/CronHelper';
 export * from './src/EmailHelper';
 export * from './src/GuestAccountHelper';

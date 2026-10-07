@@ -13,14 +13,12 @@ import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
 import { AppExtensionLanguageHelper } from '../app-extensions/AppExtensionLanguageHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 import { FoodFeedbackChatHelper, type FoodFeedbackListItem } from './FoodFeedbackChatHelper';
+import { SupportChatActions, type MarkResolvedResult, type SupportChatApiClient } from './SupportChatActions';
 
 /** The part of the Directus app's axios instance used here. */
-export type FoodFeedbackApiClient = {
-  post: (url: string, data?: unknown) => Promise<{ data?: any }>;
-  patch: (url: string, data?: unknown) => Promise<{ data?: any }>;
-};
+export type FoodFeedbackApiClient = SupportChatApiClient;
 
-export type MarkResolvedResult = { resolvedIds: string[]; failedIds: string[] };
+export type { MarkResolvedResult };
 
 export class FoodFeedbackChatActions {
   /**
@@ -49,56 +47,14 @@ export class FoodFeedbackChatActions {
   }
 
   static async setConversationState(api: FoodFeedbackApiClient, chatId: string, state: ChatConversationState): Promise<void> {
-    await api.patch(`${FoodFeedbackChatHelper.CHATS_ENDPOINT}/${chatId}`, { conversation_state: state });
+    await SupportChatActions.setConversationState(api, chatId, state);
   }
 
-  /**
-   * Marks feedbacks as done. Existing chats are updated in one request; a feedback without chat
-   * gets one first (the status lives in `chats.conversation_state`) – its author then sees the
-   * chat, opened by their own comment, as done in the app. Feedbacks that cannot be marked (no
-   * profile) or fail are reported in `failedIds`.
-   */
+  /** Marks feedbacks as done, see {@link SupportChatActions.markResolved}. */
   static async markResolved(api: FoodFeedbackApiClient, feedbacks: readonly FoodFeedbackListItem[]): Promise<MarkResolvedResult> {
-    const resolvedIds: string[] = [];
-    const failedIds: string[] = [];
-    const existingChats: { feedbackId: string; chatId: string }[] = [];
-    const withoutChat: FoodFeedbackListItem[] = [];
-
-    for (const feedback of feedbacks) {
-      const chatId = RelationHelper.getId(feedback.chat);
-      if (chatId) {
-        existingChats.push({ feedbackId: feedback.id, chatId: String(chatId) });
-      } else if (FoodFeedbackChatStatusHelper.canStartChat(feedback)) {
-        withoutChat.push(feedback);
-      } else {
-        failedIds.push(feedback.id);
-      }
-    }
-
-    if (existingChats.length > 0) {
-      try {
-        await api.patch(FoodFeedbackChatHelper.CHATS_ENDPOINT, {
-          keys: existingChats.map(entry => entry.chatId),
-          data: { conversation_state: ChatConversationState.RESOLVED },
-        });
-        resolvedIds.push(...existingChats.map(entry => entry.feedbackId));
-      } catch (error) {
-        console.error('[rocket-meals-module] marking chats as resolved failed', error);
-        failedIds.push(...existingChats.map(entry => entry.feedbackId));
-      }
-    }
-
-    for (const feedback of withoutChat) {
-      try {
-        const chatId = await FoodFeedbackChatActions.ensureChat(api, feedback);
-        await FoodFeedbackChatActions.setConversationState(api, chatId, ChatConversationState.RESOLVED);
-        resolvedIds.push(feedback.id);
-      } catch (error) {
-        console.error('[rocket-meals-module] marking food feedback as resolved failed', error);
-        failedIds.push(feedback.id);
-      }
-    }
-
-    return { resolvedIds, failedIds };
+    return SupportChatActions.markResolved(api, feedbacks, {
+      canStartChat: FoodFeedbackChatStatusHelper.canStartChat,
+      ensureChat: FoodFeedbackChatActions.ensureChat,
+    });
   }
 }

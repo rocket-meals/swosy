@@ -8,7 +8,7 @@
  * is how the app and `chat-conversation-state-hook` tell support messages from user messages.
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { ChatConversationState } from 'repo-depkit-common/src/ChatConversationState';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
@@ -19,8 +19,9 @@ import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage, type FoodFeedback
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
+import SupportChatConversation from '../support-chat/support-chat-conversation.vue';
+import SupportChatStatusMenu from '../support-chat/support-chat-status-menu.vue';
 import FoodFeedbackRating from './food-feedback-rating.vue';
-import FoodFeedbackStatusChip from './food-feedback-status-chip.vue';
 
 const props = defineProps<{ feedbackId: string }>();
 
@@ -40,8 +41,6 @@ const loading = ref(false);
 const loadError = ref(false);
 const sending = ref(false);
 const updatingState = ref(false);
-const newMessage = ref('');
-const messagesContainer = ref<HTMLElement>();
 
 const chatId = computed(() => RelationHelper.getId(feedback.value?.chat));
 const status = computed(() => (feedback.value ? FoodFeedbackChatStatusHelper.getStatus(feedback.value) : FoodFeedbackChatStatus.NEW));
@@ -69,11 +68,7 @@ async function loadMessages() {
       limit: -1,
     },
   });
-  const previousCount = messages.value.length;
   messages.value = ChatHelper.sortMessagesChronologically(response.data?.data ?? []);
-  if (messages.value.length !== previousCount) {
-    scrollToBottom();
-  }
 }
 
 async function load() {
@@ -105,24 +100,25 @@ async function setConversationState(state: ChatConversationState) {
   await FoodFeedbackChatActions.setConversationState(api, String(chatId.value), state);
 }
 
-async function sendMessage() {
-  const text = newMessage.value.trim();
-  if (!text || sending.value || !canWrite.value) {
-    return;
+/** Sends an answer; resolves `true` when it was sent, so the input is cleared. */
+async function sendMessage(text: string): Promise<boolean> {
+  if (!canWrite.value) {
+    return false;
   }
   sending.value = true;
   try {
     const targetChatId = await ensureChat();
     await api.post(FoodFeedbackChatHelper.CHAT_MESSAGES_ENDPOINT, { chat: targetChatId, message: text });
-    newMessage.value = '';
     await loadFeedback();
     // Set explicitly as well: the hook only recognises support by the app access of the writer.
     await setConversationState(ChatHelper.getConversationStateAfterMessage(true));
     await loadFeedback();
     await loadMessages();
+    return true;
   } catch (error) {
     console.error('[rocket-meals-module] sending chat message failed', error);
     notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_send_failed), type: 'error' });
+    return false;
   } finally {
     sending.value = false;
   }
@@ -153,46 +149,9 @@ async function changeStatus(nextStatus: FoodFeedbackChatStatus) {
   }
 }
 
-/**
- * Like the chat of Claude: Enter sends, Shift+Enter starts a new line. On touch devices Enter
- * stays a new line – there is a send button right next to it. Ctrl/⌘+Enter always sends.
- */
-function onKeydown(event: KeyboardEvent) {
-  if (event.key !== 'Enter' || event.isComposing) {
-    return;
-  }
-  const isTouchDevice = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
-  if (event.ctrlKey || event.metaKey || (!event.shiftKey && !isTouchDevice)) {
-    event.preventDefault();
-    sendMessage();
-  }
-}
-
-/** The input grows with its text up to a maximum height, then scrolls. */
-const composerInput = ref<HTMLTextAreaElement>();
-const COMPOSER_MAX_HEIGHT_PX = 240;
-function resizeComposer() {
-  const input = composerInput.value;
-  if (!input) {
-    return;
-  }
-  input.style.height = 'auto';
-  input.style.height = `${Math.min(input.scrollHeight, COMPOSER_MAX_HEIGHT_PX)}px`;
-}
-watch(newMessage, () => nextTick(resizeComposer));
-
-function scrollToBottom() {
-  nextTick(() => {
-    const container = messagesContainer.value;
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    }
-  });
-}
-
 let refreshInterval: ReturnType<typeof setInterval> | undefined;
 onMounted(() => {
-  load().then(scrollToBottom);
+  load();
   refreshInterval = setInterval(() => {
     if (!sending.value) {
       loadMessages().catch(() => undefined);
@@ -232,24 +191,7 @@ watch(() => props.feedbackId, load);
 
       <template v-else-if="feedback">
         <div class="feedback-info">
-          <v-menu show-arrow placement="bottom-start" :disabled="!canWrite || updatingState">
-            <template #activator="{ toggle }">
-              <button v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_change_status)" class="status-button" :disabled="!canWrite || updatingState" :aria-label="translate(BackendTranslationKeys.rocket_meals_module_change_status)" @click="toggle">
-                <food-feedback-status-chip :status="status" />
-                <v-progress-circular v-if="updatingState" indeterminate x-small />
-                <v-icon v-else-if="canWrite" name="expand_more" small />
-              </button>
-            </template>
-            <v-list>
-              <v-list-item v-for="selectableStatus in FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES" :key="selectableStatus" clickable :active="selectableStatus === status" @click="changeStatus(selectableStatus)">
-                <v-list-item-icon>
-                  <v-icon :name="FoodFeedbackChatHelper.getStatusPresentation(selectableStatus).icon" small />
-                </v-list-item-icon>
-                <v-list-item-content>{{ translate(FoodFeedbackChatHelper.getStatusPresentation(selectableStatus).labelKey) }}</v-list-item-content>
-                <v-list-item-icon v-if="selectableStatus === status"><v-icon name="check" small /></v-list-item-icon>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <support-chat-status-menu :status="status" :can-write="canWrite" :updating="updatingState" @change="changeStatus" />
           <span class="type-label">{{ foodName }}</span>
           <food-feedback-rating :rating="feedback.rating" />
           <span class="spacer" />
@@ -259,40 +201,13 @@ watch(() => props.feedbackId, load);
           </span>
         </div>
 
-        <div ref="messagesContainer" class="messages">
-          <div class="message from-user">
-            <div class="message-author type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_user) }}</div>
-            <div class="bubble">{{ feedback.comment }}</div>
-            <div class="message-date type-note">{{ formatDateTime(feedback.date_created) }}</div>
-          </div>
-
-          <div v-for="message in messages" :key="message.id" class="message" :class="ChatHelper.isSupportMessage(message) ? 'from-support' : 'from-user'">
-            <div class="message-author type-note">
-              <template v-if="ChatHelper.isSupportMessage(message)">
-                {{ translate(BackendTranslationKeys.rocket_meals_module_support) }}
-                <template v-if="FoodFeedbackChatHelper.getSupportAuthorName(message)"> · {{ FoodFeedbackChatHelper.getSupportAuthorName(message) }}</template>
-              </template>
-              <template v-else>{{ translate(BackendTranslationKeys.rocket_meals_module_user) }}</template>
-            </div>
-            <div class="bubble">{{ message.message }}</div>
-            <div class="message-date type-note">{{ formatDateTime(message.date_created) }}</div>
-          </div>
-
-          <div v-if="messages.length === 0" class="empty type-note">
-            {{ canWrite ? translate(BackendTranslationKeys.rocket_meals_module_chat_empty) : translate(BackendTranslationKeys.rocket_meals_module_chat_not_possible) }}
-          </div>
-        </div>
-
-        <div class="composer" :class="{ disabled: !canWrite }" @click="composerInput?.focus()">
-          <textarea ref="composerInput" v-model="newMessage" class="composer-input" rows="1" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_message_placeholder)" :disabled="!canWrite || sending" @keydown="onKeydown" />
-          <div class="composer-actions">
-            <span class="composer-hint type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_send_hint) }}</span>
-            <button v-tooltip.top="translate(BackendTranslationKeys.send)" class="send-button" :disabled="!canWrite || sending || newMessage.trim().length === 0" :aria-label="translate(BackendTranslationKeys.send)" @click.stop="sendMessage">
-              <v-progress-circular v-if="sending" indeterminate x-small />
-              <v-icon v-else name="arrow_upward" small />
-            </button>
-          </div>
-        </div>
+        <support-chat-conversation
+          :opening="{ text: feedback.comment ?? '', date: feedback.date_created }"
+          :messages="messages"
+          :can-write="canWrite"
+          :empty-text="canWrite ? translate(BackendTranslationKeys.rocket_meals_module_chat_empty) : translate(BackendTranslationKeys.rocket_meals_module_chat_not_possible)"
+          :send="sendMessage"
+        />
       </template>
 
       <v-progress-circular v-else-if="loading" indeterminate />
@@ -323,159 +238,5 @@ watch(() => props.feedbackId, load);
 
 .spacer {
   flex: 1;
-}
-
-.messages {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-block-size: 12rem;
-  max-block-size: calc(100vh - 26rem);
-  padding: 1.25rem;
-  overflow-y: auto;
-  border: var(--theme--border-width) solid var(--theme--border-color-subdued);
-  border-radius: var(--theme--border-radius);
-}
-
-.message {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  max-inline-size: 75%;
-}
-
-.message.from-user {
-  align-self: flex-start;
-}
-
-.message.from-support {
-  align-self: flex-end;
-  align-items: flex-end;
-}
-
-.bubble {
-  padding: 0.75rem 1rem;
-  white-space: pre-line;
-  overflow-wrap: anywhere;
-  background: var(--theme--background-accent);
-  border-radius: 1rem 1rem 1rem 0.25rem;
-}
-
-.from-support .bubble {
-  color: var(--foreground-inverted, #fff);
-  background: var(--theme--primary);
-  border-radius: 1rem 1rem 0.25rem 1rem;
-}
-
-.empty {
-  align-self: center;
-  max-inline-size: 30rem;
-  margin-block: auto;
-  text-align: center;
-}
-
-.status-button {
-  display: inline-flex;
-  gap: 0.25rem;
-  align-items: center;
-  padding: 0;
-  color: var(--theme--foreground-subdued);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.status-button:disabled {
-  cursor: default;
-}
-
-/* Input like the chat of Claude: one rounded box, text on top, round send button bottom right. */
-.composer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.75rem 0.75rem 0.625rem 1rem;
-  background: var(--theme--background-subdued);
-  border: var(--theme--border-width) solid var(--theme--border-color);
-  border-radius: 1.5rem;
-  cursor: text;
-  transition: border-color var(--fast) var(--transition);
-}
-
-.composer:focus-within {
-  border-color: var(--theme--primary);
-}
-
-.composer.disabled {
-  cursor: default;
-  opacity: 0.6;
-}
-
-.composer-input {
-  inline-size: 100%;
-  min-block-size: 1.5rem;
-  max-block-size: 15rem;
-  padding: 0.25rem 0;
-  color: var(--theme--foreground);
-  font: inherit;
-  line-height: 1.5;
-  background: transparent;
-  border: none;
-  outline: none;
-  resize: none;
-}
-
-.composer-input::placeholder {
-  color: var(--theme--foreground-subdued);
-}
-
-.composer-actions {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.composer-hint {
-  margin-inline-end: auto;
-}
-
-.send-button {
-  --v-icon-color: var(--foreground-inverted, #fff);
-
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  inline-size: 2.25rem;
-  block-size: 2.25rem;
-  background: var(--theme--primary);
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  transition:
-    background var(--fast) var(--transition),
-    opacity var(--fast) var(--transition);
-}
-
-.send-button:hover:not(:disabled) {
-  background: var(--theme--primary-accent);
-}
-
-.send-button:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-@media (pointer: coarse) {
-  /* On touch devices Enter makes a new line, so the keyboard hint would be wrong. */
-  .composer-hint {
-    visibility: hidden;
-  }
-
-  /* iOS Safari zooms into inputs with a font smaller than 16px. */
-  .composer-input {
-    font-size: 16px;
-  }
 }
 </style>

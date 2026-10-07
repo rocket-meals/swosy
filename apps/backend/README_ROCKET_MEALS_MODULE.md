@@ -14,6 +14,8 @@ aus `repo-depkit-common` und der Übersetzungskatalog.
 | ---------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Speise-Feedbacks | `/admin/rocket-meals/food-feedbacks`     | Neueste Speise-Feedbacks mit Kommentar und Bild der Speise. Filter nach Status (Offen, Neu, Wartet auf Antwort, Beantwortet, Erledigt, Alle) mit Anzahl, nach Mensen (Mehrfachauswahl), Speise (Name) und Bewertung (Schlecht 1–2, Mittel 3, Gut 4–5, Ohne); Sortierung nach Datum oder Bewertung; Suche im Kommentar; Seitengröße 10/25/50/100. Mensen, Sortierung und Seitengröße merkt sich der Browser. „Als erledigt markieren“ direkt in der Liste, per Checkbox auch mehrere auf einmal. „Antworten“ / „Zum Chat“ öffnet den Chat mit dem Autor. |
 | Chat             | `/admin/rocket-meals/food-feedbacks/:id` | Kommentar als erste Nachricht, Verlauf, Antwort schreiben (Eingabe wie im Claude-Chat: Enter sendet, Shift+Enter neue Zeile, auf dem Handy Senden-Knopf), Status über den Status-Chip ändern (Wartet auf Antwort / Beantwortet / Erledigt), Link zum Datensatz. Neue Nachrichten des Nutzers erscheinen ohne Neuladen (alle 20 s). |
+| App-Feedbacks    | `/admin/rocket-meals/app-feedbacks`      | Rückmeldungen aus dem Feedback-Formular der App und Bewertungen aus App Store / Google Play. Gleicher Aufbau wie die Speise-Feedbacks: Status-Filter mit Anzahl, Filter nach Quelle (App, App Store, Google Play) und Daumen hoch/runter, Sortierung nach Datum, Suche, Seitengröße, „Als erledigt markieren“ einzeln und per Checkbox. Quelle, Sortierung und Seitengröße merkt sich der Browser. |
+| App-Feedback     | `/admin/rocket-meals/app-feedbacks/:id`  | Titel und Text als erste Nachricht, Gerät und Kontakt-E-Mail im Kopf, derselbe Chat wie bei den Speise-Feedbacks (Status-Chip, Enter sendet, Aktualisierung alle 20 s). Bei einer Store-Bewertung schreibt die Eingabe die öffentliche Antwort im Store (`app_feedbacks.response`, veröffentlicht vom `app-reviews-pull-hook`). |
 
 ### Status eines Speise-Feedbacks
 
@@ -51,6 +53,23 @@ Der `chat-conversation-state-hook` erkennt Support jetzt an der App-Berechtigung
 (`accountability.app`) und nicht mehr nur an Admin-Rechten – so werden auch Antworten von
 Mensa-Mitarbeitenden mit eigener Rolle richtig als Support gewertet.
 
+### Status eines App-Feedbacks
+
+Dieselben Status wie bei den Speise-Feedbacks, ebenfalls aus `chats.conversation_state`. Unterschiede:
+
+- Der `app-feedbacks-hook` legt den Chat schon beim Absenden an, wenn der Nutzer ein Profil hat –
+  ein App-Feedback startet also meist als „Wartet auf Antwort“. „Neu“ (kein Chat) bleibt für ältere
+  Feedbacks oder wenn das Anlegen fehlschlug; die erste Antwort legt ihn dann genauso an wie der
+  Hook (`AppFeedbackChatStatusHelper.buildChatForFeedback`).
+- Feedbacks ohne Profil (anonym) können nicht im Chat beantwortet werden; steht eine Kontakt-E-Mail
+  dabei, verlinkt die Seite sie.
+- Store-Bewertungen haben nie einen Chat: ohne Antwort im Store sind sie „Neu“, mit Antwort
+  „Beantwortet“. „Als erledigt markieren“ gibt es für sie nicht.
+
+Die gemeinsamen Teile beider Feedback-Seiten liegen in `src/rocket-meals-module/support-chat/`
+(Verlauf + Eingabe, Status-Menü) und `src/helpers/rocket-meals-module/SupportChatActions.ts`
+(Status setzen, mehrere als erledigt markieren).
+
 ## Gemeinsame Logik in `repo-depkit-common`
 
 Die Regeln hinter den Chats stehen nicht im Modul, sondern in `packages/common` – so rechnen App,
@@ -62,6 +81,7 @@ Directus-Hooks und Modul garantiert gleich. Im Bundle bleibt nur, was Directus-s
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | `ChatHelper`                   | Support- vs. Nutzer-Nachricht, Status nach einer Nachricht, Sortierung, neuer Support-Chat, Teilnehmer                                          | `chat-conversation-state-hook`, `app-feedbacks-hook`, Modul, App-Chat |
 | `FoodFeedbackChatStatusHelper` | Status eines Speise-Feedbacks, Filter (Directus-Filter und im Speicher), wer beantwortet werden kann, Sprache des Autors, Chat für ein Feedback | Modul; für eine Ansicht in der App direkt nutzbar                     |
+| `AppFeedbackChatStatusHelper`  | Status eines App-Feedbacks (inkl. Store-Bewertungen), Status- und Quellen-Filter, wer beantwortet werden kann, Chat für ein Feedback (Titel, erste Nachricht) | `app-feedbacks-hook`, Modul                                           |
 | `RelationHelper`               | ID einer Relation, egal ob als Schlüssel oder als ausgeklappte Zeile geladen                                                                    | Modul, Chat-Logik                                                     |
 
 Neue Logik, die auch eine App brauchen könnte, gehört dorthin (mit Test unter

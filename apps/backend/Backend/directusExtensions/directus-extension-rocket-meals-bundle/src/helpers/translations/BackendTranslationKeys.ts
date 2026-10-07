@@ -112,6 +112,20 @@ export const BackendTranslationKeys = {
   rocket_meals_module_sort_rating_worst: 'rocket_meals_module_sort_rating_worst',
   rocket_meals_module_sort_rating_best: 'rocket_meals_module_sort_rating_best',
   rocket_meals_module_items_per_page: 'rocket_meals_module_items_per_page',
+  rocket_meals_module_app_feedbacks: 'rocket_meals_module_app_feedbacks',
+  rocket_meals_module_app_feedbacks_description: 'rocket_meals_module_app_feedbacks_description',
+  rocket_meals_module_source_all: 'rocket_meals_module_source_all',
+  rocket_meals_module_source_app: 'rocket_meals_module_source_app',
+  rocket_meals_module_source_apple: 'rocket_meals_module_source_apple',
+  rocket_meals_module_source_google_play: 'rocket_meals_module_source_google_play',
+  rocket_meals_module_feedback_type_all: 'rocket_meals_module_feedback_type_all',
+  rocket_meals_module_feedback_positive: 'rocket_meals_module_feedback_positive',
+  rocket_meals_module_feedback_negative: 'rocket_meals_module_feedback_negative',
+  rocket_meals_module_no_title: 'rocket_meals_module_no_title',
+  rocket_meals_module_contact_email: 'rocket_meals_module_contact_email',
+  rocket_meals_module_store_response: 'rocket_meals_module_store_response',
+  rocket_meals_module_store_response_placeholder: 'rocket_meals_module_store_response_placeholder',
+  rocket_meals_module_store_review_hint: 'rocket_meals_module_store_review_hint',
 } as const;
 
 export type BackendTranslationKeys = (typeof BackendTranslationKeys)[keyof typeof BackendTranslationKeys];
