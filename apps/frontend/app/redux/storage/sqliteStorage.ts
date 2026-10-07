@@ -163,11 +163,12 @@ export const sqliteKeyValueStorage = {
 	async multiRemove(keys: string[]): Promise<void> {
 		if (keys.length === 0) return;
 		const db = await getSqliteDb();
-		await db.withExclusiveTransactionAsync(async (txn: any) => {
-			for (const key of keys) {
-				await txn.runAsync('DELETE FROM kv WHERE key = ?', key);
-			}
-		});
+		// Deliberately on the shared connection, not withExclusiveTransactionAsync: that opens a
+		// second connection, and on logout redux-persist writes "persist:root" on the main one at
+		// the same time - SQLite then fails with "database is locked" (finalizeAsync failed).
+		for (const key of keys) {
+			await db.runAsync('DELETE FROM kv WHERE key = ?', key);
+		}
 	},
 
 	async clear(): Promise<void> {

@@ -14,6 +14,9 @@ import SettingsListLikeDislikeFast from '@/components/SettingsListLikeDislikeFas
 import { createSelector } from 'reselect';
 import { RootState } from '@/redux/reducer';
 import { MarkingLabelProps } from '@/components/MarkingLabels/types';
+import useToast from '@/hooks/useToast';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 export interface SettingsListMarkingLabelFastProps extends MarkingLabelProps {}
 // All props are defined in MarkingLabelProps; this named export is kept for
@@ -52,6 +55,8 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 	const [dislikeLoading, setDislikeLoading] = useState(false);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = useMemo(() => UserHelper.isAnonymousUser(user), [user]);
+	const toast = useToast();
+	const { translate } = useLanguage();
 
 	const openMarkingLabel = useCallback((markingItem: DatabaseTypes.Markings) => {
 		if (handleMenuSheet) {
@@ -114,6 +119,8 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 				}
 			} catch (error) {
 				console.error('Error updating marking:', error);
+				// Kept locally, but the user has to know it did not reach the server.
+				toast(translate(TranslationKeys.profile_changes_could_not_be_saved), 'error');
 			} finally {
 				if (like) {
 					setLikeLoading(false);
@@ -122,7 +129,7 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 				}
 			}
 		},
-		[profile, ownMarking, markingId, dispatch, profileHelper, fetchProfile, isAnonymousUser]
+		[profile, ownMarking, markingId, dispatch, profileHelper, fetchProfile, isAnonymousUser, toast, translate]
 	);
 
 	const handlePressLike = useCallback(() => handleUpdateMarking(true), [handleUpdateMarking]);

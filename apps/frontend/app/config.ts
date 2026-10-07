@@ -194,7 +194,13 @@ export function getVersionPatch() {
         // 85: common: AppFeedbackChatStatusHelper (status, filters and chat of app feedbacks)
         // 86: common-ui: avatar SVG generation moved to MyAvatar/AvatarSvg (no react-native), shared with the backend
         // 87: profiles.date_updated is also set on app start (web too) and when the app returns to the foreground
-        return 87;
+        // 88: an expired login is detected (sign in again) instead of silently continuing as the
+        //     public role; a failed token refresh while offline no longer drops the session
+        // 89: feedback app-state snapshot carries __session (token flags and expiry, no values)
+        // 90: logout no longer fails with "database is locked"; device updates no longer send the
+        //     display_group layout field (403 on tenants whose User policy does not list it)
+        // 91: debug view: session state, expire access token, invalidate refresh token
+        return 91;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

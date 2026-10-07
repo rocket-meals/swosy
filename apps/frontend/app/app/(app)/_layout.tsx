@@ -54,6 +54,9 @@ import { loadChatReadStatus } from '@/helper/chatReadStatus';
 import { FriendshipsHelper } from '@/redux/actions/Friendships/Friendships';
 import { PriceGroupKey } from '@/app/(app)/settings/types';
 import { UserHelper } from '@/helper/UserHelper';
+import useAuthSessionGuard from '@/hooks/useAuthSessionGuard';
+import { buildProfileRestoreAfterSessionExpiry } from '@/helper/authSessionHelper';
+import { CLEAR_PROFILE_BEFORE_SESSION_EXPIRED } from '@/redux/Types/types';
 import { useProfileActivityTouch } from '@/hooks/useProfileActivityTouch';
 
 const renderDrawerContent = (props: React.ComponentProps<typeof CustomDrawerContent>) => <CustomDrawerContent {...props} />;
@@ -127,7 +130,8 @@ export default function Layout() {
 	const { hashValue } = useAppSelector((state) => state.popup_events_hash);
 	const { lastUpdatedMap } = useAppSelector((state) => state.lastUpdated);
 	const { drawerPosition } = useAppSelector((state) => state.settings);
-	const { loggedIn, user } = useAppSelector((state) => state.authReducer);
+	const { loggedIn, user, profileBeforeSessionExpired } = useAppSelector((state) => state.authReducer);
+	useAuthSessionGuard();
 	// Live view of loggedIn for async fetch callbacks. The fetches below can still be
 	// in flight while performLogout runs; when they resolve afterwards, their closures
 	// hold pre-logout state. Dispatching then would resurrect just-cleared slices
@@ -248,9 +252,27 @@ export default function Layout() {
 		}
 	};
 
+	// Logged in again after an expired session: transfer what the user changed locally while the
+	// session was dead (eating habits, canteen) - those changes never reached the server.
+	const restoreProfileAfterSessionExpiry = async (serverProfile: DatabaseTypes.Profiles): Promise<DatabaseTypes.Profiles> => {
+		const restorePayload = buildProfileRestoreAfterSessionExpiry(serverProfile as any, profileBeforeSessionExpired);
+		dispatch({ type: CLEAR_PROFILE_BEFORE_SESSION_EXPIRED });
+		if (!restorePayload) return serverProfile;
+		try {
+			const restored = (await profileHelper.updateProfile(restorePayload)) as DatabaseTypes.Profiles;
+			return restored?.id ? restored : serverProfile;
+		} catch (error) {
+			console.error('Error restoring local profile after expired session:', error);
+			return serverProfile;
+		}
+	};
+
 	const fetchProfile = async () => {
 		try {
-			const profile = (await profileHelper.fetchProfileById(user?.profile, {})) as DatabaseTypes.Profiles;
+			let profile = (await profileHelper.fetchProfileById(user?.profile, {})) as DatabaseTypes.Profiles;
+			if (profile?.id && profileBeforeSessionExpired) {
+				profile = await restoreProfileAfterSessionExpiry(profile);
+			}
 			if (profile?.id) {
 				getOwnFeedback(profile?.id);
 				getFeedbackEntries(profile?.id);
