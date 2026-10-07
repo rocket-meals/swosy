@@ -10,12 +10,13 @@ aus `repo-depkit-common` und der Übersetzungskatalog.
 
 ## Seiten
 
-| Seite            | Pfad                                     | Was sie kann                                                                                                                                                                                                                                                                                                                       |
-| ---------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Seite            | Pfad                                     | Was sie kann                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Speise-Feedbacks | `/admin/rocket-meals/food-feedbacks`     | Neueste Speise-Feedbacks mit Kommentar und Bild der Speise. Filter nach Status (Offen, Neu, Wartet auf Antwort, Beantwortet, Erledigt, Alle) mit Anzahl, nach Mensen (Mehrfachauswahl), Speise (Name) und Bewertung (Schlecht 1–2, Mittel 3, Gut 4–5, Ohne); Sortierung nach Datum oder Bewertung; Suche im Kommentar; Seitengröße 10/25/50/100. Mensen, Sortierung und Seitengröße merkt sich der Browser. „Als erledigt markieren“ direkt in der Liste, per Checkbox auch mehrere auf einmal. „Antworten“ / „Zum Chat“ öffnet den Chat mit dem Autor. |
 | Chat             | `/admin/rocket-meals/food-feedbacks/:id` | Kommentar als erste Nachricht, Verlauf, Antwort schreiben (Eingabe wie im Claude-Chat: Enter sendet, Shift+Enter neue Zeile, auf dem Handy Senden-Knopf), Status über den Status-Chip ändern (Wartet auf Antwort / Beantwortet / Erledigt), Link zum Datensatz. Neue Nachrichten des Nutzers erscheinen ohne Neuladen (alle 20 s). |
 | App-Feedbacks    | `/admin/rocket-meals/app-feedbacks`      | Rückmeldungen aus dem Feedback-Formular der App und Bewertungen aus App Store / Google Play. Gleicher Aufbau wie die Speise-Feedbacks: Status-Filter mit Anzahl, Filter nach Quelle (App, App Store, Google Play) und Daumen hoch/runter, Sortierung nach Datum, Suche, Seitengröße, „Als erledigt markieren“ einzeln und per Checkbox. Quelle, Sortierung und Seitengröße merkt sich der Browser. |
 | App-Feedback     | `/admin/rocket-meals/app-feedbacks/:id`  | Titel und Text als erste Nachricht, Gerät und Kontakt-E-Mail im Kopf, derselbe Chat wie bei den Speise-Feedbacks (Status-Chip, Enter sendet, Aktualisierung alle 20 s). Bei einer Store-Bewertung schreibt die Eingabe die öffentliche Antwort im Store (`app_feedbacks.response`); der `app-reviews-pull-hook` veröffentlicht sie automatisch. Pro Bewertung gibt es nur eine Antwort – ein Hinweis über der Eingabe sagt, dass eine neue Nachricht die bisherige ersetzt. |
+| Live-Puls        | `/admin/rocket-meals/live-pulse`         | Für den zweiten Bildschirm: wer heute aktiv war (Avatar, Nickname, „vor 3 Minuten“; Ring grün unter 15 min, orange unter 1 h), ein Ticker aus Speise-Feedbacks, angekündigten Mensa-Besuchen, neuen Profilen und anonymen `app_usage_events`, Kennzahlen (aktiv in den letzten 15 min, heute aktiv, neue Profile, Gerichte angesehen, Speise-Feedbacks) und ein Balkendiagramm der aktiven Nutzer pro Stunde aus `directus_activity`. Aktualisiert sich alle 30 s.                                                                                      |
 
 ### Status eines Speise-Feedbacks
 
@@ -30,9 +31,9 @@ aus `repo-depkit-common` und der Übersetzungskatalog.
 
 Der Status lässt sich im Chat über den Status-Chip von Hand setzen, „Erledigt“ auch direkt in der
 Liste (einzeln oder für alle ausgewählten; bestehende Chats in einem Request, siehe
-`src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts`). Hat ein Feedback noch keinen
-Chat, wird er dabei angelegt (der Status steht in `chats.conversation_state`) – der Autor sieht den
-Chat dann in der App, auch ohne Antwort. „Neu“ ist nicht wählbar: es bedeutet nur „noch kein Chat“.
+`src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts`). Hat ein Feedback noch keinen Chat,
+wird er dabei angelegt (der Status steht in `chats.conversation_state`) – der Autor sieht den Chat
+dann in der App, auch ohne Antwort. „Neu“ ist nicht wählbar: es bedeutet nur „noch kein Chat“.
 
 ### Was beim ersten Antworten passiert
 
@@ -107,6 +108,20 @@ sofort mit.
    `useAppExtensionTranslate()`.
 4. Fachlogik nach `packages/common` (siehe oben), Directus-spezifische Logik ohne Vue in
    `src/helpers/rocket-meals-module/` – beides mit Test, die Tests laufen in Node.
+
+### Live-Puls: woher die Daten kommen
+
+| Anzeige            | Quelle                                                                                                                                                                                                     |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Zuletzt aktiv      | `profiles.date_updated` (die App setzt es beim Start und bei jedem Wechsel in den Vordergrund), heute, neueste zuerst                                                                                      |
+| Avatare            | `GET /profile-avatar/<profileId>?size=64` – zeichnet `profiles.avatar` mit derselben Logik wie die App (`AvatarSvg` in `repo-depkit-common-ui`)                                                            |
+| Gerichte angesehen | `app_usage_events` mit `food_details_opened`, geschrieben vom `food-details-usage-event-hook` beim Abruf `GET /items/foodoffers/<id>` aus einer App; anonym, `session_id` = `Backend_<Jahr>_<Monat>_<Tag>` |
+| Diagramm           | verschiedene Nutzer pro Stunde in `directus_activity`, nur Collections, in denen App-Nutzer schreiben (Mitarbeitende, die Speisen pflegen, zählen nicht)                                                   |
+
+Die Avatare werden absichtlich auf dem Server gezeichnet: die DiceBear-Stile sind rund 2 MB
+JavaScript und würden sonst mit jeder Seite der Directus-Oberfläche geladen. Die Stunden fragt die
+Seite einzeln mit Zeitstempeln ab statt mit Directus' `hour()`, damit in der Zeitzone des Browsers
+gezählt wird.
 
 Ideen für weitere Seiten: Wohnheim-Verwaltung, Renner/Penner-Listen der Speisen.
 

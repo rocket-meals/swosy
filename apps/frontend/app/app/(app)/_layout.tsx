@@ -57,6 +57,7 @@ import { UserHelper } from '@/helper/UserHelper';
 import useAuthSessionGuard from '@/hooks/useAuthSessionGuard';
 import { buildProfileRestoreAfterSessionExpiry } from '@/helper/authSessionHelper';
 import { CLEAR_PROFILE_BEFORE_SESSION_EXPIRED } from '@/redux/Types/types';
+import { useProfileActivityTouch } from '@/hooks/useProfileActivityTouch';
 
 const renderDrawerContent = (props: React.ComponentProps<typeof CustomDrawerContent>) => <CustomDrawerContent {...props} />;
 
@@ -141,6 +142,8 @@ export default function Layout() {
 	useEffect(() => {
 		loggedInRef.current = loggedIn;
 	}, [loggedIn]);
+	// Keeps profiles.date_updated current (app start and every return to the foreground) for the backend page "Live-Puls".
+	useProfileActivityTouch(loggedIn ? user : null, user?.profile);
 	const { selectedCanteen: persistedCanteen } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
 

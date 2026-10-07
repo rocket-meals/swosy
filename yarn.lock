@@ -15761,6 +15761,7 @@ __metadata:
     puppeteer-core: "npm:^24.3.0"
     repo-depkit-common: "workspace:*"
     repo-depkit-common-backend: "workspace:*"
+    repo-depkit-common-ui: "workspace:*"
     rimraf: "npm:^6.0.1"
     short-unique-id: "npm:^5.2.2"
     spark-md5: "npm:^3.0.2"
