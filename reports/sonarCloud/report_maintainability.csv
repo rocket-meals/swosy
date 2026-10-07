@@ -1,6 +1,6 @@
 Key,Message,Component,Line
-"AaETNWslJDcE9FBfZ2AU","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts",93
-"AaETNWslJDcE9FBfZ2AV","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts",94
+"AaEWTFGih6eUky8Tee_-","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts",74
+"AaEWTFGih6eUky8Tee__","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts",75
 "AaETYERN0O90mfPbLPig","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/public/mcp-instruction/index.tsx",460
 "AaESKxMHygOMAbVLDWkz","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mcp-public-user-hook/index.ts",16
 "AaERrVvctla_SBaQ5Fc1","Consider removing 'undefined' type or '?' specifier, one of them is redundant.","rocket-meals_rocket-meals:packages/common/src/ChatHelper.ts",6
@@ -494,7 +494,7 @@ Key,Message,Component,Line
 "AaD3G9D9Td3UR4iHDm26","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",104
 "AaD3G9D9Td3UR4iHDm27","Async method 'getMarkingsJSONList' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",484
 "AaD3G9OtTd3UR4iHDm4d","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/activity-auto-cleanup-schedule/index.ts",6
-"AaD3G9PyTd3UR4iHDm4u","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts",108
+"AaD3G9PyTd3UR4iHDm4u","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts",80
 "AaD3G9KBTd3UR4iHDm3r","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/index.ts",102
 "AaD3G9BhTd3UR4iHDm2D","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/index.ts",43
 "AaD3G9M3Td3UR4iHDm4D","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",11
