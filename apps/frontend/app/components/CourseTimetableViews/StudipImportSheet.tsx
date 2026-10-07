@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { SettingsListGroupTitle, SettingsListSelectOptionSingle } from 'repo-depkit-common-ui';
+import SettingsList from '@/components/SettingsList';
 import { SettingsListTextInputField } from '@/components/SettingsListTextInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useCourseTimetable from '@/hooks/useCourseTimetable';
@@ -10,8 +11,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppSelector } from '@/redux/hooks';
 import { TranslationKeys } from '@/locales/keys';
-import { darkTheme } from '@/styles/themes';
-import { myContrastColor } from '@/helper/ColorHelper';
 import { mergeImportedEvents } from '@/helper/courseTimetable/CourseTimetableModel';
 import { CorsProxyStatus, STUDIP_DEBUG_CORS_PROXY, STUDIP_DEBUG_CORS_PROXY_UNLOCK_LABEL, STUDIP_DEBUG_CORS_PROXY_UNLOCK_URL, STUDIP_INSTANCES, StudipImportError, checkCorsProxy, fetchStudipSchedule } from '@/helper/courseTimetable/StudipImporter';
 import useDebugMode from '@/hooks/useDebugMode';
@@ -38,14 +37,12 @@ const PROXY_STATUS_KEYS: Record<CorsProxyStatus | 'checking', TranslationKeys> =
  */
 const StudipImportSheet: React.FC = () => {
 	const { theme } = useTheme();
-	const isDark = theme === darkTheme;
 	const { translate } = useLanguage();
 	const toast = useToast();
 	const { closeAll } = useMyScrollViewModal();
 	const { events, saveEvents } = useCourseTimetable();
 	const { primaryColor, appSettings } = useAppSelector(state => state.settings);
 	const accentColor = appSettings?.course_timetable_area_color || primaryColor;
-	const accentText = myContrastColor(accentColor, theme, isDark);
 
 	const [instanceId, setInstanceId] = useState(STUDIP_INSTANCES[0]?.id ?? '');
 	const [username, setUsername] = useState('');
@@ -125,20 +122,14 @@ const StudipImportSheet: React.FC = () => {
 	if (importBlockedOnWeb) {
 		return (
 			<View style={styles.container}>
-				<View style={[styles.hint, { backgroundColor: theme.screen.iconBg }]}>
-					<MaterialCommunityIcons name="cellphone-arrow-down" size={20} color={theme.screen.text} />
-					<Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.course_timetable_import_web_hint)}</Text>
-				</View>
+				<SettingsList leftIcon={<MaterialCommunityIcons name="cellphone-arrow-down" size={20} />} iconBackgroundColor={accentColor} title={translate(TranslationKeys.course_timetable_import_web_hint)} groupPosition="single" showSeparator={false} />
 			</View>
 		);
 	}
 
 	return (
 		<View style={styles.container}>
-			<View style={[styles.hint, { backgroundColor: theme.screen.iconBg }]}>
-				<MaterialCommunityIcons name="shield-lock-outline" size={20} color={theme.screen.text} />
-				<Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.course_timetable_import_privacy_hint)}</Text>
-			</View>
+			<SettingsList leftIcon={<MaterialCommunityIcons name="shield-lock-outline" size={20} />} iconBackgroundColor={accentColor} title={translate(TranslationKeys.course_timetable_import_privacy_hint)} groupPosition="single" showSeparator={false} />
 
 			<SettingsListGroupTitle title={translate(TranslationKeys.course_timetable_import_university)} />
 			{STUDIP_INSTANCES.map((entry, index) => (
@@ -148,10 +139,7 @@ const StudipImportSheet: React.FC = () => {
 			{canUseSso && instance ? (
 				<>
 					<SettingsListGroupTitle title={translate(TranslationKeys.course_timetable_import_sso_title)} />
-					<TouchableOpacity onPress={startSso} style={[styles.button, styles.ssoButton, { backgroundColor: accentColor }]} accessibilityRole="button">
-						<MaterialCommunityIcons name="school-outline" size={20} color={accentText} />
-						<Text style={[styles.buttonText, { color: accentText }]}>{translate(TranslationKeys.course_timetable_import_sso_button)}</Text>
-					</TouchableOpacity>
+					<SettingsList leftIcon={<MaterialCommunityIcons name="school-outline" size={20} />} iconBackgroundColor={accentColor} title={translate(TranslationKeys.course_timetable_import_sso_button)} rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />} onPress={startSso} groupPosition="single" showSeparator={false} />
 					<StudipSsoLoginModal
 						instance={instance}
 						visible={ssoVisible}
@@ -174,10 +162,17 @@ const StudipImportSheet: React.FC = () => {
 					<SettingsListTextInputField placeholder={translate(TranslationKeys.course_timetable_import_username)} value={username} onChangeText={setUsername} autoCapitalize="none" autoCorrect={false} textContentType="username" returnKeyType="next" />
 					<SettingsListTextInputField placeholder={translate(TranslationKeys.password)} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoCorrect={false} textContentType="password" returnKeyType="done" onSubmitEditing={startImport} />
 
-					<TouchableOpacity onPress={startImport} disabled={!canSubmit} style={[styles.button, { backgroundColor: accentColor, opacity: canSubmit ? 1 : 0.5 }]} accessibilityRole="button" accessibilityState={{ disabled: !canSubmit, busy: loading }}>
-						{loading ? <ActivityIndicator color={accentText} /> : <MaterialCommunityIcons name="cloud-download-outline" size={20} color={accentText} />}
-						<Text style={[styles.buttonText, { color: accentText }]}>{translate(TranslationKeys.course_timetable_import_start)}</Text>
-					</TouchableOpacity>
+					<View style={[styles.importRow, !canSubmit && styles.importRowDisabled]} accessibilityState={{ disabled: !canSubmit, busy: loading }}>
+						<SettingsList
+							leftIcon={loading ? <ActivityIndicator /> : <MaterialCommunityIcons name="cloud-download-outline" size={20} />}
+							iconBackgroundColor={accentColor}
+							title={translate(TranslationKeys.course_timetable_import_start)}
+							rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+							onPress={canSubmit ? startImport : undefined}
+							groupPosition="single"
+							showSeparator={false}
+						/>
+					</View>
 				</>
 			) : null}
 
@@ -256,20 +251,10 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		fontFamily: 'Poppins_600SemiBold',
 	},
-	ssoButton: {
-		marginTop: 0,
+	importRow: {
+		marginTop: 8,
 	},
-	button: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
-		gap: 8,
-		height: 50,
-		borderRadius: 12,
-		marginTop: 12,
-	},
-	buttonText: {
-		fontSize: 16,
-		fontFamily: 'Poppins_700Bold',
+	importRowDisabled: {
+		opacity: 0.5,
 	},
 });

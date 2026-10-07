@@ -10,15 +10,16 @@ import IconButton from '@/components/UI/IconButton';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import MyMarkdownProjectColored from '@/components/MyMarkdownProjectColored';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import CourseEventDetailsSheet, { NEW_COURSE_EVENT_ID, createCourseEventDraft, setCourseEventDraft, weekdayTranslationKey } from '@/components/CourseTimetableViews/CourseEventDetailsSheet';
+import CourseEventDetailsSheet, { NEW_COURSE_EVENT_ID, createCourseEventDraft, setCourseEventDraft } from '@/components/CourseTimetableViews/CourseEventDetailsSheet';
 import CourseTimetableDayView, { minutesOfDay } from '@/components/CourseTimetableViews/CourseTimetableDayView';
 import CourseTimetableWeekView, { WeekViewDay } from '@/components/CourseTimetableViews/CourseTimetableWeekView';
 import LunchSuggestionCard from '@/components/CourseTimetableViews/LunchSuggestionCard';
 import StudipImportSheet from '@/components/CourseTimetableViews/StudipImportSheet';
-import ProjectButton from '@/components/ProjectButton';
+import SettingsList from '@/components/SettingsList';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { useSmartReadableDateMethod } from '@/helper/DateHelper';
 import useCourseTimetable from '@/hooks/useCourseTimetable';
 import useCourseTimetableLunchSuggestions, { LunchSuggestionDay } from '@/hooks/useCourseTimetableLunchSuggestions';
 import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
@@ -76,7 +77,6 @@ const CourseTimetableScreen = () => {
 	const { primaryColor, appSettings, firstDayOfTheWeek } = useAppSelector(state => state.settings);
 	const accentColor = appSettings?.course_timetable_area_color || primaryColor;
 	const accentText = myContrastColor(accentColor, theme, isDark);
-	const primaryText = myContrastColor(primaryColor, theme, isDark);
 
 	const isWide = width >= WEEK_VIEW_MIN_WIDTH;
 	const showSidePanel = width >= SIDE_PANEL_MIN_WIDTH;
@@ -157,14 +157,9 @@ const CourseTimetableScreen = () => {
 		return `${firstDate.getDate()}. ${monthShort(firstDate)} – ${lastDate.getDate()}. ${monthShort(lastDate)}`;
 	}, [weekDays, monthShort]);
 
-	const dayLabel = useMemo(() => {
-		const tomorrowString = format(addDays(now, 1), DATE_FORMAT);
-		let prefix = translate(weekdayTranslationKey(selectedWeekday));
-		if (selectedDate === todayString) prefix = translate(TranslationKeys.today);
-		else if (selectedDate === tomorrowString) prefix = translate(TranslationKeys.tomorrow);
-		return `${prefix}, ${selected.getDate()}. ${monthShort(selected)}`;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [selectedDate, todayString, selectedWeekday, translate, monthShort]);
+	// "Heute", "Morgen", a weekday within the next week, otherwise the date.
+	const smartReadableDate = useSmartReadableDateMethod();
+	const dayLabel = smartReadableDate(selected);
 
 	const moveSelection = (direction: 1 | -1) => {
 		const step = viewMode === 'week' ? 7 : 1;
@@ -228,7 +223,9 @@ const CourseTimetableScreen = () => {
 				<Entypo name="chevron-left" size={24} color={theme.header.text} />
 			</IconButton>
 			{viewMode === 'week' ? (
-				<Text style={[styles.navLabel, { color: theme.header.text }]}>{weekLabel}</Text>
+				<Text style={[styles.navLabel, styles.navLabelShrink, { color: theme.header.text }]} numberOfLines={1}>
+					{weekLabel}
+				</Text>
 			) : (
 				<IconButton onPress={() => openDatePickerModal({ selectedDateProp: selectedDate, onSelect: setSelectedDate })} accessibilityRole="button" accessibilityLabel={`${translate(TranslationKeys.select)}: ${translate(TranslationKeys.date)}`} style={styles.navButton}>
 					<MaterialIcons name="calendar-month" size={24} color={theme.header.text} />
@@ -238,7 +235,7 @@ const CourseTimetableScreen = () => {
 				<Entypo name="chevron-right" size={24} color={theme.header.text} />
 			</IconButton>
 			{viewMode === 'day' ? (
-				<Text style={[styles.navLabel, styles.dayLabel, { color: theme.header.text }]} numberOfLines={1}>
+				<Text style={[styles.navLabel, styles.navLabelShrink, { color: theme.header.text }]} numberOfLines={1}>
 					{dayLabel}
 				</Text>
 			) : null}
@@ -262,7 +259,9 @@ const CourseTimetableScreen = () => {
 				{events.length === 0 ? (
 					<View style={[styles.emptyInfo, { backgroundColor: theme.screen.iconBg }]}>
 						<MyMarkdownProjectColored content={translate(TranslationKeys.courseTimetableDescriptionEmpty)} />
-						<ProjectButton text={translate(TranslationKeys.course_timetable_reimport)} onPress={openImport} iconLeft={<MaterialCommunityIcons name="cloud-download-outline" size={20} color={primaryText} />} style={styles.importButton} />
+						<View style={styles.importButton}>
+							<SettingsList leftIcon={<MaterialCommunityIcons name="cloud-download-outline" size={20} />} iconBackgroundColor={accentColor} title={translate(TranslationKeys.course_timetable_import_studip)} rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />} onPress={openImport} backgroundColor={theme.screen.background} groupPosition="single" showSeparator={false} />
+						</View>
 					</View>
 				) : null}
 				{viewMode === 'week' ? (
@@ -304,7 +303,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		flexWrap: 'wrap',
+		// Navigation and the day/week switch share one row; the date label shrinks first.
 		gap: 8,
 		paddingHorizontal: 10,
 		paddingVertical: 8,
@@ -314,9 +313,10 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		flexShrink: 1,
+		minWidth: 0,
 	},
 	navButton: {
-		padding: 8,
+		padding: 6,
 	},
 	// Same type as the other screen headers (CustomMenuHeader, food offers).
 	navLabel: {
@@ -324,16 +324,17 @@ const styles = StyleSheet.create({
 		fontFamily: 'Poppins_400Regular',
 		paddingHorizontal: 4,
 	},
-	dayLabel: {
+	navLabelShrink: {
 		flexShrink: 1,
 	},
 	segmented: {
+		flexShrink: 0,
 		flexDirection: 'row',
 		borderRadius: 10,
 		padding: 3,
 	},
 	segment: {
-		paddingHorizontal: 14,
+		paddingHorizontal: 12,
 		paddingVertical: 7,
 		borderRadius: 8,
 	},
@@ -354,7 +355,7 @@ const styles = StyleSheet.create({
 		paddingBottom: 120,
 	},
 	importButton: {
-		marginVertical: 8,
+		marginTop: 8,
 	},
 	emptyInfo: {
 		borderRadius: 16,

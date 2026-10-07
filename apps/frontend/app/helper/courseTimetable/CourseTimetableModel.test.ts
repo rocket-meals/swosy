@@ -30,6 +30,12 @@ describe('CourseTimetableModel', () => {
 		expect(normalizeCourseTimetable(stored)).toEqual(events);
 	});
 
+	it('keeps the import source data through the stored shape', () => {
+		const sourceData = { type: 'seminar-cycle-dates', id: 'c1', attributes: { locations: { '2': '69/E15' } } };
+		const events = [event({ id: 'a', source: 'import', kind: null, location: '69/E15', building_id: null, source_data: sourceData })];
+		expect(normalizeCourseTimetable(serializeCourseTimetable(events))[0]?.source_data).toEqual(sourceData);
+	});
+
 	it('creates ids that do not collide', () => {
 		const existing = [event({ id: 'a' }), event({ id: 'b' })];
 		const id = createEventId(existing);

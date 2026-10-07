@@ -1,4 +1,4 @@
-import { STUDIP_DEBUG_CORS_PROXY, STUDIP_SESSION_MESSAGE_TYPE, buildStudipSessionScheduleScript, checkCorsProxy, parseStudipSessionMessage, STUDIP_INSTANCES, StudipImportError, buildBasicAuthorization, fetchStudipSchedule, mapStudipSchedule, studipWeekdayToWeekday } from './StudipImporter';
+import { STUDIP_DEBUG_CORS_PROXY, STUDIP_SESSION_MESSAGE_TYPE, buildStudipSessionScheduleScript, checkCorsProxy, parseStudipSessionMessage, STUDIP_INSTANCES, StudipImportError, studipLocations, buildBasicAuthorization, fetchStudipSchedule, mapStudipSchedule, studipWeekdayToWeekday } from './StudipImporter';
 
 const instance = STUDIP_INSTANCES[0]!;
 
@@ -44,6 +44,19 @@ describe('StudipImporter', () => {
 		expect(events[1]?.location).toBeNull();
 		expect(events[2]).toMatchObject({ weekday: 'sunday', location: 'A, B' });
 		expect(events[3]).toMatchObject({ weekday: 'sunday', title: 'Sport' });
+	});
+
+	it('reads locations sent as a list, an object with gaps in its keys or room objects', () => {
+		expect(studipLocations(['69/E15', ' ', '69/E15'])).toEqual(['69/E15']);
+		expect(studipLocations({ '0': '69/E15', '3': '35/E01' })).toEqual(['69/E15', '35/E01']);
+		expect(studipLocations([{ name: '93/E06' }])).toEqual(['93/E06']);
+		expect(studipLocations('15/E19')).toEqual(['15/E19']);
+		expect(studipLocations(null)).toEqual([]);
+	});
+
+	it('keeps the Stud.IP resource on the event', () => {
+		const [first] = mapStudipSchedule(scheduleResponse);
+		expect(first?.source_data).toBe(scheduleResponse.data[0]);
 	});
 
 	it('gives all dates of one course the same color', () => {

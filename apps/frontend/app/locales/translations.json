@@ -7849,6 +7849,16 @@
     "tr": "Stud.IP’den içe aktar (ders programının yerine geçer)",
     "zh": "从 Stud.IP 导入（替换课程表）"
   },
+  "course_timetable_import_studip": {
+    "de": "Aus Stud.IP importieren",
+    "en": "Import from Stud.IP",
+    "ar": "الاستيراد من Stud.IP",
+    "es": "Importar desde Stud.IP",
+    "fr": "Importer depuis Stud.IP",
+    "ru": "Импорт из Stud.IP",
+    "tr": "Stud.IP’den içe aktar",
+    "zh": "从 Stud.IP 导入"
+  },
   "course_timetable_load_demo": {
     "de": "Beispiel-Stundenplan laden (überschreibt)",
     "en": "Load example timetable (overwrites)",

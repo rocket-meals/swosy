@@ -201,7 +201,10 @@ export function getVersionPatch() {
         //     display_group layout field (403 on tenants whose User policy does not list it)
         // 91: debug view: session state, expire access token, invalidate refresh token
         // 92: course timetable redesign (common-ui: MyCalendarMonth in SettingsListDate, MyColorSelection, SettingsListColor)
-        return 92;
+        // 93: course timetable: empty-state import button with a short label; empty state and Stud.IP import sheet use SettingsList rows instead of buttons that cut off their labels
+        // 94: course timetable: day label is the smart readable date (Heute, Morgen, weekday), navigation and day/week switch in one row
+        // 95: Stud.IP import reads locations sent as an object too; the event modal shows the event JSON (with the Stud.IP data) in debug mode
+        return 95;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -809,6 +809,7 @@ export const TranslationKeys = {
 	course_timetable_reset: 'course_timetable_reset',
 	course_timetable_reset_confirm: 'course_timetable_reset_confirm',
 	course_timetable_reimport: 'course_timetable_reimport',
+	course_timetable_import_studip: 'course_timetable_import_studip',
 	course_timetable_load_demo: 'course_timetable_load_demo',
 	course_timetable_import_university: 'course_timetable_import_university',
 	course_timetable_import_login: 'course_timetable_import_login',
