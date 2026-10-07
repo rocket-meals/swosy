@@ -30,7 +30,7 @@ const activeNow = ref<number | undefined>();
 const activeToday = ref<number | undefined>();
 const newProfilesToday = ref<number | undefined>();
 const feedbacksToday = ref<number | undefined>();
-const openSessions = ref<number | undefined>();
+const foodViewsToday = ref<number | undefined>();
 /** Distinct active users per hour of today, index = hour. Past hours are kept, only the current one is reloaded. */
 const hourly = ref<number[]>([]);
 const hourlyDay = ref<string | undefined>();
@@ -62,12 +62,12 @@ async function getItemsOrEmpty<T>(endpoint: string, params: LivePulseQuery): Pro
 
 async function loadKpis(time: Date) {
   const startOfDay = LivePulseHelper.getStartOfDay(time);
-  const [recent, today, created, feedbacks, sessions] = await Promise.all([getAggregate(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildProfilesActiveSinceFilter(LivePulseHelper.minutesBefore(time, LivePulseHelper.ACTIVE_NOW_MINUTES))), 'count', 'id'), getAggregate(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildProfilesActiveSinceFilter(startOfDay)), 'count', 'id'), getAggregate(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildCreatedSinceFilter(startOfDay)), 'count', 'id'), getAggregate(LivePulseHelper.FOOD_FEEDBACKS_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildCreatedSinceFilter(startOfDay)), 'count', 'id'), getAggregate(LivePulseHelper.APP_USAGE_EVENTS_ENDPOINT, LivePulseHelper.buildOpenSessionsQuery(time), 'countDistinct', 'session_id')]);
+  const [recent, today, created, feedbacks, foodViews] = await Promise.all([getAggregate(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildProfilesActiveSinceFilter(LivePulseHelper.minutesBefore(time, LivePulseHelper.ACTIVE_NOW_MINUTES))), 'count', 'id'), getAggregate(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildProfilesActiveSinceFilter(startOfDay)), 'count', 'id'), getAggregate(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildCreatedSinceFilter(startOfDay)), 'count', 'id'), getAggregate(LivePulseHelper.FOOD_FEEDBACKS_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildCreatedSinceFilter(startOfDay)), 'count', 'id'), getAggregate(LivePulseHelper.APP_USAGE_EVENTS_ENDPOINT, LivePulseHelper.buildFoodViewsTodayQuery(time), 'count', 'id')]);
   activeNow.value = recent;
   activeToday.value = today;
   newProfilesToday.value = created;
   feedbacksToday.value = feedbacks;
-  openSessions.value = sessions;
+  foodViewsToday.value = foodViews;
 }
 
 async function loadFeed(time: Date) {
@@ -169,6 +169,8 @@ function feedText(item: LivePulseFeedItem): string {
       });
     case LivePulseFeedType.NEW_PROFILE:
       return translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_new_profile);
+    case LivePulseFeedType.FOOD_OPENED:
+      return translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_food_opened, { food });
     default:
       return translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_usage_event, { event: [item.eventName, item.screenName].filter(Boolean).join(' · ') });
   }
@@ -184,6 +186,8 @@ function feedIcon(item: LivePulseFeedItem): string {
       return 'restaurant';
     case LivePulseFeedType.NEW_PROFILE:
       return 'waving_hand';
+    case LivePulseFeedType.FOOD_OPENED:
+      return 'visibility';
     default:
       return 'touch_app';
   }
@@ -191,9 +195,9 @@ function feedIcon(item: LivePulseFeedItem): string {
 
 const kpis = computed<Kpi[]>(() => [
   { key: 'now', value: activeNow.value, label: translate(BackendTranslationKeys.rocket_meals_module_live_pulse_active_now, { minutes: LivePulseHelper.ACTIVE_NOW_MINUTES }) },
-  { key: 'sessions', value: openSessions.value, label: translate(BackendTranslationKeys.rocket_meals_module_live_pulse_open_sessions) },
   { key: 'today', value: activeToday.value, label: translate(BackendTranslationKeys.rocket_meals_module_live_pulse_active_today) },
   { key: 'new', value: newProfilesToday.value, label: translate(BackendTranslationKeys.rocket_meals_module_live_pulse_new_profiles_today) },
+  { key: 'food-views', value: foodViewsToday.value, label: translate(BackendTranslationKeys.rocket_meals_module_live_pulse_food_views_today) },
   { key: 'feedbacks', value: feedbacksToday.value, label: translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feedbacks_today) },
 ]);
 
@@ -323,8 +327,9 @@ onBeforeUnmount(() => {
               <div v-else class="feed-avatar feed-icon"><v-icon :name="feedIcon(item)" small /></div>
               <div class="feed-body">
                 <div class="feed-line">
-                  <strong v-if="item.type !== LivePulseFeedType.USAGE_EVENT">{{ getNickname(item.profile) }}</strong>
-                  <strong v-else>{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_anonymous_session) }}</strong>
+                  <strong v-if="item.type === LivePulseFeedType.USAGE_EVENT">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_anonymous_session) }}</strong>
+                  <strong v-else-if="item.type === LivePulseFeedType.FOOD_OPENED">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_someone) }}</strong>
+                  <strong v-else>{{ getNickname(item.profile) }}</strong>
                   {{ feedText(item) }}
                   <food-feedback-rating v-if="item.type === LivePulseFeedType.RATING || item.type === LivePulseFeedType.COMMENT" :rating="item.rating" />
                 </div>

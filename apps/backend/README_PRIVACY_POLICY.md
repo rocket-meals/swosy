@@ -95,7 +95,9 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 
 		Die Sitzungskennung wird bei jedem Start der App neu und zufällig erzeugt. Sie wird nur im Arbeitsspeicher gehalten, nicht auf deinem Gerät gespeichert und ist nach dem Schließen der App verloren. Die Ereignisse enthalten weder deine Benutzer-ID noch deine Profil-ID, Gerätekennung, Push-Token oder IP-Adresse, und wir verknüpfen sie nicht mit deinem Account. Die bei der Übertragung technisch notwendige IP-Adresse landet nur, wie oben beschrieben, kurzfristig in den Server-Logs.
 
-		Wir werten die Ereignisse ausschließlich zusammengefasst aus, zum Beispiel als Anzahl gerade geöffneter Sitzungen, als Verlauf über den Tag oder als Liste der am häufigsten geöffneten Bereiche und Inhalte.
+		Einige Ereignisse legt unser Server selbst an, ohne dass die App etwas sendet: Wenn die App die Details eines Speiseangebots lädt, speichern wir, welches Speiseangebot, welches Gericht und welche Mensa es war. Statt einer Sitzungskennung steht bei diesen Ereignissen nur der Tag. Auch hier speichern wir weder Benutzer-ID, Profil-ID noch IP-Adresse.
+
+		Wir werten die Ereignisse ausschließlich zusammengefasst aus, zum Beispiel als Anzahl angesehener Gerichte, als Verlauf über den Tag oder als Liste der am häufigsten geöffneten Bereiche und Inhalte.
 
 		Rechtsgrundlage ist unser berechtigtes Interesse nach Art. 6 Abs. 1 lit. f DSGVO, die App zu betreiben, Störungen früh zu erkennen und das Angebot an der tatsächlichen Nutzung auszurichten.
 
@@ -223,7 +225,7 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 		- dein Nickname und dein Avatar
 		- der Zeitpunkt deiner letzten Aktivität (aus last_access bzw. date_updated, siehe oben)
 		- Aktivitäten, die du ohnehin an uns übermittelst, z. B. abgegebene Bewertungen von Gerichten, angekündigte Mensa-Besuche oder das Anlegen deines Accounts
-		- zusammengefasste Zahlen aus der anonymen Nutzungsstatistik, z. B. die Anzahl gerade geöffneter Sitzungen. Diese Zahlen lassen sich keiner Person zuordnen.
+		- zusammengefasste Zahlen aus der anonymen Nutzungsstatistik, z. B. wie oft heute Gerichte angesehen wurden. Diese Zahlen lassen sich keiner Person zuordnen.
 
 		Deine E-Mail-Adresse, dein echter Name, dein Guthaben, deine Chat-Nachrichten oder dein Standort werden dort nicht angezeigt. Für die Übersicht werden keine zusätzlichen Daten erhoben oder gespeichert. Sie zeigt nur den aktuellen Stand der oben beschriebenen Daten, einen eigenen Verlauf deiner Aktivität legen wir dafür nicht an. Gäste erscheinen in der Übersicht nur in den anonymen Zahlen.
 

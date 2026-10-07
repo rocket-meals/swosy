@@ -5,13 +5,14 @@
  * Sources, all read with the permissions of the person looking at the page:
  * - `profiles.date_updated` – last activity of a profile (the app touches it when it is opened).
  * - `foods_feedbacks`, `canteen_visits`, new `profiles` – the ticker.
- * - `app_usage_events` – anonymous usage events, only counted, never linked to a profile.
+ * - `app_usage_events` – anonymous usage events (e.g. food details loaded), never linked to a profile.
  * - `directus_activity` – distinct users per hour for the chart.
  *
  * No Vue in here, so the rules are testable in Node.
  */
 
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
+import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED } from '../BackendUsageEventHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 
 type DirectusFilter = Record<string, unknown>;
@@ -34,6 +35,8 @@ export enum LivePulseFeedType {
   COMMENT = 'comment',
   CANTEEN_VISIT = 'canteen_visit',
   NEW_PROFILE = 'new_profile',
+  /** Someone loaded the details of a food offer (`food-details-usage-event-hook`), anonymous. */
+  FOOD_OPENED = 'food_opened',
   USAGE_EVENT = 'usage_event',
 }
 
@@ -72,6 +75,8 @@ export type LivePulseUsageEvent = {
   event_name?: string | null;
   screen_name?: string | null;
   platform?: string | null;
+  session_id?: string | null;
+  payload?: unknown;
   date_created?: string | null;
 };
 
@@ -235,16 +240,16 @@ export class LivePulseHelper {
 
   static buildUsageEventsQuery(now: Date): LivePulseQuery {
     return {
-      fields: ['id', 'event_type', 'event_name', 'screen_name', 'platform', 'date_created'].join(','),
+      fields: ['id', 'event_type', 'event_name', 'screen_name', 'platform', 'payload', 'date_created'].join(','),
       filter: JSON.stringify(LivePulseHelper.buildCreatedSinceFilter(LivePulseHelper.getStartOfDay(now))),
       sort: '-date_created',
       limit: LivePulseHelper.FEED_SOURCE_LIMIT,
     };
   }
 
-  /** Anonymous app sessions that sent an event within the last `ACTIVE_NOW_MINUTES`. */
-  static buildOpenSessionsQuery(now: Date): LivePulseQuery {
-    return LivePulseHelper.buildCountDistinctQuery(LivePulseHelper.buildCreatedSinceFilter(LivePulseHelper.minutesBefore(now, LivePulseHelper.ACTIVE_NOW_MINUTES)), 'session_id');
+  /** Food offer details loaded today (`food-details-usage-event-hook`). */
+  static buildFoodViewsTodayQuery(now: Date): LivePulseQuery {
+    return LivePulseHelper.buildCountQuery({ _and: [LivePulseHelper.buildCreatedSinceFilter(LivePulseHelper.getStartOfDay(now)), { event_name: { _eq: BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED } }] });
   }
 
   /**
@@ -329,13 +334,16 @@ export class LivePulseHelper {
 
     for (const event of sources.usageEvents ?? []) {
       if (!event.date_created) continue;
+      const payload = event.payload && typeof event.payload === 'object' ? (event.payload as Record<string, unknown>) : {};
+      const isFoodOpened = event.event_name === BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED;
       items.push({
         key: `event-${event.id}`,
-        type: LivePulseFeedType.USAGE_EVENT,
+        type: isFoodOpened ? LivePulseFeedType.FOOD_OPENED : LivePulseFeedType.USAGE_EVENT,
         date: event.date_created,
         eventName: event.event_name,
         screenName: event.screen_name,
         platform: event.platform,
+        foodName: typeof payload.food_name === 'string' && payload.food_name ? payload.food_name : undefined,
       });
     }
 

@@ -40,10 +40,10 @@ describe('LivePulseHelper', () => {
       expect(query.fields).toContain('nickname');
     });
 
-    it('counts open sessions as distinct session ids of the last minutes', () => {
-      const query = LivePulseHelper.buildOpenSessionsQuery(NOW);
-      expect(JSON.parse(query.aggregate!)).toEqual({ countDistinct: 'session_id' });
-      expect(JSON.parse(query.filter!)).toEqual({ date_created: { _gte: minutesAgo(LivePulseHelper.ACTIVE_NOW_MINUTES) } });
+    it('counts the food details loaded today', () => {
+      const query = LivePulseHelper.buildFoodViewsTodayQuery(NOW);
+      expect(JSON.parse(query.aggregate!)).toEqual({ count: 'id' });
+      expect(JSON.parse(query.filter!)).toEqual({ _and: [{ date_created: { _gte: new Date(2026, 9, 7).toISOString() } }, { event_name: { _eq: 'food_details_opened' } }] });
     });
 
     it('counts distinct app users per hour and leaves staff edits of other collections out', () => {
@@ -89,11 +89,22 @@ describe('LivePulseHelper', () => {
         newProfiles: [{ id: 'p4', nickname: 'Jonas', date_created: minutesAgo(10) }],
         usageEvents: [{ id: 'e1', event_name: 'food_details_opened', platform: 'ios', date_created: minutesAgo(0) }],
       });
-      expect(feed.map(item => item.type)).toEqual([LivePulseFeedType.USAGE_EVENT, LivePulseFeedType.CANTEEN_VISIT, LivePulseFeedType.RATING, LivePulseFeedType.NEW_PROFILE, LivePulseFeedType.COMMENT]);
+      expect(feed.map(item => item.type)).toEqual([LivePulseFeedType.FOOD_OPENED, LivePulseFeedType.CANTEEN_VISIT, LivePulseFeedType.RATING, LivePulseFeedType.NEW_PROFILE, LivePulseFeedType.COMMENT]);
       expect(feed[1]).toMatchObject({ canteenName: 'Mensa', visitDate: '2026-10-08', profile: { nickname: 'Tim' } });
       expect(feed[2]).toMatchObject({ foodName: 'Spaghetti', rating: 4, profile: { nickname: 'Lena' } });
       // Not expanded relation → no profile, the page shows "no nickname".
       expect(feed[4]!.profile).toBeUndefined();
+    });
+
+    it('shows food views written by the backend with the name of the food', () => {
+      const feed = LivePulseHelper.buildFeed({
+        usageEvents: [
+          { id: 'e1', event_name: 'food_details_opened', session_id: 'Backend_2026_10_07', payload: { food_name: 'Currywurst' }, date_created: minutesAgo(1) },
+          { id: 'e2', event_name: 'native_review_prompt_requested', date_created: minutesAgo(2) },
+        ],
+      });
+      expect(feed[0]).toMatchObject({ type: LivePulseFeedType.FOOD_OPENED, foodName: 'Currywurst' });
+      expect(feed[1]).toMatchObject({ type: LivePulseFeedType.USAGE_EVENT, eventName: 'native_review_prompt_requested' });
     });
 
     it('gives a changed rating a new key, so it shows up as new in the ticker', () => {

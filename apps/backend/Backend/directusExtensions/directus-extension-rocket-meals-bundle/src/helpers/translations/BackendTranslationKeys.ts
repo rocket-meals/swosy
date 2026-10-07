@@ -118,7 +118,7 @@ export const BackendTranslationKeys = {
   rocket_meals_module_live_pulse_active_today: 'rocket_meals_module_live_pulse_active_today',
   rocket_meals_module_live_pulse_new_profiles_today: 'rocket_meals_module_live_pulse_new_profiles_today',
   rocket_meals_module_live_pulse_feedbacks_today: 'rocket_meals_module_live_pulse_feedbacks_today',
-  rocket_meals_module_live_pulse_open_sessions: 'rocket_meals_module_live_pulse_open_sessions',
+  rocket_meals_module_live_pulse_food_views_today: 'rocket_meals_module_live_pulse_food_views_today',
   rocket_meals_module_live_pulse_recently_active: 'rocket_meals_module_live_pulse_recently_active',
   rocket_meals_module_live_pulse_feed: 'rocket_meals_module_live_pulse_feed',
   rocket_meals_module_live_pulse_chart: 'rocket_meals_module_live_pulse_chart',
@@ -138,6 +138,8 @@ export const BackendTranslationKeys = {
   rocket_meals_module_live_pulse_updated_at: 'rocket_meals_module_live_pulse_updated_at',
   rocket_meals_module_live_pulse_nobody_today: 'rocket_meals_module_live_pulse_nobody_today',
   rocket_meals_module_live_pulse_nothing_happened: 'rocket_meals_module_live_pulse_nothing_happened',
+  rocket_meals_module_live_pulse_someone: 'rocket_meals_module_live_pulse_someone',
+  rocket_meals_module_live_pulse_feed_food_opened: 'rocket_meals_module_live_pulse_feed_food_opened',
 } as const;
 
 export type BackendTranslationKeys = (typeof BackendTranslationKeys)[keyof typeof BackendTranslationKeys];
