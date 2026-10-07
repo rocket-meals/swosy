@@ -10,7 +10,7 @@ export { SettingsProvider, useSettingsContext } from './src/context/SettingsCont
 export type { SettingsContextType } from './src/context/SettingsContext';
 
 // Helpers
-export { myContrastColor, getContrastRatio, getColorAsHex } from './src/helpers/ColorHelper';
+export { myContrastColor, getContrastRatio, getColorAsHex, mixColors } from './src/helpers/ColorHelper';
 export { accountRequiredStyles } from './src/helpers/accountRequiredStyles';
 export {
 	DEFAULT_DB_NAME,
@@ -83,6 +83,13 @@ export type { SettingsListTextInputProps, CheckTextInput, CheckTextInputResult, 
 
 export { default as SettingsListDate } from './src/components/SettingsListDate';
 export type { SettingsListDateProps } from './src/components/SettingsListDate';
+
+export { default as MyCalendarMonth, MY_CALENDAR_MONTH_FALLBACK_TEXTS } from './src/components/MyCalendarMonth';
+export type { MyCalendarMonthProps, MyCalendarMonthTexts } from './src/components/MyCalendarMonth';
+export { getMonthGrid, dateToDateString } from './src/helpers/CalendarMonthHelper';
+
+export { default as SettingsListColor } from './src/components/SettingsListColor';
+export type { SettingsListColorProps } from './src/components/SettingsListColor';
 
 export { default as SettingsListCoordinate } from './src/components/SettingsListCoordinate';
 export type { SettingsListCoordinateProps, LinkCoordinate } from './src/components/SettingsListCoordinate';
@@ -177,6 +184,9 @@ export type { MyColorPickerProps } from './src/components/MyColorPicker';
 
 export { default as MyCustomColorPicker } from './src/components/MyCustomColorPicker';
 export type { MyCustomColorPickerProps } from './src/components/MyCustomColorPicker';
+
+export { default as MyColorSelection, MY_COLOR_SELECTION_FALLBACK_TEXTS } from './src/components/MyColorSelection';
+export type { MyColorSelectionProps, MyColorSelectionTexts } from './src/components/MyColorSelection';
 
 export { default as SettingsListAvatar } from './src/components/SettingsListAvatar';
 export type { SettingsListAvatarProps } from './src/components/SettingsListAvatar';

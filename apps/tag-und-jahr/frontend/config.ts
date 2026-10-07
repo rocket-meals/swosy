@@ -63,7 +63,8 @@ export function getVersionPatch() {
 	// 33: common: McpAccessHelper public token "PUBLIC" + /mcp-public-user endpoint; common-ui: monospace inline code in markdown
 	// 34: common: McpInstructionHelper + MCP instruction texts in commonTranslations
 	// 35: common: AppFeedbackChatStatusHelper (status, filters and chat of app feedbacks)
-	return 35;
+	// 36: course timetable redesign (common-ui: MyCalendarMonth in SettingsListDate, MyColorSelection, SettingsListColor)
+	return 36;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

@@ -171,6 +171,24 @@ export const playbookRegistryData: PlaybookEntryData[] = [
 		},
 	},
 	{
+		name: 'SettingsListColor',
+		description: 'Settings row with a color swatch opening the color selection modal (custom picker + presets).',
+		knobs: {
+			title: { type: 'text', defaultValue: 'Color' },
+			value: { type: 'text', defaultValue: '#3b82f6' },
+			editable: { type: 'boolean', defaultValue: true },
+			groupPosition: GROUP_POSITION_KNOB,
+		},
+	},
+	{
+		name: 'MyCalendarMonth',
+		description: 'Dependency-free month calendar; tapping a day selects it (YYYY-MM-DD).',
+		knobs: {
+			selectedDate: { type: 'text', defaultValue: '2026-10-07' },
+			firstDayOfWeek: { type: 'number', defaultValue: 1 },
+		},
+	},
+	{
 		name: 'SettingsListProgress',
 		description: 'Settings row with a progress bar.',
 		knobs: {

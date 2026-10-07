@@ -1536,4 +1536,26 @@ export const commonTranslations: TranslationResources = {
 		tr: 'Ara',
 		zh: '12月',
 	},
+
+	// Calendar navigation
+	previous_month: {
+		de: 'Vorheriger Monat',
+		en: 'Previous month',
+		ar: 'الشهر السابق',
+		es: 'Mes anterior',
+		fr: 'Mois précédent',
+		ru: 'Предыдущий месяц',
+		tr: 'Önceki ay',
+		zh: '上个月',
+	},
+	next_month: {
+		de: 'Nächster Monat',
+		en: 'Next month',
+		ar: 'الشهر التالي',
+		es: 'Mes siguiente',
+		fr: 'Mois suivant',
+		ru: 'Следующий месяц',
+		tr: 'Sonraki ay',
+		zh: '下个月',
+	},
 };

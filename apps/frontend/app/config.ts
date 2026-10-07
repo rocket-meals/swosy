@@ -200,7 +200,8 @@ export function getVersionPatch() {
         // 90: logout no longer fails with "database is locked"; device updates no longer send the
         //     display_group layout field (403 on tenants whose User policy does not list it)
         // 91: debug view: session state, expire access token, invalidate refresh token
-        return 91;
+        // 92: course timetable redesign (common-ui: MyCalendarMonth in SettingsListDate, MyColorSelection, SettingsListColor)
+        return 92;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

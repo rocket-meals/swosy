@@ -7628,5 +7628,455 @@
     "ru": "Нет сессии",
     "tr": "Oturum yok",
     "zh": "没有会话"
+  },
+  "course_timetable_add_event": {
+    "de": "Termin",
+    "en": "Event",
+    "ar": "موعد",
+    "es": "Evento",
+    "fr": "Événement",
+    "ru": "Событие",
+    "tr": "Etkinlik",
+    "zh": "日程"
+  },
+  "course_timetable_no_events_day": {
+    "de": "Keine Termine an diesem Tag",
+    "en": "No events on this day",
+    "ar": "لا توجد مواعيد في هذا اليوم",
+    "es": "No hay eventos este día",
+    "fr": "Aucun événement ce jour-là",
+    "ru": "В этот день нет событий",
+    "tr": "Bu günde etkinlik yok",
+    "zh": "这一天没有日程"
+  },
+  "course_timetable_break": {
+    "de": "Pause",
+    "en": "Break",
+    "ar": "استراحة",
+    "es": "Pausa",
+    "fr": "Pause",
+    "ru": "Перерыв",
+    "tr": "Mola",
+    "zh": "休息"
+  },
+  "course_timetable_lunch_suggestion": {
+    "de": "Zeit für die Mensa",
+    "en": "Time for the canteen",
+    "ar": "وقت المطعم",
+    "es": "Hora del comedor",
+    "fr": "C’est l’heure de la cantine",
+    "ru": "Время для столовой",
+    "tr": "Yemekhane zamanı",
+    "zh": "去食堂的时间"
+  },
+  "course_timetable_canteen_open": {
+    "de": "Geöffnet",
+    "en": "Open",
+    "ar": "مفتوح",
+    "es": "Abierto",
+    "fr": "Ouvert",
+    "ru": "Открыто",
+    "tr": "Açık",
+    "zh": "营业"
+  },
+  "course_timetable_open_food_offers": {
+    "de": "Speiseplan öffnen",
+    "en": "Open menu",
+    "ar": "فتح قائمة الطعام",
+    "es": "Abrir el menú",
+    "fr": "Ouvrir le menu",
+    "ru": "Открыть меню",
+    "tr": "Menüyü aç",
+    "zh": "打开菜单"
+  },
+  "course_timetable_overlap": {
+    "de": "Überschneidung",
+    "en": "Overlap",
+    "ar": "تداخل",
+    "es": "Solapamiento",
+    "fr": "Chevauchement",
+    "ru": "Пересечение",
+    "tr": "Çakışma",
+    "zh": "时间冲突"
+  },
+  "course_timetable_now": {
+    "de": "Jetzt",
+    "en": "Now",
+    "ar": "الآن",
+    "es": "Ahora",
+    "fr": "Maintenant",
+    "ru": "Сейчас",
+    "tr": "Şimdi",
+    "zh": "现在"
+  },
+  "course_timetable_source_import": {
+    "de": "Importiert",
+    "en": "Imported",
+    "ar": "مستورد",
+    "es": "Importado",
+    "fr": "Importé",
+    "ru": "Импортировано",
+    "tr": "İçe aktarıldı",
+    "zh": "已导入"
+  },
+  "course_timetable_source_manual": {
+    "de": "Eigener Termin",
+    "en": "Own event",
+    "ar": "موعد خاص",
+    "es": "Evento propio",
+    "fr": "Événement personnel",
+    "ru": "Своё событие",
+    "tr": "Kendi etkinliğim",
+    "zh": "自建日程"
+  },
+  "course_timetable_imported_hint": {
+    "de": "Dieser Termin wurde importiert. Ein erneuter Import überschreibt Zeit und Ort; Farbe und Löschen gelten nur in der App.",
+    "en": "This event was imported. A new import overwrites time and location; color and deleting only apply in the app.",
+    "ar": "تم استيراد هذا الموعد. يؤدي الاستيراد الجديد إلى استبدال الوقت والمكان؛ اللون والحذف يسريان داخل التطبيق فقط.",
+    "es": "Este evento se importó. Una nueva importación sobrescribe la hora y el lugar; el color y la eliminación solo se aplican en la app.",
+    "fr": "Cet événement a été importé. Une nouvelle importation remplace l’heure et le lieu ; la couleur et la suppression ne s’appliquent que dans l’application.",
+    "ru": "Это событие импортировано. Новый импорт перезапишет время и место; цвет и удаление действуют только в приложении.",
+    "tr": "Bu etkinlik içe aktarıldı. Yeni bir içe aktarma saati ve yeri değiştirir; renk ve silme yalnızca uygulamada geçerlidir.",
+    "zh": "此日程为导入数据。重新导入会覆盖时间和地点；颜色和删除仅在应用内生效。"
+  },
+  "course_timetable_delete_event": {
+    "de": "Termin löschen (nur in der App)",
+    "en": "Delete event (only in the app)",
+    "ar": "حذف الموعد (داخل التطبيق فقط)",
+    "es": "Eliminar evento (solo en la app)",
+    "fr": "Supprimer l’événement (uniquement dans l’application)",
+    "ru": "Удалить событие (только в приложении)",
+    "tr": "Etkinliği sil (yalnızca uygulamada)",
+    "zh": "删除日程（仅限应用内）"
+  },
+  "course_timetable_delete_event_confirm": {
+    "de": "Möchtest du diesen Termin aus deinem Stundenplan löschen?",
+    "en": "Do you want to delete this event from your timetable?",
+    "ar": "هل تريد حذف هذا الموعد من جدولك؟",
+    "es": "¿Quieres eliminar este evento de tu horario?",
+    "fr": "Voulez-vous supprimer cet événement de votre emploi du temps ?",
+    "ru": "Удалить это событие из расписания?",
+    "tr": "Bu etkinliği ders programından silmek istiyor musun?",
+    "zh": "要从课程表中删除此日程吗？"
+  },
+  "course_timetable_kind": {
+    "de": "Art",
+    "en": "Type",
+    "ar": "النوع",
+    "es": "Tipo",
+    "fr": "Type",
+    "ru": "Тип",
+    "tr": "Tür",
+    "zh": "类型"
+  },
+  "course_timetable_more_colors": {
+    "de": "Weitere Farben",
+    "en": "More colors",
+    "ar": "المزيد من الألوان",
+    "es": "Más colores",
+    "fr": "Plus de couleurs",
+    "ru": "Другие цвета",
+    "tr": "Diğer renkler",
+    "zh": "更多颜色"
+  },
+  "course_timetable_previous_week": {
+    "de": "Vorherige Woche",
+    "en": "Previous week",
+    "ar": "الأسبوع السابق",
+    "es": "Semana anterior",
+    "fr": "Semaine précédente",
+    "ru": "Предыдущая неделя",
+    "tr": "Önceki hafta",
+    "zh": "上一周"
+  },
+  "course_timetable_next_week": {
+    "de": "Nächste Woche",
+    "en": "Next week",
+    "ar": "الأسبوع التالي",
+    "es": "Semana siguiente",
+    "fr": "Semaine suivante",
+    "ru": "Следующая неделя",
+    "tr": "Sonraki hafta",
+    "zh": "下一周"
+  },
+  "course_timetable_previous_day": {
+    "de": "Vorheriger Tag",
+    "en": "Previous day",
+    "ar": "اليوم السابق",
+    "es": "Día anterior",
+    "fr": "Jour précédent",
+    "ru": "Предыдущий день",
+    "tr": "Önceki gün",
+    "zh": "前一天"
+  },
+  "course_timetable_next_day": {
+    "de": "Nächster Tag",
+    "en": "Next day",
+    "ar": "اليوم التالي",
+    "es": "Día siguiente",
+    "fr": "Jour suivant",
+    "ru": "Следующий день",
+    "tr": "Sonraki gün",
+    "zh": "后一天"
+  },
+  "course_timetable_reset": {
+    "de": "Stundenplan zurücksetzen",
+    "en": "Reset timetable",
+    "ar": "إعادة تعيين الجدول",
+    "es": "Restablecer horario",
+    "fr": "Réinitialiser l’emploi du temps",
+    "ru": "Сбросить расписание",
+    "tr": "Ders programını sıfırla",
+    "zh": "重置课程表"
+  },
+  "course_timetable_reset_confirm": {
+    "de": "Alle Termine werden gelöscht. Das kann nicht rückgängig gemacht werden.",
+    "en": "All events will be deleted. This cannot be undone.",
+    "ar": "سيتم حذف جميع المواعيد. لا يمكن التراجع عن ذلك.",
+    "es": "Se eliminarán todos los eventos. Esto no se puede deshacer.",
+    "fr": "Tous les événements seront supprimés. Cette action est irréversible.",
+    "ru": "Все события будут удалены. Это действие нельзя отменить.",
+    "tr": "Tüm etkinlikler silinecek. Bu işlem geri alınamaz.",
+    "zh": "所有日程都将被删除，且无法撤销。"
+  },
+  "course_timetable_reimport": {
+    "de": "Aus Stud.IP importieren (ersetzt den Stundenplan)",
+    "en": "Import from Stud.IP (replaces the timetable)",
+    "ar": "الاستيراد من Stud.IP (يستبدل الجدول)",
+    "es": "Importar desde Stud.IP (reemplaza el horario)",
+    "fr": "Importer depuis Stud.IP (remplace l’emploi du temps)",
+    "ru": "Импорт из Stud.IP (заменяет расписание)",
+    "tr": "Stud.IP’den içe aktar (ders programının yerine geçer)",
+    "zh": "从 Stud.IP 导入（替换课程表）"
+  },
+  "course_timetable_load_demo": {
+    "de": "Beispiel-Stundenplan laden (überschreibt)",
+    "en": "Load example timetable (overwrites)",
+    "ar": "تحميل جدول تجريبي (يستبدل)",
+    "es": "Cargar horario de ejemplo (sobrescribe)",
+    "fr": "Charger un emploi du temps d’exemple (remplace)",
+    "ru": "Загрузить пример расписания (перезаписывает)",
+    "tr": "Örnek ders programını yükle (üzerine yazar)",
+    "zh": "加载示例课程表（覆盖）"
+  },
+  "course_timetable_import_university": {
+    "de": "Hochschule",
+    "en": "University",
+    "ar": "الجامعة",
+    "es": "Universidad",
+    "fr": "Université",
+    "ru": "Университет",
+    "tr": "Üniversite",
+    "zh": "高校"
+  },
+  "course_timetable_import_login": {
+    "de": "Stud.IP-Zugang",
+    "en": "Stud.IP login",
+    "ar": "تسجيل الدخول إلى Stud.IP",
+    "es": "Acceso a Stud.IP",
+    "fr": "Connexion Stud.IP",
+    "ru": "Вход в Stud.IP",
+    "tr": "Stud.IP girişi",
+    "zh": "Stud.IP 登录"
+  },
+  "course_timetable_import_username": {
+    "de": "Nutzername",
+    "en": "Username",
+    "ar": "اسم المستخدم",
+    "es": "Nombre de usuario",
+    "fr": "Nom d’utilisateur",
+    "ru": "Имя пользователя",
+    "tr": "Kullanıcı adı",
+    "zh": "用户名"
+  },
+  "course_timetable_import_privacy_hint": {
+    "de": "Deine Zugangsdaten werden nicht an uns gesendet. Die App fragt deinen Stundenplan direkt bei Stud.IP ab und speichert Nutzername und Passwort nicht.",
+    "en": "Your login is not sent to us. The app requests your timetable directly from Stud.IP and does not store your username or password.",
+    "ar": "لا يتم إرسال بيانات الدخول إلينا. يطلب التطبيق جدولك مباشرة من Stud.IP ولا يحفظ اسم المستخدم أو كلمة المرور.",
+    "es": "Tus datos de acceso no se nos envían. La app consulta tu horario directamente en Stud.IP y no guarda tu usuario ni tu contraseña.",
+    "fr": "Vos identifiants ne nous sont pas envoyés. L’application récupère votre emploi du temps directement auprès de Stud.IP et n’enregistre ni votre nom d’utilisateur ni votre mot de passe.",
+    "ru": "Ваши данные для входа не передаются нам. Приложение запрашивает расписание напрямую в Stud.IP и не сохраняет имя пользователя и пароль.",
+    "tr": "Giriş bilgilerin bize gönderilmez. Uygulama ders programını doğrudan Stud.IP’den alır ve kullanıcı adını ile şifreni kaydetmez.",
+    "zh": "你的登录信息不会发送给我们。应用直接向 Stud.IP 获取你的课程表，不会保存用户名和密码。"
+  },
+  "course_timetable_import_replace_hint": {
+    "de": "Der Import ersetzt deinen aktuellen Stundenplan, auch eigene Termine.",
+    "en": "The import replaces your current timetable, including your own events.",
+    "ar": "يستبدل الاستيراد جدولك الحالي، بما في ذلك مواعيدك الخاصة.",
+    "es": "La importación reemplaza tu horario actual, incluidos tus eventos propios.",
+    "fr": "L’importation remplace votre emploi du temps actuel, y compris vos événements personnels.",
+    "ru": "Импорт заменит текущее расписание, включая ваши собственные события.",
+    "tr": "İçe aktarma, kendi etkinliklerin dahil mevcut ders programının yerine geçer.",
+    "zh": "导入会替换你当前的课程表，包括自建日程。"
+  },
+  "course_timetable_import_web_hint": {
+    "de": "Der Import ist nur in der App auf dem Handy möglich (iOS oder Android).",
+    "en": "Importing is only possible in the phone app (iOS or Android).",
+    "ar": "الاستيراد ممكن فقط في تطبيق الهاتف (iOS أو Android).",
+    "es": "La importación solo es posible en la app del móvil (iOS o Android).",
+    "fr": "L’importation n’est possible que dans l’application mobile (iOS ou Android).",
+    "ru": "Импорт возможен только в мобильном приложении (iOS или Android).",
+    "tr": "İçe aktarma yalnızca telefon uygulamasında mümkün (iOS veya Android).",
+    "zh": "只能在手机应用中导入（iOS 或 Android）。"
+  },
+  "course_timetable_import_start": {
+    "de": "Importieren",
+    "en": "Import",
+    "ar": "استيراد",
+    "es": "Importar",
+    "fr": "Importer",
+    "ru": "Импортировать",
+    "tr": "İçe aktar",
+    "zh": "导入"
+  },
+  "course_timetable_import_success": {
+    "de": "Stundenplan importiert",
+    "en": "Timetable imported",
+    "ar": "تم استيراد الجدول",
+    "es": "Horario importado",
+    "fr": "Emploi du temps importé",
+    "ru": "Расписание импортировано",
+    "tr": "Ders programı içe aktarıldı",
+    "zh": "课程表已导入"
+  },
+  "course_timetable_import_empty": {
+    "de": "In Stud.IP wurden für das aktuelle Semester keine Termine gefunden. Dein Stundenplan bleibt unverändert.",
+    "en": "No events were found in Stud.IP for the current semester. Your timetable stays unchanged.",
+    "ar": "لم يتم العثور على مواعيد في Stud.IP للفصل الحالي. يبقى جدولك دون تغيير.",
+    "es": "No se encontraron eventos en Stud.IP para el semestre actual. Tu horario no cambia.",
+    "fr": "Aucun événement trouvé dans Stud.IP pour le semestre en cours. Votre emploi du temps reste inchangé.",
+    "ru": "В Stud.IP не найдено событий на текущий семестр. Ваше расписание не изменилось.",
+    "tr": "Stud.IP’de bu dönem için etkinlik bulunamadı. Ders programın değişmedi.",
+    "zh": "Stud.IP 中没有找到本学期的日程，你的课程表保持不变。"
+  },
+  "course_timetable_import_error_credentials": {
+    "de": "Nutzername oder Passwort ist falsch.",
+    "en": "Username or password is incorrect.",
+    "ar": "اسم المستخدم أو كلمة المرور غير صحيحة.",
+    "es": "El usuario o la contraseña no son correctos.",
+    "fr": "Nom d’utilisateur ou mot de passe incorrect.",
+    "ru": "Неверное имя пользователя или пароль.",
+    "tr": "Kullanıcı adı veya şifre yanlış.",
+    "zh": "用户名或密码错误。"
+  },
+  "course_timetable_import_error_network": {
+    "de": "Stud.IP ist gerade nicht erreichbar. Bitte prüfe deine Internetverbindung.",
+    "en": "Stud.IP cannot be reached right now. Please check your internet connection.",
+    "ar": "لا يمكن الوصول إلى Stud.IP حاليًا. يرجى التحقق من اتصالك بالإنترنت.",
+    "es": "No se puede acceder a Stud.IP en este momento. Comprueba tu conexión a internet.",
+    "fr": "Stud.IP est injoignable pour le moment. Veuillez vérifier votre connexion internet.",
+    "ru": "Stud.IP сейчас недоступен. Проверьте подключение к интернету.",
+    "tr": "Stud.IP’ye şu anda ulaşılamıyor. Lütfen internet bağlantını kontrol et.",
+    "zh": "目前无法连接 Stud.IP，请检查网络连接。"
+  },
+  "course_timetable_import_error_unexpected": {
+    "de": "Der Stundenplan konnte nicht aus Stud.IP gelesen werden.",
+    "en": "The timetable could not be read from Stud.IP.",
+    "ar": "تعذرت قراءة الجدول من Stud.IP.",
+    "es": "No se pudo leer el horario desde Stud.IP.",
+    "fr": "Impossible de lire l’emploi du temps depuis Stud.IP.",
+    "ru": "Не удалось прочитать расписание из Stud.IP.",
+    "tr": "Ders programı Stud.IP’den okunamadı.",
+    "zh": "无法从 Stud.IP 读取课程表。"
+  },
+  "course_timetable_import_debug_proxy_hint": {
+    "de": "Debug-Modus: Im Browser laufen die Anfragen über cors-anywhere.herokuapp.com, die Zugangsdaten gehen also über diesen Dienst. Der Zugang muss dort vorher einmal freigeschaltet werden.",
+    "en": "Debug mode: in the browser the requests go through cors-anywhere.herokuapp.com, so the login passes that service. Access has to be unlocked there once beforehand.",
+    "ar": "وضع التصحيح: في المتصفح تمر الطلبات عبر cors-anywhere.herokuapp.com، أي أن بيانات الدخول تمر عبر هذه الخدمة. يجب تفعيل الوصول هناك مرة واحدة مسبقًا.",
+    "es": "Modo de depuración: en el navegador las solicitudes pasan por cors-anywhere.herokuapp.com, así que los datos de acceso pasan por ese servicio. Antes hay que desbloquear el acceso allí una vez.",
+    "fr": "Mode débogage : dans le navigateur, les requêtes passent par cors-anywhere.herokuapp.com, les identifiants transitent donc par ce service. L’accès doit y être débloqué une fois au préalable.",
+    "ru": "Режим отладки: в браузере запросы идут через cors-anywhere.herokuapp.com, то есть данные для входа проходят через этот сервис. Доступ там нужно один раз предварительно разблокировать.",
+    "tr": "Hata ayıklama modu: Tarayıcıda istekler cors-anywhere.herokuapp.com üzerinden gider, giriş bilgilerin de bu servisten geçer. Erişimin orada önceden bir kez açılması gerekir.",
+    "zh": "调试模式：在浏览器中，请求会经过 cors-anywhere.herokuapp.com，登录信息也会经过该服务。需要先在该网站上解锁一次访问。"
+  },
+  "course_timetable_import_proxy_checking": {
+    "de": "Verbindung zum CORS-Proxy wird geprüft …",
+    "en": "Checking the connection to the CORS proxy …",
+    "ar": "جارٍ التحقق من الاتصال بوكيل CORS …",
+    "es": "Comprobando la conexión con el proxy CORS …",
+    "fr": "Vérification de la connexion au proxy CORS …",
+    "ru": "Проверка соединения с CORS-прокси …",
+    "tr": "CORS proxy bağlantısı kontrol ediliyor …",
+    "zh": "正在检查与 CORS 代理的连接…"
+  },
+  "course_timetable_import_proxy_ok": {
+    "de": "CORS-Proxy ist erreichbar und freigeschaltet.",
+    "en": "The CORS proxy is reachable and unlocked.",
+    "ar": "وكيل CORS متاح ومفعّل.",
+    "es": "El proxy CORS está disponible y desbloqueado.",
+    "fr": "Le proxy CORS est joignable et débloqué.",
+    "ru": "CORS-прокси доступен и разблокирован.",
+    "tr": "CORS proxy erişilebilir ve açık.",
+    "zh": "CORS 代理可用且已解锁。"
+  },
+  "course_timetable_import_proxy_locked": {
+    "de": "CORS-Proxy ist noch nicht freigeschaltet. Öffne den Link und klicke dort auf „Request temporary access to the demo server“.",
+    "en": "The CORS proxy is not unlocked yet. Open the link and click “Request temporary access to the demo server”.",
+    "ar": "وكيل CORS غير مفعّل بعد. افتح الرابط وانقر على “Request temporary access to the demo server”.",
+    "es": "El proxy CORS aún no está desbloqueado. Abre el enlace y haz clic en «Request temporary access to the demo server».",
+    "fr": "Le proxy CORS n’est pas encore débloqué. Ouvrez le lien et cliquez sur « Request temporary access to the demo server ».",
+    "ru": "CORS-прокси ещё не разблокирован. Откройте ссылку и нажмите «Request temporary access to the demo server».",
+    "tr": "CORS proxy henüz açılmadı. Bağlantıyı aç ve „Request temporary access to the demo server“ düğmesine tıkla.",
+    "zh": "CORS 代理尚未解锁。请打开链接并点击“Request temporary access to the demo server”。"
+  },
+  "course_timetable_import_proxy_unreachable": {
+    "de": "CORS-Proxy ist nicht erreichbar.",
+    "en": "The CORS proxy cannot be reached.",
+    "ar": "لا يمكن الوصول إلى وكيل CORS.",
+    "es": "No se puede acceder al proxy CORS.",
+    "fr": "Le proxy CORS est injoignable.",
+    "ru": "CORS-прокси недоступен.",
+    "tr": "CORS proxy’ye ulaşılamıyor.",
+    "zh": "无法连接 CORS 代理。"
+  },
+  "course_timetable_import_proxy_recheck": {
+    "de": "Erneut prüfen",
+    "en": "Check again",
+    "ar": "التحقق مرة أخرى",
+    "es": "Comprobar de nuevo",
+    "fr": "Vérifier à nouveau",
+    "ru": "Проверить снова",
+    "tr": "Tekrar kontrol et",
+    "zh": "重新检查"
+  },
+  "course_timetable_import_sso_title": {
+    "de": "Zentrales Uni-Login",
+    "en": "Central university login",
+    "ar": "تسجيل الدخول المركزي للجامعة",
+    "es": "Inicio de sesión central de la universidad",
+    "fr": "Connexion centrale de l’université",
+    "ru": "Центральный вход университета",
+    "tr": "Üniversitenin merkezi girişi",
+    "zh": "学校统一登录"
+  },
+  "course_timetable_import_sso_button": {
+    "de": "Mit Uni-Login anmelden und importieren",
+    "en": "Sign in with university login and import",
+    "ar": "تسجيل الدخول بحساب الجامعة والاستيراد",
+    "es": "Iniciar sesión con la cuenta de la universidad e importar",
+    "fr": "Se connecter avec le compte universitaire et importer",
+    "ru": "Войти через университет и импортировать",
+    "tr": "Üniversite girişiyle oturum aç ve içe aktar",
+    "zh": "使用学校账号登录并导入"
+  },
+  "course_timetable_import_sso_hint": {
+    "de": "Melde dich auf der Seite deiner Hochschule an. Danach liest die App nur deinen Stundenplan aus; die Anmeldung wird beim Schließen beendet und nicht gespeichert.",
+    "en": "Sign in on your university’s page. The app then only reads your timetable; the session ends when this closes and is not stored.",
+    "ar": "سجّل الدخول في صفحة جامعتك. بعد ذلك يقرأ التطبيق جدولك فقط؛ تنتهي الجلسة عند الإغلاق ولا يتم حفظها.",
+    "es": "Inicia sesión en la página de tu universidad. Después la app solo lee tu horario; la sesión termina al cerrar y no se guarda.",
+    "fr": "Connectez-vous sur la page de votre université. L’application lit ensuite uniquement votre emploi du temps ; la session se termine à la fermeture et n’est pas enregistrée.",
+    "ru": "Войдите на странице своего университета. После этого приложение только считывает расписание; сеанс завершается при закрытии и не сохраняется.",
+    "tr": "Üniversitenin sayfasında giriş yap. Uygulama ardından yalnızca ders programını okur; oturum kapatıldığında sona erer ve kaydedilmez.",
+    "zh": "请在学校页面登录。之后应用只读取你的课程表；关闭后会话即结束，不会被保存。"
+  },
+  "course_timetable_import_or_password": {
+    "de": "Oder mit Stud.IP-Nutzername und Passwort",
+    "en": "Or with Stud.IP username and password",
+    "ar": "أو باسم مستخدم Stud.IP وكلمة المرور",
+    "es": "O con usuario y contraseña de Stud.IP",
+    "fr": "Ou avec le nom d’utilisateur et le mot de passe Stud.IP",
+    "ru": "Или с именем пользователя и паролем Stud.IP",
+    "tr": "Ya da Stud.IP kullanıcı adı ve şifresiyle",
+    "zh": "或使用 Stud.IP 用户名和密码"
   }
 }

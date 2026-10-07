@@ -3,12 +3,12 @@ import { ActivityIndicator, AppState, Dimensions, FlatList, RefreshControl, Text
 import { addDays, format } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
-import { CollectibleAt, CollectionNames, DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
+import { CollectibleAt, CollectionNames, DatabaseTypes, sortBySortField } from 'repo-depkit-common';
 import FoodItem from '@/components/FoodItem/FoodItem';
 import CanteenFeedbackLabels from '@/components/CanteenFeedbackLabels/CanteenFeedbackLabels';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
+import useFoodOffersSorter from '@/hooks/useFoodOffersSorter';
 import styles from './styles';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useFocusEffect } from 'expo-router';
@@ -43,7 +43,6 @@ interface DayItem {
 	foodofferInfoItem: DatabaseTypes.FoodoffersInfoItems | null;
 }
 
-const EMPTY_FEEDBACKS: any[] = [];
 // Lives in FoodOffersCacheHelper, so logout can clear it (clearFoodOffersCache)
 const daysCache = foodOffersMemoryCache;
 const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
@@ -147,8 +146,8 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const { canteenFeedbackLabels, canteens } = useAppSelector((state) => state.canteenReducer);
-	const { sortBy, language, amountColumnsForcard, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
-	const { ownFoodFeedbacks, foodCategories, foodOfferCategories, foodOffersInfoItems } = useAppSelector((state) => state.food);
+	const { language, amountColumnsForcard, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const { foodOffersInfoItems } = useAppSelector((state) => state.food);
 	const { profile, user } = useAppSelector((state) => state.authReducer);
 	const { appElements } = useAppSelector((state) => state.appElements);
 	
@@ -329,25 +328,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		return CardDimensionHelper.getGridCardWidth(listWidth, numColumns, itemGap);
 	}, [itemGap, listWidth, numColumns]);
 
-	const ownFoodFeedbacksForSort = useMemo(() => {
-		if (sortBy === FoodSortOption.FAVORITE || sortBy === FoodSortOption.INTELLIGENT) {
-			return ownFoodFeedbacks;
-		}
-		return EMPTY_FEEDBACKS;
-	}, [sortBy]);
-
-	const sortOffers = useCallback(
-		(foodOffers: DatabaseTypes.Foodoffers[]) =>
-			sortFoodOffers(sortBy as FoodSortOption, foodOffers, {
-				languageCode: language,
-				ownFoodFeedbacks: ownFoodFeedbacksForSort,
-				profile,
-				foodCategories,
-				foodOfferCategories,
-				useFoodOfferCategoryOnly: true,
-			}),
-		[sortBy, language, ownFoodFeedbacksForSort, profile, foodCategories, foodOfferCategories]
-	);
+	const sortOffers = useFoodOffersSorter();
 
 	// Sorting is applied at render time (see `displayDays` below) instead of mutating
 	// `days`/`daysCache` here. Re-sorting used to run as an effect that raced with the

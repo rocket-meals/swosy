@@ -201,6 +201,10 @@ export const CommonTranslationKeys = {
 	Oct: 'Oct',
 	Nov: 'Nov',
 	Dec: 'Dec',
+
+	// Calendar navigation
+	previous_month: 'previous_month',
+	next_month: 'next_month',
 } as const;
 
 export type CommonTranslationKeys = (typeof CommonTranslationKeys)[keyof typeof CommonTranslationKeys];

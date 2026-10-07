@@ -14,6 +14,7 @@ import { buildHousingReportCsv, buildHousingReportCsvFileName } from '@/helper/h
 import { resolveSettingsGroupPosition } from '@/helper/settingsListGroupPosition';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
+import useCommonUiTexts from '@/hooks/useCommonUiTexts';
 import { TranslationKeys } from '@/locales/keys';
 import { loadHousingHandoverRecords } from '@/helper/housingAnalytics/HousingAnalyticsLoader';
 import { type HousingHandoverRecord } from '@/helper/housingAnalytics/HousingHandoverRecords';
@@ -65,6 +66,7 @@ const ReportScreen = () => {
 	const { report } = useLocalSearchParams<{ report?: string }>();
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
+	const { calendarMonthTexts, firstDayOfWeek } = useCommonUiTexts();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	// The printed page is the result area, not the whole screen - the drawer and the header
 	// would otherwise end up on the paper.
@@ -380,6 +382,8 @@ const ReportScreen = () => {
 						<>
 							<SettingsListDate
 								id="housing-analytics-from"
+								calendarTexts={calendarMonthTexts}
+								firstDayOfWeek={firstDayOfWeek}
 								label={translate(TranslationKeys.housing_analytics_date_from)}
 								value={customFrom}
 								onChange={(_id: string, value: string) => setCustomFrom(value)}
@@ -388,6 +392,8 @@ const ReportScreen = () => {
 							/>
 							<SettingsListDate
 								id="housing-analytics-to"
+								calendarTexts={calendarMonthTexts}
+								firstDayOfWeek={firstDayOfWeek}
 								label={translate(TranslationKeys.housing_analytics_date_to)}
 								value={customTo}
 								onChange={(_id: string, value: string) => setCustomTo(value)}

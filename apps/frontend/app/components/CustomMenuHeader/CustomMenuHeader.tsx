@@ -61,7 +61,7 @@ const makeMenuTrigger = (props: Readonly<{
 	showNotificationDot: boolean;
 }>) => (triggerProps: object) => <MenuTriggerButton triggerProps={triggerProps} {...props} />;
 
-const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
+const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label, rightContent }) => {
 	const { theme } = useTheme();
         const { translate } = useLanguage();
         const { drawerPosition } = useAppSelector((state) => state.settings);
@@ -79,7 +79,7 @@ const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
 				paddingHorizontal: isWeb ? 20 : 10,
 			}}
 		>
-			<View style={styles.row}>
+			<View style={[styles.row, rightContent ? { flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row', alignItems: 'center', justifyContent: 'space-between' } : null]}>
 				<View
 					style={[
 						styles.col1,
@@ -108,8 +108,9 @@ const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
 						</TooltipContent>
 					</CustomTooltip>
 
-					<Text style={{ ...styles.heading, color: theme.header.text }}>{label}</Text>
+					<Text style={{ ...styles.heading, color: theme.header.text }} numberOfLines={1}>{label}</Text>
 				</View>
+				{rightContent ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>{rightContent}</View> : null}
 			</View>
 		</View>
 	);
