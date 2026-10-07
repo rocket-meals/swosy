@@ -9,6 +9,8 @@ export type AuthState = {
 	isManagement: boolean;
 	isDevMode: boolean;
 	termsAndPrivacyConsentAcceptedDate: string | null;
+	sessionExpired?: boolean;
+	profileBeforeSessionExpired?: DatabaseTypes.Profiles | null;
 }
 
 export type AppElementState = {

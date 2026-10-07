@@ -16,6 +16,7 @@ import { AppFeedbackContentHelper, DatabaseTypes, EmailHelper, StringHelper } fr
 import { useAppSelector } from '@/redux/hooks';
 import { configureStore } from '@/redux/store';
 import { buildAppStateJsonForFeedback } from '@/helper/appStateForFeedback';
+import { ServerAPI } from '@/redux/actions/Auth/Auth';
 import { collectDeviceFeedbackFields } from '@/helper/errorReport';
 import { myContrastColor } from '@/helper/ColorHelper';
 import SettingsList from '@/components/SettingsList';
@@ -230,12 +231,13 @@ const FeedbackScreen = () => {
 
 	// The app state belongs into the `data` column, not into `content`: `content` is what the
 	// user wrote and is shown as the initial message of the support chat.
-	const applyAppStateToFeedback = (sanitizedInput: { [key: string]: any }) => {
+	const applyAppStateToFeedback = async (sanitizedInput: { [key: string]: any }) => {
 		if (!includeAppState) return;
 		try {
 			// The raw state contains the whole content catalogue with all translations (>1 MB in
 			// production), which blew up the feedback entry and the notification mail.
-			const appStateJson = buildAppStateJsonForFeedback(configureStore.getState());
+			const session = await ServerAPI.getSessionDiagnostics();
+			const appStateJson = buildAppStateJsonForFeedback(configureStore.getState(), { session });
 			sanitizedInput.data = AppFeedbackContentHelper.buildAppStateData(appStateJson);
 		} catch (e) {
 			console.warn('feedback-support: could not serialize app state', e);
@@ -262,7 +264,7 @@ const FeedbackScreen = () => {
 					return true;
 				})
 			);
-			applyAppStateToFeedback(sanitizedInput);
+			await applyAppStateToFeedback(sanitizedInput);
 			try {
 				console.log('Creating app feedback with input:');
 				await appFeedback.createAppFeedback(sanitizedInput);
@@ -308,7 +310,7 @@ const FeedbackScreen = () => {
 					return true;
 				})
 			);
-			applyAppStateToFeedback(sanitizedInput);
+			await applyAppStateToFeedback(sanitizedInput);
 			try {
 				await appFeedback.updateAppFeedback(String(app_feedbacks_id), sanitizedInput);
 				setLoading(false);

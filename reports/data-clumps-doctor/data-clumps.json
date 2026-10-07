@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-06T23:13:08.497Z",
+  "report_timestamp": "2026-10-07T13:28:25.711Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
-          "maximum": 122,
-          "average": 1.5125448028673836,
-          "amountSavedValuesForKeys": 5064,
-          "amountKeys": 30
+          "median": 1,
+          "maximum": 131,
+          "average": 1.521044992743106,
+          "amountSavedValuesForKeys": 5240,
+          "amountKeys": 29
         },
         "invertedParameterToMethods": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 80,
-          "average": 2.2726218097447797,
-          "amountSavedValuesForKeys": 1959,
+          "average": 2.2814238042269186,
+          "amountSavedValuesForKeys": 2051,
           "amountKeys": 24
         },
         "invertedParameterToClasses": {
-          "median": 1,
-          "maximum": 122,
-          "average": 1.5266807356044618,
-          "amountSavedValuesForKeys": 5064,
-          "amountKeys": 30
+          "median": 1.5,
+          "maximum": 131,
+          "average": 1.5348564733450498,
+          "amountSavedValuesForKeys": 5240,
+          "amountKeys": 29
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3069,
-        "detection_time_ms": 67,
+        "ast_generation_time_ms": 5585,
+        "detection_time_ms": 125,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 98.01,
-          "os_memory_free": 14782070784,
-          "os_memory_total": 16766414848,
+          "os_uptime": 137.57,
+          "os_memory_free": 14840242176,
+          "os_memory_total": 16770748416,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 9V45 96-Core Processor",
+          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 13,
-    "amount_files_with_data_clumps": 13,
-    "amount_methods_with_data_clumps": 4,
-    "fields_to_fields_data_clump": 10,
+    "amount_classes_or_interfaces_with_data_clumps": 25,
+    "amount_files_with_data_clumps": 19,
+    "amount_methods_with_data_clumps": 8,
+    "fields_to_fields_data_clump": 32,
     "parameters_to_fields_data_clump": 2,
-    "parameters_to_parameters_data_clump": 2,
-    "amount_data_clumps": 14
+    "parameters_to_parameters_data_clump": 8,
+    "amount_data_clumps": 42
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "78e9224bf343817b1ce6ddf20743709c2234d5ae",
-    "project_commit_hash": "78e9224bf343817b1ce6ddf20743709c2234d5ae",
+    "project_version": "92e4231c7da91087e66e05b5fc68f555bb26bb4b",
+    "project_commit_hash": "92e4231c7da91087e66e05b5fc68f555bb26bb4b",
     "project_tag": null,
-    "project_commit_date": "1791328293",
+    "project_commit_date": "1791379537",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 720,
-    "number_of_classes_or_interfaces": 1576,
-    "number_of_methods": 1751,
-    "number_of_data_fields": 5064,
-    "number_of_method_parameters": 1959
+    "number_of_files": 729,
+    "number_of_classes_or_interfaces": 1609,
+    "number_of_methods": 1823,
+    "number_of_data_fields": 5240,
+    "number_of_method_parameters": 2051
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -188,6 +188,491 @@
         "cluster_type": 2
       }
     },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery-filtersearchoptions": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery-filtersearchoptions",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "from_class_or_interface_name": "AppFeedbackChatHelper",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper",
+      "from_method_name": "buildListQuery",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "to_class_or_interface_name": "AppFeedbackChatHelper",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper",
+      "to_method_name": "buildCountQuery",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/filter": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/filter",
+          "name": "filter",
+          "type": "FoodFeedbackChatFilter",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery/parameter/filter",
+            "name": "filter",
+            "type": "FoodFeedbackChatFilter",
+            "modifiers": [],
+            "position": {
+              "startLine": 132,
+              "startColumn": 26,
+              "endLine": 132,
+              "endColumn": 56
+            }
+          },
+          "position": {
+            "startLine": 115,
+            "startColumn": 25,
+            "endLine": 115,
+            "endColumn": 55
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/search": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/search",
+          "name": "search",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery/parameter/search",
+            "name": "search",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 132,
+              "startColumn": 96,
+              "endLine": 132,
+              "endColumn": 118
+            }
+          },
+          "position": {
+            "startLine": 115,
+            "startColumn": 71,
+            "endLine": 115,
+            "endColumn": 93
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/options": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/options",
+          "name": "options",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper\").AppFeedbackListOptions",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery/parameter/options",
+            "name": "options",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper\").AppFeedbackListOptions",
+            "modifiers": [],
+            "position": {
+              "startLine": 132,
+              "startColumn": 58,
+              "endLine": 132,
+              "endColumn": 94
+            }
+          },
+          "position": {
+            "startLine": 115,
+            "startColumn": 95,
+            "endLine": 115,
+            "endColumn": 131
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 2
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery-filterpagesearch": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery-filterpagesearch",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "from_class_or_interface_name": "AppFeedbackChatHelper",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper",
+      "from_method_name": "buildListQuery",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "to_class_or_interface_name": "FoodFeedbackChatHelper",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper",
+      "to_method_name": "buildListQuery",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/filter": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/filter",
+          "name": "filter",
+          "type": "FoodFeedbackChatFilter",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery/parameter/filter",
+            "name": "filter",
+            "type": "FoodFeedbackChatFilter",
+            "modifiers": [],
+            "position": {
+              "startLine": 187,
+              "startColumn": 25,
+              "endLine": 187,
+              "endColumn": 55
+            }
+          },
+          "position": {
+            "startLine": 115,
+            "startColumn": 25,
+            "endLine": 115,
+            "endColumn": 55
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/page": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/page",
+          "name": "page",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery/parameter/page",
+            "name": "page",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 187,
+              "startColumn": 57,
+              "endLine": 187,
+              "endColumn": 69
+            }
+          },
+          "position": {
+            "startLine": 115,
+            "startColumn": 57,
+            "endLine": 115,
+            "endColumn": 69
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/search": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/search",
+          "name": "search",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery/parameter/search",
+            "name": "search",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 187,
+              "startColumn": 71,
+              "endLine": 187,
+              "endColumn": 93
+            }
+          },
+          "position": {
+            "startLine": 115,
+            "startColumn": 71,
+            "endLine": 115,
+            "endColumn": 93
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 2
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery-filteroptionssearch": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery-filteroptionssearch",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "from_class_or_interface_name": "AppFeedbackChatHelper",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper",
+      "from_method_name": "buildCountQuery",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "to_class_or_interface_name": "AppFeedbackChatHelper",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper",
+      "to_method_name": "buildListQuery",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery/parameter/filter": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery/parameter/filter",
+          "name": "filter",
+          "type": "FoodFeedbackChatFilter",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/filter",
+            "name": "filter",
+            "type": "FoodFeedbackChatFilter",
+            "modifiers": [],
+            "position": {
+              "startLine": 115,
+              "startColumn": 25,
+              "endLine": 115,
+              "endColumn": 55
+            }
+          },
+          "position": {
+            "startLine": 132,
+            "startColumn": 26,
+            "endLine": 132,
+            "endColumn": 56
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery/parameter/options": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery/parameter/options",
+          "name": "options",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper\").AppFeedbackListOptions",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/options",
+            "name": "options",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper\").AppFeedbackListOptions",
+            "modifiers": [],
+            "position": {
+              "startLine": 115,
+              "startColumn": 95,
+              "endLine": 115,
+              "endColumn": 131
+            }
+          },
+          "position": {
+            "startLine": 132,
+            "startColumn": 58,
+            "endLine": 132,
+            "endColumn": 94
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery/parameter/search": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildCountQuery/parameter/search",
+          "name": "search",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/search",
+            "name": "search",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 115,
+              "startColumn": 71,
+              "endLine": 115,
+              "endColumn": 93
+            }
+          },
+          "position": {
+            "startLine": 132,
+            "startColumn": 96,
+            "endLine": 132,
+            "endColumn": 118
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 2
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState-apichatIdstate": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState-apichatIdstate",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts",
+      "from_class_or_interface_name": "FoodFeedbackChatActions",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions",
+      "from_method_name": "setConversationState",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts",
+      "to_class_or_interface_name": "SupportChatActions",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions",
+      "to_method_name": "setConversationState",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState/parameter/api": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState/parameter/api",
+          "name": "api",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions\").SupportChatApiClient",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState/parameter/api",
+            "name": "api",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions\").SupportChatApiClient",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 37,
+              "endLine": 28,
+              "endColumn": 62
+            }
+          },
+          "position": {
+            "startLine": 49,
+            "startColumn": 37,
+            "endLine": 49,
+            "endColumn": 63
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState/parameter/chatId": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState/parameter/chatId",
+          "name": "chatId",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState/parameter/chatId",
+            "name": "chatId",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 64,
+              "endLine": 28,
+              "endColumn": 78
+            }
+          },
+          "position": {
+            "startLine": 49,
+            "startColumn": 65,
+            "endLine": 49,
+            "endColumn": 79
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState/parameter/state": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState/parameter/state",
+          "name": "state",
+          "type": "ChatConversationState",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState/parameter/state",
+            "name": "state",
+            "type": "ChatConversationState",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 80,
+              "endLine": 28,
+              "endColumn": 108
+            }
+          },
+          "position": {
+            "startLine": 49,
+            "startColumn": 81,
+            "endLine": 49,
+            "endColumn": 109
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
+        "cluster_type": 2
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery-filterpagesearch": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery-filterpagesearch",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "from_class_or_interface_name": "FoodFeedbackChatHelper",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper",
+      "from_method_name": "buildListQuery",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "to_class_or_interface_name": "AppFeedbackChatHelper",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper",
+      "to_method_name": "buildListQuery",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery/parameter/filter": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery/parameter/filter",
+          "name": "filter",
+          "type": "FoodFeedbackChatFilter",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/filter",
+            "name": "filter",
+            "type": "FoodFeedbackChatFilter",
+            "modifiers": [],
+            "position": {
+              "startLine": 115,
+              "startColumn": 25,
+              "endLine": 115,
+              "endColumn": 55
+            }
+          },
+          "position": {
+            "startLine": 187,
+            "startColumn": 25,
+            "endLine": 187,
+            "endColumn": 55
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery/parameter/page": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery/parameter/page",
+          "name": "page",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/page",
+            "name": "page",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 115,
+              "startColumn": 57,
+              "endLine": 115,
+              "endColumn": 69
+            }
+          },
+          "position": {
+            "startLine": 187,
+            "startColumn": 57,
+            "endLine": 187,
+            "endColumn": 69
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery/parameter/search": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery/parameter/search",
+          "name": "search",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/class/AppFeedbackChatHelper/method/buildListQuery/parameter/search",
+            "name": "search",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 115,
+              "startColumn": 71,
+              "endLine": 115,
+              "endColumn": 93
+            }
+          },
+          "position": {
+            "startLine": 187,
+            "startColumn": 71,
+            "endLine": 187,
+            "endColumn": 93
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 2
+      }
+    },
     "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildCountQuery-filtersearchoptions": {
       "type": "data_clump",
       "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildCountQuery-filtersearchoptions",
@@ -282,7 +767,7 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 2,
-        "cluster_type": 1
+        "cluster_type": 2
       }
     },
     "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildCountQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/class/FoodFeedbackChatHelper/method/buildListQuery-filteroptionssearch": {
@@ -379,7 +864,104 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 2,
-        "cluster_type": 1
+        "cluster_type": 2
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState-apichatIdstate": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState-apichatIdstate",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts",
+      "from_class_or_interface_name": "SupportChatActions",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions",
+      "from_method_name": "setConversationState",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts",
+      "to_class_or_interface_name": "FoodFeedbackChatActions",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions",
+      "to_method_name": "setConversationState",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState/parameter/api": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState/parameter/api",
+          "name": "api",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions\").SupportChatApiClient",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState/parameter/api",
+            "name": "api",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions\").SupportChatApiClient",
+            "modifiers": [],
+            "position": {
+              "startLine": 49,
+              "startColumn": 37,
+              "endLine": 49,
+              "endColumn": 63
+            }
+          },
+          "position": {
+            "startLine": 28,
+            "startColumn": 37,
+            "endLine": 28,
+            "endColumn": 62
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState/parameter/chatId": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState/parameter/chatId",
+          "name": "chatId",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState/parameter/chatId",
+            "name": "chatId",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 49,
+              "startColumn": 65,
+              "endLine": 49,
+              "endColumn": 79
+            }
+          },
+          "position": {
+            "startLine": 28,
+            "startColumn": 64,
+            "endLine": 28,
+            "endColumn": 78
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState/parameter/state": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts/class/SupportChatActions/method/setConversationState/parameter/state",
+          "name": "state",
+          "type": "ChatConversationState",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatActions.ts/class/FoodFeedbackChatActions/method/setConversationState/parameter/state",
+            "name": "state",
+            "type": "ChatConversationState",
+            "modifiers": [],
+            "position": {
+              "startLine": 49,
+              "startColumn": 81,
+              "endLine": 49,
+              "endColumn": 109
+            }
+          },
+          "position": {
+            "startLine": 28,
+            "startColumn": 80,
+            "endLine": 28,
+            "endColumn": 108
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
+        "cluster_type": 2
       }
     },
     "parameters_to_fields_data_clump-apps/frontend/app/components/IBANInput/IBANInput.tsx-apps/frontend/app/components/IBANInput/IBANInput.tsx/interface/IBANInputProps/method/onChange-apps/frontend/app/components/IBANInput/IBANInput.tsx/interface/IBANInputProps-idvaluecustom_type": {
@@ -475,7 +1057,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 3,
+        "cluster_id": 4,
         "cluster_type": 1
       }
     },
@@ -572,7 +1154,129 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-fieldsfiltersortlimit": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-fieldsfiltersortlimit",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery",
+      "from_class_or_interface_name": "ExtendedListRestQuery",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery",
+      "to_class_or_interface_name": "LivePulseQuery",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/fields": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/fields",
+          "name": "fields",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/fields",
+            "name": "fields",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 101,
+              "startColumn": 3,
+              "endLine": 101,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 35,
+            "startColumn": 3,
+            "endLine": 35,
+            "endColumn": 18
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/filter": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/filter",
+          "name": "filter",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/filter",
+            "name": "filter",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 102,
+              "startColumn": 3,
+              "endLine": 102,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 36,
+            "startColumn": 3,
+            "endLine": 36,
+            "endColumn": 18
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/sort": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/sort",
+          "name": "sort",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/sort",
+            "name": "sort",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 103,
+              "startColumn": 3,
+              "endLine": 103,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 37,
+            "startColumn": 3,
+            "endLine": 37,
+            "endColumn": 16
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/limit": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/limit",
+          "name": "limit",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/limit",
+            "name": "limit",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 104,
+              "startColumn": 3,
+              "endLine": 104,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 38,
+            "startColumn": 3,
+            "endLine": 38,
+            "endColumn": 17
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 6,
         "cluster_type": 2
       }
     },
@@ -694,7 +1398,2247 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 5,
+        "cluster_id": 7,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage-iddate_createdprofile": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage-iddate_createdprofile",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
+      "from_class_or_interface_name": "AppFeedbackListItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage",
+      "to_class_or_interface_name": "FoodFeedbackChatMessage",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 38,
+              "startColumn": 3,
+              "endLine": 38,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 3,
+            "endLine": 24,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 40,
+              "startColumn": 3,
+              "endLine": 40,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 37,
+            "startColumn": 3,
+            "endLine": 37,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/profile": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/profile",
+          "name": "profile",
+          "type": "{ id: string } | string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage/memberField/profile",
+            "name": "profile",
+            "type": "{ id: string } | string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 41,
+              "startColumn": 3,
+              "endLine": 41,
+              "endColumn": 44
+            }
+          },
+          "position": {
+            "startLine": 39,
+            "startColumn": 3,
+            "endLine": 39,
+            "endColumn": 44
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-iddate_createddate_updatedchat": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-iddate_createddate_updatedchat",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
+      "from_class_or_interface_name": "AppFeedbackListItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem",
+      "to_class_or_interface_name": "FoodFeedbackListItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 3,
+              "endLine": 26,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 3,
+            "endLine": 24,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 3,
+              "endLine": 29,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 37,
+            "startColumn": 3,
+            "endLine": 37,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_updated": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_updated",
+          "name": "date_updated",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_updated",
+            "name": "date_updated",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 3,
+              "endLine": 30,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 38,
+            "startColumn": 3,
+            "endLine": 38,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/chat": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/chat",
+          "name": "chat",
+          "type": "{ id: string; conversation_state?: string | null; date_updated?: string | null } | string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/chat",
+            "name": "chat",
+            "type": "{ id: string; conversation_state?: string | null; date_updated?: string | null } | string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 34,
+              "startColumn": 3,
+              "endLine": 34,
+              "endColumn": 107
+            }
+          },
+          "position": {
+            "startLine": 40,
+            "startColumn": 3,
+            "endLine": 40,
+            "endColumn": 107
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-iddate_createddate_updated": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-iddate_createddate_updated",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
+      "from_class_or_interface_name": "AppFeedbackListItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback",
+      "to_class_or_interface_name": "LivePulseFoodFeedback",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 54,
+              "startColumn": 3,
+              "endLine": 54,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 3,
+            "endLine": 24,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 57,
+              "startColumn": 3,
+              "endLine": 57,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 37,
+            "startColumn": 3,
+            "endLine": 37,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_updated": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_updated",
+          "name": "date_updated",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_updated",
+            "name": "date_updated",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 58,
+              "startColumn": 3,
+              "endLine": 58,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 38,
+            "startColumn": 3,
+            "endLine": 38,
+            "endColumn": 32
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-iddate_createddate_updated": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-iddate_createddate_updated",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
+      "from_class_or_interface_name": "AppFeedbackListItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile",
+      "to_class_or_interface_name": "LivePulseProfile",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 44,
+              "startColumn": 3,
+              "endLine": 44,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 3,
+            "endLine": 24,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 48,
+              "startColumn": 3,
+              "endLine": 48,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 37,
+            "startColumn": 3,
+            "endLine": 37,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_updated": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_updated",
+          "name": "date_updated",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_updated",
+            "name": "date_updated",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 47,
+              "startColumn": 3,
+              "endLine": 47,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 38,
+            "startColumn": 3,
+            "endLine": 38,
+            "endColumn": 32
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat-titlecontentsource_identifierresponse": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat-titlecontentsource_identifierresponse",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
+      "from_class_or_interface_name": "AppFeedbackListItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common/src/AppFeedbackChatStatusHelper.ts",
+      "to_class_or_interface_key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat",
+      "to_class_or_interface_name": "AppFeedbackWithChat",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/title": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/title",
+          "name": "title",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/title",
+            "name": "title",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 3,
+              "endLine": 10,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 3,
+            "endLine": 25,
+            "endColumn": 25
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/content": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/content",
+          "name": "content",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/content",
+            "name": "content",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 3,
+              "endLine": 11,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 3,
+            "endLine": 26,
+            "endColumn": 27
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/source_identifier": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/source_identifier",
+          "name": "source_identifier",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/source_identifier",
+            "name": "source_identifier",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 3,
+              "endLine": 12,
+              "endColumn": 37
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 3,
+            "endLine": 30,
+            "endColumn": 37
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/response": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/response",
+          "name": "response",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/response",
+            "name": "response",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 14,
+              "startColumn": 3,
+              "endLine": 14,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 33,
+            "startColumn": 3,
+            "endLine": 33,
+            "endColumn": 28
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-iddate_createdprofile": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-iddate_createdprofile",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage",
+      "from_class_or_interface_name": "FoodFeedbackChatMessage",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
+      "to_class_or_interface_name": "AppFeedbackListItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 3,
+              "endLine": 24,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 38,
+            "startColumn": 3,
+            "endLine": 38,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 37,
+              "startColumn": 3,
+              "endLine": 37,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 40,
+            "startColumn": 3,
+            "endLine": 40,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage/memberField/profile": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage/memberField/profile",
+          "name": "profile",
+          "type": "{ id: string } | string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/profile",
+            "name": "profile",
+            "type": "{ id: string } | string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 39,
+              "startColumn": 3,
+              "endLine": 39,
+              "endColumn": 44
+            }
+          },
+          "position": {
+            "startLine": 41,
+            "startColumn": 3,
+            "endLine": 41,
+            "endColumn": 44
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-iddate_createddate_updatedchat": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-iddate_createddate_updatedchat",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem",
+      "from_class_or_interface_name": "FoodFeedbackListItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
+      "to_class_or_interface_name": "AppFeedbackListItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 3,
+              "endLine": 24,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 3,
+            "endLine": 26,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 37,
+              "startColumn": 3,
+              "endLine": 37,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_updated": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_updated",
+          "name": "date_updated",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_updated",
+            "name": "date_updated",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 38,
+              "startColumn": 3,
+              "endLine": 38,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 3,
+            "endLine": 30,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/chat": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/chat",
+          "name": "chat",
+          "type": "{ id: string; conversation_state?: string | null; date_updated?: string | null } | string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/chat",
+            "name": "chat",
+            "type": "{ id: string; conversation_state?: string | null; date_updated?: string | null } | string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 40,
+              "startColumn": 3,
+              "endLine": 40,
+              "endColumn": 107
+            }
+          },
+          "position": {
+            "startLine": 34,
+            "startColumn": 3,
+            "endLine": 34,
+            "endColumn": 107
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit-iddate_createdcanteen": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit-iddate_createdcanteen",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem",
+      "from_class_or_interface_name": "FoodFeedbackListItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit",
+      "to_class_or_interface_name": "LivePulseCanteenVisit",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 65,
+              "startColumn": 3,
+              "endLine": 65,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 3,
+            "endLine": 26,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 67,
+              "startColumn": 3,
+              "endLine": 67,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/canteen": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/canteen",
+          "name": "canteen",
+          "type": "{ id: string; alias?: string | null } | string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/canteen",
+            "name": "canteen",
+            "type": "{ id: string; alias?: string | null } | string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 68,
+              "startColumn": 3,
+              "endLine": 68,
+              "endColumn": 67
+            }
+          },
+          "position": {
+            "startLine": 32,
+            "startColumn": 3,
+            "endLine": 32,
+            "endColumn": 67
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-idcommentratingdate_createddate_updatedcanteen": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-idcommentratingdate_createddate_updatedcanteen",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem",
+      "from_class_or_interface_name": "FoodFeedbackListItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback",
+      "to_class_or_interface_name": "LivePulseFoodFeedback",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 54,
+              "startColumn": 3,
+              "endLine": 54,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 3,
+            "endLine": 26,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/comment": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/comment",
+          "name": "comment",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/comment",
+            "name": "comment",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 56,
+              "startColumn": 3,
+              "endLine": 56,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 3,
+            "endLine": 27,
+            "endColumn": 27
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/rating": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/rating",
+          "name": "rating",
+          "type": "number | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/rating",
+            "name": "rating",
+            "type": "number | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 55,
+              "startColumn": 3,
+              "endLine": 55,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 28,
+            "startColumn": 3,
+            "endLine": 28,
+            "endColumn": 26
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 57,
+              "startColumn": 3,
+              "endLine": 57,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_updated": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_updated",
+          "name": "date_updated",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_updated",
+            "name": "date_updated",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 58,
+              "startColumn": 3,
+              "endLine": 58,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 3,
+            "endLine": 30,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/canteen": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/canteen",
+          "name": "canteen",
+          "type": "{ id: string; alias?: string | null } | string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/canteen",
+            "name": "canteen",
+            "type": "{ id: string; alias?: string | null } | string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 60,
+              "startColumn": 3,
+              "endLine": 60,
+              "endColumn": 67
+            }
+          },
+          "position": {
+            "startLine": 32,
+            "startColumn": 3,
+            "endLine": 32,
+            "endColumn": 67
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-iddate_createddate_updated": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-iddate_createddate_updated",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem",
+      "from_class_or_interface_name": "FoodFeedbackListItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile",
+      "to_class_or_interface_name": "LivePulseProfile",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 44,
+              "startColumn": 3,
+              "endLine": 44,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 3,
+            "endLine": 26,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 48,
+              "startColumn": 3,
+              "endLine": 48,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_updated": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_updated",
+          "name": "date_updated",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_updated",
+            "name": "date_updated",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 47,
+              "startColumn": 3,
+              "endLine": 47,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 3,
+            "endLine": 30,
+            "endColumn": 32
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-iddate_createdcanteen": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-iddate_createdcanteen",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit",
+      "from_class_or_interface_name": "LivePulseCanteenVisit",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem",
+      "to_class_or_interface_name": "FoodFeedbackListItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 3,
+              "endLine": 26,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 65,
+            "startColumn": 3,
+            "endLine": 65,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 3,
+              "endLine": 29,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 67,
+            "startColumn": 3,
+            "endLine": 67,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/canteen": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/canteen",
+          "name": "canteen",
+          "type": "{ id: string; alias?: string | null } | string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/canteen",
+            "name": "canteen",
+            "type": "{ id: string; alias?: string | null } | string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 32,
+              "startColumn": 3,
+              "endLine": 32,
+              "endColumn": 67
+            }
+          },
+          "position": {
+            "startLine": 68,
+            "startColumn": 3,
+            "endLine": 68,
+            "endColumn": 67
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-iddate_createdcanteenprofile": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-iddate_createdcanteenprofile",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit",
+      "from_class_or_interface_name": "LivePulseCanteenVisit",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback",
+      "to_class_or_interface_name": "LivePulseFoodFeedback",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 54,
+              "startColumn": 3,
+              "endLine": 54,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 65,
+            "startColumn": 3,
+            "endLine": 65,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 57,
+              "startColumn": 3,
+              "endLine": 57,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 67,
+            "startColumn": 3,
+            "endLine": 67,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/canteen": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/canteen",
+          "name": "canteen",
+          "type": "{ id: string; alias?: string | null } | string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/canteen",
+            "name": "canteen",
+            "type": "{ id: string; alias?: string | null } | string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 60,
+              "startColumn": 3,
+              "endLine": 60,
+              "endColumn": 67
+            }
+          },
+          "position": {
+            "startLine": 68,
+            "startColumn": 3,
+            "endLine": 68,
+            "endColumn": 67
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/profile": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/profile",
+          "name": "profile",
+          "type": "RelatedProfile",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/profile",
+            "name": "profile",
+            "type": "RelatedProfile",
+            "modifiers": [],
+            "position": {
+              "startLine": 61,
+              "startColumn": 3,
+              "endLine": 61,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 69,
+            "startColumn": 3,
+            "endLine": 69,
+            "endColumn": 28
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-iddate_createddate_updated": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-iddate_createddate_updated",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback",
+      "from_class_or_interface_name": "LivePulseFoodFeedback",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
+      "to_class_or_interface_name": "AppFeedbackListItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 3,
+              "endLine": 24,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 54,
+            "startColumn": 3,
+            "endLine": 54,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 37,
+              "startColumn": 3,
+              "endLine": 37,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 57,
+            "startColumn": 3,
+            "endLine": 57,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_updated": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_updated",
+          "name": "date_updated",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_updated",
+            "name": "date_updated",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 38,
+              "startColumn": 3,
+              "endLine": 38,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 58,
+            "startColumn": 3,
+            "endLine": 58,
+            "endColumn": 32
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-idratingcommentdate_createddate_updatedcanteen": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-idratingcommentdate_createddate_updatedcanteen",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback",
+      "from_class_or_interface_name": "LivePulseFoodFeedback",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem",
+      "to_class_or_interface_name": "FoodFeedbackListItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 3,
+              "endLine": 26,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 54,
+            "startColumn": 3,
+            "endLine": 54,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/rating": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/rating",
+          "name": "rating",
+          "type": "number | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/rating",
+            "name": "rating",
+            "type": "number | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 3,
+              "endLine": 28,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 55,
+            "startColumn": 3,
+            "endLine": 55,
+            "endColumn": 26
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/comment": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/comment",
+          "name": "comment",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/comment",
+            "name": "comment",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 3,
+              "endLine": 27,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 56,
+            "startColumn": 3,
+            "endLine": 56,
+            "endColumn": 27
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 3,
+              "endLine": 29,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 57,
+            "startColumn": 3,
+            "endLine": 57,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_updated": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_updated",
+          "name": "date_updated",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_updated",
+            "name": "date_updated",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 3,
+              "endLine": 30,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 58,
+            "startColumn": 3,
+            "endLine": 58,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/canteen": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/canteen",
+          "name": "canteen",
+          "type": "{ id: string; alias?: string | null } | string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/canteen",
+            "name": "canteen",
+            "type": "{ id: string; alias?: string | null } | string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 32,
+              "startColumn": 3,
+              "endLine": 32,
+              "endColumn": 67
+            }
+          },
+          "position": {
+            "startLine": 60,
+            "startColumn": 3,
+            "endLine": 60,
+            "endColumn": 67
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit-iddate_createdcanteenprofile": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit-iddate_createdcanteenprofile",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback",
+      "from_class_or_interface_name": "LivePulseFoodFeedback",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit",
+      "to_class_or_interface_name": "LivePulseCanteenVisit",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 65,
+              "startColumn": 3,
+              "endLine": 65,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 54,
+            "startColumn": 3,
+            "endLine": 54,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 67,
+              "startColumn": 3,
+              "endLine": 67,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 57,
+            "startColumn": 3,
+            "endLine": 57,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/canteen": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/canteen",
+          "name": "canteen",
+          "type": "{ id: string; alias?: string | null } | string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/canteen",
+            "name": "canteen",
+            "type": "{ id: string; alias?: string | null } | string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 68,
+              "startColumn": 3,
+              "endLine": 68,
+              "endColumn": 67
+            }
+          },
+          "position": {
+            "startLine": 60,
+            "startColumn": 3,
+            "endLine": 60,
+            "endColumn": 67
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/profile": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/profile",
+          "name": "profile",
+          "type": "RelatedProfile",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit/memberField/profile",
+            "name": "profile",
+            "type": "RelatedProfile",
+            "modifiers": [],
+            "position": {
+              "startLine": 69,
+              "startColumn": 3,
+              "endLine": 69,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 61,
+            "startColumn": 3,
+            "endLine": 61,
+            "endColumn": 28
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-iddate_createddate_updated": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-iddate_createddate_updated",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback",
+      "from_class_or_interface_name": "LivePulseFoodFeedback",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile",
+      "to_class_or_interface_name": "LivePulseProfile",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 44,
+              "startColumn": 3,
+              "endLine": 44,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 54,
+            "startColumn": 3,
+            "endLine": 54,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 48,
+              "startColumn": 3,
+              "endLine": 48,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 57,
+            "startColumn": 3,
+            "endLine": 57,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_updated": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_updated",
+          "name": "date_updated",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_updated",
+            "name": "date_updated",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 47,
+              "startColumn": 3,
+              "endLine": 47,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 58,
+            "startColumn": 3,
+            "endLine": 58,
+            "endColumn": 32
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-iddate_updateddate_created": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-iddate_updateddate_created",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile",
+      "from_class_or_interface_name": "LivePulseProfile",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
+      "to_class_or_interface_name": "AppFeedbackListItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 3,
+              "endLine": 24,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 44,
+            "startColumn": 3,
+            "endLine": 44,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_updated": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_updated",
+          "name": "date_updated",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_updated",
+            "name": "date_updated",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 38,
+              "startColumn": 3,
+              "endLine": 38,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 47,
+            "startColumn": 3,
+            "endLine": 47,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 37,
+              "startColumn": 3,
+              "endLine": 37,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 48,
+            "startColumn": 3,
+            "endLine": 48,
+            "endColumn": 32
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-iddate_updateddate_created": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-iddate_updateddate_created",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile",
+      "from_class_or_interface_name": "LivePulseProfile",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem",
+      "to_class_or_interface_name": "FoodFeedbackListItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 3,
+              "endLine": 26,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 44,
+            "startColumn": 3,
+            "endLine": 44,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_updated": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_updated",
+          "name": "date_updated",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_updated",
+            "name": "date_updated",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 3,
+              "endLine": 30,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 47,
+            "startColumn": 3,
+            "endLine": 47,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 3,
+              "endLine": 29,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 48,
+            "startColumn": 3,
+            "endLine": 48,
+            "endColumn": 32
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-iddate_updateddate_created": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-iddate_updateddate_created",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile",
+      "from_class_or_interface_name": "LivePulseProfile",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback",
+      "to_class_or_interface_name": "LivePulseFoodFeedback",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 54,
+              "startColumn": 3,
+              "endLine": 54,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 44,
+            "startColumn": 3,
+            "endLine": 44,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_updated": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_updated",
+          "name": "date_updated",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_updated",
+            "name": "date_updated",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 58,
+              "startColumn": 3,
+              "endLine": 58,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 47,
+            "startColumn": 3,
+            "endLine": 47,
+            "endColumn": 32
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 57,
+              "startColumn": 3,
+              "endLine": 57,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 48,
+            "startColumn": 3,
+            "endLine": 48,
+            "endColumn": 32
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-fieldsfiltersortlimit": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-fieldsfiltersortlimit",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery",
+      "from_class_or_interface_name": "LivePulseQuery",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery",
+      "to_class_or_interface_name": "ExtendedListRestQuery",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/fields": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/fields",
+          "name": "fields",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/fields",
+            "name": "fields",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 35,
+              "startColumn": 3,
+              "endLine": 35,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 101,
+            "startColumn": 3,
+            "endLine": 101,
+            "endColumn": 19
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/filter": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/filter",
+          "name": "filter",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/filter",
+            "name": "filter",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 36,
+              "startColumn": 3,
+              "endLine": 36,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 102,
+            "startColumn": 3,
+            "endLine": 102,
+            "endColumn": 19
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/sort": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/sort",
+          "name": "sort",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/sort",
+            "name": "sort",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 37,
+              "startColumn": 3,
+              "endLine": 37,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 103,
+            "startColumn": 3,
+            "endLine": 103,
+            "endColumn": 17
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/limit": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/limit",
+          "name": "limit",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/limit",
+            "name": "limit",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 38,
+              "startColumn": 3,
+              "endLine": 38,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 104,
+            "startColumn": 3,
+            "endLine": 104,
+            "endColumn": 18
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 6,
         "cluster_type": 2
       }
     },
@@ -791,7 +3735,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 2
       }
     },
@@ -913,7 +3857,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 5,
+        "cluster_id": 7,
         "cluster_type": 2
       }
     },
@@ -1010,8 +3954,130 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 6,
+        "cluster_id": 9,
         "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common/src/AppFeedbackChatStatusHelper.ts-packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-titlecontentsource_identifierresponse": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common/src/AppFeedbackChatStatusHelper.ts-packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-titlecontentsource_identifierresponse",
+      "probability": 1,
+      "from_file_path": "packages/common/src/AppFeedbackChatStatusHelper.ts",
+      "from_class_or_interface_key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat",
+      "from_class_or_interface_name": "AppFeedbackWithChat",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
+      "to_class_or_interface_name": "AppFeedbackListItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/title": {
+          "key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/title",
+          "name": "title",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/title",
+            "name": "title",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 3,
+              "endLine": 25,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 3,
+            "endLine": 10,
+            "endColumn": 25
+          }
+        },
+        "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/content": {
+          "key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/content",
+          "name": "content",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/content",
+            "name": "content",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 3,
+              "endLine": 26,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 3,
+            "endLine": 11,
+            "endColumn": 27
+          }
+        },
+        "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/source_identifier": {
+          "key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/source_identifier",
+          "name": "source_identifier",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/source_identifier",
+            "name": "source_identifier",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 3,
+              "endLine": 30,
+              "endColumn": 37
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 3,
+            "endLine": 12,
+            "endColumn": 37
+          }
+        },
+        "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/response": {
+          "key": "packages/common/src/AppFeedbackChatStatusHelper.ts/interface/AppFeedbackWithChat/memberField/response",
+          "name": "response",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/response",
+            "name": "response",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 33,
+              "startColumn": 3,
+              "endLine": 33,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 14,
+            "startColumn": 3,
+            "endLine": 14,
+            "endColumn": 28
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-packages/common/src/LicenseEntry.ts-packages/common/src/LicenseEntry.ts/interface/LicenseEntry-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts-licenserepositorylicenseUrl": {
@@ -1107,7 +4173,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 6,
+        "cluster_id": 9,
         "cluster_type": 2
       }
     },
@@ -1216,7 +4282,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 7,
+        "cluster_id": 10,
         "cluster_type": 2
       }
     },
@@ -1325,7 +4391,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 7,
+        "cluster_id": 10,
         "cluster_type": 2
       }
     },
@@ -1422,7 +4488,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 8,
+        "cluster_id": 11,
         "cluster_type": 2
       }
     },
@@ -1519,7 +4585,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 8,
+        "cluster_id": 11,
         "cluster_type": 2
       }
     }

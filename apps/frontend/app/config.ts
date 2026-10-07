@@ -191,7 +191,17 @@ export function getVersionPatch() {
         // 83: MCP instruction: providers, steps and token flow from common McpInstructionHelper, texts in commonTranslations
         // 84: chat: the initial message (e.g. a food feedback comment) is shown as a labelled
         //     context card instead of a bubble, so it is not taken for a message of either side
-        return 89;
+        // 85: common: AppFeedbackChatStatusHelper (status, filters and chat of app feedbacks)
+        // 86: common-ui: avatar SVG generation moved to MyAvatar/AvatarSvg (no react-native), shared with the backend
+        // 87: profiles.date_updated is also set on app start (web too) and when the app returns to the foreground
+        // 88: an expired login is detected (sign in again) instead of silently continuing as the
+        //     public role; a failed token refresh while offline no longer drops the session
+        // 89: feedback app-state snapshot carries __session (token flags and expiry, no values)
+        // 90: logout no longer fails with "database is locked"; device updates no longer send the
+        //     display_group layout field (403 on tenants whose User policy does not list it)
+        // 91: debug view: session state, expire access token, invalidate refresh token
+        // 92: course timetable redesign (common-ui: MyCalendarMonth in SettingsListDate, MyColorSelection, SettingsListColor)
+        return 92;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

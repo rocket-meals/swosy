@@ -36,12 +36,15 @@ console.error = message => {
  * path into the package does not, because the resolver of the extension build does not try `.ts`.
  * Code that is also bundled into the Directus app (the "[Erweitert]" Insights panels) imports such
  * paths on purpose: the package index would pull moment-timezone and friends into the browser.
+ *
+ * The same goes for `repo-depkit-common-ui`: the module page "Live-Puls" deep-imports the avatar
+ * SVG helper, the package index would pull in React Native.
  */
-const repoDepkitCommonDeepImports = () => {
-  const prefix = 'repo-depkit-common/';
-  const packageRoot = fileURLToPath(new URL('../../../../../packages/common/', import.meta.url));
+const workspaceDeepImports = (packageName, packageFolder) => {
+  const prefix = `${packageName}/`;
+  const packageRoot = fileURLToPath(new URL(`../../../../../packages/${packageFolder}/`, import.meta.url));
   return {
-    name: 'repo-depkit-common-deep-imports',
+    name: `${packageName}-deep-imports`,
     resolveId(source) {
       if (!source.startsWith(prefix)) {
         return null;
@@ -80,7 +83,7 @@ const jsPdfOptionalDependencies = () => {
 };
 
 export default {
-  plugins: [repoDepkitCommonDeepImports(), jsPdfOptionalDependencies()],
+  plugins: [workspaceDeepImports('repo-depkit-common', 'common'), workspaceDeepImports('repo-depkit-common-ui', 'common-ui'), jsPdfOptionalDependencies()],
   onwarn(warning, warn) {
     if (warning.code === 'THIS_IS_UNDEFINED' && warning.loc?.file && (warning.loc.file.includes('puppeteer-core') || warning.loc.file.includes('yargs'))) {
       return; // Suppress Puppeteer & Yargs 'this' warnings

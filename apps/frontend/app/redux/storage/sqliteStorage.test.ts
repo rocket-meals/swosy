@@ -156,6 +156,23 @@ describe('sqliteStorage', () => {
 		expect(await sqliteKeyValueStorage.getItem('c')).toBeNull();
 	});
 
+	it('multiRemove stays on the shared connection (no exclusive transaction that locks the db on logout)', async () => {
+		const { sqliteKeyValueStorage } = require('./sqliteStorage');
+		const { getKvDatabase } = require('repo-depkit-common-ui');
+		await sqliteKeyValueStorage.setItem('auth_data', 'x');
+		await sqliteKeyValueStorage.setItem('persist:root', 'y');
+		await sqliteKeyValueStorage.setItem('keep', 'z');
+		const db = await getKvDatabase.mock.results[getKvDatabase.mock.results.length - 1].value;
+		db.withExclusiveTransactionAsync.mockClear();
+
+		await sqliteKeyValueStorage.multiRemove(['auth_data', 'persist:root']);
+
+		expect(db.withExclusiveTransactionAsync).not.toHaveBeenCalled();
+		expect(await sqliteKeyValueStorage.getItem('auth_data')).toBeNull();
+		expect(await sqliteKeyValueStorage.getItem('persist:root')).toBeNull();
+		expect(await sqliteKeyValueStorage.getItem('keep')).toBe('z');
+	});
+
 	it('the redux-persist Storage adapter (sqliteStorage) reads migrated data too', async () => {
 		mockAsyncStorageRows['persist:root'] = '{"a":1}';
 		const { sqliteStorage } = require('./sqliteStorage');

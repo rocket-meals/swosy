@@ -1,6 +1,7 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Your helper
- // Your API client
+import { IncompleteProfileError, isProfileReadAsOwner } from '@/helper/authSessionHelper';
+import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 	constructor(client?: any) {
@@ -32,7 +33,15 @@ export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 		const query = { ...defaultQuery, ...queryOverride };
 
 		// Fetch profile by ID from the server
-		return await this.readItem(id, query);
+		const profile = await this.readItem(id, query);
+		// Without a valid session the request runs as the public role, which may only read a
+		// handful of fields. Callers dispatch the result as the whole profile, so an
+		// incomplete response would wipe the local eating habits and canteen - refuse it.
+		if (!queryOverride?.fields && profile && !isProfileReadAsOwner(profile)) {
+			ServerAPI.notifySessionInvalid();
+			throw new IncompleteProfileError();
+		}
+		return profile;
 	}
 
 	async updateProfile(profileData: any) {
@@ -42,6 +51,15 @@ export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 		// "verified" is readable but not writable for users (set by the server/admins);
 		// sending it back would reject the whole update with 403
 		delete profileData.verified;
+		// `display_group` is only a field group in the Directus layout, not a column. Tenants whose
+		// User policy does not list it reject the whole update with 403 (seen on SWOSY).
+		if (Array.isArray(profileData.devices)) {
+			profileData.devices = profileData.devices.map((device: any) => {
+				if (!device || typeof device !== 'object' || !('display_group' in device)) return device;
+				const { display_group, ...rest } = device;
+				return rest;
+			});
+		}
 
 		await this.updateItem(profileData?.id, profileData);
 

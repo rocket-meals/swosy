@@ -35,6 +35,14 @@ export type AppStateSanitizeOptions = {
 	maxTotalLength?: number;
 };
 
+export type AppStateJsonForFeedbackOptions = AppStateSanitizeOptions & {
+	/**
+	 * Login session flags (see buildSessionDiagnostics), added as `__session`. The tokens are
+	 * not part of the redux state, so without this the snapshot cannot show a dead session.
+	 */
+	session?: unknown;
+};
+
 export type AppStateSanitizeSummary = {
 	/** How many `translations` / `*_translations` fields were dropped. */
 	removedTranslationFields: number;
@@ -57,6 +65,18 @@ const TRUNCATION_SUFFIX = '…[truncated]';
  */
 export function isTranslationField(key: string): boolean {
 	return key === 'translations' || key.endsWith('_translations');
+}
+
+/**
+ * Fields that hold credentials. The Directus user object carries the SSO provider's refresh
+ * token in `auth_data` - it ended up in plain text in the database and in the support mail.
+ */
+const SECRET_FIELDS = new Set(['auth_data', 'token', 'password', 'tfa_secret', 'access_token', 'refresh_token', 'accessToken', 'refreshToken']);
+
+export const REDACTED_VALUE = '[redacted]';
+
+export function isSecretField(key: string): boolean {
+	return SECRET_FIELDS.has(key);
 }
 
 /** Everything that is not an array and not a plain-ish object. */
@@ -152,6 +172,12 @@ function sanitizeObject(value: Record<string, unknown>, options: Required<AppSta
 			summary.removedTranslationFields += 1;
 			continue;
 		}
+		if (isSecretField(key) && entry !== null && entry !== undefined) {
+			// Keep the key so support can still see that a value was set.
+			result[key] = REDACTED_VALUE;
+			size += key.length + 4 + REDACTED_VALUE.length + 2;
+			continue;
+		}
 		const sanitized = sanitizeValue(entry, options, summary, seen, depth + 1);
 		if (sanitized.value === undefined) continue;
 		result[key] = sanitized.value;
@@ -186,11 +212,12 @@ export function sanitizeAppStateForFeedback(state: unknown, options?: AppStateSa
  * Serializes the sanitized app state for the feedback content. The result is capped at
  * `maxTotalLength` characters so a single report can never blow up the feedback mail again.
  */
-export function buildAppStateJsonForFeedback(state: unknown, options?: AppStateSanitizeOptions): string {
+export function buildAppStateJsonForFeedback(state: unknown, options?: AppStateJsonForFeedbackOptions): string {
 	const maxTotalLength = options?.maxTotalLength ?? DEFAULT_MAX_TOTAL_LENGTH;
 	const { state: sanitizedState, summary } = sanitizeAppStateForFeedback(state, options);
 	const isPlainState = sanitizedState !== null && typeof sanitizedState === 'object' && !Array.isArray(sanitizedState);
-	const json = JSON.stringify(isPlainState ? { __sanitized: summary, ...(sanitizedState as object) } : { __sanitized: summary, state: sanitizedState });
+	const meta = options?.session === undefined ? { __sanitized: summary } : { __sanitized: summary, __session: options.session };
+	const json = JSON.stringify(isPlainState ? { ...meta, ...(sanitizedState as object) } : { ...meta, state: sanitizedState });
 	if (json.length <= maxTotalLength) {
 		return json;
 	}

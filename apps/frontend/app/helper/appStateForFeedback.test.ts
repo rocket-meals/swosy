@@ -1,4 +1,4 @@
-import { buildAppStateJsonForFeedback, isTranslationField, sanitizeAppStateForFeedback } from './appStateForFeedback';
+import { buildAppStateJsonForFeedback, isSecretField, isTranslationField, REDACTED_VALUE, sanitizeAppStateForFeedback } from './appStateForFeedback';
 
 /** Builds a catalogue-like collection of entities, each with translations in eight languages. */
 const buildBuildings = (count: number) =>
@@ -91,6 +91,29 @@ describe('sanitizeAppStateForFeedback', () => {
 		expect((state as any).food.ownFoodFeedbacks).toEqual(ownFoodFeedbacks);
 	});
 
+	it('redacts credentials such as the SSO refresh token in auth_data', () => {
+		const { state } = sanitizeAppStateForFeedback({
+			authReducer: {
+				user: { id: 'user-1', provider: 'apple', auth_data: { refreshToken: 'secret-apple-token' }, token: null, password: 'hash', tfa_secret: null },
+			},
+		});
+
+		const user = (state as any).authReducer.user;
+		expect(user.auth_data).toBe(REDACTED_VALUE);
+		expect(user.password).toBe(REDACTED_VALUE);
+		// Unset values stay null so support can see that nothing was set.
+		expect(user.token).toBeNull();
+		expect(user.tfa_secret).toBeNull();
+		expect(user.provider).toBe('apple');
+		expect(JSON.stringify(state)).not.toContain('secret-apple-token');
+	});
+
+	it('detects secret fields', () => {
+		expect(isSecretField('auth_data')).toBe(true);
+		expect(isSecretField('refresh_token')).toBe(true);
+		expect(isSecretField('provider')).toBe(false);
+	});
+
 	it('shortens very long texts', () => {
 		const { state, summary } = sanitizeAppStateForFeedback({ settings: { wiki: 'x'.repeat(5000) } }, { maxStringLength: 100 });
 
@@ -117,6 +140,18 @@ describe('sanitizeAppStateForFeedback', () => {
 });
 
 describe('buildAppStateJsonForFeedback', () => {
+	it('adds the session flags as __session next to the summary', () => {
+		const session = { hasRefreshToken: false, hasAccessToken: false, accessTokenExpiresAt: null, accessTokenExpired: null };
+		const parsed = JSON.parse(buildAppStateJsonForFeedback({ authReducer: { loggedIn: true } }, { session }));
+
+		expect(parsed.__session).toEqual(session);
+		expect(parsed.authReducer).toEqual({ loggedIn: true });
+	});
+
+	it('leaves __session out when no session was passed', () => {
+		expect(JSON.parse(buildAppStateJsonForFeedback({ settings: {} }))).not.toHaveProperty('__session');
+	});
+
 	it('produces valid JSON with a summary of what was dropped', () => {
 		const json = buildAppStateJsonForFeedback({
 			canteenReducer: { buildings: buildBuildings(200) },
