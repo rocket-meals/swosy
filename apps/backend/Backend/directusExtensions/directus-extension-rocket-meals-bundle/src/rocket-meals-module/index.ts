@@ -3,6 +3,8 @@ import { RocketMealsModulePages } from '../helpers/rocket-meals-module/RocketMea
 import OverviewPage from './overview-page.vue';
 import FoodFeedbacksPage from './food-feedbacks/food-feedbacks-page.vue';
 import FoodFeedbackChatPage from './food-feedbacks/food-feedback-chat-page.vue';
+import AppFeedbacksPage from './app-feedbacks/app-feedbacks-page.vue';
+import AppFeedbackChatPage from './app-feedbacks/app-feedback-chat-page.vue';
 import McpInstructionPage from './mcp-instruction/mcp-instruction-page.vue';
 
 /**
@@ -29,6 +31,15 @@ export default defineModule({
     {
       path: `${RocketMealsModulePages.FOOD_FEEDBACKS.path}/:feedbackId`,
       component: FoodFeedbackChatPage,
+      props: true,
+    },
+    {
+      path: RocketMealsModulePages.APP_FEEDBACKS.path,
+      component: AppFeedbacksPage,
+    },
+    {
+      path: `${RocketMealsModulePages.APP_FEEDBACKS.path}/:feedbackId`,
+      component: AppFeedbackChatPage,
       props: true,
     },
     {

@@ -191,7 +191,8 @@ export function getVersionPatch() {
         // 83: MCP instruction: providers, steps and token flow from common McpInstructionHelper, texts in commonTranslations
         // 84: chat: the initial message (e.g. a food feedback comment) is shown as a labelled
         //     context card instead of a bubble, so it is not taken for a message of either side
-        return 84;
+        // 85: common: AppFeedbackChatStatusHelper (status, filters and chat of app feedbacks)
+        return 85;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
