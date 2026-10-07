@@ -202,7 +202,8 @@ export function getVersionPatch() {
         // 91: debug view: session state, expire access token, invalidate refresh token
         // 92: course timetable redesign (common-ui: MyCalendarMonth in SettingsListDate, MyColorSelection, SettingsListColor)
         // 93: course timetable: empty-state import button with a short label; empty state and Stud.IP import sheet use SettingsList rows instead of buttons that cut off their labels
-        return 93;
+        // 94: course timetable: day label is the smart readable date (Heute, Morgen, weekday), navigation and day/week switch in one row
+        return 94;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
