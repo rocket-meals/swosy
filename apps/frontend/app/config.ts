@@ -192,7 +192,8 @@ export function getVersionPatch() {
         // 84: chat: the initial message (e.g. a food feedback comment) is shown as a labelled
         //     context card instead of a bubble, so it is not taken for a message of either side
         // 85: common-ui: avatar SVG generation moved to MyAvatar/AvatarSvg (no react-native), shared with the backend
-        return 85;
+        // 86: profiles.date_updated is also set on app start (web too) and when the app returns to the foreground
+        return 86;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

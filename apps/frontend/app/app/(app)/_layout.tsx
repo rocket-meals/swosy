@@ -54,6 +54,7 @@ import { loadChatReadStatus } from '@/helper/chatReadStatus';
 import { FriendshipsHelper } from '@/redux/actions/Friendships/Friendships';
 import { PriceGroupKey } from '@/app/(app)/settings/types';
 import { UserHelper } from '@/helper/UserHelper';
+import { useProfileActivityTouch } from '@/hooks/useProfileActivityTouch';
 
 const renderDrawerContent = (props: React.ComponentProps<typeof CustomDrawerContent>) => <CustomDrawerContent {...props} />;
 
@@ -137,6 +138,8 @@ export default function Layout() {
 	useEffect(() => {
 		loggedInRef.current = loggedIn;
 	}, [loggedIn]);
+	// Keeps profiles.date_updated current (app start and every return to the foreground) for the backend page "Live-Puls".
+	useProfileActivityTouch(loggedIn ? user : null, user?.profile);
 	const { selectedCanteen: persistedCanteen } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
 

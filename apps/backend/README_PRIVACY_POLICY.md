@@ -168,7 +168,7 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 
 			- date_created - Das Erstelldatum deines Kontos. Dadurch können wir den Zuwachs von Benutzern verfolgen.
 
-			- date_updated - Das letzte Änderungsdatum deines Profils. Es wird bei Änderungen an deinem Profil aktualisiert und zusätzlich, wenn du die App öffnest oder in den Vordergrund holst (höchstens alle paar Minuten). Dadurch können wir nachvollziehen, wann Änderungen getätigt wurden, und wann du zuletzt aktiv warst. Den Zeitpunkt der letzten Aktivität nutzen wir für die Betriebsübersicht für Administratoren (siehe Abschnitt „Betriebsübersicht für Administratoren“).
+			- date_updated - Das letzte Änderungsdatum deines Profils. Es wird bei Änderungen an deinem Profil aktualisiert und zusätzlich, wenn du die App öffnest oder in den Vordergrund holst. Dadurch können wir nachvollziehen, wann Änderungen getätigt wurden, und wann du zuletzt aktiv warst. Den Zeitpunkt der letzten Aktivität nutzen wir für die Betriebsübersicht für Administratoren (siehe Abschnitt „Betriebsübersicht für Administratoren“).
 
 		#### Informationen zu deinem Gerät
 
