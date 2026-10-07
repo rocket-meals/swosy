@@ -22,7 +22,7 @@ const ProjectButton: React.FC<ProjectButtonProps> = ({ text, onPress, iconLeft, 
 	return (
 		<TouchableOpacity style={[styles.container, { backgroundColor: primaryColor }, style]} onPress={onPress}>
 			{iconLeft}
-			<Text style={[styles.label, { color: contrastColor }]}>{text}</Text>
+			<Text style={[styles.label, { color: contrastColor }]} numberOfLines={2}>{text}</Text>
 			{iconRight}
 		</TouchableOpacity>
 	);
@@ -37,11 +37,15 @@ const styles = StyleSheet.create({
 		marginVertical: 20,
 		gap: 10,
 		paddingHorizontal: 18,
-		height: 43,
+		// minHeight instead of height: a label too long for one line wraps instead of being cut off.
+		paddingVertical: 8,
+		minHeight: 43,
 	},
 	label: {
 		fontSize: 16,
 		fontFamily: 'Poppins_400Regular',
+		flexShrink: 1,
+		textAlign: 'center',
 	},
 });
 

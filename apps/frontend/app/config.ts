@@ -201,7 +201,8 @@ export function getVersionPatch() {
         //     display_group layout field (403 on tenants whose User policy does not list it)
         // 91: debug view: session state, expire access token, invalidate refresh token
         // 92: course timetable redesign (common-ui: MyCalendarMonth in SettingsListDate, MyColorSelection, SettingsListColor)
-        return 92;
+        // 93: course timetable: empty-state import button with a short label; ProjectButton wraps long labels instead of cutting them off
+        return 93;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

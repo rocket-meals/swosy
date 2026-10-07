@@ -262,7 +262,7 @@ const CourseTimetableScreen = () => {
 				{events.length === 0 ? (
 					<View style={[styles.emptyInfo, { backgroundColor: theme.screen.iconBg }]}>
 						<MyMarkdownProjectColored content={translate(TranslationKeys.courseTimetableDescriptionEmpty)} />
-						<ProjectButton text={translate(TranslationKeys.course_timetable_reimport)} onPress={openImport} iconLeft={<MaterialCommunityIcons name="cloud-download-outline" size={20} color={primaryText} />} style={styles.importButton} />
+						<ProjectButton text={translate(TranslationKeys.course_timetable_import_studip)} onPress={openImport} iconLeft={<MaterialCommunityIcons name="cloud-download-outline" size={20} color={primaryText} />} style={styles.importButton} />
 					</View>
 				) : null}
 				{viewMode === 'week' ? (
@@ -354,7 +354,8 @@ const styles = StyleSheet.create({
 		paddingBottom: 120,
 	},
 	importButton: {
-		marginVertical: 8,
+		marginTop: 4,
+		marginBottom: 0,
 	},
 	emptyInfo: {
 		borderRadius: 16,
