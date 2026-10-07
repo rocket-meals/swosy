@@ -169,6 +169,29 @@ export class ServerAPI {
 		}
 	}
 
+	/**
+	 * Debug: marks the access token as expired, the refresh token stays. The next request has to
+	 * refresh - exactly the moment in which the SDK used to lose the session when it failed.
+	 * Returns false when there is no session to expire.
+	 */
+	static async debugExpireAccessToken(): Promise<boolean> {
+		const data = await this.simpleAuthentificationStorage?.get();
+		if (!data?.refresh_token) return false;
+		await this.simpleAuthentificationStorage?.set({ ...data, expires_at: Date.now() - 1000 });
+		return true;
+	}
+
+	/**
+	 * Debug: replaces the refresh token with one the server does not know and expires the access
+	 * token. The next request is rejected like an expired session (login hint, guests re-login).
+	 */
+	static async debugInvalidateRefreshToken(): Promise<boolean> {
+		const data = await this.simpleAuthentificationStorage?.get();
+		if (!data?.refresh_token) return false;
+		await this.simpleAuthentificationStorage?.set({ ...data, refresh_token: 'debug-invalid-refresh-token', expires_at: Date.now() - 1000 });
+		return true;
+	}
+
 	/** Session flags for the feedback snapshot - never the token values themselves. */
 	static async getSessionDiagnostics(): Promise<SessionDiagnostics | null> {
 		try {

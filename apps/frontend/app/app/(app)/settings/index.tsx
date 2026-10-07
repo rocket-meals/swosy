@@ -33,6 +33,7 @@ import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import DebugView from '@/components/DebugView';
+import SettingsListSessionDebug from '@/components/SettingsListSessionDebug';
 import DropdownInput from '@/components/DropdownInput/DropdownInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useToast from '@/hooks/useToast';
@@ -994,6 +995,9 @@ const Settings = () => {
 							handleFunction={isClearingAsyncStorage ? undefined : handleClearAsyncStorage}
 							groupPosition="bottom"
 						/>
+					</View>
+					<View style={groupStyle}>
+						<SettingsListSessionDebug iconBgColor={primaryColor} iconColor={theme.screen.icon} />
 					</View>
 					<View style={groupStyle}>
 						<SettingsListSqliteStorage

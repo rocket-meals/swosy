@@ -83,6 +83,36 @@ describe('ServerAPI token refresh', () => {
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
 
+	it('debug: expiring the access token makes the next request refresh, the refresh token stays', async () => {
+		stored = { access_token: 'valid-access', refresh_token: 'r', expires: 900000, expires_at: Date.now() + 600000 };
+		fetchMock.mockResolvedValue(jsonResponse(200, { data: { access_token: 'new-access', refresh_token: 'new-refresh', expires: 900000 } }));
+
+		expect(await ServerAPI.debugExpireAccessToken()).toBe(true);
+		expect(await ServerAPI.getValidAccessToken()).toBe('new-access');
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+	});
+
+	it('debug: an invalidated refresh token is rejected and reported like an expired session', async () => {
+		stored = { access_token: 'valid-access', refresh_token: 'r', expires: 900000, expires_at: Date.now() + 600000 };
+		fetchMock.mockResolvedValue(jsonResponse(401, { errors: [{ message: 'Invalid user credentials.', extensions: { code: 'INVALID_CREDENTIALS' } }] }));
+		const onInvalid = jest.fn();
+		const unsubscribe = ServerAPI.onSessionInvalid(onInvalid);
+
+		expect(await ServerAPI.debugInvalidateRefreshToken()).toBe(true);
+		const refreshBody = JSON.parse((await ServerAPI.getValidAccessToken(), fetchMock.mock.calls[0][1].body));
+
+		expect(refreshBody.refresh_token).toBe('debug-invalid-refresh-token');
+		expect(onInvalid).toHaveBeenCalledTimes(1);
+		expect(stored).toBeNull();
+		unsubscribe();
+	});
+
+	it('debug: does nothing without a session', async () => {
+		stored = null;
+		expect(await ServerAPI.debugExpireAccessToken()).toBe(false);
+		expect(await ServerAPI.debugInvalidateRefreshToken()).toBe(false);
+	});
+
 	it('treats a missing session as invalid on app start', async () => {
 		stored = null;
 		expect(await ServerAPI.validateSession()).toEqual({ status: 'invalid' });

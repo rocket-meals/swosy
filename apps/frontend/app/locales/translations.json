@@ -7558,5 +7558,75 @@
     "ru": "Не удалось сохранить изменение на сервере.",
     "tr": "Değişikliğiniz sunucuya kaydedilemedi.",
     "zh": "你的更改无法保存到服务器。"
+  },
+  "debug_session_status": {
+    "de": "Sitzung (Refresh-Token · Access-Token bis)",
+    "en": "Session (refresh token · access token until)",
+    "ar": "الجلسة (رمز التحديث · رمز الوصول حتى)",
+    "es": "Sesión (token de actualización · token de acceso hasta)",
+    "fr": "Session (jeton d’actualisation · jeton d’accès jusqu’à)",
+    "ru": "Сессия (токен обновления · токен доступа до)",
+    "tr": "Oturum (yenileme belirteci · erişim belirteci şu saate kadar)",
+    "zh": "会话（刷新令牌 · 访问令牌有效至）"
+  },
+  "debug_expire_access_token": {
+    "de": "Access-Token ablaufen lassen",
+    "en": "Expire access token",
+    "ar": "إنهاء صلاحية رمز الوصول",
+    "es": "Caducar el token de acceso",
+    "fr": "Faire expirer le jeton d’accès",
+    "ru": "Сделать токен доступа просроченным",
+    "tr": "Erişim belirtecinin süresini doldur",
+    "zh": "使访问令牌过期"
+  },
+  "debug_invalidate_refresh_token": {
+    "de": "Refresh-Token ungültig machen",
+    "en": "Invalidate refresh token",
+    "ar": "إبطال رمز التحديث",
+    "es": "Invalidar el token de actualización",
+    "fr": "Invalider le jeton d’actualisation",
+    "ru": "Сделать токен обновления недействительным",
+    "tr": "Yenileme belirtecini geçersiz kıl",
+    "zh": "使刷新令牌失效"
+  },
+  "debug_session_valid": {
+    "de": "Sitzung gültig",
+    "en": "Session valid",
+    "ar": "الجلسة صالحة",
+    "es": "Sesión válida",
+    "fr": "Session valide",
+    "ru": "Сессия действительна",
+    "tr": "Oturum geçerli",
+    "zh": "会话有效"
+  },
+  "debug_session_rejected": {
+    "de": "Sitzung vom Server abgelehnt",
+    "en": "Session rejected by the server",
+    "ar": "رفض الخادم الجلسة",
+    "es": "El servidor rechazó la sesión",
+    "fr": "Session refusée par le serveur",
+    "ru": "Сервер отклонил сессию",
+    "tr": "Oturum sunucu tarafından reddedildi",
+    "zh": "服务器拒绝了会话"
+  },
+  "debug_session_server_unreachable": {
+    "de": "Server nicht erreichbar – Sitzung bleibt erhalten",
+    "en": "Server not reachable – session is kept",
+    "ar": "تعذّر الوصول إلى الخادم – تبقى الجلسة محفوظة",
+    "es": "Servidor no disponible: la sesión se conserva",
+    "fr": "Serveur injoignable – la session est conservée",
+    "ru": "Сервер недоступен – сессия сохраняется",
+    "tr": "Sunucuya ulaşılamıyor – oturum korunuyor",
+    "zh": "无法连接服务器——会话将保留"
+  },
+  "debug_session_none": {
+    "de": "Keine Sitzung vorhanden",
+    "en": "No session",
+    "ar": "لا توجد جلسة",
+    "es": "No hay sesión",
+    "fr": "Aucune session",
+    "ru": "Нет сессии",
+    "tr": "Oturum yok",
+    "zh": "没有会话"
   }
 }
