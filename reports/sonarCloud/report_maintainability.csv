@@ -1,7 +1,14 @@
 Key,Message,Component,Line
+"AaEWj9vPCV1trJHF7F0n","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListSessionDebug/index.tsx",63
+"AaEWj9vPCV1trJHF7F0o","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListSessionDebug/index.tsx",63
+"AaEWj93ECV1trJHF7F0r","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/redux/storage/sqliteStorage.ts",170
 "AaEWb5lecRawMmRJQMIl","Consider removing 'undefined' type or '?' specifier, one of them is redundant.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/BackendUsageEventHelper.ts",34
 "AaEWb5lecRawMmRJQMIm","Consider removing 'undefined' type or '?' specifier, one of them is redundant.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/BackendUsageEventHelper.ts",35
 "AaEWb5gjcRawMmRJQMIh","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",300
+"AaEWj86wCV1trJHF7F0m","'@/redux/Types/types' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",59
+"AaEWj-GSCV1trJHF7F0v","This branch's code block is the same as the block for the branch on line 73.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useAuthSessionGuard.ts",75
+"AaEWj9z2CV1trJHF7F0p","Mark this member as `readonly`.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",44
+"AaEWj9z2CV1trJHF7F0q","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",144
 "AaEWTFGih6eUky8Tee_-","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts",74
 "AaEWTFGih6eUky8Tee__","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/SupportChatActions.ts",75
 "AaEWb5gjcRawMmRJQMIf","Consider removing 'undefined' type or '?' specifier, one of them is redundant.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",61
@@ -38,9 +45,9 @@ Key,Message,Component,Line
 "AaD3G9JjTd3UR4iHDm3l","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupWorkflow.ts",56
 "AaD3G9JjTd3UR4iHDm3n","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupWorkflow.ts",61
 "AaD3G9JjTd3UR4iHDm3m","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/users-inactive-cleanup-workflow/InactiveUsersCleanupWorkflow.ts",57
-"AaDQMNlOpmu0snvzkbTP","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",619
-"AaDQMNlOpmu0snvzkbTQ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",853
-"AaDQMNlOpmu0snvzkbTR","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",961
+"AaDQMNlOpmu0snvzkbTP","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",620
+"AaDQMNlOpmu0snvzkbTQ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",854
+"AaDQMNlOpmu0snvzkbTR","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",962
 "AaD3G9UvTd3UR4iHDm5t","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/profile-create-hook/index.ts",31
 "AaDJdtK5S4SkZ9_68GSc","The empty object is useless.","rocket-meals_rocket-meals:apps/frontend/app/helper/authorizedFetch.ts",24
 "AaDJdsToS4SkZ9_68GSZ","Using `String.raw` is unnecessary as the string does not contain any `\`.","rocket-meals_rocket-meals:packages/common/src/FileNameHelper.ts",37
@@ -309,8 +316,8 @@ Key,Message,Component,Line
 "AaC0s5BphkA3gTKRIozq","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",359
 "AaC0s5BphkA3gTKRIozr","Expected a `for-of` loop instead of a `for` loop with this simple iteration.","rocket-meals_rocket-meals:packages/common/src/form/IbanRecognitionHelper.ts",385
 "AaBmrg8uWnKIYqRPo5r7","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/app/scripts/deploy-gh-pages.js",20
-"AaBg9V9xEfY3x5R1F0GH","Compare with `undefined` directly instead of using `typeof`.","rocket-meals_rocket-meals:apps/frontend/app/helper/appStateForFeedback.ts",98
-"AaBg9V9xEfY3x5R1F0GI","'value' may use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/frontend/app/helper/appStateForFeedback.ts",103
+"AaBg9V9xEfY3x5R1F0GH","Compare with `undefined` directly instead of using `typeof`.","rocket-meals_rocket-meals:apps/frontend/app/helper/appStateForFeedback.ts",118
+"AaBg9V9xEfY3x5R1F0GI","'value' may use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/frontend/app/helper/appStateForFeedback.ts",123
 "AaC_3Y1fynaeS38RnmCJ","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing-analytics/[report].tsx",64
 "AaC_3ZbzynaeS38RnmCK","Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.","rocket-meals_rocket-meals:apps/frontend/app/helper/downloadTextFileOnWeb.ts",14
 "AaC_3ZdWynaeS38RnmCN","Prefer `String#replaceAll()` over `String#split().join()`.","rocket-meals_rocket-meals:apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts",50
@@ -408,7 +415,6 @@ Key,Message,Component,Line
 "AaD3G-bTTd3UR4iHDm8f","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",1108
 "AaD3G-CpTd3UR4iHDm7-","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/redux/storage/sqliteStorage.ts",52
 "AaD3G-C5Td3UR4iHDm8A","Async function 'migrateAsyncStorageToSqlite' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/redux/storage/sqliteStorage.web.ts",19
-"AaD3G-CpTd3UR4iHDm7_","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/redux/storage/sqliteStorage.ts",168
 "AaD3G-YxTd3UR4iHDm8R","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityStorage.ts",212
 "AaD3G-YxTd3UR4iHDm8S","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityStorage.ts",251
 "AaD3G-ZsTd3UR4iHDm8T","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RouteStorage.ts",103
@@ -416,6 +422,7 @@ Key,Message,Component,Line
 "AaD3G8x5Td3UR4iHDm1o","Async function 'getStorageItem' has no 'await' expression.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/SqliteKeyValueStorage.web.ts",40
 "AaD3G8x5Td3UR4iHDm1p","Async function 'setStorageItem' has no 'await' expression.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/SqliteKeyValueStorage.web.ts",46
 "AaD3G8x5Td3UR4iHDm1q","Async function 'removeStorageItem' has no 'await' expression.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/SqliteKeyValueStorage.web.ts",52
+"AaEWj86wCV1trJHF7F0l","'@/redux/Types/types' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",12
 "AaD3G8zkTd3UR4iHDm1u","Async function 'generateMaestroTests' has no 'await' expression.","rocket-meals_rocket-meals:packages/maestro-framework/src/generate.ts",29
 "AaD3G-sNTd3UR4iHDm-T","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/accessibilityTester/src/index.ts",119
 "AaD3G9Q7Td3UR4iHDm48","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",107
@@ -602,15 +609,15 @@ Key,Message,Component,Line
 "AaD3G95TTd3UR4iHDm7u","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/components/FileUpload/FileUpload.tsx",83
 "AaD3G-S7Td3UR4iHDm8H","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/interceptor.ts",24
 "AaD3G80HTd3UR4iHDm1v","Async method 'init' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/OpenAIChat.ts",8
-"AaD3G9lWTd3UR4iHDm6V","Async arrow function 'autoLogin' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",147
+"AaD3G9lWTd3UR4iHDm6V","Async arrow function 'autoLogin' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",151
 "AaD3G9_ETd3UR4iHDm72","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/components/RssFeed/index.tsx",60
 "AaD3G9_ETd3UR4iHDm73","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/components/RssFeed/index.tsx",61
 "AaD3G88HTd3UR4iHDm15","Async method 'getServerInfoNoInternetTest' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts",120
-"AaD3G9q-Td3UR4iHDm6v","Async arrow function 'fetchDeviceInfo' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",124
-"AaD3G9k4Td3UR4iHDm6U","Async arrow function 'handleDeleteAccount' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",521
-"AaD3G-AzTd3UR4iHDm76","Static async method 'readRemoteRoles' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",143
-"AaD3G-AzTd3UR4iHDm77","Static async method 'readRemotePolicies' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",153
-"AaD3G-AzTd3UR4iHDm78","Static async method 'getMe' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",190
+"AaD3G9q-Td3UR4iHDm6v","Async arrow function 'fetchDeviceInfo' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",125
+"AaD3G9k4Td3UR4iHDm6U","Async arrow function 'handleDeleteAccount' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",522
+"AaD3G-AzTd3UR4iHDm76","Static async method 'readRemoteRoles' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",292
+"AaD3G-AzTd3UR4iHDm77","Static async method 'readRemotePolicies' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",302
+"AaD3G-AzTd3UR4iHDm78","Static async method 'getMe' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",339
 "AaD3G-UyTd3UR4iHDm8K","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/scripts/reset-project.js",53
 "AaD3G9HcTd3UR4iHDm3V","Async method 'getCurrentResultHash' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/FormHousingContractsWorkflowHannover.ts",28
 "AaD3G88HTd3UR4iHDm18","Async method 'getAdminBearerToken' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts",225

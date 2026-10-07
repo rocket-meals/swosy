@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
-| 🐛 Reliability | 377 | 48 |
-| 🔧 Maintainability | 654 | 0 |
+| 🐛 Reliability | 380 | 48 |
+| 🔧 Maintainability | 661 | 0 |
 
-**Total issues:** 1033 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1043 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -22,7 +22,7 @@
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:10
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L10
 
-## 🐛 Reliability (48/377)
+## 🐛 Reliability (48/380)
 
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
   apps/accessibilityTester/src/index.ts:104
