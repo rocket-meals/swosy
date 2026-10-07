@@ -1,0 +1,151 @@
+name: "🔄 Sync Forks & Deploy Backends"
+
+# Started from rocket-meals/rocket-meals: triggers "🔄 Fork Synchronization"
+# (sync-fork.yml) in every tenant fork, waits until that run has finished and
+# only then deploys the fork's backend server via the same SSH deploy as
+# "🚀 Deploy Backend (Manual)". Each fork is handled in its own matrix job, so
+# a failing fork neither blocks nor cancels the others.
+#
+# Requires in rocket-meals/rocket-meals:
+#   - PRIVATE_ACCESS_TOKEN: token with "Actions: read & write" on the forks
+#     (dispatch sync-fork.yml and read its runs).
+#   - DEPLOY_SSH_KEY: SSH key of the deploy user (already used by the deploys).
+#
+# Only runs on rocket-meals/rocket-meals - forks receive this file through the
+# fork sync, but must never sync or deploy the other tenants.
+
+on:
+  workflow_dispatch:
+    inputs:
+      fork:
+        description: 'Fork to sync and deploy; "all" handles every fork'
+        required: true
+        type: choice
+        default: 'all'
+        options:
+          - all
+          - rocket-meals/swosy
+          - rocket-meals/studi-futter
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  resolve-forks:
+    name: "🔍 Resolve forks"
+    runs-on: ubuntu-latest
+    if: github.repository == 'rocket-meals/rocket-meals'
+    outputs:
+      forks: ${{ steps.resolve.outputs.forks }}
+    steps:
+      - name: "🔍 Resolve forks"
+        id: resolve
+        env:
+          SELECTED: ${{ inputs.fork }}
+          # Fork repository -> backend host it is deployed to.
+          # Keep the hosts in sync with ALL_HOSTS in deploy-backend-manual.yml.
+          ALL_FORKS: >-
+            [
+              {"repo": "rocket-meals/swosy", "host": "swosy.rocket-meals.de"},
+              {"repo": "rocket-meals/studi-futter", "host": "studi-futter.rocket-meals.de"}
+            ]
+        run: |
+          if [ "$SELECTED" = "all" ]; then
+            FORKS=$(jq -c '.' <<< "$ALL_FORKS")
+          else
+            FORKS=$(jq -c --arg repo "$SELECTED" '[.[] | select(.repo == $repo)]' <<< "$ALL_FORKS")
+          fi
+          if [ "$(jq 'length' <<< "$FORKS")" -eq 0 ]; then
+            echo "❌ Unknown fork: $SELECTED"
+            exit 1
+          fi
+          echo "ℹ️ Forks: $FORKS"
+          echo "forks=$FORKS" >> "$GITHUB_OUTPUT"
+
+  sync-and-deploy:
+    name: "🔄 ${{ matrix.fork.repo }}"
+    needs: resolve-forks
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    strategy:
+      # One failing fork must not cancel the others.
+      fail-fast: false
+      matrix:
+        fork: ${{ fromJSON(needs.resolve-forks.outputs.forks) }}
+    # Shared with deploy-backend-manual.yml and backend-daily-restart.yml:
+    # never run two deploys on the same server at once.
+    concurrency:
+      group: deploy-backend-${{ matrix.fork.host }}
+      cancel-in-progress: false
+    env:
+      FORK_REPO: ${{ matrix.fork.repo }}
+      SYNC_WORKFLOW: sync-fork.yml
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "🚀 Trigger Fork Synchronization"
+        id: dispatch
+        env:
+          GH_TOKEN: ${{ secrets.PRIVATE_ACCESS_TOKEN }}
+        run: |
+          # Remember the dispatch time to find exactly the run started here
+          # (15 s earlier to tolerate clock skew between runner and GitHub).
+          DISPATCHED_AT=$(date -u -d '-15 seconds' +%Y-%m-%dT%H:%M:%SZ)
+          echo "dispatched-at=$DISPATCHED_AT" >> "$GITHUB_OUTPUT"
+          gh workflow run "$SYNC_WORKFLOW" --repo "$FORK_REPO" --ref master
+          echo "✅ Dispatched $SYNC_WORKFLOW in $FORK_REPO at $DISPATCHED_AT"
+
+      - name: "🔍 Find Fork Synchronization Run"
+        id: find-run
+        env:
+          GH_TOKEN: ${{ secrets.PRIVATE_ACCESS_TOKEN }}
+          DISPATCHED_AT: ${{ steps.dispatch.outputs.dispatched-at }}
+        run: |
+          # The dispatch API returns no run id, and the run shows up with a
+          # short delay - poll for the first dispatch run created after it.
+          for attempt in $(seq 1 30); do
+            RUN_ID=$(gh run list --repo "$FORK_REPO" --workflow "$SYNC_WORKFLOW" \
+              --event workflow_dispatch --limit 20 --json databaseId,createdAt \
+              | jq -r --arg since "$DISPATCHED_AT" \
+                '[.[] | select(.createdAt >= $since)] | sort_by(.createdAt) | first | .databaseId // empty')
+            if [ -n "$RUN_ID" ]; then
+              echo "✅ Found run $RUN_ID (attempt $attempt)"
+              echo "run-id=$RUN_ID" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "⏳ Run not visible yet (attempt $attempt/30)..."
+            sleep 10
+          done
+          echo "❌ No $SYNC_WORKFLOW run found in $FORK_REPO after dispatch"
+          exit 1
+
+      - name: "⏳ Wait for Fork Synchronization"
+        env:
+          GH_TOKEN: ${{ secrets.PRIVATE_ACCESS_TOKEN }}
+          RUN_ID: ${{ steps.find-run.outputs.run-id }}
+        run: |
+          RUN_URL="https://github.com/$FORK_REPO/actions/runs/$RUN_ID"
+          echo "🔗 $RUN_URL"
+          # --exit-status fails this step (and skips the deploy) when the
+          # fork sync failed.
+          if gh run watch "$RUN_ID" --repo "$FORK_REPO" --interval 15 --exit-status > /dev/null; then
+            echo "✅ Fork synchronization finished: $RUN_URL" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "❌ Fork synchronization failed - not deploying: $RUN_URL" | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+      - name: "🚀 Deploy to ${{ matrix.fork.host }}"
+        uses: ./.github/actions/deploy-server
+        with:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SERVER_HOST: ${{ matrix.fork.host }}
+
+      - name: "📝 Summary"
+        env:
+          FORK_HOST: ${{ matrix.fork.host }}
+        run: echo "🚀 Deployed $FORK_REPO to $FORK_HOST" >> "$GITHUB_STEP_SUMMARY"
