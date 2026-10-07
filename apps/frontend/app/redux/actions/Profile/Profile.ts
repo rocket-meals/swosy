@@ -1,6 +1,7 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Your helper
- // Your API client
+import { IncompleteProfileError, isProfileReadAsOwner } from '@/helper/authSessionHelper';
+import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 	constructor(client?: any) {
@@ -32,7 +33,15 @@ export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 		const query = { ...defaultQuery, ...queryOverride };
 
 		// Fetch profile by ID from the server
-		return await this.readItem(id, query);
+		const profile = await this.readItem(id, query);
+		// Without a valid session the request runs as the public role, which may only read a
+		// handful of fields. Callers dispatch the result as the whole profile, so an
+		// incomplete response would wipe the local eating habits and canteen - refuse it.
+		if (!queryOverride?.fields && profile && !isProfileReadAsOwner(profile)) {
+			ServerAPI.notifySessionInvalid();
+			throw new IncompleteProfileError();
+		}
+		return profile;
 	}
 
 	async updateProfile(profileData: any) {

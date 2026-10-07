@@ -1,4 +1,4 @@
-import { buildAppStateJsonForFeedback, isTranslationField, sanitizeAppStateForFeedback } from './appStateForFeedback';
+import { buildAppStateJsonForFeedback, isSecretField, isTranslationField, REDACTED_VALUE, sanitizeAppStateForFeedback } from './appStateForFeedback';
 
 /** Builds a catalogue-like collection of entities, each with translations in eight languages. */
 const buildBuildings = (count: number) =>
@@ -89,6 +89,29 @@ describe('sanitizeAppStateForFeedback', () => {
 
 		expect((state as any).authReducer).toEqual({ loggedIn: true, profile: { id: 'profile-1', canteen: 'canteen-1' } });
 		expect((state as any).food.ownFoodFeedbacks).toEqual(ownFoodFeedbacks);
+	});
+
+	it('redacts credentials such as the SSO refresh token in auth_data', () => {
+		const { state } = sanitizeAppStateForFeedback({
+			authReducer: {
+				user: { id: 'user-1', provider: 'apple', auth_data: { refreshToken: 'secret-apple-token' }, token: null, password: 'hash', tfa_secret: null },
+			},
+		});
+
+		const user = (state as any).authReducer.user;
+		expect(user.auth_data).toBe(REDACTED_VALUE);
+		expect(user.password).toBe(REDACTED_VALUE);
+		// Unset values stay null so support can see that nothing was set.
+		expect(user.token).toBeNull();
+		expect(user.tfa_secret).toBeNull();
+		expect(user.provider).toBe('apple');
+		expect(JSON.stringify(state)).not.toContain('secret-apple-token');
+	});
+
+	it('detects secret fields', () => {
+		expect(isSecretField('auth_data')).toBe(true);
+		expect(isSecretField('refresh_token')).toBe(true);
+		expect(isSecretField('provider')).toBe(false);
 	});
 
 	it('shortens very long texts', () => {

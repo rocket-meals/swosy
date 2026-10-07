@@ -191,7 +191,9 @@ export function getVersionPatch() {
         // 83: MCP instruction: providers, steps and token flow from common McpInstructionHelper, texts in commonTranslations
         // 84: chat: the initial message (e.g. a food feedback comment) is shown as a labelled
         //     context card instead of a bubble, so it is not taken for a message of either side
-        return 84;
+        // 85: an expired login is detected (sign in again) instead of silently continuing as the
+        //     public role; a failed token refresh while offline no longer drops the session
+        return 85;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

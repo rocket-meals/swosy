@@ -59,6 +59,18 @@ export function isTranslationField(key: string): boolean {
 	return key === 'translations' || key.endsWith('_translations');
 }
 
+/**
+ * Fields that hold credentials. The Directus user object carries the SSO provider's refresh
+ * token in `auth_data` - it ended up in plain text in the database and in the support mail.
+ */
+const SECRET_FIELDS = new Set(['auth_data', 'token', 'password', 'tfa_secret', 'access_token', 'refresh_token', 'accessToken', 'refreshToken']);
+
+export const REDACTED_VALUE = '[redacted]';
+
+export function isSecretField(key: string): boolean {
+	return SECRET_FIELDS.has(key);
+}
+
 /** Everything that is not an array and not a plain-ish object. */
 function isPrimitive(value: unknown): boolean {
 	return value === null || typeof value !== 'object';
@@ -150,6 +162,12 @@ function sanitizeObject(value: Record<string, unknown>, options: Required<AppSta
 	for (const [key, entry] of Object.entries(value)) {
 		if (isTranslationField(key)) {
 			summary.removedTranslationFields += 1;
+			continue;
+		}
+		if (isSecretField(key) && entry !== null && entry !== undefined) {
+			// Keep the key so support can still see that a value was set.
+			result[key] = REDACTED_VALUE;
+			size += key.length + 4 + REDACTED_VALUE.length + 2;
 			continue;
 		}
 		const sanitized = sanitizeValue(entry, options, summary, seen, depth + 1);

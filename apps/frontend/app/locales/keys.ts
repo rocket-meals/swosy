@@ -29,6 +29,8 @@ export const TranslationKeys = {
 	CHECK_SERVER_STATUS: 'CHECK_SERVER_STATUS',
 	SERVER_IS_OFFLINE: 'SERVER_IS_OFFLINE',
 	CONTINUE_WITH_CACHE: 'CONTINUE_WITH_CACHE',
+	session_expired_please_sign_in_again: 'session_expired_please_sign_in_again',
+	profile_changes_could_not_be_saved: 'profile_changes_could_not_be_saved',
 	automatic: 'automatic',
 	amount_columns_for_cards: 'amount_columns_for_cards',
 	loggingInPleaseWait: 'loggingInPleaseWait',

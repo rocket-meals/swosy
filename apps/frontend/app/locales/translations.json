@@ -7538,5 +7538,25 @@
     "ru": "Это предложение тем временем было обновлено. Меню загружается заново – пожалуйста, откройте блюдо ещё раз.",
     "tr": "Bu teklif bu arada güncellendi. Menü yeniden yükleniyor – lütfen yemeği tekrar açın.",
     "zh": "该餐品已在此期间更新。菜单正在重新加载——请重新打开该菜品。"
+  },
+  "session_expired_please_sign_in_again": {
+    "de": "Deine Anmeldung ist abgelaufen. Bitte melde dich erneut an. Deine Einstellungen auf diesem Gerät bleiben erhalten.",
+    "en": "Your sign-in has expired. Please sign in again. Your settings on this device are kept.",
+    "ar": "انتهت صلاحية تسجيل دخولك. يرجى تسجيل الدخول مرة أخرى. يتم الاحتفاظ بإعداداتك على هذا الجهاز.",
+    "es": "Tu sesión ha caducado. Vuelve a iniciar sesión. Se conservan tus ajustes en este dispositivo.",
+    "fr": "Votre connexion a expiré. Veuillez vous reconnecter. Vos réglages sur cet appareil sont conservés.",
+    "ru": "Срок действия вашего входа истёк. Пожалуйста, войдите снова. Ваши настройки на этом устройстве сохранены.",
+    "tr": "Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın. Bu cihazdaki ayarlarınız korunur.",
+    "zh": "你的登录已过期。请重新登录。此设备上的设置会保留。"
+  },
+  "profile_changes_could_not_be_saved": {
+    "de": "Deine Änderung konnte nicht auf dem Server gespeichert werden.",
+    "en": "Your change could not be saved on the server.",
+    "ar": "تعذّر حفظ التغيير على الخادم.",
+    "es": "No se pudo guardar tu cambio en el servidor.",
+    "fr": "Votre modification n’a pas pu être enregistrée sur le serveur.",
+    "ru": "Не удалось сохранить изменение на сервере.",
+    "tr": "Değişikliğiniz sunucuya kaydedilemedi.",
+    "zh": "你的更改无法保存到服务器。"
   }
 }

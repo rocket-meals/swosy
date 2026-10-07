@@ -6,6 +6,7 @@ import { UrlHelper } from '@/constants/UrlHelper';
 import ServerConfiguration from '@/constants/ServerUrl';
 import { setApiBaseUrl } from '@/redux/actions/ApiService/ApiService';
 import { setBaseURL } from '@/interceptor';
+import { hasRefreshToken, isAccessTokenExpiring, isSessionRejectedError } from '@/helper/authSessionHelper';
 
 interface ExtendedProperties {
 	project: {
@@ -28,6 +29,12 @@ export interface ServerInfo {
 	errorMessage?: string;
 }
 
+export type SessionValidationResult =
+	| { status: 'valid'; user: DatabaseTypes.DirectusUsers }
+	| { status: 'invalid' }
+	// Server not reachable or answered with an error that says nothing about the session.
+	| { status: 'unknown' };
+
 export type AuthProvider = {
 	name: string;
 	label?: string | null;
@@ -41,6 +48,12 @@ export class ServerAPI {
 	static readonly PROVIDER_NAME_APPLE = 'apple';
 	static readonly PROVIDER_NAME_GOOGLE = 'google';
 	private static simpleAuthentificationStorage: AuthenticationStorage | null = null;
+	private static tokenRefreshInProgress: Promise<void> | null = null;
+	// The SDK clears the stored tokens *before* it sends the refresh request. While our own
+	// refresh runs, that clear is held back, so a refresh that fails because the device is
+	// offline keeps the refresh token for the next attempt instead of losing the session.
+	private static holdBackTokenClear = false;
+	private static sessionInvalidListeners = new Set<() => void>();
 
 	static updateServerUrl(url: string) {
 		this.serverUrlCustom = url;
@@ -71,7 +84,105 @@ export class ServerAPI {
 	// Initializes authentication storage
 	static createAuthentificationStorage(get: () => Promise<AuthenticationData | null> | AuthenticationData | null, set: (value: AuthenticationData | null) => Promise<void> | void) {
 		if (!this.simpleAuthentificationStorage) {
-			this.simpleAuthentificationStorage = { get, set };
+			this.simpleAuthentificationStorage = {
+				get,
+				set: async value => {
+					if (this.holdBackTokenClear && !value?.refresh_token) {
+						return;
+					}
+					await set(value);
+				},
+			};
+		}
+	}
+
+	/**
+	 * Called when the server rejected the session (refresh token expired or revoked, or a
+	 * request came back as the public role). Returns an unsubscribe function.
+	 */
+	static onSessionInvalid(listener: () => void): () => void {
+		this.sessionInvalidListeners.add(listener);
+		return () => {
+			this.sessionInvalidListeners.delete(listener);
+		};
+	}
+
+	static notifySessionInvalid() {
+		this.sessionInvalidListeners.forEach(listener => {
+			try {
+				listener();
+			} catch (err) {
+				console.error('Session invalid listener failed:', err);
+			}
+		});
+	}
+
+	static async clearSession() {
+		await this.simpleAuthentificationStorage?.set(null);
+	}
+
+	/**
+	 * Replaces the SDK's getToken. The SDK swallows every refresh error and then sends the
+	 * request without a token - the app silently continued as the public role. Here a rejected
+	 * refresh is reported via onSessionInvalid, and a network error keeps the session.
+	 */
+	static async getValidAccessToken(): Promise<string | null> {
+		const storage = this.simpleAuthentificationStorage;
+		if (!storage) return null;
+		if (this.tokenRefreshInProgress) {
+			await this.tokenRefreshInProgress;
+		}
+		const data = await storage.get();
+		if (hasRefreshToken(data) && isAccessTokenExpiring(data)) {
+			await this.refreshTokensOnce();
+			return (await storage.get())?.access_token ?? null;
+		}
+		return data?.access_token ?? null;
+	}
+
+	private static refreshTokensOnce(): Promise<void> {
+		if (!this.tokenRefreshInProgress) {
+			this.tokenRefreshInProgress = this.refreshTokensKeepingSessionOnNetworkError().finally(() => {
+				this.tokenRefreshInProgress = null;
+			});
+		}
+		return this.tokenRefreshInProgress;
+	}
+
+	private static async refreshTokensKeepingSessionOnNetworkError() {
+		let rejected = false;
+		this.holdBackTokenClear = true;
+		try {
+			await this.getClient().refresh();
+		} catch (err) {
+			rejected = isSessionRejectedError(err);
+			if (!rejected) {
+				console.warn('Token refresh failed, keeping the session for the next attempt:', err);
+			}
+		} finally {
+			this.holdBackTokenClear = false;
+		}
+		if (rejected) {
+			console.warn('Server rejected the refresh token - the login session has expired');
+			await this.clearSession();
+			this.notifySessionInvalid();
+		}
+	}
+
+	/**
+	 * Checks with the server whether the stored session still belongs to a logged-in user.
+	 * Used on app start: without it, a dead session went unnoticed for months.
+	 */
+	static async validateSession(): Promise<SessionValidationResult> {
+		const data = await this.simpleAuthentificationStorage?.get();
+		if (!data?.refresh_token && !data?.access_token) {
+			return { status: 'invalid' };
+		}
+		try {
+			const user = (await this.getMe()) as DatabaseTypes.DirectusUsers;
+			return user?.id ? { status: 'valid', user } : { status: 'invalid' };
+		} catch (err) {
+			return isSessionRejectedError(err) ? { status: 'invalid' } : { status: 'unknown' };
 		}
 	}
 
@@ -81,12 +192,17 @@ export class ServerAPI {
 				throw new Error('Authentication storage not initialized. Call createAuthentificationStorage() first.');
 			}
 			const authConfig: Partial<AuthenticationConfig> = {
-				autoRefresh: true,
+				// The SDK's refresh timer swallows errors and wipes the tokens on any failure
+				// (e.g. while offline). Tokens are refreshed on demand in getValidAccessToken.
+				autoRefresh: false,
 				credentials: 'include',
 				storage: this.simpleAuthentificationStorage,
 			};
 
-			this.client = createDirectus(this.getServerUrl()).with(authentication('json', authConfig)).with(graphql()).with(rest());
+			const client = createDirectus(this.getServerUrl()).with(authentication('json', authConfig)).with(graphql()).with(rest());
+			// rest() and graphql() call `this.getToken()` on the client for every request.
+			client.getToken = () => this.getValidAccessToken();
+			this.client = client;
 		}
 		return this.client;
 	}

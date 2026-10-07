@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Dimensions, Image, ScrollView, Text, View } from 'react-native';
+import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import Form from '@/components/Login/Form';
@@ -44,6 +44,7 @@ export default function Login() {
 	const [showLoginDebug, setShowLoginDebug] = useState(false);
 	const [isWebVisible, setIsWebVisible] = useState(Dimensions.get('window').width > 500);
 	const { appSettings, language } = useAppSelector((state) => state.settings);
+	const sessionExpired = useAppSelector((state) => state.authReducer.sessionExpired);
 	const intro_description = appSettings?.login_screen_translations && getIntroDescriptionTranslation(appSettings?.login_screen_translations, language);
 	const detailed_description = appSettings?.login_screen_translations && getDetailedDescriptionTranslation(appSettings?.login_screen_translations, language);
 	const [heading, subHeading] = intro_description?.split('-') || ['', ''];
@@ -298,6 +299,11 @@ export default function Login() {
 					}}
 				>
 					<Header onLogoLongPress={() => setShowLoginDebug(current => !current)} />
+					{!!sessionExpired && (
+						<View style={[sessionExpiredStyles.container, { borderColor: theme.login.text }]}>
+							<Text style={[sessionExpiredStyles.text, { color: theme.login.text }]}>{translate(TranslationKeys.session_expired_please_sign_in_again)}</Text>
+						</View>
+					)}
 					<Form
 						openSheet={openSheet}
 						openAttentionSheet={openAttentionSheet}
@@ -327,3 +333,17 @@ export default function Login() {
 		</>
 	);
 }
+
+const sessionExpiredStyles = StyleSheet.create({
+	container: {
+		width: '100%',
+		borderWidth: 1,
+		borderRadius: 12,
+		padding: 12,
+		marginVertical: 10,
+	},
+	text: {
+		fontSize: 15,
+		textAlign: 'center',
+	},
+});
