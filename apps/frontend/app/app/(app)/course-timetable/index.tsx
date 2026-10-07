@@ -15,7 +15,7 @@ import CourseTimetableDayView, { minutesOfDay } from '@/components/CourseTimetab
 import CourseTimetableWeekView, { WeekViewDay } from '@/components/CourseTimetableViews/CourseTimetableWeekView';
 import LunchSuggestionCard from '@/components/CourseTimetableViews/LunchSuggestionCard';
 import StudipImportSheet from '@/components/CourseTimetableViews/StudipImportSheet';
-import ProjectButton from '@/components/ProjectButton';
+import SettingsList from '@/components/SettingsList';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -76,7 +76,6 @@ const CourseTimetableScreen = () => {
 	const { primaryColor, appSettings, firstDayOfTheWeek } = useAppSelector(state => state.settings);
 	const accentColor = appSettings?.course_timetable_area_color || primaryColor;
 	const accentText = myContrastColor(accentColor, theme, isDark);
-	const primaryText = myContrastColor(primaryColor, theme, isDark);
 
 	const isWide = width >= WEEK_VIEW_MIN_WIDTH;
 	const showSidePanel = width >= SIDE_PANEL_MIN_WIDTH;
@@ -262,7 +261,9 @@ const CourseTimetableScreen = () => {
 				{events.length === 0 ? (
 					<View style={[styles.emptyInfo, { backgroundColor: theme.screen.iconBg }]}>
 						<MyMarkdownProjectColored content={translate(TranslationKeys.courseTimetableDescriptionEmpty)} />
-						<ProjectButton text={translate(TranslationKeys.course_timetable_import_studip)} onPress={openImport} iconLeft={<MaterialCommunityIcons name="cloud-download-outline" size={20} color={primaryText} />} style={styles.importButton} />
+						<View style={styles.importButton}>
+							<SettingsList leftIcon={<MaterialCommunityIcons name="cloud-download-outline" size={20} />} iconBackgroundColor={accentColor} title={translate(TranslationKeys.course_timetable_import_studip)} rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />} onPress={openImport} backgroundColor={theme.screen.background} groupPosition="single" showSeparator={false} />
+						</View>
 					</View>
 				) : null}
 				{viewMode === 'week' ? (
@@ -354,8 +355,7 @@ const styles = StyleSheet.create({
 		paddingBottom: 120,
 	},
 	importButton: {
-		marginTop: 4,
-		marginBottom: 0,
+		marginTop: 8,
 	},
 	emptyInfo: {
 		borderRadius: 16,
