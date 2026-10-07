@@ -1,4 +1,4 @@
-import { STUDIP_DEBUG_CORS_PROXY, STUDIP_INSTANCES, StudipImportError, buildBasicAuthorization, fetchStudipSchedule, mapStudipSchedule, studipWeekdayToWeekday } from './StudipImporter';
+import { STUDIP_DEBUG_CORS_PROXY, checkCorsProxy, STUDIP_INSTANCES, StudipImportError, buildBasicAuthorization, fetchStudipSchedule, mapStudipSchedule, studipWeekdayToWeekday } from './StudipImporter';
 
 const instance = STUDIP_INSTANCES[0]!;
 
@@ -81,6 +81,24 @@ describe('StudipImporter', () => {
 		};
 		await fetchStudipSchedule(instance, 'max', 'secret', fetchFn, { corsProxy: STUDIP_DEBUG_CORS_PROXY });
 		expect(calls).toEqual(['https://cors-anywhere.herokuapp.com/https://studip.uni-osnabrueck.de/jsonapi.php/v1/users/me', 'https://cors-anywhere.herokuapp.com/https://studip.uni-osnabrueck.de/jsonapi.php/v1/users/u1/schedule']);
+	});
+
+	it('checks whether the debug CORS proxy is unlocked', async () => {
+		const headers = (location: string | null) => ({ get: (name: string) => (name === 'location' ? location : null) });
+		let requested = '';
+		const ok = await checkCorsProxy(instance, STUDIP_DEBUG_CORS_PROXY, async url => {
+			requested = url;
+			return { status: 401, headers: headers(null), text: async () => '' };
+		});
+		expect(ok).toBe('ok');
+		expect(requested).toBe('https://cors-anywhere.herokuapp.com/https://studip.uni-osnabrueck.de/jsonapi.php/v1/users/me');
+		expect(await checkCorsProxy(instance, STUDIP_DEBUG_CORS_PROXY, async () => ({ status: 403, headers: headers('/corsdemo'), text: async () => 'See /corsdemo for more info' }))).toBe('locked');
+		expect(await checkCorsProxy(instance, STUDIP_DEBUG_CORS_PROXY, async () => ({ status: 403, headers: headers(null), text: async () => 'Forbidden' }))).toBe('ok');
+		expect(
+			await checkCorsProxy(instance, STUDIP_DEBUG_CORS_PROXY, async () => {
+				throw new TypeError('Failed to fetch');
+			})
+		).toBe('unreachable');
 	});
 
 	it('reports wrong credentials and network failures', async () => {

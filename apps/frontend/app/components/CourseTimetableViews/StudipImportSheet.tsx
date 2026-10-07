@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ActivityIndicator, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SettingsListGroupTitle, SettingsListSelectOptionSingle } from 'repo-depkit-common-ui';
 import { SettingsListTextInputField } from '@/components/SettingsListTextInput';
@@ -13,13 +13,20 @@ import { TranslationKeys } from '@/locales/keys';
 import { darkTheme } from '@/styles/themes';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { mergeImportedEvents } from '@/helper/courseTimetable/CourseTimetableModel';
-import { STUDIP_DEBUG_CORS_PROXY, STUDIP_INSTANCES, StudipImportError, fetchStudipSchedule } from '@/helper/courseTimetable/StudipImporter';
+import { CorsProxyStatus, STUDIP_DEBUG_CORS_PROXY, STUDIP_DEBUG_CORS_PROXY_UNLOCK_LABEL, STUDIP_DEBUG_CORS_PROXY_UNLOCK_URL, STUDIP_INSTANCES, StudipImportError, checkCorsProxy, fetchStudipSchedule } from '@/helper/courseTimetable/StudipImporter';
 import useDebugMode from '@/hooks/useDebugMode';
 
 const ERROR_KEYS: Record<string, TranslationKeys> = {
 	unauthorized: TranslationKeys.course_timetable_import_error_credentials,
 	network: TranslationKeys.course_timetable_import_error_network,
 	unexpected: TranslationKeys.course_timetable_import_error_unexpected,
+};
+
+const PROXY_STATUS_KEYS: Record<CorsProxyStatus | 'checking', TranslationKeys> = {
+	checking: TranslationKeys.course_timetable_import_proxy_checking,
+	ok: TranslationKeys.course_timetable_import_proxy_ok,
+	locked: TranslationKeys.course_timetable_import_proxy_locked,
+	unreachable: TranslationKeys.course_timetable_import_proxy_unreachable,
 };
 
 /**
@@ -50,14 +57,32 @@ const StudipImportSheet: React.FC = () => {
 	const debugMode = useDebugMode();
 	const isWeb = Platform.OS === 'web';
 	const importBlockedOnWeb = isWeb && !debugMode;
-	const canSubmit = !!instance && username.trim().length > 0 && password.length > 0 && !loading;
+	const useCorsProxy = isWeb && debugMode;
+
+	// Debug on web: check whether the CORS proxy is unlocked for this browser, on open, on
+	// request and whenever the tab gets the focus back (e.g. after unlocking it in another tab).
+	const [proxyStatus, setProxyStatus] = useState<CorsProxyStatus | 'checking'>('checking');
+	const recheckProxy = useCallback(async () => {
+		if (!useCorsProxy || !instance) return;
+		setProxyStatus('checking');
+		setProxyStatus(await checkCorsProxy(instance));
+	}, [useCorsProxy, instance]);
+	useEffect(() => {
+		if (!useCorsProxy) return;
+		recheckProxy();
+		const onFocus = () => recheckProxy();
+		globalThis.window?.addEventListener?.('focus', onFocus);
+		return () => globalThis.window?.removeEventListener?.('focus', onFocus);
+	}, [useCorsProxy, recheckProxy]);
+
+	const canSubmit = !!instance && username.trim().length > 0 && password.length > 0 && !loading && (!useCorsProxy || proxyStatus === 'ok');
 
 	const startImport = async () => {
 		if (!instance || !canSubmit) return;
 		setLoading(true);
 		setErrorText(null);
 		try {
-			const imported = await fetchStudipSchedule(instance, username, password, undefined, isWeb ? { corsProxy: STUDIP_DEBUG_CORS_PROXY } : {});
+			const imported = await fetchStudipSchedule(instance, username, password, undefined, useCorsProxy ? { corsProxy: STUDIP_DEBUG_CORS_PROXY } : {});
 			if (imported.length === 0) {
 				// Nothing to import: keep the current timetable instead of wiping it.
 				setErrorText(translate(TranslationKeys.course_timetable_import_empty));
@@ -106,7 +131,23 @@ const StudipImportSheet: React.FC = () => {
 			<SettingsListTextInputField placeholder={translate(TranslationKeys.password)} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoCorrect={false} textContentType="password" returnKeyType="done" onSubmitEditing={startImport} />
 
 			<Text style={[styles.replaceHint, { color: theme.screen.placeholder }]}>{translate(TranslationKeys.course_timetable_import_replace_hint)}</Text>
-			{isWeb && debugMode ? <Text style={[styles.replaceHint, { color: theme.screen.placeholder }]}>{translate(TranslationKeys.course_timetable_import_debug_proxy_hint)}</Text> : null}
+			{useCorsProxy ? (
+				<View style={[styles.hint, styles.proxyPanel, { backgroundColor: theme.screen.iconBg }]}>
+					<Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.course_timetable_import_debug_proxy_hint)}</Text>
+					<View style={styles.proxyStatusRow}>
+						{proxyStatus === 'checking' ? <ActivityIndicator size="small" color={theme.screen.text} /> : <MaterialCommunityIcons name={proxyStatus === 'ok' ? 'check-circle' : 'alert-circle'} size={20} color={proxyStatus === 'ok' ? '#2E7D32' : theme.sheet.inputBorderInvalid} />}
+						<Text style={[styles.proxyStatusText, { color: theme.screen.text }]}>{translate(PROXY_STATUS_KEYS[proxyStatus])}</Text>
+					</View>
+					<View style={styles.proxyActions}>
+						<TouchableOpacity onPress={() => Linking.openURL(STUDIP_DEBUG_CORS_PROXY_UNLOCK_URL)} accessibilityRole="link">
+							<Text style={[styles.link, { color: theme.screen.text }]}>{STUDIP_DEBUG_CORS_PROXY_UNLOCK_LABEL}</Text>
+						</TouchableOpacity>
+						<TouchableOpacity onPress={recheckProxy} accessibilityRole="button" disabled={proxyStatus === 'checking'}>
+							<Text style={[styles.link, { color: theme.screen.text }]}>{translate(TranslationKeys.course_timetable_import_proxy_recheck)}</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+			) : null}
 			{errorText ? <Text style={[styles.error, { color: theme.sheet.inputBorderInvalid }]}>{errorText}</Text> : null}
 
 			<TouchableOpacity onPress={startImport} disabled={!canSubmit} style={[styles.button, { backgroundColor: accentColor, opacity: canSubmit ? 1 : 0.5 }]} accessibilityRole="button" accessibilityState={{ disabled: !canSubmit, busy: loading }}>
@@ -136,6 +177,29 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		lineHeight: 19,
 		fontFamily: 'Poppins_400Regular',
+	},
+	proxyPanel: {
+		flexDirection: 'column',
+		marginTop: 4,
+	},
+	proxyStatusRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	proxyStatusText: {
+		flex: 1,
+		fontSize: 14,
+		fontFamily: 'Poppins_600SemiBold',
+	},
+	proxyActions: {
+		gap: 10,
+	},
+	link: {
+		flexShrink: 1,
+		fontSize: 14,
+		fontFamily: 'Poppins_600SemiBold',
+		textDecorationLine: 'underline',
 	},
 	replaceHint: {
 		fontSize: 13,

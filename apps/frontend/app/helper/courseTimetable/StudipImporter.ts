@@ -31,6 +31,36 @@ export const STUDIP_INSTANCES: StudipInstance[] = [{ id: 'uni-osnabrueck', name:
  */
 export const STUDIP_DEBUG_CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
 
+/** Page where developers unlock the public CORS proxy for their browser. */
+export const STUDIP_DEBUG_CORS_PROXY_UNLOCK_URL = 'https://cors-anywhere.herokuapp.com/corsdemo';
+/** The same address without the scheme, short enough to show as link text. */
+export const STUDIP_DEBUG_CORS_PROXY_UNLOCK_LABEL = 'cors-anywhere.herokuapp.com/corsdemo';
+
+export type CorsProxyStatus = 'ok' | 'locked' | 'unreachable';
+
+type ProxyFetchLike = (url: string) => Promise<{ status: number; headers?: { get: (name: string) => string | null }; text: () => Promise<string> }>;
+
+/**
+ * Health check of the debug CORS proxy: an unauthenticated request to Stud.IP through it.
+ * Any answer from Stud.IP (usually 401) means the proxy works; the proxy itself answers 403 with
+ * a pointer to `/corsdemo` while it is not unlocked for this browser; a thrown fetch means it is
+ * not reachable at all.
+ */
+export async function checkCorsProxy(instance: StudipInstance, corsProxy: string = STUDIP_DEBUG_CORS_PROXY, fetchFn: ProxyFetchLike = fetch as unknown as ProxyFetchLike): Promise<CorsProxyStatus> {
+	let response;
+	try {
+		response = await fetchFn(`${corsProxy}${instance.baseUrl}/jsonapi.php/v1/users/me`);
+	} catch {
+		return 'unreachable';
+	}
+	if (response.status === 403) {
+		const location = response.headers?.get('location') ?? '';
+		const body = await response.text().catch(() => '');
+		if (location.includes('corsdemo') || body.includes('corsdemo')) return 'locked';
+	}
+	return 'ok';
+}
+
 export type StudipImportErrorCode = 'unauthorized' | 'network' | 'unexpected';
 
 export class StudipImportError extends Error {

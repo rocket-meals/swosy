@@ -7898,5 +7898,55 @@
     "ru": "Режим отладки: в браузере запросы идут через cors-anywhere.herokuapp.com, то есть данные для входа проходят через этот сервис. Доступ там нужно один раз предварительно разблокировать.",
     "tr": "Hata ayıklama modu: Tarayıcıda istekler cors-anywhere.herokuapp.com üzerinden gider, giriş bilgilerin de bu servisten geçer. Erişimin orada önceden bir kez açılması gerekir.",
     "zh": "调试模式：在浏览器中，请求会经过 cors-anywhere.herokuapp.com，登录信息也会经过该服务。需要先在该网站上解锁一次访问。"
+  },
+  "course_timetable_import_proxy_checking": {
+    "de": "Verbindung zum CORS-Proxy wird geprüft …",
+    "en": "Checking the connection to the CORS proxy …",
+    "ar": "جارٍ التحقق من الاتصال بوكيل CORS …",
+    "es": "Comprobando la conexión con el proxy CORS …",
+    "fr": "Vérification de la connexion au proxy CORS …",
+    "ru": "Проверка соединения с CORS-прокси …",
+    "tr": "CORS proxy bağlantısı kontrol ediliyor …",
+    "zh": "正在检查与 CORS 代理的连接…"
+  },
+  "course_timetable_import_proxy_ok": {
+    "de": "CORS-Proxy ist erreichbar und freigeschaltet.",
+    "en": "The CORS proxy is reachable and unlocked.",
+    "ar": "وكيل CORS متاح ومفعّل.",
+    "es": "El proxy CORS está disponible y desbloqueado.",
+    "fr": "Le proxy CORS est joignable et débloqué.",
+    "ru": "CORS-прокси доступен и разблокирован.",
+    "tr": "CORS proxy erişilebilir ve açık.",
+    "zh": "CORS 代理可用且已解锁。"
+  },
+  "course_timetable_import_proxy_locked": {
+    "de": "CORS-Proxy ist noch nicht freigeschaltet. Öffne den Link und klicke dort auf „Request temporary access to the demo server“.",
+    "en": "The CORS proxy is not unlocked yet. Open the link and click “Request temporary access to the demo server”.",
+    "ar": "وكيل CORS غير مفعّل بعد. افتح الرابط وانقر على “Request temporary access to the demo server”.",
+    "es": "El proxy CORS aún no está desbloqueado. Abre el enlace y haz clic en «Request temporary access to the demo server».",
+    "fr": "Le proxy CORS n’est pas encore débloqué. Ouvrez le lien et cliquez sur « Request temporary access to the demo server ».",
+    "ru": "CORS-прокси ещё не разблокирован. Откройте ссылку и нажмите «Request temporary access to the demo server».",
+    "tr": "CORS proxy henüz açılmadı. Bağlantıyı aç ve „Request temporary access to the demo server“ düğmesine tıkla.",
+    "zh": "CORS 代理尚未解锁。请打开链接并点击“Request temporary access to the demo server”。"
+  },
+  "course_timetable_import_proxy_unreachable": {
+    "de": "CORS-Proxy ist nicht erreichbar.",
+    "en": "The CORS proxy cannot be reached.",
+    "ar": "لا يمكن الوصول إلى وكيل CORS.",
+    "es": "No se puede acceder al proxy CORS.",
+    "fr": "Le proxy CORS est injoignable.",
+    "ru": "CORS-прокси недоступен.",
+    "tr": "CORS proxy’ye ulaşılamıyor.",
+    "zh": "无法连接 CORS 代理。"
+  },
+  "course_timetable_import_proxy_recheck": {
+    "de": "Erneut prüfen",
+    "en": "Check again",
+    "ar": "التحقق مرة أخرى",
+    "es": "Comprobar de nuevo",
+    "fr": "Vérifier à nouveau",
+    "ru": "Проверить снова",
+    "tr": "Tekrar kontrol et",
+    "zh": "重新检查"
   }
 }
