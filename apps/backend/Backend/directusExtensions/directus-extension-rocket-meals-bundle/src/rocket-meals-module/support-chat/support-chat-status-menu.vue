@@ -6,7 +6,10 @@ import { FoodFeedbackChatHelper } from '../../helpers/rocket-meals-module/FoodFe
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import FoodFeedbackStatusChip from '../food-feedbacks/food-feedback-status-chip.vue';
 
-defineProps<{ status: FoodFeedbackChatStatus; canWrite: boolean; updating: boolean }>();
+/** `statuses` limits the menu, e.g. to open / done for a feedback without chat; default: every status of a chat. */
+withDefaults(defineProps<{ status: FoodFeedbackChatStatus; canWrite: boolean; updating: boolean; statuses?: readonly FoodFeedbackChatStatus[] }>(), {
+  statuses: () => FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES,
+});
 const emit = defineEmits<{ change: [status: FoodFeedbackChatStatus] }>();
 
 const { translate } = useAppExtensionTranslate();
@@ -22,7 +25,7 @@ const { translate } = useAppExtensionTranslate();
       </button>
     </template>
     <v-list>
-      <v-list-item v-for="selectableStatus in FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES" :key="selectableStatus" clickable :active="selectableStatus === status" @click="emit('change', selectableStatus)">
+      <v-list-item v-for="selectableStatus in statuses" :key="selectableStatus" clickable :active="selectableStatus === status" @click="emit('change', selectableStatus)">
         <v-list-item-icon>
           <v-icon :name="FoodFeedbackChatHelper.getStatusPresentation(selectableStatus).icon" small />
         </v-list-item-icon>

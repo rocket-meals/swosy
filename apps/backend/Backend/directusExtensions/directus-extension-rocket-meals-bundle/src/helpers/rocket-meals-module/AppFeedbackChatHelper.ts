@@ -31,6 +31,8 @@ export type AppFeedbackListItem = {
   source_rating_raw?: number | null;
   /** The public answer to a store review; setting it publishes it in the store (`app-reviews-pull-hook`). */
   response?: string | null;
+  /** `closed` marks a feedback without chat as done, see `AppFeedbackState`. */
+  state?: string | null;
   device_platform?: string | null;
   device_brand?: string | null;
   device_system_version?: string | null;
@@ -72,6 +74,7 @@ export class AppFeedbackChatHelper {
     'source_identifier',
     'source_rating_raw',
     'response',
+    'state',
     'device_platform',
     'device_brand',
     'device_system_version',
@@ -220,8 +223,11 @@ export class AppFeedbackChatHelper {
     return description || undefined;
   }
 
-  /** Whether a feedback can be marked as done from the list: not done yet, and someone to show the chat to. */
+  /**
+   * Whether a feedback can be marked as done from the list: whenever it is not done yet – also
+   * store reviews and feedbacks without profile, which nobody has to answer (e.g. positive ones).
+   */
   static canMarkResolved(feedback: AppFeedbackListItem): boolean {
-    return AppFeedbackChatStatusHelper.getStatus(feedback) !== FoodFeedbackChatStatus.RESOLVED && AppFeedbackChatStatusHelper.canStartChat(feedback);
+    return AppFeedbackChatStatusHelper.getStatus(feedback) !== FoodFeedbackChatStatus.RESOLVED;
   }
 }

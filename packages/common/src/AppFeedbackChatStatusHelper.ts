@@ -12,9 +12,22 @@ export type AppFeedbackWithChat = {
   source_identifier?: string | null;
   /** The public answer to a store review. */
   response?: string | null;
+  /** Handling state of the feedback itself, see {@link AppFeedbackState}. */
+  state?: string | null;
   profile?: { id: string | number } | string | number | null;
   chat?: { id: string | number; conversation_state?: string | null } | string | number | null;
 };
+
+/**
+ * Values of `app_feedbacks.state`. Only {@link AppFeedbackState.CLOSED} is looked at: it marks a
+ * feedback without chat as done – a store review or an anonymous feedback support has nothing to
+ * answer to (e.g. a positive one). A feedback with a chat takes its status from the chat.
+ */
+export enum AppFeedbackState {
+  OPEN = 'open',
+  IN_REVIEW = 'in_review',
+  CLOSED = 'closed',
+}
 
 /** Where app feedbacks come from – the in-app form or a review pulled from an app store. */
 export enum AppFeedbackSourceFilter {
@@ -34,6 +47,8 @@ export enum AppFeedbackSourceFilter {
  * chat creation. Feedbacks without profile – anonymous ones and app store reviews – cannot be
  * answered in a chat. A store review is answered publicly in its store instead
  * (`app_feedbacks.response`): without answer it is "new", with one "waiting for user".
+ * A feedback without chat can also be marked as done without any answer
+ * (`app_feedbacks.state` = {@link AppFeedbackState.CLOSED}).
  *
  * Used by the `app-feedbacks-hook` and the backend module "Rocket Meals", so both create the chat
  * the same way.
@@ -51,7 +66,15 @@ export class AppFeedbackChatStatusHelper {
   /** Makes it obvious in the chat list of the app what kind of chat this is. */
   public static readonly CHAT_ALIAS_PREFIX = 'Feedback: ';
 
-  static getStatus(feedback: Pick<AppFeedbackWithChat, 'chat' | 'source_identifier' | 'response'>): FoodFeedbackChatStatus {
+  static getStatus(feedback: Pick<AppFeedbackWithChat, 'chat' | 'source_identifier' | 'response' | 'state'>): FoodFeedbackChatStatus {
+    if (AppFeedbackChatStatusHelper.isClosedWithoutChat(feedback)) {
+      return FoodFeedbackChatStatus.RESOLVED;
+    }
+    return AppFeedbackChatStatusHelper.getOpenStatus(feedback);
+  }
+
+  /** The status a feedback has (again) when it is not marked as done via `state` – the chat or the store answer decides. */
+  static getOpenStatus(feedback: Pick<AppFeedbackWithChat, 'chat' | 'source_identifier' | 'response'>): FoodFeedbackChatStatus {
     if (AppFeedbackChatStatusHelper.isStoreReview(feedback)) {
       return (feedback.response ?? '').trim().length > 0 ? FoodFeedbackChatStatus.WAITING_FOR_USER : FoodFeedbackChatStatus.NEW;
     }
@@ -59,19 +82,23 @@ export class AppFeedbackChatStatusHelper {
   }
 
   /** Whether a feedback matches a filter – the in-memory counterpart of {@link buildFilter}. */
-  static matchesFilter(feedback: Pick<AppFeedbackWithChat, 'chat' | 'source_identifier' | 'response'>, filter: FoodFeedbackChatFilter): boolean {
+  static matchesFilter(feedback: Pick<AppFeedbackWithChat, 'chat' | 'source_identifier' | 'response' | 'state'>, filter: FoodFeedbackChatFilter): boolean {
     return FoodFeedbackChatStatusHelper.statusMatchesFilter(AppFeedbackChatStatusHelper.getStatus(feedback), filter);
   }
 
   /** The Directus filter for `app_feedbacks`, `undefined` for all of them. Store reviews never have a chat. */
   static buildFilter(filter: FoodFeedbackChatFilter): DirectusFilterObject | undefined {
     const storeSources = AppFeedbackChatStatusHelper.STORE_SOURCES;
+    const withoutChat: DirectusFilterObject = { chat: { _null: true } };
     const storeReview: DirectusFilterObject = { source_identifier: { _in: storeSources } };
     const notStoreReview: DirectusFilterObject = { _or: [{ source_identifier: { _null: true } }, { source_identifier: { _nin: storeSources } }] };
+    // `_neq` alone would drop rows without state.
+    const notClosed: DirectusFilterObject = { _or: [{ state: { _null: true } }, { state: { _neq: AppFeedbackState.CLOSED } }] };
+    const closedWithoutChat: DirectusFilterObject = { _and: [withoutChat, { state: { _eq: AppFeedbackState.CLOSED } }] };
     const newFeedback: DirectusFilterObject = {
-      _or: [{ _and: [notStoreReview, { chat: { _null: true } }] }, { _and: [storeReview, { response: { _empty: true } }] }],
+      _and: [notClosed, { _or: [{ _and: [notStoreReview, withoutChat] }, { _and: [storeReview, { response: { _empty: true } }] }] }],
     };
-    const answeredStoreReview: DirectusFilterObject = { _and: [storeReview, { response: { _nempty: true } }] };
+    const answeredStoreReview: DirectusFilterObject = { _and: [storeReview, { response: { _nempty: true } }, notClosed] };
 
     switch (filter) {
       case FoodFeedbackChatFilter.OPEN:
@@ -80,6 +107,8 @@ export class AppFeedbackChatStatusHelper {
         return newFeedback;
       case FoodFeedbackChatFilter.WAITING_FOR_USER:
         return { _or: [FoodFeedbackChatStatusHelper.buildStatusFilter(filter), answeredStoreReview] };
+      case FoodFeedbackChatFilter.RESOLVED:
+        return { _or: [FoodFeedbackChatStatusHelper.buildStatusFilter(filter), closedWithoutChat] };
       default:
         return FoodFeedbackChatStatusHelper.buildStatusFilter(filter);
     }
@@ -102,6 +131,19 @@ export class AppFeedbackChatStatusHelper {
   /** Whether a feedback is a review pulled from an app store (answered there, not in a chat). */
   static isStoreReview(feedback: Pick<AppFeedbackWithChat, 'source_identifier'>): boolean {
     return !!feedback.source_identifier && (AppFeedbackChatStatusHelper.STORE_SOURCES as readonly string[]).includes(feedback.source_identifier);
+  }
+
+  /** Whether a feedback without chat was marked as done via `state`. */
+  static isClosedWithoutChat(feedback: Pick<AppFeedbackWithChat, 'chat' | 'state'>): boolean {
+    return !RelationHelper.isSet(feedback.chat as RelationValue) && feedback.state === AppFeedbackState.CLOSED;
+  }
+
+  /**
+   * Whether the status of a feedback is kept in `app_feedbacks.state` instead of a chat: it has no
+   * chat and will not get one – a store review, or a feedback without profile.
+   */
+  static isStatusWithoutChat(feedback: Pick<AppFeedbackWithChat, 'chat' | 'profile' | 'source_identifier'>): boolean {
+    return !RelationHelper.isSet(feedback.chat as RelationValue) && (AppFeedbackChatStatusHelper.isStoreReview(feedback) || !AppFeedbackChatStatusHelper.canStartChat(feedback));
   }
 
   /** Whether support can answer in a chat – without a profile there is nobody to show the chat to. */

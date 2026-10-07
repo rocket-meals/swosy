@@ -9,6 +9,10 @@
  *
  * A store review has no chat: the answer is written to `app_feedbacks.response`, and the
  * `app-reviews-pull-hook` publishes it in the App Store or on Google Play.
+ *
+ * A feedback without chat that will not get one – a store review or one without profile – can
+ * still be marked as done (and opened again) without answering; that is kept in
+ * `app_feedbacks.state`.
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -27,7 +31,6 @@ import { SupportChatActions } from '../../helpers/rocket-meals-module/SupportCha
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
 import FoodFeedbackRating from '../food-feedbacks/food-feedback-rating.vue';
-import FoodFeedbackStatusChip from '../food-feedbacks/food-feedback-status-chip.vue';
 import SupportChatConversation from '../support-chat/support-chat-conversation.vue';
 import SupportChatStatusMenu from '../support-chat/support-chat-status-menu.vue';
 
@@ -54,6 +57,14 @@ const chatId = computed(() => RelationHelper.getId(feedback.value?.chat));
 const isStoreReview = computed(() => !!feedback.value && AppFeedbackChatStatusHelper.isStoreReview(feedback.value));
 const status = computed(() => (feedback.value ? AppFeedbackChatStatusHelper.getStatus(feedback.value) : FoodFeedbackChatStatus.NEW));
 const canWrite = computed(() => !!feedback.value && (isStoreReview.value || AppFeedbackChatStatusHelper.canStartChat(feedback.value)));
+const isStatusWithoutChat = computed(() => !!feedback.value && AppFeedbackChatStatusHelper.isStatusWithoutChat(feedback.value));
+/** The statuses the menu offers: every chat status, or open / done for a feedback without chat. */
+const selectableStatuses = computed<FoodFeedbackChatStatus[]>(() => {
+  if (!feedback.value || !isStatusWithoutChat.value) {
+    return [...FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES];
+  }
+  return [AppFeedbackChatStatusHelper.getOpenStatus(feedback.value), FoodFeedbackChatStatus.RESOLVED];
+});
 const feedbackTitle = computed(() => (feedback.value ? AppFeedbackChatHelper.getTitle(feedback.value) : undefined));
 const title = computed(() => feedbackTitle.value || translate(page.labelKey));
 
@@ -162,10 +173,31 @@ async function sendMessage(text: string): Promise<boolean> {
   }
 }
 
+/** Marks a feedback without chat as done or opens it again – no chat is created for it. */
+async function changeStatusWithoutChat(nextStatus: FoodFeedbackChatStatus) {
+  if (!feedback.value || nextStatus === status.value || updatingState.value) {
+    return;
+  }
+  updatingState.value = true;
+  try {
+    await AppFeedbackChatActions.setResolvedWithoutChat(api, feedback.value, nextStatus === FoodFeedbackChatStatus.RESOLVED);
+    await loadFeedback();
+  } catch (error) {
+    console.error('[rocket-meals-module] updating app feedback state failed', error);
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_status_change_failed), type: 'error' });
+  } finally {
+    updatingState.value = false;
+  }
+}
+
 /** Sets the status by hand. A feedback without chat gets one first – the status lives in `chats.conversation_state`. */
 async function changeStatus(nextStatus: FoodFeedbackChatStatus) {
+  if (isStatusWithoutChat.value) {
+    await changeStatusWithoutChat(nextStatus);
+    return;
+  }
   const nextState = FoodFeedbackChatStatusHelper.getConversationStateForStatus(nextStatus);
-  if (!nextState || nextStatus === status.value || updatingState.value || !canWrite.value || isStoreReview.value) {
+  if (!nextState || nextStatus === status.value || updatingState.value || !canWrite.value) {
     return;
   }
   updatingState.value = true;
@@ -226,8 +258,7 @@ watch(() => props.feedbackId, load);
 
       <template v-else-if="feedback">
         <div class="feedback-info">
-          <food-feedback-status-chip v-if="isStoreReview" :status="status" />
-          <support-chat-status-menu v-else :status="status" :can-write="canWrite" :updating="updatingState" @change="changeStatus" />
+          <support-chat-status-menu :status="status" :statuses="selectableStatuses" :can-write="canWrite || isStatusWithoutChat" :updating="updatingState" @change="changeStatus" />
           <v-icon v-if="AppFeedbackChatHelper.getTypeIcon(feedback)" :name="AppFeedbackChatHelper.getTypeIcon(feedback) ?? ''" small :class="AppFeedbackChatHelper.isPositive(feedback) ? 'positive' : 'negative'" />
           <span class="type-label">{{ feedbackTitle ?? translate(BackendTranslationKeys.rocket_meals_module_no_title) }}</span>
           <food-feedback-rating :rating="feedback.source_rating_raw" />
