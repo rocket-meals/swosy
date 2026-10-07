@@ -685,6 +685,7 @@ export type DirectusCollections = {
   sort?: number | null;
   sort_field?: string | null;
   translations?: unknown | null;
+  translations_enable_helper: string;
   unarchive_value?: string | null;
   versioning: boolean;
 };
@@ -711,6 +712,45 @@ export type DirectusDashboards = {
   user_created?: string | DirectusUsers | null;
 };
 
+export type DirectusDeploymentProjects = {
+  date_created?: string | null;
+  deployable: boolean;
+  deployment: string | DirectusDeployments;
+  external_id: string;
+  framework?: string | null;
+  id: string;
+  name: string;
+  runs: any[] | DirectusDeploymentRuns[];
+  url?: string | null;
+  user_created?: string | DirectusUsers | null;
+};
+
+export type DirectusDeploymentRuns = {
+  completed_at?: string | null;
+  date_created?: string | null;
+  external_id: string;
+  id: string;
+  project: string | DirectusDeploymentProjects;
+  started_at?: string | null;
+  status?: string | null;
+  target: string;
+  url?: string | null;
+  user_created?: string | DirectusUsers | null;
+};
+
+export type DirectusDeployments = {
+  credentials?: string | null;
+  date_created?: string | null;
+  id: string;
+  last_synced_at?: string | null;
+  options?: unknown | null;
+  projects: any[] | DirectusDeploymentProjects[];
+  provider: string;
+  user_created?: string | DirectusUsers | null;
+  webhook_ids?: unknown | null;
+  webhook_secret?: string | null;
+};
+
 export type DirectusExtensions = {
   bundle?: string | null;
   enabled: boolean;
@@ -733,6 +773,7 @@ export type DirectusFields = {
   options?: unknown | null;
   readonly: boolean;
   required?: boolean | null;
+  searchable: boolean;
   sort?: number | null;
   special?: unknown | null;
   translations?: unknown | null;
@@ -933,10 +974,23 @@ export type DirectusSessions = {
 };
 
 export type DirectusSettings = {
-  accepted_terms?: boolean | null;
+  ai_anthropic_allowed_models?: unknown | null;
+  ai_anthropic_api_key?: string | null;
+  ai_google_allowed_models?: unknown | null;
+  ai_google_api_key?: string | null;
+  ai_group: string;
+  ai_openai_allowed_models?: unknown | null;
+  ai_openai_api_key?: string | null;
+  ai_openai_compatible_api_key?: string | null;
+  ai_openai_compatible_base_url?: string | null;
+  ai_openai_compatible_headers?: unknown | null;
+  ai_openai_compatible_models?: unknown | null;
+  ai_openai_compatible_name?: string | null;
+  ai_system_prompt?: string | null;
   auth_login_attempts?: number | null;
   auth_password_policy?: string | null;
   basemaps?: unknown | null;
+  collaborative_editing_enabled: boolean;
   custom_aspect_ratios?: unknown | null;
   custom_css?: string | null;
   default_appearance: string;
@@ -945,13 +999,25 @@ export type DirectusSettings = {
   default_theme_light?: string | null;
   id: number;
   mapbox_key?: string | null;
+  mcp_allow_deletes: boolean;
+  mcp_enabled: boolean;
+  mcp_group: string;
+  mcp_prompts_collection?: string | null;
+  mcp_prompts_collection_validation: string;
+  mcp_system_prompt?: string | null;
+  mcp_system_prompt_enabled: boolean;
   module_bar?: unknown | null;
+  org_name?: string | null;
+  product_updates?: boolean | null;
   project_color: string;
   project_descriptor?: string | null;
   project_id?: string | null;
   project_logo?: string | DirectusFiles | null;
   project_name: string;
+  project_owner?: string | null;
+  project_status?: string | null;
   project_url?: string | null;
+  project_usage?: string | null;
   public_background?: string | DirectusFiles | null;
   public_favicon?: string | DirectusFiles | null;
   public_foreground?: string | DirectusFiles | null;
@@ -1024,6 +1090,7 @@ export type DirectusUsers = {
   role?: string | DirectusRoles | null;
   status: string;
   tags?: unknown | null;
+  text_direction: string;
   tfa_secret?: string | null;
   theme_dark?: string | null;
   theme_dark_overrides?: unknown | null;
@@ -1045,20 +1112,6 @@ export type DirectusVersions = {
   name?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
-};
-
-export type DirectusWebhooks = {
-  actions: unknown;
-  collections: unknown;
-  data: boolean;
-  headers?: unknown | null;
-  id: number;
-  method: string;
-  migrated_flow?: string | DirectusFlows | null;
-  name: string;
-  status: string;
-  url: string;
-  was_active_before_deprecation: boolean;
 };
 
 export type FeatureWhishes = {
@@ -2106,6 +2159,9 @@ export type CustomDirectusTypes = {
   directus_collections: DirectusCollections[];
   directus_comments: DirectusComments[];
   directus_dashboards: DirectusDashboards[];
+  directus_deployment_projects: DirectusDeploymentProjects[];
+  directus_deployment_runs: DirectusDeploymentRuns[];
+  directus_deployments: DirectusDeployments[];
   directus_extensions: DirectusExtensions[];
   directus_fields: DirectusFields[];
   directus_files: DirectusFiles[];
@@ -2128,7 +2184,6 @@ export type CustomDirectusTypes = {
   directus_translations: DirectusTranslations[];
   directus_users: DirectusUsers[];
   directus_versions: DirectusVersions[];
-  directus_webhooks: DirectusWebhooks[];
   feature_whishes: FeatureWhishes[];
   files_shares: FilesShares[];
   foodoffers: Foodoffers[];

@@ -191,10 +191,11 @@ export function getVersionPatch() {
         // 83: MCP instruction: providers, steps and token flow from common McpInstructionHelper, texts in commonTranslations
         // 84: chat: the initial message (e.g. a food feedback comment) is shown as a labelled
         //     context card instead of a bubble, so it is not taken for a message of either side
-        // 85: an expired login is detected (sign in again) instead of silently continuing as the
+        // 85: common: AppFeedbackChatStatusHelper (status, filters and chat of app feedbacks)
+        // 86: an expired login is detected (sign in again) instead of silently continuing as the
         //     public role; a failed token refresh while offline no longer drops the session
-        // 86: feedback app-state snapshot carries __session (token flags and expiry, no values)
-        return 86;
+        // 87: feedback app-state snapshot carries __session (token flags and expiry, no values)
+        return 87;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

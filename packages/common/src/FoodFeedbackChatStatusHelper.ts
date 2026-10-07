@@ -90,7 +90,11 @@ export class FoodFeedbackChatStatusHelper {
     if (!FoodFeedbackChatStatusHelper.hasComment(feedback)) {
       return false;
     }
-    const status = FoodFeedbackChatStatusHelper.getStatus(feedback);
+    return FoodFeedbackChatStatusHelper.statusMatchesFilter(FoodFeedbackChatStatusHelper.getStatus(feedback), filter);
+  }
+
+  /** Whether a status belongs to a filter – shared with app feedbacks, which have the same statuses. */
+  static statusMatchesFilter(status: FoodFeedbackChatStatus, filter: FoodFeedbackChatFilter): boolean {
     switch (filter) {
       case FoodFeedbackChatFilter.ALL:
         return true;
@@ -108,6 +112,15 @@ export class FoodFeedbackChatStatusHelper {
    */
   static buildFilter(filter: FoodFeedbackChatFilter): DirectusFilterObject {
     const hasComment: DirectusFilterObject = { comment: { _nempty: true } };
+    const statusFilter = FoodFeedbackChatStatusHelper.buildStatusFilter(filter);
+    return statusFilter ? { _and: [hasComment, statusFilter] } : { _and: [hasComment] };
+  }
+
+  /**
+   * The Directus filter of a status filter alone, on a collection with a `chat` relation –
+   * `undefined` for {@link FoodFeedbackChatFilter.ALL}. Shared with app feedbacks.
+   */
+  static buildStatusFilter(filter: FoodFeedbackChatFilter): DirectusFilterObject | undefined {
     const withoutChat: DirectusFilterObject = { chat: { _null: true } };
     const inState = (state: ChatConversationState): DirectusFilterObject => ({ chat: { conversation_state: { _eq: state } } });
 
@@ -132,7 +145,7 @@ export class FoodFeedbackChatStatusHelper {
         statusFilter = undefined;
         break;
     }
-    return statusFilter ? { _and: [hasComment, statusFilter] } : { _and: [hasComment] };
+    return statusFilter;
   }
 
   /** Whether support can answer – without a profile there is nobody to show the chat to. */
