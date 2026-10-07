@@ -82,6 +82,23 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 			Widerspruchs- und Beseitigungsmöglichkeit
 			Die Erfassung der Daten zur Bereitstellung der Website und die Speicherung der Daten in Logfiles ist für den Betrieb der Internetseite zwingend erforderlich. Es besteht folglich seitens des Nutzers keine Widerspruchsmöglichkeit.
 
+	### Anonyme Nutzungsstatistik
+
+		Damit wir erkennen, welche Bereiche der App genutzt werden und wie stark die App über den Tag ausgelastet ist, sendet die App während der Nutzung einzelne Nutzungsereignisse an unseren Server. Das gilt für Gäste und für Nutzer mit einem Account gleichermaßen. Beispiele für solche Ereignisse sind „App geöffnet“, „App in den Vordergrund geholt“, „Detailansicht eines Gerichts geöffnet“ oder „Bewertungsdialog des App Stores angezeigt“.
+
+		Zu jedem Ereignis übertragen wir:
+		- Art und Name des Ereignisses
+		- den Bereich der App, in dem das Ereignis ausgelöst wurde (z. B. Speiseplan), und ggf. die ID des geöffneten Inhalts (z. B. eines Gerichts)
+		- die Plattform (iOS, Android oder Web) und die Version der App
+		- die lokale Uhrzeit und die Zeitzonenabweichung deines Geräts
+		- eine zufällige Sitzungskennung und eine fortlaufende Nummer innerhalb dieser Sitzung
+
+		Die Sitzungskennung wird bei jedem Start der App neu und zufällig erzeugt. Sie wird nur im Arbeitsspeicher gehalten, nicht auf deinem Gerät gespeichert und ist nach dem Schließen der App verloren. Die Ereignisse enthalten weder deine Benutzer-ID noch deine Profil-ID, Gerätekennung, Push-Token oder IP-Adresse, und wir verknüpfen sie nicht mit deinem Account. Die bei der Übertragung technisch notwendige IP-Adresse landet nur, wie oben beschrieben, kurzfristig in den Server-Logs.
+
+		Wir werten die Ereignisse ausschließlich zusammengefasst aus, zum Beispiel als Anzahl gerade geöffneter Sitzungen, als Verlauf über den Tag oder als Liste der am häufigsten geöffneten Bereiche und Inhalte.
+
+		Rechtsgrundlage ist unser berechtigtes Interesse nach Art. 6 Abs. 1 lit. f DSGVO, die App zu betreiben, Störungen früh zu erkennen und das Angebot an der tatsächlichen Nutzung auszurichten. Die Ereignisse werden nach spätestens 12 Monaten gelöscht.
+
 	### Informationen von Nutzern mit einem Account
 
 		Solltest du die App nicht als Gast benutzen, so wird im Rahmen deiner Nutzung der App automatisiert eine UserID (Benutzer Identifier) erstellt, welche für den vollen Nutzungsumfang der App erforderlich ist. Für die Erhebung der UserID berufen wir uns auf unser berechtigtes Interesse gem. Art. 6 Abs. 1 f) DSGVO, um die Funktionsfähigkeit und den fehlerfreien Betrieb der App zu gewährleisten und einen markt- und interessensgerechten Dienst anbieten zu können.
@@ -105,7 +122,7 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 
 			- profile - Wir trennen dein Profil von deinem Benutzer Login. Dadurch pseudonomisieren wir die Daten, sofern wir diese analysieren.
 
-			- last_access - Wir speichern den Zeitpunkt deines letzten Zugriffes, sodass wir inaktive Nutzer automatisch löschen können.
+			- last_access - Wir speichern den Zeitpunkt deines letzten Zugriffes, sodass wir inaktive Nutzer automatisch löschen können. Außerdem verwenden wir ihn für die Betriebsübersicht für Administratoren (siehe Abschnitt „Betriebsübersicht für Administratoren“).
 
 			- password - Sofern du dich über einen externen Anbieter angemeldet hast, speichern wir natürlich kein Passwort. Für Accounts von Mitarbeitern wird hier ein gehashed Passwort gespeichert.
 
@@ -151,9 +168,9 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 
 			- date_created - Das Erstelldatum deines Kontos. Dadurch können wir den Zuwachs von Benutzern verfolgen.
 
-			- date_updated - Das letzte Änderungsdatum deines Kontos. Dadurch können wir nachvollziehen, wann Änderungen getätigt wurden.
+			- date_updated - Das letzte Änderungsdatum deines Profils. Es wird bei Änderungen an deinem Profil aktualisiert und zusätzlich, wenn du die App öffnest oder in den Vordergrund holst (höchstens alle paar Minuten). Dadurch können wir nachvollziehen, wann Änderungen getätigt wurden, und wann du zuletzt aktiv warst. Den Zeitpunkt der letzten Aktivität nutzen wir für die Betriebsübersicht für Administratoren (siehe Abschnitt „Betriebsübersicht für Administratoren“).
 
-			- visited_pages - Die von dir aufgerufenen Menüpunkte/Bereiche der App. Dadurch können wir erkennen, welche Bereiche der App besonders häufig genutzt werden. Dies hilft uns, den Fokus der Verbesserung dahingehend zu setzen. StreamViews werden nur durch deine explizite Zustimmung (zur Verbesserung der App) an uns übermittelt. Wir erhoffen uns damit, Fragen beantworten zu können, wie z. B. "Verwenden Erstsemester-Studenten den Lageplan häufiger als andere?".
+			- visited_pages - Die von dir aufgerufenen Menüpunkte und Bereiche der App speichern wir nicht in deinem Profil. Welche Bereiche der App häufig genutzt werden, erfassen wir nur ohne Bezug zu deinem Account (siehe Abschnitt „Anonyme Nutzungsstatistik“).
 
 		#### Informationen zu deinem Gerät
 
@@ -198,6 +215,21 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 		Die Verarbeitung und Nutzung der Daten durch das Studierendenwerk erfolgt stets in Übereinstimmung mit den geltenden Datenschutzgesetzen und ausschließlich zu den in dieser Datenschutzerklärung beschriebenen Zwecken. Weitere Informationen dazu findest du in der Datenschutzerklärung des Studierendenwerks 
 
 		[https://www.studentenwerk-osnabrueck.de/de/datenschutzerklaerung.html](https://www.studentenwerk-osnabrueck.de/de/datenschutzerklaerung.html).
+
+
+	### Betriebsübersicht für Administratoren
+
+		Administratoren von Baumgartner Software und des Studierendenwerks können in der App eine Betriebsübersicht öffnen. Sie zeigt, welche Nutzer mit einem Account zuletzt aktiv waren, und welche Aktivitäten gerade in der App stattfinden.
+
+		Angezeigt werden dabei:
+		- dein Nickname und dein Avatar
+		- der Zeitpunkt deiner letzten Aktivität (aus last_access bzw. date_updated, siehe oben)
+		- Aktivitäten, die du ohnehin an uns übermittelst, z. B. abgegebene Bewertungen von Gerichten, angekündigte Mensa-Besuche oder das Anlegen deines Accounts
+		- zusammengefasste Zahlen aus der anonymen Nutzungsstatistik, z. B. die Anzahl gerade geöffneter Sitzungen. Diese Zahlen lassen sich keiner Person zuordnen.
+
+		Deine E-Mail-Adresse, dein echter Name, dein Guthaben, deine Chat-Nachrichten oder dein Standort werden dort nicht angezeigt. Für die Übersicht werden keine zusätzlichen Daten erhoben oder gespeichert. Sie zeigt nur den aktuellen Stand der oben beschriebenen Daten, einen eigenen Verlauf deiner Aktivität legen wir dafür nicht an. Gäste erscheinen in der Übersicht nur in den anonymen Zahlen.
+
+		Zweck der Übersicht ist es, den Betrieb der App zu beobachten und Störungen früh zu erkennen, z. B. wenn nach einem Update plötzlich kaum noch Nutzer aktiv sind. Rechtsgrundlage ist unser berechtigtes Interesse nach Art. 6 Abs. 1 lit. f DSGVO. Du kannst dieser Verarbeitung nach Art. 21 DSGVO jederzeit über die unten genannten Kontaktdaten widersprechen.
 
 
 	### Cloud Messaging
@@ -298,6 +330,8 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 	Die Bewertungen zu Speisen und anderen Leistungen werden hingegen nicht gelöscht, auch wenn du die App deinstallierst oder dieses Gericht nicht mehr auf den Speiseplänen steht. Die Bewertungen beinhalten, außer der UserID, die wie o.g. gelöscht oder anonymisiert wird, keine weiteren personenbezogenen Daten. Wir werden dich auch nicht bitten, zur Löschung oder Anonymisierung deiner Daten, zusätzliche personenbezogene Daten anzugeben.
 
 	Die Account ID wird in unseren Systemen während des Angebots der App genutzt. Serverlogs werden in der Regel so lange vorgehalten, wie es erforderlich ist, um etwaige Fehler analysieren zu können. Im Regelfall liegt dies bei 30 Tagen.
+
+	Die Ereignisse der anonymen Nutzungsstatistik enthalten keine Daten, die wir dir zuordnen können. Wir löschen sie nach spätestens 12 Monaten.
 
 
 
