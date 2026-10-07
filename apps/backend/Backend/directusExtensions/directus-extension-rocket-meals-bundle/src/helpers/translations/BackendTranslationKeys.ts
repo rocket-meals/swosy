@@ -123,9 +123,10 @@ export const BackendTranslationKeys = {
   rocket_meals_module_feedback_negative: 'rocket_meals_module_feedback_negative',
   rocket_meals_module_no_title: 'rocket_meals_module_no_title',
   rocket_meals_module_contact_email: 'rocket_meals_module_contact_email',
-  rocket_meals_module_store_response: 'rocket_meals_module_store_response',
+  rocket_meals_module_to_store_response: 'rocket_meals_module_to_store_response',
   rocket_meals_module_store_response_placeholder: 'rocket_meals_module_store_response_placeholder',
   rocket_meals_module_store_review_hint: 'rocket_meals_module_store_review_hint',
+  rocket_meals_module_store_review_single_response: 'rocket_meals_module_store_review_single_response',
 } as const;
 
 export type BackendTranslationKeys = (typeof BackendTranslationKeys)[keyof typeof BackendTranslationKeys];

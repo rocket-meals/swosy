@@ -18,6 +18,8 @@ const props = defineProps<{
   /** Shown instead of messages when there are none yet. */
   emptyText: string;
   placeholder?: string;
+  /** A note right above the input, e.g. that a store review has only one public answer. */
+  hint?: string;
   /** Sends a text; resolves `true` when it was sent, so the input is cleared. */
   send: (text: string) => Promise<boolean>;
 }>();
@@ -106,6 +108,11 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
     <div v-if="messages.length === 0" class="empty type-note">{{ emptyText }}</div>
   </div>
 
+  <div v-if="hint" class="composer-note type-note">
+    <v-icon name="info" x-small />
+    <span>{{ hint }}</span>
+  </div>
+
   <div class="composer" :class="{ disabled: !canWrite }" @click="composerInput?.focus()">
     <textarea ref="composerInput" v-model="newMessage" class="composer-input" rows="1" :placeholder="placeholder ?? translate(BackendTranslationKeys.rocket_meals_module_message_placeholder)" :disabled="!canWrite || sending" @keydown="onKeydown" />
     <div class="composer-actions">
@@ -166,6 +173,18 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
   max-inline-size: 30rem;
   margin-block: auto;
   text-align: center;
+}
+
+.composer-note {
+  display: flex;
+  gap: 0.375rem;
+  align-items: flex-start;
+  padding: 0 1rem;
+}
+
+.composer-note .v-icon {
+  flex: none;
+  margin-block-start: 0.125rem;
 }
 
 /* Input like the chat of Claude: one rounded box, text on top, round send button bottom right. */

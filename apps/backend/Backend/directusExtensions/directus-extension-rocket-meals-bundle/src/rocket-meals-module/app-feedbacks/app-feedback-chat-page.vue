@@ -250,6 +250,7 @@ watch(() => props.feedbackId, load);
           :can-write="canWrite"
           :empty-text="emptyText"
           :placeholder="isStoreReview ? translate(BackendTranslationKeys.rocket_meals_module_store_response_placeholder) : undefined"
+          :hint="isStoreReview ? translate(BackendTranslationKeys.rocket_meals_module_store_review_single_response) : undefined"
           :send="sendMessage"
         />
       </template>

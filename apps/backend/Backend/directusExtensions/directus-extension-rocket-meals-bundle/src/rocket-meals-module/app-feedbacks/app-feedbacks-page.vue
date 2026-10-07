@@ -186,12 +186,15 @@ async function markResolved(feedbacksToResolve: readonly AppFeedbackListItem[]) 
   }
 }
 
-/** The label of the button that leads to the conversation. */
+/**
+ * The label of the button that leads to the conversation. A store review is answered on its page
+ * as well – the hook publishes the answer in the store, so there is no external link.
+ */
 function getOpenLabel(feedback: AppFeedbackListItem): string {
-  if (AppFeedbackChatStatusHelper.isStoreReview(feedback)) {
-    return translate(BackendTranslationKeys.rocket_meals_module_store_response);
+  if (AppFeedbackChatStatusHelper.getStatus(feedback) === FoodFeedbackChatStatus.NEW) {
+    return translate(BackendTranslationKeys.rocket_meals_module_reply);
   }
-  return AppFeedbackChatStatusHelper.getStatus(feedback) === FoodFeedbackChatStatus.NEW ? translate(BackendTranslationKeys.rocket_meals_module_reply) : translate(BackendTranslationKeys.rocket_meals_module_to_chat);
+  return AppFeedbackChatStatusHelper.isStoreReview(feedback) ? translate(BackendTranslationKeys.rocket_meals_module_to_store_response) : translate(BackendTranslationKeys.rocket_meals_module_to_chat);
 }
 
 let searchTimeout: ReturnType<typeof setTimeout> | undefined;
@@ -285,7 +288,7 @@ onMounted(reload);
           </div>
           <div class="feedback-content">
             <div class="feedback-header">
-              <food-feedback-status-chip v-if="!AppFeedbackChatStatusHelper.isStoreReview(feedback)" :status="AppFeedbackChatStatusHelper.getStatus(feedback)" />
+              <food-feedback-status-chip :status="AppFeedbackChatStatusHelper.getStatus(feedback)" />
               <span class="title type-label">{{ AppFeedbackChatHelper.getTitle(feedback) ?? translate(BackendTranslationKeys.rocket_meals_module_no_title) }}</span>
               <food-feedback-rating :rating="feedback.source_rating_raw" />
               <span class="spacer" />
@@ -303,7 +306,7 @@ onMounted(reload);
                 {{ translate(BackendTranslationKeys.rocket_meals_module_mark_resolved) }}
               </v-button>
               <v-button small :secondary="AppFeedbackChatStatusHelper.getStatus(feedback) !== FoodFeedbackChatStatus.NEW" @click.stop="openChat(feedback)">
-                <v-icon :name="AppFeedbackChatStatusHelper.isStoreReview(feedback) ? 'reply' : 'forum'" left small />
+                <v-icon name="forum" left small />
                 {{ getOpenLabel(feedback) }}
               </v-button>
             </div>
