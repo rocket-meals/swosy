@@ -2,7 +2,7 @@
  * RocketMealsModulePages.ts – the pages of the `Rocket Meals` module in the Directus app.
  *
  * The module is the place for backend tools that do not fit Directus' generic content views:
- * today the food feedback chats and the MCP instruction, later e.g. housing management or top/flop lists of dishes.
+ * today the food feedback chats, the live pulse and the MCP instruction, later e.g. housing management or top/flop lists of dishes.
  * A new page is one entry here plus a route in `src/rocket-meals-module/index.ts`; the side
  * navigation and the overview page are built from this list.
  */
@@ -33,6 +33,14 @@ export class RocketMealsModulePages {
     descriptionKey: BackendTranslationKeys.rocket_meals_module_food_feedbacks_description,
   };
 
+  /** Who is active in the app right now – meant to stay open on a second screen during the day. */
+  public static readonly LIVE_PULSE: RocketMealsModulePage = {
+    path: 'live-pulse',
+    icon: 'monitor_heart',
+    labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse,
+    descriptionKey: BackendTranslationKeys.rocket_meals_module_live_pulse_description,
+  };
+
   /** The instruction "connect an AI assistant via MCP" – the same one the app shows under `/public/mcp-instruction`. */
   public static readonly MCP_INSTRUCTION: RocketMealsModulePage = {
     path: 'mcp-instruction',
@@ -42,7 +50,7 @@ export class RocketMealsModulePages {
   };
 
   /** All pages, in the order of the navigation. */
-  public static readonly PAGES: readonly RocketMealsModulePage[] = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.MCP_INSTRUCTION];
+  public static readonly PAGES: readonly RocketMealsModulePage[] = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE];
 
   /** `/rocket-meals/food-feedbacks/abc` – a path for the Vue router of the Directus app. */
   static getRoute(page?: RocketMealsModulePage, ...segments: string[]): string {

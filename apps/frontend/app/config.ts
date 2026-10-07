@@ -191,7 +191,8 @@ export function getVersionPatch() {
         // 83: MCP instruction: providers, steps and token flow from common McpInstructionHelper, texts in commonTranslations
         // 84: chat: the initial message (e.g. a food feedback comment) is shown as a labelled
         //     context card instead of a bubble, so it is not taken for a message of either side
-        return 84;
+        // 85: common-ui: avatar SVG generation moved to MyAvatar/AvatarSvg (no react-native), shared with the backend
+        return 85;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
