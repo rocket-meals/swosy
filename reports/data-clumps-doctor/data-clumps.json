@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-07T13:28:25.711Z",
+  "report_timestamp": "2026-10-07T15:39:44.142Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
           "median": 1,
-          "maximum": 131,
-          "average": 1.521044992743106,
-          "amountSavedValuesForKeys": 5240,
-          "amountKeys": 29
+          "maximum": 132,
+          "average": 1.523138832997988,
+          "amountSavedValuesForKeys": 5299,
+          "amountKeys": 31
         },
         "invertedParameterToMethods": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 80,
-          "average": 2.2814238042269186,
-          "amountSavedValuesForKeys": 2051,
-          "amountKeys": 24
+          "average": 2.2822222222222224,
+          "amountSavedValuesForKeys": 2054,
+          "amountKeys": 23
         },
         "invertedParameterToClasses": {
           "median": 1.5,
-          "maximum": 131,
-          "average": 1.5348564733450498,
-          "amountSavedValuesForKeys": 5240,
-          "amountKeys": 29
+          "maximum": 132,
+          "average": 1.536832946635731,
+          "amountSavedValuesForKeys": 5299,
+          "amountKeys": 31
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 5585,
-        "detection_time_ms": 125,
+        "ast_generation_time_ms": 5647,
+        "detection_time_ms": 148,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 137.57,
-          "os_memory_free": 14840242176,
-          "os_memory_total": 16770748416,
+          "os_uptime": 144.51,
+          "os_memory_free": 14807523328,
+          "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 25,
-    "amount_files_with_data_clumps": 19,
+    "amount_classes_or_interfaces_with_data_clumps": 31,
+    "amount_files_with_data_clumps": 25,
     "amount_methods_with_data_clumps": 8,
-    "fields_to_fields_data_clump": 32,
+    "fields_to_fields_data_clump": 38,
     "parameters_to_fields_data_clump": 2,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 42
+    "amount_data_clumps": 48
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "92e4231c7da91087e66e05b5fc68f555bb26bb4b",
-    "project_commit_hash": "92e4231c7da91087e66e05b5fc68f555bb26bb4b",
+    "project_version": "ffaec586db5659c5a19e4829087889e846e3e9b7",
+    "project_commit_hash": "ffaec586db5659c5a19e4829087889e846e3e9b7",
     "project_tag": null,
-    "project_commit_date": "1791379537",
+    "project_commit_date": "1791387450",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 729,
-    "number_of_classes_or_interfaces": 1609,
-    "number_of_methods": 1823,
-    "number_of_data_fields": 5240,
-    "number_of_method_parameters": 2051
+    "number_of_files": 742,
+    "number_of_classes_or_interfaces": 1633,
+    "number_of_methods": 1822,
+    "number_of_data_fields": 5299,
+    "number_of_method_parameters": 2054
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -3642,6 +3642,103 @@
         "cluster_type": 2
       }
     },
+    "fields_to_fields_data_clump-apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx-apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay-apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay-dateStringweekdayevents": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx-apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay-apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay-dateStringweekdayevents",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay",
+      "from_class_or_interface_name": "WeekViewDay",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts",
+      "to_class_or_interface_key": "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay",
+      "to_class_or_interface_name": "LunchSuggestionDay",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay/memberField/dateString": {
+          "key": "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay/memberField/dateString",
+          "name": "dateString",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay/memberField/dateString",
+            "name": "dateString",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 2,
+              "endLine": 25,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 21
+          }
+        },
+        "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay/memberField/weekday": {
+          "key": "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay/memberField/weekday",
+          "name": "weekday",
+          "type": "CourseTimetableWeekday",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay/memberField/weekday",
+            "name": "weekday",
+            "type": "CourseTimetableWeekday",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 2,
+              "endLine": 26,
+              "endColumn": 34
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 2,
+            "endLine": 17,
+            "endColumn": 34
+          }
+        },
+        "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay/memberField/events": {
+          "key": "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay/memberField/events",
+          "name": "events",
+          "type": "CourseTimetableEvent[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay/memberField/events",
+            "name": "events",
+            "type": "CourseTimetableEvent[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 33
+            }
+          },
+          "position": {
+            "startLine": 21,
+            "startColumn": 2,
+            "endLine": 21,
+            "endColumn": 33
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 9,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-apps/frontend/app/helper/UserDisplayNameHelper.ts-apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser-first_namelast_nameemail": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/frontend/app/helper/UserDisplayNameHelper.ts-apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser-first_namelast_nameemail",
@@ -3736,6 +3833,103 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 5,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/helper/courseTimetable/StudipImporter.ts-apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource-apps/scripts/asc-api.ts/interface/JsonApiResource-typeidattributes": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/helper/courseTimetable/StudipImporter.ts-apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource-apps/scripts/asc-api.ts/interface/JsonApiResource-typeidattributes",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/helper/courseTimetable/StudipImporter.ts",
+      "from_class_or_interface_key": "apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource",
+      "from_class_or_interface_name": "JsonApiResource",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/scripts/asc-api.ts",
+      "to_class_or_interface_key": "apps/scripts/asc-api.ts/interface/JsonApiResource",
+      "to_class_or_interface_name": "JsonApiResource",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource/memberField/type": {
+          "key": "apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource/memberField/type",
+          "name": "type",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/scripts/asc-api.ts/interface/JsonApiResource/memberField/type",
+            "name": "type",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 3,
+              "endLine": 10,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 92,
+            "startColumn": 2,
+            "endLine": 92,
+            "endColumn": 16
+          }
+        },
+        "apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource/memberField/id": {
+          "key": "apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/scripts/asc-api.ts/interface/JsonApiResource/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 3,
+              "endLine": 11,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 93,
+            "startColumn": 2,
+            "endLine": 93,
+            "endColumn": 14
+          }
+        },
+        "apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource/memberField/attributes": {
+          "key": "apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource/memberField/attributes",
+          "name": "attributes",
+          "type": "Record<string, unknown>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/scripts/asc-api.ts/interface/JsonApiResource/memberField/attributes",
+            "name": "attributes",
+            "type": "Record<string, unknown>",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 3,
+              "endLine": 12,
+              "endColumn": 40
+            }
+          },
+          "position": {
+            "startLine": 94,
+            "startColumn": 2,
+            "endLine": 94,
+            "endColumn": 39
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
         "cluster_type": 2
       }
     },
@@ -3861,6 +4055,444 @@
         "cluster_type": 2
       }
     },
+    "fields_to_fields_data_clump-apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts-apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay-apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay-dateStringweekdayevents": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts-apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay-apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay-dateStringweekdayevents",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts",
+      "from_class_or_interface_key": "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay",
+      "from_class_or_interface_name": "LunchSuggestionDay",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay",
+      "to_class_or_interface_name": "WeekViewDay",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay/memberField/dateString": {
+          "key": "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay/memberField/dateString",
+          "name": "dateString",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay/memberField/dateString",
+            "name": "dateString",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 2,
+            "endLine": 25,
+            "endColumn": 21
+          }
+        },
+        "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay/memberField/weekday": {
+          "key": "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay/memberField/weekday",
+          "name": "weekday",
+          "type": "CourseTimetableWeekday",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay/memberField/weekday",
+            "name": "weekday",
+            "type": "CourseTimetableWeekday",
+            "modifiers": [],
+            "position": {
+              "startLine": 17,
+              "startColumn": 2,
+              "endLine": 17,
+              "endColumn": 34
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 2,
+            "endLine": 26,
+            "endColumn": 34
+          }
+        },
+        "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay/memberField/events": {
+          "key": "apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay/memberField/events",
+          "name": "events",
+          "type": "CourseTimetableEvent[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay/memberField/events",
+            "name": "events",
+            "type": "CourseTimetableEvent[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 2,
+              "endLine": 21,
+              "endColumn": 33
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 33
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 9,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx-apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem-apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption-keytitleicononPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx-apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem-apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption-keytitleicononPress",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem",
+      "from_class_or_interface_name": "OptionItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption",
+      "to_class_or_interface_name": "NavigationOption",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/key": {
+          "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/key",
+          "name": "key",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/key",
+            "name": "key",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 2,
+              "endLine": 30,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 22,
+            "startColumn": 2,
+            "endLine": 22,
+            "endColumn": 14
+          }
+        },
+        "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/title": {
+          "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 32,
+              "startColumn": 2,
+              "endLine": 32,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 2,
+            "endLine": 23,
+            "endColumn": 16
+          }
+        },
+        "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/icon": {
+          "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/icon",
+          "name": "icon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/icon",
+            "name": "icon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 33,
+              "startColumn": 2,
+              "endLine": 33,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 2,
+            "endLine": 24,
+            "endColumn": 24
+          }
+        },
+        "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/onPress": {
+          "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 34,
+              "startColumn": 2,
+              "endLine": 34,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 2,
+            "endLine": 25,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 11,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx-apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption-apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem-keytitleicononPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx-apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption-apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem-keytitleicononPress",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption",
+      "from_class_or_interface_name": "NavigationOption",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem",
+      "to_class_or_interface_name": "OptionItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/key": {
+          "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/key",
+          "name": "key",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/key",
+            "name": "key",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 22,
+              "startColumn": 2,
+              "endLine": 22,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 2,
+            "endLine": 30,
+            "endColumn": 14
+          }
+        },
+        "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/title": {
+          "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 2,
+              "endLine": 23,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 32,
+            "startColumn": 2,
+            "endLine": 32,
+            "endColumn": 16
+          }
+        },
+        "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/icon": {
+          "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/icon",
+          "name": "icon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/icon",
+            "name": "icon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 2,
+              "endLine": 24,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 33,
+            "startColumn": 2,
+            "endLine": 33,
+            "endColumn": 24
+          }
+        },
+        "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/onPress": {
+          "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 2,
+              "endLine": 25,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 34,
+            "startColumn": 2,
+            "endLine": 34,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 11,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/scripts/asc-api.ts-apps/scripts/asc-api.ts/interface/JsonApiResource-apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource-typeidattributes": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/scripts/asc-api.ts-apps/scripts/asc-api.ts/interface/JsonApiResource-apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource-typeidattributes",
+      "probability": 1,
+      "from_file_path": "apps/scripts/asc-api.ts",
+      "from_class_or_interface_key": "apps/scripts/asc-api.ts/interface/JsonApiResource",
+      "from_class_or_interface_name": "JsonApiResource",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/helper/courseTimetable/StudipImporter.ts",
+      "to_class_or_interface_key": "apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource",
+      "to_class_or_interface_name": "JsonApiResource",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/scripts/asc-api.ts/interface/JsonApiResource/memberField/type": {
+          "key": "apps/scripts/asc-api.ts/interface/JsonApiResource/memberField/type",
+          "name": "type",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource/memberField/type",
+            "name": "type",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 92,
+              "startColumn": 2,
+              "endLine": 92,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 3,
+            "endLine": 10,
+            "endColumn": 16
+          }
+        },
+        "apps/scripts/asc-api.ts/interface/JsonApiResource/memberField/id": {
+          "key": "apps/scripts/asc-api.ts/interface/JsonApiResource/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 93,
+              "startColumn": 2,
+              "endLine": 93,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 3,
+            "endLine": 11,
+            "endColumn": 14
+          }
+        },
+        "apps/scripts/asc-api.ts/interface/JsonApiResource/memberField/attributes": {
+          "key": "apps/scripts/asc-api.ts/interface/JsonApiResource/memberField/attributes",
+          "name": "attributes",
+          "type": "Record<string, unknown>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource/memberField/attributes",
+            "name": "attributes",
+            "type": "Record<string, unknown>",
+            "modifiers": [],
+            "position": {
+              "startLine": 94,
+              "startColumn": 2,
+              "endLine": 94,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 3,
+            "endLine": 12,
+            "endColumn": 40
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts-packages/common/src/LicenseEntry.ts/interface/LicenseEntry-licenserepositorylicenseUrl": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx-packages/common-ui/src/components/LicenseInformation/LicenseInformation.tsx/interface/LicenseInformationTexts-packages/common/src/LicenseEntry.ts/interface/LicenseEntry-licenserepositorylicenseUrl",
@@ -3954,7 +4586,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 9,
+        "cluster_id": 12,
         "cluster_type": 2
       }
     },
@@ -4173,7 +4805,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 9,
+        "cluster_id": 12,
         "cluster_type": 2
       }
     },
@@ -4282,7 +4914,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 10,
+        "cluster_id": 13,
         "cluster_type": 2
       }
     },
@@ -4391,7 +5023,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 10,
+        "cluster_id": 13,
         "cluster_type": 2
       }
     },
@@ -4488,7 +5120,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 14,
         "cluster_type": 2
       }
     },
@@ -4585,7 +5217,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 14,
         "cluster_type": 2
       }
     }

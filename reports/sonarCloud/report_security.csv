@@ -1,3 +1,4 @@
 Key,Message,Component,Line
+"AaEXB9B6-_xqPaPbi5uy","Make sure that using this pseudorandom number generator is safe here.","rocket-meals_rocket-meals:apps/frontend/app/helper/courseTimetable/CourseTimetableModel.ts",160
 "AaC0s5zuhkA3gTKRIo3v","Code Injection via unsanitized user input","rocket-meals_rocket-meals:apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs",10
 "AaDsCkqojjI_XBnxawIT","Move this write permission from workflow level to job level.","rocket-meals_rocket-meals:.github/workflows/sync-fork.yml",4
