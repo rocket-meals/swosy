@@ -7538,5 +7538,255 @@
     "ru": "Это предложение тем временем было обновлено. Меню загружается заново – пожалуйста, откройте блюдо ещё раз.",
     "tr": "Bu teklif bu arada güncellendi. Menü yeniden yükleniyor – lütfen yemeği tekrar açın.",
     "zh": "该餐品已在此期间更新。菜单正在重新加载——请重新打开该菜品。"
+  },
+  "course_timetable_add_event": {
+    "de": "Termin",
+    "en": "Event",
+    "ar": "موعد",
+    "es": "Evento",
+    "fr": "Événement",
+    "ru": "Событие",
+    "tr": "Etkinlik",
+    "zh": "日程"
+  },
+  "course_timetable_no_events_day": {
+    "de": "Keine Termine an diesem Tag",
+    "en": "No events on this day",
+    "ar": "لا توجد مواعيد في هذا اليوم",
+    "es": "No hay eventos este día",
+    "fr": "Aucun événement ce jour-là",
+    "ru": "В этот день нет событий",
+    "tr": "Bu günde etkinlik yok",
+    "zh": "这一天没有日程"
+  },
+  "course_timetable_break": {
+    "de": "Pause",
+    "en": "Break",
+    "ar": "استراحة",
+    "es": "Pausa",
+    "fr": "Pause",
+    "ru": "Перерыв",
+    "tr": "Mola",
+    "zh": "休息"
+  },
+  "course_timetable_lunch_suggestion": {
+    "de": "Zeit für die Mensa",
+    "en": "Time for the canteen",
+    "ar": "وقت المطعم",
+    "es": "Hora del comedor",
+    "fr": "C’est l’heure de la cantine",
+    "ru": "Время для столовой",
+    "tr": "Yemekhane zamanı",
+    "zh": "去食堂的时间"
+  },
+  "course_timetable_canteen_open": {
+    "de": "Geöffnet",
+    "en": "Open",
+    "ar": "مفتوح",
+    "es": "Abierto",
+    "fr": "Ouvert",
+    "ru": "Открыто",
+    "tr": "Açık",
+    "zh": "营业"
+  },
+  "course_timetable_open_food_offers": {
+    "de": "Speiseplan öffnen",
+    "en": "Open menu",
+    "ar": "فتح قائمة الطعام",
+    "es": "Abrir el menú",
+    "fr": "Ouvrir le menu",
+    "ru": "Открыть меню",
+    "tr": "Menüyü aç",
+    "zh": "打开菜单"
+  },
+  "course_timetable_overlap": {
+    "de": "Überschneidung",
+    "en": "Overlap",
+    "ar": "تداخل",
+    "es": "Solapamiento",
+    "fr": "Chevauchement",
+    "ru": "Пересечение",
+    "tr": "Çakışma",
+    "zh": "时间冲突"
+  },
+  "course_timetable_now": {
+    "de": "Jetzt",
+    "en": "Now",
+    "ar": "الآن",
+    "es": "Ahora",
+    "fr": "Maintenant",
+    "ru": "Сейчас",
+    "tr": "Şimdi",
+    "zh": "现在"
+  },
+  "course_timetable_source_import": {
+    "de": "Importiert",
+    "en": "Imported",
+    "ar": "مستورد",
+    "es": "Importado",
+    "fr": "Importé",
+    "ru": "Импортировано",
+    "tr": "İçe aktarıldı",
+    "zh": "已导入"
+  },
+  "course_timetable_source_manual": {
+    "de": "Eigener Termin",
+    "en": "Own event",
+    "ar": "موعد خاص",
+    "es": "Evento propio",
+    "fr": "Événement personnel",
+    "ru": "Своё событие",
+    "tr": "Kendi etkinliğim",
+    "zh": "自建日程"
+  },
+  "course_timetable_imported_hint": {
+    "de": "Dieser Termin wurde importiert. Ein erneuter Import überschreibt Zeit und Ort; Farbe und Löschen gelten nur in der App.",
+    "en": "This event was imported. A new import overwrites time and location; color and deleting only apply in the app.",
+    "ar": "تم استيراد هذا الموعد. يؤدي الاستيراد الجديد إلى استبدال الوقت والمكان؛ اللون والحذف يسريان داخل التطبيق فقط.",
+    "es": "Este evento se importó. Una nueva importación sobrescribe la hora y el lugar; el color y la eliminación solo se aplican en la app.",
+    "fr": "Cet événement a été importé. Une nouvelle importation remplace l’heure et le lieu ; la couleur et la suppression ne s’appliquent que dans l’application.",
+    "ru": "Это событие импортировано. Новый импорт перезапишет время и место; цвет и удаление действуют только в приложении.",
+    "tr": "Bu etkinlik içe aktarıldı. Yeni bir içe aktarma saati ve yeri değiştirir; renk ve silme yalnızca uygulamada geçerlidir.",
+    "zh": "此日程为导入数据。重新导入会覆盖时间和地点；颜色和删除仅在应用内生效。"
+  },
+  "course_timetable_delete_event": {
+    "de": "Termin löschen (nur in der App)",
+    "en": "Delete event (only in the app)",
+    "ar": "حذف الموعد (داخل التطبيق فقط)",
+    "es": "Eliminar evento (solo en la app)",
+    "fr": "Supprimer l’événement (uniquement dans l’application)",
+    "ru": "Удалить событие (только в приложении)",
+    "tr": "Etkinliği sil (yalnızca uygulamada)",
+    "zh": "删除日程（仅限应用内）"
+  },
+  "course_timetable_delete_event_confirm": {
+    "de": "Möchtest du diesen Termin aus deinem Stundenplan löschen?",
+    "en": "Do you want to delete this event from your timetable?",
+    "ar": "هل تريد حذف هذا الموعد من جدولك؟",
+    "es": "¿Quieres eliminar este evento de tu horario?",
+    "fr": "Voulez-vous supprimer cet événement de votre emploi du temps ?",
+    "ru": "Удалить это событие из расписания?",
+    "tr": "Bu etkinliği ders programından silmek istiyor musun?",
+    "zh": "要从课程表中删除此日程吗？"
+  },
+  "course_timetable_kind": {
+    "de": "Art",
+    "en": "Type",
+    "ar": "النوع",
+    "es": "Tipo",
+    "fr": "Type",
+    "ru": "Тип",
+    "tr": "Tür",
+    "zh": "类型"
+  },
+  "course_timetable_more_colors": {
+    "de": "Weitere Farben",
+    "en": "More colors",
+    "ar": "المزيد من الألوان",
+    "es": "Más colores",
+    "fr": "Plus de couleurs",
+    "ru": "Другие цвета",
+    "tr": "Diğer renkler",
+    "zh": "更多颜色"
+  },
+  "course_timetable_previous_week": {
+    "de": "Vorherige Woche",
+    "en": "Previous week",
+    "ar": "الأسبوع السابق",
+    "es": "Semana anterior",
+    "fr": "Semaine précédente",
+    "ru": "Предыдущая неделя",
+    "tr": "Önceki hafta",
+    "zh": "上一周"
+  },
+  "course_timetable_next_week": {
+    "de": "Nächste Woche",
+    "en": "Next week",
+    "ar": "الأسبوع التالي",
+    "es": "Semana siguiente",
+    "fr": "Semaine suivante",
+    "ru": "Следующая неделя",
+    "tr": "Sonraki hafta",
+    "zh": "下一周"
+  },
+  "course_timetable_previous_day": {
+    "de": "Vorheriger Tag",
+    "en": "Previous day",
+    "ar": "اليوم السابق",
+    "es": "Día anterior",
+    "fr": "Jour précédent",
+    "ru": "Предыдущий день",
+    "tr": "Önceki gün",
+    "zh": "前一天"
+  },
+  "course_timetable_next_day": {
+    "de": "Nächster Tag",
+    "en": "Next day",
+    "ar": "اليوم التالي",
+    "es": "Día siguiente",
+    "fr": "Jour suivant",
+    "ru": "Следующий день",
+    "tr": "Sonraki gün",
+    "zh": "后一天"
+  },
+  "course_timetable_reset": {
+    "de": "Stundenplan zurücksetzen",
+    "en": "Reset timetable",
+    "ar": "إعادة تعيين الجدول",
+    "es": "Restablecer horario",
+    "fr": "Réinitialiser l’emploi du temps",
+    "ru": "Сбросить расписание",
+    "tr": "Ders programını sıfırla",
+    "zh": "重置课程表"
+  },
+  "course_timetable_reset_confirm": {
+    "de": "Alle Termine werden gelöscht. Das kann nicht rückgängig gemacht werden.",
+    "en": "All events will be deleted. This cannot be undone.",
+    "ar": "سيتم حذف جميع المواعيد. لا يمكن التراجع عن ذلك.",
+    "es": "Se eliminarán todos los eventos. Esto no se puede deshacer.",
+    "fr": "Tous les événements seront supprimés. Cette action est irréversible.",
+    "ru": "Все события будут удалены. Это действие нельзя отменить.",
+    "tr": "Tüm etkinlikler silinecek. Bu işlem geri alınamaz.",
+    "zh": "所有日程都将被删除，且无法撤销。"
+  },
+  "course_timetable_reimport": {
+    "de": "Neu importieren (ersetzt den Stundenplan)",
+    "en": "Import again (replaces the timetable)",
+    "ar": "إعادة الاستيراد (يستبدل الجدول)",
+    "es": "Importar de nuevo (reemplaza el horario)",
+    "fr": "Réimporter (remplace l’emploi du temps)",
+    "ru": "Импортировать заново (заменяет расписание)",
+    "tr": "Yeniden içe aktar (ders programının yerine geçer)",
+    "zh": "重新导入（替换课程表）"
+  },
+  "course_timetable_import_unavailable": {
+    "de": "Der Import ist noch nicht verfügbar.",
+    "en": "Importing is not available yet.",
+    "ar": "الاستيراد غير متاح بعد.",
+    "es": "La importación aún no está disponible.",
+    "fr": "L’importation n’est pas encore disponible.",
+    "ru": "Импорт пока недоступен.",
+    "tr": "İçe aktarma henüz kullanılamıyor.",
+    "zh": "导入功能暂不可用。"
+  },
+  "course_timetable_load_demo": {
+    "de": "Beispiel-Stundenplan laden (überschreibt)",
+    "en": "Load example timetable (overwrites)",
+    "ar": "تحميل جدول تجريبي (يستبدل)",
+    "es": "Cargar horario de ejemplo (sobrescribe)",
+    "fr": "Charger un emploi du temps d’exemple (remplace)",
+    "ru": "Загрузить пример расписания (перезаписывает)",
+    "tr": "Örnek ders programını yükle (üzerine yazar)",
+    "zh": "加载示例课程表（覆盖）"
+  },
+  "course_timetable_reimport_confirm": {
+    "de": "Dein Stundenplan wird durch einen neuen Import ersetzt. Eigene Termine gehen dabei verloren.",
+    "en": "Your timetable will be replaced by a new import. Your own events will be lost.",
+    "ar": "سيتم استبدال جدولك باستيراد جديد. ستفقد مواعيدك الخاصة.",
+    "es": "Tu horario será reemplazado por una nueva importación. Se perderán tus eventos propios.",
+    "fr": "Votre emploi du temps sera remplacé par une nouvelle importation. Vos événements personnels seront perdus.",
+    "ru": "Ваше расписание будет заменено новым импортом. Ваши собственные события будут потеряны.",
+    "tr": "Ders programın yeni bir içe aktarmayla değiştirilecek. Kendi etkinliklerin silinecek.",
+    "zh": "你的课程表将被新的导入替换，自建日程将会丢失。"
   }
 }

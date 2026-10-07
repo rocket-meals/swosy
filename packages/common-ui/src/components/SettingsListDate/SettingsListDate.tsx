@@ -9,6 +9,8 @@ import type { SettingsListProps } from '../SettingsList/types';
 import type { FormFieldStatusProps, AffixProps, ModalSheetBaseProps } from '../SettingsList/formFieldTypes';
 import type { PropsWithChildren } from 'react';
 import { borderRadiusContainer } from '../../constants/ui';
+import MyCalendarMonth from '../MyCalendarMonth';
+import type { MyCalendarMonthTexts } from '../MyCalendarMonth';
 
 type SettingsListDatePropsOwn = FormFieldStatusProps &
 	AffixProps & {
@@ -21,6 +23,10 @@ type SettingsListDatePropsOwn = FormFieldStatusProps &
 		placeholder?: string;
 		editable?: boolean;
 		saveLabel?: string;
+		/** Month/weekday names for the calendar below the input. Defaults to English. */
+		calendarTexts?: MyCalendarMonthTexts;
+		/** First day of the calendar week: 0 = Sunday, 1 = Monday (default). */
+		firstDayOfWeek?: number;
 	};
 
 export type SettingsListDateProps = PropsWithChildren<
@@ -43,8 +49,23 @@ function formatDateParts(day: string, month: string, year: string): string {
 	return `${day}.${month}.${year}`;
 }
 
+/** `DD.MM.YYYY` → `YYYY-MM-DD` (the calendar's format); null when the input is incomplete. */
+function toIsoDate(dateStr: string): string | null {
+	const parts = parseDateParts(dateStr);
+	if (!parts) return null;
+	return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
+/** `YYYY-MM-DD` → `DD.MM.YYYY`. */
+function fromIsoDate(isoDate: string): string {
+	const [year, month, day] = isoDate.split('-');
+	return formatDateParts(day ?? '', month ?? '', year ?? '');
+}
+
 type DatePickerSheetProps = ModalSheetBaseProps<string> & {
 	onConfirm: (value: string) => void;
+	calendarTexts?: MyCalendarMonthTexts;
+	firstDayOfWeek?: number;
 };
 
 const DatePickerSheet: React.FC<DatePickerSheetProps> = ({
@@ -52,6 +73,8 @@ const DatePickerSheet: React.FC<DatePickerSheetProps> = ({
 	onConfirm,
 	primaryColor,
 	saveLabel,
+	calendarTexts,
+	firstDayOfWeek,
 }) => {
 	const { theme } = useTheme();
 	const [text, setText] = useState(initialValue);
@@ -74,7 +97,6 @@ const DatePickerSheet: React.FC<DatePickerSheetProps> = ({
 						borderRadius: borderRadiusContainer,
 					},
 				]}
-				autoFocus
 				placeholder="DD.MM.YYYY"
 				placeholderTextColor={theme.sheet.placeholder}
 				selectionColor={primaryColor}
@@ -91,6 +113,15 @@ const DatePickerSheet: React.FC<DatePickerSheetProps> = ({
 			>
 				<Text style={[styles.saveButtonText, { color: theme.button.text }]}>{saveLabel}</Text>
 			</TouchableOpacity>
+			<View style={styles.calendarWrapper}>
+				<MyCalendarMonth
+					selectedDate={toIsoDate(text)}
+					onSelect={(isoDate) => onConfirm(fromIsoDate(isoDate))}
+					firstDayOfWeek={firstDayOfWeek}
+					primaryColor={primaryColor}
+					texts={calendarTexts}
+				/>
+			</View>
 		</View>
 	);
 };
@@ -110,6 +141,8 @@ const SettingsListDate: React.FC<SettingsListDateProps> = ({
 	suffix,
 	saveLabel = 'Save',
 	primaryColor,
+	calendarTexts,
+	firstDayOfWeek,
 	...settingsListProps
 }) => {
 	const { theme } = useTheme();
@@ -134,6 +167,8 @@ const SettingsListDate: React.FC<SettingsListDateProps> = ({
 					initialValue={initialValue}
 					primaryColor={resolvedPrimaryColor}
 					saveLabel={saveLabel}
+					calendarTexts={calendarTexts}
+					firstDayOfWeek={firstDayOfWeek}
 					onConfirm={(formatted) => {
 						const parts = parseDateParts(formatted);
 						if (!parts) return;
@@ -145,7 +180,7 @@ const SettingsListDate: React.FC<SettingsListDateProps> = ({
 				/>
 			),
 		});
-	}, [close, custom_type, id, isEditable, label, onChange, onError, placeholder, resolvedPrimaryColor, saveLabel, show, value]);
+	}, [calendarTexts, close, custom_type, firstDayOfWeek, id, isEditable, label, onChange, onError, placeholder, resolvedPrimaryColor, saveLabel, show, value]);
 
 	const decoratedValue = value ? `${prefix ?? ''}${value}${suffix ?? ''}` : '';
 
@@ -196,6 +231,9 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		marginTop: 12,
+	},
+	calendarWrapper: {
+		marginTop: 16,
 	},
 	saveButtonText: {
 		fontSize: 16,

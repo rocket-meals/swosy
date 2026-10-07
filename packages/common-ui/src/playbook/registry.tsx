@@ -27,6 +27,8 @@ import SettingsListEditable from '../components/SettingsListEditable';
 import SettingsListTextInput from '../components/SettingsListTextInput';
 import SettingsListNumberInput from '../components/SettingsListNumberInput';
 import SettingsListDate from '../components/SettingsListDate';
+import SettingsListColor from '../components/SettingsListColor';
+import MyCalendarMonth from '../components/MyCalendarMonth';
 import SettingsListTimeInput from '../components/SettingsListTimeInput';
 import SettingsListProgress from '../components/SettingsListProgress';
 import SettingsListLikeButton from '../components/SettingsListLikeButton';
@@ -196,6 +198,18 @@ const runtimeByName: Record<string, PlaybookEntryRuntime> = {
 			custom_type: 'date',
 			onChange: (_id: string, nextValue: string) => setKnob('value', nextValue),
 			onError: (_id: string, error: string) => setKnob('error', error),
+		}),
+	},
+	SettingsListColor: {
+		component: SettingsListColor,
+		bindProps: (_values, setKnob) => ({
+			onChange: (color: string) => setKnob('value', color),
+		}),
+	},
+	MyCalendarMonth: {
+		component: MyCalendarMonth,
+		bindProps: (_values, setKnob) => ({
+			onSelect: (dateString: string) => setKnob('selectedDate', dateString),
 		}),
 	},
 	SettingsListProgress: {

@@ -740,7 +740,8 @@ export default function Layout() {
 				<Drawer.Screen
 					name="course-timetable/index"
 					options={{
-						header: makeTranslatedMenuHeader(TranslationKeys.course_timetable, 'course_timetable'),
+						// The screen renders its own header (with the options button).
+						headerShown: false,
 						title: 'Course Timetable',
 					}}
 				/>
