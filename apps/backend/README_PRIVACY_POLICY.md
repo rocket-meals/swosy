@@ -97,7 +97,7 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 
 		Wir werten die Ereignisse ausschließlich zusammengefasst aus, zum Beispiel als Anzahl gerade geöffneter Sitzungen, als Verlauf über den Tag oder als Liste der am häufigsten geöffneten Bereiche und Inhalte.
 
-		Rechtsgrundlage ist unser berechtigtes Interesse nach Art. 6 Abs. 1 lit. f DSGVO, die App zu betreiben, Störungen früh zu erkennen und das Angebot an der tatsächlichen Nutzung auszurichten. Die Ereignisse werden nach spätestens 12 Monaten gelöscht.
+		Rechtsgrundlage ist unser berechtigtes Interesse nach Art. 6 Abs. 1 lit. f DSGVO, die App zu betreiben, Störungen früh zu erkennen und das Angebot an der tatsächlichen Nutzung auszurichten.
 
 	### Informationen von Nutzern mit einem Account
 
@@ -328,8 +328,6 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 	Die Bewertungen zu Speisen und anderen Leistungen werden hingegen nicht gelöscht, auch wenn du die App deinstallierst oder dieses Gericht nicht mehr auf den Speiseplänen steht. Die Bewertungen beinhalten, außer der UserID, die wie o.g. gelöscht oder anonymisiert wird, keine weiteren personenbezogenen Daten. Wir werden dich auch nicht bitten, zur Löschung oder Anonymisierung deiner Daten, zusätzliche personenbezogene Daten anzugeben.
 
 	Die Account ID wird in unseren Systemen während des Angebots der App genutzt. Serverlogs werden in der Regel so lange vorgehalten, wie es erforderlich ist, um etwaige Fehler analysieren zu können. Im Regelfall liegt dies bei 30 Tagen.
-
-	Die Ereignisse der anonymen Nutzungsstatistik enthalten keine Daten, die wir dir zuordnen können. Wir löschen sie nach spätestens 12 Monaten.
 
 
 
