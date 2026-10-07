@@ -120,6 +120,11 @@
       },
       {
         "type": "hook",
+        "name": "food-details-usage-event-hook",
+        "source": "src/food-details-usage-event-hook/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "food-feedback-guest-restriction-hook",
         "source": "src/food-feedback-guest-restriction-hook/index.ts"
       },
@@ -227,6 +232,11 @@
         "type": "endpoint",
         "name": "mcp-public-user-endpoint",
         "source": "src/mcp-public-user-endpoint/index.ts"
+      },
+      {
+        "type": "endpoint",
+        "name": "profile-avatar-endpoint",
+        "source": "src/profile-avatar-endpoint/index.ts"
       },
       {
         "type": "endpoint",
@@ -352,6 +362,7 @@
     "puppeteer-core": "^24.3.0",
     "repo-depkit-common": "workspace:*",
     "repo-depkit-common-backend": "workspace:*",
+    "repo-depkit-common-ui": "workspace:*",
     "short-unique-id": "^5.2.2",
     "spark-md5": "^3.0.2",
     "sqlite3": "^5.1.7",
