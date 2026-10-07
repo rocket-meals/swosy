@@ -1,4 +1,4 @@
-import { STUDIP_INSTANCES, StudipImportError, buildBasicAuthorization, fetchStudipSchedule, mapStudipSchedule, studipWeekdayToWeekday } from './StudipImporter';
+import { STUDIP_DEBUG_CORS_PROXY, STUDIP_INSTANCES, StudipImportError, buildBasicAuthorization, fetchStudipSchedule, mapStudipSchedule, studipWeekdayToWeekday } from './StudipImporter';
 
 const instance = STUDIP_INSTANCES[0]!;
 
@@ -71,6 +71,16 @@ describe('StudipImporter', () => {
 		const events = await fetchStudipSchedule(instance, ' max ', 'secret', fetchFn);
 		expect(calls).toEqual(['https://studip.uni-osnabrueck.de/jsonapi.php/v1/users/me', 'https://studip.uni-osnabrueck.de/jsonapi.php/v1/users/u%201/schedule']);
 		expect(events).toHaveLength(4);
+	});
+
+	it('routes both requests through the debug CORS proxy when given', async () => {
+		const calls: string[] = [];
+		const fetchFn = async (url: string) => {
+			calls.push(url);
+			return { status: 200, json: async () => (url.endsWith('/users/me') ? { data: { id: 'u1' } } : { data: [] }) };
+		};
+		await fetchStudipSchedule(instance, 'max', 'secret', fetchFn, { corsProxy: STUDIP_DEBUG_CORS_PROXY });
+		expect(calls).toEqual(['https://cors-anywhere.herokuapp.com/https://studip.uni-osnabrueck.de/jsonapi.php/v1/users/me', 'https://cors-anywhere.herokuapp.com/https://studip.uni-osnabrueck.de/jsonapi.php/v1/users/u1/schedule']);
 	});
 
 	it('reports wrong credentials and network failures', async () => {

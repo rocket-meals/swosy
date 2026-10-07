@@ -7820,14 +7820,14 @@
     "zh": "导入会替换你当前的课程表，包括自建日程。"
   },
   "course_timetable_import_web_hint": {
-    "de": "Im Browser blockiert Stud.IP den Import. Bitte nutze die App für iOS oder Android.",
-    "en": "Stud.IP blocks the import in the browser. Please use the iOS or Android app.",
-    "ar": "يحظر Stud.IP الاستيراد في المتصفح. يرجى استخدام تطبيق iOS أو Android.",
-    "es": "Stud.IP bloquea la importación en el navegador. Usa la app para iOS o Android.",
-    "fr": "Stud.IP bloque l’importation dans le navigateur. Veuillez utiliser l’application iOS ou Android.",
-    "ru": "В браузере Stud.IP блокирует импорт. Пожалуйста, используйте приложение для iOS или Android.",
-    "tr": "Stud.IP tarayıcıda içe aktarmayı engelliyor. Lütfen iOS veya Android uygulamasını kullan.",
-    "zh": "Stud.IP 会在浏览器中阻止导入，请使用 iOS 或 Android 应用。"
+    "de": "Der Import ist nur in der App auf dem Handy möglich (iOS oder Android).",
+    "en": "Importing is only possible in the phone app (iOS or Android).",
+    "ar": "الاستيراد ممكن فقط في تطبيق الهاتف (iOS أو Android).",
+    "es": "La importación solo es posible en la app del móvil (iOS o Android).",
+    "fr": "L’importation n’est possible que dans l’application mobile (iOS ou Android).",
+    "ru": "Импорт возможен только в мобильном приложении (iOS или Android).",
+    "tr": "İçe aktarma yalnızca telefon uygulamasında mümkün (iOS veya Android).",
+    "zh": "只能在手机应用中导入（iOS 或 Android）。"
   },
   "course_timetable_import_start": {
     "de": "Importieren",
@@ -7888,5 +7888,15 @@
     "ru": "Не удалось прочитать расписание из Stud.IP.",
     "tr": "Ders programı Stud.IP’den okunamadı.",
     "zh": "无法从 Stud.IP 读取课程表。"
+  },
+  "course_timetable_import_debug_proxy_hint": {
+    "de": "Debug-Modus: Im Browser laufen die Anfragen über cors-anywhere.herokuapp.com, die Zugangsdaten gehen also über diesen Dienst. Der Zugang muss dort vorher einmal freigeschaltet werden.",
+    "en": "Debug mode: in the browser the requests go through cors-anywhere.herokuapp.com, so the login passes that service. Access has to be unlocked there once beforehand.",
+    "ar": "وضع التصحيح: في المتصفح تمر الطلبات عبر cors-anywhere.herokuapp.com، أي أن بيانات الدخول تمر عبر هذه الخدمة. يجب تفعيل الوصول هناك مرة واحدة مسبقًا.",
+    "es": "Modo de depuración: en el navegador las solicitudes pasan por cors-anywhere.herokuapp.com, así que los datos de acceso pasan por ese servicio. Antes hay que desbloquear el acceso allí una vez.",
+    "fr": "Mode débogage : dans le navigateur, les requêtes passent par cors-anywhere.herokuapp.com, les identifiants transitent donc par ce service. L’accès doit y être débloqué une fois au préalable.",
+    "ru": "Режим отладки: в браузере запросы идут через cors-anywhere.herokuapp.com, то есть данные для входа проходят через этот сервис. Доступ там нужно один раз предварительно разблокировать.",
+    "tr": "Hata ayıklama modu: Tarayıcıda istekler cors-anywhere.herokuapp.com üzerinden gider, giriş bilgilerin de bu servisten geçer. Erişimin orada önceden bir kez açılması gerekir.",
+    "zh": "调试模式：在浏览器中，请求会经过 cors-anywhere.herokuapp.com，登录信息也会经过该服务。需要先在该网站上解锁一次访问。"
   }
 }

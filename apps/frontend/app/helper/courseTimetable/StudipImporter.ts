@@ -24,6 +24,13 @@ export type StudipInstance = {
 
 export const STUDIP_INSTANCES: StudipInstance[] = [{ id: 'uni-osnabrueck', name: 'Universität Osnabrück', baseUrl: 'https://studip.uni-osnabrueck.de' }];
 
+/**
+ * Public CORS proxy, only for developers: in debug mode the web app routes the Stud.IP requests
+ * through it (the login then passes a third party). Access has to be unlocked once per browser
+ * on that page.
+ */
+export const STUDIP_DEBUG_CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+
 export type StudipImportErrorCode = 'unauthorized' | 'network' | 'unexpected';
 
 export class StudipImportError extends Error {
@@ -111,7 +118,8 @@ async function getJson(fetchFn: FetchLike, url: string, authorization: string): 
 	} catch (error) {
 		throw new StudipImportError('network', error instanceof Error ? error.message : 'Network error');
 	}
-	if (response.status === 401 || response.status === 403) {
+	// Only 401 means a wrong login; a 403 also comes from the debug CORS proxy while it is locked.
+	if (response.status === 401) {
 		throw new StudipImportError('unauthorized', `Stud.IP responded with HTTP ${response.status}`);
 	}
 	if (response.status !== 200) {
@@ -129,9 +137,9 @@ export function buildBasicAuthorization(username: string, password: string): str
 }
 
 /** Loads the user's current semester schedule from Stud.IP. */
-export async function fetchStudipSchedule(instance: StudipInstance, username: string, password: string, fetchFn: FetchLike = fetch as unknown as FetchLike): Promise<CourseTimetableEvent[]> {
+export async function fetchStudipSchedule(instance: StudipInstance, username: string, password: string, fetchFn: FetchLike = fetch as unknown as FetchLike, options: { corsProxy?: string } = {}): Promise<CourseTimetableEvent[]> {
 	const authorization = buildBasicAuthorization(username.trim(), password);
-	const apiBase = `${instance.baseUrl}/jsonapi.php/v1`;
+	const apiBase = `${options.corsProxy ?? ''}${instance.baseUrl}/jsonapi.php/v1`;
 	const me = (await getJson(fetchFn, `${apiBase}/users/me`, authorization)) as { data?: { id?: string } };
 	const userId = me?.data?.id;
 	if (!userId) {

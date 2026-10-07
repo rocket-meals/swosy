@@ -807,6 +807,7 @@ export const TranslationKeys = {
 	course_timetable_import_privacy_hint: 'course_timetable_import_privacy_hint',
 	course_timetable_import_replace_hint: 'course_timetable_import_replace_hint',
 	course_timetable_import_web_hint: 'course_timetable_import_web_hint',
+	course_timetable_import_debug_proxy_hint: 'course_timetable_import_debug_proxy_hint',
 	course_timetable_import_start: 'course_timetable_import_start',
 	course_timetable_import_success: 'course_timetable_import_success',
 	course_timetable_import_empty: 'course_timetable_import_empty',

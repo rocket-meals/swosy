@@ -13,7 +13,8 @@ import { TranslationKeys } from '@/locales/keys';
 import { darkTheme } from '@/styles/themes';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { mergeImportedEvents } from '@/helper/courseTimetable/CourseTimetableModel';
-import { STUDIP_INSTANCES, StudipImportError, fetchStudipSchedule } from '@/helper/courseTimetable/StudipImporter';
+import { STUDIP_DEBUG_CORS_PROXY, STUDIP_INSTANCES, StudipImportError, fetchStudipSchedule } from '@/helper/courseTimetable/StudipImporter';
+import useDebugMode from '@/hooks/useDebugMode';
 
 const ERROR_KEYS: Record<string, TranslationKeys> = {
 	unauthorized: TranslationKeys.course_timetable_import_error_credentials,
@@ -44,6 +45,11 @@ const StudipImportSheet: React.FC = () => {
 	const [errorText, setErrorText] = useState<string | null>(null);
 
 	const instance = STUDIP_INSTANCES.find(entry => entry.id === instanceId);
+	// Stud.IP sends no CORS headers, so the browser blocks the requests. On web the import
+	// only runs in debug mode, through a public CORS proxy; everyone else uses the phone app.
+	const debugMode = useDebugMode();
+	const isWeb = Platform.OS === 'web';
+	const importBlockedOnWeb = isWeb && !debugMode;
 	const canSubmit = !!instance && username.trim().length > 0 && password.length > 0 && !loading;
 
 	const startImport = async () => {
@@ -51,7 +57,7 @@ const StudipImportSheet: React.FC = () => {
 		setLoading(true);
 		setErrorText(null);
 		try {
-			const imported = await fetchStudipSchedule(instance, username, password);
+			const imported = await fetchStudipSchedule(instance, username, password, undefined, isWeb ? { corsProxy: STUDIP_DEBUG_CORS_PROXY } : {});
 			if (imported.length === 0) {
 				// Nothing to import: keep the current timetable instead of wiping it.
 				setErrorText(translate(TranslationKeys.course_timetable_import_empty));
@@ -64,11 +70,24 @@ const StudipImportSheet: React.FC = () => {
 		} catch (error) {
 			const code = error instanceof StudipImportError ? error.code : 'unexpected';
 			console.warn('Stud.IP import failed:', code, error instanceof Error ? error.message : '');
-			setErrorText(translate(ERROR_KEYS[code] ?? TranslationKeys.course_timetable_import_error_unexpected));
+			const message = translate(ERROR_KEYS[code] ?? TranslationKeys.course_timetable_import_error_unexpected);
+			// Developers get the technical reason too (e.g. the CORS proxy answering 403 while locked).
+			setErrorText(debugMode && error instanceof Error ? `${message} (${error.message})` : message);
 		} finally {
 			setLoading(false);
 		}
 	};
+
+	if (importBlockedOnWeb) {
+		return (
+			<View style={styles.container}>
+				<View style={[styles.hint, { backgroundColor: theme.screen.iconBg }]}>
+					<MaterialCommunityIcons name="cellphone-arrow-down" size={20} color={theme.screen.text} />
+					<Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.course_timetable_import_web_hint)}</Text>
+				</View>
+			</View>
+		);
+	}
 
 	return (
 		<View style={styles.container}>
@@ -87,7 +106,7 @@ const StudipImportSheet: React.FC = () => {
 			<SettingsListTextInputField placeholder={translate(TranslationKeys.password)} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoCorrect={false} textContentType="password" returnKeyType="done" onSubmitEditing={startImport} />
 
 			<Text style={[styles.replaceHint, { color: theme.screen.placeholder }]}>{translate(TranslationKeys.course_timetable_import_replace_hint)}</Text>
-			{Platform.OS === 'web' ? <Text style={[styles.replaceHint, { color: theme.screen.placeholder }]}>{translate(TranslationKeys.course_timetable_import_web_hint)}</Text> : null}
+			{isWeb && debugMode ? <Text style={[styles.replaceHint, { color: theme.screen.placeholder }]}>{translate(TranslationKeys.course_timetable_import_debug_proxy_hint)}</Text> : null}
 			{errorText ? <Text style={[styles.error, { color: theme.sheet.inputBorderInvalid }]}>{errorText}</Text> : null}
 
 			<TouchableOpacity onPress={startImport} disabled={!canSubmit} style={[styles.button, { backgroundColor: accentColor, opacity: canSubmit ? 1 : 0.5 }]} accessibilityRole="button" accessibilityState={{ disabled: !canSubmit, busy: loading }}>

@@ -81,6 +81,17 @@ const CourseTimetableScreen = () => {
 	const isWide = width >= WEEK_VIEW_MIN_WIDTH;
 	const showSidePanel = width >= SIDE_PANEL_MIN_WIDTH;
 	const [viewMode, setViewMode] = useState<ViewMode>(isWide ? 'week' : 'day');
+	// Tablet and desktop default to the week, phones to the day. On web the first render can
+	// report a smaller width than the window really has, so follow the width until the user
+	// picks a view themselves.
+	const [viewModeChosen, setViewModeChosen] = useState(false);
+	useEffect(() => {
+		if (!viewModeChosen) setViewMode(isWide ? 'week' : 'day');
+	}, [isWide, viewModeChosen]);
+	const chooseViewMode = (mode: ViewMode) => {
+		setViewModeChosen(true);
+		setViewMode(mode);
+	};
 	const [selectedDate, setSelectedDate] = useState(() => format(new Date(), DATE_FORMAT));
 	const [now, setNow] = useState(() => new Date());
 
@@ -205,7 +216,7 @@ const CourseTimetableScreen = () => {
 	const segment = (mode: ViewMode, label: string) => {
 		const active = viewMode === mode;
 		return (
-			<TouchableOpacity key={mode} onPress={() => setViewMode(mode)} style={[styles.segment, active && { backgroundColor: theme.screen.background }]} accessibilityRole="button" accessibilityState={{ selected: active }}>
+			<TouchableOpacity key={mode} onPress={() => chooseViewMode(mode)} style={[styles.segment, active && { backgroundColor: theme.screen.background }]} accessibilityRole="button" accessibilityState={{ selected: active }}>
 				<Text style={[styles.segmentText, { color: active ? theme.screen.text : theme.screen.placeholder }, active && styles.segmentTextActive]}>{label}</Text>
 			</TouchableOpacity>
 		);
@@ -307,15 +318,14 @@ const styles = StyleSheet.create({
 	navButton: {
 		padding: 8,
 	},
+	// Same type as the other screen headers (CustomMenuHeader, food offers).
 	navLabel: {
-		fontSize: 17,
-		fontFamily: 'Poppins_700Bold',
+		fontSize: 18,
+		fontFamily: 'Poppins_400Regular',
 		paddingHorizontal: 4,
 	},
 	dayLabel: {
 		flexShrink: 1,
-		fontSize: 15,
-		fontFamily: 'Poppins_600SemiBold',
 	},
 	segmented: {
 		flexDirection: 'row',
