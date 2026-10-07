@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { AppFeedbackChatStatusHelper, AppFeedbackSourceFilter } from '../AppFeedbackChatStatusHelper';
+import { AppFeedbackChatStatusHelper, AppFeedbackSourceFilter, AppFeedbackState } from '../AppFeedbackChatStatusHelper';
 import { AppFeedbackContentHelper } from '../AppFeedbackContentHelper';
 import { ChatConversationState } from '../ChatConversationState';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus } from '../FoodFeedbackChatStatusHelper';
@@ -17,10 +17,28 @@ describe('AppFeedbackChatStatusHelper', () => {
     expect(AppFeedbackChatStatusHelper.getStatus({ source_identifier: 'apple', response: 'Danke!' })).toBe(FoodFeedbackChatStatus.WAITING_FOR_USER);
   });
 
+  it('counts a feedback without chat marked as closed as done', () => {
+    expect(AppFeedbackChatStatusHelper.getStatus({ source_identifier: 'apple', response: null, state: AppFeedbackState.CLOSED })).toBe(FoodFeedbackChatStatus.RESOLVED);
+    expect(AppFeedbackChatStatusHelper.getStatus({ source_identifier: 'apple', response: 'Danke!', state: AppFeedbackState.CLOSED })).toBe(FoodFeedbackChatStatus.RESOLVED);
+    expect(AppFeedbackChatStatusHelper.getStatus({ chat: null, state: AppFeedbackState.CLOSED })).toBe(FoodFeedbackChatStatus.RESOLVED);
+    expect(AppFeedbackChatStatusHelper.getStatus({ chat: null, state: AppFeedbackState.OPEN })).toBe(FoodFeedbackChatStatus.NEW);
+    // A chat decides on its own.
+    expect(AppFeedbackChatStatusHelper.getStatus({ chat: { id: 'c', conversation_state: ChatConversationState.WAITING_FOR_SUPPORT }, state: AppFeedbackState.CLOSED })).toBe(FoodFeedbackChatStatus.WAITING_FOR_SUPPORT);
+    expect(AppFeedbackChatStatusHelper.getOpenStatus({ source_identifier: 'apple', response: 'Danke!' })).toBe(FoodFeedbackChatStatus.WAITING_FOR_USER);
+  });
+
+  it('keeps the status without chat only for store reviews and feedbacks without profile', () => {
+    expect(AppFeedbackChatStatusHelper.isStatusWithoutChat({ source_identifier: 'apple' })).toBe(true);
+    expect(AppFeedbackChatStatusHelper.isStatusWithoutChat({ profile: null, chat: null })).toBe(true);
+    expect(AppFeedbackChatStatusHelper.isStatusWithoutChat({ profile: 'p', chat: null })).toBe(false);
+    expect(AppFeedbackChatStatusHelper.isStatusWithoutChat({ profile: null, chat: 'c' })).toBe(false);
+  });
+
   describe('buildFilter', () => {
     const storeReview = { source_identifier: { _in: ['apple', 'google_play'] } };
     const notStoreReview = { _or: [{ source_identifier: { _null: true } }, { source_identifier: { _nin: ['apple', 'google_play'] } }] };
-    const newFeedback = { _or: [{ _and: [notStoreReview, { chat: { _null: true } }] }, { _and: [storeReview, { response: { _empty: true } }] }] };
+    const notClosed = { _or: [{ state: { _null: true } }, { state: { _neq: 'closed' } }] };
+    const newFeedback = { _and: [notClosed, { _or: [{ _and: [notStoreReview, { chat: { _null: true } }] }, { _and: [storeReview, { response: { _empty: true } }] }] }] };
     const inState = (state: ChatConversationState) => ({ chat: { conversation_state: { _eq: state } } });
 
     it('counts feedbacks without chat and unanswered store reviews as new', () => {
@@ -30,13 +48,18 @@ describe('AppFeedbackChatStatusHelper', () => {
 
     it('counts answered store reviews as waiting for the user', () => {
       expect(AppFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.WAITING_FOR_USER)).toEqual({
-        _or: [inState(ChatConversationState.WAITING_FOR_USER), { _and: [storeReview, { response: { _nempty: true } }] }],
+        _or: [inState(ChatConversationState.WAITING_FOR_USER), { _and: [storeReview, { response: { _nempty: true } }, notClosed] }],
+      });
+    });
+
+    it('counts resolved chats and closed feedbacks without chat as done', () => {
+      expect(AppFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.RESOLVED)).toEqual({
+        _or: [inState(ChatConversationState.RESOLVED), { _and: [{ chat: { _null: true } }, { state: { _eq: 'closed' } }] }],
       });
     });
 
     it('filters by chat state otherwise, without requiring a comment', () => {
       expect(AppFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.WAITING_FOR_SUPPORT)).toEqual(inState(ChatConversationState.WAITING_FOR_SUPPORT));
-      expect(AppFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.RESOLVED)).toEqual(inState(ChatConversationState.RESOLVED));
       expect(AppFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.ALL)).toBeUndefined();
     });
 
@@ -50,6 +73,8 @@ describe('AppFeedbackChatStatusHelper', () => {
       expect(AppFeedbackChatStatusHelper.matchesFilter({ source_identifier: 'apple', response: 'Danke' }, FoodFeedbackChatFilter.WAITING_FOR_USER)).toBe(true);
       expect(AppFeedbackChatStatusHelper.matchesFilter({ source_identifier: 'apple' }, FoodFeedbackChatFilter.OPEN)).toBe(true);
       expect(AppFeedbackChatStatusHelper.matchesFilter(answered, FoodFeedbackChatFilter.ALL)).toBe(true);
+      expect(AppFeedbackChatStatusHelper.matchesFilter({ source_identifier: 'apple', state: 'closed' }, FoodFeedbackChatFilter.OPEN)).toBe(false);
+      expect(AppFeedbackChatStatusHelper.matchesFilter({ source_identifier: 'apple', state: 'closed' }, FoodFeedbackChatFilter.RESOLVED)).toBe(true);
     });
   });
 

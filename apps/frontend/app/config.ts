@@ -204,7 +204,8 @@ export function getVersionPatch() {
         // 93: course timetable: empty-state import button with a short label; empty state and Stud.IP import sheet use SettingsList rows instead of buttons that cut off their labels
         // 94: course timetable: day label is the smart readable date (Heute, Morgen, weekday), navigation and day/week switch in one row
         // 95: Stud.IP import reads locations sent as an object too; the event modal shows the event JSON (with the Stud.IP data) in debug mode
-        return 95;
+        // 96: common: app feedbacks without chat can be marked as done (app_feedbacks.state)
+        return 96;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

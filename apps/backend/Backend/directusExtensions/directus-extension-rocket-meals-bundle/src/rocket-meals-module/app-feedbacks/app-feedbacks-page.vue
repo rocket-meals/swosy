@@ -3,7 +3,8 @@
  * Page "App-Feedbacks": the latest feedbacks on the app – from the feedback form in the app and
  * reviews pulled from the App Store and Google Play – filterable by chat status, source and
  * thumbs up / down, sortable by date. Feedbacks can be marked as done right from the list – one
- * by one or several selected at once. Every row leads to the chat with the author
+ * by one or several selected at once, without answering (also store reviews and anonymous ones,
+ * e.g. positive feedback). Every row leads to the chat with the author
  * (`app-feedback-chat-page.vue`), store reviews to their public answer.
  */
 import { useApi, useStores } from '@directus/extensions-sdk';

@@ -70,7 +70,8 @@ export function getVersionPatch() {
 	// 40: common: AppFeedbackChatStatusHelper (status, filters and chat of app feedbacks)
 	// 41: common-ui: avatar SVG generation moved to MyAvatar/AvatarSvg (no react-native), shared with the backend
 	// 42: course timetable redesign (common-ui: MyCalendarMonth in SettingsListDate, MyColorSelection, SettingsListColor)
-	return 42;
+	// 43: common: app feedbacks without chat can be marked as done (app_feedbacks.state)
+	return 43;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

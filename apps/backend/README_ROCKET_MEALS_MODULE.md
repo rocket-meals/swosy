@@ -65,7 +65,11 @@ Dieselben Status wie bei den Speise-Feedbacks, ebenfalls aus `chats.conversation
 - Feedbacks ohne Profil (anonym) können nicht im Chat beantwortet werden; steht eine Kontakt-E-Mail
   dabei, verlinkt die Seite sie.
 - Store-Bewertungen haben nie einen Chat: ohne Antwort im Store sind sie „Neu“, mit Antwort
-  „Beantwortet“. „Als erledigt markieren“ gibt es für sie nicht.
+  „Beantwortet“.
+- Store-Bewertungen und anonyme Feedbacks lassen sich trotzdem ohne Antwort als erledigt markieren
+  (z. B. positives Feedback) – in der Liste einzeln oder per Checkbox, im Chat über den Status-Chip
+  (dort auch wieder öffnen). Da es keinen Chat gibt, steht das in `app_feedbacks.state = closed`;
+  ein Feedback mit Chat richtet sich weiter nur nach dem Chat.
 
 Die gemeinsamen Teile beider Feedback-Seiten liegen in `src/rocket-meals-module/support-chat/`
 (Verlauf + Eingabe, Status-Menü) und `src/helpers/rocket-meals-module/SupportChatActions.ts`
