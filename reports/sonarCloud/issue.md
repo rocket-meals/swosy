@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
-| 🐛 Reliability | 373 | 48 |
+| 🐛 Reliability | 375 | 48 |
 | 🔧 Maintainability | 645 | 0 |
 
-**Total issues:** 1020 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1022 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -22,7 +22,7 @@
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:10
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L10
 
-## 🐛 Reliability (48/373)
+## 🐛 Reliability (48/375)
 
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
   apps/accessibilityTester/src/index.ts:104
@@ -65,8 +65,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/admin-password-setup-from-env/index.ts#L8
 
 - **Async arrow function has no 'await' expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts:108
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts#L108
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts:80
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts#L80
 
 - **Async arrow function has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apple-secret-rotator/index.ts:4

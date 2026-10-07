@@ -4743,7 +4743,7 @@
         ]
       },
       "curveType": "stepline",
-      "field": "credit_balance_date_updated"
+      "field": "id"
     },
     "type": "metric",
     "color": null,

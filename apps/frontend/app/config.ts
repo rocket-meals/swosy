@@ -191,9 +191,10 @@ export function getVersionPatch() {
         // 83: MCP instruction: providers, steps and token flow from common McpInstructionHelper, texts in commonTranslations
         // 84: chat: the initial message (e.g. a food feedback comment) is shown as a labelled
         //     context card instead of a bubble, so it is not taken for a message of either side
-        // 85: common-ui: avatar SVG generation moved to MyAvatar/AvatarSvg (no react-native), shared with the backend
-        // 86: profiles.date_updated is also set on app start (web too) and when the app returns to the foreground
-        return 86;
+        // 85: common: AppFeedbackChatStatusHelper (status, filters and chat of app feedbacks)
+        // 86: common-ui: avatar SVG generation moved to MyAvatar/AvatarSvg (no react-native), shared with the backend
+        // 87: profiles.date_updated is also set on app start (web too) and when the app returns to the foreground
+        return 87;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -1,5 +1,5 @@
 import {
-  AppFeedbackContentHelper,
+  AppFeedbackChatStatusHelper,
   ChatHelper,
   CollectionNames,
   DatabaseTypes,
@@ -12,9 +12,6 @@ import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
 import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'activity_auto_cleanup';
-
-const CHAT_ALIAS_MAX_LENGTH = 255;
-const CHAT_ALIAS_PREFIX = 'Feedback: ';
 
 type AppFeedbackMailTemplateVariablesType = {
   subject: string;
@@ -39,28 +36,6 @@ type AppFeedbackMailTemplateVariablesType = {
     };
   }[];
 };
-
-/**
- * Build the chat title shown in the chat list of the app. The `Feedback: ` prefix makes it
- * obvious what kind of chat this is; the feedback id is the fallback when there is no title.
- */
-function getChatAliasForAppFeedback(app_feedback: DatabaseTypes.AppFeedbacks): string {
-  const title = (app_feedback.title || '').trim();
-  const alias = CHAT_ALIAS_PREFIX + (title.length > 0 ? title : app_feedback.id);
-  return alias.substring(0, CHAT_ALIAS_MAX_LENGTH);
-}
-
-/**
- * The first message of the chat repeats the request, so both sides see right away what the
- * conversation is about. The markdown renderer of the app turns the single newline into a
- * line break, so title and content stay on their own lines.
- */
-function getChatInitialMessageForAppFeedback(app_feedback: DatabaseTypes.AppFeedbacks): string {
-  const title = (app_feedback.title || '').trim();
-  // Older feedbacks still carry the app state dump inside the content - never repeat that here.
-  const content = AppFeedbackContentHelper.stripAppState(app_feedback.content);
-  return `Title: ${title}\nContent: ${content}`;
-}
 
 /**
  * Create a support chat for a freshly created app feedback of a user with a profile, so that
@@ -92,10 +67,7 @@ async function createChatForAppFeedback(
   const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 
   const chatId = await chatsHelper.createOne(
-    ChatHelper.buildSupportChat({
-      alias: getChatAliasForAppFeedback(app_feedback),
-      initialMessage: getChatInitialMessageForAppFeedback(app_feedback),
-    })
+    AppFeedbackChatStatusHelper.buildChatForFeedback(app_feedback)
   );
 
   await chatsParticipantsHelper.createOne(ChatHelper.buildParticipant(String(chatId), String(profileId)));

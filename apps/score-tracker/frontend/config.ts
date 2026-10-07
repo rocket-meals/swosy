@@ -67,8 +67,9 @@ export function getVersionPatch() {
 	// 37: common: food feedback status can be set by hand (FoodFeedbackChatStatusHelper)
 	// 38: common: McpAccessHelper public token "PUBLIC" + /mcp-public-user endpoint; common-ui: monospace inline code in markdown
 	// 39: common: McpInstructionHelper + MCP instruction texts in commonTranslations
-	// 40: common-ui: avatar SVG generation moved to MyAvatar/AvatarSvg (no react-native), shared with the backend
-	return 40;
+	// 40: common: AppFeedbackChatStatusHelper (status, filters and chat of app feedbacks)
+	// 41: common-ui: avatar SVG generation moved to MyAvatar/AvatarSvg (no react-native), shared with the backend
+	return 41;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

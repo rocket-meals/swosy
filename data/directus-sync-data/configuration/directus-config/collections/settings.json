@@ -1,14 +1,13 @@
 [
   {
-    "public_note": null,
+    "product_updates": false,
+    "collaborative_editing_enabled": false,
+    "public_registration_verify_email": true,
+    "public_registration": false,
+    "mcp_enabled": true,
+    "mcp_system_prompt_enabled": true,
+    "mcp_allow_deletes": false,
     "auth_login_attempts": 25,
-    "auth_password_policy": null,
-    "storage_asset_transform": "all",
-    "storage_asset_presets": null,
-    "custom_css": null,
-    "storage_default_folder": null,
-    "basemaps": null,
-    "mapbox_key": null,
     "module_bar": [
       {
         "type": "module",
@@ -57,24 +56,59 @@
         "enabled": true
       }
     ],
-    "project_descriptor": null,
-    "default_language": "de-DE",
+    "mcp_system_prompt": null,
+    "public_note": null,
+    "ai_system_prompt": null,
+    "ai_openai_compatible_base_url": null,
+    "custom_css": null,
+    "ai_openai_compatible_name": null,
     "custom_aspect_ratios": null,
-    "default_appearance": "auto",
-    "default_theme_light": null,
+    "ai_openai_compatible_models": null,
+    "ai_openai_allowed_models": [
+      "gpt-5-nano",
+      "gpt-5-mini",
+      "gpt-5"
+    ],
+    "ai_anthropic_allowed_models": [
+      "claude-haiku-4-5",
+      "claude-sonnet-4-5"
+    ],
+    "ai_google_allowed_models": [
+      "gemini-flash-latest",
+      "gemini-flash-lite-latest",
+      "gemini-3.6-flash",
+      "gemini-3.5-flash"
+    ],
     "theme_light_overrides": null,
-    "default_theme_dark": null,
     "theme_dark_overrides": null,
-    "report_error_url": null,
-    "report_bug_url": null,
-    "report_feature_url": null,
-    "public_registration": false,
-    "public_registration_verify_email": true,
-    "public_registration_role": null,
     "public_registration_email_filter": null,
-    "_syncId": "_sync_default_settings",
-    "mcp_enabled": true,
-    "mcp_allow_deletes": false,
-    "mcp_system_prompt_enabled": true
+    "visual_editor_urls": [
+      {
+        "url": "https://test.rocket-meals.de/rocket-meals/api/"
+      }
+    ],
+    "storage_asset_presets": null,
+    "basemaps": null,
+    "project_name": "Test Server",
+    "project_status": null,
+    "org_name": "Baumgartner Software UG (haftungsbeschränkt)",
+    "project_usage": "commercial",
+    "project_owner": "info@baumgartner-software.de",
+    "mcp_prompts_collection": null,
+    "report_feature_url": null,
+    "report_bug_url": null,
+    "report_error_url": null,
+    "default_theme_dark": null,
+    "default_theme_light": null,
+    "default_appearance": "auto",
+    "default_language": "de-DE",
+    "project_descriptor": null,
+    "mapbox_key": null,
+    "storage_asset_transform": "all",
+    "auth_password_policy": null,
+    "project_color": "#01569A",
+    "storage_default_folder": null,
+    "public_registration_role": null,
+    "_syncId": "_sync_default_settings"
   }
 ]

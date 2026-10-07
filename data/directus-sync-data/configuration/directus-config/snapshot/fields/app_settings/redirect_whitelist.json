@@ -36,6 +36,7 @@
     },
     "readonly": false,
     "required": false,
+    "searchable": true,
     "sort": 1,
     "special": [
       "cast-json"

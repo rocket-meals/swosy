@@ -168,11 +168,12 @@ describe('RocketMealsModulePages', () => {
     expect(RocketMealsModulePages.getRoute()).toBe('/rocket-meals');
     expect(RocketMealsModulePages.getRoute(RocketMealsModulePages.FOOD_FEEDBACKS)).toBe('/rocket-meals/food-feedbacks');
     expect(RocketMealsModulePages.getRoute(RocketMealsModulePages.FOOD_FEEDBACKS, 'a b')).toBe('/rocket-meals/food-feedbacks/a%20b');
+    expect(RocketMealsModulePages.getRoute(RocketMealsModulePages.APP_FEEDBACKS, 'f1')).toBe('/rocket-meals/app-feedbacks/f1');
     expect(RocketMealsModulePages.getRoute(RocketMealsModulePages.MCP_INSTRUCTION)).toBe('/rocket-meals/mcp-instruction');
   });
 
-  it('lists the MCP instruction right after the food feedbacks, the live pulse last', () => {
-    expect(RocketMealsModulePages.PAGES).toEqual([RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE]);
+  it('lists the app feedbacks after the food feedbacks, then the MCP instruction, the live pulse last', () => {
+    expect(RocketMealsModulePages.PAGES).toEqual([RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE]);
   });
 });
 
