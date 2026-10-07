@@ -170,11 +170,9 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 
 			- date_updated - Das letzte Änderungsdatum deines Profils. Es wird bei Änderungen an deinem Profil aktualisiert und zusätzlich, wenn du die App öffnest oder in den Vordergrund holst (höchstens alle paar Minuten). Dadurch können wir nachvollziehen, wann Änderungen getätigt wurden, und wann du zuletzt aktiv warst. Den Zeitpunkt der letzten Aktivität nutzen wir für die Betriebsübersicht für Administratoren (siehe Abschnitt „Betriebsübersicht für Administratoren“).
 
-			- visited_pages - Die von dir aufgerufenen Menüpunkte und Bereiche der App speichern wir nicht in deinem Profil. Welche Bereiche der App häufig genutzt werden, erfassen wir nur ohne Bezug zu deinem Account (siehe Abschnitt „Anonyme Nutzungsstatistik“).
-
 		#### Informationen zu deinem Gerät
 
-			- id - Eine vom Server generierte Nummer für dein Gerät. Da es Personen gibt, welche mehrere Geräte haben, unterscheiden wir zwischen diesen angemeldeten Geräten. Dieser Nummer ordnen wir weitere Informationen zu: PushNotificationToken, DeviceOS, DeviceID und StreamViews.
+			- id - Eine vom Server generierte Nummer für dein Gerät. Da es Personen gibt, welche mehrere Geräte haben, unterscheiden wir zwischen diesen angemeldeten Geräten. Dieser Nummer ordnen wir weitere Informationen zu: PushNotificationToken, DeviceOS und DeviceID.
 
 			- DeviceOS - Das Betriebssystem und die Version deines Smartphones. Anhand dieser Informationen können wir Fehlerabstürze und die zu testenden Geräte überblicken.
 
