@@ -30,6 +30,8 @@ export type CourseTimetableEvent = {
 	source?: CourseTimetableEventSource;
 	/** Building the room belongs to, when the source knows it. */
 	building_id?: string | null;
+	/** The entry exactly as the import source sent it (e.g. the Stud.IP JSON:API resource), shown in debug mode. */
+	source_data?: unknown;
 };
 
 /** Short weekday names used in the stored `{ id, name }` weekday object (and translation keys). */
@@ -121,6 +123,7 @@ export function normalizeCourseTimetable(raw: unknown): CourseTimetableEvent[] {
 			kind: typeof item.kind === 'string' ? item.kind : null,
 			source: item.source === 'import' ? 'import' : 'manual',
 			building_id: typeof item.building_id === 'string' ? item.building_id : null,
+			...(item.source_data !== undefined && item.source_data !== null ? { source_data: item.source_data } : {}),
 		});
 	}
 	return sortEvents(events);
@@ -149,6 +152,7 @@ export function serializeCourseTimetable(events: CourseTimetableEvent[]): Record
 			kind: event.kind ?? null,
 			source: event.source ?? 'manual',
 			building_id: event.building_id ?? null,
+			...(event.source_data !== undefined ? { source_data: event.source_data } : {}),
 		};
 	}
 	return result;

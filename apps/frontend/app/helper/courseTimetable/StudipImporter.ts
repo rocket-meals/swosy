@@ -110,6 +110,32 @@ function textOrNull(value: unknown): string | null {
 	return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
 }
 
+/** A room name from one `locations` entry: a plain string or an object with a name-like field. */
+function locationName(value: unknown): string | null {
+	if (typeof value === 'string') return textOrNull(value);
+	if (value && typeof value === 'object') {
+		const record = value as Record<string, unknown>;
+		return textOrNull(record.name) ?? textOrNull(record.room) ?? textOrNull(record.title) ?? textOrNull(record.description);
+	}
+	return null;
+}
+
+/**
+ * Room names of a cycle date. Stud.IP sends `locations` as a list, but a PHP array with
+ * gaps in its keys (e.g. after `array_unique`) arrives as an object; both are read.
+ */
+export function studipLocations(value: unknown): string[] {
+	if (typeof value === 'string') return textOrNull(value) ? [value.trim()] : [];
+	if (!value || typeof value !== 'object') return [];
+	const entries = Array.isArray(value) ? value : Object.values(value as Record<string, unknown>);
+	const names: string[] = [];
+	for (const entry of entries) {
+		const name = locationName(entry);
+		if (name && !names.includes(name)) names.push(name);
+	}
+	return names;
+}
+
 /** Maps a `users/{id}/schedule` response to timetable events (source `import`). */
 export function mapStudipSchedule(response: unknown): CourseTimetableEvent[] {
 	const data = (response as { data?: unknown })?.data;
@@ -137,7 +163,7 @@ export function mapStudipSchedule(response: unknown): CourseTimetableEvent[] {
 		if (!weekday || !isValidTime(start) || !isValidTime(end) || timeToMinutes(start) >= timeToMinutes(end)) continue;
 
 		const title = textOrNull(attributes.title) ?? '';
-		const locations = Array.isArray(attributes.locations) ? attributes.locations.filter((location): location is string => typeof location === 'string' && location.trim().length > 0) : [];
+		const locations = studipLocations(attributes.locations ?? attributes.location ?? attributes.room);
 		const group = resource.relationships?.owner?.data?.id ?? title;
 		events.push({
 			id: `studip-${resource.type}-${resource.id ?? events.length}`,
@@ -150,6 +176,7 @@ export function mapStudipSchedule(response: unknown): CourseTimetableEvent[] {
 			weekday,
 			source: 'import',
 			building_id: null,
+			source_data: resource,
 		});
 	}
 	return events;

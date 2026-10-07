@@ -5,6 +5,7 @@ import { MyColorSelection, SettingsListGroupTitle, SettingsListSelectOptionSingl
 import { myContrastColor } from '@/helper/ColorHelper';
 import SettingsList from '@/components/SettingsList';
 import ProjectButton from '@/components/ProjectButton';
+import DebugView from '@/components/DebugView';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
@@ -298,6 +299,9 @@ const CourseEventDetailsSheet: React.FC<CourseEventDetailsSheetProps> = ({ event
 					<Text style={[styles.deleteText, { color: theme.sheet.inputBorderInvalid }]}>{translate(TranslationKeys.course_timetable_delete_event)}</Text>
 				</TouchableOpacity>
 			)}
+
+			{/* Debug mode only: the stored event, including what the import source sent (source_data). */}
+			<DebugView title="Debug: JSON" logs={[JSON.stringify(event, null, 2)]} />
 		</View>
 	);
 };
