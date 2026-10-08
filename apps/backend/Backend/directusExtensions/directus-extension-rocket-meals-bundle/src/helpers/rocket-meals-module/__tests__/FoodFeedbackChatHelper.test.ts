@@ -203,3 +203,19 @@ describe('AppExtensionLanguageHelper.resolveUiLanguage', () => {
     expect(navigationLabel('en-US')).toBe('Dish feedback');
   });
 });
+
+describe('FoodFeedbackChatHelper.getNickname', () => {
+  it('returns the trimmed nickname of a loaded profile', () => {
+    expect(FoodFeedbackChatHelper.getNickname({ nickname: '  Mensafan ' })).toBe('Mensafan');
+  });
+
+  it('is undefined without a loaded profile or nickname', () => {
+    expect(FoodFeedbackChatHelper.getNickname(undefined)).toBeUndefined();
+    expect(FoodFeedbackChatHelper.getNickname('profile-id')).toBeUndefined();
+    expect(FoodFeedbackChatHelper.getNickname({ nickname: '   ' })).toBeUndefined();
+  });
+
+  it('labels the author as "Nutzer: <Nickname>"', () => {
+    expect(AppExtensionLanguageHelper.translate(BackendTranslationKeys.rocket_meals_module_user_with_nickname, 'de-DE', { nickname: 'Mensafan' })).toBe('Nutzer: Mensafan');
+  });
+});

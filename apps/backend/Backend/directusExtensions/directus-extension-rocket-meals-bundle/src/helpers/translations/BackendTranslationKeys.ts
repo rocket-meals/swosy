@@ -96,6 +96,7 @@ export const BackendTranslationKeys = {
   rocket_meals_module_chat_empty: 'rocket_meals_module_chat_empty',
   rocket_meals_module_chat_not_possible: 'rocket_meals_module_chat_not_possible',
   rocket_meals_module_user: 'rocket_meals_module_user',
+  rocket_meals_module_user_with_nickname: 'rocket_meals_module_user_with_nickname',
   rocket_meals_module_support: 'rocket_meals_module_support',
   rocket_meals_module_rating: 'rocket_meals_module_rating',
   rocket_meals_module_canteen: 'rocket_meals_module_canteen',

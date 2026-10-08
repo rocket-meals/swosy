@@ -76,6 +76,8 @@ const selectableStatuses = computed<FoodFeedbackChatStatus[]>(() => {
   }
   return [AppFeedbackChatStatusHelper.getOpenStatus(feedback.value), FoodFeedbackChatStatus.RESOLVED];
 });
+const userNickname = computed(() => FoodFeedbackChatHelper.getNickname(feedback.value?.profile));
+const userLabel = computed(() => (userNickname.value ? translate(BackendTranslationKeys.rocket_meals_module_user_with_nickname, { nickname: userNickname.value }) : translate(BackendTranslationKeys.rocket_meals_module_user)));
 const feedbackTitle = computed(() => (feedback.value ? AppFeedbackChatHelper.getTitle(feedback.value) : undefined));
 const title = computed(() => feedbackTitle.value || translate(page.labelKey));
 
@@ -316,7 +318,7 @@ watch(() => props.feedbackId, load);
 
         <template v-if="isWithoutConversation">
           <div class="feedback-text">
-            <div class="type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_user) }} · {{ formatDateTime(opening?.date) }}</div>
+            <div class="type-note">{{ userLabel }} · {{ formatDateTime(opening?.date) }}</div>
             <div class="feedback-text-content">{{ opening?.text }}</div>
           </div>
 
@@ -350,6 +352,7 @@ watch(() => props.feedbackId, load);
         <support-chat-conversation
           v-else
           :opening="opening"
+          :user-nickname="userNickname"
           :messages="messages"
           :can-write="canWrite"
           :empty-text="emptyText"

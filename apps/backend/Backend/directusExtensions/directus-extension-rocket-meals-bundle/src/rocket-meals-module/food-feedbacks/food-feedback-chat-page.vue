@@ -203,6 +203,7 @@ watch(() => props.feedbackId, load);
 
         <support-chat-conversation
           :opening="{ text: feedback.comment ?? '', date: feedback.date_created }"
+          :user-nickname="FoodFeedbackChatHelper.getNickname(feedback.profile)"
           :messages="messages"
           :can-write="canWrite"
           :empty-text="canWrite ? translate(BackendTranslationKeys.rocket_meals_module_chat_empty) : translate(BackendTranslationKeys.rocket_meals_module_chat_not_possible)"

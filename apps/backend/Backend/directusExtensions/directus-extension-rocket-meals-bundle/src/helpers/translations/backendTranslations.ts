@@ -698,6 +698,17 @@ export const backendTranslations: TranslationResources = {
     tr: 'Kullanıcı',
     zh: '用户',
   },
+  /** The author of a feedback or chat message who set a nickname in the app. */
+  rocket_meals_module_user_with_nickname: {
+    de: 'Nutzer: {{nickname}}',
+    en: 'User: {{nickname}}',
+    ar: 'المستخدم: {{nickname}}',
+    es: 'Usuario: {{nickname}}',
+    fr: 'Utilisateur : {{nickname}}',
+    ru: 'Пользователь: {{nickname}}',
+    tr: 'Kullanıcı: {{nickname}}',
+    zh: '用户：{{nickname}}',
+  },
   rocket_meals_module_support: {
     de: 'Support',
     en: 'Support',

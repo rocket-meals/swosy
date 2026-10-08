@@ -39,7 +39,7 @@ export type AppFeedbackListItem = {
   device_system_version?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
-  profile?: { id: string } | string | null;
+  profile?: { id: string; nickname?: string | null } | string | null;
   chat?: { id: string; conversation_state?: string | null; date_updated?: string | null } | string | null;
 };
 
@@ -96,6 +96,7 @@ export class AppFeedbackChatHelper {
     'date_created',
     'date_updated',
     'profile.id',
+    'profile.nickname',
     'chat.id',
     'chat.conversation_state',
     'chat.date_updated',

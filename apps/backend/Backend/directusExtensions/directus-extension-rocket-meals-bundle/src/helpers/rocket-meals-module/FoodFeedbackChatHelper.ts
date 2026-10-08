@@ -30,7 +30,7 @@ export type FoodFeedbackListItem = {
   date_updated?: string | null;
   food?: { id: string; alias?: string | null; image?: string | { id: string } | null; image_remote_url?: string | null } | string | null;
   canteen?: { id: string; alias?: string | null } | string | null;
-  profile?: { id: string; language?: string | { code?: string | null } | null } | string | null;
+  profile?: { id: string; nickname?: string | null; language?: string | { code?: string | null } | null } | string | null;
   chat?: { id: string; conversation_state?: string | null; date_updated?: string | null } | string | null;
 };
 
@@ -38,7 +38,7 @@ export type FoodFeedbackChatMessage = {
   id: string;
   message?: string | null;
   date_created?: string | null;
-  profile?: { id: string } | string | null;
+  profile?: { id: string; nickname?: string | null } | string | null;
   user_created?: { id: string; first_name?: string | null; last_name?: string | null; email?: string | null } | string | null;
 };
 
@@ -83,10 +83,10 @@ export class FoodFeedbackChatHelper {
   public static readonly FOOD_IMAGE_SIZE = 64;
 
   /** Fields of the list. */
-  public static readonly LIST_FIELDS = ['id', 'comment', 'rating', 'date_created', 'date_updated', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'canteen.id', 'canteen.alias', 'profile.id', 'profile.language', 'chat.id', 'chat.conversation_state', 'chat.date_updated'];
+  public static readonly LIST_FIELDS = ['id', 'comment', 'rating', 'date_created', 'date_updated', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'canteen.id', 'canteen.alias', 'profile.id', 'profile.nickname', 'profile.language', 'chat.id', 'chat.conversation_state', 'chat.date_updated'];
 
   /** Fields of a chat message, including who wrote it in the backend. */
-  public static readonly MESSAGE_FIELDS = ['id', 'message', 'date_created', 'profile.id', 'user_created.id', 'user_created.first_name', 'user_created.last_name', 'user_created.email'];
+  public static readonly MESSAGE_FIELDS = ['id', 'message', 'date_created', 'profile.id', 'profile.nickname', 'user_created.id', 'user_created.first_name', 'user_created.last_name', 'user_created.email'];
 
   static readonly CANTEENS_ENDPOINT = `/items/${CollectionNames.CANTEENS}`;
   static readonly FOOD_FEEDBACKS_ENDPOINT = `/items/${CollectionNames.FOODS_FEEDBACKS}`;
@@ -290,6 +290,14 @@ export class FoodFeedbackChatHelper {
   }
 
   /** The name of the backend user who wrote a support message, if known. */
+  /** The trimmed nickname of a profile, `undefined` when it is not loaded or empty. */
+  static getNickname(profile: { nickname?: string | null } | string | null | undefined): string | undefined {
+    if (!profile || typeof profile === 'string') {
+      return undefined;
+    }
+    return profile.nickname?.trim() || undefined;
+  }
+
   static getSupportAuthorName(message: FoodFeedbackChatMessage): string | undefined {
     const user = message.user_created;
     if (!user || typeof user === 'string') {
