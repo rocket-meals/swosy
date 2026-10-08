@@ -8,6 +8,14 @@ import fs from 'node:fs';
 export const SECRET_SETTINGS_FIELDS = ['ai_openai_api_key', 'ai_anthropic_api_key', 'ai_google_api_key', 'ai_openai_compatible_api_key', 'ai_openai_compatible_headers'];
 
 /**
+ * Settings fields that belong to a single instance (name, color, URLs). They are removed from the
+ * pulled settings as well, otherwise the values of the test system are pushed to every fork.
+ */
+export const INSTANCE_SPECIFIC_SETTINGS_FIELDS = ['project_name', 'project_color', 'project_descriptor', 'visual_editor_urls'];
+
+const SETTINGS_FIELDS_NOT_IN_DUMP = [...SECRET_SETTINGS_FIELDS, ...INSTANCE_SPECIFIC_SETTINGS_FIELDS];
+
+/**
  * Modules that must always be enabled in the module bar: the schema pull workflow downloads the
  * TypeScript types from /admin/generate-types.
  */
@@ -57,7 +65,7 @@ export function mergeOverwriteItems(pulledItems: unknown, overwriteItems: unknow
 }
 
 /**
- * Cleans the settings dump file in place: removes secret fields and normalizes the module bar.
+ * Cleans the settings dump file in place: removes secret and instance specific fields and normalizes the module bar.
  * Returns the normalized module bar (or null if the dump has none).
  */
 export function cleanSettingsDumpFile(settingsFilePath: string): ModuleBarEntry[] | null {
@@ -73,7 +81,7 @@ export function cleanSettingsDumpFile(settingsFilePath: string): ModuleBarEntry[
     if (!isPlainObject(item)) {
       continue;
     }
-    for (const field of SECRET_SETTINGS_FIELDS) {
+    for (const field of SETTINGS_FIELDS_NOT_IN_DUMP) {
       delete item[field];
     }
     if (Array.isArray(item.module_bar)) {
