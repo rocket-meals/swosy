@@ -20,7 +20,7 @@ describe('AppFeedbackAnswerMail.buildMailAnswer', () => {
     const mail = AppFeedbackAnswerMail.buildMailAnswer({ feedback, answer: 'Danke, ist behoben.', projectName: 'Studi Futter', translate: germanTranslate });
 
     expect(mail?.recipient).toBe('user@example.com');
-    expect(mail?.subject).toBe('Studi Futter – Antwort auf dein Feedback');
+    expect(mail?.subject).toBe('Studi Futter: Antwort auf dein Feedback');
     expect(mail?.markdown_content).toContain('Danke, ist behoben.');
     expect(mail?.markdown_content).toContain('## Dein Feedback');
     expect(mail?.markdown_content).toContain('> Absturz\n> \n> Die App stürzt ab.\n> Beim Start.');
@@ -30,7 +30,7 @@ describe('AppFeedbackAnswerMail.buildMailAnswer', () => {
   it('is written in the language it is given', () => {
     const mail = AppFeedbackAnswerMail.buildMailAnswer({ feedback: { contact_email: 'user@example.com' }, answer: 'Thanks!', projectName: 'Rocket Meals', translate: englishTranslate });
 
-    expect(mail?.subject).toBe('Rocket Meals – Reply to your feedback');
+    expect(mail?.subject).toBe('Rocket Meals: Reply to your feedback');
     expect(mail?.markdown_content).not.toContain('##');
   });
 });
@@ -44,5 +44,15 @@ describe('AppFeedbackAnswerMail.buildChatAnswer', () => {
     expect(mail?.markdown_content).toContain('support@example.com');
     expect(mail?.markdown_content).not.toContain('http');
     expect(mail?.markdown_content).not.toContain('Bitte antworte nicht');
+  });
+});
+
+describe('texts of the answer mails', () => {
+  it('use neither dashes nor semicolons (writing rule of the README)', () => {
+    const mail = AppFeedbackAnswerMail.buildMailAnswer({ feedback, answer: 'Danke.', projectName: 'Swosy', translate: germanTranslate });
+    const chatMail = AppFeedbackAnswerMail.buildChatAnswer({ feedback, answer: 'Danke.', projectName: 'Swosy', translate: germanTranslate, supportEmail: 'support@example.com' });
+    for (const text of [mail?.subject, mail?.markdown_content, chatMail?.markdown_content]) {
+      expect(text).not.toMatch(/[–—;；؛]/);
+    }
   });
 });
