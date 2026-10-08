@@ -1,5 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { LivePulseFeedType, LivePulseHelper, LivePulsePresence } from '../LivePulseHelper';
+import { DefaultProfileHelper } from 'repo-depkit-common';
 import { RocketMealsModulePages } from '../RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../translations/BackendTranslationKeys';
 
@@ -82,6 +83,24 @@ describe('LivePulseHelper', () => {
       expect(LivePulseHelper.hasOwnNickname({ id: 'p', nickname: 'guest_x' })).toBe(false);
       expect(LivePulseHelper.hasOwnNickname({ id: 'p', nickname: '  ' })).toBe(false);
       expect(LivePulseHelper.hasOwnNickname({ id: 'p', nickname: 'Guesthouse' })).toBe(true);
+    });
+
+    it('does not count the scientist nickname and avatar every profile starts with as own', () => {
+      const defaultProfile = DefaultProfileHelper.buildDefaultProfile();
+      const profile = { id: 'p', nickname: defaultProfile.nickname, avatar: defaultProfile.avatar };
+      expect(LivePulseHelper.hasOwnNickname(profile)).toBe(false);
+      expect(LivePulseHelper.hasAvatar(profile)).toBe(true);
+      expect(LivePulseHelper.hasOwnAvatar(profile)).toBe(false);
+      expect(LivePulseHelper.hasOwnAvatar({ id: 'p', avatar })).toBe(true);
+    });
+
+    it('puts own avatars before scientist default avatars', () => {
+      const defaultProfile = DefaultProfileHelper.buildDefaultProfile();
+      const sorted = LivePulseHelper.sortProfilesForWall([
+        { id: 'default', ...defaultProfile, date_updated: minutesAgo(0) },
+        { id: 'own-avatar', nickname: defaultProfile.nickname, avatar, date_updated: minutesAgo(5) },
+      ]);
+      expect(sorted.map(profile => profile.id)).toEqual(['own-avatar', 'default']);
     });
 
     it('keeps at most PROFILE_LIMIT profiles', () => {
