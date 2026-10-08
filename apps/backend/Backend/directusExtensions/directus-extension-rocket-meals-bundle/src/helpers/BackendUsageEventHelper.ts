@@ -12,6 +12,7 @@
 
 import { Accountability } from '@directus/types';
 import { AccountabilityHelper } from './AccountabilityHelper';
+import { KeyValueStore, SharedStore } from './RedisHelper';
 
 /** `session_id` prefix of every event written by the backend. */
 export const BACKEND_USAGE_SESSION_PREFIX = 'Backend_';
@@ -121,36 +122,23 @@ export class BackendUsageEventHelper {
 }
 
 /**
- * Remembers which requester read which food offer when, so that one opening of the details counts
- * once. In memory per server process: after a restart or on another instance a read may count again,
- * which is fine for statistics.
+ * Remembers which requester read which food offer, so that one opening of the details counts once.
+ * The details screen reads `/items/foodoffers/<id>` several times when it opens, and the load
+ * balancer spreads these reads over the Directus replicas – so the lock lives in the `SharedStore`
+ * (Redis with `REDIS`, else memory of this process). `setIfAbsent` is atomic in Redis: exactly one
+ * read per window wins, whichever replica it hits.
  */
 export class BackendUsageEventDeduplicator {
-  private readonly lastCounted = new Map<string, number>();
+  public static readonly KEY_PREFIX = 'rocket-meals:usage-event-dedup:';
 
-  constructor(private readonly windowMs: number = BackendUsageEventHelper.DEDUPLICATION_WINDOW_MS) {}
+  constructor(
+    env: Record<string, unknown> | null | undefined,
+    private readonly windowMs: number = BackendUsageEventHelper.DEDUPLICATION_WINDOW_MS,
+    private readonly store: KeyValueStore = new SharedStore(env)
+  ) {}
 
   /** `true` when the read should be counted – and from then on the same pair is skipped for the window. */
-  shouldCount(requesterKey: string, itemKey: string, nowMs: number): boolean {
-    this.removeExpired(nowMs);
-    const key = `${requesterKey}|${itemKey}`;
-    const last = this.lastCounted.get(key);
-    if (last !== undefined && nowMs - last < this.windowMs) {
-      return false;
-    }
-    this.lastCounted.set(key, nowMs);
-    return true;
-  }
-
-  get size(): number {
-    return this.lastCounted.size;
-  }
-
-  private removeExpired(nowMs: number) {
-    for (const [key, time] of this.lastCounted) {
-      if (nowMs - time >= this.windowMs) {
-        this.lastCounted.delete(key);
-      }
-    }
+  async shouldCount(requesterKey: string, itemKey: string): Promise<boolean> {
+    return this.store.setIfAbsent(`${BackendUsageEventDeduplicator.KEY_PREFIX}${requesterKey}|${itemKey}`, '1', this.windowMs);
   }
 }

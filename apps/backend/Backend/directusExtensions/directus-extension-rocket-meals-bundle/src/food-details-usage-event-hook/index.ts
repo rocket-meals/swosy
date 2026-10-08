@@ -13,6 +13,9 @@
  * läuft der Hook nicht. Zusätzlich zählt derselbe Nutzer (bzw. dieselbe IP ohne Login) dasselbe Angebot
  * innerhalb einer Minute nur einmal: die Detailansicht der App liest `/items/foodoffers/<id>` beim
  * Öffnen mehrfach (Details, Labels, Komponenten), ohne Sperre würde jedes Öffnen doppelt zählen.
+ * Die Sperre liegt im `SharedStore` (Redis bei `REDIS`), damit sie über alle Directus-Replicas gilt:
+ * der Load Balancer verteilt die Abrufe eines Öffnens auf verschiedene Instanzen. Ohne Redis gilt sie
+ * nur pro Prozess.
  */
 
 import { defineHook } from '@directus/extensions-sdk';
@@ -26,7 +29,7 @@ const HOOK_NAME = 'food-details-usage-event-hook';
 const APP_USAGE_EVENTS = 'app_usage_events';
 
 export default defineHook(({ action }, apiContext) => {
-  const deduplicator = new BackendUsageEventDeduplicator();
+  const deduplicator = new BackendUsageEventDeduplicator(apiContext.env);
 
   action(`${CollectionNames.FOODOFFERS}.items.read`, async (meta, eventContext) => {
     try {
@@ -37,7 +40,7 @@ export default defineHook(({ action }, apiContext) => {
       if (!foodofferId) {
         return;
       }
-      if (!deduplicator.shouldCount(BackendUsageEventHelper.getRequesterKey(eventContext?.accountability), foodofferId, Date.now())) {
+      if (!(await deduplicator.shouldCount(BackendUsageEventHelper.getRequesterKey(eventContext?.accountability), foodofferId))) {
         return;
       }
       const records = Array.isArray(meta?.payload) ? (meta.payload as FoodofferForUsageEvent[]) : [];
