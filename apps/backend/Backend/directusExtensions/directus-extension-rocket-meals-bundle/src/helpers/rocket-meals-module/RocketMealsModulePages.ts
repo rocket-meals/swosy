@@ -2,7 +2,7 @@
  * RocketMealsModulePages.ts – the pages of the `Rocket Meals` module in the Directus app.
  *
  * The module is the place for backend tools that do not fit Directus' generic content views:
- * today the food and app feedback chats, the MCP instruction and the live pulse, later e.g. housing management or top/flop lists of dishes.
+ * today the food and app feedback chats, the MCP instruction, the live pulse and the friendship network, later e.g. housing management or top/flop lists of dishes.
  * A new page is one entry here plus a route in `src/rocket-meals-module/index.ts`; the side
  * navigation and the overview page are built from this list.
  */
@@ -49,6 +49,14 @@ export class RocketMealsModulePages {
     descriptionKey: BackendTranslationKeys.rocket_meals_module_live_pulse_description,
   };
 
+  /** All friendships as a network: who is connected to whom, with the friends of one profile on the side. */
+  public static readonly FRIENDSHIP_NETWORK: RocketMealsModulePage = {
+    path: 'friendship-network',
+    icon: 'hub',
+    labelKey: BackendTranslationKeys.rocket_meals_module_friendship_network,
+    descriptionKey: BackendTranslationKeys.rocket_meals_module_friendship_network_description,
+  };
+
   /** The instruction "connect an AI assistant via MCP" – the same one the app shows under `/public/mcp-instruction`. */
   public static readonly MCP_INSTRUCTION: RocketMealsModulePage = {
     path: 'mcp-instruction',
@@ -58,7 +66,7 @@ export class RocketMealsModulePages {
   };
 
   /** All pages, in the order of the navigation. */
-  public static readonly PAGES: readonly RocketMealsModulePage[] = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE];
+  public static readonly PAGES: readonly RocketMealsModulePage[] = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE, RocketMealsModulePages.FRIENDSHIP_NETWORK];
 
   /**
    * The full URL of a page, e.g. for a link in a mail to support:
