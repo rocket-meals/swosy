@@ -73,7 +73,8 @@ export function getVersionPatch() {
 	// 43: common: app feedbacks without chat can be marked as done (app_feedbacks.state)
 	// 44: common: DefaultProfileHelper (scientist default nickname + avatar for new profiles)
 	// 45: common: DefaultProfileHelper.findScientist
-	return 45;
+	// 46: common: default scientist nickname without number
+	return 46;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

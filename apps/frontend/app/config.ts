@@ -208,7 +208,8 @@ export function getVersionPatch() {
         // 97: onboarding step "Das bist du": default scientist avatar + nickname, customizable
         // 98: onboarding: "i" next to the default avatar explains which scientist the profile is named after
         // 99: onboarding: avatar step last, editor starts with presets while the scientist avatar is set, texts without dashes/semicolons
-        return 99;
+        // 100: default nickname without number (e.g. Curie), info modal heading aligned with its text
+        return 100;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

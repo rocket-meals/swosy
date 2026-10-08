@@ -7,7 +7,7 @@ describe('getInitialProfileForUser', () => {
 
   it('gives guests a scientist nickname with the matching avatar', () => {
     const profile = getInitialProfileForUser(guest, () => 0);
-    expect(profile.nickname).toBe(FAMOUS_SCIENTISTS[0]!.nickname + '_0000');
+    expect(profile.nickname).toBe(FAMOUS_SCIENTISTS[0]!.nickname);
     expect(profile.avatar).toEqual(DefaultProfileHelper.buildAvatar(FAMOUS_SCIENTISTS[0]!));
   });
 

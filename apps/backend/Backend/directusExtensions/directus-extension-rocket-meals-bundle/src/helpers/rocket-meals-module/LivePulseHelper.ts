@@ -209,7 +209,7 @@ export class LivePulseHelper {
 
   /**
    * Whether the profile has a nickname of its own – not empty and not the default every profile starts with
-   * (`Curie_4821`, formerly `Guest_…`, see `DefaultProfileHelper`).
+   * (`Curie`, formerly `Guest_…`, see `DefaultProfileHelper`).
    */
   static hasOwnNickname(profile: LivePulseProfile | undefined): boolean {
     const nickname = profile?.nickname?.trim();

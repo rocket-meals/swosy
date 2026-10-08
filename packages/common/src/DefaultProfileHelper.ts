@@ -1,7 +1,7 @@
 /**
  * Startprofil für neue Nutzer: Jedes neue Profil (Gast, Apple, Google, …) bekommt eine bekannte
  * Wissenschaftlerin / einen bekannten Wissenschaftler als Vorlage – einen Spitznamen wie
- * `Curie_4821` und den passenden Avatar. Beides kann der Nutzer im Onboarding und in den
+ * `Curie` und den passenden Avatar. Beides kann der Nutzer im Onboarding und in den
  * Einstellungen sofort ändern; der Default soll nur Lust aufs Personalisieren machen.
  *
  * Die Avatare sind im Stil `avataaars` angelegt, dem Standard-Stil der App (siehe
@@ -407,23 +407,17 @@ export class DefaultProfileHelper {
 
   static readonly AVATAR_STYLE = 'avataaars' as const;
 
-  /** Ziffern hinter dem Namen, damit nicht alle „Curie" gleich heißen: `Curie_4821`. */
-  private static readonly NICKNAME_SUFFIX_DIGITS = 4;
-
   /** Präfix der früheren Gast-Spitznamen (`GuestAccountHelper.buildDefaultNickname`). */
   private static readonly LEGACY_GUEST_NICKNAME_PREFIX = 'Guest_';
-
-  private static readonly NICKNAME_PATTERN = /^([A-Za-z]+)_(\d+)$/;
 
   static pickScientist(random: RandomSource = Math.random): FamousScientist {
     const index = Math.min(FAMOUS_SCIENTISTS.length - 1, Math.floor(random() * FAMOUS_SCIENTISTS.length));
     return FAMOUS_SCIENTISTS[index]!;
   }
 
-  static buildNickname(scientist: FamousScientist, random: RandomSource = Math.random): string {
-    const max = 10 ** DefaultProfileHelper.NICKNAME_SUFFIX_DIGITS;
-    const number = Math.min(max - 1, Math.floor(random() * max));
-    return scientist.nickname + '_' + String(number).padStart(DefaultProfileHelper.NICKNAME_SUFFIX_DIGITS, '0');
+  /** Spitznamen müssen nicht eindeutig sein: mehrere Profile dürfen gleichzeitig `Curie` heißen. */
+  static buildNickname(scientist: FamousScientist): string {
+    return scientist.nickname;
   }
 
   static buildAvatar(scientist: FamousScientist): DefaultAvatarConfig {
@@ -434,27 +428,25 @@ export class DefaultProfileHelper {
     };
   }
 
-  /** Spitzname und Avatar derselben Person, z. B. `Einstein_0815` mit Einsteins Avatar. */
+  /** Spitzname und Avatar derselben Person, z. B. `Einstein` mit Einsteins Avatar. */
   static buildDefaultProfile(random: RandomSource = Math.random): DefaultProfile {
     const scientist = DefaultProfileHelper.pickScientist(random);
     return {
-      nickname: DefaultProfileHelper.buildNickname(scientist, random),
+      nickname: DefaultProfileHelper.buildNickname(scientist),
       avatar: DefaultProfileHelper.buildAvatar(scientist),
     };
   }
 
   /**
-   * Die Person hinter einem noch unveränderten Startprofil – zuerst am Spitznamen (`Curie_4821` → Curie),
+   * Die Person hinter einem noch unveränderten Startprofil – zuerst am Spitznamen (`Curie` → Marie Curie),
    * sonst am Avatar erkannt. `null`, sobald beides angepasst ist oder das Profil aus der Zeit vor den
    * Wissenschaftler-Defaults stammt (`Guest_…`).
    */
   static findScientist(nickname: string | null | undefined, avatar: unknown): FamousScientist | null {
-    const match = DefaultProfileHelper.NICKNAME_PATTERN.exec(nickname?.trim() ?? '');
-    if (match?.[2]?.length === DefaultProfileHelper.NICKNAME_SUFFIX_DIGITS) {
-      const byNickname = FAMOUS_SCIENTISTS.find(entry => entry.nickname === match[1]);
-      if (byNickname) {
-        return byNickname;
-      }
+    const trimmed = nickname?.trim();
+    const byNickname = trimmed ? FAMOUS_SCIENTISTS.find(entry => entry.nickname === trimmed) : undefined;
+    if (byNickname) {
+      return byNickname;
     }
     const config = DefaultProfileHelper.parseAvatar(avatar);
     if (config?.style !== DefaultProfileHelper.AVATAR_STYLE || !config.options || typeof config.options !== 'object') {
@@ -465,7 +457,7 @@ export class DefaultProfileHelper {
   }
 
   /**
-   * Ob der Spitzname noch der automatisch vergebene ist – `Curie_4821` oder das frühere `Guest_…`.
+   * Ob der Spitzname noch der automatisch vergebene ist: `Curie` oder das frühere `Guest_…`.
    * Leere Spitznamen zählen nicht als Default, sondern als „kein Spitzname".
    */
   static isDefaultNickname(nickname: string | null | undefined): boolean {
@@ -476,13 +468,7 @@ export class DefaultProfileHelper {
     if (trimmed.toLowerCase().startsWith(DefaultProfileHelper.LEGACY_GUEST_NICKNAME_PREFIX.toLowerCase())) {
       return true;
     }
-    const match = DefaultProfileHelper.NICKNAME_PATTERN.exec(trimmed);
-    const name = match?.[1];
-    const digits = match?.[2];
-    if (!name || digits?.length !== DefaultProfileHelper.NICKNAME_SUFFIX_DIGITS) {
-      return false;
-    }
-    return FAMOUS_SCIENTISTS.some(entry => entry.nickname === name);
+    return FAMOUS_SCIENTISTS.some(entry => entry.nickname === trimmed);
   }
 
   /**

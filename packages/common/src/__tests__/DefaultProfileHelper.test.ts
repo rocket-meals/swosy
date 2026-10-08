@@ -46,14 +46,14 @@ describe('FAMOUS_SCIENTISTS', () => {
 
 describe('DefaultProfileHelper', () => {
   it('builds nickname and avatar from the same scientist', () => {
-    const profile = DefaultProfileHelper.buildDefaultProfile(sequence(0, 0.0815));
-    expect(profile.nickname).toBe('Einstein_0815');
+    const profile = DefaultProfileHelper.buildDefaultProfile(sequence(0));
+    expect(profile.nickname).toBe('Einstein');
     expect(profile.avatar).toEqual({ style: 'avataaars', size: 128, options: FAMOUS_SCIENTISTS[0]!.avatar });
   });
 
   it('stays in range for random values close to 1', () => {
     const profile = DefaultProfileHelper.buildDefaultProfile(() => 0.99999999);
-    expect(profile.nickname).toBe(FAMOUS_SCIENTISTS[FAMOUS_SCIENTISTS.length - 1]!.nickname + '_9999');
+    expect(profile.nickname).toBe(FAMOUS_SCIENTISTS[FAMOUS_SCIENTISTS.length - 1]!.nickname);
   });
 
   it('returns a copy of the avatar options, so editing a profile never changes the list', () => {
@@ -64,12 +64,12 @@ describe('DefaultProfileHelper', () => {
 
   it('recognizes generated and legacy guest nicknames as default', () => {
     expect(DefaultProfileHelper.isDefaultNickname(DefaultProfileHelper.buildDefaultProfile().nickname)).toBe(true);
-    expect(DefaultProfileHelper.isDefaultNickname(' Curie_1234 ')).toBe(true);
+    expect(DefaultProfileHelper.isDefaultNickname(' Curie ')).toBe(true);
     expect(DefaultProfileHelper.isDefaultNickname('Guest_2609232151')).toBe(true);
   });
 
   it('treats own nicknames as not default', () => {
-    expect(DefaultProfileHelper.isDefaultNickname('Curie')).toBe(false);
+    expect(DefaultProfileHelper.isDefaultNickname('Marie')).toBe(false);
     expect(DefaultProfileHelper.isDefaultNickname('Curie_12')).toBe(false);
     expect(DefaultProfileHelper.isDefaultNickname('Mensafan_1234')).toBe(false);
     expect(DefaultProfileHelper.isDefaultNickname('')).toBe(false);
@@ -93,7 +93,7 @@ describe('DefaultProfileHelper', () => {
   });
 
   it('finds the scientist behind a default nickname, even when the avatar was customized', () => {
-    expect(DefaultProfileHelper.findScientist('Curie_4821', { style: 'micah' })?.name).toBe('Marie Curie');
+    expect(DefaultProfileHelper.findScientist('Curie', { style: 'micah' })?.name).toBe('Marie Curie');
   });
 
   it('finds the scientist behind a default avatar, even when the nickname was changed', () => {

@@ -740,9 +740,12 @@ const OnboardingScreen = () => {
 		const factKey = getScientistFactKey(ownScientist);
 		showModal(
 			{
-				title: translate(TranslationKeys.onboarding_profile_scientist_info),
+				// Heading inside the content instead of the modal title, so it lines up with the text below.
 				children: (
 					<View style={styles.scientistInfoContainer}>
+						<Text style={[styles.scientistInfoTitle, { color: theme.screen.text }]}>
+							{translate(TranslationKeys.onboarding_profile_scientist_info)}
+						</Text>
 						<Text style={[styles.scientistInfoText, { color: theme.screen.text }]}>
 							{translate(TranslationKeys.onboarding_profile_scientist_info_intro)}
 						</Text>
@@ -1147,6 +1150,10 @@ const styles = StyleSheet.create({
 	},
 	scientistInfoContainer: {
 		gap: 12,
+	},
+	scientistInfoTitle: {
+		fontSize: 24,
+		fontFamily: 'Poppins_700Bold',
 	},
 	scientistInfoName: {
 		fontSize: 20,

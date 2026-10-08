@@ -3,7 +3,7 @@ import { TranslationKeys } from '@/locales/keys';
 
 /**
  * Kurzer Fakt zu jeder Person aus `FAMOUS_SCIENTISTS` – erklärt im Onboarding, warum ein neues Profil
- * z. B. `Curie_4821` heißt. Schlüssel ist `FamousScientist.nickname`; `scientistFactHelper.test.ts`
+ * z. B. `Curie` heißt. Schlüssel ist `FamousScientist.nickname`; `scientistFactHelper.test.ts`
  * stellt sicher, dass keine Person ohne Text bleibt.
  */
 export const SCIENTIST_FACT_KEYS: Record<string, TranslationKeys> = {

@@ -2,7 +2,7 @@ import { DatabaseTypes, DefaultProfileHelper, GuestAccountHelper, RandomSource }
 
 /**
  * Jedes neue Profil – Gast, Apple, Google oder anderes SSO – startet mit einer bekannten Wissenschaftlerin bzw.
- * einem bekannten Wissenschaftler: Spitzname wie `Curie_4821` und der passende Avatar. Die App zeigt beides im
+ * einem bekannten Wissenschaftler: Spitzname wie `Curie` und der passende Avatar. Die App zeigt beides im
  * Onboarding und lädt zum Anpassen ein.
  * `verified` muss für Gäste explizit `false` sein: der Datenbank-Default von `profiles.verified` ist `true`.
  */
