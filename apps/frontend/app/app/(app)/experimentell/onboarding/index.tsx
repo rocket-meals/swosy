@@ -39,7 +39,8 @@ import { UserHelper } from '@/helper/UserHelper';
 import SettingsListNickname from '@/components/SettingsListNickname';
 import { getScientistFactKey } from '@/helper/scientistFactHelper';
 
-const STEPS = ['welcome', 'profile', 'canteen', 'pricegroup', 'preferences'] as const;
+// The own avatar comes last: by then the app is set up and customizing the avatar is the fun part at the end.
+const STEPS = ['welcome', 'canteen', 'pricegroup', 'preferences', 'profile'] as const;
 type Step = (typeof STEPS)[number];
 // Size of the own avatar on the profile step – large, so it invites a tap to customize it.
 const PROFILE_AVATAR_SIZE = 160;
@@ -140,6 +141,11 @@ const OnboardingScreen = () => {
 		() => DefaultProfileHelper.findScientist(ownNickname, ownAvatarConfig),
 		[ownNickname, ownAvatarConfig]
 	);
+	// While the avatar is still the scientist default, the editor opens as if there were no avatar yet
+	// (quick-start presets). Without a change the scientist avatar simply stays.
+	const customizeOwnAvatar = useCallback(() => {
+		openOwnAvatarEditor(!ownAvatarConfig || DefaultProfileHelper.isDefaultAvatar(ownAvatarConfig));
+	}, [openOwnAvatarEditor, ownAvatarConfig]);
 
 	const isFirstStep = currentStepIndex === 0;
 	const isLastStep = currentStepIndex === STEPS.length - 1;
@@ -766,7 +772,7 @@ const OnboardingScreen = () => {
 				</Text>
 				<View style={styles.profileAvatarButton}>
 					<TouchableOpacity
-						onPress={() => openOwnAvatarEditor()}
+						onPress={customizeOwnAvatar}
 						accessibilityRole="button"
 						accessibilityLabel={translate(TranslationKeys.onboarding_profile_customize_avatar)}
 					>
@@ -780,7 +786,7 @@ const OnboardingScreen = () => {
 							/>
 						) : (
 							<View style={[styles.profileAvatarPlaceholder, { backgroundColor: theme.screen.iconBg }]}>
-								<ActivityIndicator size="large" color={primaryColor} />
+								<MaterialCommunityIcons name="account" size={PROFILE_AVATAR_SIZE / 2} color={theme.screen.icon} />
 							</View>
 						)}
 						<View style={[styles.profileAvatarEditBadge, { backgroundColor: primaryColor, borderColor: theme.screen.background }]}>
@@ -799,7 +805,7 @@ const OnboardingScreen = () => {
 					)}
 				</View>
 				<TouchableOpacity
-					onPress={() => openOwnAvatarEditor()}
+					onPress={customizeOwnAvatar}
 					style={[styles.readMoreButton, { backgroundColor: primaryColor }]}
 				>
 					<Text style={[styles.readMoreText, { color: contrastColor }]}>

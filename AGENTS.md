@@ -51,6 +51,10 @@ Das gilt für alle Apps und für `packages/common-ui`.
 - **In `packages/common-ui`:** Komponenten sind sprach-agnostisch. Sie bekommen ihre Texte über eine `texts`-Prop (Muster: `WeatherPreviewTexts`, `AppDownloadBannerTexts`, `LicenseInformationTexts`, `SettingsListMyMapThemeSelectionTexts`). Die App löst ihre Translation-Keys auf und reicht die fertigen Strings durch. Ein englischer `*_FALLBACK_TEXTS`-Export darf existieren, damit Playbook/Prototypen ohne `texts` funktionieren — er ist kein Ersatz für Übersetzungen.
 - **Durchgesetzt durch Tests:** `packages/common-ui/src/__tests__/noHardcodedTexts.test.ts` scannt alle Komponenten. Ein neuer hardgecodeter Text lässt den Test fehlschlagen. Ausnahmen müssen mit Begründung in die dortige `ALLOWED_LITERALS`-Liste — bitte sparsam.
 
+## Schreibregel: keine Gedankenstriche und keine Semikolons
+
+- In nutzersichtbaren Texten (alle Sprachen) **keine Gedankenstriche (`–`, `—`, `——`) und keine Semikolons (`;`, `；`, `؛`)**. Stattdessen neuer Satz, Komma oder Doppelpunkt. Details in der `README.md` (Abschnitt „Schreibregel für Texte in der App“).
+
 ## Übersetzungen: gemeinsame Keys in `repo-depkit-common`, App-Keys erben davon
 
 - **Allgemeines Vokabular** (Speichern, Abbrechen, Fehler, Wochentage, Monate, …) lebt **einmal** in `packages/common/src/translations/`:

@@ -207,7 +207,8 @@ export function getVersionPatch() {
         // 96: common: app feedbacks without chat can be marked as done (app_feedbacks.state)
         // 97: onboarding step "Das bist du": default scientist avatar + nickname, customizable
         // 98: onboarding: "i" next to the default avatar explains which scientist the profile is named after
-        return 98;
+        // 99: onboarding: avatar step last, editor starts with presets while the scientist avatar is set, texts without dashes/semicolons
+        return 99;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
