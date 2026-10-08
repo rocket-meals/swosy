@@ -60,6 +60,15 @@ export class RocketMealsModulePages {
   /** All pages, in the order of the navigation. */
   public static readonly PAGES: readonly RocketMealsModulePage[] = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE];
 
+  /**
+   * The full URL of a page, e.g. for a link in a mail to support:
+   * `<PUBLIC_URL>/admin/rocket-meals/app-feedbacks/abc`.
+   */
+  static getAdminUrl(publicUrl: string, page?: RocketMealsModulePage, ...segments: string[]): string {
+    const baseUrl = publicUrl.endsWith('/') ? publicUrl.slice(0, -1) : publicUrl;
+    return `${baseUrl}/admin${RocketMealsModulePages.getRoute(page, ...segments)}`;
+  }
+
   /** `/rocket-meals/food-feedbacks/abc` – a path for the Vue router of the Directus app. */
   static getRoute(page?: RocketMealsModulePage, ...segments: string[]): string {
     const parts = [RocketMealsModulePages.MODULE_ID, ...(page ? [page.path] : []), ...segments.map(segment => encodeURIComponent(segment))];

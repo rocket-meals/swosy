@@ -62,12 +62,24 @@ Dieselben Status wie bei den Speise-Feedbacks, ebenfalls aus `chats.conversation
   ein App-Feedback startet also meist als „Wartet auf Antwort“. „Neu“ (kein Chat) bleibt für ältere
   Feedbacks oder wenn das Anlegen fehlschlug; die erste Antwort legt ihn dann genauso an wie der
   Hook (`AppFeedbackChatStatusHelper.buildChatForFeedback`).
-- Feedbacks ohne Profil (anonym) können nicht im Chat beantwortet werden; steht eine Kontakt-E-Mail
-  dabei, verlinkt die Seite sie.
-- Hat ein App-Feedback mit Chat eine gültige Kontakt-E-Mail, schickt der
-  `chat-conversation-state-hook` jede Support-Antwort zusätzlich als Mail an diese Adresse – in der
-  Sprache aus `profiles.language`, mit dem ursprünglichen Feedback als Zitat und dem Hinweis, dass
-  im Chat der App geantwortet werden kann (`chat-conversation-state-hook/AppFeedbackAnswerMail.ts`).
+- Wie ein App-Feedback beantwortet wird, hängt davon ab, was der Nutzer hinterlassen hat
+  (`AppFeedbackChatHelper.getAnswerChannel`):
+  - **Profil vorhanden** → Chat. Antwortet jemand anderes als der Autor, bekommt der Autor eine
+    Push-Benachrichtigung (falls ein Gerät mit Push-Token hinterlegt ist) und – wenn eine gültige
+    Kontakt-E-Mail dabei ist – eine Mail mit der Antwort, einem Link „In der App antworten“ und dem
+    Hinweis, bitte über die App zu antworten (notfalls per Mail an den Support). Beides verschickt
+    der `chat-conversation-state-hook`, in der Sprache aus `profiles.language`.
+  - **Kein Profil, aber Kontakt-E-Mail** → kein Chat, sondern ein Antwortfeld mit Hinweis auf die
+    Adresse. Die Antwort landet in `app_feedbacks.response`, das Feedback wird zugleich erledigt
+    (`state = closed`), und der `app-feedbacks-hook` mailt die Antwort mit dem Hinweis, nicht auf
+    die Mail zu antworten. Pro Feedback gibt es eine Antwort.
+  - **Weder Profil noch E-Mail** (anonym) → keine Antwort möglich; die Detailseite bietet nur
+    „Als erledigt markieren“.
+- Schreibt der Nutzer im Chat eines App- oder Speise-Feedbacks, bekommt der Support eine Mail mit
+  Link auf die Chat-Seite im Modul (`RocketMealsModulePages.getAdminUrl`). Antwortet der Support im
+  Chat eines Speise-Feedbacks, bekommt der Autor ebenfalls eine Push-Benachrichtigung.
+- Der Link in die App führt auf die Web-App des Kunden (`EnvVariableHelper.getAppWebBaseUrl`, aus
+  `SYNC_FOR_CUSTOMER`); ist der Kunde unbekannt, fehlt der Link in der Mail.
 - Store-Bewertungen haben nie einen Chat: ohne Antwort im Store sind sie „Neu“, mit Antwort
   „Beantwortet“.
 - Store-Bewertungen und anonyme Feedbacks lassen sich trotzdem ohne Antwort als erledigt markieren
