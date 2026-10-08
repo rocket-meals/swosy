@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AvatarConfig, AvatarStyle, useAvatarEditorModal } from 'repo-depkit-common-ui';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
@@ -39,6 +39,12 @@ export function useAvatarProfileEditor() {
 	const [avatarConfig, setAvatarConfig] = useState<AvatarConfig | null>(() =>
 		parseProfileAvatar(profile?.avatar),
 	);
+
+	// Follow the profile when its avatar changes elsewhere – e.g. the server profile with its default
+	// avatar arrives after login, or onboarding stores the default avatar.
+	useEffect(() => {
+		setAvatarConfig(parseProfileAvatar(profile?.avatar));
+	}, [profile?.avatar]);
 
 	const saveAvatarToProfile = useCallback(
 		async (config: AvatarConfig | null) => {

@@ -173,6 +173,12 @@ falls so etwas wieder in den Katalog gelangt. Offen bleibt: Beim nächsten Impor
 Tabellen-Roundtrip die gleiche Klasse Fehler für andere Sprachen mitprüfen (Italienisch und
 Katalanisch elidieren genauso).
 
+## ✍️ Schreibregel für Texte in der App
+
+In Texten, die Nutzer sehen, verwenden wir **keine Gedankenstriche (`–`, `—`) und keine Semikolons (`;`)**. Das gilt in allen Sprachen, also auch für das chinesische `——`/`；` und das arabische `؛`. Statt eines Gedankenstrichs einen neuen Satz, ein Komma oder einen Doppelpunkt nehmen.
+
+Durchgesetzt wird die Regel bisher für den Onboarding-Screen und die Fakten zu den Wissenschaftlern (`apps/frontend/app/__tests__/onboardingTexts.test.ts`). Neue oder geänderte Texte sollen sie überall einhalten.
+
 ## 🔢 Versionierung
 
 Die App-Version setzt sich aus `Major.BuildNumber.Patch` zusammen (siehe `getMajorVersion()`, `getBuildNumber()` und `getVersionPatch()` in der `config.ts` der jeweiligen App, z.&nbsp;B. `apps/frontend/app/config.ts`).
