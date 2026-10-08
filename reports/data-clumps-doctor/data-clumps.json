@@ -1,45 +1,45 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-08T08:08:34.033Z",
+  "report_timestamp": "2026-10-08T08:32:09.782Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
-          "maximum": 132,
-          "average": 1.5235632183908046,
-          "amountSavedValuesForKeys": 5302,
+          "median": 1,
+          "maximum": 133,
+          "average": 1.5224735184655025,
+          "amountSavedValuesForKeys": 5318,
           "amountKeys": 31
         },
         "invertedParameterToMethods": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 80,
-          "average": 2.2787610619469025,
-          "amountSavedValuesForKeys": 2060,
+          "average": 2.267175572519084,
+          "amountSavedValuesForKeys": 2079,
           "amountKeys": 23
         },
         "invertedParameterToClasses": {
-          "median": 1,
-          "maximum": 132,
-          "average": 1.5372571759930416,
-          "amountSavedValuesForKeys": 5302,
+          "median": 1.5,
+          "maximum": 133,
+          "average": 1.536106296938186,
+          "amountSavedValuesForKeys": 5318,
           "amountKeys": 31
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3595,
-        "detection_time_ms": 88,
+        "ast_generation_time_ms": 5781,
+        "detection_time_ms": 102,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 109.82,
-          "os_memory_free": 14732275712,
+          "os_uptime": 146.34,
+          "os_memory_free": 14828384256,
           "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 9V45 96-Core Processor",
+          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
@@ -55,18 +55,18 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "8c16552e4df5acd7476ddee8fa71038f9de5d263",
-    "project_commit_hash": "8c16552e4df5acd7476ddee8fa71038f9de5d263",
+    "project_version": "665837d46811987b6145603a6c0e24863089fc21",
+    "project_commit_hash": "665837d46811987b6145603a6c0e24863089fc21",
     "project_tag": null,
-    "project_commit_date": "1791446807",
+    "project_commit_date": "1791448203",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 742,
-    "number_of_classes_or_interfaces": 1633,
-    "number_of_methods": 1826,
-    "number_of_data_fields": 5302,
-    "number_of_method_parameters": 2060
+    "number_of_files": 744,
+    "number_of_classes_or_interfaces": 1637,
+    "number_of_methods": 1841,
+    "number_of_data_fields": 5318,
+    "number_of_method_parameters": 2079
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -1186,9 +1186,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 101,
+              "startLine": 114,
               "startColumn": 3,
-              "endLine": 101,
+              "endLine": 114,
               "endColumn": 19
             }
           },
@@ -1211,9 +1211,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 102,
+              "startLine": 115,
               "startColumn": 3,
-              "endLine": 102,
+              "endLine": 115,
               "endColumn": 19
             }
           },
@@ -1236,9 +1236,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 103,
+              "startLine": 116,
               "startColumn": 3,
-              "endLine": 103,
+              "endLine": 116,
               "endColumn": 17
             }
           },
@@ -1261,9 +1261,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 104,
+              "startLine": 117,
               "startColumn": 3,
-              "endLine": 104,
+              "endLine": 117,
               "endColumn": 18
             }
           },
@@ -1649,9 +1649,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 54,
+              "startLine": 63,
               "startColumn": 3,
-              "endLine": 54,
+              "endLine": 63,
               "endColumn": 14
             }
           },
@@ -1674,9 +1674,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 57,
+              "startLine": 66,
               "startColumn": 3,
-              "endLine": 57,
+              "endLine": 66,
               "endColumn": 32
             }
           },
@@ -1699,9 +1699,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 58,
+              "startLine": 67,
               "startColumn": 3,
-              "endLine": 58,
+              "endLine": 67,
               "endColumn": 32
             }
           },
@@ -1746,9 +1746,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 44,
+              "startLine": 45,
               "startColumn": 3,
-              "endLine": 44,
+              "endLine": 45,
               "endColumn": 14
             }
           },
@@ -1771,9 +1771,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 48,
+              "startLine": 49,
               "startColumn": 3,
-              "endLine": 48,
+              "endLine": 49,
               "endColumn": 32
             }
           },
@@ -1796,9 +1796,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 47,
+              "startLine": 48,
               "startColumn": 3,
-              "endLine": 47,
+              "endLine": 48,
               "endColumn": 32
             }
           },
@@ -2209,9 +2209,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 65,
+              "startLine": 74,
               "startColumn": 3,
-              "endLine": 65,
+              "endLine": 74,
               "endColumn": 14
             }
           },
@@ -2234,9 +2234,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 67,
+              "startLine": 76,
               "startColumn": 3,
-              "endLine": 67,
+              "endLine": 76,
               "endColumn": 32
             }
           },
@@ -2259,9 +2259,9 @@
             "type": "{ id: string; alias?: string | null } | string | null",
             "modifiers": [],
             "position": {
-              "startLine": 68,
+              "startLine": 77,
               "startColumn": 3,
-              "endLine": 68,
+              "endLine": 77,
               "endColumn": 67
             }
           },
@@ -2306,9 +2306,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 54,
+              "startLine": 63,
               "startColumn": 3,
-              "endLine": 54,
+              "endLine": 63,
               "endColumn": 14
             }
           },
@@ -2331,9 +2331,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 56,
+              "startLine": 65,
               "startColumn": 3,
-              "endLine": 56,
+              "endLine": 65,
               "endColumn": 27
             }
           },
@@ -2356,9 +2356,9 @@
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 55,
+              "startLine": 64,
               "startColumn": 3,
-              "endLine": 55,
+              "endLine": 64,
               "endColumn": 26
             }
           },
@@ -2381,9 +2381,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 57,
+              "startLine": 66,
               "startColumn": 3,
-              "endLine": 57,
+              "endLine": 66,
               "endColumn": 32
             }
           },
@@ -2406,9 +2406,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 58,
+              "startLine": 67,
               "startColumn": 3,
-              "endLine": 58,
+              "endLine": 67,
               "endColumn": 32
             }
           },
@@ -2431,9 +2431,9 @@
             "type": "{ id: string; alias?: string | null } | string | null",
             "modifiers": [],
             "position": {
-              "startLine": 60,
+              "startLine": 69,
               "startColumn": 3,
-              "endLine": 60,
+              "endLine": 69,
               "endColumn": 67
             }
           },
@@ -2478,9 +2478,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 44,
+              "startLine": 45,
               "startColumn": 3,
-              "endLine": 44,
+              "endLine": 45,
               "endColumn": 14
             }
           },
@@ -2503,9 +2503,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 48,
+              "startLine": 49,
               "startColumn": 3,
-              "endLine": 48,
+              "endLine": 49,
               "endColumn": 32
             }
           },
@@ -2528,9 +2528,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 47,
+              "startLine": 48,
               "startColumn": 3,
-              "endLine": 47,
+              "endLine": 48,
               "endColumn": 32
             }
           },
@@ -2582,9 +2582,9 @@
             }
           },
           "position": {
-            "startLine": 65,
+            "startLine": 74,
             "startColumn": 3,
-            "endLine": 65,
+            "endLine": 74,
             "endColumn": 14
           }
         },
@@ -2607,9 +2607,9 @@
             }
           },
           "position": {
-            "startLine": 67,
+            "startLine": 76,
             "startColumn": 3,
-            "endLine": 67,
+            "endLine": 76,
             "endColumn": 32
           }
         },
@@ -2632,9 +2632,9 @@
             }
           },
           "position": {
-            "startLine": 68,
+            "startLine": 77,
             "startColumn": 3,
-            "endLine": 68,
+            "endLine": 77,
             "endColumn": 67
           }
         }
@@ -2672,16 +2672,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 54,
+              "startLine": 63,
               "startColumn": 3,
-              "endLine": 54,
+              "endLine": 63,
               "endColumn": 14
             }
           },
           "position": {
-            "startLine": 65,
+            "startLine": 74,
             "startColumn": 3,
-            "endLine": 65,
+            "endLine": 74,
             "endColumn": 14
           }
         },
@@ -2697,16 +2697,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 57,
+              "startLine": 66,
               "startColumn": 3,
-              "endLine": 57,
+              "endLine": 66,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 67,
+            "startLine": 76,
             "startColumn": 3,
-            "endLine": 67,
+            "endLine": 76,
             "endColumn": 32
           }
         },
@@ -2722,16 +2722,16 @@
             "type": "{ id: string; alias?: string | null } | string | null",
             "modifiers": [],
             "position": {
-              "startLine": 60,
+              "startLine": 69,
               "startColumn": 3,
-              "endLine": 60,
+              "endLine": 69,
               "endColumn": 67
             }
           },
           "position": {
-            "startLine": 68,
+            "startLine": 77,
             "startColumn": 3,
-            "endLine": 68,
+            "endLine": 77,
             "endColumn": 67
           }
         },
@@ -2747,16 +2747,16 @@
             "type": "RelatedProfile",
             "modifiers": [],
             "position": {
-              "startLine": 61,
+              "startLine": 70,
               "startColumn": 3,
-              "endLine": 61,
+              "endLine": 70,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 69,
+            "startLine": 78,
             "startColumn": 3,
-            "endLine": 69,
+            "endLine": 78,
             "endColumn": 28
           }
         }
@@ -2801,9 +2801,9 @@
             }
           },
           "position": {
-            "startLine": 54,
+            "startLine": 63,
             "startColumn": 3,
-            "endLine": 54,
+            "endLine": 63,
             "endColumn": 14
           }
         },
@@ -2826,9 +2826,9 @@
             }
           },
           "position": {
-            "startLine": 57,
+            "startLine": 66,
             "startColumn": 3,
-            "endLine": 57,
+            "endLine": 66,
             "endColumn": 32
           }
         },
@@ -2851,9 +2851,9 @@
             }
           },
           "position": {
-            "startLine": 58,
+            "startLine": 67,
             "startColumn": 3,
-            "endLine": 58,
+            "endLine": 67,
             "endColumn": 32
           }
         }
@@ -2898,9 +2898,9 @@
             }
           },
           "position": {
-            "startLine": 54,
+            "startLine": 63,
             "startColumn": 3,
-            "endLine": 54,
+            "endLine": 63,
             "endColumn": 14
           }
         },
@@ -2923,9 +2923,9 @@
             }
           },
           "position": {
-            "startLine": 55,
+            "startLine": 64,
             "startColumn": 3,
-            "endLine": 55,
+            "endLine": 64,
             "endColumn": 26
           }
         },
@@ -2948,9 +2948,9 @@
             }
           },
           "position": {
-            "startLine": 56,
+            "startLine": 65,
             "startColumn": 3,
-            "endLine": 56,
+            "endLine": 65,
             "endColumn": 27
           }
         },
@@ -2973,9 +2973,9 @@
             }
           },
           "position": {
-            "startLine": 57,
+            "startLine": 66,
             "startColumn": 3,
-            "endLine": 57,
+            "endLine": 66,
             "endColumn": 32
           }
         },
@@ -2998,9 +2998,9 @@
             }
           },
           "position": {
-            "startLine": 58,
+            "startLine": 67,
             "startColumn": 3,
-            "endLine": 58,
+            "endLine": 67,
             "endColumn": 32
           }
         },
@@ -3023,9 +3023,9 @@
             }
           },
           "position": {
-            "startLine": 60,
+            "startLine": 69,
             "startColumn": 3,
-            "endLine": 60,
+            "endLine": 69,
             "endColumn": 67
           }
         }
@@ -3063,16 +3063,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 65,
+              "startLine": 74,
               "startColumn": 3,
-              "endLine": 65,
+              "endLine": 74,
               "endColumn": 14
             }
           },
           "position": {
-            "startLine": 54,
+            "startLine": 63,
             "startColumn": 3,
-            "endLine": 54,
+            "endLine": 63,
             "endColumn": 14
           }
         },
@@ -3088,16 +3088,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 67,
+              "startLine": 76,
               "startColumn": 3,
-              "endLine": 67,
+              "endLine": 76,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 57,
+            "startLine": 66,
             "startColumn": 3,
-            "endLine": 57,
+            "endLine": 66,
             "endColumn": 32
           }
         },
@@ -3113,16 +3113,16 @@
             "type": "{ id: string; alias?: string | null } | string | null",
             "modifiers": [],
             "position": {
-              "startLine": 68,
+              "startLine": 77,
               "startColumn": 3,
-              "endLine": 68,
+              "endLine": 77,
               "endColumn": 67
             }
           },
           "position": {
-            "startLine": 60,
+            "startLine": 69,
             "startColumn": 3,
-            "endLine": 60,
+            "endLine": 69,
             "endColumn": 67
           }
         },
@@ -3138,16 +3138,16 @@
             "type": "RelatedProfile",
             "modifiers": [],
             "position": {
-              "startLine": 69,
+              "startLine": 78,
               "startColumn": 3,
-              "endLine": 69,
+              "endLine": 78,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 61,
+            "startLine": 70,
             "startColumn": 3,
-            "endLine": 61,
+            "endLine": 70,
             "endColumn": 28
           }
         }
@@ -3185,16 +3185,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 44,
+              "startLine": 45,
               "startColumn": 3,
-              "endLine": 44,
+              "endLine": 45,
               "endColumn": 14
             }
           },
           "position": {
-            "startLine": 54,
+            "startLine": 63,
             "startColumn": 3,
-            "endLine": 54,
+            "endLine": 63,
             "endColumn": 14
           }
         },
@@ -3210,16 +3210,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 48,
+              "startLine": 49,
               "startColumn": 3,
-              "endLine": 48,
+              "endLine": 49,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 57,
+            "startLine": 66,
             "startColumn": 3,
-            "endLine": 57,
+            "endLine": 66,
             "endColumn": 32
           }
         },
@@ -3235,16 +3235,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 47,
+              "startLine": 48,
               "startColumn": 3,
-              "endLine": 47,
+              "endLine": 48,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 58,
+            "startLine": 67,
             "startColumn": 3,
-            "endLine": 58,
+            "endLine": 67,
             "endColumn": 32
           }
         }
@@ -3289,9 +3289,9 @@
             }
           },
           "position": {
-            "startLine": 44,
+            "startLine": 45,
             "startColumn": 3,
-            "endLine": 44,
+            "endLine": 45,
             "endColumn": 14
           }
         },
@@ -3314,9 +3314,9 @@
             }
           },
           "position": {
-            "startLine": 47,
+            "startLine": 48,
             "startColumn": 3,
-            "endLine": 47,
+            "endLine": 48,
             "endColumn": 32
           }
         },
@@ -3339,9 +3339,9 @@
             }
           },
           "position": {
-            "startLine": 48,
+            "startLine": 49,
             "startColumn": 3,
-            "endLine": 48,
+            "endLine": 49,
             "endColumn": 32
           }
         }
@@ -3386,9 +3386,9 @@
             }
           },
           "position": {
-            "startLine": 44,
+            "startLine": 45,
             "startColumn": 3,
-            "endLine": 44,
+            "endLine": 45,
             "endColumn": 14
           }
         },
@@ -3411,9 +3411,9 @@
             }
           },
           "position": {
-            "startLine": 47,
+            "startLine": 48,
             "startColumn": 3,
-            "endLine": 47,
+            "endLine": 48,
             "endColumn": 32
           }
         },
@@ -3436,9 +3436,9 @@
             }
           },
           "position": {
-            "startLine": 48,
+            "startLine": 49,
             "startColumn": 3,
-            "endLine": 48,
+            "endLine": 49,
             "endColumn": 32
           }
         }
@@ -3476,16 +3476,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 54,
+              "startLine": 63,
               "startColumn": 3,
-              "endLine": 54,
+              "endLine": 63,
               "endColumn": 14
             }
           },
           "position": {
-            "startLine": 44,
+            "startLine": 45,
             "startColumn": 3,
-            "endLine": 44,
+            "endLine": 45,
             "endColumn": 14
           }
         },
@@ -3501,16 +3501,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 58,
+              "startLine": 67,
               "startColumn": 3,
-              "endLine": 58,
+              "endLine": 67,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 47,
+            "startLine": 48,
             "startColumn": 3,
-            "endLine": 47,
+            "endLine": 48,
             "endColumn": 32
           }
         },
@@ -3526,16 +3526,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 57,
+              "startLine": 66,
               "startColumn": 3,
-              "endLine": 57,
+              "endLine": 66,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 48,
+            "startLine": 49,
             "startColumn": 3,
-            "endLine": 48,
+            "endLine": 49,
             "endColumn": 32
           }
         }
@@ -3580,9 +3580,9 @@
             }
           },
           "position": {
-            "startLine": 101,
+            "startLine": 114,
             "startColumn": 3,
-            "endLine": 101,
+            "endLine": 114,
             "endColumn": 19
           }
         },
@@ -3605,9 +3605,9 @@
             }
           },
           "position": {
-            "startLine": 102,
+            "startLine": 115,
             "startColumn": 3,
-            "endLine": 102,
+            "endLine": 115,
             "endColumn": 19
           }
         },
@@ -3630,9 +3630,9 @@
             }
           },
           "position": {
-            "startLine": 103,
+            "startLine": 116,
             "startColumn": 3,
-            "endLine": 103,
+            "endLine": 116,
             "endColumn": 17
           }
         },
@@ -3655,9 +3655,9 @@
             }
           },
           "position": {
-            "startLine": 104,
+            "startLine": 117,
             "startColumn": 3,
-            "endLine": 104,
+            "endLine": 117,
             "endColumn": 18
           }
         }

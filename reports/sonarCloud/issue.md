@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 3 | 3 |
-| 🐛 Reliability | 382 | 47 |
-| 🔧 Maintainability | 680 | 0 |
+| 🐛 Reliability | 384 | 47 |
+| 🔧 Maintainability | 682 | 0 |
 
-**Total issues:** 1065 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1069 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -26,7 +26,7 @@
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:10
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L10
 
-## 🐛 Reliability (47/382)
+## 🐛 Reliability (47/384)
 
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
   apps/accessibilityTester/src/index.ts:104
@@ -71,6 +71,14 @@
 - **Async arrow function has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts:80
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts#L80
+
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-usage-events-cleanup-schedule/index.ts:56
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-usage-events-cleanup-schedule/index.ts#L56
+
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-usage-events-cleanup-schedule/index.ts:57
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-usage-events-cleanup-schedule/index.ts#L57
 
 - **Async arrow function has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apple-secret-rotator/index.ts:4
@@ -207,12 +215,4 @@
 - **Async method 'getSavedRawReport' has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserRawReportTestReaderOsnabrueck.ts:42
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserRawReportTestReaderOsnabrueck.ts#L42
-
-- **Async method 'getFoodsService' has no 'await' expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:292
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L292
-
-- **Async arrow function has no 'await' expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foodoffers-components-hook/index.ts:8
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foodoffers-components-hook/index.ts#L8
 
