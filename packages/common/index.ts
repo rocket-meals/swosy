@@ -24,6 +24,7 @@ export * from './src/AppFeedbackChatStatusHelper';
 export * from './src/CronHelper';
 export * from './src/EmailHelper';
 export * from './src/GuestAccountHelper';
+export * from './src/DefaultProfileHelper';
 export * from './src/McpAccessHelper';
 export * from './src/McpInstructionHelper';
 export * from './src/FoodFeedbackPermissionHelper';

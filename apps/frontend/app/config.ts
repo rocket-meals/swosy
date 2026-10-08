@@ -205,7 +205,8 @@ export function getVersionPatch() {
         // 94: course timetable: day label is the smart readable date (Heute, Morgen, weekday), navigation and day/week switch in one row
         // 95: Stud.IP import reads locations sent as an object too; the event modal shows the event JSON (with the Stud.IP data) in debug mode
         // 96: common: app feedbacks without chat can be marked as done (app_feedbacks.state)
-        return 96;
+        // 97: onboarding step "Das bist du": default scientist avatar + nickname, customizable
+        return 97;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

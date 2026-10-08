@@ -5909,6 +5909,36 @@
     "tr": "Uygulamayı sizin için ayarlayalım. Sadece bir dakika sürer.",
     "zh": "让我们为你设置应用程序，只需片刻。"
   },
+  "onboarding_profile_title": {
+    "de": "Das bist du",
+    "en": "This is you",
+    "ar": "هذا أنت",
+    "es": "Este eres tú",
+    "fr": "C'est toi",
+    "ru": "Это ты",
+    "tr": "Bu sensin",
+    "zh": "这就是你"
+  },
+  "onboarding_profile_description": {
+    "de": "Wir haben dir einen Avatar und einen Spitznamen gegeben. Mach sie zu deinen – so erkennen dich deine Freunde.",
+    "en": "We've given you an avatar and a nickname. Make them your own – that's how your friends will recognize you.",
+    "ar": "لقد منحناك صورة رمزية واسمًا مستعارًا. اجعلهما خاصين بك – هكذا سيتعرف عليك أصدقاؤك.",
+    "es": "Te hemos dado un avatar y un apodo. Hazlos tuyos: así te reconocerán tus amigos.",
+    "fr": "Nous t'avons donné un avatar et un pseudo. Personnalise-les – c'est ainsi que tes amis te reconnaîtront.",
+    "ru": "Мы дали тебе аватар и никнейм. Сделай их своими – так тебя узнают друзья.",
+    "tr": "Sana bir avatar ve bir takma ad verdik. Onları kendine göre düzenle – arkadaşların seni böyle tanıyacak.",
+    "zh": "我们为你准备了一个头像和昵称。把它们变成你自己的吧——你的朋友会这样认出你。"
+  },
+  "onboarding_profile_customize_avatar": {
+    "de": "Avatar anpassen",
+    "en": "Customize avatar",
+    "ar": "تخصيص الصورة الرمزية",
+    "es": "Personalizar avatar",
+    "fr": "Personnaliser l'avatar",
+    "ru": "Настроить аватар",
+    "tr": "Avatarı özelleştir",
+    "zh": "自定义头像"
+  },
   "onboarding_select_canteen": {
     "de": "Wähle deine Mensa",
     "en": "Choose your canteen",

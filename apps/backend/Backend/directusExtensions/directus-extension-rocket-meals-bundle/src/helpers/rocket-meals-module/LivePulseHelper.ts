@@ -12,6 +12,7 @@
  */
 
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
+import { DefaultProfileHelper } from 'repo-depkit-common/src/DefaultProfileHelper';
 import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED } from '../BackendUsageEventHelper';
 import { FoodFeedbackChatHelper } from './FoodFeedbackChatHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
@@ -127,10 +128,8 @@ export class LivePulseHelper {
   public static readonly ONLINE_MINUTES = 10;
   /** Avatars shown on the wall. */
   public static readonly PROFILE_LIMIT = 30;
-  /** Profiles loaded for the wall; the ones with avatar and own nickname move to the front, see `sortProfilesForWall`. */
+  /** Profiles loaded for the wall; the ones with own avatar and own nickname move to the front, see `sortProfilesForWall`. */
   public static readonly PROFILE_QUERY_LIMIT = 100;
-  /** Nickname every guest profile starts with (`GuestAccountHelper.buildDefaultNickname`). */
-  public static readonly GUEST_NICKNAME_PREFIX = 'Guest_';
   /** Entries loaded per ticker source; the merged ticker shows `FEED_LIMIT` of them. */
   public static readonly FEED_SOURCE_LIMIT = 15;
   public static readonly FEED_LIMIT = 25;
@@ -208,19 +207,27 @@ export class LivePulseHelper {
     };
   }
 
-  /** Whether the profile has a nickname of its own – not empty and not the `Guest_…` a guest starts with. */
+  /**
+   * Whether the profile has a nickname of its own – not empty and not the default every profile starts with
+   * (`Curie_4821`, formerly `Guest_…`, see `DefaultProfileHelper`).
+   */
   static hasOwnNickname(profile: LivePulseProfile | undefined): boolean {
     const nickname = profile?.nickname?.trim();
-    return !!nickname && !nickname.toLowerCase().startsWith(LivePulseHelper.GUEST_NICKNAME_PREFIX.toLowerCase());
+    return !!nickname && !DefaultProfileHelper.isDefaultNickname(nickname);
+  }
+
+  /** Whether the profile has an avatar the user made – not the scientist avatar every profile starts with. */
+  static hasOwnAvatar(profile: LivePulseProfile | undefined): boolean {
+    return LivePulseHelper.hasAvatar(profile) && !DefaultProfileHelper.isDefaultAvatar(profile?.avatar);
   }
 
   /**
-   * Order of the wall: profiles with avatar first, among them the ones with an own nickname first,
-   * then the ones with only a nickname, then the rest – each group most recently active first.
+   * Order of the wall: profiles with an own avatar first, among them the ones with an own nickname first,
+   * then the ones with only an own nickname, then the rest – each group most recently active first.
    * Keeps at most `PROFILE_LIMIT`.
    */
   static sortProfilesForWall(profiles: LivePulseProfile[]): LivePulseProfile[] {
-    const rank = (profile: LivePulseProfile) => (LivePulseHelper.hasAvatar(profile) ? 2 : 0) + (LivePulseHelper.hasOwnNickname(profile) ? 1 : 0);
+    const rank = (profile: LivePulseProfile) => (LivePulseHelper.hasOwnAvatar(profile) ? 2 : 0) + (LivePulseHelper.hasOwnNickname(profile) ? 1 : 0);
     const time = (profile: LivePulseProfile) => {
       const value = profile.date_updated ? new Date(profile.date_updated).getTime() : Number.NaN;
       return Number.isNaN(value) ? 0 : value;

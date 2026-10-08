@@ -1,22 +1,29 @@
 import { describe, expect, it } from '@jest/globals';
-import { GuestAccountHelper } from 'repo-depkit-common';
+import { DefaultProfileHelper, FAMOUS_SCIENTISTS, GuestAccountHelper } from 'repo-depkit-common';
 import { getInitialProfileForUser } from '../InitialProfileHelper';
 
 describe('getInitialProfileForUser', () => {
-  const now = new Date('2026-09-23T19:51:00Z');
+  const guest = { email: GuestAccountHelper.buildEmail('abc') };
 
-  it('gives guests the default nickname Guest_<YYMMDDHHmm>', () => {
-    const profile = getInitialProfileForUser({ email: GuestAccountHelper.buildEmail('abc') }, now);
-    expect(profile.nickname).toMatch(/^Guest_\d{10}$/);
+  it('gives guests a scientist nickname with the matching avatar', () => {
+    const profile = getInitialProfileForUser(guest, () => 0);
+    expect(profile.nickname).toBe(FAMOUS_SCIENTISTS[0]!.nickname + '_0000');
+    expect(profile.avatar).toEqual(DefaultProfileHelper.buildAvatar(FAMOUS_SCIENTISTS[0]!));
+  });
+
+  it('gives SSO users (Apple, Google, …) a scientist nickname and avatar as well', () => {
+    for (const email of ['someone@privaterelay.appleid.com', 'someone@gmail.com', null]) {
+      const profile = getInitialProfileForUser({ email });
+      expect(DefaultProfileHelper.isDefaultNickname(profile.nickname)).toBe(true);
+      expect(DefaultProfileHelper.isDefaultAvatar(profile.avatar)).toBe(true);
+    }
   });
 
   it('marks guests as not verified, because the database default of profiles.verified is true', () => {
-    const profile = getInitialProfileForUser({ email: GuestAccountHelper.buildEmail('abc') }, now);
-    expect(profile.verified).toBe(false);
+    expect(getInitialProfileForUser(guest).verified).toBe(false);
   });
 
-  it('leaves profiles of other users empty', () => {
-    expect(getInitialProfileForUser({ email: 'someone@example.com' }, now)).toEqual({});
-    expect(getInitialProfileForUser({ email: null }, now)).toEqual({});
+  it('leaves verified of other users to the database default', () => {
+    expect(getInitialProfileForUser({ email: 'someone@example.com' })).not.toHaveProperty('verified');
   });
 });

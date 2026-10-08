@@ -12,7 +12,7 @@ import CanteenSelection from '@/components/CanteenSelection/CanteenSelection';
 import SettingsListMarkingLabelsFast from '@/components/SettingsListMarkingLabelsFast';
 import PriceGroupSettingsList from '@/components/PriceGroupSettingsList';
 import { SET_SELECTED_CANTEEN, SET_BUILDINGS_DICT, SET_CANTEENS, SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, UPDATE_PROFILE } from '@/redux/Types/types';
-import { AppScreens, DatabaseTypes } from 'repo-depkit-common';
+import { AppScreens, DatabaseTypes, DefaultProfileHelper } from 'repo-depkit-common';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
@@ -23,7 +23,7 @@ import animation from '@/assets/animations/priceGroup.json';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { AvatarConfig, AvatarStyle, AVATAAARS_PRESETS, MyAvatar, presetToConfig, AvatarSize } from 'repo-depkit-common-ui';
-import { parseProfileAvatar, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
+import { parseProfileAvatar, AVATAR_BACKGROUND, useAvatarProfileEditor } from '@/hooks/useAvatarProfileEditor';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import FoodLabelingInfo from '@/components/FoodLabelingInfo';
 import SettingsList from '@/components/SettingsList';
@@ -36,8 +36,12 @@ import useCustomerConfigSeperateMarkingsForFood from '@/hooks/useCustomerConfigS
 import ProjectButton from '@/components/ProjectButton';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { UserHelper } from '@/helper/UserHelper';
+import SettingsListNickname from '@/components/SettingsListNickname';
 
-const STEPS = ['welcome', 'canteen', 'pricegroup', 'preferences'] as const;
+const STEPS = ['welcome', 'profile', 'canteen', 'pricegroup', 'preferences'] as const;
+type Step = (typeof STEPS)[number];
+// Size of the own avatar on the profile step – large, so it invites a tap to customize it.
+const PROFILE_AVATAR_SIZE = 160;
 // Avatar size: 80% bigger than original 44px
 const AVATAR_CAROUSEL_SIZE = 80;
 const AVATARS_PER_ROW = 4;
@@ -121,6 +125,13 @@ const OnboardingScreen = () => {
 	const nextSlotRef = useRef(0);
 	// Trigger to start carousel once server avatars are available
 	const [hasServerAvatars, setHasServerAvatars] = useState(false);
+
+	// ── Profile step: own avatar + nickname ──────────────────────────────────
+	// New profiles get a scientist avatar and nickname from the server (DefaultProfileHelper). Profiles
+	// created before that, or still missing one of the two, get the defaults when they reach the step,
+	// so every user sees "their" avatar here and is invited to customize it.
+	const { avatarConfig: ownAvatarConfig, openEditor: openOwnAvatarEditor } = useAvatarProfileEditor();
+	const hasFilledProfileDefaultsRef = useRef(false);
 
 	const isFirstStep = currentStepIndex === 0;
 	const isLastStep = currentStepIndex === STEPS.length - 1;
@@ -398,6 +409,32 @@ const OnboardingScreen = () => {
 			router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
 		});
 	}, [readyOpacity]);
+
+	useEffect(() => {
+		if (STEPS[currentStepIndex] !== 'profile' || hasFilledProfileDefaultsRef.current) return;
+		if (!UserHelper.isRegisteredUser(user) || !profile?.id) return;
+		const hasAvatar = !!parseProfileAvatar(profile.avatar);
+		const hasNickname = !!profile.nickname?.trim();
+		hasFilledProfileDefaultsRef.current = true;
+		if (hasAvatar && hasNickname) return;
+		const defaults = DefaultProfileHelper.buildDefaultProfile();
+		const updatedPayload: DatabaseTypes.Profiles = {
+			...profile,
+			avatar: hasAvatar ? profile.avatar : defaults.avatar,
+			nickname: hasNickname ? profile.nickname : defaults.nickname,
+		};
+		const saveDefaults = async () => {
+			try {
+				const result = (await profileHelper.updateProfile(updatedPayload)) as DatabaseTypes.Profiles;
+				if (result) {
+					dispatch({ type: UPDATE_PROFILE, payload: result });
+				}
+			} catch (error) {
+				console.error('[Onboarding] Failed to save default avatar/nickname:', error);
+			}
+		};
+		void saveDefaults();
+	}, [currentStepIndex, user, profile, dispatch]);
 
 	const handleBack = useCallback(() => {
 		if (!isFirstStep) {
@@ -684,6 +721,53 @@ const OnboardingScreen = () => {
 		</View>
 	);
 
+	const renderProfileStep = () => (
+		<View style={[styles.stepContent, { width: screenWidth }]}>
+			<ScrollView contentContainerStyle={styles.stepScrollContentNoHPad}>
+				<Text style={[styles.stepTitle, { color: theme.screen.text, paddingHorizontal: 20 }]}>
+					{translate(TranslationKeys.onboarding_profile_title)}
+				</Text>
+				<Text style={[styles.stepDescription, { color: theme.screen.text, paddingHorizontal: 20 }]}>
+					{translate(TranslationKeys.onboarding_profile_description)}
+				</Text>
+				<TouchableOpacity
+					onPress={() => openOwnAvatarEditor()}
+					style={styles.profileAvatarButton}
+					accessibilityRole="button"
+					accessibilityLabel={translate(TranslationKeys.onboarding_profile_customize_avatar)}
+				>
+					{ownAvatarConfig ? (
+						<MyAvatar
+							style={ownAvatarConfig.style}
+							options={ownAvatarConfig.options}
+							size={PROFILE_AVATAR_SIZE}
+							rounded={true}
+							backgroundColor={AVATAR_BACKGROUND}
+						/>
+					) : (
+						<View style={[styles.profileAvatarPlaceholder, { backgroundColor: theme.screen.iconBg }]}>
+							<ActivityIndicator size="large" color={primaryColor} />
+						</View>
+					)}
+					<View style={[styles.profileAvatarEditBadge, { backgroundColor: primaryColor, borderColor: theme.screen.background }]}>
+						<MaterialCommunityIcons name="pencil" size={20} color={contrastColor} />
+					</View>
+				</TouchableOpacity>
+				<TouchableOpacity
+					onPress={() => openOwnAvatarEditor()}
+					style={[styles.readMoreButton, { backgroundColor: primaryColor }]}
+				>
+					<Text style={[styles.readMoreText, { color: contrastColor }]}>
+						{translate(TranslationKeys.onboarding_profile_customize_avatar)}
+					</Text>
+				</TouchableOpacity>
+				<View style={styles.profileNicknameContainer}>
+					<SettingsListNickname iconBgColor={primaryColor} />
+				</View>
+			</ScrollView>
+		</View>
+	);
+
 	const renderCanteenStep = () => (
 		<View style={[styles.stepContent, { width: screenWidth }]}>
 			<ScrollView contentContainerStyle={styles.stepScrollContentNoHPad}>
@@ -774,6 +858,14 @@ const OnboardingScreen = () => {
 		</View>
 	);
 
+	const stepRenderers: Record<Step, () => React.ReactElement> = {
+		welcome: renderWelcomeStep,
+		profile: renderProfileStep,
+		canteen: renderCanteenStep,
+		pricegroup: renderPriceGroupStep,
+		preferences: renderPreferencesStep,
+	};
+
 	const nextOrStartButton = !isLastStep ? (
 		<TouchableOpacity
 			onPress={handleNext}
@@ -808,10 +900,11 @@ const OnboardingScreen = () => {
 				scrollEventThrottle={16}
 				style={styles.horizontalScroll}
 			>
-				{mountedSteps.has(0) ? renderWelcomeStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
-				{mountedSteps.has(1) ? renderCanteenStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
-				{mountedSteps.has(2) ? renderPriceGroupStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
-				{mountedSteps.has(3) ? renderPreferencesStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
+				{STEPS.map((step, index) => (
+					<React.Fragment key={step}>
+						{mountedSteps.has(index) ? stepRenderers[step]() : <View style={[styles.stepContent, { width: screenWidth }]} />}
+					</React.Fragment>
+				))}
 			</ScrollView>
 			<View style={styles.stepIndicatorContainer}>
 				{renderStepIndicator()}
@@ -967,6 +1060,31 @@ const styles = StyleSheet.create({
 	priceGroupContainer: {
 		width: '100%',
 		marginTop: 8,
+		paddingHorizontal: 16,
+	},
+	profileAvatarButton: {
+		marginTop: 8,
+	},
+	profileAvatarPlaceholder: {
+		width: PROFILE_AVATAR_SIZE,
+		height: PROFILE_AVATAR_SIZE,
+		borderRadius: PROFILE_AVATAR_SIZE / 2,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	profileAvatarEditBadge: {
+		position: 'absolute',
+		right: 4,
+		bottom: 4,
+		width: 40,
+		height: 40,
+		borderRadius: 20,
+		borderWidth: 3,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	profileNicknameContainer: {
+		width: '100%',
 		paddingHorizontal: 16,
 	},
 	lottieContainer: {

@@ -74,7 +74,8 @@ export function getVersionPatch() {
 	// 47: common-ui: avatar SVG generation moved to MyAvatar/AvatarSvg (no react-native), shared with the backend
 	// 48: course timetable redesign (common-ui: MyCalendarMonth in SettingsListDate, MyColorSelection, SettingsListColor)
 	// 49: common: app feedbacks without chat can be marked as done (app_feedbacks.state)
-	return 49;
+	// 50: common: DefaultProfileHelper (scientist default nickname + avatar for new profiles)
+	return 50;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
