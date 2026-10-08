@@ -35,11 +35,11 @@ describe('LivePulseHelper', () => {
   });
 
   describe('queries', () => {
-    it('loads the profiles active since local midnight, most recent first', () => {
+    it('loads only the profiles active within the last 10 minutes, most recent first', () => {
       const query = LivePulseHelper.buildActiveProfilesQuery(NOW);
       expect(query.sort).toBe('-date_updated');
       expect(query.limit).toBe(LivePulseHelper.PROFILE_QUERY_LIMIT);
-      expect(JSON.parse(query.filter!)).toEqual({ date_updated: { _gte: new Date(2026, 9, 7).toISOString() } });
+      expect(JSON.parse(query.filter!)).toEqual({ date_updated: { _gte: minutesAgo(LivePulseHelper.ONLINE_MINUTES) } });
       expect(query.fields).toContain('avatar');
       expect(query.fields).toContain('nickname');
     });

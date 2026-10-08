@@ -197,11 +197,14 @@ export class LivePulseHelper {
     }
   }
 
-  /** Profiles active today, most recent first – `sortProfilesForWall` picks the ones shown. */
+  /**
+   * Profiles active right now or a few minutes ago (within `ONLINE_MINUTES`), most recent first –
+   * `sortProfilesForWall` picks the ones shown. Who was only active earlier today stays off the wall.
+   */
   static buildActiveProfilesQuery(now: Date): LivePulseQuery {
     return {
       fields: LivePulseHelper.PROFILE_FIELDS.join(','),
-      filter: JSON.stringify({ date_updated: { _gte: LivePulseHelper.getStartOfDay(now).toISOString() } }),
+      filter: JSON.stringify(LivePulseHelper.buildProfilesActiveSinceFilter(LivePulseHelper.minutesBefore(now, LivePulseHelper.ONLINE_MINUTES))),
       sort: '-date_updated',
       limit: LivePulseHelper.PROFILE_QUERY_LIMIT,
     };
