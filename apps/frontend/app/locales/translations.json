@@ -5939,6 +5939,406 @@
     "tr": "Avatarı özelleştir",
     "zh": "自定义头像"
   },
+  "onboarding_profile_scientist_info": {
+    "de": "Wer ist das?",
+    "en": "Who is this?",
+    "ar": "من هذا؟",
+    "es": "¿Quién es?",
+    "fr": "Qui est-ce ?",
+    "ru": "Кто это?",
+    "tr": "Bu kim?",
+    "zh": "这是谁？"
+  },
+  "onboarding_profile_scientist_info_intro": {
+    "de": "Jedes neue Profil startet mit dem Namen einer berühmten Person aus der Wissenschaft. Deine ist:",
+    "en": "Every new profile starts with a famous scientist as its namesake. Yours is:",
+    "ar": "يبدأ كل ملف شخصي جديد باسم شخصية علمية مشهورة. شخصيتك هي:",
+    "es": "Cada perfil nuevo empieza con el nombre de una figura famosa de la ciencia. La tuya es:",
+    "fr": "Chaque nouveau profil commence avec le nom d'une grande figure de la science. La tienne :",
+    "ru": "Каждый новый профиль начинается с имени знаменитого учёного. Твой:",
+    "tr": "Her yeni profil, adını ünlü bir bilim insanından alarak başlar. Seninki:",
+    "zh": "每个新账户都会以一位著名科学家的名字开始。你的是："
+  },
+  "onboarding_profile_scientist_info_hint": {
+    "de": "Avatar und Spitzname gehören dir – du kannst beide jederzeit ändern.",
+    "en": "Your avatar and nickname are yours – you can change both at any time.",
+    "ar": "الصورة الرمزية والاسم المستعار لك – يمكنك تغييرهما في أي وقت.",
+    "es": "El avatar y el apodo son tuyos: puedes cambiarlos cuando quieras.",
+    "fr": "L'avatar et le pseudo t'appartiennent – tu peux les modifier à tout moment.",
+    "ru": "Аватар и никнейм – твои: их можно изменить в любой момент.",
+    "tr": "Avatar ve takma ad senin – ikisini de istediğin zaman değiştirebilirsin.",
+    "zh": "头像和昵称都属于你——随时都可以修改。"
+  },
+  "scientist_fact_einstein": {
+    "de": "Entwickelte die Relativitätstheorie – den Nobelpreis bekam er aber für etwas anderes: den photoelektrischen Effekt.",
+    "en": "Developed the theory of relativity – yet won the Nobel Prize for something else: the photoelectric effect.",
+    "ar": "طوّر النظرية النسبية – لكنه نال جائزة نوبل عن شيء آخر: التأثير الكهروضوئي.",
+    "es": "Desarrolló la teoría de la relatividad, pero ganó el Nobel por otra cosa: el efecto fotoeléctrico.",
+    "fr": "A développé la théorie de la relativité – mais a reçu le prix Nobel pour autre chose : l'effet photoélectrique.",
+    "ru": "Создал теорию относительности, но Нобелевскую премию получил за другое – за фотоэффект.",
+    "tr": "Görelilik kuramını geliştirdi – ama Nobel Ödülü’nü başka bir şey için aldı: fotoelektrik etki.",
+    "zh": "他提出了相对论，但获得诺贝尔奖却是因为另一项成果：光电效应。"
+  },
+  "scientist_fact_curie": {
+    "de": "Erhielt als erster Mensch zwei Nobelpreise – in Physik und in Chemie.",
+    "en": "The first person ever to win two Nobel Prizes – in physics and in chemistry.",
+    "ar": "أول شخص يفوز بجائزتي نوبل – في الفيزياء والكيمياء.",
+    "es": "La primera persona en ganar dos premios Nobel: en Física y en Química.",
+    "fr": "Première personne à recevoir deux prix Nobel – en physique et en chimie.",
+    "ru": "Первый человек, получивший две Нобелевские премии – по физике и по химии.",
+    "tr": "İki Nobel Ödülü kazanan ilk insan – fizik ve kimya alanlarında.",
+    "zh": "历史上第一位两次获得诺贝尔奖的人——物理学奖和化学奖。"
+  },
+  "scientist_fact_lovelace": {
+    "de": "Schrieb im 19. Jahrhundert das erste Computerprogramm – für eine Maschine, die nie gebaut wurde.",
+    "en": "Wrote the first computer program in the 19th century – for a machine that was never built.",
+    "ar": "كتبت أول برنامج حاسوبي في القرن التاسع عشر – لآلة لم تُبنَ قط.",
+    "es": "Escribió el primer programa informático en el siglo XIX, para una máquina que nunca llegó a construirse.",
+    "fr": "A écrit le premier programme informatique au XIXe siècle – pour une machine qui n'a jamais été construite.",
+    "ru": "Написала первую компьютерную программу ещё в XIX веке – для машины, которую так и не построили.",
+    "tr": "19. yüzyılda ilk bilgisayar programını yazdı – hiç inşa edilmemiş bir makine için.",
+    "zh": "她在19世纪写出了第一个计算机程序——为一台从未建成的机器。"
+  },
+  "scientist_fact_newton": {
+    "de": "Beschrieb die Schwerkraft und die Bewegungsgesetze und entwickelte die Infinitesimalrechnung mit.",
+    "en": "Described gravity and the laws of motion and co-invented calculus.",
+    "ar": "وصف الجاذبية وقوانين الحركة وشارك في ابتكار حساب التفاضل والتكامل.",
+    "es": "Describió la gravedad y las leyes del movimiento y fue uno de los creadores del cálculo.",
+    "fr": "A décrit la gravitation et les lois du mouvement et a co-inventé le calcul infinitésimal.",
+    "ru": "Описал всемирное тяготение и законы движения и стал одним из создателей математического анализа.",
+    "tr": "Yerçekimini ve hareket yasalarını tanımladı, kalkülüsün de mucitlerinden biri oldu.",
+    "zh": "他描述了万有引力和运动定律，并参与创立了微积分。"
+  },
+  "scientist_fact_darwin": {
+    "de": "Reiste fünf Jahre mit der HMS Beagle um die Welt und erklärte danach die Evolution durch natürliche Selektion.",
+    "en": "Sailed around the world on HMS Beagle for five years and then explained evolution by natural selection.",
+    "ar": "أبحر حول العالم على متن السفينة بيغل خمس سنوات، ثم فسّر التطور بالانتقاء الطبيعي.",
+    "es": "Dio la vuelta al mundo durante cinco años a bordo del HMS Beagle y después explicó la evolución por selección natural.",
+    "fr": "A fait le tour du monde pendant cinq ans à bord du HMS Beagle, puis a expliqué l'évolution par la sélection naturelle.",
+    "ru": "Пять лет путешествовал вокруг света на корабле «Бигль», а затем объяснил эволюцию естественным отбором.",
+    "tr": "HMS Beagle ile beş yıl boyunca dünyayı dolaştı, ardından evrimi doğal seçilimle açıkladı.",
+    "zh": "他乘“小猎犬号”环游世界五年，之后用自然选择解释了进化。"
+  },
+  "scientist_fact_franklin": {
+    "de": "Ihr Röntgenbild „Photo 51“ war der Schlüssel zur Entdeckung der DNA-Doppelhelix.",
+    "en": "Her X-ray image “Photo 51” was the key to discovering the DNA double helix.",
+    "ar": "كانت صورتها بالأشعة السينية „الصورة 51“ مفتاح اكتشاف اللولب المزدوج للحمض النووي.",
+    "es": "Su imagen de rayos X «Foto 51» fue la clave para descubrir la doble hélice del ADN.",
+    "fr": "Son cliché aux rayons X « Photo 51 » a été la clé de la découverte de la double hélice de l'ADN.",
+    "ru": "Её рентгеновский снимок «Фото 51» стал ключом к открытию двойной спирали ДНК.",
+    "tr": "Röntgen görüntüsü „Fotoğraf 51“, DNA çift sarmalının keşfinin anahtarı oldu.",
+    "zh": "她拍摄的X射线照片“51号照片”是发现DNA双螺旋结构的关键。"
+  },
+  "scientist_fact_turing": {
+    "de": "Half im Zweiten Weltkrieg, die Enigma-Verschlüsselung zu knacken, und gilt als Vater der Informatik.",
+    "en": "Helped crack the Enigma code in World War II and is considered the father of computer science.",
+    "ar": "ساعد في فك شيفرة إنيغما في الحرب العالمية الثانية، ويُعدّ أبا علم الحاسوب.",
+    "es": "Ayudó a descifrar el código Enigma en la Segunda Guerra Mundial y se le considera el padre de la informática.",
+    "fr": "A aidé à casser le code Enigma pendant la Seconde Guerre mondiale et est considéré comme le père de l'informatique.",
+    "ru": "Помог взломать шифр «Энигмы» во Второй мировой войне и считается отцом информатики.",
+    "tr": "İkinci Dünya Savaşı’nda Enigma şifresinin kırılmasına yardım etti ve bilgisayar biliminin babası sayılır.",
+    "zh": "他在二战中帮助破解了恩尼格玛密码，被誉为计算机科学之父。"
+  },
+  "scientist_fact_johnson": {
+    "de": "Berechnete als NASA-Mathematikerin die Flugbahnen der ersten US-Raumflüge – Astronaut John Glenn wollte, dass sie die Computerwerte nachrechnet.",
+    "en": "As a NASA mathematician she calculated the trajectories of the first US spaceflights – astronaut John Glenn asked her to double-check the computer.",
+    "ar": "حسبت بصفتها عالمة رياضيات في ناسا مسارات أولى الرحلات الفضائية الأمريكية – وطلب رائد الفضاء جون غلين أن تتحقق من حسابات الحاسوب.",
+    "es": "Como matemática de la NASA calculó las trayectorias de los primeros vuelos espaciales de EE. UU.; el astronauta John Glenn pidió que ella revisara los cálculos del ordenador.",
+    "fr": "Mathématicienne à la NASA, elle a calculé les trajectoires des premiers vols spatiaux américains – l'astronaute John Glenn tenait à ce qu'elle vérifie l'ordinateur.",
+    "ru": "Как математик NASA рассчитывала траектории первых полётов США в космос – астронавт Джон Гленн просил её перепроверить расчёты компьютера.",
+    "tr": "NASA matematikçisi olarak ilk ABD uzay uçuşlarının yörüngelerini hesapladı – astronot John Glenn bilgisayarın sonuçlarını onun kontrol etmesini istedi.",
+    "zh": "作为NASA数学家，她计算了美国早期载人航天的飞行轨道——宇航员约翰·格伦坚持要她复核计算机的结果。"
+  },
+  "scientist_fact_tesla": {
+    "de": "Entwickelte das Wechselstromsystem, mit dem heute fast die ganze Welt ihren Strom bekommt.",
+    "en": "Developed the alternating current system that powers almost the whole world today.",
+    "ar": "طوّر نظام التيار المتردد الذي يزوّد معظم العالم بالكهرباء اليوم.",
+    "es": "Desarrolló el sistema de corriente alterna que hoy lleva electricidad a casi todo el mundo.",
+    "fr": "A développé le système de courant alternatif qui alimente aujourd'hui presque le monde entier.",
+    "ru": "Разработал систему переменного тока, которая сегодня снабжает электричеством почти весь мир.",
+    "tr": "Bugün neredeyse tüm dünyaya elektrik sağlayan alternatif akım sistemini geliştirdi.",
+    "zh": "他开发了交流电系统，如今几乎全世界都靠它供电。"
+  },
+  "scientist_fact_galilei": {
+    "de": "Richtete als einer der Ersten ein Fernrohr auf den Himmel und entdeckte die vier großen Jupitermonde.",
+    "en": "Was one of the first to point a telescope at the sky and discovered the four large moons of Jupiter.",
+    "ar": "كان من أوائل من وجّهوا التلسكوب نحو السماء، واكتشف أقمار المشتري الأربعة الكبرى.",
+    "es": "Fue de los primeros en apuntar un telescopio al cielo y descubrió las cuatro grandes lunas de Júpiter.",
+    "fr": "A été l'un des premiers à pointer une lunette vers le ciel et a découvert les quatre grandes lunes de Jupiter.",
+    "ru": "Одним из первых направил телескоп в небо и открыл четыре крупнейших спутника Юпитера.",
+    "tr": "Teleskobu gökyüzüne çeviren ilk kişilerden biriydi ve Jüpiter’in dört büyük uydusunu keşfetti.",
+    "zh": "他是最早用望远镜观察天空的人之一，发现了木星的四颗大卫星。"
+  },
+  "scientist_fact_meitner": {
+    "de": "Erklärte gemeinsam mit Otto Frisch als Erste die Kernspaltung – das Element Meitnerium ist nach ihr benannt.",
+    "en": "Together with Otto Frisch she was the first to explain nuclear fission – the element meitnerium is named after her.",
+    "ar": "كانت مع أوتو فريش أول من فسّر الانشطار النووي – ويحمل عنصر المايتنريوم اسمها.",
+    "es": "Junto con Otto Frisch fue la primera en explicar la fisión nuclear; el elemento meitnerio lleva su nombre.",
+    "fr": "Avec Otto Frisch, elle a été la première à expliquer la fission nucléaire – l'élément meitnérium porte son nom.",
+    "ru": "Вместе с Отто Фришем первой объяснила деление ядра – в её честь назван элемент мейтнерий.",
+    "tr": "Otto Frisch ile birlikte nükleer fisyonu ilk açıklayan kişi oldu – meitneryum elementi onun adını taşır.",
+    "zh": "她与奥托·弗里施最先解释了核裂变——元素鿏（Meitnerium）以她的名字命名。"
+  },
+  "scientist_fact_noether": {
+    "de": "Bewies, dass jede Symmetrie in der Physik eine Erhaltungsgröße mit sich bringt – Einstein würdigte sie als mathematisches Genie.",
+    "en": "Proved that every symmetry in physics comes with a conserved quantity – Einstein praised her as a mathematical genius.",
+    "ar": "أثبتت أن كل تناظر في الفيزياء يرتبط بكمية محفوظة – وأشاد بها أينشتاين بوصفها عبقرية رياضية.",
+    "es": "Demostró que cada simetría de la física va unida a una magnitud que se conserva; Einstein la elogió como un genio matemático.",
+    "fr": "A démontré qu'à chaque symétrie en physique correspond une grandeur conservée – Einstein la saluait comme un génie mathématique.",
+    "ru": "Доказала, что каждой симметрии в физике соответствует сохраняющаяся величина – Эйнштейн называл её математическим гением.",
+    "tr": "Fizikteki her simetrinin korunan bir nicelikle bağlantılı olduğunu kanıtladı – Einstein onu bir matematik dehası olarak övdü.",
+    "zh": "她证明了物理学中每一种对称性都对应一个守恒量——爱因斯坦称赞她是数学天才。"
+  },
+  "scientist_fact_hopper": {
+    "de": "Entwickelte einen der ersten Compiler und machte den Begriff „Bug“ berühmt – nach einer echten Motte im Computer.",
+    "en": "Built one of the first compilers and made the word “bug” famous – after a real moth in the computer.",
+    "ar": "طوّرت أحد أوائل المترجمات البرمجية، واشتهرت كلمة „bug“ بفضلها – بعد عثّة حقيقية داخل الحاسوب.",
+    "es": "Creó uno de los primeros compiladores e hizo famosa la palabra «bug», por una polilla real dentro del ordenador.",
+    "fr": "A créé l'un des premiers compilateurs et a rendu célèbre le mot « bug » – à cause d'un vrai papillon de nuit dans l'ordinateur.",
+    "ru": "Создала один из первых компиляторов и прославила слово «баг» – после настоящего мотылька в компьютере.",
+    "tr": "İlk derleyicilerden birini geliştirdi ve „bug“ kelimesini ünlü yaptı – bilgisayardaki gerçek bir güve yüzünden.",
+    "zh": "她开发了最早的编译器之一，并让“bug”一词出了名——源于计算机里一只真的飞蛾。"
+  },
+  "scientist_fact_hawking": {
+    "de": "Zeigte, dass Schwarze Löcher Strahlung abgeben, und schrieb den Bestseller „Eine kurze Geschichte der Zeit“.",
+    "en": "Showed that black holes emit radiation and wrote the bestseller “A Brief History of Time”.",
+    "ar": "بيّن أن الثقوب السوداء تُصدر إشعاعًا، وألّف الكتاب الأكثر مبيعًا „تاريخ موجز للزمان“.",
+    "es": "Demostró que los agujeros negros emiten radiación y escribió el éxito de ventas «Breve historia del tiempo».",
+    "fr": "A montré que les trous noirs émettent un rayonnement et a écrit le best-seller « Une brève histoire du temps ».",
+    "ru": "Показал, что чёрные дыры испускают излучение, и написал бестселлер «Краткая история времени».",
+    "tr": "Kara deliklerin ışıma yaptığını gösterdi ve çok satan „Zamanın Kısa Tarihi“ kitabını yazdı.",
+    "zh": "他证明了黑洞会发出辐射，并写下畅销书《时间简史》。"
+  },
+  "scientist_fact_feynman": {
+    "de": "Erhielt den Nobelpreis für Quantenelektrodynamik und spielte leidenschaftlich gern Bongo-Trommeln.",
+    "en": "Won the Nobel Prize for quantum electrodynamics and loved playing the bongo drums.",
+    "ar": "نال جائزة نوبل عن الديناميكا الكهربائية الكمية، وكان مولعًا بالعزف على طبول البونغو.",
+    "es": "Ganó el Nobel por la electrodinámica cuántica y le encantaba tocar los bongós.",
+    "fr": "A reçu le prix Nobel pour l'électrodynamique quantique et adorait jouer des bongos.",
+    "ru": "Получил Нобелевскую премию за квантовую электродинамику и обожал играть на бонго.",
+    "tr": "Kuantum elektrodinamiği çalışmalarıyla Nobel Ödülü aldı ve bongo çalmayı çok severdi.",
+    "zh": "他因量子电动力学获得诺贝尔奖，还特别爱打邦戈鼓。"
+  },
+  "scientist_fact_planck": {
+    "de": "Begründete die Quantenphysik – nach ihm sind die Max-Planck-Institute benannt.",
+    "en": "Founded quantum physics – the Max Planck Institutes are named after him.",
+    "ar": "أسّس فيزياء الكم – وتحمل معاهد ماكس بلانك اسمه.",
+    "es": "Fundó la física cuántica; los Institutos Max Planck llevan su nombre.",
+    "fr": "A fondé la physique quantique – les instituts Max-Planck portent son nom.",
+    "ru": "Основоположник квантовой физики – в его честь названы Институты Макса Планка.",
+    "tr": "Kuantum fiziğinin kurucusudur – Max Planck Enstitüleri onun adını taşır.",
+    "zh": "他开创了量子物理学——马克斯·普朗克研究所以他的名字命名。"
+  },
+  "scientist_fact_humboldt": {
+    "de": "Erforschte Südamerika und gilt als Mitbegründer der Ökologie – unzählige Orte, Pflanzen und Tiere tragen seinen Namen.",
+    "en": "Explored South America and is considered a co-founder of ecology – countless places, plants and animals bear his name.",
+    "ar": "استكشف أمريكا الجنوبية ويُعدّ من مؤسسي علم البيئة – وتحمل أماكن ونباتات وحيوانات لا تُحصى اسمه.",
+    "es": "Exploró Sudamérica y se le considera cofundador de la ecología; innumerables lugares, plantas y animales llevan su nombre.",
+    "fr": "A exploré l'Amérique du Sud et est considéré comme l'un des fondateurs de l'écologie – d'innombrables lieux, plantes et animaux portent son nom.",
+    "ru": "Исследовал Южную Америку и считается одним из основателей экологии – его имя носят бесчисленные места, растения и животные.",
+    "tr": "Güney Amerika’yı keşfetti ve ekolojinin kurucularından sayılır – sayısız yer, bitki ve hayvan onun adını taşır.",
+    "zh": "他考察了南美洲，被视为生态学的奠基人之一——无数地方、植物和动物以他的名字命名。"
+  },
+  "scientist_fact_gauss": {
+    "de": "Rechnete schon als Schüler blitzschnell die Summe der Zahlen von 1 bis 100 aus und war später auf dem 10-D-Mark-Schein abgebildet.",
+    "en": "As a schoolboy he instantly added up the numbers from 1 to 100 – later his portrait was on the German 10-mark note.",
+    "ar": "جمع وهو تلميذ الأعداد من 1 إلى 100 في لمح البصر – ثم ظهرت صورته لاحقًا على ورقة العشرة ماركات الألمانية.",
+    "es": "De niño sumó en un instante los números del 1 al 100; más tarde su retrato apareció en el billete alemán de 10 marcos.",
+    "fr": "Écolier, il a calculé en un éclair la somme des nombres de 1 à 100 – plus tard, son portrait figurait sur le billet allemand de 10 marks.",
+    "ru": "Ещё школьником мгновенно сложил числа от 1 до 100 – позже его портрет появился на немецкой купюре в 10 марок.",
+    "tr": "Daha öğrenciyken 1’den 100’e kadar sayıların toplamını bir anda buldu – sonradan portresi 10 Alman markının üzerinde yer aldı.",
+    "zh": "他上学时就瞬间算出了1到100的和——后来他的头像印在了德国10马克纸币上。"
+  },
+  "scientist_fact_mendel": {
+    "de": "Entdeckte mit Tausenden Erbsenpflanzen im Klostergarten die Grundregeln der Vererbung.",
+    "en": "Discovered the basic rules of heredity with thousands of pea plants in his monastery garden.",
+    "ar": "اكتشف القواعد الأساسية للوراثة باستخدام آلاف نباتات البازلاء في حديقة الدير.",
+    "es": "Descubrió las reglas básicas de la herencia con miles de plantas de guisante en el huerto de su monasterio.",
+    "fr": "A découvert les règles de base de l'hérédité grâce à des milliers de plants de pois dans le jardin de son monastère.",
+    "ru": "Открыл основные законы наследственности, изучив тысячи растений гороха в монастырском саду.",
+    "tr": "Manastır bahçesindeki binlerce bezelye bitkisiyle kalıtımın temel kurallarını keşfetti.",
+    "zh": "他在修道院花园里用数千株豌豆发现了遗传的基本规律。"
+  },
+  "scientist_fact_goodall": {
+    "de": "Beobachtete jahrzehntelang Schimpansen in Tansania und entdeckte, dass sie Werkzeuge benutzen.",
+    "en": "Observed chimpanzees in Tanzania for decades and discovered that they use tools.",
+    "ar": "راقبت الشمبانزي في تنزانيا لعقود، واكتشفت أنها تستخدم الأدوات.",
+    "es": "Observó chimpancés en Tanzania durante décadas y descubrió que usan herramientas.",
+    "fr": "A observé les chimpanzés en Tanzanie pendant des décennies et découvert qu’ils utilisent des outils.",
+    "ru": "Десятилетиями наблюдала за шимпанзе в Танзании и обнаружила, что они пользуются орудиями.",
+    "tr": "Tanzanya’da onlarca yıl şempanzeleri gözlemledi ve alet kullandıklarını keşfetti.",
+    "zh": "她在坦桑尼亚观察黑猩猩数十年，发现它们会使用工具。"
+  },
+  "scientist_fact_jemison": {
+    "de": "Flog 1992 als erste afroamerikanische Frau ins All.",
+    "en": "Became the first African American woman in space in 1992.",
+    "ar": "أصبحت عام 1992 أول امرأة أمريكية من أصل أفريقي تصعد إلى الفضاء.",
+    "es": "En 1992 se convirtió en la primera mujer afroamericana en viajar al espacio.",
+    "fr": "En 1992, elle est devenue la première femme afro-américaine à aller dans l’espace.",
+    "ru": "В 1992 году стала первой афроамериканкой в космосе.",
+    "tr": "1992’de uzaya giden ilk Afro-Amerikalı kadın oldu.",
+    "zh": "1992年，她成为第一位进入太空的非裔美国女性。"
+  },
+  "scientist_fact_wu": {
+    "de": "Bewies mit ihrem Experiment, dass die Natur nicht immer spiegelsymmetrisch ist – man nannte sie die „First Lady der Physik“.",
+    "en": "Her experiment proved that nature is not always mirror-symmetric – she was called the “First Lady of Physics”.",
+    "ar": "أثبتت بتجربتها أن الطبيعة ليست دائمًا متناظرة كالمرآة – ولُقّبت بـ„السيدة الأولى للفيزياء“.",
+    "es": "Su experimento demostró que la naturaleza no siempre es simétrica como un espejo; la llamaban la «primera dama de la física».",
+    "fr": "Son expérience a prouvé que la nature n’est pas toujours symétrique comme dans un miroir – on la surnommait la « First Lady de la physique ».",
+    "ru": "Её эксперимент доказал, что природа не всегда зеркально симметрична, – её называли «первой леди физики».",
+    "tr": "Deneyiyle doğanın her zaman ayna simetrik olmadığını kanıtladı – ona „Fiziğin First Lady’si“ dendi.",
+    "zh": "她的实验证明了自然界并不总是镜像对称的——她被誉为“物理学第一夫人”。"
+  },
+  "scientist_fact_ramanujan": {
+    "de": "Brachte sich Mathematik weitgehend selbst bei und hinterließ fast 4.000 Formeln und Ergebnisse.",
+    "en": "Largely taught himself mathematics and left behind almost 4,000 formulas and results.",
+    "ar": "علّم نفسه الرياضيات إلى حد كبير، وترك نحو 4000 صيغة ونتيجة.",
+    "es": "Aprendió matemáticas casi por su cuenta y dejó cerca de 4000 fórmulas y resultados.",
+    "fr": "A appris les mathématiques en grande partie seul et a laissé près de 4 000 formules et résultats.",
+    "ru": "Во многом самостоятельно выучил математику и оставил почти 4000 формул и результатов.",
+    "tr": "Matematiği büyük ölçüde kendi kendine öğrendi ve yaklaşık 4.000 formül ve sonuç bıraktı.",
+    "zh": "他几乎自学成才，留下了近4000个公式和结论。"
+  },
+  "scientist_fact_youyou": {
+    "de": "Entdeckte das Malariamittel Artemisinin, angeregt von einem über 1.600 Jahre alten chinesischen Heiltext – und erhielt dafür den Nobelpreis.",
+    "en": "Discovered the malaria drug artemisinin, inspired by a Chinese medical text over 1,600 years old – and won the Nobel Prize for it.",
+    "ar": "اكتشفت دواء الملاريا أرتيميسينين مستلهمةً نصًا طبيًا صينيًا عمره أكثر من 1600 عام – ونالت عنه جائزة نوبل.",
+    "es": "Descubrió el antipalúdico artemisinina inspirada en un texto médico chino de más de 1600 años, y ganó el Nobel por ello.",
+    "fr": "A découvert l'artémisinine contre le paludisme, inspirée par un texte médical chinois vieux de plus de 1 600 ans – et a reçu le prix Nobel pour cela.",
+    "ru": "Открыла противомалярийный препарат артемизинин, вдохновившись китайским медицинским текстом возрастом более 1600 лет, и получила за это Нобелевскую премию.",
+    "tr": "1.600 yılı aşkın eski bir Çin tıp metninden esinlenerek sıtma ilacı artemisinini keşfetti – ve bununla Nobel Ödülü kazandı.",
+    "zh": "她受一部1600多年前中医古籍的启发发现了抗疟药青蒿素，并因此获得诺贝尔奖。"
+  },
+  "scientist_fact_haytham": {
+    "de": "Erklärte vor rund 1.000 Jahren, wie wir sehen, und gilt als Wegbereiter der experimentellen Methode.",
+    "en": "Explained how we see around 1,000 years ago and is considered a pioneer of the experimental method.",
+    "ar": "شرح قبل نحو ألف عام كيف نرى، ويُعدّ من رواد المنهج التجريبي.",
+    "es": "Explicó hace unos 1000 años cómo vemos y se le considera un pionero del método experimental.",
+    "fr": "A expliqué il y a environ 1 000 ans comment nous voyons et est considéré comme un pionnier de la méthode expérimentale.",
+    "ru": "Около 1000 лет назад объяснил, как мы видим, и считается первопроходцем экспериментального метода.",
+    "tr": "Yaklaşık 1.000 yıl önce nasıl gördüğümüzü açıkladı ve deneysel yöntemin öncülerinden sayılır.",
+    "zh": "约一千年前，他解释了人眼如何看见事物，被视为实验方法的先驱。"
+  },
+  "scientist_fact_hypatia": {
+    "de": "Lehrte vor über 1.600 Jahren in Alexandria Mathematik, Astronomie und Philosophie.",
+    "en": "Taught mathematics, astronomy and philosophy in Alexandria more than 1,600 years ago.",
+    "ar": "درّست الرياضيات والفلك والفلسفة في الإسكندرية قبل أكثر من 1600 عام.",
+    "es": "Enseñó matemáticas, astronomía y filosofía en Alejandría hace más de 1600 años.",
+    "fr": "Enseignait les mathématiques, l'astronomie et la philosophie à Alexandrie il y a plus de 1 600 ans.",
+    "ru": "Более 1600 лет назад преподавала в Александрии математику, астрономию и философию.",
+    "tr": "1.600 yılı aşkın bir süre önce İskenderiye’de matematik, astronomi ve felsefe öğretti.",
+    "zh": "1600多年前，她在亚历山大城教授数学、天文学和哲学。"
+  },
+  "scientist_fact_carson": {
+    "de": "Warnte mit ihrem Buch „Der stumme Frühling“ vor Pestiziden und gab damit der Umweltbewegung einen kräftigen Anstoß.",
+    "en": "Warned about pesticides in her book “Silent Spring” and gave the environmental movement a big push.",
+    "ar": "حذّرت من المبيدات في كتابها „الربيع الصامت“ ومنحت الحركة البيئية دفعة قوية.",
+    "es": "Advirtió sobre los pesticidas en su libro «Primavera silenciosa» y dio un gran impulso al movimiento ecologista.",
+    "fr": "A alerté sur les pesticides dans son livre « Printemps silencieux » et a donné un élan majeur au mouvement écologiste.",
+    "ru": "Предупредила об опасности пестицидов в книге «Безмолвная весна» и дала мощный толчок экологическому движению.",
+    "tr": "„Sessiz Bahar“ kitabıyla pestisitlere karşı uyardı ve çevre hareketine güçlü bir ivme kazandırdı.",
+    "zh": "她在《寂静的春天》中警示农药的危害，有力推动了环保运动。"
+  },
+  "scientist_fact_hodgkin": {
+    "de": "Entschlüsselte die Struktur von Penicillin und Vitamin B12 und erhielt dafür den Chemie-Nobelpreis.",
+    "en": "Determined the structures of penicillin and vitamin B12 and won the Nobel Prize in Chemistry for it.",
+    "ar": "حدّدت بنية البنسلين وفيتامين ب12 ونالت عن ذلك جائزة نوبل في الكيمياء.",
+    "es": "Determinó la estructura de la penicilina y de la vitamina B12 y ganó por ello el Nobel de Química.",
+    "fr": "A déterminé la structure de la pénicilline et de la vitamine B12, ce qui lui a valu le prix Nobel de chimie.",
+    "ru": "Расшифровала структуру пенициллина и витамина B12 и получила за это Нобелевскую премию по химии.",
+    "tr": "Penisilin ve B12 vitamininin yapısını çözdü ve bununla Nobel Kimya Ödülü’nü kazandı.",
+    "zh": "她解析了青霉素和维生素B12的结构，并因此获得诺贝尔化学奖。"
+  },
+  "scientist_fact_mcclintock": {
+    "de": "Entdeckte im Mais „springende Gene“ – Jahrzehnte später erhielt sie dafür allein den Nobelpreis.",
+    "en": "Discovered “jumping genes” in maize – decades later she won an unshared Nobel Prize for it.",
+    "ar": "اكتشفت „الجينات القافزة“ في الذرة – وبعد عقود نالت عنها جائزة نوبل منفردة.",
+    "es": "Descubrió los «genes saltarines» en el maíz; décadas después recibió en solitario el Nobel por ello.",
+    "fr": "A découvert les « gènes sauteurs » dans le maïs – des décennies plus tard, elle a reçu seule le prix Nobel pour cela.",
+    "ru": "Открыла «прыгающие гены» у кукурузы – спустя десятилетия единолично получила за это Нобелевскую премию.",
+    "tr": "Mısırda „zıplayan genleri“ keşfetti – onlarca yıl sonra bu buluşla Nobel Ödülü’nü tek başına aldı.",
+    "zh": "她在玉米中发现了“跳跃基因”——几十年后独享了诺贝尔奖。"
+  },
+  "scientist_fact_carver": {
+    "de": "Entwickelte Hunderte Verwendungen für Erdnüsse und Süßkartoffeln und half so Bauern im Süden der USA.",
+    "en": "Developed hundreds of uses for peanuts and sweet potatoes, helping farmers in the southern United States.",
+    "ar": "ابتكر مئات الاستخدامات للفول السوداني والبطاطا الحلوة، فساعد المزارعين في جنوب الولايات المتحدة.",
+    "es": "Desarrolló cientos de usos para el cacahuete y el boniato y así ayudó a los agricultores del sur de EE. UU.",
+    "fr": "A mis au point des centaines d'usages pour l'arachide et la patate douce, aidant ainsi les agriculteurs du sud des États-Unis.",
+    "ru": "Придумал сотни способов применения арахиса и батата и тем помог фермерам юга США.",
+    "tr": "Yer fıstığı ve tatlı patates için yüzlerce kullanım alanı geliştirerek ABD’nin güneyindeki çiftçilere yardım etti.",
+    "zh": "他为花生和红薯开发了数百种用途，帮助了美国南方的农民。"
+  },
+  "scientist_fact_bohr": {
+    "de": "Entwickelte das Atommodell mit Elektronen auf festen Bahnen und erhielt dafür den Nobelpreis.",
+    "en": "Developed the atomic model with electrons on fixed orbits and won the Nobel Prize for it.",
+    "ar": "طوّر نموذج الذرة الذي تدور فيه الإلكترونات في مدارات ثابتة، ونال عنه جائزة نوبل.",
+    "es": "Desarrolló el modelo atómico con electrones en órbitas fijas y ganó por ello el Nobel.",
+    "fr": "A développé le modèle de l'atome avec des électrons sur des orbites fixes, ce qui lui a valu le prix Nobel.",
+    "ru": "Разработал модель атома с электронами на фиксированных орбитах и получил за это Нобелевскую премию.",
+    "tr": "Elektronların sabit yörüngelerde dolaştığı atom modelini geliştirdi ve bununla Nobel Ödülü aldı.",
+    "zh": "他提出了电子在固定轨道上运行的原子模型，并因此获得诺贝尔奖。"
+  },
+  "scientist_fact_lamarr": {
+    "de": "War Hollywood-Star und erfand nebenbei eine Funktechnik mit, die als Vorläufer von WLAN und Bluetooth gilt.",
+    "en": "Was a Hollywood star and co-invented a radio technique that is seen as a forerunner of Wi-Fi and Bluetooth.",
+    "ar": "كانت نجمة في هوليوود، وشاركت في اختراع تقنية لاسلكية تُعدّ سلفًا للواي فاي والبلوتوث.",
+    "es": "Fue estrella de Hollywood y coinventó una técnica de radio considerada precursora del wifi y el Bluetooth.",
+    "fr": "Star de Hollywood, elle a aussi co-inventé une technique radio considérée comme l’ancêtre du Wi-Fi et du Bluetooth.",
+    "ru": "Была звездой Голливуда и стала соавтором радиотехнологии, которую считают предшественницей Wi-Fi и Bluetooth.",
+    "tr": "Bir Hollywood yıldızıydı ve Wi-Fi ile Bluetooth’un öncüsü sayılan bir radyo tekniğinin mucitlerinden biri oldu.",
+    "zh": "她是好莱坞明星，还参与发明了一种被视为Wi-Fi和蓝牙前身的无线电技术。"
+  },
+  "scientist_fact_kepler": {
+    "de": "Fand heraus, dass Planeten auf Ellipsen um die Sonne laufen – nicht auf Kreisen.",
+    "en": "Found out that planets orbit the Sun on ellipses – not on circles.",
+    "ar": "اكتشف أن الكواكب تدور حول الشمس في مدارات إهليلجية – لا دائرية.",
+    "es": "Descubrió que los planetas giran alrededor del Sol en elipses, no en círculos.",
+    "fr": "A découvert que les planètes tournent autour du Soleil sur des ellipses – et non sur des cercles.",
+    "ru": "Установил, что планеты движутся вокруг Солнца по эллипсам, а не по кругам.",
+    "tr": "Gezegenlerin Güneş’in etrafında daire değil, elips biçiminde döndüğünü buldu.",
+    "zh": "他发现行星绕太阳运行的轨道是椭圆，而不是正圆。"
+  },
+  "scientist_fact_maathai": {
+    "de": "Ließ mit dem Green Belt Movement über 50 Millionen Bäume pflanzen und erhielt als erste Afrikanerin den Friedensnobelpreis.",
+    "en": "Had more than 50 million trees planted with the Green Belt Movement and was the first African woman to win the Nobel Peace Prize.",
+    "ar": "زرعت عبر حركة الحزام الأخضر أكثر من 50 مليون شجرة، وكانت أول امرأة أفريقية تنال جائزة نوبل للسلام.",
+    "es": "Con el Movimiento Cinturón Verde impulsó la plantación de más de 50 millones de árboles y fue la primera africana en ganar el Nobel de la Paz.",
+    "fr": "Avec le Green Belt Movement, elle a fait planter plus de 50 millions d'arbres et a été la première Africaine à recevoir le prix Nobel de la paix.",
+    "ru": "Через движение «Зелёный пояс» организовала посадку более 50 миллионов деревьев и стала первой африканкой – лауреатом Нобелевской премии мира.",
+    "tr": "Yeşil Kuşak Hareketi ile 50 milyondan fazla ağaç diktirdi ve Nobel Barış Ödülü’nü kazanan ilk Afrikalı kadın oldu.",
+    "zh": "她通过绿带运动种下了超过5000万棵树，并成为首位获得诺贝尔和平奖的非洲女性。"
+  },
+  "scientist_fact_kariko": {
+    "de": "Forschte jahrzehntelang an mRNA, oft gegen viele Widerstände – ihre Arbeit machte die Corona-Impfstoffe möglich.",
+    "en": "Researched mRNA for decades, often against much resistance – her work made the COVID-19 vaccines possible.",
+    "ar": "بحثت في الحمض النووي الريبي المرسال لعقود، وغالبًا رغم مقاومة كبيرة – وجعل عملها لقاحات كورونا ممكنة.",
+    "es": "Investigó el ARNm durante décadas, a menudo contra mucha resistencia; su trabajo hizo posibles las vacunas contra la COVID-19.",
+    "fr": "A étudié l'ARN messager pendant des décennies, souvent contre vents et marées – ses travaux ont rendu possibles les vaccins contre la COVID-19.",
+    "ru": "Десятилетиями изучала мРНК, часто вопреки сопротивлению, – её работа сделала возможными вакцины от COVID-19.",
+    "tr": "Onlarca yıl, çoğu zaman büyük dirençlere rağmen mRNA üzerinde çalıştı – çalışmaları COVID-19 aşılarını mümkün kıldı.",
+    "zh": "她数十年坚持研究mRNA，常常顶着重重阻力——她的工作让新冠疫苗成为可能。"
+  },
+  "scientist_fact_mendeleev": {
+    "de": "Ordnete die Elemente im Periodensystem und sagte Elemente voraus, die erst später entdeckt wurden.",
+    "en": "Arranged the elements in the periodic table and predicted elements that were only discovered later.",
+    "ar": "رتّب العناصر في الجدول الدوري، وتنبأ بعناصر لم تُكتشف إلا لاحقًا.",
+    "es": "Ordenó los elementos en la tabla periódica y predijo elementos que se descubrieron más tarde.",
+    "fr": "A organisé les éléments dans le tableau périodique et prédit des éléments découverts seulement plus tard.",
+    "ru": "Упорядочил элементы в периодической таблице и предсказал элементы, открытые лишь позднее.",
+    "tr": "Elementleri periyodik tabloda düzenledi ve ancak sonradan keşfedilen elementleri önceden tahmin etti.",
+    "zh": "他把元素排进了元素周期表，还预言了后来才被发现的元素。"
+  },
+  "scientist_fact_mirzakhani": {
+    "de": "Erhielt als erste Frau die Fields-Medaille, die höchste Auszeichnung der Mathematik.",
+    "en": "The first woman to win the Fields Medal, the highest honor in mathematics.",
+    "ar": "أول امرأة تنال وسام فيلدز، أرفع جائزة في الرياضيات.",
+    "es": "La primera mujer en ganar la Medalla Fields, el máximo galardón de las matemáticas.",
+    "fr": "Première femme à recevoir la médaille Fields, la plus haute distinction en mathématiques.",
+    "ru": "Первая женщина – лауреат Филдсовской премии, высшей награды в математике.",
+    "tr": "Matematiğin en yüksek ödülü olan Fields Madalyası’nı kazanan ilk kadın.",
+    "zh": "她是第一位获得菲尔兹奖——数学界最高荣誉——的女性。"
+  },
   "onboarding_select_canteen": {
     "de": "Wähle deine Mensa",
     "en": "Choose your canteen",

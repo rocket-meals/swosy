@@ -37,6 +37,7 @@ import ProjectButton from '@/components/ProjectButton';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsListNickname from '@/components/SettingsListNickname';
+import { getScientistFactKey } from '@/helper/scientistFactHelper';
 
 const STEPS = ['welcome', 'profile', 'canteen', 'pricegroup', 'preferences'] as const;
 type Step = (typeof STEPS)[number];
@@ -75,7 +76,7 @@ const OnboardingScreen = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
-	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const { primaryColor, selectedTheme: mode, nickNameLocal } = useAppSelector((state) => state.settings);
 	const { canteens } = useAppSelector((state) => state.canteenReducer);
 	const { markings } = useAppSelector((state) => state.food);
 	const { isManagement, profile, user } = useAppSelector((state) => state.authReducer);
@@ -132,6 +133,13 @@ const OnboardingScreen = () => {
 	// so every user sees "their" avatar here and is invited to customize it.
 	const { avatarConfig: ownAvatarConfig, openEditor: openOwnAvatarEditor } = useAvatarProfileEditor();
 	const hasFilledProfileDefaultsRef = useRef(false);
+	// The scientist behind a still unchanged default nickname/avatar – the "i" next to the avatar explains
+	// who that is, so nobody wonders about the strange name.
+	const ownNickname = profile?.id ? profile?.nickname : nickNameLocal;
+	const ownScientist = useMemo(
+		() => DefaultProfileHelper.findScientist(ownNickname, ownAvatarConfig),
+		[ownNickname, ownAvatarConfig]
+	);
 
 	const isFirstStep = currentStepIndex === 0;
 	const isLastStep = currentStepIndex === STEPS.length - 1;
@@ -721,6 +729,32 @@ const OnboardingScreen = () => {
 		</View>
 	);
 
+	const openScientistInfo = useCallback(() => {
+		if (!ownScientist) return;
+		const factKey = getScientistFactKey(ownScientist);
+		showModal(
+			{
+				title: translate(TranslationKeys.onboarding_profile_scientist_info),
+				children: (
+					<View style={styles.scientistInfoContainer}>
+						<Text style={[styles.scientistInfoText, { color: theme.screen.text }]}>
+							{translate(TranslationKeys.onboarding_profile_scientist_info_intro)}
+						</Text>
+						<Text style={[styles.scientistInfoName, { color: theme.screen.text }]}>{ownScientist.name}</Text>
+						{factKey && (
+							<Text style={[styles.scientistInfoText, { color: theme.screen.text }]}>{translate(factKey)}</Text>
+						)}
+						<Text style={[styles.scientistInfoHint, { color: theme.screen.text }]}>
+							{translate(TranslationKeys.onboarding_profile_scientist_info_hint)}
+						</Text>
+						<ProjectButton text={translate(TranslationKeys.okay)} onPress={closeModal} style={{ marginVertical: 0 }} />
+					</View>
+				),
+			},
+			{}
+		);
+	}, [ownScientist, showModal, closeModal, translate, theme.screen.text]);
+
 	const renderProfileStep = () => (
 		<View style={[styles.stepContent, { width: screenWidth }]}>
 			<ScrollView contentContainerStyle={styles.stepScrollContentNoHPad}>
@@ -730,29 +764,40 @@ const OnboardingScreen = () => {
 				<Text style={[styles.stepDescription, { color: theme.screen.text, paddingHorizontal: 20 }]}>
 					{translate(TranslationKeys.onboarding_profile_description)}
 				</Text>
-				<TouchableOpacity
-					onPress={() => openOwnAvatarEditor()}
-					style={styles.profileAvatarButton}
-					accessibilityRole="button"
-					accessibilityLabel={translate(TranslationKeys.onboarding_profile_customize_avatar)}
-				>
-					{ownAvatarConfig ? (
-						<MyAvatar
-							style={ownAvatarConfig.style}
-							options={ownAvatarConfig.options}
-							size={PROFILE_AVATAR_SIZE}
-							rounded={true}
-							backgroundColor={AVATAR_BACKGROUND}
-						/>
-					) : (
-						<View style={[styles.profileAvatarPlaceholder, { backgroundColor: theme.screen.iconBg }]}>
-							<ActivityIndicator size="large" color={primaryColor} />
+				<View style={styles.profileAvatarButton}>
+					<TouchableOpacity
+						onPress={() => openOwnAvatarEditor()}
+						accessibilityRole="button"
+						accessibilityLabel={translate(TranslationKeys.onboarding_profile_customize_avatar)}
+					>
+						{ownAvatarConfig ? (
+							<MyAvatar
+								style={ownAvatarConfig.style}
+								options={ownAvatarConfig.options}
+								size={PROFILE_AVATAR_SIZE}
+								rounded={true}
+								backgroundColor={AVATAR_BACKGROUND}
+							/>
+						) : (
+							<View style={[styles.profileAvatarPlaceholder, { backgroundColor: theme.screen.iconBg }]}>
+								<ActivityIndicator size="large" color={primaryColor} />
+							</View>
+						)}
+						<View style={[styles.profileAvatarEditBadge, { backgroundColor: primaryColor, borderColor: theme.screen.background }]}>
+							<MaterialCommunityIcons name="pencil" size={20} color={contrastColor} />
 						</View>
+					</TouchableOpacity>
+					{ownScientist && (
+						<TouchableOpacity
+							onPress={openScientistInfo}
+							style={[styles.profileAvatarInfoBadge, { backgroundColor: theme.screen.iconBg, borderColor: theme.screen.background }]}
+							accessibilityRole="button"
+							accessibilityLabel={translate(TranslationKeys.onboarding_profile_scientist_info)}
+						>
+							<MaterialCommunityIcons name="information-variant" size={22} color={theme.screen.icon} />
+						</TouchableOpacity>
 					)}
-					<View style={[styles.profileAvatarEditBadge, { backgroundColor: primaryColor, borderColor: theme.screen.background }]}>
-						<MaterialCommunityIcons name="pencil" size={20} color={contrastColor} />
-					</View>
-				</TouchableOpacity>
+				</View>
 				<TouchableOpacity
 					onPress={() => openOwnAvatarEditor()}
 					style={[styles.readMoreButton, { backgroundColor: primaryColor }]}
@@ -1082,6 +1127,33 @@ const styles = StyleSheet.create({
 		borderWidth: 3,
 		alignItems: 'center',
 		justifyContent: 'center',
+	},
+	profileAvatarInfoBadge: {
+		position: 'absolute',
+		right: 4,
+		top: 4,
+		width: 36,
+		height: 36,
+		borderRadius: 18,
+		borderWidth: 3,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	scientistInfoContainer: {
+		gap: 12,
+	},
+	scientistInfoName: {
+		fontSize: 20,
+		fontFamily: 'Poppins_700Bold',
+	},
+	scientistInfoText: {
+		fontSize: 16,
+		fontFamily: 'Poppins_400Regular',
+	},
+	scientistInfoHint: {
+		fontSize: 14,
+		fontFamily: 'Poppins_400Regular',
+		opacity: 0.7,
 	},
 	profileNicknameContainer: {
 		width: '100%',

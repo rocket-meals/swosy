@@ -72,7 +72,8 @@ export function getVersionPatch() {
 	// 42: course timetable redesign (common-ui: MyCalendarMonth in SettingsListDate, MyColorSelection, SettingsListColor)
 	// 43: common: app feedbacks without chat can be marked as done (app_feedbacks.state)
 	// 44: common: DefaultProfileHelper (scientist default nickname + avatar for new profiles)
-	return 44;
+	// 45: common: DefaultProfileHelper.findScientist
+	return 45;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

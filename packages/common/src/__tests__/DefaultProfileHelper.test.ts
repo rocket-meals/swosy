@@ -91,4 +91,20 @@ describe('DefaultProfileHelper', () => {
     expect(DefaultProfileHelper.isDefaultAvatar(null)).toBe(false);
     expect(DefaultProfileHelper.isDefaultAvatar('{broken')).toBe(false);
   });
+
+  it('finds the scientist behind a default nickname, even when the avatar was customized', () => {
+    expect(DefaultProfileHelper.findScientist('Curie_4821', { style: 'micah' })?.name).toBe('Marie Curie');
+  });
+
+  it('finds the scientist behind a default avatar, even when the nickname was changed', () => {
+    const avatar = DefaultProfileHelper.buildAvatar(FAMOUS_SCIENTISTS[2]!);
+    expect(DefaultProfileHelper.findScientist('Mensafan', JSON.stringify(avatar))?.name).toBe(FAMOUS_SCIENTISTS[2]!.name);
+  });
+
+  it('finds nobody once nickname and avatar are customized, or for legacy guest profiles', () => {
+    expect(DefaultProfileHelper.findScientist('Mensafan', { style: 'avataaars', options: { top: ['bob'] } })).toBeNull();
+    expect(DefaultProfileHelper.findScientist('Guest_2609232151', null)).toBeNull();
+    expect(DefaultProfileHelper.findScientist('Curie_12', null)).toBeNull();
+    expect(DefaultProfileHelper.findScientist(null, undefined)).toBeNull();
+  });
 });

@@ -206,7 +206,8 @@ export function getVersionPatch() {
         // 95: Stud.IP import reads locations sent as an object too; the event modal shows the event JSON (with the Stud.IP data) in debug mode
         // 96: common: app feedbacks without chat can be marked as done (app_feedbacks.state)
         // 97: onboarding step "Das bist du": default scientist avatar + nickname, customizable
-        return 97;
+        // 98: onboarding: "i" next to the default avatar explains which scientist the profile is named after
+        return 98;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

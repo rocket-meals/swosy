@@ -444,6 +444,27 @@ export class DefaultProfileHelper {
   }
 
   /**
+   * Die Person hinter einem noch unveränderten Startprofil – zuerst am Spitznamen (`Curie_4821` → Curie),
+   * sonst am Avatar erkannt. `null`, sobald beides angepasst ist oder das Profil aus der Zeit vor den
+   * Wissenschaftler-Defaults stammt (`Guest_…`).
+   */
+  static findScientist(nickname: string | null | undefined, avatar: unknown): FamousScientist | null {
+    const match = DefaultProfileHelper.NICKNAME_PATTERN.exec(nickname?.trim() ?? '');
+    if (match?.[2]?.length === DefaultProfileHelper.NICKNAME_SUFFIX_DIGITS) {
+      const byNickname = FAMOUS_SCIENTISTS.find(entry => entry.nickname === match[1]);
+      if (byNickname) {
+        return byNickname;
+      }
+    }
+    const config = DefaultProfileHelper.parseAvatar(avatar);
+    if (config?.style !== DefaultProfileHelper.AVATAR_STYLE || !config.options || typeof config.options !== 'object') {
+      return null;
+    }
+    const key = DefaultProfileHelper.optionsKey(config.options);
+    return FAMOUS_SCIENTISTS.find(entry => DefaultProfileHelper.optionsKey(entry.avatar) === key) ?? null;
+  }
+
+  /**
    * Ob der Spitzname noch der automatisch vergebene ist – `Curie_4821` oder das frühere `Guest_…`.
    * Leere Spitznamen zählen nicht als Default, sondern als „kein Spitzname".
    */
@@ -469,23 +490,20 @@ export class DefaultProfileHelper {
    * Client als Objekt oder als JSON-String an; beides wird akzeptiert.
    */
   static isDefaultAvatar(avatar: unknown): boolean {
+    return DefaultProfileHelper.findScientist(null, avatar) !== null;
+  }
+
+  /** `profiles.avatar` kommt je nach Client als Objekt oder als JSON-String an. */
+  private static parseAvatar(avatar: unknown): Partial<DefaultAvatarConfig> | null {
     let parsed: unknown = avatar;
     if (typeof avatar === 'string') {
       try {
         parsed = JSON.parse(avatar);
       } catch {
-        return false;
+        return null;
       }
     }
-    if (!parsed || typeof parsed !== 'object') {
-      return false;
-    }
-    const config = parsed as Partial<DefaultAvatarConfig>;
-    if (config.style !== DefaultProfileHelper.AVATAR_STYLE || !config.options || typeof config.options !== 'object') {
-      return false;
-    }
-    const key = DefaultProfileHelper.optionsKey(config.options);
-    return FAMOUS_SCIENTISTS.some(entry => DefaultProfileHelper.optionsKey(entry.avatar) === key);
+    return parsed && typeof parsed === 'object' ? (parsed as Partial<DefaultAvatarConfig>) : null;
   }
 
   /** Reihenfolge-unabhängiger Vergleichsschlüssel für Avatar-Optionen. */
