@@ -18,10 +18,10 @@
  */
 
 import { defineHook } from '@directus/extensions-sdk';
-import Redis from 'ioredis';
 import { CollectionNames } from 'repo-depkit-common';
 import { BackendUsageEventDeduplicator, BackendUsageEventHelper, BackendUsageEventSharedDeduplicator, FoodofferForUsageEvent } from '../helpers/BackendUsageEventHelper';
 import { ItemsServiceCreator } from '../helpers/ItemsServiceCreator';
+import { RedisHelper } from '../helpers/RedisHelper';
 
 const HOOK_NAME = 'food-details-usage-event-hook';
 
@@ -29,11 +29,8 @@ const HOOK_NAME = 'food-details-usage-event-hook';
 const APP_USAGE_EVENTS = 'app_usage_events';
 
 export default defineHook(({ action }, apiContext) => {
-  const redisUrl = apiContext.env?.['REDIS'];
-  const deduplicator =
-    typeof redisUrl === 'string' && redisUrl.length > 0
-      ? new BackendUsageEventSharedDeduplicator(new Redis(redisUrl, { maxRetriesPerRequest: 1 }))
-      : new BackendUsageEventDeduplicator();
+  const redisStore = RedisHelper.getRedisStore(apiContext.env);
+  const deduplicator = redisStore ? new BackendUsageEventSharedDeduplicator(redisStore) : new BackendUsageEventDeduplicator();
 
   action(`${CollectionNames.FOODOFFERS}.items.read`, async (meta, eventContext) => {
     try {

@@ -12,6 +12,7 @@
 
 import { Accountability } from '@directus/types';
 import { AccountabilityHelper } from './AccountabilityHelper';
+import { KeyValueStore } from './RedisHelper';
 
 /** `session_id` prefix of every event written by the backend. */
 export const BACKEND_USAGE_SESSION_PREFIX = 'Backend_';
@@ -156,16 +157,12 @@ export class BackendUsageEventDeduplicator {
   }
 }
 
-/** The part of an ioredis client the shared deduplicator needs: `SET key value PX <ms> NX`. */
-export type BackendUsageEventLockStore = {
-  set(key: string, value: string, expiryMode: 'PX', time: number, setMode: 'NX'): Promise<'OK' | null>;
-};
-
 /**
  * Same job as `BackendUsageEventDeduplicator`, but shared by all Directus replicas via Redis. The
  * details screen reads `/items/foodoffers/<id>` several times when it opens, the load balancer
  * spreads these reads over the replicas – an in-memory lock per process then counts one opening once
- * per replica. `SET … NX` is atomic, so exactly one read per window wins, whichever replica it hits.
+ * per replica. `setIfAbsent` is atomic in Redis, so exactly one read per window wins, whichever
+ * replica it hits.
  *
  * If Redis fails, the local deduplicator decides – counting must never disturb the app.
  */
@@ -175,7 +172,7 @@ export class BackendUsageEventSharedDeduplicator {
   private readonly fallback: BackendUsageEventDeduplicator;
 
   constructor(
-    private readonly store: BackendUsageEventLockStore,
+    private readonly store: KeyValueStore,
     private readonly windowMs: number = BackendUsageEventHelper.DEDUPLICATION_WINDOW_MS
   ) {
     this.fallback = new BackendUsageEventDeduplicator(windowMs);
@@ -184,8 +181,7 @@ export class BackendUsageEventSharedDeduplicator {
   async shouldCount(requesterKey: string, itemKey: string, nowMs: number): Promise<boolean> {
     const key = `${BackendUsageEventSharedDeduplicator.KEY_PREFIX}${requesterKey}|${itemKey}`;
     try {
-      const result = await this.store.set(key, String(nowMs), 'PX', this.windowMs, 'NX');
-      return result === 'OK';
+      return await this.store.setIfAbsent(key, String(nowMs), this.windowMs);
     } catch {
       return this.fallback.shouldCount(requesterKey, itemKey, nowMs);
     }

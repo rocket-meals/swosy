@@ -1,13 +1,12 @@
 import { defineEndpoint } from '@directus/extensions-sdk';
-import Redis from 'ioredis';
 import ms from 'ms';
 import crypto from 'node:crypto';
 import { Knex } from 'knex';
 import { RedirectWhitelistHelper } from '../helpers/RedirectWhitelistHelper';
 import { ApiContext } from '../helpers/ApiContext'; // Use Node.js crypto module for secure comparisons
-import { createKv, KvLocal, KvRedis } from '@directus/memory';
 import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
 import { NanoidHelper } from '../helpers/NanoidHelper';
+import { KeyValueStore, RedisHelper } from '../helpers/RedisHelper';
 
 const env = process.env;
 const PUBLIC_URL = env.PUBLIC_URL || ''; // e.g. http://rocket-meals.de/rocket-meals/api or empty string
@@ -27,102 +26,26 @@ type AuthorizationCodeAndRedirectType = {
   redirect_url: string;
 };
 
-interface MyKvStorageImplementation {
-  set(key: string, value: string): Promise<'OK'>;
-  get(key: string): Promise<string | null>;
-  del(...args: string[]): Promise<number>;
-}
-
-class MyKvStorageRedis implements MyKvStorageImplementation {
-  private readonly duration: number;
-  private readonly redis: Redis;
-  constructor(redisUrl: string, duration: number) {
-    this.duration = duration;
-    this.redis = new Redis(redisUrl); // Assumes env.REDIS is set to "redis://rocket-meals-cache:6379"
-  }
-
-  del(...args: string[]): Promise<number> {
-    return this.redis.del(args);
-  }
-
-  get(key: string): Promise<string | null> {
-    return this.redis.get(key);
-  }
-
-  set(key: string, value: string): Promise<'OK'> {
-    return this.redis.set(key, value, 'EX', this.duration);
-  }
-}
-
-class MyKvStorageMemory implements MyKvStorageImplementation {
-  private readonly cache: KvLocal | KvRedis;
-  private readonly duration: number;
-
-  constructor(duration: number) {
-    this.duration = duration;
-    this.cache = createKv({
-      type: 'local',
-    });
-  }
-
-  async del(...args: string[]): Promise<number> {
-    let amountDeleted = 0;
-    for (let arg of args) {
-      await this.cache.delete(arg);
-      amountDeleted++;
-    }
-    return amountDeleted;
-  }
-
-  async get(key: string): Promise<string | null> {
-    const cachedItem = await this.cache.get<{
-      value: string;
-      expiration: number;
-    }>(key);
-
-    if (!cachedItem) {
-      return null; // Key not found or value is null
-    }
-
-    const { value, expiration } = cachedItem;
-    const currentTime = Date.now();
-
-    if (currentTime > expiration) {
-      // If the current time is past the expiration, remove the item and return null
-      await this.cache.delete(key);
-      return null;
-    }
-
-    return value; // Return the value if it has not expired
-  }
-
-  async set(key: string, value: string): Promise<'OK'> {
-    const expiration = Date.now() + this.duration * 1000; // Calculate expiration time in milliseconds
-    const item = { value, expiration }; // Create an object with value and expiration
-    await this.cache.set(key, item); // Store the object in the cache
-    return 'OK';
-  }
-}
-
 class MyKvStorage {
   static readonly prefix_code_challenge = 'pkce_code_challenge_';
   static readonly prefix_save_session = 'pkce_save_session_';
 
-  private readonly kvImplementation: MyKvStorageImplementation;
+  private readonly kvImplementation: KeyValueStore;
+  private readonly ttlMs: number;
 
-  constructor(redisUrl: string | null, maxTtl?: number) {
+  constructor(store: KeyValueStore, maxTtl?: number) {
     const defaultDuration = 300; // max Time To Live (TTL) to 300s = 5min
     const duration = maxTtl || defaultDuration;
 
-    //this.kvImplementation = !!redisUrl ? new MyKvStorageRedis(redisUrl, duration)
-    this.kvImplementation = redisUrl ? new MyKvStorageRedis(redisUrl, duration) : new MyKvStorageMemory(duration);
+    this.kvImplementation = store;
+    this.ttlMs = duration * 1000;
   }
 
   async setCodeChallenge(authorization_code: string, code_challenge: CodeChallengeRedisEntryType) {
     mylog('associateCodeChallengeWithCode: state: ' + authorization_code);
     mylog(JSON.stringify(code_challenge, null, 2));
     mylog('-----');
-    await this.kvImplementation.set(MyKvStorage.prefix_code_challenge + authorization_code, JSON.stringify(code_challenge));
+    await this.kvImplementation.set(MyKvStorage.prefix_code_challenge + authorization_code, JSON.stringify(code_challenge), this.ttlMs);
   }
 
   async getCodeChallenge(authorization_code: string) {
@@ -141,7 +64,7 @@ class MyKvStorage {
     mylog('setStateInformation: state: ' + state);
     mylog(JSON.stringify(authCodeAndRedirect, null, 2));
     mylog('-----');
-    await this.kvImplementation.set(MyKvStorage.prefix_save_session + state, JSON.stringify(authCodeAndRedirect));
+    await this.kvImplementation.set(MyKvStorage.prefix_save_session + state, JSON.stringify(authCodeAndRedirect), this.ttlMs);
   }
 
   async getStateInformation(state: string): Promise<AuthorizationCodeAndRedirectType | null> {
@@ -282,16 +205,13 @@ export default defineEndpoint({
   handler: (router, apiContext) => {
     const { database, env } = apiContext;
 
-    const redisUrl = env?.['REDIS'];
-    let validRedisUrl: string | null = null;
-    if (!redisUrl || redisUrl.length === 0) {
+    const redisStore = RedisHelper.getRedisStore(env);
+    if (!redisStore) {
       mylog(EndpointTopName + ' current is only supported with redis. Please configure env var REDIS.');
       return;
-    } else {
-      validRedisUrl = redisUrl;
     }
 
-    const myStorage = new MyKvStorage(validRedisUrl, 300);
+    const myStorage = new MyKvStorage(redisStore, 300);
 
     // 4.1.  Client Creates a Code Verifier - Mobile App
     // 4.2.  Client Creates the Code Challenge - Mobile App
