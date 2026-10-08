@@ -109,19 +109,26 @@ async function sendMessage(text: string): Promise<boolean> {
   try {
     const targetChatId = await ensureChat();
     await api.post(FoodFeedbackChatHelper.CHAT_MESSAGES_ENDPOINT, { chat: targetChatId, message: text });
+  } catch (error) {
+    console.error('[rocket-meals-module] sending chat message failed', error);
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_send_failed), type: 'error' });
+    sending.value = false;
+    return false;
+  }
+  // The message is saved – what follows only updates the page, so a failure there must not look like a failed send.
+  try {
     await loadFeedback();
     // Set explicitly as well: the hook only recognises support by the app access of the writer.
     await setConversationState(ChatHelper.getConversationStateAfterMessage(true));
     await loadFeedback();
     await loadMessages();
-    return true;
   } catch (error) {
-    console.error('[rocket-meals-module] sending chat message failed', error);
-    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_send_failed), type: 'error' });
-    return false;
+    console.error('[rocket-meals-module] reloading food feedback chat after the answer failed', error);
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_load_failed), type: 'warning' });
   } finally {
     sending.value = false;
   }
+  return true;
 }
 
 /**
