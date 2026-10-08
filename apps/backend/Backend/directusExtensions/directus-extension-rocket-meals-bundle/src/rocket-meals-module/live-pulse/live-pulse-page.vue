@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Page "Live-Puls": meant to stay open on a second screen during the day. Shows the profiles that
- * were active today with their avatars, a ticker of what is happening in the app and a chart of the
+ * are active right now or were a few minutes ago with their avatars, a ticker of what is happening in the app and a chart of the
  * active users per hour. Reloads every 30 seconds; the data rules live in `LivePulseHelper`.
  *
  * The ticker does not jump: what arrives with a refresh is queued and slides in entry by entry,
@@ -327,8 +327,8 @@ onBeforeUnmount(() => {
       <div class="columns">
         <div class="column">
           <section class="panel">
-            <h2 class="panel-title type-label">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_recently_active) }}</h2>
-            <div v-if="profiles.length === 0 && !loading" class="empty type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_nobody_today) }}</div>
+            <h2 class="panel-title type-label">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_right_now_active) }}</h2>
+            <div v-if="profiles.length === 0 && !loading" class="empty type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_nobody_right_now) }}</div>
             <div v-else class="people">
               <div v-for="profile in profiles" :key="profile.id" class="person" :title="translate(LivePulseHelper.getPresenceLabelKey(presenceOf(profile)))">
                 <div class="avatar" :class="`presence-${presenceOf(profile)}`">
@@ -342,7 +342,6 @@ onBeforeUnmount(() => {
             <div class="legend type-note">
               <span><i class="dot presence-now" />{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_presence_now) }}</span>
               <span><i class="dot presence-recent" />{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_presence_recent) }}</span>
-              <span><i class="dot presence-today" />{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_presence_today) }}</span>
             </div>
           </section>
           <section class="panel">
