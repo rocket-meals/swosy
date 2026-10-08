@@ -134,22 +134,6 @@ export class EnvVariableHelper {
     }
   }
 
-  /**
-   * The path the web app of this customer is served under on `ROCKET_MEALS_WEB_HOST`, e.g.
-   * `/swosy` – the same value as `baseUrl` in the customer config of `apps/frontend/app/config.ts`.
-   * `null` when the backend does not know the customer; links into the app are left out then.
-   */
-  static getAppWebBaseUrl(): string | null {
-    switch (this.getSyncForCustomer()) {
-      case SyncForCustomerEnum.OSNABRUECK:
-        return '/swosy';
-      case SyncForCustomerEnum.HANNOVER:
-        return '/studi-futter';
-      default:
-        return null;
-    }
-  }
-
   static getAppleAppId(): string | null {
     switch (this.getSyncForCustomer()) {
       case SyncForCustomerEnum.OSNABRUECK:

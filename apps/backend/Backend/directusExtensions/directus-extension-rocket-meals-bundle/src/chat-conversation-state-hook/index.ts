@@ -10,7 +10,6 @@ import {BackendTranslationKeys} from '../helpers/translations/BackendTranslation
 import {AppFeedbackAnswerMail} from '../helpers/rocket-meals-module/AppFeedbackAnswerMail';
 import {AppFeedbackChatHelper} from '../helpers/rocket-meals-module/AppFeedbackChatHelper';
 import {RocketMealsModulePages} from '../helpers/rocket-meals-module/RocketMealsModulePages';
-import {EnvVariableHelper} from '../helpers/EnvVariableHelper';
 
 const HOOK_NAME = 'chat_conversation_state';
 
@@ -156,7 +155,7 @@ async function notifySupportAboutFeedbackChatMessage(
 
 /**
  * Mail the author of an app feedback about an answer in its chat, when they left a contact email.
- * The mail contains the answer and links to the chat in the app, where the author should reply.
+ * The mail contains the answer and points to the menu item "Chats" of the app to reply there.
  * A message of the author themselves is never mailed back to them.
  */
 async function mailAnswerToAppFeedbackContactEmail(
@@ -192,8 +191,6 @@ async function mailAnswerToAppFeedbackContactEmail(
       answer: message?.message,
       projectName,
       translate: language.translate,
-      chatId,
-      appWebBaseUrl: EnvVariableHelper.getAppWebBaseUrl(),
       supportEmail: MailAdresses.SupportMail,
     });
     if (!mail) {

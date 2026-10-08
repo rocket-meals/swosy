@@ -299,8 +299,9 @@ watch(() => props.feedbackId, load);
             <template v-if="AppFeedbackChatHelper.getDeviceDescription(feedback)"> · {{ AppFeedbackChatHelper.getDeviceDescription(feedback) }}</template>
             · {{ formatDateTime(feedback.date_created) }}
           </span>
-          <div v-if="feedback.contact_email" class="contact type-note">
-            {{ translate(BackendTranslationKeys.rocket_meals_module_contact_email) }}:
+          <div v-if="feedback.contact_email" class="contact">
+            <v-icon name="mail" small />
+            <span class="contact-label">{{ translate(BackendTranslationKeys.rocket_meals_module_contact_email) }}:</span>
             <a :href="`mailto:${feedback.contact_email}`">{{ feedback.contact_email }}</a>
           </div>
         </div>
@@ -383,7 +384,19 @@ watch(() => props.feedbackId, load);
 }
 
 .contact {
+  display: flex;
   flex-basis: 100%;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.contact-label {
+  color: var(--theme--foreground-subdued);
+}
+
+.contact a {
+  color: var(--theme--primary);
+  font-weight: 600;
 }
 
 .feedback-text {

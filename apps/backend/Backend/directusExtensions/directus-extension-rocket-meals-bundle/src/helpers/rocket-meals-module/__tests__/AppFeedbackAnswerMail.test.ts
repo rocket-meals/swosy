@@ -36,21 +36,13 @@ describe('AppFeedbackAnswerMail.buildMailAnswer', () => {
 });
 
 describe('AppFeedbackAnswerMail.buildChatAnswer', () => {
-  const base = { feedback, answer: 'Schau mal in den Chat.', projectName: 'Swosy', translate: germanTranslate, chatId: 'chat-1', supportEmail: 'support@example.com' };
-
-  it('links to the chat in the web app and asks to reply there', () => {
-    const mail = AppFeedbackAnswerMail.buildChatAnswer({ ...base, appWebBaseUrl: '/swosy' });
+  it('points to the menu item "Chats" of the app instead of a link and names the support address', () => {
+    const mail = AppFeedbackAnswerMail.buildChatAnswer({ feedback, answer: 'Schau mal in den Chat.', projectName: 'Swosy', translate: germanTranslate, supportEmail: 'support@example.com' });
 
     expect(mail?.markdown_content).toContain('Schau mal in den Chat.');
-    expect(mail?.markdown_content).toContain('[In der App antworten](https://rocket-meals.de/swosy/chats/details?chat_id=chat-1)');
+    expect(mail?.markdown_content).toContain('„Chats“');
     expect(mail?.markdown_content).toContain('support@example.com');
+    expect(mail?.markdown_content).not.toContain('http');
     expect(mail?.markdown_content).not.toContain('Bitte antworte nicht');
-  });
-
-  it('leaves the link out when the web app of the customer is unknown', () => {
-    const mail = AppFeedbackAnswerMail.buildChatAnswer({ ...base, appWebBaseUrl: null });
-
-    expect(mail?.markdown_content).not.toContain('chats/details');
-    expect(mail?.markdown_content).toContain('support@example.com');
   });
 });
