@@ -194,10 +194,18 @@ async function sendMailAnswer() {
   try {
     await AppFeedbackChatActions.sendMailResponse(api, feedback.value, text);
     mailAnswer.value = '';
-    await loadFeedback();
   } catch (error) {
     console.error('[rocket-meals-module] sending app feedback mail answer failed', error);
     notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_send_failed), type: 'error' });
+    sending.value = false;
+    return;
+  }
+  // The answer is saved and mailed – a failing reload must not look like a failed send.
+  try {
+    await loadFeedback();
+  } catch (error) {
+    console.error('[rocket-meals-module] reloading app feedback after mail answer failed', error);
+    loadError.value = true;
   } finally {
     sending.value = false;
   }
