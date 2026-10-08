@@ -1,5 +1,5 @@
 name: 'Deploy to Server'
-description: 'Deploy to a server via SSH by running the update-and-generate-env script'
+description: 'Deploy to a server via SSH by running the update-and-generate-env script, then wait until the backend is reachable again'
 
 inputs:
   DEPLOY_SSH_KEY:
@@ -8,6 +8,14 @@ inputs:
   DEPLOY_SERVER_HOST:
     description: 'Hostname or IP of the target server'
     required: true
+  HEALTH_PATH:
+    description: 'Path of the Directus health endpoint used to check reachability'
+    required: false
+    default: '/rocket-meals/api/server/health'
+  REACHABLE_TIMEOUT_SECONDS:
+    description: 'How long to wait after the deploy for the backend to become reachable again'
+    required: false
+    default: '900'
 
 runs:
   using: 'composite'
@@ -25,10 +33,74 @@ runs:
       shell: bash
       env:
         DEPLOY_SERVER_HOST: ${{ inputs.DEPLOY_SERVER_HOST }}
+        HEALTH_PATH: ${{ inputs.HEALTH_PATH }}
+        REACHABLE_TIMEOUT_SECONDS: ${{ inputs.REACHABLE_TIMEOUT_SECONDS }}
+        POLL_INTERVAL_SECONDS: 5
       run: |
+        set -uo pipefail
+        HEALTH_URL="https://${DEPLOY_SERVER_HOST}${HEALTH_PATH}"
+        MONITOR_DIR="$(mktemp -d "$RUNNER_TEMP/deploy-monitor.XXXXXX")"
+
+        # Reachable = /server/health answers HTTP 200 with status "ok" or
+        # "warn" (same rule as backend-daily-health-check.yml).
+        is_reachable() {
+          local body="$MONITOR_DIR/body-$1.json" code status
+          code="$(curl -sS -m 10 -o "$body" -w '%{http_code}' "$HEALTH_URL" 2>/dev/null)" || true
+          status="$(jq -r '.status // empty' "$body" 2>/dev/null || true)"
+          [ "$code" = "200" ] && { [ "$status" = "ok" ] || [ "$status" = "warn" ]; }
+        }
+
+        # Watch the server in the background while the deploy runs, so the
+        # downtime (docker compose down ... up -d) is noticed even though it
+        # happens inside the SSH session.
+        (
+          while [ ! -f "$MONITOR_DIR/stop" ]; do
+            if ! is_reachable monitor; then
+              touch "$MONITOR_DIR/was-down"
+            fi
+            sleep "$POLL_INTERVAL_SECONDS"
+          done
+        ) &
+        MONITOR_PID=$!
+
         echo "🚀 Connecting to $DEPLOY_SERVER_HOST as deploy user..."
+        SSH_EXIT=0
         ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -i ~/.ssh/deploy_key deploy@"$DEPLOY_SERVER_HOST" \
-          'sudo bash -l -c "cd /root/rocket-meals && ./scripts/update-and-generate-env.sh"'
+          'sudo bash -l -c "cd /root/rocket-meals && ./scripts/update-and-generate-env.sh"' || SSH_EXIT=$?
+
+        touch "$MONITOR_DIR/stop"
+        wait "$MONITOR_PID" 2>/dev/null || true
+
+        if [ "$SSH_EXIT" -ne 0 ]; then
+          echo "::error::Deploy script on $DEPLOY_SERVER_HOST failed with exit code $SSH_EXIT"
+          exit "$SSH_EXIT"
+        fi
+        echo "✅ Deploy script finished on $DEPLOY_SERVER_HOST"
+
+        # The containers are started with "up -d", so Directus may still be
+        # booting. The job only counts as completed once the server is
+        # reachable again after it was unreachable at least once.
+        echo "⏳ Waiting for $HEALTH_URL to become reachable again (timeout ${REACHABLE_TIMEOUT_SECONDS}s)..."
+        DEADLINE=$(( $(date +%s) + REACHABLE_TIMEOUT_SECONDS ))
+        while true; do
+          if is_reachable wait; then
+            if [ -f "$MONITOR_DIR/was-down" ]; then
+              echo "✅ $DEPLOY_SERVER_HOST is reachable again after the restart"
+              echo "✅ $DEPLOY_SERVER_HOST: deployed and reachable again" >> "$GITHUB_STEP_SUMMARY"
+              break
+            fi
+            echo "::warning::$DEPLOY_SERVER_HOST is reachable, but no downtime was observed during the deploy"
+            echo "🟡 $DEPLOY_SERVER_HOST: deployed and reachable, no downtime observed" >> "$GITHUB_STEP_SUMMARY"
+            break
+          fi
+          touch "$MONITOR_DIR/was-down"
+          if [ "$(date +%s)" -ge "$DEADLINE" ]; then
+            echo "::error::$DEPLOY_SERVER_HOST did not become reachable within ${REACHABLE_TIMEOUT_SECONDS}s ($HEALTH_URL)"
+            echo "❌ $DEPLOY_SERVER_HOST: not reachable after deploy" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          sleep "$POLL_INTERVAL_SECONDS"
+        done
         echo "✅ Deploy completed successfully"
 
     - name: "🧹 Cleanup SSH Key"
