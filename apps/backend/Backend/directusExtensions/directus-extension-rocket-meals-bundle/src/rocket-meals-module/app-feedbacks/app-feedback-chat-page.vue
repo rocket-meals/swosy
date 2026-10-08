@@ -10,6 +10,10 @@
  * A store review has no chat: the answer is written to `app_feedbacks.response`, and the
  * `app-reviews-pull-hook` publishes it in the App Store or on Google Play.
  *
+ * A feedback without profile but with a contact email has no chat either: there is one answer
+ * field instead, the answer goes to `app_feedbacks.response`, the `app-feedbacks-hook` mails it and
+ * the feedback is done. Without contact email (anonymous) it can only be marked as done.
+ *
  * A feedback without chat that will not get one – a store review or one without profile – can
  * still be marked as done (and opened again) without answering; that is kept in
  * `app_feedbacks.state`.
@@ -24,7 +28,7 @@ import { FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depki
 import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { AppFeedbackChatActions } from '../../helpers/rocket-meals-module/AppFeedbackChatActions';
-import { AppFeedbackChatHelper, type AppFeedbackListItem } from '../../helpers/rocket-meals-module/AppFeedbackChatHelper';
+import { AppFeedbackAnswerChannel, AppFeedbackChatHelper, type AppFeedbackListItem } from '../../helpers/rocket-meals-module/AppFeedbackChatHelper';
 import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { SupportChatActions } from '../../helpers/rocket-meals-module/SupportChatActions';
@@ -53,8 +57,15 @@ const loadError = ref(false);
 const sending = ref(false);
 const updatingState = ref(false);
 
+const mailAnswer = ref('');
+
 const chatId = computed(() => RelationHelper.getId(feedback.value?.chat));
-const isStoreReview = computed(() => !!feedback.value && AppFeedbackChatStatusHelper.isStoreReview(feedback.value));
+const answerChannel = computed(() => (feedback.value ? AppFeedbackChatHelper.getAnswerChannel(feedback.value) : AppFeedbackAnswerChannel.NONE));
+const isStoreReview = computed(() => answerChannel.value === AppFeedbackAnswerChannel.STORE);
+/** Answered by mail or not at all – no chat window, see the header comment. */
+const isWithoutConversation = computed(() => answerChannel.value === AppFeedbackAnswerChannel.MAIL || answerChannel.value === AppFeedbackAnswerChannel.NONE);
+const contactEmail = computed(() => (feedback.value ? AppFeedbackChatHelper.getContactEmail(feedback.value) : undefined));
+const sentMailAnswer = computed(() => (answerChannel.value === AppFeedbackAnswerChannel.MAIL ? feedback.value?.response?.trim() || undefined : undefined));
 const status = computed(() => (feedback.value ? AppFeedbackChatStatusHelper.getStatus(feedback.value) : FoodFeedbackChatStatus.NEW));
 const canWrite = computed(() => !!feedback.value && (isStoreReview.value || AppFeedbackChatStatusHelper.canStartChat(feedback.value)));
 const isStatusWithoutChat = computed(() => !!feedback.value && AppFeedbackChatStatusHelper.isStatusWithoutChat(feedback.value));
@@ -65,6 +76,8 @@ const selectableStatuses = computed<FoodFeedbackChatStatus[]>(() => {
   }
   return [AppFeedbackChatStatusHelper.getOpenStatus(feedback.value), FoodFeedbackChatStatus.RESOLVED];
 });
+const userNickname = computed(() => FoodFeedbackChatHelper.getNickname(feedback.value?.profile));
+const userLabel = computed(() => (userNickname.value ? translate(BackendTranslationKeys.rocket_meals_module_user_with_nickname, { nickname: userNickname.value }) : translate(BackendTranslationKeys.rocket_meals_module_user)));
 const feedbackTitle = computed(() => (feedback.value ? AppFeedbackChatHelper.getTitle(feedback.value) : undefined));
 const title = computed(() => feedbackTitle.value || translate(page.labelKey));
 
@@ -153,21 +166,56 @@ async function sendMessage(text: string): Promise<boolean> {
   try {
     if (isStoreReview.value) {
       await AppFeedbackChatActions.setStoreResponse(api, feedback.value, text);
-      await loadFeedback();
-      return true;
+    } else {
+      const targetChatId = await ensureChat();
+      await api.post(FoodFeedbackChatHelper.CHAT_MESSAGES_ENDPOINT, { chat: targetChatId, message: text });
     }
-    const targetChatId = await ensureChat();
-    await api.post(FoodFeedbackChatHelper.CHAT_MESSAGES_ENDPOINT, { chat: targetChatId, message: text });
-    await loadFeedback();
-    // Set explicitly as well: the hook only recognises support by the app access of the writer.
-    await setConversationState(ChatHelper.getConversationStateAfterMessage(true));
-    await loadFeedback();
-    await loadMessages();
-    return true;
   } catch (error) {
     console.error('[rocket-meals-module] sending app feedback answer failed', error);
     notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_send_failed), type: 'error' });
+    sending.value = false;
     return false;
+  }
+  // The answer is saved – what follows only updates the page, so a failure there must not look like a failed send.
+  try {
+    if (!isStoreReview.value) {
+      await loadFeedback();
+      // Set explicitly as well: the hook only recognises support by the app access of the writer.
+      await setConversationState(ChatHelper.getConversationStateAfterMessage(true));
+      await loadMessages();
+    }
+    await loadFeedback();
+  } catch (error) {
+    console.error('[rocket-meals-module] reloading app feedback after the answer failed', error);
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_load_failed), type: 'warning' });
+  } finally {
+    sending.value = false;
+  }
+  return true;
+}
+
+/** Answers a feedback without profile by mail – it is done afterwards. */
+async function sendMailAnswer() {
+  const text = mailAnswer.value.trim();
+  if (!feedback.value || !text || sending.value) {
+    return;
+  }
+  sending.value = true;
+  try {
+    await AppFeedbackChatActions.sendMailResponse(api, feedback.value, text);
+    mailAnswer.value = '';
+  } catch (error) {
+    console.error('[rocket-meals-module] sending app feedback mail answer failed', error);
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_send_failed), type: 'error' });
+    sending.value = false;
+    return;
+  }
+  // The answer is saved and mailed – a failing reload must not look like a failed send.
+  try {
+    await loadFeedback();
+  } catch (error) {
+    console.error('[rocket-meals-module] reloading app feedback after mail answer failed', error);
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_load_failed), type: 'warning' });
   } finally {
     sending.value = false;
   }
@@ -269,14 +317,50 @@ watch(() => props.feedbackId, load);
             <template v-if="AppFeedbackChatHelper.getDeviceDescription(feedback)"> · {{ AppFeedbackChatHelper.getDeviceDescription(feedback) }}</template>
             · {{ formatDateTime(feedback.date_created) }}
           </span>
-          <div v-if="feedback.contact_email" class="contact type-note">
-            {{ translate(BackendTranslationKeys.rocket_meals_module_contact_email) }}:
+          <div v-if="feedback.contact_email" class="contact">
+            <v-icon name="mail" small />
+            <span class="contact-label">{{ translate(BackendTranslationKeys.rocket_meals_module_contact_email) }}:</span>
             <a :href="`mailto:${feedback.contact_email}`">{{ feedback.contact_email }}</a>
           </div>
         </div>
 
+        <template v-if="isWithoutConversation">
+          <div class="feedback-text">
+            <div class="type-note">{{ userLabel }} · {{ formatDateTime(opening?.date) }}</div>
+            <div class="feedback-text-content">{{ opening?.text }}</div>
+          </div>
+
+          <div v-if="sentMailAnswer" class="feedback-text answered">
+            <div class="type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_mail_answer_sent, { email: contactEmail ?? '' }) }}</div>
+            <div class="feedback-text-content">{{ sentMailAnswer }}</div>
+          </div>
+
+          <template v-else-if="answerChannel === AppFeedbackAnswerChannel.MAIL">
+            <div class="composer-note type-note">
+              <v-icon name="mail" x-small />
+              <span>{{ translate(BackendTranslationKeys.rocket_meals_module_mail_answer_hint, { email: contactEmail ?? '' }) }}</span>
+            </div>
+            <v-textarea v-model="mailAnswer" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_mail_answer_placeholder)" :disabled="sending" />
+          </template>
+
+          <v-notice v-else type="info">{{ translate(BackendTranslationKeys.rocket_meals_module_answer_not_possible) }}</v-notice>
+
+          <div class="answer-actions">
+            <v-button v-if="status !== FoodFeedbackChatStatus.RESOLVED" secondary :loading="updatingState" @click="changeStatus(FoodFeedbackChatStatus.RESOLVED)">
+              <v-icon name="task_alt" left small />
+              {{ translate(BackendTranslationKeys.rocket_meals_module_mark_resolved) }}
+            </v-button>
+            <v-button v-if="answerChannel === AppFeedbackAnswerChannel.MAIL && !sentMailAnswer" :loading="sending" :disabled="mailAnswer.trim().length === 0" @click="sendMailAnswer">
+              <v-icon name="send" left small />
+              {{ translate(BackendTranslationKeys.rocket_meals_module_send_mail) }}
+            </v-button>
+          </div>
+        </template>
+
         <support-chat-conversation
+          v-else
           :opening="opening"
+          :user-nickname="userNickname"
           :messages="messages"
           :can-write="canWrite"
           :empty-text="emptyText"
@@ -319,7 +403,49 @@ watch(() => props.feedbackId, load);
 }
 
 .contact {
+  display: flex;
   flex-basis: 100%;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.contact-label {
+  color: var(--theme--foreground-subdued);
+}
+
+.contact a {
+  color: var(--theme--primary);
+  font-weight: 600;
+}
+
+.feedback-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  border: var(--theme--border-width) solid var(--theme--border-color-subdued);
+  border-radius: var(--theme--border-radius);
+}
+
+.feedback-text.answered {
+  background: var(--theme--primary-background);
+}
+
+.feedback-text-content {
+  white-space: pre-wrap;
+}
+
+.composer-note {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.answer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
 }
 
 .positive {

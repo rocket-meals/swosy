@@ -15,6 +15,7 @@ import { AppFeedbackChatStatusHelper, AppFeedbackSourceFilter } from 'repo-depki
 import { AppFeedbackContentHelper } from 'repo-depkit-common/src/AppFeedbackContentHelper';
 import { AppFeedbackSourceIdentifier } from 'repo-depkit-common/src/AppFeedbackSourceIdentifier';
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
+import { EmailHelper } from 'repo-depkit-common/src/EmailHelper';
 import { type FoodFeedbackChatFilter, FoodFeedbackChatStatus } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 import { FoodFeedbackChatHelper, FoodFeedbackListSort } from './FoodFeedbackChatHelper';
@@ -38,7 +39,7 @@ export type AppFeedbackListItem = {
   device_system_version?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
-  profile?: { id: string } | string | null;
+  profile?: { id: string; nickname?: string | null } | string | null;
   chat?: { id: string; conversation_state?: string | null; date_updated?: string | null } | string | null;
 };
 
@@ -56,6 +57,20 @@ export type AppFeedbackListOptions = {
   sort?: FoodFeedbackListSort | null;
   pageSize?: number | null;
 };
+
+/**
+ * How support answers a feedback:
+ * - `store` – a store review, answered publicly in the store via `response`.
+ * - `chat` – the author has a profile (or there is a chat already), answered in the chat of the app.
+ * - `mail` – no profile but a contact email: one answer in `response`, the `app-feedbacks-hook` mails it.
+ * - `none` – anonymous without contact email: nobody to answer, it can only be marked as done.
+ */
+export enum AppFeedbackAnswerChannel {
+  STORE = 'store',
+  CHAT = 'chat',
+  MAIL = 'mail',
+  NONE = 'none',
+}
 
 type DirectusFilter = Record<string, unknown>;
 
@@ -81,6 +96,7 @@ export class AppFeedbackChatHelper {
     'date_created',
     'date_updated',
     'profile.id',
+    'profile.nickname',
     'chat.id',
     'chat.conversation_state',
     'chat.date_updated',
@@ -221,6 +237,23 @@ export class AppFeedbackChatHelper {
     const system = [feedback.device_platform, feedback.device_system_version].filter(part => !!part && String(part).trim().length > 0).join(' ');
     const description = [system, feedback.device_brand?.trim()].filter(part => !!part).join(' · ');
     return description || undefined;
+  }
+
+  /** The trimmed contact email, `undefined` when there is none or it is not a valid address. */
+  static getContactEmail(feedback: Pick<AppFeedbackListItem, 'contact_email'>): string | undefined {
+    const { trimmedEmail, isValid } = EmailHelper.sanitizeAndValidate(feedback.contact_email ?? '');
+    return isValid ? trimmedEmail : undefined;
+  }
+
+  /** How support can answer the feedback, see {@link AppFeedbackAnswerChannel}. */
+  static getAnswerChannel(feedback: Pick<AppFeedbackListItem, 'source_identifier' | 'profile' | 'chat' | 'contact_email'>): AppFeedbackAnswerChannel {
+    if (AppFeedbackChatStatusHelper.isStoreReview(feedback)) {
+      return AppFeedbackAnswerChannel.STORE;
+    }
+    if (AppFeedbackChatStatusHelper.canStartChat(feedback)) {
+      return AppFeedbackAnswerChannel.CHAT;
+    }
+    return AppFeedbackChatHelper.getContactEmail(feedback) ? AppFeedbackAnswerChannel.MAIL : AppFeedbackAnswerChannel.NONE;
   }
 
   /**

@@ -1,8 +1,8 @@
 /**
  * AppFeedbackChatActions.ts – the writes of the page "App-Feedbacks": create the chat of a
  * feedback (exactly like the `app-feedbacks-hook` does), mark feedbacks as done and answer store
- * reviews. Feedbacks without chat that will not get one (store reviews, no profile) are marked as
- * done via `app_feedbacks.state` instead.
+ * reviews and feedbacks without profile (by mail). Feedbacks without chat that will not get one
+ * (store reviews, no profile) are marked as done via `app_feedbacks.state` instead.
  *
  * Takes the Directus app's API client (`useApi()`) as parameter, so it has no Vue imports.
  */
@@ -64,6 +64,15 @@ export class AppFeedbackChatActions {
   /** Marks a feedback without chat as done or opens it again – its status lives in `app_feedbacks.state`. */
   static async setResolvedWithoutChat(api: SupportChatApiClient, feedback: Pick<AppFeedbackListItem, 'id'>, resolved: boolean): Promise<void> {
     await api.patch(`${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/${feedback.id}`, { state: resolved ? AppFeedbackState.CLOSED : AppFeedbackState.OPEN });
+  }
+
+  /**
+   * Answers a feedback without profile by mail: the text goes to `app_feedbacks.response`, the
+   * `app-feedbacks-hook` mails it to the contact email. There is nothing left to do afterwards, so
+   * the feedback is marked as done in the same request.
+   */
+  static async sendMailResponse(api: SupportChatApiClient, feedback: Pick<AppFeedbackListItem, 'id'>, response: string): Promise<void> {
+    await api.patch(`${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/${feedback.id}`, { response, state: AppFeedbackState.CLOSED });
   }
 
   /**

@@ -10,6 +10,10 @@ import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { HtmlTemplatesEnum } from '../helpers/html/HtmlGenerator';
 import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
 import {MyDefineHook} from "../helpers/MyDefineHook";
+import { HookKeysHelper } from '../helpers/HookKeysHelper';
+import { AppFeedbackAnswerMail } from '../helpers/rocket-meals-module/AppFeedbackAnswerMail';
+import { AppFeedbackAnswerChannel, AppFeedbackChatHelper } from '../helpers/rocket-meals-module/AppFeedbackChatHelper';
+import { BackendTranslator } from '../helpers/translations/BackendTranslator';
 
 const SCHEDULE_NAME = 'activity_auto_cleanup';
 
@@ -77,6 +81,29 @@ async function createChatForAppFeedback(
   return String(chatId);
 }
 
+/**
+ * Mail the answer of support to a feedback without profile but with a contact email. Support
+ * writes it to `app_feedbacks.response` on the page "App-Feedbacks" – there is no chat nobody would
+ * see. Nobody knows the language of such an author, so the mail is in the default language.
+ */
+async function mailResponseToContactEmail(myDatabaseHelper: MyDatabaseHelper, app_feedback: DatabaseTypes.AppFeedbacks): Promise<void> {
+  if (AppFeedbackChatHelper.getAnswerChannel(app_feedback) !== AppFeedbackAnswerChannel.MAIL) {
+    return;
+  }
+  const server_info = await myDatabaseHelper.getServerInfo();
+  const mail = AppFeedbackAnswerMail.buildMailAnswer({
+    feedback: app_feedback,
+    answer: app_feedback.response,
+    projectName: server_info?.project?.project_name || 'Rocket Meals',
+    translate: BackendTranslator.getTranslator(undefined),
+  });
+  if (!mail) {
+    return;
+  }
+  await myDatabaseHelper.sendMail(mail);
+  console.log(`app-feedbacks-hook: Mailed the response of app feedback ${app_feedback.id} to its contact email`);
+}
+
 export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ schedule, action }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
   const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
@@ -84,6 +111,23 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
   const publicUrl = myDatabaseHelper.getServerUrl();
 
   const toMail = MailAdresses.SupportMail;
+
+  action(CollectionNames.APP_FEEDBACKS + '.items.update', async meta => {
+    const payload = meta.payload as Partial<DatabaseTypes.AppFeedbacks> | undefined;
+    if (!payload?.response || payload.response.trim() === '') {
+      return;
+    }
+    for (const app_feedback_id of HookKeysHelper.getKeysFromMeta(meta)) {
+      try {
+        const app_feedback = await appFeedbacksHelper.readOne(app_feedback_id);
+        if (app_feedback) {
+          await mailResponseToContactEmail(myDatabaseHelper, app_feedback);
+        }
+      } catch (error) {
+        console.error(`app-feedbacks-hook: Failed to mail the response of app feedback ${app_feedback_id}`, error);
+      }
+    }
+  });
 
   action(CollectionNames.APP_FEEDBACKS + '.items.create', async meta => {
     let app_feedback_id = meta.key;

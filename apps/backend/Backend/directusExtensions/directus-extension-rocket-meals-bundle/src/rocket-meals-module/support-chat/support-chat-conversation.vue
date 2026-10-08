@@ -20,11 +20,19 @@ const props = defineProps<{
   placeholder?: string;
   /** A note right above the input, e.g. that a store review has only one public answer. */
   hint?: string;
+  /** The nickname of the author of the request, shown as "Nutzer: <Nickname>" when set. */
+  userNickname?: string;
   /** Sends a text; resolves `true` when it was sent, so the input is cleared. */
   send: (text: string) => Promise<boolean>;
 }>();
 
 const { translate, formatDateTime } = useAppExtensionTranslate();
+
+/** "Nutzer: <Nickname>" when the message (or the request) has a nickname, otherwise "Nutzer". */
+function getUserLabel(message?: FoodFeedbackChatMessage): string {
+  const nickname = (message ? FoodFeedbackChatHelper.getNickname(message.profile) : undefined) ?? props.userNickname;
+  return nickname ? translate(BackendTranslationKeys.rocket_meals_module_user_with_nickname, { nickname }) : translate(BackendTranslationKeys.rocket_meals_module_user);
+}
 
 const newMessage = ref('');
 const sending = ref(false);
@@ -88,7 +96,7 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
 <template>
   <div ref="messagesContainer" class="messages">
     <div v-if="opening" class="message from-user">
-      <div class="message-author type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_user) }}</div>
+      <div class="message-author type-note">{{ getUserLabel() }}</div>
       <div class="bubble">{{ opening.text }}</div>
       <div class="message-date type-note">{{ formatDateTime(opening.date) }}</div>
     </div>
@@ -99,7 +107,7 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
           {{ translate(BackendTranslationKeys.rocket_meals_module_support) }}
           <template v-if="FoodFeedbackChatHelper.getSupportAuthorName(message)"> · {{ FoodFeedbackChatHelper.getSupportAuthorName(message) }}</template>
         </template>
-        <template v-else>{{ translate(BackendTranslationKeys.rocket_meals_module_user) }}</template>
+        <template v-else>{{ getUserLabel(message) }}</template>
       </div>
       <div class="bubble">{{ message.message }}</div>
       <div class="message-date type-note">{{ formatDateTime(message.date_created) }}</div>

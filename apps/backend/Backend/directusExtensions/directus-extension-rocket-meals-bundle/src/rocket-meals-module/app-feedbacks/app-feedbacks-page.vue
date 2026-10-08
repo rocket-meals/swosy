@@ -14,7 +14,7 @@ import { AppFeedbackChatStatusHelper, AppFeedbackSourceFilter } from 'repo-depki
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { AppFeedbackChatActions } from '../../helpers/rocket-meals-module/AppFeedbackChatActions';
-import { AppFeedbackChatHelper, AppFeedbackTypeFilter, type AppFeedbackListItem, type AppFeedbackListOptions } from '../../helpers/rocket-meals-module/AppFeedbackChatHelper';
+import { AppFeedbackAnswerChannel, AppFeedbackChatHelper, AppFeedbackTypeFilter, type AppFeedbackListItem, type AppFeedbackListOptions } from '../../helpers/rocket-meals-module/AppFeedbackChatHelper';
 import { FoodFeedbackChatHelper, FoodFeedbackListSort } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
@@ -187,11 +187,29 @@ async function markResolved(feedbacksToResolve: readonly AppFeedbackListItem[]) 
   }
 }
 
+function getOpenIcon(feedback: AppFeedbackListItem): string {
+  switch (AppFeedbackChatHelper.getAnswerChannel(feedback)) {
+    case AppFeedbackAnswerChannel.MAIL:
+      return 'mail';
+    case AppFeedbackAnswerChannel.NONE:
+      return 'visibility';
+    default:
+      return 'forum';
+  }
+}
+
 /**
  * The label of the button that leads to the conversation. A store review is answered on its page
  * as well – the hook publishes the answer in the store, so there is no external link.
  */
 function getOpenLabel(feedback: AppFeedbackListItem): string {
+  const channel = AppFeedbackChatHelper.getAnswerChannel(feedback);
+  if (channel === AppFeedbackAnswerChannel.NONE) {
+    return translate(BackendTranslationKeys.rocket_meals_module_details);
+  }
+  if (channel === AppFeedbackAnswerChannel.MAIL) {
+    return feedback.response?.trim() ? translate(BackendTranslationKeys.rocket_meals_module_details) : translate(BackendTranslationKeys.rocket_meals_module_reply_by_mail);
+  }
   if (AppFeedbackChatStatusHelper.getStatus(feedback) === FoodFeedbackChatStatus.NEW) {
     return translate(BackendTranslationKeys.rocket_meals_module_reply);
   }
@@ -307,7 +325,7 @@ onMounted(reload);
                 {{ translate(BackendTranslationKeys.rocket_meals_module_mark_resolved) }}
               </v-button>
               <v-button small :secondary="AppFeedbackChatStatusHelper.getStatus(feedback) !== FoodFeedbackChatStatus.NEW" @click.stop="openChat(feedback)">
-                <v-icon name="forum" left small />
+                <v-icon :name="getOpenIcon(feedback)" left small />
                 {{ getOpenLabel(feedback) }}
               </v-button>
             </div>

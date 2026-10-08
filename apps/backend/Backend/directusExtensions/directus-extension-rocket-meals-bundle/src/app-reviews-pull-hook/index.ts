@@ -1,4 +1,4 @@
-import { CollectionNames, CronHelper, DatabaseTypes } from 'repo-depkit-common';
+import { AppFeedbackChatStatusHelper, CollectionNames, CronHelper, DatabaseTypes } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MyDefineHook } from '../helpers/MyDefineHook';
 import { AppReviewsPullHelper, PulledAppReview } from './AppReviewsPullHelper';
@@ -155,7 +155,8 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
 
     for (const feedbackId of keysArray) {
       const feedback = await appFeedbacksHelper.readOne(feedbackId);
-      if (!feedback) {
+      // A feedback from the app has no store – its response is mailed by the app-feedbacks-hook.
+      if (!feedback || !AppFeedbackChatStatusHelper.isStoreReview(feedback)) {
         continue;
       }
 

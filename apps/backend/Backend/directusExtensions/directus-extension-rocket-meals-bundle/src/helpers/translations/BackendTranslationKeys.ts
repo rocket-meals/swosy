@@ -45,6 +45,15 @@ export const BackendTranslationKeys = {
   food_feedback_guest_rating_forbidden: 'food_feedback_guest_rating_forbidden',
   food_feedback_guest_comment_forbidden: 'food_feedback_guest_comment_forbidden',
 
+  // Mails to the contact email of an app feedback and pushes when support answers
+  app_feedback_answer_mail_subject: 'app_feedback_answer_mail_subject',
+  app_feedback_answer_mail_intro: 'app_feedback_answer_mail_intro',
+  app_feedback_answer_mail_your_feedback: 'app_feedback_answer_mail_your_feedback',
+  app_feedback_answer_mail_no_reply_hint: 'app_feedback_answer_mail_no_reply_hint',
+  app_feedback_chat_answer_mail_intro: 'app_feedback_chat_answer_mail_intro',
+  app_feedback_chat_answer_mail_reply_hint: 'app_feedback_chat_answer_mail_reply_hint',
+  notification_support_answer_title: 'notification_support_answer_title',
+
   // Insights panels shipped by Rocket Meals ("[Erweitert]", see helpers/extended-panels)
   extended_panel_list_name: 'extended_panel_list_name',
   extended_panel_list_description: 'extended_panel_list_description',
@@ -87,6 +96,7 @@ export const BackendTranslationKeys = {
   rocket_meals_module_chat_empty: 'rocket_meals_module_chat_empty',
   rocket_meals_module_chat_not_possible: 'rocket_meals_module_chat_not_possible',
   rocket_meals_module_user: 'rocket_meals_module_user',
+  rocket_meals_module_user_with_nickname: 'rocket_meals_module_user_with_nickname',
   rocket_meals_module_support: 'rocket_meals_module_support',
   rocket_meals_module_rating: 'rocket_meals_module_rating',
   rocket_meals_module_canteen: 'rocket_meals_module_canteen',
@@ -123,6 +133,13 @@ export const BackendTranslationKeys = {
   rocket_meals_module_feedback_negative: 'rocket_meals_module_feedback_negative',
   rocket_meals_module_no_title: 'rocket_meals_module_no_title',
   rocket_meals_module_contact_email: 'rocket_meals_module_contact_email',
+  rocket_meals_module_mail_answer_hint: 'rocket_meals_module_mail_answer_hint',
+  rocket_meals_module_mail_answer_placeholder: 'rocket_meals_module_mail_answer_placeholder',
+  rocket_meals_module_mail_answer_sent: 'rocket_meals_module_mail_answer_sent',
+  rocket_meals_module_send_mail: 'rocket_meals_module_send_mail',
+  rocket_meals_module_reply_by_mail: 'rocket_meals_module_reply_by_mail',
+  rocket_meals_module_details: 'rocket_meals_module_details',
+  rocket_meals_module_answer_not_possible: 'rocket_meals_module_answer_not_possible',
   rocket_meals_module_to_store_response: 'rocket_meals_module_to_store_response',
   rocket_meals_module_store_response_placeholder: 'rocket_meals_module_store_response_placeholder',
   rocket_meals_module_store_review_hint: 'rocket_meals_module_store_review_hint',
