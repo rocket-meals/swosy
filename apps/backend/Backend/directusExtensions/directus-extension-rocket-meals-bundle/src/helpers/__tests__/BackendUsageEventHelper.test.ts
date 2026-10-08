@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { Accountability } from '@directus/types';
-import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED, BackendUsageEventHelper } from '../BackendUsageEventHelper';
+import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED, BackendUsageEventDeduplicator, BackendUsageEventHelper } from '../BackendUsageEventHelper';
 
 function accountability(values: Partial<Accountability>): Accountability {
   return { role: null, roles: [], user: null, admin: false, app: false, ip: null, ...values } as Accountability;
@@ -49,5 +49,33 @@ describe('BackendUsageEventHelper', () => {
     const event = BackendUsageEventHelper.buildFoodDetailsOpenedEvent({ id: 'o1', alias: 'Tagesgericht', food: 'f1' }, 'o1', new Date());
     expect(event.payload).toMatchObject({ food_id: 'f1', food_name: 'Tagesgericht' });
     expect(BackendUsageEventHelper.buildFoodDetailsOpenedEvent(undefined, 'o2', new Date()).payload).toMatchObject({ foodoffer_id: 'o2', food_id: null, food_name: null });
+  });
+
+  it('identifies the requester by user, else by IP', () => {
+    expect(BackendUsageEventHelper.getRequesterKey(accountability({ user: 'u1', ip: '1.2.3.4' }))).toBe('user:u1');
+    expect(BackendUsageEventHelper.getRequesterKey(accountability({ ip: '1.2.3.4' }))).toBe('ip:1.2.3.4');
+    expect(BackendUsageEventHelper.getRequesterKey(undefined)).toBe('ip:unknown');
+  });
+
+  it('counts repeated reads of the same food offer by the same requester once per window', () => {
+    const deduplicator = new BackendUsageEventDeduplicator(60_000);
+    expect(deduplicator.shouldCount('user:u1', 'offer-1', 0)).toBe(true);
+    // the details screen reads the offer again right away (labels, components)
+    expect(deduplicator.shouldCount('user:u1', 'offer-1', 300)).toBe(false);
+    expect(deduplicator.shouldCount('user:u1', 'offer-1', 1_200)).toBe(false);
+    // another offer or another person counts
+    expect(deduplicator.shouldCount('user:u1', 'offer-2', 1_500)).toBe(true);
+    expect(deduplicator.shouldCount('user:u2', 'offer-1', 1_500)).toBe(true);
+    // opened again after the window
+    expect(deduplicator.shouldCount('user:u1', 'offer-1', 60_000)).toBe(true);
+  });
+
+  it('forgets expired entries so the memory does not grow', () => {
+    const deduplicator = new BackendUsageEventDeduplicator(1_000);
+    deduplicator.shouldCount('a', 'x', 0);
+    deduplicator.shouldCount('b', 'y', 100);
+    expect(deduplicator.size).toBe(2);
+    deduplicator.shouldCount('c', 'z', 5_000);
+    expect(deduplicator.size).toBe(1);
   });
 });

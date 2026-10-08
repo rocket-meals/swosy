@@ -10,12 +10,14 @@
  * Bewusst serverseitig: es zählt sofort für alle App-Versionen und im Web, ohne App-Release.
  * Gezählt werden nur Abrufe aus den Apps – Admins und Mitarbeitende mit Zugang zur Directus-Oberfläche
  * sowie Abrufe anderer Hooks nicht. Liefert Directus die Antwort aus dem Cache (pro Nutzer, `CACHE_TTL`),
- * läuft der Hook nicht: wer dasselbe Angebot mehrmals kurz hintereinander öffnet, zählt einmal.
+ * läuft der Hook nicht. Zusätzlich zählt derselbe Nutzer (bzw. dieselbe IP ohne Login) dasselbe Angebot
+ * innerhalb einer Minute nur einmal: die Detailansicht der App liest `/items/foodoffers/<id>` beim
+ * Öffnen mehrfach (Details, Labels, Komponenten), ohne Sperre würde jedes Öffnen doppelt zählen.
  */
 
 import { defineHook } from '@directus/extensions-sdk';
 import { CollectionNames } from 'repo-depkit-common';
-import { BackendUsageEventHelper, FoodofferForUsageEvent } from '../helpers/BackendUsageEventHelper';
+import { BackendUsageEventDeduplicator, BackendUsageEventHelper, FoodofferForUsageEvent } from '../helpers/BackendUsageEventHelper';
 import { ItemsServiceCreator } from '../helpers/ItemsServiceCreator';
 
 const HOOK_NAME = 'food-details-usage-event-hook';
@@ -24,6 +26,8 @@ const HOOK_NAME = 'food-details-usage-event-hook';
 const APP_USAGE_EVENTS = 'app_usage_events';
 
 export default defineHook(({ action }, apiContext) => {
+  const deduplicator = new BackendUsageEventDeduplicator();
+
   action(`${CollectionNames.FOODOFFERS}.items.read`, async (meta, eventContext) => {
     try {
       if (!BackendUsageEventHelper.isAppRequest(eventContext?.accountability)) {
@@ -31,6 +35,9 @@ export default defineHook(({ action }, apiContext) => {
       }
       const foodofferId = BackendUsageEventHelper.getSingleReadKey(meta?.query);
       if (!foodofferId) {
+        return;
+      }
+      if (!deduplicator.shouldCount(BackendUsageEventHelper.getRequesterKey(eventContext?.accountability), foodofferId, Date.now())) {
         return;
       }
       const records = Array.isArray(meta?.payload) ? (meta.payload as FoodofferForUsageEvent[]) : [];

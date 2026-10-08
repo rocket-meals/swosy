@@ -13,6 +13,7 @@
 
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED } from '../BackendUsageEventHelper';
+import { FoodFeedbackChatHelper } from './FoodFeedbackChatHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 
 type DirectusFilter = Record<string, unknown>;
@@ -24,9 +25,9 @@ const APP_USAGE_EVENTS = 'app_usage_events';
 export enum LivePulsePresence {
   /** Active within the last `ACTIVE_NOW_MINUTES`. */
   NOW = 'now',
-  /** Active within the last `ACTIVE_RECENT_MINUTES`. */
+  /** Active within the last `ONLINE_MINUTES` – probably just put the phone away. */
   RECENT = 'recent',
-  /** Active earlier today. */
+  /** Active earlier today, offline now. */
   TODAY = 'today',
 }
 
@@ -50,13 +51,21 @@ export type LivePulseProfile = {
 
 type RelatedProfile = LivePulseProfile | string | null | undefined;
 
+/** A food with what is needed for its picture in the ticker. */
+export type LivePulseFood = {
+  id: string;
+  alias?: string | null;
+  image?: string | { id: string } | null;
+  image_remote_url?: string | null;
+};
+
 export type LivePulseFoodFeedback = {
   id: string;
   rating?: number | null;
   comment?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
-  food?: { id: string; alias?: string | null } | string | null;
+  food?: LivePulseFood | string | null;
   canteen?: { id: string; alias?: string | null } | string | null;
   profile?: RelatedProfile;
 };
@@ -83,12 +92,16 @@ export type LivePulseUsageEvent = {
 export type LivePulseFeedItem = {
   /** Unique across all sources, stable between refreshes – used as list key and to spot new entries. */
   key: string;
+  /** The record behind the entry – a changed rating gets a new `key` but keeps this, so it replaces its old entry. */
+  sourceKey: string;
   type: LivePulseFeedType;
   date: string;
   profile?: LivePulseProfile;
   rating?: number | null;
   comment?: string | null;
   foodName?: string;
+  /** The food, with image, if known – for its picture in the ticker. */
+  food?: LivePulseFood;
   canteenName?: string;
   /** For a canteen visit: the day of the planned visit (`YYYY-MM-DD`). */
   visitDate?: string | null;
@@ -108,15 +121,24 @@ export type LivePulseQuery = {
 export class LivePulseHelper {
   /** How often the page reloads its data. */
   public static readonly REFRESH_INTERVAL_MS = 30_000;
-  public static readonly ACTIVE_NOW_MINUTES = 15;
-  public static readonly ACTIVE_RECENT_MINUTES = 60;
+  /** Hardly anyone looks at the app for longer: after 5 minutes without a request someone is no longer "active now". */
+  public static readonly ACTIVE_NOW_MINUTES = 5;
+  /** After 10 minutes without a request someone counts as offline. */
+  public static readonly ONLINE_MINUTES = 10;
   /** Avatars shown on the wall. */
   public static readonly PROFILE_LIMIT = 30;
+  /** Profiles loaded for the wall; the ones with avatar and own nickname move to the front, see `sortProfilesForWall`. */
+  public static readonly PROFILE_QUERY_LIMIT = 100;
+  /** Nickname every guest profile starts with (`GuestAccountHelper.buildDefaultNickname`). */
+  public static readonly GUEST_NICKNAME_PREFIX = 'Guest_';
   /** Entries loaded per ticker source; the merged ticker shows `FEED_LIMIT` of them. */
   public static readonly FEED_SOURCE_LIMIT = 15;
   public static readonly FEED_LIMIT = 25;
   public static readonly AVATAR_SIZE = 64;
   public static readonly FEED_AVATAR_SIZE = 36;
+  /** New ticker entries are revealed one by one, spread over the refresh interval, but within these bounds. */
+  public static readonly FEED_REVEAL_MIN_DELAY_MS = 700;
+  public static readonly FEED_REVEAL_MAX_DELAY_MS = 4_000;
 
   /**
    * Collections in which app users leave traces in `directus_activity`. Restricting the chart to
@@ -126,6 +148,7 @@ export class LivePulseHelper {
 
   static readonly PROFILES_ENDPOINT = `/items/${CollectionNames.PROFILES}`;
   static readonly FOOD_FEEDBACKS_ENDPOINT = `/items/${CollectionNames.FOODS_FEEDBACKS}`;
+  static readonly FOODS_ENDPOINT = `/items/${CollectionNames.FOODS}`;
   static readonly CANTEEN_VISITS_ENDPOINT = `/items/${CANTEEN_VISITS}`;
   static readonly APP_USAGE_EVENTS_ENDPOINT = `/items/${APP_USAGE_EVENTS}`;
   static readonly ACTIVITY_ENDPOINT = '/activity';
@@ -158,7 +181,7 @@ export class LivePulseHelper {
     if (minutesAgo <= LivePulseHelper.ACTIVE_NOW_MINUTES) {
       return LivePulsePresence.NOW;
     }
-    if (minutesAgo <= LivePulseHelper.ACTIVE_RECENT_MINUTES) {
+    if (minutesAgo <= LivePulseHelper.ONLINE_MINUTES) {
       return LivePulsePresence.RECENT;
     }
     return LivePulsePresence.TODAY;
@@ -175,14 +198,34 @@ export class LivePulseHelper {
     }
   }
 
-  /** Profiles active today, most recent first. */
+  /** Profiles active today, most recent first – `sortProfilesForWall` picks the ones shown. */
   static buildActiveProfilesQuery(now: Date): LivePulseQuery {
     return {
       fields: LivePulseHelper.PROFILE_FIELDS.join(','),
       filter: JSON.stringify({ date_updated: { _gte: LivePulseHelper.getStartOfDay(now).toISOString() } }),
       sort: '-date_updated',
-      limit: LivePulseHelper.PROFILE_LIMIT,
+      limit: LivePulseHelper.PROFILE_QUERY_LIMIT,
     };
+  }
+
+  /** Whether the profile has a nickname of its own – not empty and not the `Guest_…` a guest starts with. */
+  static hasOwnNickname(profile: LivePulseProfile | undefined): boolean {
+    const nickname = profile?.nickname?.trim();
+    return !!nickname && !nickname.toLowerCase().startsWith(LivePulseHelper.GUEST_NICKNAME_PREFIX.toLowerCase());
+  }
+
+  /**
+   * Order of the wall: profiles with avatar first, among them the ones with an own nickname first,
+   * then the ones with only a nickname, then the rest – each group most recently active first.
+   * Keeps at most `PROFILE_LIMIT`.
+   */
+  static sortProfilesForWall(profiles: LivePulseProfile[]): LivePulseProfile[] {
+    const rank = (profile: LivePulseProfile) => (LivePulseHelper.hasAvatar(profile) ? 2 : 0) + (LivePulseHelper.hasOwnNickname(profile) ? 1 : 0);
+    const time = (profile: LivePulseProfile) => {
+      const value = profile.date_updated ? new Date(profile.date_updated).getTime() : Number.NaN;
+      return Number.isNaN(value) ? 0 : value;
+    };
+    return [...profiles].sort((a, b) => rank(b) - rank(a) || time(b) - time(a)).slice(0, LivePulseHelper.PROFILE_LIMIT);
   }
 
   static buildCountQuery(filter: DirectusFilter, field: string = 'id'): LivePulseQuery {
@@ -211,7 +254,7 @@ export class LivePulseHelper {
   /** Food feedbacks of today with a rating or a comment. */
   static buildFoodFeedbacksQuery(now: Date): LivePulseQuery {
     return {
-      fields: ['id', 'rating', 'comment', 'date_created', 'date_updated', 'food.id', 'food.alias', 'canteen.id', 'canteen.alias', ...LivePulseHelper.relatedProfileFields()].join(','),
+      fields: ['id', 'rating', 'comment', 'date_created', 'date_updated', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'canteen.id', 'canteen.alias', ...LivePulseHelper.relatedProfileFields()].join(','),
       filter: JSON.stringify({
         _and: [{ date_updated: { _gte: LivePulseHelper.getStartOfDay(now).toISOString() } }, { _or: [{ rating: { _nnull: true } }, { comment: { _nnull: true } }] }],
       }),
@@ -245,6 +288,39 @@ export class LivePulseHelper {
       sort: '-date_created',
       limit: LivePulseHelper.FEED_SOURCE_LIMIT,
     };
+  }
+
+  /** The food ids that the usage events carry in their payload (`food_details_opened`). */
+  static getUsageEventFoodIds(events: LivePulseUsageEvent[]): string[] {
+    const ids = new Set<string>();
+    for (const event of events) {
+      const foodId = LivePulseHelper.getPayload(event).food_id;
+      if ((typeof foodId === 'string' && foodId) || typeof foodId === 'number') {
+        ids.add(String(foodId));
+      }
+    }
+    return [...ids];
+  }
+
+  /** The foods of the ticker, with their image. `undefined` when there is nothing to load. */
+  static buildFoodsQuery(foodIds: string[]): LivePulseQuery | undefined {
+    if (foodIds.length === 0) {
+      return undefined;
+    }
+    return {
+      fields: ['id', 'alias', 'image', 'image_remote_url'].join(','),
+      filter: JSON.stringify({ id: { _in: foodIds } }),
+      limit: foodIds.length,
+    };
+  }
+
+  /** Thumbnail of the food (Directus file, else remote URL), `undefined` without a picture. */
+  static getFoodImageUrl(food: LivePulseFood | undefined, apiRoot: string = '/'): string | undefined {
+    return food ? FoodFeedbackChatHelper.getFoodImageUrl({ food }, apiRoot) : undefined;
+  }
+
+  private static getPayload(event: LivePulseUsageEvent): Record<string, unknown> {
+    return event.payload && typeof event.payload === 'object' ? (event.payload as Record<string, unknown>) : {};
   }
 
   /** Food offer details loaded today (`food-details-usage-event-hook`). */
@@ -297,20 +373,23 @@ export class LivePulseHelper {
   }
 
   /** Merges all ticker sources into one list, newest first. */
-  static buildFeed(sources: { foodFeedbacks?: LivePulseFoodFeedback[]; canteenVisits?: LivePulseCanteenVisit[]; newProfiles?: LivePulseProfile[]; usageEvents?: LivePulseUsageEvent[] }): LivePulseFeedItem[] {
+  static buildFeed(sources: { foodFeedbacks?: LivePulseFoodFeedback[]; canteenVisits?: LivePulseCanteenVisit[]; newProfiles?: LivePulseProfile[]; usageEvents?: LivePulseUsageEvent[]; foods?: LivePulseFood[] }): LivePulseFeedItem[] {
     const items: LivePulseFeedItem[] = [];
+    const foodsById = new Map((sources.foods ?? []).map(food => [String(food.id), food]));
 
     for (const feedback of sources.foodFeedbacks ?? []) {
       const date = feedback.date_updated || feedback.date_created;
       if (!date) continue;
       items.push({
         key: `feedback-${feedback.id}-${date}`,
+        sourceKey: `feedback-${feedback.id}`,
         type: feedback.comment ? LivePulseFeedType.COMMENT : LivePulseFeedType.RATING,
         date,
         profile: LivePulseHelper.getProfile(feedback.profile),
         rating: feedback.rating,
         comment: feedback.comment,
         foodName: LivePulseHelper.getAlias(feedback.food),
+        food: feedback.food && typeof feedback.food === 'object' ? feedback.food : undefined,
         canteenName: LivePulseHelper.getAlias(feedback.canteen),
       });
     }
@@ -319,6 +398,7 @@ export class LivePulseHelper {
       if (!visit.date_created) continue;
       items.push({
         key: `visit-${visit.id}`,
+        sourceKey: `visit-${visit.id}`,
         type: LivePulseFeedType.CANTEEN_VISIT,
         date: visit.date_created,
         profile: LivePulseHelper.getProfile(visit.profile),
@@ -329,25 +409,48 @@ export class LivePulseHelper {
 
     for (const profile of sources.newProfiles ?? []) {
       if (!profile.date_created) continue;
-      items.push({ key: `profile-${profile.id}`, type: LivePulseFeedType.NEW_PROFILE, date: profile.date_created, profile });
+      items.push({ key: `profile-${profile.id}`, sourceKey: `profile-${profile.id}`, type: LivePulseFeedType.NEW_PROFILE, date: profile.date_created, profile });
     }
 
     for (const event of sources.usageEvents ?? []) {
       if (!event.date_created) continue;
-      const payload = event.payload && typeof event.payload === 'object' ? (event.payload as Record<string, unknown>) : {};
+      const payload = LivePulseHelper.getPayload(event);
+      const food = payload.food_id !== null && payload.food_id !== undefined ? foodsById.get(String(payload.food_id)) : undefined;
       const isFoodOpened = event.event_name === BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED;
       items.push({
         key: `event-${event.id}`,
+        sourceKey: `event-${event.id}`,
         type: isFoodOpened ? LivePulseFeedType.FOOD_OPENED : LivePulseFeedType.USAGE_EVENT,
         date: event.date_created,
         eventName: event.event_name,
         screenName: event.screen_name,
         platform: event.platform,
-        foodName: typeof payload.food_name === 'string' && payload.food_name ? payload.food_name : undefined,
+        foodName: typeof payload.food_name === 'string' && payload.food_name ? payload.food_name : (food?.alias ?? undefined),
+        food,
       });
     }
 
     return items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, LivePulseHelper.FEED_LIMIT);
+  }
+
+  /**
+   * Entries of `next` the ticker does not show or queue yet, oldest first – the order in which they
+   * are revealed, so the newest ends up on top.
+   */
+  static findNewFeedItems(next: LivePulseFeedItem[], knownKeys: Set<string>): LivePulseFeedItem[] {
+    return next.filter(item => !knownKeys.has(item.key)).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }
+
+  /**
+   * Pause before the next queued entry slides in: the queue is spread over one refresh interval, so
+   * the ticker keeps moving until the next data arrives – never slower or faster than the bounds.
+   */
+  static getRevealDelayMs(pendingCount: number): number {
+    if (pendingCount <= 0) {
+      return LivePulseHelper.FEED_REVEAL_MAX_DELAY_MS;
+    }
+    const spread = LivePulseHelper.REFRESH_INTERVAL_MS / pendingCount;
+    return Math.round(Math.min(LivePulseHelper.FEED_REVEAL_MAX_DELAY_MS, Math.max(LivePulseHelper.FEED_REVEAL_MIN_DELAY_MS, spread)));
   }
 
   /** Whether `profiles.avatar` holds an avatar config (object or JSON string with a `style`). */

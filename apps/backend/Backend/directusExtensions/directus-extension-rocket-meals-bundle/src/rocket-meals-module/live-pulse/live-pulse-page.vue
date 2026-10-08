@@ -3,11 +3,14 @@
  * Page "Live-Puls": meant to stay open on a second screen during the day. Shows the profiles that
  * were active today with their avatars, a ticker of what is happening in the app and a chart of the
  * active users per hour. Reloads every 30 seconds; the data rules live in `LivePulseHelper`.
+ *
+ * The ticker does not jump: what arrives with a refresh is queued and slides in entry by entry,
+ * spread over the time until the next refresh, the older entries move down.
  */
 import { useApi } from '@directus/extensions-sdk';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
-import { LivePulseFeedType, LivePulseHelper, LivePulsePresence, type LivePulseCanteenVisit, type LivePulseFeedItem, type LivePulseFoodFeedback, type LivePulseProfile, type LivePulseQuery, type LivePulseUsageEvent } from '../../helpers/rocket-meals-module/LivePulseHelper';
+import { LivePulseFeedType, LivePulseHelper, LivePulsePresence, type LivePulseCanteenVisit, type LivePulseFeedItem, type LivePulseFood, type LivePulseFoodFeedback, type LivePulseProfile, type LivePulseQuery, type LivePulseUsageEvent } from '../../helpers/rocket-meals-module/LivePulseHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
@@ -34,8 +37,11 @@ const foodViewsToday = ref<number | undefined>();
 /** Distinct active users per hour of today, index = hour. Past hours are kept, only the current one is reloaded. */
 const hourly = ref<number[]>([]);
 const hourlyDay = ref<string | undefined>();
-/** Ticker entries that arrived with the last refresh – highlighted briefly. */
+/** Ticker entries that slid in while the page is open – highlighted briefly. */
 const freshKeys = ref<Set<string>>(new Set());
+/** New ticker entries waiting to slide in, oldest first. */
+let pendingFeed: LivePulseFeedItem[] = [];
+let revealTimer: ReturnType<typeof setTimeout> | undefined;
 
 async function getItems<T>(endpoint: string, params: LivePulseQuery): Promise<T[]> {
   const response = await api.get(endpoint, { params });
@@ -62,7 +68,7 @@ async function getItemsOrEmpty<T>(endpoint: string, params: LivePulseQuery): Pro
 
 async function loadKpis(time: Date) {
   const startOfDay = LivePulseHelper.getStartOfDay(time);
-  const [recent, today, created, feedbacks, foodViews] = await Promise.all([getAggregate(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildProfilesActiveSinceFilter(LivePulseHelper.minutesBefore(time, LivePulseHelper.ACTIVE_NOW_MINUTES))), 'count', 'id'), getAggregate(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildProfilesActiveSinceFilter(startOfDay)), 'count', 'id'), getAggregate(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildCreatedSinceFilter(startOfDay)), 'count', 'id'), getAggregate(LivePulseHelper.FOOD_FEEDBACKS_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildCreatedSinceFilter(startOfDay)), 'count', 'id'), getAggregate(LivePulseHelper.APP_USAGE_EVENTS_ENDPOINT, LivePulseHelper.buildFoodViewsTodayQuery(time), 'count', 'id')]);
+  const [recent, today, created, feedbacks, foodViews] = await Promise.all([getAggregate(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildProfilesActiveSinceFilter(LivePulseHelper.minutesBefore(time, LivePulseHelper.ONLINE_MINUTES))), 'count', 'id'), getAggregate(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildProfilesActiveSinceFilter(startOfDay)), 'count', 'id'), getAggregate(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildCreatedSinceFilter(startOfDay)), 'count', 'id'), getAggregate(LivePulseHelper.FOOD_FEEDBACKS_ENDPOINT, LivePulseHelper.buildCountQuery(LivePulseHelper.buildCreatedSinceFilter(startOfDay)), 'count', 'id'), getAggregate(LivePulseHelper.APP_USAGE_EVENTS_ENDPOINT, LivePulseHelper.buildFoodViewsTodayQuery(time), 'count', 'id')]);
   activeNow.value = recent;
   activeToday.value = today;
   newProfilesToday.value = created;
@@ -72,11 +78,35 @@ async function loadKpis(time: Date) {
 
 async function loadFeed(time: Date) {
   const [foodFeedbacks, canteenVisits, newProfiles, usageEvents] = await Promise.all([getItemsOrEmpty<LivePulseFoodFeedback>(LivePulseHelper.FOOD_FEEDBACKS_ENDPOINT, LivePulseHelper.buildFoodFeedbacksQuery(time)), getItemsOrEmpty<LivePulseCanteenVisit>(LivePulseHelper.CANTEEN_VISITS_ENDPOINT, LivePulseHelper.buildCanteenVisitsQuery(time)), getItemsOrEmpty<LivePulseProfile>(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildNewProfilesQuery(time)), getItemsOrEmpty<LivePulseUsageEvent>(LivePulseHelper.APP_USAGE_EVENTS_ENDPOINT, LivePulseHelper.buildUsageEventsQuery(time))]);
-  const next = LivePulseHelper.buildFeed({ foodFeedbacks, canteenVisits, newProfiles, usageEvents });
-  const known = new Set(feed.value.map(item => item.key));
-  // On the first load nothing is "new" – only what arrives while the page is open lights up.
-  freshKeys.value = feed.value.length === 0 ? new Set() : new Set(next.filter(item => !known.has(item.key)).map(item => item.key));
-  feed.value = next;
+  const foodsQuery = LivePulseHelper.buildFoodsQuery(LivePulseHelper.getUsageEventFoodIds(usageEvents));
+  const foods = foodsQuery ? await getItemsOrEmpty<LivePulseFood>(LivePulseHelper.FOODS_ENDPOINT, foodsQuery) : [];
+  const next = LivePulseHelper.buildFeed({ foodFeedbacks, canteenVisits, newProfiles, usageEvents, foods });
+  // On the first load everything is there at once – only what arrives while the page is open slides in.
+  if (feed.value.length === 0 && pendingFeed.length === 0) {
+    feed.value = next;
+    return;
+  }
+  const known = new Set([...feed.value, ...pendingFeed].map(item => item.key));
+  // More than fits into the ticker would only slide through unseen – keep the newest.
+  pendingFeed = [...pendingFeed, ...LivePulseHelper.findNewFeedItems(next, known)].slice(-LivePulseHelper.FEED_LIMIT);
+  if (!revealTimer) {
+    revealNext();
+  }
+}
+
+/** Slides the oldest queued entry in on top and plans the next one. */
+function revealNext() {
+  revealTimer = undefined;
+  const item = pendingFeed.shift();
+  if (!item) {
+    return;
+  }
+  // A changed rating replaces its old entry instead of standing in the ticker twice.
+  feed.value = [item, ...feed.value.filter(entry => entry.sourceKey !== item.sourceKey)].slice(0, LivePulseHelper.FEED_LIMIT);
+  freshKeys.value = new Set([...freshKeys.value, item.key].filter(key => feed.value.some(entry => entry.key === key)));
+  if (pendingFeed.length > 0) {
+    revealTimer = setTimeout(revealNext, LivePulseHelper.getRevealDelayMs(pendingFeed.length));
+  }
 }
 
 async function loadHourly(time: Date) {
@@ -102,7 +132,7 @@ async function reload() {
   const time = new Date();
   now.value = time;
   try {
-    profiles.value = await getItems<LivePulseProfile>(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildActiveProfilesQuery(time));
+    profiles.value = LivePulseHelper.sortProfilesForWall(await getItems<LivePulseProfile>(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildActiveProfilesQuery(time)));
     await Promise.all([loadKpis(time), loadFeed(time), loadHourly(time)]);
     loadError.value = false;
     lastLoaded.value = time;
@@ -130,6 +160,22 @@ function avatarUrl(profile: LivePulseProfile | undefined, size: number): string 
 function onAvatarError(profile: LivePulseProfile | undefined) {
   if (profile) {
     failedAvatars.value = new Set([...failedAvatars.value, profile.id]);
+  }
+}
+
+/** Food images that could not be loaded – the entry falls back to its icon. */
+const failedFoodImages = ref<Set<string>>(new Set());
+
+function foodImageUrl(item: LivePulseFeedItem): string | undefined {
+  if (!item.food || failedFoodImages.value.has(item.food.id)) {
+    return undefined;
+  }
+  return LivePulseHelper.getFoodImageUrl(item.food, apiRoot);
+}
+
+function onFoodImageError(item: LivePulseFeedItem) {
+  if (item.food) {
+    failedFoodImages.value = new Set([...failedFoodImages.value, item.food.id]);
   }
 }
 
@@ -194,7 +240,7 @@ function feedIcon(item: LivePulseFeedItem): string {
 }
 
 const kpis = computed<Kpi[]>(() => [
-  { key: 'now', value: activeNow.value, label: translate(BackendTranslationKeys.rocket_meals_module_live_pulse_active_now, { minutes: LivePulseHelper.ACTIVE_NOW_MINUTES }) },
+  { key: 'now', value: activeNow.value, label: translate(BackendTranslationKeys.rocket_meals_module_live_pulse_active_now, { minutes: LivePulseHelper.ONLINE_MINUTES }) },
   { key: 'today', value: activeToday.value, label: translate(BackendTranslationKeys.rocket_meals_module_live_pulse_active_today) },
   { key: 'new', value: newProfilesToday.value, label: translate(BackendTranslationKeys.rocket_meals_module_live_pulse_new_profiles_today) },
   { key: 'food-views', value: foodViewsToday.value, label: translate(BackendTranslationKeys.rocket_meals_module_live_pulse_food_views_today) },
@@ -244,6 +290,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   clearInterval(refreshTimer);
   clearInterval(clockTimer);
+  clearTimeout(revealTimer);
 });
 </script>
 
@@ -323,6 +370,9 @@ onBeforeUnmount(() => {
             <li v-for="item in feed" :key="item.key" class="feed-item" :class="{ fresh: freshKeys.has(item.key) }">
               <div v-if="avatarUrl(item.profile, LivePulseHelper.FEED_AVATAR_SIZE)" class="feed-avatar">
                 <img class="avatar-image" :src="avatarUrl(item.profile, LivePulseHelper.FEED_AVATAR_SIZE)" alt="" loading="lazy" @error="onAvatarError(item.profile)" />
+              </div>
+              <div v-else-if="foodImageUrl(item)" class="feed-avatar">
+                <img class="food-image" :src="foodImageUrl(item)" alt="" loading="lazy" @error="onFoodImageError(item)" />
               </div>
               <div v-else class="feed-avatar feed-icon"><v-icon :name="feedIcon(item)" small /></div>
               <div class="feed-body">
@@ -528,6 +578,7 @@ onBeforeUnmount(() => {
 }
 
 .feed {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -557,12 +608,26 @@ onBeforeUnmount(() => {
   }
 }
 
+/* A new entry slides in from above, the others glide down to make room, the last one fades out. */
+.feed-move,
 .feed-enter-active {
-  transition: all 0.4s ease-out;
+  transition:
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.6s ease-out;
+}
+
+.feed-leave-active {
+  position: absolute;
+  inset-inline: 0;
+  transition: opacity 0.4s ease-in;
 }
 
 .feed-enter-from {
-  transform: translateY(-0.5rem);
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+.feed-leave-to {
   opacity: 0;
 }
 
@@ -573,6 +638,15 @@ onBeforeUnmount(() => {
 .feed-avatar .avatar-image {
   inline-size: 36px;
   block-size: 36px;
+}
+
+.food-image {
+  display: block;
+  inline-size: 36px;
+  block-size: 36px;
+  object-fit: cover;
+  background: var(--theme--background-normal);
+  border-radius: var(--theme--border-radius);
 }
 
 .feed-icon {
@@ -654,7 +728,9 @@ onBeforeUnmount(() => {
     animation: none;
   }
 
-  .feed-enter-active {
+  .feed-move,
+  .feed-enter-active,
+  .feed-leave-active {
     transition: none;
   }
 }
