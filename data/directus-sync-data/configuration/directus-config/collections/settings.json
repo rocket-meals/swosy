@@ -82,14 +82,8 @@
     "theme_light_overrides": null,
     "theme_dark_overrides": null,
     "public_registration_email_filter": null,
-    "visual_editor_urls": [
-      {
-        "url": "https://test.rocket-meals.de/rocket-meals/api/"
-      }
-    ],
     "storage_asset_presets": null,
     "basemaps": null,
-    "project_name": "Test Server",
     "project_status": null,
     "org_name": "Baumgartner Software UG (haftungsbeschränkt)",
     "project_usage": "commercial",
@@ -102,11 +96,9 @@
     "default_theme_light": null,
     "default_appearance": "auto",
     "default_language": "de-DE",
-    "project_descriptor": null,
     "mapbox_key": null,
     "storage_asset_transform": "all",
     "auth_password_policy": null,
-    "project_color": "#01569A",
     "storage_default_folder": null,
     "public_registration_role": null,
     "_syncId": "_sync_default_settings"
