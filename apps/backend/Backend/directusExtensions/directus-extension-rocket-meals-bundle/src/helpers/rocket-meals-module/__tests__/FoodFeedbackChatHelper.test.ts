@@ -172,8 +172,8 @@ describe('RocketMealsModulePages', () => {
     expect(RocketMealsModulePages.getRoute(RocketMealsModulePages.MCP_INSTRUCTION)).toBe('/rocket-meals/mcp-instruction');
   });
 
-  it('lists the app feedbacks after the food feedbacks, then the MCP instruction, the live pulse last', () => {
-    expect(RocketMealsModulePages.PAGES).toEqual([RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE]);
+  it('lists the app feedbacks after the food feedbacks, then the MCP instruction, the live pulse and the friendship network last', () => {
+    expect(RocketMealsModulePages.PAGES).toEqual([RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE, RocketMealsModulePages.FRIENDSHIP_NETWORK]);
   });
 });
 
