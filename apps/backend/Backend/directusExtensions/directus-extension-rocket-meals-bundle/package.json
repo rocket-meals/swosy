@@ -275,6 +275,11 @@
       },
       {
         "type": "hook",
+        "name": "app-usage-events-cleanup-schedule",
+        "source": "src/app-usage-events-cleanup-schedule/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "workflows-runs-cleanup-schedule",
         "source": "src/workflows-runs-cleanup-schedule/index.ts"
       },

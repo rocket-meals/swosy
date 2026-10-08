@@ -54,6 +54,21 @@ function getRelatedAlias(related: RelatedItem): string | undefined {
 }
 
 export class BackendUsageEventHelper {
+  /**
+   * Window in which repeated reads of the same food offer by the same requester count once. The
+   * details screen of the app reads `/items/foodoffers/<id>` several times when it opens (details,
+   * labels, components) – without this every opening would be counted two or three times.
+   */
+  public static readonly DEDUPLICATION_WINDOW_MS = 60_000;
+
+  /**
+   * Who asked, only to recognise repeated reads – kept in memory for `DEDUPLICATION_WINDOW_MS`,
+   * never written to the event. The user, else the IP of a request without login.
+   */
+  static getRequesterKey(accountability: Accountability | null | undefined): string {
+    return accountability?.user ? `user:${accountability.user}` : `ip:${accountability?.ip ?? 'unknown'}`;
+  }
+
   /** `Backend_2026_10_07` – the day in the time zone of the server (`TZ`, Europe/Berlin in production). */
   static getSessionId(date: Date): string {
     return `${BACKEND_USAGE_SESSION_PREFIX}${date.getFullYear()}_${pad(date.getMonth() + 1)}_${pad(date.getDate())}`;
@@ -102,5 +117,40 @@ export class BackendUsageEventHelper {
         canteen_id: getRelatedId(foodoffer?.canteen) ?? null,
       },
     };
+  }
+}
+
+/**
+ * Remembers which requester read which food offer when, so that one opening of the details counts
+ * once. In memory per server process: after a restart or on another instance a read may count again,
+ * which is fine for statistics.
+ */
+export class BackendUsageEventDeduplicator {
+  private readonly lastCounted = new Map<string, number>();
+
+  constructor(private readonly windowMs: number = BackendUsageEventHelper.DEDUPLICATION_WINDOW_MS) {}
+
+  /** `true` when the read should be counted – and from then on the same pair is skipped for the window. */
+  shouldCount(requesterKey: string, itemKey: string, nowMs: number): boolean {
+    this.removeExpired(nowMs);
+    const key = `${requesterKey}|${itemKey}`;
+    const last = this.lastCounted.get(key);
+    if (last !== undefined && nowMs - last < this.windowMs) {
+      return false;
+    }
+    this.lastCounted.set(key, nowMs);
+    return true;
+  }
+
+  get size(): number {
+    return this.lastCounted.size;
+  }
+
+  private removeExpired(nowMs: number) {
+    for (const [key, time] of this.lastCounted) {
+      if (nowMs - time >= this.windowMs) {
+        this.lastCounted.delete(key);
+      }
+    }
   }
 }
