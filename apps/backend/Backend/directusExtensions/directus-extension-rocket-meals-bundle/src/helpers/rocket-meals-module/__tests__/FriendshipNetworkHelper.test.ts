@@ -79,27 +79,39 @@ describe('FriendshipNetworkHelper', () => {
   describe('filterNetwork and getStats', () => {
     const network = FriendshipNetworkHelper.buildNetwork([row('a', 'b'), row('a', 'c'), row('b', 'c'), row('a', 'd'), row('x', 'y'), row('d', 'x', FriendshipStatus.PENDING), row('p', 'a', FriendshipStatus.PENDING)]);
 
-    it('hides smaller groups and the links to them', () => {
+    const ids = (filtered: { nodes: { id: string }[] }) => filtered.nodes.map(entry => entry.id).sort();
+
+    it('shows friendships of large enough groups and every open request with its profiles', () => {
       const filtered = FriendshipNetworkHelper.filterNetwork(network, { showAccepted: true, showPending: true, minGroupSize: 3 });
-      expect(filtered.nodes.map(entry => entry.id).sort()).toEqual(['a', 'b', 'c', 'd']);
-      expect(filtered.links.every(link => link.status === FriendshipNetworkLinkStatus.ACCEPTED)).toBe(true);
+      expect(ids(filtered)).toEqual(['a', 'b', 'c', 'd', 'p', 'x']);
+      expect(
+        filtered.links
+          .filter(link => link.status === FriendshipNetworkLinkStatus.PENDING)
+          .map(link => link.key)
+          .sort()
+      ).toEqual(['d>x', 'p>a']);
     });
 
-    it('hides a link type without hiding profiles', () => {
-      const filtered = FriendshipNetworkHelper.filterNetwork(network, { showAccepted: false, showPending: true, minGroupSize: 1 });
-      expect(filtered.nodes).toHaveLength(network.nodes.length);
+    it('shows only the requests and their profiles when only open requests are checked', () => {
+      const filtered = FriendshipNetworkHelper.filterNetwork(network, { showAccepted: false, showPending: true, minGroupSize: 2 });
+      expect(ids(filtered)).toEqual(['a', 'd', 'p', 'x']);
       expect(filtered.links.map(link => link.key).sort()).toEqual(['d>x', 'p>a']);
     });
 
-    it('counts the key figures', () => {
-      expect(FriendshipNetworkHelper.getStats(FriendshipNetworkHelper.filterNetwork(network, { showAccepted: true, showPending: true, minGroupSize: 1 }))).toEqual({
-        profilesWithFriends: 6,
-        friendships: 5,
-        pendingRequests: 2,
-        largestGroupSize: 4,
-        averageFriends: 10 / 6,
-      });
-      expect(FriendshipNetworkHelper.getStats({ nodes: [], links: [] })).toEqual({ profilesWithFriends: 0, friendships: 0, pendingRequests: 0, largestGroupSize: 0, averageFriends: 0 });
+    it('shows only the friendships when only accepted is checked', () => {
+      const filtered = FriendshipNetworkHelper.filterNetwork(network, { showAccepted: true, showPending: false, minGroupSize: 2 });
+      expect(ids(filtered)).toEqual(['a', 'b', 'c', 'd', 'x', 'y']);
+      expect(filtered.links.every(link => link.status === FriendshipNetworkLinkStatus.ACCEPTED)).toBe(true);
+    });
+
+    it('shows nothing without a checkbox', () => {
+      expect(FriendshipNetworkHelper.filterNetwork(network, { showAccepted: false, showPending: false, minGroupSize: 2 })).toEqual({ nodes: [], links: [] });
+    });
+
+    it('counts the key figures, the group size only changes the friendship figures', () => {
+      expect(FriendshipNetworkHelper.getStats(network, 2)).toEqual({ profilesWithFriends: 6, friendships: 5, pendingRequests: 2, largestGroupSize: 4, averageFriends: 10 / 6 });
+      expect(FriendshipNetworkHelper.getStats(network, 3)).toEqual({ profilesWithFriends: 4, friendships: 4, pendingRequests: 2, largestGroupSize: 4, averageFriends: 2 });
+      expect(FriendshipNetworkHelper.getStats({ nodes: [], links: [] }, 2)).toEqual({ profilesWithFriends: 0, friendships: 0, pendingRequests: 0, largestGroupSize: 0, averageFriends: 0 });
     });
   });
 

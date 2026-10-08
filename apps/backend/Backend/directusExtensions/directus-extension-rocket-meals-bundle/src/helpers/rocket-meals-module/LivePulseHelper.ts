@@ -13,7 +13,7 @@
 
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { DefaultProfileHelper } from 'repo-depkit-common/src/DefaultProfileHelper';
-import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED } from '../BackendUsageEventHelper';
+import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED } from '../BackendUsageEventNames';
 import { FoodFeedbackChatHelper } from './FoodFeedbackChatHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 

@@ -1549,16 +1549,6 @@ export const backendTranslations: TranslationResources = {
     tr: 'Grup büyüklüğü',
     zh: '群组大小',
   },
-  rocket_meals_module_friendship_network_group_size_all: {
-    de: 'Alle Profile',
-    en: 'All profiles',
-    ar: 'كل الملفات',
-    es: 'Todos los perfiles',
-    fr: 'Tous les profils',
-    ru: 'Все профили',
-    tr: 'Tüm profiller',
-    zh: '所有资料',
-  },
   rocket_meals_module_friendship_network_group_size_min: {
     de: 'Gruppen ab {{count}} Profilen',
     en: 'Groups of {{count}} profiles or more',
