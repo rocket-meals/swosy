@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 3 | 3 |
 | 🐛 Reliability | 384 | 47 |
-| 🔧 Maintainability | 682 | 0 |
+| 🔧 Maintainability | 691 | 0 |
 
-**Total issues:** 1069 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1078 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -69,8 +69,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/admin-password-setup-from-env/index.ts#L8
 
 - **Async arrow function has no 'await' expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts:80
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts#L80
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts:107
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts#L107
 
 - **Async arrow function has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-usage-events-cleanup-schedule/index.ts:56
@@ -105,8 +105,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/index.ts#L70
 
 - **Async arrow function has no 'await' expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts:11
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts#L11
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts:16
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts#L16
 
 - **Async arrow function has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-hook/index.ts:26
