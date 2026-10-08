@@ -6,7 +6,7 @@ import { RedirectWhitelistHelper } from '../helpers/RedirectWhitelistHelper';
 import { ApiContext } from '../helpers/ApiContext'; // Use Node.js crypto module for secure comparisons
 import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
 import { NanoidHelper } from '../helpers/NanoidHelper';
-import { KeyValueStore, RedisHelper } from '../helpers/RedisHelper';
+import { KeyValueStore, SharedStore } from '../helpers/RedisHelper';
 
 const env = process.env;
 const PUBLIC_URL = env.PUBLIC_URL || ''; // e.g. http://rocket-meals.de/rocket-meals/api or empty string
@@ -205,13 +205,7 @@ export default defineEndpoint({
   handler: (router, apiContext) => {
     const { database, env } = apiContext;
 
-    const redisStore = RedisHelper.getRedisStore(env);
-    if (!redisStore) {
-      mylog(EndpointTopName + ' current is only supported with redis. Please configure env var REDIS.');
-      return;
-    }
-
-    const myStorage = new MyKvStorage(redisStore, 300);
+    const myStorage = new MyKvStorage(new SharedStore(env), 300);
 
     // 4.1.  Client Creates a Code Verifier - Mobile App
     // 4.2.  Client Creates the Code Challenge - Mobile App

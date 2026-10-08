@@ -12,7 +12,7 @@
 
 import { Accountability } from '@directus/types';
 import { AccountabilityHelper } from './AccountabilityHelper';
-import { KeyValueStore } from './RedisHelper';
+import { KeyValueStore, SharedStore } from './RedisHelper';
 
 /** `session_id` prefix of every event written by the backend. */
 export const BACKEND_USAGE_SESSION_PREFIX = 'Backend_';
@@ -122,68 +122,23 @@ export class BackendUsageEventHelper {
 }
 
 /**
- * Remembers which requester read which food offer when, so that one opening of the details counts
- * once. In memory per server process: with several Directus replicas (`DIRECTUS_REPLICAS`) the reads
- * of one opening land on different instances and each would count – use
- * `BackendUsageEventSharedDeduplicator` there. This one stays the fallback without Redis.
+ * Remembers which requester read which food offer, so that one opening of the details counts once.
+ * The details screen reads `/items/foodoffers/<id>` several times when it opens, and the load
+ * balancer spreads these reads over the Directus replicas – so the lock lives in the `SharedStore`
+ * (Redis with `REDIS`, else memory of this process). `setIfAbsent` is atomic in Redis: exactly one
+ * read per window wins, whichever replica it hits.
  */
 export class BackendUsageEventDeduplicator {
-  private readonly lastCounted = new Map<string, number>();
-
-  constructor(private readonly windowMs: number = BackendUsageEventHelper.DEDUPLICATION_WINDOW_MS) {}
-
-  /** `true` when the read should be counted – and from then on the same pair is skipped for the window. */
-  shouldCount(requesterKey: string, itemKey: string, nowMs: number): boolean {
-    this.removeExpired(nowMs);
-    const key = `${requesterKey}|${itemKey}`;
-    const last = this.lastCounted.get(key);
-    if (last !== undefined && nowMs - last < this.windowMs) {
-      return false;
-    }
-    this.lastCounted.set(key, nowMs);
-    return true;
-  }
-
-  get size(): number {
-    return this.lastCounted.size;
-  }
-
-  private removeExpired(nowMs: number) {
-    for (const [key, time] of this.lastCounted) {
-      if (nowMs - time >= this.windowMs) {
-        this.lastCounted.delete(key);
-      }
-    }
-  }
-}
-
-/**
- * Same job as `BackendUsageEventDeduplicator`, but shared by all Directus replicas via Redis. The
- * details screen reads `/items/foodoffers/<id>` several times when it opens, the load balancer
- * spreads these reads over the replicas – an in-memory lock per process then counts one opening once
- * per replica. `setIfAbsent` is atomic in Redis, so exactly one read per window wins, whichever
- * replica it hits.
- *
- * If Redis fails, the local deduplicator decides – counting must never disturb the app.
- */
-export class BackendUsageEventSharedDeduplicator {
   public static readonly KEY_PREFIX = 'rocket-meals:usage-event-dedup:';
 
-  private readonly fallback: BackendUsageEventDeduplicator;
-
   constructor(
-    private readonly store: KeyValueStore,
-    private readonly windowMs: number = BackendUsageEventHelper.DEDUPLICATION_WINDOW_MS
-  ) {
-    this.fallback = new BackendUsageEventDeduplicator(windowMs);
-  }
+    env: Record<string, unknown> | null | undefined,
+    private readonly windowMs: number = BackendUsageEventHelper.DEDUPLICATION_WINDOW_MS,
+    private readonly store: KeyValueStore = new SharedStore(env)
+  ) {}
 
-  async shouldCount(requesterKey: string, itemKey: string, nowMs: number): Promise<boolean> {
-    const key = `${BackendUsageEventSharedDeduplicator.KEY_PREFIX}${requesterKey}|${itemKey}`;
-    try {
-      return await this.store.setIfAbsent(key, String(nowMs), this.windowMs);
-    } catch {
-      return this.fallback.shouldCount(requesterKey, itemKey, nowMs);
-    }
+  /** `true` when the read should be counted – and from then on the same pair is skipped for the window. */
+  async shouldCount(requesterKey: string, itemKey: string): Promise<boolean> {
+    return this.store.setIfAbsent(`${BackendUsageEventDeduplicator.KEY_PREFIX}${requesterKey}|${itemKey}`, '1', this.windowMs);
   }
 }

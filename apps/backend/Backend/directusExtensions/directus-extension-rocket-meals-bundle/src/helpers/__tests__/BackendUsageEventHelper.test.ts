@@ -4,9 +4,8 @@ import {
   BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED,
   BackendUsageEventDeduplicator,
   BackendUsageEventHelper,
-  BackendUsageEventSharedDeduplicator,
 } from '../BackendUsageEventHelper';
-import { KeyValueStore, MemoryKeyValueStore } from '../RedisHelper';
+import { MemoryKeyValueStore } from '../RedisHelper';
 
 function accountability(values: Partial<Accountability>): Accountability {
   return { role: null, roles: [], user: null, admin: false, app: false, ip: null, ...values } as Accountability;
@@ -63,50 +62,39 @@ describe('BackendUsageEventHelper', () => {
     expect(BackendUsageEventHelper.getRequesterKey(undefined)).toBe('ip:unknown');
   });
 
-  it('counts repeated reads of the same food offer by the same requester once per window', () => {
-    const deduplicator = new BackendUsageEventDeduplicator(60_000);
-    expect(deduplicator.shouldCount('user:u1', 'offer-1', 0)).toBe(true);
+  it('counts the same offer by the same requester once per window', async () => {
+    let now = 0;
+    const deduplicator = new BackendUsageEventDeduplicator({}, 60_000, new MemoryKeyValueStore(() => now));
+    expect(await deduplicator.shouldCount('user:u1', 'offer-1')).toBe(true);
     // the details screen reads the offer again right away (labels, components)
-    expect(deduplicator.shouldCount('user:u1', 'offer-1', 300)).toBe(false);
-    expect(deduplicator.shouldCount('user:u1', 'offer-1', 1_200)).toBe(false);
+    now = 300;
+    expect(await deduplicator.shouldCount('user:u1', 'offer-1')).toBe(false);
+    now = 1_200;
+    expect(await deduplicator.shouldCount('user:u1', 'offer-1')).toBe(false);
     // another offer or another person counts
-    expect(deduplicator.shouldCount('user:u1', 'offer-2', 1_500)).toBe(true);
-    expect(deduplicator.shouldCount('user:u2', 'offer-1', 1_500)).toBe(true);
+    expect(await deduplicator.shouldCount('user:u1', 'offer-2')).toBe(true);
+    expect(await deduplicator.shouldCount('user:u2', 'offer-1')).toBe(true);
     // opened again after the window
-    expect(deduplicator.shouldCount('user:u1', 'offer-1', 60_000)).toBe(true);
-  });
-
-  it('forgets expired entries so the memory does not grow', () => {
-    const deduplicator = new BackendUsageEventDeduplicator(1_000);
-    deduplicator.shouldCount('a', 'x', 0);
-    deduplicator.shouldCount('b', 'y', 100);
-    expect(deduplicator.size).toBe(2);
-    deduplicator.shouldCount('c', 'z', 5_000);
-    expect(deduplicator.size).toBe(1);
+    now = 60_000;
+    expect(await deduplicator.shouldCount('user:u1', 'offer-1')).toBe(true);
   });
 
   it('shares the lock between replicas so one opening counts once', async () => {
     // one store shared by two "replicas", like Redis
     let now = 0;
     const store = new MemoryKeyValueStore(() => now);
-    const replicaA = new BackendUsageEventSharedDeduplicator(store, 60_000);
-    const replicaB = new BackendUsageEventSharedDeduplicator(store, 60_000);
+    const replicaA = new BackendUsageEventDeduplicator({}, 60_000, store);
+    const replicaB = new BackendUsageEventDeduplicator({}, 60_000, store);
 
-    expect(await replicaA.shouldCount('user:u1', 'offer-1', now)).toBe(true);
+    expect(await replicaA.shouldCount('user:u1', 'offer-1')).toBe(true);
     now = 300;
-    expect(await replicaB.shouldCount('user:u1', 'offer-1', now)).toBe(false);
-    expect(await replicaB.shouldCount('user:u2', 'offer-1', now)).toBe(true);
-    now = 60_000;
-    expect(await replicaB.shouldCount('user:u1', 'offer-1', now)).toBe(true);
+    expect(await replicaB.shouldCount('user:u1', 'offer-1')).toBe(false);
+    expect(await replicaB.shouldCount('user:u2', 'offer-1')).toBe(true);
   });
 
-  it('falls back to the local lock when Redis fails', async () => {
-    const failing = async (): Promise<never> => {
-      throw new Error('redis down');
-    };
-    const store: KeyValueStore = { set: failing, setIfAbsent: failing, get: failing, del: failing };
-    const deduplicator = new BackendUsageEventSharedDeduplicator(store, 60_000);
-    expect(await deduplicator.shouldCount('user:u1', 'offer-1', 0)).toBe(true);
-    expect(await deduplicator.shouldCount('user:u1', 'offer-1', 300)).toBe(false);
+  it('uses memory without REDIS', async () => {
+    const deduplicator = new BackendUsageEventDeduplicator({});
+    expect(await deduplicator.shouldCount('user:u1', 'offer-1')).toBe(true);
+    expect(await deduplicator.shouldCount('user:u1', 'offer-1')).toBe(false);
   });
 });

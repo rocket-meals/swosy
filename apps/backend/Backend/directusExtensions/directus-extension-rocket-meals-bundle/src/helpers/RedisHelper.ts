@@ -4,7 +4,7 @@
  * Everything that has to hold across replicas (`DIRECTUS_REPLICAS`) – PKCE login state, the lock
  * against double-counted usage events – goes through `KeyValueStore`. With `REDIS` set it is Redis,
  * the same instance Directus uses for cache and synchronisation. Without it an in-memory store per
- * process takes over, which is enough for a single instance and for tests.
+ * process takes over, which is enough for a single instance and for tests. `SharedStore` picks one.
  */
 
 import Redis from 'ioredis';
@@ -114,15 +114,37 @@ export class RedisHelper {
     }
     return client;
   }
+}
 
-  /** The Redis store when `REDIS` is set, else `null` – for callers that need to know. */
-  static getRedisStore(env: Record<string, unknown> | null | undefined): KeyValueStore | null {
+/**
+ * The store to use: Redis when `REDIS` is set, so the values hold across all replicas, else memory
+ * of this process (single instance, local development, tests).
+ */
+export class SharedStore implements KeyValueStore {
+  private readonly store: KeyValueStore;
+
+  constructor(env: Record<string, unknown> | null | undefined) {
     const redisUrl = RedisHelper.getRedisUrl(env);
-    return redisUrl ? new RedisKeyValueStore(RedisHelper.getClient(redisUrl)) : null;
+    this.store = redisUrl ? new RedisKeyValueStore(RedisHelper.getClient(redisUrl)) : new MemoryKeyValueStore();
   }
 
-  /** The Redis store when `REDIS` is set, else an in-memory store for this process. */
-  static getStore(env: Record<string, unknown> | null | undefined): KeyValueStore {
-    return RedisHelper.getRedisStore(env) ?? new MemoryKeyValueStore();
+  get usesRedis(): boolean {
+    return this.store instanceof RedisKeyValueStore;
+  }
+
+  set(key: string, value: string, ttlMs: number): Promise<void> {
+    return this.store.set(key, value, ttlMs);
+  }
+
+  setIfAbsent(key: string, value: string, ttlMs: number): Promise<boolean> {
+    return this.store.setIfAbsent(key, value, ttlMs);
+  }
+
+  get(key: string): Promise<string | null> {
+    return this.store.get(key);
+  }
+
+  del(...keys: string[]): Promise<void> {
+    return this.store.del(...keys);
   }
 }

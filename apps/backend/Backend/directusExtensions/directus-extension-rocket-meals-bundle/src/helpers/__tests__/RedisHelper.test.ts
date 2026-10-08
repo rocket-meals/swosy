@@ -1,4 +1,4 @@
-import { MemoryKeyValueStore, RedisHelper, RedisKeyValueStore } from '../RedisHelper';
+import { MemoryKeyValueStore, RedisHelper, RedisKeyValueStore, SharedStore } from '../RedisHelper';
 
 describe('RedisHelper', () => {
   it('reads REDIS from the env', () => {
@@ -8,9 +8,11 @@ describe('RedisHelper', () => {
     expect(RedisHelper.getRedisUrl(undefined)).toBeNull();
   });
 
-  it('falls back to memory without REDIS', () => {
-    expect(RedisHelper.getRedisStore({})).toBeNull();
-    expect(RedisHelper.getStore({})).toBeInstanceOf(MemoryKeyValueStore);
+  it('uses memory in the SharedStore without REDIS', async () => {
+    const store = new SharedStore({});
+    expect(store.usesRedis).toBe(false);
+    await store.set('a', '1', 1_000);
+    expect(await store.get('a')).toBe('1');
   });
 });
 
