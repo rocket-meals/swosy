@@ -64,6 +64,10 @@ Dieselben Status wie bei den Speise-Feedbacks, ebenfalls aus `chats.conversation
   Hook (`AppFeedbackChatStatusHelper.buildChatForFeedback`).
 - Feedbacks ohne Profil (anonym) können nicht im Chat beantwortet werden; steht eine Kontakt-E-Mail
   dabei, verlinkt die Seite sie.
+- Hat ein App-Feedback mit Chat eine gültige Kontakt-E-Mail, schickt der
+  `chat-conversation-state-hook` jede Support-Antwort zusätzlich als Mail an diese Adresse – in der
+  Sprache aus `profiles.language`, mit dem ursprünglichen Feedback als Zitat und dem Hinweis, dass
+  im Chat der App geantwortet werden kann (`chat-conversation-state-hook/AppFeedbackAnswerMail.ts`).
 - Store-Bewertungen haben nie einen Chat: ohne Antwort im Store sind sie „Neu“, mit Antwort
   „Beantwortet“.
 - Store-Bewertungen und anonyme Feedbacks lassen sich trotzdem ohne Antwort als erledigt markieren

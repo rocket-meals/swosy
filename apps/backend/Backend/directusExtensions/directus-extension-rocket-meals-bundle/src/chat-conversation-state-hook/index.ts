@@ -5,6 +5,8 @@ import {PushNotificationHelper} from '../helpers/PushNotificationHelper';
 import {AccountabilityHelper} from "../helpers/AccountabilityHelper";
 import {PrimaryKey} from "@directus/types";
 import {MyDefineHook} from "../helpers/MyDefineHook";
+import {BackendLanguageResolver} from '../helpers/translations/BackendLanguageResolver';
+import {AppFeedbackAnswerMail} from './AppFeedbackAnswerMail';
 
 const HOOK_NAME = 'chat_conversation_state';
 
@@ -60,6 +62,12 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
         await notifySupportAboutAppFeedbackChatMessage(chatId, message, myDatabaseHelper);
       } catch (error) {
         console.error(`${HOOK_NAME}: Failed to notify support about chat message ${messageId}`, error);
+      }
+    } else {
+      try {
+        await mailAnswerToAppFeedbackContactEmail(chatId, message, myDatabaseHelper);
+      } catch (error) {
+        console.error(`${HOOK_NAME}: Failed to mail the answer of chat message ${messageId} to the app feedback contact email`, error);
       }
     }
 
@@ -132,6 +140,50 @@ async function notifySupportAboutAppFeedbackChatMessage(
   });
 
   console.log(`${HOOK_NAME}: Notified support about a new user message in app feedback chat ${chatId}`);
+}
+
+/**
+ * Mail the answer of support to the contact email of the app feedback the chat belongs to. The
+ * answer is shown in the app as well, but a user who left an email may not open the app again
+ * soon. Written in the language of the feedback's profile.
+ */
+async function mailAnswerToAppFeedbackContactEmail(
+  chatId: string,
+  message: DatabaseTypes.ChatMessages,
+  myDatabaseHelper: MyDatabaseHelper
+): Promise<void> {
+  const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
+  const relatedAppFeedbacks = await appFeedbacksHelper.findItems({ chat: chatId });
+  const feedbacksWithEmail = relatedAppFeedbacks.filter(appFeedback => !!AppFeedbackAnswerMail.getRecipient(appFeedback));
+
+  if (feedbacksWithEmail.length === 0) {
+    return;
+  }
+
+  const server_info = await myDatabaseHelper.getServerInfo();
+  const projectName = server_info?.project?.project_name || 'Rocket Meals';
+  const languageResolver = new BackendLanguageResolver(myDatabaseHelper);
+  const profilesHelper = myDatabaseHelper.getProfilesHelper();
+
+  for (const appFeedback of feedbacksWithEmail) {
+    const profileId = ItemsServiceHelper.getPrimaryKeyFromItemOrString(appFeedback.profile);
+    // Without a readable profile the mail still goes out, in the default language.
+    const profile = profileId ? await profilesHelper.readOne(profileId).catch(() => undefined) : undefined;
+    const language = await languageResolver.resolveForProfile(profile);
+
+    const mail = AppFeedbackAnswerMail.build({
+      feedback: appFeedback,
+      answer: message?.message,
+      projectName,
+      translate: language.translate,
+    });
+    if (!mail) {
+      continue;
+    }
+
+    await myDatabaseHelper.sendMail(mail);
+    console.log(`${HOOK_NAME}: Mailed the answer in chat ${chatId} to the contact email of app feedback ${appFeedback.id}`);
+  }
 }
 
 async function collectProfilesToNotify(

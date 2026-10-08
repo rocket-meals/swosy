@@ -229,6 +229,51 @@ export const backendTranslations: TranslationResources = {
     zh: '访客无法对菜品发表评论。请使用账户登录后再评论。',
   },
 
+  /**
+   * Mail to the contact email of an app feedback when support answers in its chat
+   * (`chat-conversation-state-hook`). `{{project}}` is the project name of the Directus instance.
+   */
+  app_feedback_answer_mail_subject: {
+    de: '{{project}} – Antwort auf dein Feedback',
+    en: '{{project}} – Reply to your feedback',
+    ar: '{{project}} – رد على ملاحظاتك',
+    es: '{{project}} – Respuesta a tus comentarios',
+    fr: '{{project}} – Réponse à votre retour',
+    ru: '{{project}} – Ответ на ваш отзыв',
+    tr: '{{project}} – Geri bildiriminize yanıt',
+    zh: '{{project}} – 对您反馈的回复',
+  },
+  app_feedback_answer_mail_intro: {
+    de: 'Hallo, wir haben auf dein Feedback geantwortet:',
+    en: 'Hello, we have replied to your feedback:',
+    ar: 'مرحبًا، لقد رددنا على ملاحظاتك:',
+    es: 'Hola, hemos respondido a tus comentarios:',
+    fr: 'Bonjour, nous avons répondu à votre retour :',
+    ru: 'Здравствуйте, мы ответили на ваш отзыв:',
+    tr: 'Merhaba, geri bildiriminize yanıt verdik:',
+    zh: '您好，我们已回复您的反馈：',
+  },
+  app_feedback_answer_mail_your_feedback: {
+    de: 'Dein Feedback',
+    en: 'Your feedback',
+    ar: 'ملاحظاتك',
+    es: 'Tus comentarios',
+    fr: 'Votre retour',
+    ru: 'Ваш отзыв',
+    tr: 'Geri bildiriminiz',
+    zh: '您的反馈',
+  },
+  app_feedback_answer_mail_reply_hint: {
+    de: 'Du kannst uns direkt in der App im Chat zu deinem Feedback antworten.',
+    en: 'You can reply to us directly in the app, in the chat of your feedback.',
+    ar: 'يمكنك الرد علينا مباشرة في التطبيق، في المحادثة الخاصة بملاحظاتك.',
+    es: 'Puedes respondernos directamente en la app, en el chat de tus comentarios.',
+    fr: 'Vous pouvez nous répondre directement dans l’application, dans la discussion de votre retour.',
+    ru: 'Вы можете ответить нам прямо в приложении, в чате вашего отзыва.',
+    tr: 'Bize doğrudan uygulamada, geri bildiriminizin sohbetinde yanıt verebilirsiniz.',
+    zh: '您可以直接在应用中该反馈的聊天里回复我们。',
+  },
+
   /** Texts of the Insights panels "Liste [Erweitert]" and "Seite exportieren [Erweitert]". */
   extended_panel_list_name: {
     de: 'Liste',

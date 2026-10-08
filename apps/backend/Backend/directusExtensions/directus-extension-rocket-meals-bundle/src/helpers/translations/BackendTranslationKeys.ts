@@ -45,6 +45,12 @@ export const BackendTranslationKeys = {
   food_feedback_guest_rating_forbidden: 'food_feedback_guest_rating_forbidden',
   food_feedback_guest_comment_forbidden: 'food_feedback_guest_comment_forbidden',
 
+  // Mail to the contact email of an app feedback when support answers it
+  app_feedback_answer_mail_subject: 'app_feedback_answer_mail_subject',
+  app_feedback_answer_mail_intro: 'app_feedback_answer_mail_intro',
+  app_feedback_answer_mail_your_feedback: 'app_feedback_answer_mail_your_feedback',
+  app_feedback_answer_mail_reply_hint: 'app_feedback_answer_mail_reply_hint',
+
   // Insights panels shipped by Rocket Meals ("[Erweitert]", see helpers/extended-panels)
   extended_panel_list_name: 'extended_panel_list_name',
   extended_panel_list_description: 'extended_panel_list_description',
