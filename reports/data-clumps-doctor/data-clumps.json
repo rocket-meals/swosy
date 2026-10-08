@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-08T14:20:38.623Z",
+  "report_timestamp": "2026-10-08T23:06:03.172Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
           "median": 1,
-          "maximum": 133,
-          "average": 1.5229803025977733,
-          "amountSavedValuesForKeys": 5335,
+          "maximum": 136,
+          "average": 1.5233644859813085,
+          "amountSavedValuesForKeys": 5379,
           "amountKeys": 31
         },
         "invertedParameterToMethods": {
           "median": 1,
           "maximum": 80,
-          "average": 2.2658772874058126,
-          "amountSavedValuesForKeys": 2105,
-          "amountKeys": 24
+          "average": 2.2582359192348567,
+          "amountSavedValuesForKeys": 2125,
+          "amountKeys": 25
         },
         "invertedParameterToClasses": {
           "median": 1.5,
-          "maximum": 133,
-          "average": 1.536578341013825,
-          "amountSavedValuesForKeys": 5335,
+          "maximum": 136,
+          "average": 1.536857142857143,
+          "amountSavedValuesForKeys": 5379,
           "amountKeys": 31
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 5542,
+        "ast_generation_time_ms": 5641,
         "detection_time_ms": 122,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 140.12,
-          "os_memory_free": 14795653120,
-          "os_memory_total": 16766414848,
+          "os_uptime": 266.39,
+          "os_memory_free": 14769135616,
+          "os_memory_total": 16766410752,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 32,
-    "amount_files_with_data_clumps": 26,
+    "amount_classes_or_interfaces_with_data_clumps": 34,
+    "amount_files_with_data_clumps": 27,
     "amount_methods_with_data_clumps": 10,
-    "fields_to_fields_data_clump": 38,
+    "fields_to_fields_data_clump": 44,
     "parameters_to_fields_data_clump": 2,
     "parameters_to_parameters_data_clump": 10,
-    "amount_data_clumps": 50
+    "amount_data_clumps": 56
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "737826ffb7b76da25879ca022b15ec20a5c92421",
-    "project_commit_hash": "737826ffb7b76da25879ca022b15ec20a5c92421",
+    "project_version": "2d1e43c9a7c98bebb079c3466f11d406c49a2513",
+    "project_commit_hash": "2d1e43c9a7c98bebb079c3466f11d406c49a2513",
     "project_tag": null,
-    "project_commit_date": "1791469108",
+    "project_commit_date": "1791500634",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 747,
-    "number_of_classes_or_interfaces": 1649,
-    "number_of_methods": 1861,
-    "number_of_data_fields": 5335,
-    "number_of_method_parameters": 2105
+    "number_of_files": 748,
+    "number_of_classes_or_interfaces": 1661,
+    "number_of_methods": 1875,
+    "number_of_data_fields": 5379,
+    "number_of_method_parameters": 2125
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -1352,6 +1352,103 @@
         "cluster_type": 2
       }
     },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-fieldssortlimit": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-fieldssortlimit",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery",
+      "from_class_or_interface_name": "ExtendedListRestQuery",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery",
+      "to_class_or_interface_name": "FriendshipNetworkQuery",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/fields": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/fields",
+          "name": "fields",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/fields",
+            "name": "fields",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 91,
+              "startColumn": 3,
+              "endLine": 91,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 35,
+            "startColumn": 3,
+            "endLine": 35,
+            "endColumn": 18
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/sort": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/sort",
+          "name": "sort",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/sort",
+            "name": "sort",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 93,
+              "startColumn": 3,
+              "endLine": 93,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 37,
+            "startColumn": 3,
+            "endLine": 37,
+            "endColumn": 16
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/limit": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/limit",
+          "name": "limit",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/limit",
+            "name": "limit",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 92,
+              "startColumn": 3,
+              "endLine": 92,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 38,
+            "startColumn": 3,
+            "endLine": 38,
+            "endColumn": 17
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 7,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-fieldsfiltersortlimit": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-fieldsfiltersortlimit",
@@ -1471,7 +1568,7 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 7,
-        "cluster_type": 2
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/interface/FormFieldExampleData-apps/frontend/app/helper/housingAnalytics/HousingHandoverRecords.ts/interface/HousingHandoverAnswer-value_stringvalue_numbervalue_booleanvalue_date": {
@@ -2741,6 +2838,297 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-idnicknameavatar": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-idnicknameavatar",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile",
+      "from_class_or_interface_name": "FriendshipNetworkProfile",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile",
+      "to_class_or_interface_name": "LivePulseProfile",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 46,
+              "startColumn": 3,
+              "endLine": 46,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 18,
+            "startColumn": 3,
+            "endLine": 18,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile/memberField/nickname": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile/memberField/nickname",
+          "name": "nickname",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/nickname",
+            "name": "nickname",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 47,
+              "startColumn": 3,
+              "endLine": 47,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 19,
+            "startColumn": 3,
+            "endLine": 19,
+            "endColumn": 28
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile/memberField/avatar": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile/memberField/avatar",
+          "name": "avatar",
+          "type": "unknown",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/avatar",
+            "name": "avatar",
+            "type": "unknown",
+            "modifiers": [],
+            "position": {
+              "startLine": 48,
+              "startColumn": 3,
+              "endLine": 48,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 20,
+            "startColumn": 3,
+            "endLine": 20,
+            "endColumn": 20
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 9,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-fieldslimitsort": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-fieldslimitsort",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery",
+      "from_class_or_interface_name": "FriendshipNetworkQuery",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery",
+      "to_class_or_interface_name": "ExtendedListRestQuery",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/fields": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/fields",
+          "name": "fields",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/fields",
+            "name": "fields",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 35,
+              "startColumn": 3,
+              "endLine": 35,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 91,
+            "startColumn": 3,
+            "endLine": 91,
+            "endColumn": 18
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/limit": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/limit",
+          "name": "limit",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/limit",
+            "name": "limit",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 38,
+              "startColumn": 3,
+              "endLine": 38,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 92,
+            "startColumn": 3,
+            "endLine": 92,
+            "endColumn": 17
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/sort": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/sort",
+          "name": "sort",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/sort",
+            "name": "sort",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 37,
+              "startColumn": 3,
+              "endLine": 37,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 93,
+            "startColumn": 3,
+            "endLine": 93,
+            "endColumn": 16
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 7,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-fieldslimitsort": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-fieldslimitsort",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery",
+      "from_class_or_interface_name": "FriendshipNetworkQuery",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery",
+      "to_class_or_interface_name": "LivePulseQuery",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/fields": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/fields",
+          "name": "fields",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/fields",
+            "name": "fields",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 115,
+              "startColumn": 3,
+              "endLine": 115,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 91,
+            "startColumn": 3,
+            "endLine": 91,
+            "endColumn": 18
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/limit": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/limit",
+          "name": "limit",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/limit",
+            "name": "limit",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 118,
+              "startColumn": 3,
+              "endLine": 118,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 92,
+            "startColumn": 3,
+            "endLine": 92,
+            "endColumn": 17
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/sort": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/sort",
+          "name": "sort",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/sort",
+            "name": "sort",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 117,
+              "startColumn": 3,
+              "endLine": 117,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 93,
+            "startColumn": 3,
+            "endLine": 93,
+            "endColumn": 16
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 7,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-iddate_createdcanteen": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseCanteenVisit-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackListItem-iddate_createdcanteen",
@@ -3642,6 +4030,103 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile-idnicknameavatar": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile-idnicknameavatar",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile",
+      "from_class_or_interface_name": "LivePulseProfile",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile",
+      "to_class_or_interface_name": "FriendshipNetworkProfile",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 18,
+              "startColumn": 3,
+              "endLine": 18,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 46,
+            "startColumn": 3,
+            "endLine": 46,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/nickname": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/nickname",
+          "name": "nickname",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile/memberField/nickname",
+            "name": "nickname",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 19,
+              "startColumn": 3,
+              "endLine": 19,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 47,
+            "startColumn": 3,
+            "endLine": 47,
+            "endColumn": 28
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/avatar": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile/memberField/avatar",
+          "name": "avatar",
+          "type": "unknown",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkProfile/memberField/avatar",
+            "name": "avatar",
+            "type": "unknown",
+            "modifiers": [],
+            "position": {
+              "startLine": 20,
+              "startColumn": 3,
+              "endLine": 20,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 48,
+            "startColumn": 3,
+            "endLine": 48,
+            "endColumn": 20
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 9,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-iddate_updateddate_created": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseProfile-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-iddate_updateddate_created",
@@ -3858,7 +4343,104 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 7,
-        "cluster_type": 2
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-fieldssortlimit": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-fieldssortlimit",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery",
+      "from_class_or_interface_name": "LivePulseQuery",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery",
+      "to_class_or_interface_name": "FriendshipNetworkQuery",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/fields": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/fields",
+          "name": "fields",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/fields",
+            "name": "fields",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 91,
+              "startColumn": 3,
+              "endLine": 91,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 115,
+            "startColumn": 3,
+            "endLine": 115,
+            "endColumn": 19
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/sort": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/sort",
+          "name": "sort",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/sort",
+            "name": "sort",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 93,
+              "startColumn": 3,
+              "endLine": 93,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 117,
+            "startColumn": 3,
+            "endLine": 117,
+            "endColumn": 17
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/limit": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/limit",
+          "name": "limit",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/limit",
+            "name": "limit",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 92,
+              "startColumn": 3,
+              "endLine": 92,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 118,
+            "startColumn": 3,
+            "endLine": 118,
+            "endColumn": 18
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 7,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx-apps/frontend/app/components/CourseTimetableViews/CourseTimetableWeekView.tsx/interface/WeekViewDay-apps/frontend/app/hooks/useCourseTimetableLunchSuggestions.ts/interface/LunchSuggestionDay-dateStringweekdayevents": {

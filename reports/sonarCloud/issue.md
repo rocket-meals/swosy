@@ -4,19 +4,23 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 3 | 3 |
-| 🐛 Reliability | 384 | 47 |
-| 🔧 Maintainability | 691 | 0 |
+| 🔒 Security | 4 | 4 |
+| 🐛 Reliability | 386 | 46 |
+| 🔧 Maintainability | 698 | 0 |
 
-**Total issues:** 1078 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1088 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (3/3)
+## 🔒 Security (4/4)
 
 - **Move this write permission from workflow level to job level.**
   .github/workflows/sync-fork.yml:4
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/sync-fork.yml#L4
+
+- **Make sure that using this pseudorandom number generator is safe here.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue:360
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue#L360
 
 - **Make sure that using this pseudorandom number generator is safe here.**
   apps/frontend/app/helper/courseTimetable/CourseTimetableModel.ts:164
@@ -26,7 +30,7 @@
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:10
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L10
 
-## 🐛 Reliability (47/384)
+## 🐛 Reliability (46/386)
 
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
   apps/accessibilityTester/src/index.ts:104
@@ -211,8 +215,4 @@
 - **Async method 'getMarkingsJSONList' has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts:28
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts#L28
-
-- **Async method 'getSavedRawReport' has no 'await' expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserRawReportTestReaderOsnabrueck.ts:42
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserRawReportTestReaderOsnabrueck.ts#L42
 
