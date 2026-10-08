@@ -122,8 +122,9 @@ export class BackendUsageEventHelper {
 
 /**
  * Remembers which requester read which food offer when, so that one opening of the details counts
- * once. In memory per server process: after a restart or on another instance a read may count again,
- * which is fine for statistics.
+ * once. In memory per server process: with several Directus replicas (`DIRECTUS_REPLICAS`) the reads
+ * of one opening land on different instances and each would count – use
+ * `BackendUsageEventSharedDeduplicator` there. This one stays the fallback without Redis.
  */
 export class BackendUsageEventDeduplicator {
   private readonly lastCounted = new Map<string, number>();
@@ -151,6 +152,42 @@ export class BackendUsageEventDeduplicator {
       if (nowMs - time >= this.windowMs) {
         this.lastCounted.delete(key);
       }
+    }
+  }
+}
+
+/** The part of an ioredis client the shared deduplicator needs: `SET key value PX <ms> NX`. */
+export type BackendUsageEventLockStore = {
+  set(key: string, value: string, expiryMode: 'PX', time: number, setMode: 'NX'): Promise<'OK' | null>;
+};
+
+/**
+ * Same job as `BackendUsageEventDeduplicator`, but shared by all Directus replicas via Redis. The
+ * details screen reads `/items/foodoffers/<id>` several times when it opens, the load balancer
+ * spreads these reads over the replicas – an in-memory lock per process then counts one opening once
+ * per replica. `SET … NX` is atomic, so exactly one read per window wins, whichever replica it hits.
+ *
+ * If Redis fails, the local deduplicator decides – counting must never disturb the app.
+ */
+export class BackendUsageEventSharedDeduplicator {
+  public static readonly KEY_PREFIX = 'rocket-meals:usage-event-dedup:';
+
+  private readonly fallback: BackendUsageEventDeduplicator;
+
+  constructor(
+    private readonly store: BackendUsageEventLockStore,
+    private readonly windowMs: number = BackendUsageEventHelper.DEDUPLICATION_WINDOW_MS
+  ) {
+    this.fallback = new BackendUsageEventDeduplicator(windowMs);
+  }
+
+  async shouldCount(requesterKey: string, itemKey: string, nowMs: number): Promise<boolean> {
+    const key = `${BackendUsageEventSharedDeduplicator.KEY_PREFIX}${requesterKey}|${itemKey}`;
+    try {
+      const result = await this.store.set(key, String(nowMs), 'PX', this.windowMs, 'NX');
+      return result === 'OK';
+    } catch {
+      return this.fallback.shouldCount(requesterKey, itemKey, nowMs);
     }
   }
 }

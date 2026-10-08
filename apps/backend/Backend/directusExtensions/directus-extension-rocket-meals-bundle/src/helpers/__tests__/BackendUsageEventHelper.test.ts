@@ -1,6 +1,12 @@
 import { describe, expect, it } from '@jest/globals';
 import { Accountability } from '@directus/types';
-import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED, BackendUsageEventDeduplicator, BackendUsageEventHelper } from '../BackendUsageEventHelper';
+import {
+  BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED,
+  BackendUsageEventDeduplicator,
+  BackendUsageEventHelper,
+  BackendUsageEventLockStore,
+  BackendUsageEventSharedDeduplicator,
+} from '../BackendUsageEventHelper';
 
 function accountability(values: Partial<Accountability>): Accountability {
   return { role: null, roles: [], user: null, admin: false, app: false, ip: null, ...values } as Accountability;
@@ -77,5 +83,41 @@ describe('BackendUsageEventHelper', () => {
     expect(deduplicator.size).toBe(2);
     deduplicator.shouldCount('c', 'z', 5_000);
     expect(deduplicator.size).toBe(1);
+  });
+
+  it('shares the lock between replicas so one opening counts once', async () => {
+    // a minimal Redis: SET … PX … NX with expiry, shared by two "replicas"
+    let now = 0;
+    const entries = new Map<string, number>();
+    const store: BackendUsageEventLockStore = {
+      set: async (key, _value, _mode, time) => {
+        const expiresAt = entries.get(key);
+        if (expiresAt !== undefined && expiresAt > now) {
+          return null;
+        }
+        entries.set(key, now + time);
+        return 'OK';
+      },
+    };
+    const replicaA = new BackendUsageEventSharedDeduplicator(store, 60_000);
+    const replicaB = new BackendUsageEventSharedDeduplicator(store, 60_000);
+
+    expect(await replicaA.shouldCount('user:u1', 'offer-1', now)).toBe(true);
+    now = 300;
+    expect(await replicaB.shouldCount('user:u1', 'offer-1', now)).toBe(false);
+    expect(await replicaB.shouldCount('user:u2', 'offer-1', now)).toBe(true);
+    now = 60_000;
+    expect(await replicaB.shouldCount('user:u1', 'offer-1', now)).toBe(true);
+  });
+
+  it('falls back to the local lock when Redis fails', async () => {
+    const store: BackendUsageEventLockStore = {
+      set: async () => {
+        throw new Error('redis down');
+      },
+    };
+    const deduplicator = new BackendUsageEventSharedDeduplicator(store, 60_000);
+    expect(await deduplicator.shouldCount('user:u1', 'offer-1', 0)).toBe(true);
+    expect(await deduplicator.shouldCount('user:u1', 'offer-1', 300)).toBe(false);
   });
 });

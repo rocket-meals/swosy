@@ -13,11 +13,14 @@
  * läuft der Hook nicht. Zusätzlich zählt derselbe Nutzer (bzw. dieselbe IP ohne Login) dasselbe Angebot
  * innerhalb einer Minute nur einmal: die Detailansicht der App liest `/items/foodoffers/<id>` beim
  * Öffnen mehrfach (Details, Labels, Komponenten), ohne Sperre würde jedes Öffnen doppelt zählen.
+ * Die Sperre liegt in Redis (`REDIS`), damit sie über alle Directus-Replicas gilt: der Load Balancer
+ * verteilt die Abrufe eines Öffnens auf verschiedene Instanzen. Ohne Redis gilt sie nur pro Prozess.
  */
 
 import { defineHook } from '@directus/extensions-sdk';
+import Redis from 'ioredis';
 import { CollectionNames } from 'repo-depkit-common';
-import { BackendUsageEventDeduplicator, BackendUsageEventHelper, FoodofferForUsageEvent } from '../helpers/BackendUsageEventHelper';
+import { BackendUsageEventDeduplicator, BackendUsageEventHelper, BackendUsageEventSharedDeduplicator, FoodofferForUsageEvent } from '../helpers/BackendUsageEventHelper';
 import { ItemsServiceCreator } from '../helpers/ItemsServiceCreator';
 
 const HOOK_NAME = 'food-details-usage-event-hook';
@@ -26,7 +29,11 @@ const HOOK_NAME = 'food-details-usage-event-hook';
 const APP_USAGE_EVENTS = 'app_usage_events';
 
 export default defineHook(({ action }, apiContext) => {
-  const deduplicator = new BackendUsageEventDeduplicator();
+  const redisUrl = apiContext.env?.['REDIS'];
+  const deduplicator =
+    typeof redisUrl === 'string' && redisUrl.length > 0
+      ? new BackendUsageEventSharedDeduplicator(new Redis(redisUrl, { maxRetriesPerRequest: 1 }))
+      : new BackendUsageEventDeduplicator();
 
   action(`${CollectionNames.FOODOFFERS}.items.read`, async (meta, eventContext) => {
     try {
@@ -37,7 +44,7 @@ export default defineHook(({ action }, apiContext) => {
       if (!foodofferId) {
         return;
       }
-      if (!deduplicator.shouldCount(BackendUsageEventHelper.getRequesterKey(eventContext?.accountability), foodofferId, Date.now())) {
+      if (!(await deduplicator.shouldCount(BackendUsageEventHelper.getRequesterKey(eventContext?.accountability), foodofferId, Date.now()))) {
         return;
       }
       const records = Array.isArray(meta?.payload) ? (meta.payload as FoodofferForUsageEvent[]) : [];
