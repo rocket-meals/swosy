@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 4 | 4 |
 | 🐛 Reliability | 402 | 46 |
-| 🔧 Maintainability | 746 | 0 |
+| 🔧 Maintainability | 747 | 0 |
 
-**Total issues:** 1152 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1153 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -45,8 +45,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/CronHelperManager.ts#L23
 
 - **Async method 'copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder' has no 'await' expression.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:141
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L141
+  apps/backend-sync/src/DirectusDatabaseSync.ts:142
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L142
 
 - **Async function 'findFileUpwards' has no 'await' expression.**
   apps/backend-sync/src/EnvFileFinder.ts:4

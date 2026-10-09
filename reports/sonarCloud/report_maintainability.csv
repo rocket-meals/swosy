@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AaEiILnow1Jsv7NK4TI9","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusSettingsDumpHelper.ts",126
 "AaEhX8zu7-uP4aiYAcXX","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apartments-free-notify-schedule-hook/FreeApartmentsNotifier.ts",117
 "AaEhX8zu7-uP4aiYAcXT","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apartments-free-notify-schedule-hook/FreeApartmentsNotifier.ts",97
 "AaEhX8zu7-uP4aiYAcXU","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apartments-free-notify-schedule-hook/FreeApartmentsNotifier.ts",102
@@ -30,7 +31,7 @@ Key,Message,Component,Line
 "AaEfwi2mowdoI0qOTfhA","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/index.ts",83
 "AaEfwi2mowdoI0qOTfhB","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/index.ts",128
 "AaEfwi2mowdoI0qOTfhC","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/index.ts",131
-"AaEfwhpJowdoI0qOTfg9","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/DirectusOpenAiCompatibleClient.ts",66
+"AaEfwhpJowdoI0qOTfg9","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/DirectusOpenAiCompatibleClient.ts",60
 "AaEeHn9dbxLRAgU_Hjxf","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-cleanup-workflow/index.ts",63
 "AaEeHnkzbxLRAgU_HjxT","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",82
 "AaEeHnkzbxLRAgU_HjxU","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",99
@@ -646,9 +647,9 @@ Key,Message,Component,Line
 "AaD3G-rBTd3UR4iHDm-Q","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/index.ts",123
 "AaD3G-rBTd3UR4iHDm-P","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/index.ts",79
 "AaD3G9jRTd3UR4iHDm6S","Async method 'isNfcSupported' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts",12
-"AaD3G-usTd3UR4iHDm-a","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",128
-"AaD3G-usTd3UR4iHDm-b","Async method 'copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",141
-"AaD3G-usTd3UR4iHDm-c","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",351
+"AaD3G-usTd3UR4iHDm-a","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",129
+"AaD3G-usTd3UR4iHDm-b","Async method 'copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",142
+"AaD3G-usTd3UR4iHDm-c","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",377
 "AaD3G-ubTd3UR4iHDm-Z","Static async method 'fetch' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend-sync/src/FetchIgnoreSelfSignedCertHelper.ts",5
 "AaD3G-tJTd3UR4iHDm-X","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DockerContainerManager.ts",88
 "AaD3G-s1Td3UR4iHDm-W","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend-sync/src/DockerDirectusPingHelper.ts",54
