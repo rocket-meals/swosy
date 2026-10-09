@@ -48,7 +48,8 @@ import useThemeSettingsModal from '@/hooks/useThemeSettingsModal';
 import useMenuPositionModal from '@/hooks/useMenuPositionModal';
 import useCardColumnsModal from '@/hooks/useCardColumnsModal';
 import useFirstDayOfWeekModal from '@/hooks/useFirstDayOfWeekModal';
-import useHousingSortingModal from '@/hooks/useHousingSortingModal';
+import useHousingSortingModal, { getHousingSortOptionLabel } from '@/hooks/useHousingSortingModal';
+import { FreeApartmentsNotificationToggle } from '@/components/FreeApartmentsNotification';
 import useCampusSortingModal from '@/hooks/useCampusSortingModal';
 import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
 import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityModal';
@@ -193,20 +194,9 @@ const Settings = () => {
                 [sortBy, sortingOptionLabels, translate]
         );
 
-        const housingSortingOptionLabels: Partial<Record<ApartmentSortOption, string>> = useMemo(
-                () => ({
-                        [ApartmentSortOption.INTELLIGENT]: 'sort_option_intelligent',
-                        [ApartmentSortOption.FREE_ROOMS]: 'free_rooms',
-                        [ApartmentSortOption.DISTANCE]: 'sort_option_distance',
-                        [ApartmentSortOption.ALPHABETICAL]: 'sort_option_alphabetical',
-                        [ApartmentSortOption.NONE]: 'sort_option_none',
-                }),
-                []
-        );
-
         const housingSortingLabel = useMemo(
-                () => translate(housingSortingOptionLabels[apartmentsSortBy as ApartmentSortOption] ?? 'sort_option_none'),
-                [apartmentsSortBy, housingSortingOptionLabels, translate]
+                () => translate(getHousingSortOptionLabel(apartmentsSortBy as ApartmentSortOption)),
+                [apartmentsSortBy, translate]
         );
 
         const campusSortingOptionLabels: Partial<Record<CampusSortOption, string>> = useMemo(
@@ -712,7 +702,7 @@ const Settings = () => {
 								groupPosition="middle"
 							/>
 						)}
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition="bottom" />
+						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition="bottom" />
 					</View>
 				</View>
 			),
@@ -777,8 +767,9 @@ const Settings = () => {
 								value={housingSortingLabel}
 								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
 								handleFunction={openHousingSortingModal}
-								groupPosition="single"
+								groupPosition="top"
 							/>
+							<FreeApartmentsNotificationToggle groupPosition="bottom" iconSize={24} />
 						</View>
 					</View>
 				),
