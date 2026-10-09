@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Keyboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
+import { ActivityIndicator, Keyboard, StyleSheet, Text, View } from 'react-native';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { FeatureWishHelper, FeatureWishProgress, FeatureWishStatus } from 'repo-depkit-common';
-import { SettingsListLikeButton } from 'repo-depkit-common-ui';
+import { MyButton, MyDeleteButton, MyEditButton, MySubmitButton, MyUpdateButton, SettingsListLikeButton } from 'repo-depkit-common-ui';
 import SettingsList from '@/components/SettingsList';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
-import ProjectButton from '@/components/ProjectButton';
 import ModalTextInput from '@/components/ModalTextInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useTheme } from '@/hooks/useTheme';
@@ -20,6 +19,7 @@ import type { FeatureWishesLocalState } from '@/redux/Types/stateTypes';
 import { CollectionKeys } from '@/constants/collectionKeys';
 import { DirectusFieldChoiceHelper } from '@/helper/DirectusFieldChoiceHelper';
 import { myContrastColor } from '@/helper/ColorHelper';
+import { Icon } from '@/helper/iconHelper';
 
 type FeatureWishesLocal = FeatureWishesLocalState;
 
@@ -112,21 +112,14 @@ const useChoiceVisual = (view: WishView) => {
 	const { key, value } = getVisualField(view);
 	const choice = DirectusFieldChoiceHelper.findChoice(choicesByField?.[key], value);
 	const backgroundColor = DirectusFieldChoiceHelper.resolveColor(choice?.color, { primary: primaryColor, text: theme.screen.text }) ?? primaryColor;
-	const icon = DirectusFieldChoiceHelper.resolveIcon(choice?.icon, MaterialIcons.glyphMap);
+	const icon = DirectusFieldChoiceHelper.toIconName(choice?.icon, MaterialIcons.glyphMap);
 	const iconColor = myContrastColor(backgroundColor, theme as Parameters<typeof myContrastColor>[1], selectedTheme === 'dark');
 	return { backgroundColor, icon, iconColor };
 };
 
 const ChoiceIcon: React.FC<{ view: WishView; size?: number; color?: string }> = ({ view, size = 24, color }) => {
 	const visual = useChoiceVisual(view);
-	const iconColor = color ?? visual.iconColor;
-	if (visual.icon?.family === 'MaterialIcons') {
-		return <MaterialIcons name={visual.icon.name as any} size={size} color={iconColor} />;
-	}
-	if (visual.icon?.family === 'MaterialCommunityIcons') {
-		return <MaterialCommunityIcons name={visual.icon.name as any} size={size} color={iconColor} />;
-	}
-	return <MaterialCommunityIcons name="lightbulb-on-outline" size={size} color={iconColor} />;
+	return <Icon name={visual.icon ?? 'MaterialCommunityIcons:lightbulb-on-outline'} size={size} color={color ?? visual.iconColor} />;
 };
 
 /** Texts for the state of a wish, shared by the list and the details. */
@@ -211,9 +204,6 @@ const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initial
 	const unchanged = isEdit && title.trim() === (initialTitle ?? '').trim() && description.trim() === (initialDescription ?? '').trim();
 
 	const handleSubmit = useCallback(async () => {
-		if (unchanged) {
-			return;
-		}
 		const text = FeatureWishHelper.validateText({ title, description });
 		if (!text.ok) {
 			showToast(translate(TranslationKeys.feature_wishes_title_missing), 'error');
@@ -229,7 +219,7 @@ const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initial
 		} finally {
 			setSubmitting(false);
 		}
-	}, [unchanged, title, description, onSubmit, showToast, translate]);
+	}, [title, description, onSubmit, showToast, translate]);
 
 	const inputStyle = [styles.input, { color: theme.screen.text, borderColor: theme.screen.placeholder }];
 
@@ -262,12 +252,10 @@ const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initial
 			{showReviewAgainHint ? (
 				<Text style={[styles.hint, { color: theme.screen.placeholder, backgroundColor: theme.screen.iconBg }]}>{translate(TranslationKeys.feature_wishes_edit_published_hint)}</Text>
 			) : null}
-			{submitting ? (
-				<ActivityIndicator style={styles.loading} color={theme.screen.text} />
+			{isEdit ? (
+				<MyUpdateButton onPress={handleSubmit} disabled={unchanged} loading={submitting} style={styles.submit} />
 			) : (
-				<View style={unchanged ? styles.disabled : undefined} accessibilityState={{ disabled: unchanged }}>
-					<ProjectButton text={translate(isEdit ? TranslationKeys.feature_wishes_update : TranslationKeys.submit)} onPress={handleSubmit} />
-				</View>
+				<MySubmitButton onPress={handleSubmit} loading={submitting} style={styles.submit} />
 			)}
 		</View>
 	);
@@ -293,7 +281,6 @@ const FeatureWishDetails: React.FC<FeatureWishDetailsProps> = ({ view, likeId: i
 	const [likeId, setLikeId] = useState<string | null>(initialLikeId);
 	const [likesAmount, setLikesAmount] = useState(view.original?.likes_amount ?? view.likesAmount);
 	const [busy, setBusy] = useState(false);
-	const [confirmDelete, setConfirmDelete] = useState(false);
 
 	const shown = view.original ?? null;
 	const description = shown ? shown.description : view.description;
@@ -368,29 +355,8 @@ const FeatureWishDetails: React.FC<FeatureWishDetailsProps> = ({ view, likeId: i
 					{`${translate(TranslationKeys.feature_wishes_note_from_team)}: ${noteTeam}`}
 				</Text>
 			) : null}
-			{view.editable ? <ProjectButton text={translate(TranslationKeys.edit)} onPress={onEdit} iconLeft={<Octicons name="pencil" size={18} color={theme.screen.text} />} /> : null}
-			{view.deletable && !confirmDelete ? (
-				<TouchableOpacity style={[styles.deleteButton, { borderColor: theme.screen.placeholder }]} onPress={() => setConfirmDelete(true)} accessibilityRole="button">
-					<Text style={[styles.deleteText, { color: theme.screen.text }]}>{translate(TranslationKeys.delete)}</Text>
-				</TouchableOpacity>
-			) : null}
-			{view.deletable && confirmDelete ? (
-				<View style={[styles.confirmBox, { backgroundColor: theme.screen.iconBg }]}>
-					<Text style={[styles.detailText, { color: theme.screen.text }]}>{translate(TranslationKeys.feature_wishes_delete_question)}</Text>
-					{busy ? (
-						<ActivityIndicator style={styles.loading} color={theme.screen.text} />
-					) : (
-						<View style={styles.confirmButtons}>
-							<TouchableOpacity style={[styles.deleteButton, { borderColor: theme.screen.placeholder }]} onPress={() => setConfirmDelete(false)} accessibilityRole="button">
-								<Text style={[styles.deleteText, { color: theme.screen.text }]}>{translate(TranslationKeys.cancel)}</Text>
-							</TouchableOpacity>
-							<TouchableOpacity style={[styles.deleteButton, styles.deleteConfirm]} onPress={deleteWish} accessibilityRole="button">
-								<Text style={[styles.deleteText, styles.deleteConfirmText]}>{translate(TranslationKeys.delete)}</Text>
-							</TouchableOpacity>
-						</View>
-					)}
-				</View>
-			) : null}
+			{view.editable ? <MyEditButton onPress={onEdit} /> : null}
+			{view.deletable ? <MyDeleteButton onPress={deleteWish} loading={busy} confirmQuestion={translate(TranslationKeys.feature_wishes_delete_question)} /> : null}
 		</View>
 	);
 };
@@ -553,11 +519,7 @@ const FeatureWishesList: React.FC<FeatureWishesListProps> = ({ openForm, openDet
 
 	return (
 		<View style={styles.list}>
-			<ProjectButton
-				text={translate(TranslationKeys.feature_wishes_submit)}
-				onPress={() => openForm({})}
-				iconLeft={<MaterialCommunityIcons name="lightbulb-on-outline" size={20} color={theme.screen.text} />}
-			/>
+			<MyButton text={translate(TranslationKeys.feature_wishes_submit)} onPress={() => openForm({})} icon="lightbulb-on-outline" />
 			{loading ? <ActivityIndicator style={styles.loading} color={theme.screen.text} /> : null}
 			{!loading && ownViews.length > 0 ? (
 				<View>
@@ -722,9 +684,6 @@ const styles = StyleSheet.create({
 		padding: 12,
 		marginTop: 8,
 	},
-	disabled: {
-		opacity: 0.4,
-	},
 	stateRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -760,38 +719,14 @@ const styles = StyleSheet.create({
 	likesCountText: {
 		fontSize: 14,
 	},
-	deleteButton: {
-		borderWidth: 1,
-		borderRadius: 10,
-		paddingVertical: 10,
-		paddingHorizontal: 16,
-		alignItems: 'center',
-	},
-	deleteText: {
-		fontSize: 15,
-	},
-	deleteConfirm: {
-		backgroundColor: '#C62828',
-		borderColor: '#C62828',
-	},
-	deleteConfirmText: {
-		color: '#FFFFFF',
-	},
-	confirmBox: {
-		borderRadius: 10,
-		padding: 12,
-		gap: 10,
-	},
-	confirmButtons: {
-		flexDirection: 'row',
-		gap: 10,
-		justifyContent: 'flex-end',
-	},
 	empty: {
 		fontSize: 14,
 		paddingVertical: 8,
 	},
 	loading: {
 		marginVertical: 20,
+	},
+	submit: {
+		marginTop: 8,
 	},
 });

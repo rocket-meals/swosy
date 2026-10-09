@@ -40,6 +40,7 @@ export const CommonTranslationKeys = {
 	edit: 'edit',
 	confirm: 'confirm',
 	submit: 'submit',
+	update: 'update',
 	send: 'send',
 	reset: 'reset',
 	clear: 'clear',

@@ -14,15 +14,6 @@ export type DirectusFieldChoice = {
 	icon?: string | null;
 };
 
-export type ResolvedChoiceIcon = { family: 'MaterialIcons' | 'MaterialCommunityIcons'; name: string };
-
-/** Material Symbols that have no Material Icons twin, mapped to a Material Community Icon. */
-const COMMUNITY_ICON_FALLBACKS: Record<string, string> = {
-	robot_2: 'robot',
-	robot: 'robot',
-	progress_activity: 'progress-clock',
-};
-
 const HEX_COLOR = /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 
 /** Directus theme variables mapped to app colors; `primary` follows the app's primary color. */
@@ -79,18 +70,12 @@ export class DirectusFieldChoiceHelper {
 	}
 
 	/**
-	 * The icon to draw for a Material Symbols name: the Material Icons glyph with the same name
-	 * (`forward_to_inbox` → `forward-to-inbox`) when it exists, otherwise a known fallback.
+	 * Directus' own icon picker stores Material Symbols names (`forward_to_inbox`), while the app's
+	 * `Icon` takes `family:name`. Material Icons uses the same names with dashes, so this returns
+	 * `MaterialIcons:forward-to-inbox`, or null when Material Icons has no such icon.
 	 */
-	static resolveIcon(icon: string | null | undefined, materialIconsGlyphMap: Record<string, unknown>): ResolvedChoiceIcon | null {
-		if (!icon) {
-			return null;
-		}
-		const materialName = icon.trim().toLowerCase().split('_').join('-');
-		if (materialName in materialIconsGlyphMap) {
-			return { family: 'MaterialIcons', name: materialName };
-		}
-		const fallback = COMMUNITY_ICON_FALLBACKS[icon.trim().toLowerCase()];
-		return fallback ? { family: 'MaterialCommunityIcons', name: fallback } : null;
+	static toIconName(icon: string | null | undefined, materialIconsGlyphMap: Record<string, unknown>): string | null {
+		const materialName = icon?.trim().toLowerCase().split('_').join('-');
+		return materialName && materialName in materialIconsGlyphMap ? `MaterialIcons:${materialName}` : null;
 	}
 }

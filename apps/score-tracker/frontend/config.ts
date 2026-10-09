@@ -76,7 +76,8 @@ export function getVersionPatch() {
 	// 46: common: default scientist nickname without number
 	// 47: common: FeatureWishHelper and collection name feature_whishes
 	// 48: common: FeatureWishHelper author like and delete rules, CollectionNames.DIRECTUS_FIELDS
-	return 48;
+	// 49: common-ui: MyButton with translated action buttons (save, submit, update, edit, cancel, delete)
+	return 49;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

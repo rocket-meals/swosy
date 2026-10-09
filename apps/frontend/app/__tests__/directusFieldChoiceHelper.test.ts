@@ -31,12 +31,11 @@ describe('DirectusFieldChoiceHelper', () => {
 		expect(DirectusFieldChoiceHelper.resolveColor(null, appColors)).toBeNull();
 	});
 
-	it('turns Material Symbols names into icons the app has', () => {
+	it('turns Material Symbols names into names for the Icon component', () => {
 		const glyphMap = { 'forward-to-inbox': 1, 'public-off': 2 };
-		expect(DirectusFieldChoiceHelper.resolveIcon('forward_to_inbox', glyphMap)).toEqual({ family: 'MaterialIcons', name: 'forward-to-inbox' });
-		expect(DirectusFieldChoiceHelper.resolveIcon('robot_2', glyphMap)).toEqual({ family: 'MaterialCommunityIcons', name: 'robot' });
-		expect(DirectusFieldChoiceHelper.resolveIcon('does_not_exist', glyphMap)).toBeNull();
-		expect(DirectusFieldChoiceHelper.resolveIcon(null, glyphMap)).toBeNull();
+		expect(DirectusFieldChoiceHelper.toIconName('forward_to_inbox', glyphMap)).toBe('MaterialIcons:forward-to-inbox');
+		expect(DirectusFieldChoiceHelper.toIconName('robot_2', glyphMap)).toBeNull();
+		expect(DirectusFieldChoiceHelper.toIconName(null, glyphMap)).toBeNull();
 	});
 
 	it('finds the choice of a value', () => {

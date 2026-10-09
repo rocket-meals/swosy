@@ -904,7 +904,6 @@ export const TranslationKeys = {
 	feature_wishes_like: 'feature_wishes_like',
 	feature_wishes_unlike: 'feature_wishes_unlike',
 	feature_wishes_note_from_team: 'feature_wishes_note_from_team',
-	feature_wishes_update: 'feature_wishes_update',
 	feature_wishes_delete_question: 'feature_wishes_delete_question',
 	feature_wishes_deleted: 'feature_wishes_deleted',
 	feature_wishes_edit_published_hint: 'feature_wishes_edit_published_hint',

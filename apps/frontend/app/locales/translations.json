@@ -8799,16 +8799,6 @@
     "tr": "İstek gönder",
     "zh": "提交心愿"
   },
-  "feature_wishes_update": {
-    "de": "Aktualisieren",
-    "en": "Update",
-    "ar": "تحديث",
-    "es": "Actualizar",
-    "fr": "Mettre à jour",
-    "ru": "Обновить",
-    "tr": "Güncelle",
-    "zh": "更新"
-  },
   "feature_wishes_delete_question": {
     "de": "Möchtest du diesen Wunsch wirklich löschen?",
     "en": "Do you really want to delete this wish?",

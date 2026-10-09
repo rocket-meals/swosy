@@ -200,6 +200,32 @@ export const playbookRegistryData: PlaybookEntryData[] = [
 		},
 	},
 	{
+		name: 'MyButton',
+		description: 'Button of common-ui. Use it instead of a new TouchableOpacity.',
+		knobs: {
+			text: { type: 'text', defaultValue: 'Button' },
+			variant: { type: 'select', defaultValue: 'primary', options: ['primary', 'secondary', 'danger'] },
+			disabled: { type: 'boolean', defaultValue: false },
+			loading: { type: 'boolean', defaultValue: false },
+		},
+	},
+	{
+		name: 'MyUpdateButton',
+		description: 'Action button with translated text and icon. The same exists for save, submit, edit and cancel.',
+		knobs: {
+			disabled: { type: 'boolean', defaultValue: true },
+			loading: { type: 'boolean', defaultValue: false },
+		},
+	},
+	{
+		name: 'MyDeleteButton',
+		description: 'Delete button with translated text, optionally asking for confirmation first.',
+		knobs: {
+			confirmQuestion: { type: 'text', defaultValue: 'Do you really want to delete this?' },
+			loading: { type: 'boolean', defaultValue: false },
+		},
+	},
+	{
 		name: 'SettingsListLikeButton',
 		description: 'Standalone like button with counter.',
 		knobs: {
