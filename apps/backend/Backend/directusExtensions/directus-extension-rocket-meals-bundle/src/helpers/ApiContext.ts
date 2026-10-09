@@ -39,6 +39,7 @@ type Services = {
   RelationsService: any;
   RolesService: any;
   ServerService: any;
+  SettingsService: any;
   UsersService: any;
   MailService: ExtensionsServices['MailService'];
 };
