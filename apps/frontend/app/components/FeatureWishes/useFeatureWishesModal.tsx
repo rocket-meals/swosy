@@ -205,15 +205,21 @@ const FeatureWishesList: React.FC<FeatureWishesListProps> = ({ openForm, openDet
 						original: null,
 						editable: FeatureWishHelper.isEditable(row),
 					}));
-			} else if (local.ownWishes.length > 0) {
-				const states = await helper.fetchStatesByIds(local.ownWishes.map(wish => wish.id));
+			}
+
+			// Wishes submitted on this device without account: also shown after signing in, they are
+			// not linked to the profile.
+			const serverIds = new Set(entries.map(entry => entry.id));
+			const deviceWishes = local.ownWishes.filter(wish => !serverIds.has(wish.id));
+			if (deviceWishes.length > 0) {
+				const states = await helper.fetchStatesByIds(deviceWishes.map(wish => wish.id));
 				const statesById = new Map(states.map(state => [state.id, state]));
 				// Wishes the server no longer knows (deleted after being archived) disappear from the device too.
-				const stillExisting = local.ownWishes.filter(wish => statesById.has(wish.id));
-				if (stillExisting.length !== local.ownWishes.length) {
-					update({ ownWishes: stillExisting });
+				const missingIds = new Set(deviceWishes.filter(wish => !statesById.has(wish.id)).map(wish => wish.id));
+				if (missingIds.size > 0) {
+					update({ ownWishes: local.ownWishes.filter(wish => !missingIds.has(wish.id)) });
 				}
-				entries = stillExisting.map(wish => {
+				const deviceEntries: OwnWishEntry[] = deviceWishes.filter(wish => statesById.has(wish.id)).map(wish => {
 					const state = statesById.get(wish.id);
 					return {
 						id: wish.id,
@@ -230,6 +236,7 @@ const FeatureWishesList: React.FC<FeatureWishesListProps> = ({ openForm, openDet
 						editable: false,
 					};
 				});
+				entries = [...entries, ...deviceEntries];
 			}
 
 			// Merged wishes show the original they now count for (published, so readable for everyone).

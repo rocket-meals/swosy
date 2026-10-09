@@ -211,7 +211,8 @@ export function getVersionPatch() {
         // 100: default nickname without number (e.g. Curie), info modal heading aligned with its text
         // 101: feature wishes: tile in the food offers, entry in the settings, modal to submit and like wishes
         // 102: feature wishes: own wishes without account no longer vanish from the device (SDK unwraps `data`)
-        return 102;
+        // 103: feature wishes: wishes submitted without account stay under "Deine Wünsche" after signing in
+        return 103;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
