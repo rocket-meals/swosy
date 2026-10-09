@@ -87,6 +87,16 @@ export const commonTranslations: TranslationResources = {
 		tr: 'Gönder',
 		zh: '提交',
 	},
+	update: {
+		de: 'Aktualisieren',
+		en: 'Update',
+		ar: 'تحديث',
+		es: 'Actualizar',
+		fr: 'Mettre à jour',
+		ru: 'Обновить',
+		tr: 'Güncelle',
+		zh: '更新',
+	},
 	send: {
 		de: 'Senden',
 		en: 'Send',

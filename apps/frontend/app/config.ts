@@ -212,7 +212,10 @@ export function getVersionPatch() {
         // 101: feature wishes: tile in the food offers, entry in the settings, modal to submit and like wishes
         // 102: feature wishes: own wishes without account no longer vanish from the device (SDK unwraps `data`)
         // 103: feature wishes: wishes submitted without account stay under "Deine Wünsche" after signing in
-        return 103;
+        // 104: feature wishes: details with delete and update, likes of own wishes, icons and colors of the states from Directus
+        // 105: common-ui: MyButton with translated action buttons (save, submit, update, edit, cancel, delete)
+        // 106: merge of master (backend feedback pages)
+        return 106;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

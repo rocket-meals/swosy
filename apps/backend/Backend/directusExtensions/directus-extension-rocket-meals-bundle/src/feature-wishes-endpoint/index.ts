@@ -1,7 +1,7 @@
 /**
  * feature-wishes-endpoint – the review state of wishes an anonymous app user submitted.
  *
- * `GET /feature-wishes/status?ids=<id>,<id>` answers `{ data: [{ id, status, progress, related_to, date_updated,
+ * `GET /feature-wishes/status?ids=<id>,<id>` answers `{ data: [{ id, status, progress, likes_amount, related_to, date_updated,
  * date_created, moderation_note_public }] }` for the given ids.
  *
  * Anonymous users may only read published wishes (the Directus policies cannot limit a second read
@@ -16,7 +16,7 @@ import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 
 const ENDPOINT_ID = 'feature-wishes';
 
-const STATUS_FIELDS = ['id', 'status', 'progress', 'related_to', 'date_updated', 'date_created', 'moderation_note_public'];
+const STATUS_FIELDS = ['id', 'status', 'progress', 'likes_amount', 'related_to', 'date_updated', 'date_created', 'moderation_note_public'];
 
 export default defineEndpoint({
   id: ENDPOINT_ID,

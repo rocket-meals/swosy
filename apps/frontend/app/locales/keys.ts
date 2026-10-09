@@ -904,6 +904,10 @@ export const TranslationKeys = {
 	feature_wishes_like: 'feature_wishes_like',
 	feature_wishes_unlike: 'feature_wishes_unlike',
 	feature_wishes_note_from_team: 'feature_wishes_note_from_team',
+	feature_wishes_delete_question: 'feature_wishes_delete_question',
+	feature_wishes_deleted: 'feature_wishes_deleted',
+	feature_wishes_edit_published_hint: 'feature_wishes_edit_published_hint',
+	feature_wishes_likes: 'feature_wishes_likes',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];

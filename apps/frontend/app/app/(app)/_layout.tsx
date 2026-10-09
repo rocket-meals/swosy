@@ -50,6 +50,7 @@ import { BuildingsHelper, BuildingsOrganizationsHelper } from '@/redux/actions/B
 import { OrganizationsHelper } from '@/redux/actions/Organizations/Organizations';
 import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
+import { loadFeatureWishFieldChoices } from '@/redux/actions/FeatureWishes/FeatureWishes';
 import { loadChatReadStatus } from '@/helper/chatReadStatus';
 import { FriendshipsHelper } from '@/redux/actions/Friendships/Friendships';
 import { PriceGroupKey } from '@/app/(app)/settings/types';
@@ -625,6 +626,8 @@ export default function Layout() {
 		},
 		{ key: CollectionKeys.WIKIS, action: getWikis },
 		{ key: CollectionKeys.APP_SETTINGS, action: getAppSettings },
+		// Colors and icons of the feature wish states, reloaded when the Directus schema changes.
+		{ key: CollectionKeys.DIRECTUS_FIELDS, action: () => loadFeatureWishFieldChoices(dispatch) },
 		{
 			key: CollectionKeys.FOODS_ATTRIBUTES_GROUPS,
 			action: getAllFoodAttributesGroups,

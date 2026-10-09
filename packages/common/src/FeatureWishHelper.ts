@@ -6,7 +6,7 @@
  * - a duplicate of another wish (`merged`, `related_to` = the original)
  * - a like (`like`, `related_to` = the liked wish, no text)
  *
- * `likes_amount` of a wish is the number of `merged` and `like` rows pointing to it.
+ * `likes_amount` of a wish is its author (always 1) plus the `merged` and `like` rows pointing to it.
  */
 
 export enum FeatureWishStatus {
@@ -80,8 +80,9 @@ export class FeatureWishHelper {
   /** Rows that add to `likes_amount` of the wish in `related_to`. */
   static readonly COUNTING_STATUSES: string[] = [FeatureWishStatus.MERGED, FeatureWishStatus.LIKE];
 
-  /** Statuses in which the author may still edit title and description. */
+  /** Statuses in which the author may edit title and description. A published wish goes back to review. */
   static readonly EDITABLE_STATUSES: string[] = [
+    FeatureWishStatus.PUBLISHED,
     FeatureWishStatus.DRAFT,
     FeatureWishStatus.AI_SUGGESTS_PUBLISH,
     FeatureWishStatus.AI_SUGGESTS_DECLINE,
@@ -179,6 +180,9 @@ export class FeatureWishHelper {
     };
   }
 
+  /** The author of a wish counts as its first like. */
+  static readonly AUTHOR_LIKES = 1;
+
   /** Counts the `merged` and `like` rows per wish they point to. */
   static countLikesByWishId(rows: FeatureWishLike[]): Record<string, number> {
     const counts: Record<string, number> = {};
@@ -190,6 +194,29 @@ export class FeatureWishHelper {
       counts[relatedToId] = (counts[relatedToId] ?? 0) + 1;
     }
     return counts;
+  }
+
+  /** `likes_amount` a wish should have: its author plus the rows counted by `countLikesByWishId`. */
+  static getExpectedLikesAmount(wishId: string, counts: Record<string, number>): number {
+    return FeatureWishHelper.AUTHOR_LIKES + (counts[wishId] ?? 0);
+  }
+
+  /**
+   * Whether an app user may delete these rows: signed in, every row must belong to the profile.
+   * Without account (no profile) only rows without profile that are not public, because the ids
+   * of those are never readable for others.
+   */
+  static mayAppUserDelete(rows: (Pick<FeatureWishLike, 'status'> & { profile?: string | { id: string } | null })[], profileId: string | null): boolean {
+    if (rows.length === 0) {
+      return false;
+    }
+    return rows.every(row => {
+      const rowProfileId = row.profile ? (typeof row.profile === 'string' ? row.profile : row.profile.id) : null;
+      if (profileId) {
+        return rowProfileId === profileId;
+      }
+      return rowProfileId === null && row.status !== FeatureWishStatus.PUBLISHED;
+    });
   }
 
   /** The day an archived wish is deleted, counted from its last change. Null when the wish is not archived. */

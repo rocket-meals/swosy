@@ -70,7 +70,7 @@ function createService(initialRows: Row[]) {
 }
 
 describe('FeatureWishService', () => {
-  it('recounts likes from like and merged rows and writes only changed values', async () => {
+  it('recounts likes from the author, like and merged rows and writes only changed values', async () => {
     const { service, rows } = createService([
       { id: 'original', status: FeatureWishStatus.PUBLISHED, likes_amount: 7 },
       { id: 'other', status: FeatureWishStatus.PUBLISHED, likes_amount: 0 },
@@ -82,11 +82,11 @@ describe('FeatureWishService', () => {
 
     const changed = await service.recountAllLikes();
 
-    expect(rows.get('original')?.likes_amount).toBe(3);
-    expect(rows.get('other')?.likes_amount).toBe(0);
-    // the suggestion itself is a wish in review and gets 0, the "other" wish is unchanged
-    expect(rows.get('suggestion')?.likes_amount).toBe(0);
-    expect(changed).toBe(2);
+    // the author counts as the first like
+    expect(rows.get('original')?.likes_amount).toBe(4);
+    expect(rows.get('other')?.likes_amount).toBe(1);
+    expect(rows.get('suggestion')?.likes_amount).toBe(1);
+    expect(changed).toBe(3);
   });
 
   it('deletes a wish together with its duplicates, their likes and its likes', async () => {

@@ -54,10 +54,10 @@ describe('FeatureWishHelper.countLikesByWishId', () => {
 });
 
 describe('FeatureWishHelper status groups', () => {
-  it('lets authors edit only wishes that are not public', () => {
+  it('lets authors edit their wishes but not duplicates and likes', () => {
     expect(FeatureWishHelper.isEditable({ status: FeatureWishStatus.DRAFT })).toBe(true);
     expect(FeatureWishHelper.isEditable({ status: FeatureWishStatus.ARCHIVED })).toBe(true);
-    expect(FeatureWishHelper.isEditable({ status: FeatureWishStatus.PUBLISHED })).toBe(false);
+    expect(FeatureWishHelper.isEditable({ status: FeatureWishStatus.PUBLISHED })).toBe(true);
     expect(FeatureWishHelper.isEditable({ status: FeatureWishStatus.MERGED })).toBe(false);
     expect(FeatureWishHelper.isEditable({ status: FeatureWishStatus.LIKE })).toBe(false);
   });
@@ -130,5 +130,29 @@ describe('FeatureWishHelper.parseStatusIds', () => {
   it('answers at most 50 ids', () => {
     const many = Array.from({ length: 60 }, (_, i) => `00000000-0000-4000-8000-${String(i).padStart(12, '0')}`);
     expect(FeatureWishHelper.parseStatusIds(many.join(','))).toHaveLength(50);
+  });
+});
+
+describe('FeatureWishHelper likes of the author', () => {
+  it('counts the author as the first like', () => {
+    expect(FeatureWishHelper.getExpectedLikesAmount('a', { a: 2 })).toBe(3);
+    expect(FeatureWishHelper.getExpectedLikesAmount('b', { a: 2 })).toBe(1);
+  });
+});
+
+describe('FeatureWishHelper.mayAppUserDelete', () => {
+  it('lets a signed in user delete only rows of the own profile', () => {
+    expect(FeatureWishHelper.mayAppUserDelete([{ status: 'published', profile: 'p1' }, { status: 'like', profile: { id: 'p1' } }], 'p1')).toBe(true);
+    expect(FeatureWishHelper.mayAppUserDelete([{ status: 'draft', profile: 'p1' }, { status: 'draft', profile: 'p2' }], 'p1')).toBe(false);
+  });
+
+  it('lets anonymous users delete only rows without profile that are not public', () => {
+    expect(FeatureWishHelper.mayAppUserDelete([{ status: 'draft', profile: null }, { status: 'like' }], null)).toBe(true);
+    expect(FeatureWishHelper.mayAppUserDelete([{ status: 'published', profile: null }], null)).toBe(false);
+    expect(FeatureWishHelper.mayAppUserDelete([{ status: 'draft', profile: 'p1' }], null)).toBe(false);
+  });
+
+  it('allows nothing for an empty selection', () => {
+    expect(FeatureWishHelper.mayAppUserDelete([], 'p1')).toBe(false);
   });
 });

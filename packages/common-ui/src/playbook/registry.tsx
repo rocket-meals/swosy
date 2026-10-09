@@ -31,6 +31,7 @@ import SettingsListColor from '../components/SettingsListColor';
 import MyCalendarMonth from '../components/MyCalendarMonth';
 import SettingsListTimeInput from '../components/SettingsListTimeInput';
 import SettingsListProgress from '../components/SettingsListProgress';
+import MyButton, { MyDeleteButton, MyUpdateButton } from '../components/MyButton';
 import SettingsListLikeButton from '../components/SettingsListLikeButton';
 import SettingsListLikeDislikeFast from '../components/SettingsListLikeDislikeFast';
 import SettingsListSelectOptionSingle from '../components/SettingsListSelectOptionSingle';
@@ -217,6 +218,20 @@ const runtimeByName: Record<string, PlaybookEntryRuntime> = {
 		variants: {
 			'with-icon': { leftIcon: <ThemedIcon name="progress-check" /> },
 		},
+	},
+	MyButton: {
+		component: MyButton,
+		baseProps: { onPress: () => {} },
+	},
+	MyUpdateButton: {
+		component: MyUpdateButton,
+		baseProps: { onPress: () => {} },
+	},
+	MyDeleteButton: {
+		component: MyDeleteButton,
+		bindProps: (_values, setKnob) => ({
+			onPress: () => setKnob('loading', true),
+		}),
 	},
 	SettingsListLikeButton: {
 		component: SettingsListLikeButton,

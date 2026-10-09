@@ -53,6 +53,8 @@ export const BackendTranslationKeys = {
   app_feedback_chat_answer_mail_intro: 'app_feedback_chat_answer_mail_intro',
   app_feedback_chat_answer_mail_reply_hint: 'app_feedback_chat_answer_mail_reply_hint',
   notification_support_answer_title: 'notification_support_answer_title',
+  notification_feature_wish_published_title: 'notification_feature_wish_published_title',
+  notification_feature_wish_published_body: 'notification_feature_wish_published_body',
 
   // Insights panels shipped by Rocket Meals ("[Erweitert]", see helpers/extended-panels)
   extended_panel_list_name: 'extended_panel_list_name',

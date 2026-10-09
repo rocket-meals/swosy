@@ -305,6 +305,28 @@ export const backendTranslations: TranslationResources = {
     zh: '客服有新回复',
   },
 
+  /** Push to the author when their feature wish was published, `title` is the wish. */
+  notification_feature_wish_published_title: {
+    de: 'Dein Wunsch ist veröffentlicht',
+    en: 'Your wish is published',
+    ar: 'تم نشر طلبك',
+    es: 'Tu deseo se ha publicado',
+    fr: 'Ton souhait est publié',
+    ru: 'Твоё пожелание опубликовано',
+    tr: 'İsteğin yayınlandı',
+    zh: '你的心愿已发布',
+  },
+  notification_feature_wish_published_body: {
+    de: '„{{title}}“ ist jetzt für alle sichtbar und kann geliked werden.',
+    en: '"{{title}}" is now visible to everyone and can be liked.',
+    ar: '"{{title}}" أصبح الآن مرئيًا للجميع ويمكن الإعجاب به.',
+    es: '"{{title}}" ya es visible para todos y se puede marcar con me gusta.',
+    fr: '« {{title}} » est maintenant visible par tous et peut être aimé.',
+    ru: '«{{title}}» теперь видно всем, его можно отметить как понравившееся.',
+    tr: '"{{title}}" artık herkes tarafından görülebilir ve beğenilebilir.',
+    zh: '“{{title}}”现在所有人都能看到，并且可以点赞。',
+  },
+
   /** Texts of the Insights panels "Liste [Erweitert]" and "Seite exportieren [Erweitert]". */
   extended_panel_list_name: {
     de: 'Liste',

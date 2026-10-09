@@ -1,3 +1,4 @@
+import type { DirectusFieldChoice } from '@/helper/DirectusFieldChoiceHelper';
 import { ConfigCustomerEnum } from '@/config';
 import { ApartmentSortOption, CampusSortOption, DatabaseTypes, FoodSortOption } from 'repo-depkit-common';
 import { FoodOfferDetailTab } from '@/constants/TabEnums';
@@ -79,6 +80,7 @@ export type SettingsState = {
         foodoffersShowSeparatedMarkingsBreakdown: boolean | null;
         foodoffersShowAverageRatingOnCard: boolean | null;
         featureWishesLocal?: FeatureWishesLocalState;
+        directusFieldChoices?: Record<string, DirectusFieldChoice[]>;
 }
 
 /** Feature wishes data kept on the device, see `featureWishesLocal` in the settings reducer. */
