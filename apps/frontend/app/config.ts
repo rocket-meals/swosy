@@ -220,7 +220,8 @@ export function getVersionPatch() {
         // 108: our explanation before the system push dialog on Android too, nowhere asked unprompted
         //     (app start, food offers, washing machines); food reminder uses it; housing: options
         //     modal, hint panel and button in the "free rooms" modal to be notified about free apartments
-        return 108;
+        // 109: free apartment push notification on the housing screen is a plain switch now
+        return 109;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
