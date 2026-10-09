@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common';
-import { FoodFeedbackChatHelper, FoodFeedbackListSort, FoodFeedbackRatingFilter } from '../FoodFeedbackChatHelper';
+import { FoodFeedbackChatHelper, FoodFeedbackContentFilter, FoodFeedbackListSort, FoodFeedbackRatingFilter } from '../FoodFeedbackChatHelper';
 import { FoodFeedbackChatActions } from '../FoodFeedbackChatActions';
 import { RocketMealsModulePages } from '../RocketMealsModulePages';
 import { AppExtensionLanguageHelper } from '../../app-extensions/AppExtensionLanguageHelper';
@@ -61,11 +61,48 @@ describe('FoodFeedbackChatHelper', () => {
     const statusFilter = FoodFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.OPEN);
     expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.OPEN)).toEqual(statusFilter);
     expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.OPEN, { canteenIds: [], foodSearch: '  ', rating: FoodFeedbackRatingFilter.ALL })).toEqual(statusFilter);
-    expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.OPEN, { canteenIds: ['a', 'b'], foodSearch: ' Pasta ', rating: FoodFeedbackRatingFilter.BAD })).toEqual({
-      _and: [statusFilter, { canteen: { _in: ['a', 'b'] } }, { food: { alias: { _icontains: 'Pasta' } } }, { rating: { _between: [1, 2] } }],
+    expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.OPEN, { canteenIds: ['a', 'b'], foodSearch: ' Pasta ' })).toEqual({
+      _and: [statusFilter, { canteen: { _in: ['a', 'b'] } }, { food: { alias: { _icontains: 'Pasta' } } }],
     });
     expect(FoodFeedbackChatHelper.buildRatingFilter(FoodFeedbackRatingFilter.GOOD)).toEqual({ rating: { _between: [4, 5] } });
     expect(FoodFeedbackChatHelper.buildRatingFilter(FoodFeedbackRatingFilter.NONE)).toEqual({ rating: { _null: true } });
+  });
+
+  describe('content filter', () => {
+    const withComment = { comment: { _nempty: true } };
+    const withRating = { rating: { _nnull: true } };
+    const open = FoodFeedbackChatStatusHelper.buildStatusFilter(FoodFeedbackChatFilter.OPEN);
+
+    it('lists only feedbacks with a comment by default', () => {
+      expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.OPEN, { contents: [FoodFeedbackContentFilter.WITH_COMMENT] })).toEqual(FoodFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.OPEN));
+      expect(FoodFeedbackChatHelper.isRatingFilterAvailable(undefined)).toBe(false);
+    });
+
+    it('lists feedbacks with a rating, or with either when both or none are selected', () => {
+      expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.OPEN, { contents: [FoodFeedbackContentFilter.WITH_RATING] })).toEqual({ _and: [withRating, open] });
+      const either = { _and: [{ _or: [withComment, withRating] }, open] };
+      expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.OPEN, { contents: [FoodFeedbackContentFilter.WITH_COMMENT, FoodFeedbackContentFilter.WITH_RATING] })).toEqual(either);
+      expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.OPEN, { contents: [] })).toEqual(either);
+      expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.ALL, { contents: [FoodFeedbackContentFilter.WITH_RATING] })).toEqual({ _and: [withRating] });
+    });
+
+    it('applies the rating filter only when feedbacks with a rating are listed', () => {
+      expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.ALL, { rating: FoodFeedbackRatingFilter.BAD })).toEqual(FoodFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.ALL));
+      expect(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.ALL, { contents: [FoodFeedbackContentFilter.WITH_RATING], rating: FoodFeedbackRatingFilter.BAD })).toEqual({
+        _and: [{ _and: [withRating] }, { rating: { _between: [1, 2] } }],
+      });
+    });
+
+    it('offers "without rating" only when feedbacks with only a comment are listed too', () => {
+      expect(FoodFeedbackChatHelper.getRatingFilters([FoodFeedbackContentFilter.WITH_RATING])).not.toContain(FoodFeedbackRatingFilter.NONE);
+      expect(FoodFeedbackChatHelper.getRatingFilters([FoodFeedbackContentFilter.WITH_COMMENT, FoodFeedbackContentFilter.WITH_RATING])).toContain(FoodFeedbackRatingFilter.NONE);
+    });
+
+    it('has a label for every content filter', () => {
+      for (const content of FoodFeedbackChatHelper.CONTENT_FILTERS) {
+        expect(AppExtensionLanguageHelper.translate(FoodFeedbackChatHelper.getContentFilterLabelKey(content), 'de-DE').length).toBeGreaterThan(0);
+      }
+    });
   });
 
   it('counts with the same filters and search as the list', () => {
