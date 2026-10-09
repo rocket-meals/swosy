@@ -219,6 +219,11 @@
         "source": "src/push-notification-hook/index.ts"
       },
       {
+        "type": "hook",
+        "name": "apartments-free-notify-hook",
+        "source": "src/apartments-free-notify-hook/index.ts"
+      },
+      {
         "type": "endpoint",
         "name": "redirect-with-token-endpoint",
         "source": "src/redirect-with-token-endpoint/index.ts"

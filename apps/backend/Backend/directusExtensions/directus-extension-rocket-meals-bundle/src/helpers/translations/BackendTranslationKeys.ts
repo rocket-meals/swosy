@@ -55,6 +55,10 @@ export const BackendTranslationKeys = {
   notification_support_answer_title: 'notification_support_answer_title',
   notification_feature_wish_published_title: 'notification_feature_wish_published_title',
   notification_feature_wish_published_body: 'notification_feature_wish_published_body',
+  notification_free_apartments_title: 'notification_free_apartments_title',
+  notification_free_apartments_body_single: 'notification_free_apartments_body_single',
+  notification_free_apartments_body_many: 'notification_free_apartments_body_many',
+  notification_free_apartments_body_unnamed: 'notification_free_apartments_body_unnamed',
 
   // Insights panels shipped by Rocket Meals ("[Erweitert]", see helpers/extended-panels)
   extended_panel_list_name: 'extended_panel_list_name',
