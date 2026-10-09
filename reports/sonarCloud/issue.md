@@ -19,8 +19,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/sync-fork.yml#L4
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue:360
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue#L360
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue:365
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue#L365
 
 - **Make sure that using this pseudorandom number generator is safe here.**
   apps/frontend/app/helper/courseTimetable/CourseTimetableModel.ts:164
