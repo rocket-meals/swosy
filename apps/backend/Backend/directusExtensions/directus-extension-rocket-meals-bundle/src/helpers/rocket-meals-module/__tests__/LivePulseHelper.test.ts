@@ -254,4 +254,37 @@ describe('LivePulseHelper', () => {
     expect(RocketMealsModulePages.PAGES).toContain(RocketMealsModulePages.LIVE_PULSE);
     expect(RocketMealsModulePages.getRoute(RocketMealsModulePages.LIVE_PULSE)).toBe('/rocket-meals/live-pulse');
   });
+
+  describe('links', () => {
+    it('links a profile to its item page', () => {
+      expect(LivePulseHelper.getProfileRoute({ id: 'p 1' })).toBe('/content/profiles/p%201');
+      expect(LivePulseHelper.getProfileRoute(undefined)).toBeUndefined();
+    });
+
+    it('takes the food offer and the food of a feedback and of a food details event', () => {
+      const feed = LivePulseHelper.buildFeed({
+        foodFeedbacks: [{ id: 'f1', rating: 5, date_updated: minutesAgo(1), food: { id: 'food-1', alias: 'Pasta' }, foodoffer: 'offer-1' }],
+        usageEvents: [{ id: 'e1', event_name: 'food_details_opened', date_created: minutesAgo(2), payload: { foodoffer_id: 'offer-2', food_id: 'food-2', food_name: 'Curry' } }],
+      });
+      expect(feed.map(item => [item.foodofferId, item.foodId])).toEqual([
+        ['offer-1', 'food-1'],
+        ['offer-2', 'food-2'],
+      ]);
+      expect(LivePulseHelper.getFeedFoodofferIds([...feed, ...feed])).toEqual(['offer-1', 'offer-2']);
+      expect(JSON.parse(LivePulseHelper.buildExistingFoodoffersQuery(['offer-1'])!.filter!)).toEqual({ id: { _in: ['offer-1'] } });
+      expect(LivePulseHelper.buildExistingFoodoffersQuery([])).toBeUndefined();
+    });
+
+    it('links the food offer while it exists, else the food', () => {
+      const item = { key: 'k', sourceKey: 'k', type: LivePulseFeedType.RATING, date: minutesAgo(1), foodofferId: 'offer-1', foodId: 'food-1' };
+      expect(LivePulseHelper.getFoodRoute(item, new Set(['offer-1']))).toBe('/content/foodoffers/offer-1');
+      expect(LivePulseHelper.getFoodRoute(item, new Set())).toBe('/content/foods/food-1');
+      expect(LivePulseHelper.getFoodRoute({ ...item, foodId: undefined }, new Set())).toBeUndefined();
+    });
+
+    it('splits a translated text around the food name', () => {
+      expect(LivePulseHelper.splitAtMarker('hat \uE000 bewertet', '\uE000')).toEqual({ before: 'hat ', after: ' bewertet', found: true });
+      expect(LivePulseHelper.splitAtMarker('plant einen Mensabesuch', '\uE000')).toEqual({ before: 'plant einen Mensabesuch', after: '', found: false });
+    });
+  });
 });

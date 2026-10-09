@@ -67,6 +67,7 @@ export type LivePulseFoodFeedback = {
   date_created?: string | null;
   date_updated?: string | null;
   food?: LivePulseFood | string | null;
+  foodoffer?: { id: string } | string | null;
   canteen?: { id: string; alias?: string | null } | string | null;
   profile?: RelatedProfile;
 };
@@ -103,6 +104,10 @@ export type LivePulseFeedItem = {
   foodName?: string;
   /** The food, with image, if known – for its picture in the ticker. */
   food?: LivePulseFood;
+  /** Id of the food, also when the food itself could not be loaded – the link target when the food offer is gone. */
+  foodId?: string;
+  /** Id of the food offer the entry is about – the preferred link target, see `getFoodRoute`. */
+  foodofferId?: string;
   canteenName?: string;
   /** For a canteen visit: the day of the planned visit (`YYYY-MM-DD`). */
   visitDate?: string | null;
@@ -148,6 +153,7 @@ export class LivePulseHelper {
   static readonly PROFILES_ENDPOINT = `/items/${CollectionNames.PROFILES}`;
   static readonly FOOD_FEEDBACKS_ENDPOINT = `/items/${CollectionNames.FOODS_FEEDBACKS}`;
   static readonly FOODS_ENDPOINT = `/items/${CollectionNames.FOODS}`;
+  static readonly FOODOFFERS_ENDPOINT = `/items/${CollectionNames.FOODOFFERS}`;
   static readonly CANTEEN_VISITS_ENDPOINT = `/items/${CANTEEN_VISITS}`;
   static readonly APP_USAGE_EVENTS_ENDPOINT = `/items/${APP_USAGE_EVENTS}`;
   static readonly ACTIVITY_ENDPOINT = '/activity';
@@ -264,7 +270,7 @@ export class LivePulseHelper {
   /** Food feedbacks of today with a rating or a comment. */
   static buildFoodFeedbacksQuery(now: Date): LivePulseQuery {
     return {
-      fields: ['id', 'rating', 'comment', 'date_created', 'date_updated', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'canteen.id', 'canteen.alias', ...LivePulseHelper.relatedProfileFields()].join(','),
+      fields: ['id', 'rating', 'comment', 'date_created', 'date_updated', 'foodoffer', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'canteen.id', 'canteen.alias', ...LivePulseHelper.relatedProfileFields()].join(','),
       filter: JSON.stringify({
         _and: [{ date_updated: { _gte: LivePulseHelper.getStartOfDay(now).toISOString() } }, { _or: [{ rating: { _nnull: true } }, { comment: { _nnull: true } }] }],
       }),
@@ -324,6 +330,57 @@ export class LivePulseHelper {
     };
   }
 
+  /** The food offers the ticker links to – their ids are kept, the offers themselves may be gone by now. */
+  static getFeedFoodofferIds(items: LivePulseFeedItem[]): string[] {
+    return [...new Set(items.map(item => item.foodofferId).filter((id): id is string => !!id))];
+  }
+
+  /**
+   * Which of the food offers still exist: the parser replaces them, an entry from the morning may
+   * point to an offer that is deleted. `undefined` when there is nothing to check.
+   */
+  static buildExistingFoodoffersQuery(foodofferIds: string[]): LivePulseQuery | undefined {
+    if (foodofferIds.length === 0) {
+      return undefined;
+    }
+    return {
+      fields: 'id',
+      filter: JSON.stringify({ id: { _in: foodofferIds } }),
+      limit: foodofferIds.length,
+    };
+  }
+
+  /** Item page of the profile in the Directus app, `undefined` without a profile. */
+  static getProfileRoute(profile: LivePulseProfile | undefined): string | undefined {
+    return profile?.id ? `/content/${CollectionNames.PROFILES}/${encodeURIComponent(profile.id)}` : undefined;
+  }
+
+  /**
+   * Where a click on the food of an entry leads: the food offer while it still exists, else the food.
+   * `undefined` when the entry knows neither.
+   */
+  static getFoodRoute(item: LivePulseFeedItem, existingFoodofferIds: ReadonlySet<string>): string | undefined {
+    if (item.foodofferId && existingFoodofferIds.has(item.foodofferId)) {
+      return `/content/${CollectionNames.FOODOFFERS}/${encodeURIComponent(item.foodofferId)}`;
+    }
+    if (item.foodId) {
+      return `/content/${CollectionNames.FOODS}/${encodeURIComponent(item.foodId)}`;
+    }
+    return undefined;
+  }
+
+  /**
+   * Splits a translated text at the spot where `marker` was interpolated, so the part in between
+   * can be rendered as a link. Without the marker, everything is `before`.
+   */
+  static splitAtMarker(text: string, marker: string): { before: string; after: string; found: boolean } {
+    const index = text.indexOf(marker);
+    if (index < 0) {
+      return { before: text, after: '', found: false };
+    }
+    return { before: text.slice(0, index), after: text.slice(index + marker.length), found: true };
+  }
+
   /** Thumbnail of the food (Directus file, else remote URL), `undefined` without a picture. */
   static getFoodImageUrl(food: LivePulseFood | undefined, apiRoot: string = '/'): string | undefined {
     return food ? FoodFeedbackChatHelper.getFoodImageUrl({ food }, apiRoot) : undefined;
@@ -378,6 +435,13 @@ export class LivePulseHelper {
     return profile && typeof profile === 'object' ? profile : undefined;
   }
 
+  private static getRelatedId(relation: { id: string | number } | string | number | null | undefined): string | undefined {
+    if (relation === null || relation === undefined || relation === '') {
+      return undefined;
+    }
+    return typeof relation === 'object' ? (relation.id !== null && relation.id !== undefined ? String(relation.id) : undefined) : String(relation);
+  }
+
   private static getAlias(relation: { alias?: string | null } | string | null | undefined): string | undefined {
     return relation && typeof relation === 'object' ? relation.alias || undefined : undefined;
   }
@@ -400,6 +464,8 @@ export class LivePulseHelper {
         comment: feedback.comment,
         foodName: LivePulseHelper.getAlias(feedback.food),
         food: feedback.food && typeof feedback.food === 'object' ? feedback.food : undefined,
+        foodId: LivePulseHelper.getRelatedId(feedback.food),
+        foodofferId: LivePulseHelper.getRelatedId(feedback.foodoffer),
         canteenName: LivePulseHelper.getAlias(feedback.canteen),
       });
     }
@@ -437,6 +503,8 @@ export class LivePulseHelper {
         platform: event.platform,
         foodName: typeof payload.food_name === 'string' && payload.food_name ? payload.food_name : (food?.alias ?? undefined),
         food,
+        foodId: LivePulseHelper.getRelatedId(payload.food_id as string | number | null | undefined) ?? food?.id,
+        foodofferId: LivePulseHelper.getRelatedId(payload.foodoffer_id as string | number | null | undefined),
       });
     }
 
