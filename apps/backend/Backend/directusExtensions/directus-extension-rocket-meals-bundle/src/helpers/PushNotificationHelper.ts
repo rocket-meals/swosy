@@ -1,4 +1,5 @@
-import { DatabaseTypes } from 'repo-depkit-common';
+// Type only: this helper is also bundled into the Directus app (module page "Push-Nachricht").
+import type { DatabaseTypes } from 'repo-depkit-common';
 
 const HELPER_NAME = 'PushNotificationHelper';
 
@@ -10,19 +11,18 @@ type PushTokenObject = {
 
 export class PushNotificationHelper {
   static getExpoPushTokenFromDevice(device: DatabaseTypes.Devices): string | undefined {
-    const pushTokenObj = this.parsePushTokenObj(device.pushTokenObj);
-    if (!pushTokenObj) {
-      console.log(`${HELPER_NAME}: Device ${device.id} has no push token object`);
-      return undefined;
+    const expoPushToken = this.readExpoPushToken(device.pushTokenObj);
+    if (!expoPushToken) {
+      console.log(`${HELPER_NAME}: Device ${device.id} has no push token object with a valid Expo token`);
     }
+    return expoPushToken;
+  }
 
-    const expoTokenCandidate = (pushTokenObj as PushTokenObject)?.pushtokenObj?.data;
-    if (typeof expoTokenCandidate === 'string') {
-      return expoTokenCandidate;
-    }
-
-    console.log(`${HELPER_NAME}: Device ${device.id} push token object does not contain a valid Expo token`);
-    return undefined;
+  /** The Expo push token inside a raw `devices.pushTokenObj` (object or JSON string), without logging. */
+  static readExpoPushToken(raw: unknown): string | undefined {
+    const pushTokenObj = this.parsePushTokenObj(raw);
+    const expoTokenCandidate = (pushTokenObj as PushTokenObject | undefined)?.pushtokenObj?.data;
+    return typeof expoTokenCandidate === 'string' && expoTokenCandidate.length > 0 ? expoTokenCandidate : undefined;
   }
 
   static getExpoPushTokensToDevicesDict(

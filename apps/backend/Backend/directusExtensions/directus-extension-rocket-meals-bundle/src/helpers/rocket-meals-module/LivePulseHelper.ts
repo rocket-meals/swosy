@@ -15,6 +15,7 @@ import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/Collection
 import { DefaultProfileHelper } from 'repo-depkit-common/src/DefaultProfileHelper';
 import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED } from '../BackendUsageEventNames';
 import { FoodFeedbackChatHelper } from './FoodFeedbackChatHelper';
+import { RocketMealsModulePages } from './RocketMealsModulePages';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 
 type DirectusFilter = Record<string, unknown>;
@@ -350,9 +351,9 @@ export class LivePulseHelper {
     };
   }
 
-  /** Item page of the profile in the Directus app, `undefined` without a profile. */
+  /** The profile page of the module, `undefined` without a profile. */
   static getProfileRoute(profile: LivePulseProfile | undefined): string | undefined {
-    return profile?.id ? `/content/${CollectionNames.PROFILES}/${encodeURIComponent(profile.id)}` : undefined;
+    return profile?.id ? RocketMealsModulePages.getProfileRoute(profile.id) : undefined;
   }
 
   /**

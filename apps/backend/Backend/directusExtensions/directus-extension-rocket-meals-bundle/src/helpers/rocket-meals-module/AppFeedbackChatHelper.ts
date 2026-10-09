@@ -39,7 +39,7 @@ export type AppFeedbackListItem = {
   device_system_version?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
-  profile?: { id: string; nickname?: string | null } | string | null;
+  profile?: { id: string; nickname?: string | null; avatar?: unknown; date_updated?: string | null } | string | null;
   chat?: { id: string; conversation_state?: string | null; date_updated?: string | null } | string | null;
 };
 
@@ -86,7 +86,7 @@ export class AppFeedbackChatHelper {
   public static readonly SELECTABLE_TYPES: readonly AppFeedbackTypeFilter[] = AppFeedbackChatHelper.TYPE_FILTERS.filter(type => type !== AppFeedbackTypeFilter.ALL);
 
   /** Fields of the list and the chat page. */
-  public static readonly LIST_FIELDS = ['id', 'title', 'content', 'positive', 'contact_email', 'source_identifier', 'source_rating_raw', 'response', 'state', 'device_platform', 'device_brand', 'device_system_version', 'date_created', 'date_updated', 'profile.id', 'profile.nickname', 'chat.id', 'chat.conversation_state', 'chat.date_updated'];
+  public static readonly LIST_FIELDS = ['id', 'title', 'content', 'positive', 'contact_email', 'source_identifier', 'source_rating_raw', 'response', 'state', 'device_platform', 'device_brand', 'device_system_version', 'date_created', 'date_updated', 'profile.id', 'profile.nickname', 'profile.avatar', 'profile.date_updated', 'chat.id', 'chat.conversation_state', 'chat.date_updated'];
 
   static readonly APP_FEEDBACKS_ENDPOINT = `/items/${CollectionNames.APP_FEEDBACKS}`;
 

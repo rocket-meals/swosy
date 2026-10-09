@@ -12,7 +12,6 @@ import { forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY
 import { select, type Selection } from 'd3-selection';
 import { zoom, zoomIdentity, type ZoomBehavior, type ZoomTransform } from 'd3-zoom';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
-import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FriendshipNetworkHelper, FriendshipNetworkLinkStatus, type FriendshipNetwork, type FriendshipNetworkFriendship, type FriendshipNetworkNode, type FriendshipNetworkProfile } from '../../helpers/rocket-meals-module/FriendshipNetworkHelper';
 import { LivePulseHelper } from '../../helpers/rocket-meals-module/LivePulseHelper';
@@ -226,7 +225,7 @@ function friendsSince(date: string | null | undefined): string {
 }
 
 function profileRoute(profile: FriendshipNetworkProfile): string {
-  return `/content/${CollectionNames.PROFILES}/${encodeURIComponent(profile.id)}`;
+  return RocketMealsModulePages.getProfileRoute(profile.id);
 }
 
 /** Runs d3-force to the end in one go: the network stands still once it shows up. */
@@ -526,7 +525,7 @@ const clipPathId = `friendship-network-avatar-${Math.random().toString(36).slice
             </div>
 
             <v-button :to="profileRoute(selectedNode.profile)" secondary full-width>
-              <v-icon name="open_in_new" left />
+              <v-icon name="person" left />
               {{ translate(BackendTranslationKeys.rocket_meals_module_friendship_network_open_profile) }}
             </v-button>
           </template>

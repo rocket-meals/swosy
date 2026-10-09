@@ -8,6 +8,11 @@ import AppFeedbackChatPage from './app-feedbacks/app-feedback-chat-page.vue';
 import McpInstructionPage from './mcp-instruction/mcp-instruction-page.vue';
 import LivePulsePage from './live-pulse/live-pulse-page.vue';
 import FriendshipNetworkPage from './friendship-network/friendship-network-page.vue';
+import ProfilesPage from './profiles/profiles-page.vue';
+import ProfileDetailsPage from './profiles/profile-details-page.vue';
+import ProfilePushPage from './profiles/profile-push-page.vue';
+import ChatsPage from './chats/chats-page.vue';
+import ChatPage from './chats/chat-page.vue';
 
 /**
  * Module `Rocket Meals` – our own area in the Directus app, with a side navigation like the content
@@ -42,6 +47,34 @@ export default defineModule({
     {
       path: `${RocketMealsModulePages.APP_FEEDBACKS.path}/:feedbackId`,
       component: AppFeedbackChatPage,
+      props: true,
+    },
+    {
+      path: RocketMealsModulePages.CHATS.path,
+      component: ChatsPage,
+    },
+    {
+      path: `${RocketMealsModulePages.CHATS.path}/:chatId`,
+      component: ChatPage,
+      props: true,
+    },
+    {
+      path: RocketMealsModulePages.PROFILES.path,
+      component: ProfilesPage,
+    },
+    {
+      path: `${RocketMealsModulePages.PROFILES.path}/:profileId`,
+      component: ProfileDetailsPage,
+      props: true,
+    },
+    {
+      path: `${RocketMealsModulePages.PROFILES.path}/:profileId/${RocketMealsModulePages.PROFILE_CHAT_SEGMENT}`,
+      component: ChatPage,
+      props: true,
+    },
+    {
+      path: `${RocketMealsModulePages.PROFILES.path}/:profileId/${RocketMealsModulePages.PROFILE_PUSH_SEGMENT}`,
+      component: ProfilePushPage,
       props: true,
     },
     {

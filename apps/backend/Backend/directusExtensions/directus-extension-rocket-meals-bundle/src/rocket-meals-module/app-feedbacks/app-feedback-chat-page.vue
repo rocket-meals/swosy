@@ -30,11 +30,13 @@ import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExt
 import { AppFeedbackChatActions } from '../../helpers/rocket-meals-module/AppFeedbackChatActions';
 import { AppFeedbackAnswerChannel, AppFeedbackChatHelper, type AppFeedbackListItem } from '../../helpers/rocket-meals-module/AppFeedbackChatHelper';
 import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import { ChatQueryHelper } from '../../helpers/rocket-meals-module/ChatQueryHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { SupportChatActions } from '../../helpers/rocket-meals-module/SupportChatActions';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
 import FoodFeedbackRating from '../food-feedbacks/food-feedback-rating.vue';
+import ProfileAvatar from '../profiles/profile-avatar.vue';
 import SupportChatConversation from '../support-chat/support-chat-conversation.vue';
 import SupportChatStatusMenu from '../support-chat/support-chat-status-menu.vue';
 
@@ -118,14 +120,7 @@ async function loadMessages() {
     chatMessages.value = [];
     return;
   }
-  const response = await api.get(FoodFeedbackChatHelper.CHAT_MESSAGES_ENDPOINT, {
-    params: {
-      fields: FoodFeedbackChatHelper.MESSAGE_FIELDS.join(','),
-      filter: JSON.stringify({ chat: { _eq: chatId.value } }),
-      sort: 'date_created',
-      limit: -1,
-    },
-  });
+  const response = await api.get(ChatQueryHelper.CHAT_MESSAGES_ENDPOINT, { params: ChatQueryHelper.buildMessagesQuery(String(chatId.value)) });
   chatMessages.value = ChatHelper.sortMessagesChronologically(response.data?.data ?? []);
 }
 
@@ -311,6 +306,7 @@ watch(() => props.feedbackId, load);
           <span class="type-label">{{ feedbackTitle ?? translate(BackendTranslationKeys.rocket_meals_module_no_title) }}</span>
           <food-feedback-rating :rating="feedback.source_rating_raw" />
           <span class="spacer" />
+          <profile-avatar v-if="feedback.profile" :profile="feedback.profile" :size="28" with-name />
           <span class="meta type-note">
             <v-icon :name="AppFeedbackChatHelper.getSourceIcon(feedback)" x-small />
             {{ translate(AppFeedbackChatHelper.getSourceLabelKey(feedback)) }}
@@ -326,7 +322,10 @@ watch(() => props.feedbackId, load);
 
         <template v-if="isWithoutConversation">
           <div class="feedback-text">
-            <div class="type-note">{{ userLabel }} · {{ formatDateTime(opening?.date) }}</div>
+            <div class="feedback-author type-note">
+              <profile-avatar v-if="feedback.profile" :profile="feedback.profile" :size="24" />
+              <span>{{ userLabel }} · {{ formatDateTime(opening?.date) }}</span>
+            </div>
             <div class="feedback-text-content">{{ opening?.text }}</div>
           </div>
 
@@ -360,7 +359,7 @@ watch(() => props.feedbackId, load);
         <support-chat-conversation
           v-else
           :opening="opening"
-          :user-nickname="userNickname"
+          :user-profile="feedback.profile"
           :messages="messages"
           :can-write="canWrite"
           :empty-text="emptyText"
@@ -425,6 +424,12 @@ watch(() => props.feedbackId, load);
   padding: 1rem 1.25rem;
   border: var(--theme--border-width) solid var(--theme--border-color-subdued);
   border-radius: var(--theme--border-radius);
+}
+
+.feedback-author {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .feedback-text.answered {

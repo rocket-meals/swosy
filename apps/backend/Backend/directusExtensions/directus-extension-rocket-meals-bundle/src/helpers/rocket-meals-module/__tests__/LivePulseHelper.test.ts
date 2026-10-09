@@ -256,8 +256,8 @@ describe('LivePulseHelper', () => {
   });
 
   describe('links', () => {
-    it('links a profile to its item page', () => {
-      expect(LivePulseHelper.getProfileRoute({ id: 'p 1' })).toBe('/content/profiles/p%201');
+    it('links a profile to the profile page of the module', () => {
+      expect(LivePulseHelper.getProfileRoute({ id: 'p 1' })).toBe('/rocket-meals/profiles/p%201');
       expect(LivePulseHelper.getProfileRoute(undefined)).toBeUndefined();
     });
 
