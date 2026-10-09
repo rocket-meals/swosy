@@ -95,6 +95,7 @@ export type AppSettings = {
   date_created?: string | null;
   date_privacy_policy_updated?: string | null;
   date_updated?: string | null;
+  feature_wishes_enabled?: boolean | null;
   food_responsible_organization_link?: string | null;
   food_responsible_organization_name?: string | null;
   food_responsible_settings: string;
@@ -1121,6 +1122,13 @@ export type FeatureWhishes = {
   description?: string | null;
   id: string;
   likes?: number | null;
+  likes_amount?: number | null;
+  likes_amount_last_checked?: number | null;
+  moderation_note_intern?: string | null;
+  moderation_note_public?: string | null;
+  profile?: string | Profiles | null;
+  progress?: string | null;
+  related_to?: string | FeatureWhishes | null;
   sort?: number | null;
   status: string;
   tags?: unknown | null;

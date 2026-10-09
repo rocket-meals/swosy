@@ -53,6 +53,36 @@
           "color": "var(--theme--warning)",
           "text": "$t:archived",
           "value": "archived"
+        },
+        {
+          "color": "#2ECDA7",
+          "icon": "robot_2",
+          "text": "KI empfielt Veröffentlichen",
+          "value": "ai_suggests_publish"
+        },
+        {
+          "color": "#E35169",
+          "icon": "robot_2",
+          "text": "KI empfielt Archiv",
+          "value": "ai_suggests_decline"
+        },
+        {
+          "color": "#A2B5CD",
+          "icon": "content_copy",
+          "text": "KI emfpielt Dublikat",
+          "value": "ai_suggests_merge"
+        },
+        {
+          "color": "#A2B5CD",
+          "icon": "merge",
+          "text": "Merged",
+          "value": "merged"
+        },
+        {
+          "color": "#2ECDA7",
+          "icon": "thumb_up",
+          "text": "Like",
+          "value": "like"
         }
       ]
     },

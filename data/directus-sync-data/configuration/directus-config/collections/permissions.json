@@ -1507,6 +1507,176 @@
   {
     "fields": [
       "id",
+      "status",
+      "alias",
+      "tags",
+      "title",
+      "description",
+      "profile",
+      "related_to"
+    ],
+    "presets": null,
+    "validation": {
+      "_and": [
+        {
+          "_and": [
+            {
+              "profile": {
+                "_eq": "$CURRENT_USER.profile"
+              }
+            },
+            {
+              "_or": [
+                {
+                  "status": {
+                    "_eq": "draft"
+                  }
+                },
+                {
+                  "status": {
+                    "_eq": "like"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "permissions": null,
+    "action": "create",
+    "collection": "feature_whishes",
+    "policy": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "_syncId": "0585e8cb-801a-405f-bb21-8607418b6b65"
+  },
+  {
+    "fields": null,
+    "presets": null,
+    "validation": null,
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "action": "delete",
+    "collection": "feature_whishes",
+    "policy": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "_syncId": "23d8e4fd-9d06-4dbf-93e0-54e4104e4236"
+  },
+  {
+    "fields": [
+      "id",
+      "status",
+      "user_created",
+      "date_created",
+      "user_updated",
+      "date_updated",
+      "alias",
+      "tags",
+      "title",
+      "description",
+      "progress",
+      "profile",
+      "likes_amount",
+      "related_to",
+      "moderation_note_public"
+    ],
+    "presets": null,
+    "validation": null,
+    "permissions": {
+      "_and": [
+        {
+          "_or": [
+            {
+              "status": {
+                "_eq": "published"
+              }
+            },
+            {
+              "profile": {
+                "_eq": "$CURRENT_USER.profile"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "action": "read",
+    "collection": "feature_whishes",
+    "policy": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "_syncId": "5f5f7832-7d58-4864-b5df-208ee71d23ca"
+  },
+  {
+    "fields": [
+      "title",
+      "description",
+      "tags",
+      "alias"
+    ],
+    "presets": null,
+    "validation": {
+      "_and": [
+        {
+          "status": {
+            "_eq": "draft"
+          }
+        }
+      ]
+    },
+    "permissions": {
+      "_and": [
+        {
+          "_and": [
+            {
+              "profile": {
+                "_eq": "$CURRENT_USER.profile"
+              }
+            },
+            {
+              "_or": [
+                {
+                  "status": {
+                    "_eq": "draft"
+                  }
+                },
+                {
+                  "status": {
+                    "_eq": "archived"
+                  }
+                },
+                {
+                  "status": {
+                    "_eq": "ai_suggests_publish"
+                  }
+                },
+                {
+                  "status": {
+                    "_eq": "ai_suggests_decline"
+                  }
+                },
+                {
+                  "status": {
+                    "_eq": "ai_suggests_merge"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "action": "update",
+    "collection": "feature_whishes",
+    "policy": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "_syncId": "e874f0c1-4605-4cec-9374-d5611de21715"
+  },
+  {
+    "fields": [
+      "id",
       "profile",
       "status",
       "sort",
@@ -3246,29 +3416,29 @@
   {
     "fields": [
       "id",
-      "status",
-      "alias",
-      "tags",
       "title",
-      "description"
+      "description",
+      "related_to",
+      "tags",
+      "alias",
+      "status"
     ],
     "presets": null,
     "validation": {
       "_and": [
         {
-          "status": {
-            "_eq": "draft"
-          }
-        },
-        {
-          "title": {
-            "_nempty": true
-          }
-        },
-        {
-          "description": {
-            "_nempty": true
-          }
+          "_or": [
+            {
+              "status": {
+                "_eq": "draft"
+              }
+            },
+            {
+              "status": {
+                "_eq": "like"
+              }
+            }
+          ]
         }
       ]
     },
@@ -3276,39 +3446,69 @@
     "action": "create",
     "collection": "feature_whishes",
     "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "a6d511c1-95fb-4342-8cf7-d41c8573d7b6"
+    "_syncId": "a7207fad-304b-4f15-a95d-c126f93770db"
   },
   {
-    "fields": [
-      "*"
-    ],
+    "fields": null,
     "presets": null,
     "validation": null,
-    "permissions": null,
-    "action": "read",
+    "permissions": {
+      "_and": [
+        {
+          "_and": [
+            {
+              "status": {
+                "_eq": "like"
+              }
+            },
+            {
+              "profile": {
+                "_null": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "action": "delete",
     "collection": "feature_whishes",
     "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "0db61349-1f99-4113-9c6c-fbbd40b63367"
+    "_syncId": "a254f3b7-8042-40ec-90e5-30304a438c21"
   },
   {
     "fields": [
-      "likes"
+      "id",
+      "status",
+      "title",
+      "description",
+      "progress",
+      "likes_amount",
+      "related_to",
+      "date_created",
+      "date_updated",
+      "alias",
+      "tags",
+      "moderation_note_public"
     ],
     "presets": null,
     "validation": null,
     "permissions": {
       "_and": [
         {
-          "status": {
-            "_eq": "published"
-          }
+          "_and": [
+            {
+              "status": {
+                "_eq": "published"
+              }
+            }
+          ]
         }
       ]
     },
-    "action": "update",
+    "action": "read",
     "collection": "feature_whishes",
     "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "cf703aa9-cdb9-45b8-b174-46e934ef7435"
+    "_syncId": "a0b77959-9e6a-45a5-8e5d-205b3661a13b"
   },
   {
     "fields": [
