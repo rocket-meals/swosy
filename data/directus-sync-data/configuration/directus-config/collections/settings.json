@@ -61,11 +61,8 @@
     "custom_aspect_ratios": null,
     "mcp_system_prompt": null,
     "ai_system_prompt": null,
-    "ai_openai_compatible_base_url": null,
-    "ai_openai_compatible_name": null,
     "public_note": null,
     "theme_light_overrides": null,
-    "ai_openai_compatible_models": null,
     "ai_openai_allowed_models": [
       "gpt-5-nano",
       "gpt-5-mini",
