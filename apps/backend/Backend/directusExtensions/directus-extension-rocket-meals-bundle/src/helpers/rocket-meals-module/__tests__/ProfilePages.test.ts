@@ -56,7 +56,7 @@ describe('ProfileDetailsHelper', () => {
   });
 
   it('describes a device and picks its icon', () => {
-    expect(ProfileDetailsHelper.getDeviceDescription({ id: 'd', brand: 'Apple', platform: 'ios', system_version: '18.2' })).toBe('Apple · ios 18.2');
+    expect(ProfileDetailsHelper.getDeviceDescription({ id: 'd', brand: 'Apple', platform: 'ios', system_version: '18.2' })).toBe('Apple · iOS 18.2');
     expect(ProfileDetailsHelper.getDeviceDescription({ id: 'd' })).toBeUndefined();
     expect(ProfileDetailsHelper.getDeviceIcon({ id: 'd', is_ios: true })).toBe('phone_iphone');
     expect(ProfileDetailsHelper.getDeviceIcon({ id: 'd', is_web: true, is_ios: true })).toBe('language');
@@ -133,6 +133,8 @@ describe('PushNotificationComposeHelper', () => {
     expect(short).toEqual({ visible: 'Heute Pizza', hidden: '', tooLong: false, length: 11, limit: PushNotificationComposeHelper.TITLE_VISIBLE_CHARACTERS });
     const long = PushNotificationComposeHelper.getVisibility('abcdef', 4);
     expect(long).toEqual({ visible: 'abcd', hidden: 'ef', tooLong: true, length: 6, limit: 4 });
+    // The cut moves back to the last space, no word is split.
+    expect(PushNotificationComposeHelper.getVisibility('Pizza in der Hauptmensa', 15)).toEqual({ visible: 'Pizza in der', hidden: ' Hauptmensa', tooLong: true, length: 23, limit: 15 });
     // An emoji counts as one character.
     expect(PushNotificationComposeHelper.getVisibility('🍕🍕🍕', 2).hidden).toBe('🍕');
   });

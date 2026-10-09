@@ -25,9 +25,11 @@ export class PushNotificationComposeHelper {
    * About as many characters as a phone shows of the title in a collapsed notification (one line
    * on the lock screen). Depends on the device and font size, so it is a guide, not a hard limit.
    */
-  public static readonly TITLE_VISIBLE_CHARACTERS = 40;
+  public static readonly TITLE_VISIBLE_CHARACTERS = 32;
   /** About as many characters of the text as fit into the four lines iOS shows collapsed. */
-  public static readonly BODY_VISIBLE_CHARACTERS = 150;
+  public static readonly BODY_VISIBLE_CHARACTERS = 130;
+  /** A cut moves back to the last space within this many characters, so no word is split in the preview. */
+  public static readonly WORD_SNAP_CHARACTERS = 15;
   /** Lines of the text in the preview – the same four lines the limit above is based on. */
   public static readonly BODY_VISIBLE_LINES = 4;
   /** Larger numbers do not fit on the app icon any more. */
@@ -40,13 +42,24 @@ export class PushNotificationComposeHelper {
     // Array.from: an emoji counts as one character, as the phone shows it.
     const characters = Array.from(value);
     const tooLong = characters.length > limit;
+    const cut = tooLong ? PushNotificationComposeHelper.findCut(characters, limit) : characters.length;
     return {
-      visible: tooLong ? characters.slice(0, limit).join('') : value,
-      hidden: tooLong ? characters.slice(limit).join('') : '',
+      visible: tooLong ? characters.slice(0, cut).join('') : value,
+      hidden: tooLong ? characters.slice(cut).join('') : '',
       tooLong,
       length: characters.length,
       limit,
     };
+  }
+
+  /** Where to cut: at the limit, or at the last space shortly before it, so no word is split. */
+  private static findCut(characters: readonly string[], limit: number): number {
+    for (let index = limit; index >= Math.max(1, limit - PushNotificationComposeHelper.WORD_SNAP_CHARACTERS); index--) {
+      if (/\s/.test(characters[index] ?? '')) {
+        return index;
+      }
+    }
+    return limit;
   }
 
   static getTitleVisibility(title: string | null | undefined): PushTextVisibility {

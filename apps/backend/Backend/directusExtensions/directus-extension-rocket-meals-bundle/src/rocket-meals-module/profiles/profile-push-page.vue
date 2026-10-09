@@ -186,20 +186,27 @@ watch(() => props.profileId, load);
         <div class="previews">
           <section class="preview">
             <h3 class="preview-title type-label">{{ translate(BackendTranslationKeys.rocket_meals_module_push_preview_notification) }}</h3>
-            <div class="lock-screen" :style="{ '--project-color': projectColor }">
-              <div class="lock-clock">{{ clockLabel }}</div>
-              <div class="notification">
-                <div class="notification-icon">
-                  <img v-if="projectLogoUrl" :src="projectLogoUrl" alt="" @error="logoFailed = true" />
-                  <v-icon v-else :name="RocketMealsModulePages.MODULE_ICON" small />
+            <div class="phone" :style="{ '--project-color': projectColor }">
+              <div class="lock-screen">
+                <div class="status-bar">
+                  <span />
+                  <span class="island" />
+                  <span class="status-icons"><v-icon name="signal_cellular_alt" x-small /><v-icon name="wifi" x-small /><v-icon name="battery_full" x-small /></span>
                 </div>
-                <div class="notification-content">
-                  <div class="notification-header">
-                    <span class="notification-app">{{ projectName }}</span>
-                    <span class="notification-time">{{ nowLabel }}</span>
+                <div class="lock-clock">{{ clockLabel }}</div>
+                <div class="notification">
+                  <div class="notification-icon">
+                    <img v-if="projectLogoUrl" :src="projectLogoUrl" alt="" @error="logoFailed = true" />
+                    <v-icon v-else :name="RocketMealsModulePages.MODULE_ICON" small />
                   </div>
-                  <div class="notification-title" :class="{ placeholder: !title.trim() }">{{ title.trim() || translate(BackendTranslationKeys.rocket_meals_module_push_title_placeholder) }}</div>
-                  <div class="notification-body" :class="{ placeholder: !body.trim() }" :style="{ '-webkit-line-clamp': PushNotificationComposeHelper.BODY_VISIBLE_LINES }">{{ body.trim() || translate(BackendTranslationKeys.rocket_meals_module_push_body_placeholder) }}</div>
+                  <div class="notification-content">
+                    <div class="notification-header">
+                      <span class="notification-app">{{ projectName }}</span>
+                      <span class="notification-time">{{ nowLabel }}</span>
+                    </div>
+                    <div class="notification-title" :class="{ placeholder: !title.trim() }">{{ title.trim() || translate(BackendTranslationKeys.rocket_meals_module_push_title_placeholder) }}</div>
+                    <div class="notification-body" :class="{ placeholder: !body.trim() }" :style="{ '-webkit-line-clamp': PushNotificationComposeHelper.BODY_VISIBLE_LINES }">{{ body.trim() || translate(BackendTranslationKeys.rocket_meals_module_push_body_placeholder) }}</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -356,7 +363,7 @@ watch(() => props.profileId, load);
 
 .previews {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.5rem;
   align-items: start;
 }
@@ -374,20 +381,23 @@ watch(() => props.profileId, load);
   margin: 0;
 }
 
-/* Lock screen: blurred wallpaper in the project colour, the notification on top. */
+/* Lock screen in the same phone as the home screen: wallpaper in the project colour, the notification below the clock. */
 .lock-screen {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-  inline-size: 100%;
-  max-inline-size: 22rem;
-  padding: 1.5rem 0.75rem 2.5rem;
+  gap: 1.25rem;
+  align-items: stretch;
+  aspect-ratio: 9 / 19.5;
+  padding: 0.75rem 0.625rem;
+  overflow: hidden;
+  color: #fff;
   background: radial-gradient(circle at 20% 10%, color-mix(in srgb, var(--project-color) 70%, #fff) 0%, transparent 55%), linear-gradient(160deg, var(--project-color), #1c1c28);
-  border-radius: 2rem;
+  border-radius: 2.25rem;
 }
 
 .lock-clock {
+  align-self: center;
+  margin-block-start: 1rem;
   color: #fff;
   font-weight: 600;
   font-size: 3.5rem;
@@ -436,7 +446,7 @@ watch(() => props.profileId, load);
   flex-direction: column;
   gap: 0.125rem;
   min-inline-size: 0;
-  font-size: 0.875rem;
+  font-size: 12px;
   line-height: 1.3;
 }
 
@@ -497,6 +507,11 @@ watch(() => props.profileId, load);
   align-items: flex-start;
 }
 
+.cut-off-header .v-icon {
+  flex: none;
+  margin-block-start: 0.125rem;
+}
+
 .cut-off-text p {
   margin: 0;
   white-space: pre-line;
@@ -512,7 +527,8 @@ watch(() => props.profileId, load);
 
 /* Phone on its home screen. */
 .phone {
-  inline-size: 17rem;
+  /* In px, not rem: the width decides how much text fits, and must match the limits of PushNotificationComposeHelper. */
+  inline-size: 320px;
   padding: 0.625rem;
   background: #111;
   border-radius: 2.75rem;
@@ -642,7 +658,7 @@ watch(() => props.profileId, load);
 }
 
 .badge-note {
-  max-inline-size: 17rem;
+  max-inline-size: 320px;
   margin: 0;
   text-align: center;
 }

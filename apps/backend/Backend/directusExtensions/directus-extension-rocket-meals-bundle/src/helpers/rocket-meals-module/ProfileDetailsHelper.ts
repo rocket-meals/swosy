@@ -57,6 +57,9 @@ export class ProfileDetailsHelper {
   public static readonly AVATAR_SIZE = 96;
   public static readonly LIST_AVATAR_SIZE = 40;
 
+  /** Product names, not translated. */
+  private static readonly PLATFORM_NAMES: Record<string, string> = { ios: 'iOS', android: 'Android', web: 'Web', macos: 'macOS', windows: 'Windows' };
+
   private static readonly UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
   static readonly PROFILES_ENDPOINT = `/items/${CollectionNames.PROFILES}`;
@@ -228,9 +231,18 @@ export class ProfileDetailsHelper {
     return 'devices';
   }
 
-  /** E.g. `Apple · ios 18.2` – brand, platform and system version, whatever is known. */
+  /** How a platform is written, `ios` → `iOS`; unknown ones stay as they are. */
+  static getPlatformName(platform: string | null | undefined): string | undefined {
+    const value = platform?.trim();
+    if (!value) {
+      return undefined;
+    }
+    return ProfileDetailsHelper.PLATFORM_NAMES[value.toLowerCase()] ?? value;
+  }
+
+  /** E.g. `Apple · iOS 18.2` – brand, platform and system version, whatever is known. */
   static getDeviceDescription(device: ModuleProfileDevice): string | undefined {
-    const system = [device.platform, device.system_version].filter(part => !!part && String(part).trim().length > 0).join(' ');
+    const system = [ProfileDetailsHelper.getPlatformName(device.platform), device.system_version].filter(part => !!part && String(part).trim().length > 0).join(' ');
     const parts = [device.alias, device.brand, system].filter((part): part is string => !!part && part.trim().length > 0);
     return parts.length > 0 ? parts.join(' · ') : undefined;
   }
