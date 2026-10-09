@@ -13,6 +13,7 @@
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
+import type { ModuleChatMessage } from './ChatQueryHelper';
 
 export type FoodFeedbackStatusPresentation = {
   labelKey: BackendTranslationKeys;
@@ -30,17 +31,12 @@ export type FoodFeedbackListItem = {
   date_updated?: string | null;
   food?: { id: string; alias?: string | null; image?: string | { id: string } | null; image_remote_url?: string | null } | string | null;
   canteen?: { id: string; alias?: string | null } | string | null;
-  profile?: { id: string; nickname?: string | null; language?: string | { code?: string | null } | null } | string | null;
+  profile?: { id: string; nickname?: string | null; avatar?: unknown; date_updated?: string | null; language?: string | { code?: string | null } | null } | string | null;
   chat?: { id: string; conversation_state?: string | null; date_updated?: string | null } | string | null;
 };
 
-export type FoodFeedbackChatMessage = {
-  id: string;
-  message?: string | null;
-  date_created?: string | null;
-  profile?: { id: string; nickname?: string | null } | string | null;
-  user_created?: { id: string; first_name?: string | null; last_name?: string | null; email?: string | null } | string | null;
-};
+/** A message of a support chat – the same shape for every chat of the module, see `ChatQueryHelper`. */
+export type FoodFeedbackChatMessage = ModuleChatMessage;
 
 /** Order of the list. */
 export enum FoodFeedbackListSort {
@@ -102,10 +98,7 @@ export class FoodFeedbackChatHelper {
   public static readonly CANTEEN_IMAGE_SIZE = 24;
 
   /** Fields of the list. */
-  public static readonly LIST_FIELDS = ['id', 'comment', 'rating', 'date_created', 'date_updated', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'canteen.id', 'canteen.alias', 'profile.id', 'profile.nickname', 'profile.language', 'chat.id', 'chat.conversation_state', 'chat.date_updated'];
-
-  /** Fields of a chat message, including who wrote it in the backend. */
-  public static readonly MESSAGE_FIELDS = ['id', 'message', 'date_created', 'profile.id', 'profile.nickname', 'user_created.id', 'user_created.first_name', 'user_created.last_name', 'user_created.email'];
+  public static readonly LIST_FIELDS = ['id', 'comment', 'rating', 'date_created', 'date_updated', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'canteen.id', 'canteen.alias', 'profile.id', 'profile.nickname', 'profile.avatar', 'profile.date_updated', 'profile.language', 'chat.id', 'chat.conversation_state', 'chat.date_updated'];
 
   static readonly CANTEENS_ENDPOINT = `/items/${CollectionNames.CANTEENS}`;
   static readonly FOOD_FEEDBACKS_ENDPOINT = `/items/${CollectionNames.FOODS_FEEDBACKS}`;

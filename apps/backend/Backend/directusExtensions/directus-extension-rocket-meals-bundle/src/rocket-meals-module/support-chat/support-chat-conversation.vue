@@ -2,13 +2,16 @@
 /**
  * The conversation of a support chat: the request that opened it as first bubble, the messages
  * (user left, support right) and the input to answer. Shared by the chat pages of food feedbacks
- * and app feedbacks; loading and sending stay with the page (`send`).
+ * and app feedbacks and the page of a chat; loading and sending stay with the page (`send`).
+ * Messages of users carry the avatar of their profile, a click on it opens the profile page.
  */
 import { nextTick, ref, watch } from 'vue';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import type { ModuleProfile } from '../../helpers/rocket-meals-module/ProfileDetailsHelper';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
+import ProfileAvatar from '../profiles/profile-avatar.vue';
 
 const props = defineProps<{
   /** The request of the user, e.g. the comment of a food feedback. */
@@ -20,8 +23,8 @@ const props = defineProps<{
   placeholder?: string;
   /** A note right above the input, e.g. that a store review has only one public answer. */
   hint?: string;
-  /** The nickname of the author of the request, shown as "Nutzer: <Nickname>" when set. */
-  userNickname?: string;
+  /** The author of the request: avatar and "Nutzer: <Nickname>" of the opening bubble. */
+  userProfile?: ModuleProfile | string | null;
   /** Sends a text; resolves `true` when it was sent, so the input is cleared. */
   send: (text: string) => Promise<boolean>;
 }>();
@@ -30,9 +33,12 @@ const { translate, formatDateTime } = useAppExtensionTranslate();
 
 /** "Nutzer: <Nickname>" when the message (or the request) has a nickname, otherwise "Nutzer". */
 function getUserLabel(message?: FoodFeedbackChatMessage): string {
-  const nickname = (message ? FoodFeedbackChatHelper.getNickname(message.profile) : undefined) ?? props.userNickname;
+  const nickname = (message ? FoodFeedbackChatHelper.getNickname(message.profile) : undefined) ?? FoodFeedbackChatHelper.getNickname(props.userProfile);
   return nickname ? translate(BackendTranslationKeys.rocket_meals_module_user_with_nickname, { nickname }) : translate(BackendTranslationKeys.rocket_meals_module_user);
 }
+
+/** Edge length in px of the avatar next to a message of the user. */
+const AVATAR_SIZE = 32;
 
 const newMessage = ref('');
 const sending = ref(false);
@@ -95,22 +101,28 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
 
 <template>
   <div ref="messagesContainer" class="messages">
-    <div v-if="opening" class="message from-user">
-      <div class="message-author type-note">{{ getUserLabel() }}</div>
-      <div class="bubble">{{ opening.text }}</div>
-      <div class="message-date type-note">{{ formatDateTime(opening.date) }}</div>
+    <div v-if="opening" class="message-row from-user">
+      <profile-avatar class="message-avatar" :profile="userProfile" :size="AVATAR_SIZE" />
+      <div class="message">
+        <div class="message-author type-note">{{ getUserLabel() }}</div>
+        <div class="bubble">{{ opening.text }}</div>
+        <div class="message-date type-note">{{ formatDateTime(opening.date) }}</div>
+      </div>
     </div>
 
-    <div v-for="message in messages" :key="message.id" class="message" :class="ChatHelper.isSupportMessage(message) ? 'from-support' : 'from-user'">
-      <div class="message-author type-note">
-        <template v-if="ChatHelper.isSupportMessage(message)">
-          {{ translate(BackendTranslationKeys.rocket_meals_module_support) }}
-          <template v-if="FoodFeedbackChatHelper.getSupportAuthorName(message)"> · {{ FoodFeedbackChatHelper.getSupportAuthorName(message) }}</template>
-        </template>
-        <template v-else>{{ getUserLabel(message) }}</template>
+    <div v-for="message in messages" :key="message.id" class="message-row" :class="ChatHelper.isSupportMessage(message) ? 'from-support' : 'from-user'">
+      <profile-avatar v-if="!ChatHelper.isSupportMessage(message)" class="message-avatar" :profile="message.profile ?? userProfile" :size="AVATAR_SIZE" />
+      <div class="message">
+        <div class="message-author type-note">
+          <template v-if="ChatHelper.isSupportMessage(message)">
+            {{ translate(BackendTranslationKeys.rocket_meals_module_support) }}
+            <template v-if="FoodFeedbackChatHelper.getSupportAuthorName(message)"> · {{ FoodFeedbackChatHelper.getSupportAuthorName(message) }}</template>
+          </template>
+          <template v-else>{{ getUserLabel(message) }}</template>
+        </div>
+        <div class="bubble">{{ message.message }}</div>
+        <div class="message-date type-note">{{ formatDateTime(message.date_created) }}</div>
       </div>
-      <div class="bubble">{{ message.message }}</div>
-      <div class="message-date type-note">{{ formatDateTime(message.date_created) }}</div>
     </div>
 
     <div v-if="messages.length === 0" class="empty type-note">{{ emptyText }}</div>
@@ -146,19 +158,34 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
   border-radius: var(--theme--border-radius);
 }
 
+.message-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+  max-inline-size: 75%;
+}
+
+.message-row.from-user {
+  align-self: flex-start;
+}
+
+.message-row.from-support {
+  align-self: flex-end;
+}
+
+/* Next to the bubble, not next to the date below it. */
+.message-avatar {
+  margin-block-end: 1.375rem;
+}
+
 .message {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  max-inline-size: 75%;
+  min-inline-size: 0;
 }
 
-.message.from-user {
-  align-self: flex-start;
-}
-
-.message.from-support {
-  align-self: flex-end;
+.from-support .message {
   align-items: flex-end;
 }
 

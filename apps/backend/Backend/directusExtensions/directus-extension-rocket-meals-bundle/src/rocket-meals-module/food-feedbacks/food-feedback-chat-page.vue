@@ -16,9 +16,11 @@ import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FoodFeedbackChatActions } from '../../helpers/rocket-meals-module/FoodFeedbackChatActions';
 import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage, type FoodFeedbackListItem } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import { ChatQueryHelper } from '../../helpers/rocket-meals-module/ChatQueryHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
+import ProfileAvatar from '../profiles/profile-avatar.vue';
 import SupportChatConversation from '../support-chat/support-chat-conversation.vue';
 import SupportChatStatusMenu from '../support-chat/support-chat-status-menu.vue';
 import FoodFeedbackRating from './food-feedback-rating.vue';
@@ -60,14 +62,7 @@ async function loadMessages() {
     messages.value = [];
     return;
   }
-  const response = await api.get(FoodFeedbackChatHelper.CHAT_MESSAGES_ENDPOINT, {
-    params: {
-      fields: FoodFeedbackChatHelper.MESSAGE_FIELDS.join(','),
-      filter: JSON.stringify({ chat: { _eq: chatId.value } }),
-      sort: 'date_created',
-      limit: -1,
-    },
-  });
+  const response = await api.get(ChatQueryHelper.CHAT_MESSAGES_ENDPOINT, { params: ChatQueryHelper.buildMessagesQuery(String(chatId.value)) });
   messages.value = ChatHelper.sortMessagesChronologically(response.data?.data ?? []);
 }
 
@@ -202,6 +197,7 @@ watch(() => props.feedbackId, load);
           <span class="type-label">{{ foodName }}</span>
           <food-feedback-rating :rating="feedback.rating" />
           <span class="spacer" />
+          <profile-avatar v-if="feedback.profile" :profile="feedback.profile" :size="28" with-name />
           <span class="type-note">
             <template v-if="FoodFeedbackChatHelper.getCanteenName(feedback)"> {{ translate(BackendTranslationKeys.rocket_meals_module_canteen) }}: {{ FoodFeedbackChatHelper.getCanteenName(feedback) }} · </template>
             {{ formatDateTime(feedback.date_created) }}
@@ -210,7 +206,7 @@ watch(() => props.feedbackId, load);
 
         <support-chat-conversation
           :opening="FoodFeedbackChatStatusHelper.hasComment(feedback) ? { text: feedback.comment ?? '', date: feedback.date_created } : null"
-          :user-nickname="FoodFeedbackChatHelper.getNickname(feedback.profile)"
+          :user-profile="feedback.profile"
           :messages="messages"
           :can-write="canWrite"
           :empty-text="canWrite ? translate(BackendTranslationKeys.rocket_meals_module_chat_empty) : translate(BackendTranslationKeys.rocket_meals_module_chat_not_possible)"
