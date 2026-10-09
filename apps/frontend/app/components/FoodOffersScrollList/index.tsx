@@ -25,6 +25,7 @@ import MyMarkdownProjectColored from '@/components/MyMarkdownProjectColored';
 import { getAppElementTranslation } from '@/helper/resourceHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
+import FeatureWishesTile from '@/components/FeatureWishesTile';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { CanteenVisitsDateRow } from '@/components/CanteenVisitsDateRow';
 import FoodOffersLoadingBar from '@/components/FoodOffersLoadingBar';
@@ -502,7 +503,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		setRefreshing(false);
 	};
 
-	const renderDay = ({ item }: { item: DayData }) => {
+	const renderDay = ({ item, index }: { item: DayData; index: number }) => {
 		const feedbacks = canteenFeedbackLabels?.map((label, idx) => {
 			const total = canteenFeedbackLabels.length;
 			let groupPosition: 'single' | 'top' | 'bottom' | 'middle' = 'middle';
@@ -598,6 +599,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						<MyMarkdownProjectColored content={afterElement?.content || ''} accentColor={foods_area_color} imageWidth={440} imageHeight={293} collapsibleSections />
 					</View>
 				)}
+				{index === 0 && <FeatureWishesTile />}
 				{feedbacks && feedbacks.length > 0 && (
 					<View style={styles.feebackContainer}>
 						<Text style={[styles.feedbackLabelsTitle, { color: theme.screen.text }]}>

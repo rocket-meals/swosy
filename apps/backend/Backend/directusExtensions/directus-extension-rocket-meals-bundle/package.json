@@ -105,6 +105,21 @@
       },
       {
         "type": "hook",
+        "name": "feature-wishes-hook",
+        "source": "src/feature-wishes-hook/index.ts"
+      },
+      {
+        "type": "hook",
+        "name": "feature-wishes-cleanup-workflow",
+        "source": "src/feature-wishes-cleanup-workflow/index.ts"
+      },
+      {
+        "type": "endpoint",
+        "name": "feature-wishes-endpoint",
+        "source": "src/feature-wishes-endpoint/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "users-inactive-cleanup-workflow",
         "source": "src/users-inactive-cleanup-workflow/index.ts"
       },

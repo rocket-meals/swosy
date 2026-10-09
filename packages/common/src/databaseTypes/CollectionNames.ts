@@ -28,6 +28,7 @@ export enum CollectionNames {
   DIRECTUS_FILES = 'directus_files',
   DASHBOARDS = 'directus_dashboards',
   PANELS = 'directus_panels',
+  FEATURE_WHISHES = 'feature_whishes',
   FILES_SHARES = 'files_shares',
   FORMS = 'forms',
   FORM_EXTRACTS = 'form_extracts',

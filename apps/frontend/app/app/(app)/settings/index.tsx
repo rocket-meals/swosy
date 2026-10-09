@@ -60,6 +60,7 @@ import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
 import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
 import FoodoffersAverageRatingToggle from '@/components/FoodoffersAverageRatingToggle';
+import { useFeatureWishesModal } from '@/components/FeatureWishes/useFeatureWishesModal';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -573,6 +574,8 @@ const Settings = () => {
                 );
         }, [collectibleSizeLabel, collectibleSizeOptions, handleSelectCollectibleSize, showScrollViewModal, translate]);
 
+        const { openFeatureWishesModal } = useFeatureWishesModal();
+
         const openCollectibleSettingsModal = useCallback(() => {
                 showScrollViewModal(
                         {
@@ -832,6 +835,9 @@ const Settings = () => {
 							handleFunction={openCollectibleSettingsModal}
 							groupPosition="middle"
 						/>
+						{appSettings?.feature_wishes_enabled === true && (
+							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="lightbulb-on-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feature_wishes)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFeatureWishesModal} groupPosition="middle" />
+						)}
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="support-agent" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feedback_support_faq)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/support-FAQ')} groupPosition="middle" nativeID={ComponentIds.SETTINGS_FEEDBACK_SUPPORT_FAQ} />
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="license" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.license_information)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/licenseInformation')} groupPosition="middle" />
 						{/* Terms & Conditions */}
@@ -1052,6 +1058,7 @@ const Settings = () => {
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 		settingsAvatarConfig, openAvatarEditor,
 		appSettings?.foods_ratings_average_display,
+		appSettings?.feature_wishes_enabled, openFeatureWishesModal,
 		sqliteStorageRefreshSignal, handleSqliteStorageCleared, handleSqliteStorageClearError,
 		asyncStorageUsageTotalBytes, refreshAsyncStorageUsage, openAsyncStorageKeysSheet,
 		isMigratingStorage, handleMigrateStorage,

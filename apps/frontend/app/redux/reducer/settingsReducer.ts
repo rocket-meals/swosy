@@ -1,4 +1,4 @@
-import { CHANGE_LANGUAGE, CHANGE_THEME, CLEAR_SETTINGS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_APARTMENTS_SORTING, SET_APP_RATING_DATA, SET_APP_SETTINGS, SET_CAMPUSES_SORTING, SET_CANTEEN_VISITS_VISIBILITY, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_COLOR, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOOD_DETAILS_LAST_TAB, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD, SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, SET_FUN_LANGUAGE_MODE, SET_MAP_CLUSTER_PIXEL_RADIUS, SET_MAP_ORGANISATION_FILTER, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM, SET_NICKNAME_LOCAL, SET_OFFLINE_MODE,  SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CAR_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_CONSENT, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_COUNT, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_PITCH, SET_OSM_VECTOR_MAP_POI_SUB_SETTINGS, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_SHOW_SETTINGS, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION, SET_PIRATE_LANGUAGE, SET_SELECTED_CUSTOMER, SET_SERVER_INFO, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_SORTING, SET_USE_WEBP_FOR_ASSETS, SET_WARNING, SET_WIKIS, SET_WIKIS_PAGES } from '@/redux/Types/types';
+import { CHANGE_LANGUAGE, CHANGE_THEME, CLEAR_SETTINGS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_APARTMENTS_SORTING, SET_APP_RATING_DATA, SET_APP_SETTINGS, SET_FEATURE_WISHES_LOCAL_DATA, SET_CAMPUSES_SORTING, SET_CANTEEN_VISITS_VISIBILITY, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_COLOR, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOOD_DETAILS_LAST_TAB, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD, SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, SET_FUN_LANGUAGE_MODE, SET_MAP_CLUSTER_PIXEL_RADIUS, SET_MAP_ORGANISATION_FILTER, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM, SET_NICKNAME_LOCAL, SET_OFFLINE_MODE,  SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CAR_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_CONSENT, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_COUNT, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_PITCH, SET_OSM_VECTOR_MAP_POI_SUB_SETTINGS, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_SHOW_SETTINGS, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION, SET_PIRATE_LANGUAGE, SET_SELECTED_CUSTOMER, SET_SERVER_INFO, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_SORTING, SET_USE_WEBP_FOR_ASSETS, SET_WARNING, SET_WIKIS, SET_WIKIS_PAGES } from '@/redux/Types/types';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 import { ConfigCustomerEnum, getCustomerConfig, getCustomerEnumForConfig } from '@/config';
 import { MapStyleKey } from 'repo-depkit-common-ui';
@@ -72,6 +72,15 @@ const initialState = {
                 lastAskedAt: null as string | null,
                 lastAskedAppVersion: null as string | null,
                 lastFocusTime: '',
+        },
+        // Feature wishes on this device: when the tile in the food offers was hidden, the wishes
+        // submitted without account (the server only tells their state, not their text), the like rows
+        // by wish id (needed to take a like back) and the submission times for the daily limit.
+        featureWishesLocal: {
+                tileHiddenAt: null as string | null,
+                ownWishes: [] as { id: string; title: string }[],
+                likeIdsByWishId: {} as Record<string, string>,
+                submittedAt: [] as string[],
         },
 };
 
@@ -178,6 +187,16 @@ const settingReducer = (state, actions: any) => {
                                 ...state,
                                 appRatingData: {
                                         ...state.appRatingData,
+                                        ...actions.payload,
+                                },
+                        };
+                }
+                case SET_FEATURE_WISHES_LOCAL_DATA: {
+                        return {
+                                ...state,
+                                featureWishesLocal: {
+                                        ...initialState.featureWishesLocal,
+                                        ...state.featureWishesLocal,
                                         ...actions.payload,
                                 },
                         };

@@ -105,6 +105,7 @@ export const CollectionKeys = {
 	MAILS: 'mails',
 	PUSH_NOTIFICATIONS: 'push_notifications',
 	APP_FEEDBACKS: 'app_feedbacks',
+	FEATURE_WHISHES: 'feature_whishes',
 	FORM_FIELDS_TRANSLATIONS: 'form_fields_translations',
 	FOODOFFERS_MARKINGS: 'foodoffers_markings',
 	WORKFLOWS: 'workflows',

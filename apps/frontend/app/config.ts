@@ -209,7 +209,8 @@ export function getVersionPatch() {
         // 98: onboarding: "i" next to the default avatar explains which scientist the profile is named after
         // 99: onboarding: avatar step last, editor starts with presets while the scientist avatar is set, texts without dashes/semicolons
         // 100: default nickname without number (e.g. Curie), info modal heading aligned with its text
-        return 100;
+        // 101: feature wishes: tile in the food offers, entry in the settings, modal to submit and like wishes
+        return 101;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
