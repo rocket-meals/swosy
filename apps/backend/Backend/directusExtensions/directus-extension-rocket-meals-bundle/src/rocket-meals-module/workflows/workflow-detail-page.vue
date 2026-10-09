@@ -161,7 +161,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <private-view :title="name" :icon="page.icon">
+  <private-view :title="name" :icon="WorkflowsPageHelper.getIcon(workflowId)">
     <template #title-outer:prepend>
       <v-button class="back" rounded icon secondary exact :to="RocketMealsModulePages.getRoute(page)" :title="translate(BackendTranslationKeys.rocket_meals_module_workflows_back)">
         <v-icon name="arrow_back" />
