@@ -8838,5 +8838,35 @@
     "ru": "Отметки «нравится»",
     "tr": "Beğeni",
     "zh": "点赞"
+  },
+  "push_notification_opt_in_description": {
+    "de": "Möchtest du eine Push-Nachricht bekommen, wenn es dazu Neuigkeiten gibt? So erfährst du zum Beispiel sofort, wenn wir dir antworten.",
+    "en": "Would you like to get a push notification when there is news about this? For example, you will know right away when we reply to you.",
+    "ar": "هل تريد تلقي إشعار عند وجود مستجدات حول هذا؟ على سبيل المثال، ستعرف فورًا عندما نرد عليك.",
+    "es": "¿Quieres recibir una notificación push cuando haya novedades sobre esto? Por ejemplo, sabrás enseguida cuando te respondamos.",
+    "fr": "Veux-tu recevoir une notification push lorsqu'il y a du nouveau à ce sujet ? Par exemple, tu sauras tout de suite quand nous te répondrons.",
+    "ru": "Хочешь получать push-уведомления, когда здесь появятся новости? Например, ты сразу узнаешь, когда мы тебе ответим.",
+    "tr": "Bununla ilgili yenilikler olduğunda anlık bildirim almak ister misin? Örneğin sana yanıt verdiğimizde hemen haberin olur.",
+    "zh": "有相关新消息时，你想收到推送通知吗？例如，我们回复你时你会立即知道。"
+  },
+  "push_notification_opt_in_accept": {
+    "de": "Ja, benachrichtige mich",
+    "en": "Yes, notify me",
+    "ar": "نعم، أبلغني",
+    "es": "Sí, avísame",
+    "fr": "Oui, préviens-moi",
+    "ru": "Да, уведомлять меня",
+    "tr": "Evet, bana bildir",
+    "zh": "好的，通知我"
+  },
+  "push_notification_opt_in_later": {
+    "de": "Später",
+    "en": "Later",
+    "ar": "لاحقًا",
+    "es": "Más tarde",
+    "fr": "Plus tard",
+    "ru": "Позже",
+    "tr": "Daha sonra",
+    "zh": "稍后"
   }
 }

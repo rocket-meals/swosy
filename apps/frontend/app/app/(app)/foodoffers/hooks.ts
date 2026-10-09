@@ -311,7 +311,9 @@ export const useNotifications = () => {
         }
     };
     useEffect(() => {
-        if (Platform.OS !== 'web') requestPermissions();
+        // iOS shows its permission dialog only once: it is asked for after our own explanation
+        // (usePushNotificationOptInPrompt) instead of right when the food offers open.
+        if (Platform.OS !== 'web' && Platform.OS !== 'ios') requestPermissions();
     }, []);
 };
 

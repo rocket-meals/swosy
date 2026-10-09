@@ -10,6 +10,7 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { AppFeedback } from '@/redux/actions/AppFeedback/AppFeedback';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import useToast from '@/hooks/useToast';
+import usePushNotificationOptInPrompt from '@/hooks/usePushNotificationOptInPrompt';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { AppFeedbackContentHelper, DatabaseTypes, EmailHelper, StringHelper } from 'repo-depkit-common';
@@ -73,6 +74,7 @@ const FeedbackScreen = () => {
 	const { app_feedbacks_id, title: titleParam } = useLocalSearchParams();
 	const prefilledTitle = typeof titleParam === 'string' ? titleParam : '';
     const { profile } = useAppSelector((state) => state.authReducer);
+    const { askForPushNotifications } = usePushNotificationOptInPrompt();
     const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const [loading, setLoading] = useState(false);
@@ -277,6 +279,8 @@ const FeedbackScreen = () => {
 				console.log('Navigating to support ticket or FAQ');
 				if (profile?.id) {
 					router.navigate('/support-ticket');
+					// With a profile we can answer in the support chat - a good moment to offer push notifications.
+					void askForPushNotifications();
 				} else {
 					router.navigate('/support-FAQ');
 				}

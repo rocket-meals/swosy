@@ -10,6 +10,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
+import usePushNotificationOptInPrompt from '@/hooks/usePushNotificationOptInPrompt';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { SET_FEATURE_WISHES_LOCAL_DATA } from '@/redux/Types/types';
 import { FeatureWish, FeatureWishesHelper, loadFeatureWishFieldChoices } from '@/redux/actions/FeatureWishes/FeatureWishes';
@@ -586,6 +587,7 @@ export const useFeatureWishesModal = () => {
 	const { profile } = useAppSelector(state => state.authReducer);
 	const profileId: string | null = profile?.id ?? null;
 	const helper = useMemo(() => new FeatureWishesHelper(), []);
+	const { askForPushNotifications } = usePushNotificationOptInPrompt();
 	// The list is rendered by the callbacks below and the callbacks open the list again.
 	const listRef = useRef<() => React.ReactElement>(() => <View />);
 
@@ -624,12 +626,13 @@ export const useFeatureWishesModal = () => {
 							});
 							showToast(translate(TranslationKeys.feature_wishes_submitted), 'success');
 							close();
+							void askForPushNotifications();
 						}}
 					/>
 				),
 			});
 		},
-		[profileId, helper, show, close, showListAgain, showToast, translate, update]
+		[profileId, helper, show, close, showListAgain, showToast, translate, update, askForPushNotifications]
 	);
 
 	const openDetails = useCallback(

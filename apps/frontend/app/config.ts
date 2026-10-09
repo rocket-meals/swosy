@@ -215,7 +215,9 @@ export function getVersionPatch() {
         // 104: feature wishes: details with delete and update, likes of own wishes, icons and colors of the states from Directus
         // 105: common-ui: MyButton with translated action buttons (save, submit, update, edit, cancel, delete)
         // 106: merge of master (backend feedback pages)
-        return 106;
+        // 107: push notifications offered after app feedback, feature wish or comment
+        //     (iOS: own modal first, the system dialog is no longer shown at app start)
+        return 107;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

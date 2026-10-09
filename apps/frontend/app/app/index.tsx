@@ -3,10 +3,8 @@ import { Redirect } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { registerForPushNotificationsAsync } from '@/helper/getPushToken';
+import { syncCurrentDevicePushNotificationState } from '@/helper/PushNotificationDeviceSync';
 import type { Subscription } from 'expo-notifications';
-import { UPDATE_PROFILE } from '@/redux/Types/types';
-import { DatabaseTypes } from 'repo-depkit-common';
-import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { Platform } from 'react-native';
 import { markOnboardingShouldBeShownAfterLogin } from '@/helper/onboardingIntentHelper';
 
@@ -15,61 +13,6 @@ export const extractRawExpoToken = (token: string | null) => {
 	const m = /\[([^\]]{1,200})\]/.exec(String(token));
 	return m ? m[1] : token;
 };
-
-async function savePushTokenToAPI(opts: { token: string | null; profile: Partial<DatabaseTypes.Profiles>; dispatch: any }) {
-	const { token, profile, dispatch } = opts;
-	if (!token) {
-		return;
-	}
-	if (!profile?.id) {
-		return;
-	}
-
-	try {
-		const rawToken = extractRawExpoToken(token);
-
-		const devices = Array.isArray(profile.devices) ? profile.devices : [];
-		if (devices.length === 0) {
-			return;
-		}
-
-		const deviceToUpdate = devices.slice().sort((a: any, b: any) => new Date(b?.date_updated ?? 0).getTime() - new Date(a?.date_updated ?? 0).getTime())[0] || devices[0];
-
-		const existingPermission = deviceToUpdate?.pushTokenObj?.permission ?? null;
-
-		const normalizedPushTokenObj: any = {
-			...(existingPermission ? { permission: existingPermission } : {}),
-			pushToken: rawToken,
-		};
-
-		const updatedDevices = devices.map((d: any) =>
-			d.id === deviceToUpdate.id
-			? {
-				...d,
-				pushTokenObj: normalizedPushTokenObj,
-			}
-			: d
-		);
-
-		const payload: Partial<DatabaseTypes.Profiles> = {
-			id: profile.id,
-			devices: updatedDevices as any,
-		};
-
-
-		const helper = new ProfileHelper();
-		const updated = (await helper.updateProfile(payload)) as DatabaseTypes.Profiles;
-
-		if (updated) {
-			dispatch({
-				type: UPDATE_PROFILE,
-				payload: updated,
-			});
-		}
-	} catch (e) {
-		console.error('Error in savePushTokenToAPI:', e);
-	}
-}
 
 const Index = () => {
 	const dispatch = useDispatch();
@@ -83,9 +26,12 @@ const Index = () => {
 
 		(async () => {
 
-			const token = await registerForPushNotificationsAsync();
-
-			await savePushTokenToAPI({ token, profile, dispatch });
+			// iOS shows its permission dialog only once - it is asked for after our own explanation
+			// (usePushNotificationOptInPrompt), not right at app start.
+			const token = await registerForPushNotificationsAsync({ requestPermission: Platform.OS !== 'ios' });
+			if (token) {
+				await syncCurrentDevicePushNotificationState({ profile, dispatch });
+			}
 
 			const Notifications = await import('expo-notifications');
 			subscription = Notifications.addNotificationReceivedListener(() => {});
