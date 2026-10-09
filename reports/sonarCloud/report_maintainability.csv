@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AaEgOr9CMxMq9SokM_4G","Replace this union type with a type alias.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FilterSelectHelper.ts",27
 "AaEfwi2YowdoI0qOTfg_","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts",67
 "AaEfwi2mowdoI0qOTfhA","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/index.ts",83
 "AaEfwi2mowdoI0qOTfhB","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/index.ts",128

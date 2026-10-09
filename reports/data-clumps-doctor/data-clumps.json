@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-09T09:27:34.902Z",
+  "report_timestamp": "2026-10-09T10:31:21.903Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
-          "maximum": 142,
-          "average": 1.524247491638796,
-          "amountSavedValuesForKeys": 5469,
+          "median": 1,
+          "maximum": 143,
+          "average": 1.5265794600612301,
+          "amountSavedValuesForKeys": 5485,
           "amountKeys": 31
         },
         "invertedParameterToMethods": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 81,
-          "average": 2.2713257965056526,
-          "amountSavedValuesForKeys": 2210,
+          "average": 2.272357723577236,
+          "amountSavedValuesForKeys": 2236,
           "amountKeys": 24
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
-          "maximum": 142,
-          "average": 1.5370994940978078,
-          "amountSavedValuesForKeys": 5469,
+          "median": 1,
+          "maximum": 143,
+          "average": 1.5394330620263823,
+          "amountSavedValuesForKeys": 5485,
           "amountKeys": 31
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 5580,
-        "detection_time_ms": 128,
+        "ast_generation_time_ms": 4273,
+        "detection_time_ms": 115,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 158.77,
-          "os_memory_free": 14801203200,
-          "os_memory_total": 16766414848,
+          "os_uptime": 192.59,
+          "os_memory_free": 14698790912,
+          "os_memory_total": 16765378560,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
-          "os_cpu_speed": 0
+          "os_cpu_model": "Intel(R) Xeon(R) 6973P-C",
+          "os_cpu_speed": 3601
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 39,
+    "amount_classes_or_interfaces_with_data_clumps": 41,
     "amount_files_with_data_clumps": 31,
     "amount_methods_with_data_clumps": 12,
-    "fields_to_fields_data_clump": 56,
+    "fields_to_fields_data_clump": 58,
     "parameters_to_fields_data_clump": 2,
     "parameters_to_parameters_data_clump": 12,
-    "amount_data_clumps": 70
+    "amount_data_clumps": 72
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "3037cdf5d9c4175e78bf307e04bc078071250d4b",
-    "project_commit_hash": "3037cdf5d9c4175e78bf307e04bc078071250d4b",
+    "project_version": "83ea57be66e0885366fbce77fa6d951a179d9d44",
+    "project_commit_hash": "83ea57be66e0885366fbce77fa6d951a179d9d44",
     "project_tag": null,
-    "project_commit_date": "1791537925",
+    "project_commit_date": "1791541754",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 758,
-    "number_of_classes_or_interfaces": 1693,
-    "number_of_methods": 1939,
-    "number_of_data_fields": 5469,
-    "number_of_method_parameters": 2210
+    "number_of_files": 759,
+    "number_of_classes_or_interfaces": 1698,
+    "number_of_methods": 1957,
+    "number_of_data_fields": 5485,
+    "number_of_method_parameters": 2236
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -604,16 +604,16 @@
             "type": "FoodFeedbackChatFilter",
             "modifiers": [],
             "position": {
-              "startLine": 151,
+              "startLine": 176,
               "startColumn": 26,
-              "endLine": 151,
+              "endLine": 176,
               "endColumn": 56
             }
           },
           "position": {
-            "startLine": 134,
+            "startLine": 159,
             "startColumn": 25,
-            "endLine": 134,
+            "endLine": 159,
             "endColumn": 55
           }
         },
@@ -629,16 +629,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 151,
+              "startLine": 176,
               "startColumn": 96,
-              "endLine": 151,
+              "endLine": 176,
               "endColumn": 118
             }
           },
           "position": {
-            "startLine": 134,
+            "startLine": 159,
             "startColumn": 71,
-            "endLine": 134,
+            "endLine": 159,
             "endColumn": 93
           }
         },
@@ -654,16 +654,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper\").AppFeedbackListOptions",
             "modifiers": [],
             "position": {
-              "startLine": 151,
+              "startLine": 176,
               "startColumn": 58,
-              "endLine": 151,
+              "endLine": 176,
               "endColumn": 94
             }
           },
           "position": {
-            "startLine": 134,
+            "startLine": 159,
             "startColumn": 95,
-            "endLine": 134,
+            "endLine": 159,
             "endColumn": 131
           }
         }
@@ -701,16 +701,16 @@
             "type": "FoodFeedbackChatFilter",
             "modifiers": [],
             "position": {
-              "startLine": 223,
+              "startLine": 231,
               "startColumn": 25,
-              "endLine": 223,
+              "endLine": 231,
               "endColumn": 55
             }
           },
           "position": {
-            "startLine": 134,
+            "startLine": 159,
             "startColumn": 25,
-            "endLine": 134,
+            "endLine": 159,
             "endColumn": 55
           }
         },
@@ -726,16 +726,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 223,
+              "startLine": 231,
               "startColumn": 57,
-              "endLine": 223,
+              "endLine": 231,
               "endColumn": 69
             }
           },
           "position": {
-            "startLine": 134,
+            "startLine": 159,
             "startColumn": 57,
-            "endLine": 134,
+            "endLine": 159,
             "endColumn": 69
           }
         },
@@ -751,16 +751,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 223,
+              "startLine": 231,
               "startColumn": 71,
-              "endLine": 223,
+              "endLine": 231,
               "endColumn": 93
             }
           },
           "position": {
-            "startLine": 134,
+            "startLine": 159,
             "startColumn": 71,
-            "endLine": 134,
+            "endLine": 159,
             "endColumn": 93
           }
         }
@@ -798,16 +798,16 @@
             "type": "FoodFeedbackChatFilter",
             "modifiers": [],
             "position": {
-              "startLine": 134,
+              "startLine": 159,
               "startColumn": 25,
-              "endLine": 134,
+              "endLine": 159,
               "endColumn": 55
             }
           },
           "position": {
-            "startLine": 151,
+            "startLine": 176,
             "startColumn": 26,
-            "endLine": 151,
+            "endLine": 176,
             "endColumn": 56
           }
         },
@@ -823,16 +823,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper\").AppFeedbackListOptions",
             "modifiers": [],
             "position": {
-              "startLine": 134,
+              "startLine": 159,
               "startColumn": 95,
-              "endLine": 134,
+              "endLine": 159,
               "endColumn": 131
             }
           },
           "position": {
-            "startLine": 151,
+            "startLine": 176,
             "startColumn": 58,
-            "endLine": 151,
+            "endLine": 176,
             "endColumn": 94
           }
         },
@@ -848,16 +848,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 134,
+              "startLine": 159,
               "startColumn": 71,
-              "endLine": 134,
+              "endLine": 159,
               "endColumn": 93
             }
           },
           "position": {
-            "startLine": 151,
+            "startLine": 176,
             "startColumn": 96,
-            "endLine": 151,
+            "endLine": 176,
             "endColumn": 118
           }
         }
@@ -992,16 +992,16 @@
             "type": "FoodFeedbackChatFilter",
             "modifiers": [],
             "position": {
-              "startLine": 134,
+              "startLine": 159,
               "startColumn": 25,
-              "endLine": 134,
+              "endLine": 159,
               "endColumn": 55
             }
           },
           "position": {
-            "startLine": 223,
+            "startLine": 231,
             "startColumn": 25,
-            "endLine": 223,
+            "endLine": 231,
             "endColumn": 55
           }
         },
@@ -1017,16 +1017,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 134,
+              "startLine": 159,
               "startColumn": 57,
-              "endLine": 134,
+              "endLine": 159,
               "endColumn": 69
             }
           },
           "position": {
-            "startLine": 223,
+            "startLine": 231,
             "startColumn": 57,
-            "endLine": 223,
+            "endLine": 231,
             "endColumn": 69
           }
         },
@@ -1042,16 +1042,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 134,
+              "startLine": 159,
               "startColumn": 71,
-              "endLine": 134,
+              "endLine": 159,
               "endColumn": 93
             }
           },
           "position": {
-            "startLine": 223,
+            "startLine": 231,
             "startColumn": 71,
-            "endLine": 223,
+            "endLine": 231,
             "endColumn": 93
           }
         }
@@ -1089,16 +1089,16 @@
             "type": "FoodFeedbackChatFilter",
             "modifiers": [],
             "position": {
-              "startLine": 240,
+              "startLine": 248,
               "startColumn": 26,
-              "endLine": 240,
+              "endLine": 248,
               "endColumn": 56
             }
           },
           "position": {
-            "startLine": 223,
+            "startLine": 231,
             "startColumn": 25,
-            "endLine": 223,
+            "endLine": 231,
             "endColumn": 55
           }
         },
@@ -1114,16 +1114,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 240,
+              "startLine": 248,
               "startColumn": 97,
-              "endLine": 240,
+              "endLine": 248,
               "endColumn": 119
             }
           },
           "position": {
-            "startLine": 223,
+            "startLine": 231,
             "startColumn": 71,
-            "endLine": 223,
+            "endLine": 231,
             "endColumn": 93
           }
         },
@@ -1139,16 +1139,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper\").FoodFeedbackListOptions",
             "modifiers": [],
             "position": {
-              "startLine": 240,
+              "startLine": 248,
               "startColumn": 58,
-              "endLine": 240,
+              "endLine": 248,
               "endColumn": 95
             }
           },
           "position": {
-            "startLine": 223,
+            "startLine": 231,
             "startColumn": 95,
-            "endLine": 223,
+            "endLine": 231,
             "endColumn": 132
           }
         }
@@ -1186,16 +1186,16 @@
             "type": "FoodFeedbackChatFilter",
             "modifiers": [],
             "position": {
-              "startLine": 223,
+              "startLine": 231,
               "startColumn": 25,
-              "endLine": 223,
+              "endLine": 231,
               "endColumn": 55
             }
           },
           "position": {
-            "startLine": 240,
+            "startLine": 248,
             "startColumn": 26,
-            "endLine": 240,
+            "endLine": 248,
             "endColumn": 56
           }
         },
@@ -1211,16 +1211,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper\").FoodFeedbackListOptions",
             "modifiers": [],
             "position": {
-              "startLine": 223,
+              "startLine": 231,
               "startColumn": 95,
-              "endLine": 223,
+              "endLine": 231,
               "endColumn": 132
             }
           },
           "position": {
-            "startLine": 240,
+            "startLine": 248,
             "startColumn": 58,
-            "endLine": 240,
+            "endLine": 248,
             "endColumn": 95
           }
         },
@@ -1236,16 +1236,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 223,
+              "startLine": 231,
               "startColumn": 71,
-              "endLine": 223,
+              "endLine": 231,
               "endColumn": 93
             }
           },
           "position": {
-            "startLine": 240,
+            "startLine": 248,
             "startColumn": 97,
-            "endLine": 240,
+            "endLine": 248,
             "endColumn": 119
           }
         }
@@ -2666,6 +2666,128 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood-idaliasimageimage_remote_url": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood-idaliasimageimage_remote_url",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption",
+      "from_class_or_interface_name": "FoodFeedbackCanteenOption",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood",
+      "to_class_or_interface_name": "LivePulseFood",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 57,
+              "startColumn": 3,
+              "endLine": 57,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 82,
+            "startColumn": 43,
+            "endLine": 82,
+            "endColumn": 54
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption/memberField/alias": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption/memberField/alias",
+          "name": "alias",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood/memberField/alias",
+            "name": "alias",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 58,
+              "startColumn": 3,
+              "endLine": 58,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 82,
+            "startColumn": 55,
+            "endLine": 82,
+            "endColumn": 77
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption/memberField/image": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption/memberField/image",
+          "name": "image",
+          "type": "string | { id: string } | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood/memberField/image",
+            "name": "image",
+            "type": "string | { id: string } | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 59,
+              "startColumn": 3,
+              "endLine": 59,
+              "endColumn": 42
+            }
+          },
+          "position": {
+            "startLine": 82,
+            "startColumn": 78,
+            "endLine": 82,
+            "endColumn": 117
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption/memberField/image_remote_url": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption/memberField/image_remote_url",
+          "name": "image_remote_url",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood/memberField/image_remote_url",
+            "name": "image_remote_url",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 60,
+              "startColumn": 3,
+              "endLine": 60,
+              "endColumn": 36
+            }
+          },
+          "position": {
+            "startLine": 82,
+            "startColumn": 118,
+            "endLine": 82,
+            "endColumn": 150
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 12,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-iddate_createdprofile": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackChatMessage-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-iddate_createdprofile",
@@ -3856,6 +3978,128 @@
       "data_clump_type_additional": {
         "cluster_id": 11,
         "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption-idaliasimageimage_remote_url": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption-idaliasimageimage_remote_url",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood",
+      "from_class_or_interface_name": "LivePulseFood",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption",
+      "to_class_or_interface_name": "FoodFeedbackCanteenOption",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 82,
+              "startColumn": 43,
+              "endLine": 82,
+              "endColumn": 54
+            }
+          },
+          "position": {
+            "startLine": 57,
+            "startColumn": 3,
+            "endLine": 57,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood/memberField/alias": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood/memberField/alias",
+          "name": "alias",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption/memberField/alias",
+            "name": "alias",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 82,
+              "startColumn": 55,
+              "endLine": 82,
+              "endColumn": 77
+            }
+          },
+          "position": {
+            "startLine": 58,
+            "startColumn": 3,
+            "endLine": 58,
+            "endColumn": 25
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood/memberField/image": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood/memberField/image",
+          "name": "image",
+          "type": "string | { id: string } | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption/memberField/image",
+            "name": "image",
+            "type": "string | { id: string } | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 82,
+              "startColumn": 78,
+              "endLine": 82,
+              "endColumn": 117
+            }
+          },
+          "position": {
+            "startLine": 59,
+            "startColumn": 3,
+            "endLine": 59,
+            "endColumn": 42
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood/memberField/image_remote_url": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFood/memberField/image_remote_url",
+          "name": "image_remote_url",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper.ts/interface/FoodFeedbackCanteenOption/memberField/image_remote_url",
+            "name": "image_remote_url",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 82,
+              "startColumn": 118,
+              "endLine": 82,
+              "endColumn": 150
+            }
+          },
+          "position": {
+            "startLine": 60,
+            "startColumn": 3,
+            "endLine": 60,
+            "endColumn": 36
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 12,
+        "cluster_type": 2
       }
     },
     "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseFoodFeedback-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-iddate_createddate_updated": {
@@ -5240,7 +5484,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 13,
         "cluster_type": 2
       }
     },
@@ -5531,7 +5775,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 14,
         "cluster_type": 2
       }
     },
@@ -5750,7 +5994,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 13,
         "cluster_type": 2
       }
     },
@@ -5872,7 +6116,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 15,
         "cluster_type": 2
       }
     },
@@ -5994,7 +6238,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 15,
         "cluster_type": 2
       }
     },
@@ -6091,7 +6335,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 14,
         "cluster_type": 2
       }
     },
@@ -6188,7 +6432,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -7039,7 +7283,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -7148,7 +7392,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 2
       }
     },
@@ -7257,7 +7501,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 2
       }
     },
@@ -7354,7 +7598,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -7451,7 +7695,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     }
