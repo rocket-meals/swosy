@@ -35,7 +35,6 @@ import { useMyScrollviewModalFoodOffersOptions } from '@/hooks/useMyScrollviewMo
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 
 import FoodOffersHeader from './components/FoodOffersHeader';
-import { useNotifications } from './hooks';
 import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useAppRatingScore from '@/hooks/useAppRatingScore';
@@ -68,7 +67,6 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const { openActiveModal, activePopupEvent } = usePopupEventModal();
 	const { openFoodofferSortingModal } = useFoodofferSortingModal();
 	useAppForegroundUpdateCheckModal();
-	useNotifications();
 
 	const { checkAndRequestRatingOnFocus, appRatingData, setLastFocusTime } = useAppRatingScore();
 	const { show: showScrollViewModal, close: closeScrollViewModal, debug: modalDebug } = useMyScrollViewModal();

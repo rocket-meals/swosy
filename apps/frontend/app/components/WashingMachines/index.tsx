@@ -67,19 +67,20 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 		}
 	}, [campusDetails]);
 
-	// Check and request notification permissions
-	const checkPermissions = async () => {
+	// Only checks the notification permission: the system dialog can be shown only once on iOS
+	// (twice on Android 13+), so it is never shown just because this screen opened - only after
+	// our own explanation (usePushNotificationOptInPrompt).
+	const hasNotificationPermission = async (): Promise<boolean> => {
 		try {
 			if (Platform.OS === 'web') {
-				return;
+				return false;
 			}
 			const Notifications = await import('expo-notifications');
 			const { status } = await Notifications.getPermissionsAsync();
-			if (status !== 'granted') {
-				await Notifications.requestPermissionsAsync();
-			}
+			return status === 'granted';
 		} catch (error) {
 			console.error('Error checking permissions:', error);
+			return false;
 		}
 	};
 
@@ -122,7 +123,11 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 	useEffect(() => {
 		if (washingMachines && washingMachines?.length > 0) {
 			if (Platform.OS !== 'web') {
-				checkPermissions().then(scheduleNotifications);
+				hasNotificationPermission().then(granted => {
+					if (granted) {
+						scheduleNotifications();
+					}
+				});
 			}
 		}
 	}, [washingMachines]);

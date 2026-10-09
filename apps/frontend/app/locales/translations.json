@@ -8868,5 +8868,45 @@
     "ru": "Позже",
     "tr": "Daha sonra",
     "zh": "稍后"
+  },
+  "push_notification_permission_explanation": {
+    "de": "Damit die Benachrichtigung bei dir ankommt, braucht die App deine Erlaubnis für Push-Nachrichten. Im nächsten Schritt fragt dein Gerät danach.",
+    "en": "For the notification to reach you, the app needs your permission for push notifications. In the next step your device will ask for it.",
+    "ar": "لكي يصلك الإشعار، يحتاج التطبيق إلى إذنك بالإشعارات. في الخطوة التالية سيطلب جهازك ذلك.",
+    "es": "Para que la notificación te llegue, la app necesita tu permiso para las notificaciones push. En el siguiente paso tu dispositivo te lo pedirá.",
+    "fr": "Pour que la notification t'arrive, l'application a besoin de ton autorisation pour les notifications push. À l'étape suivante, ton appareil te la demandera.",
+    "ru": "Чтобы уведомление дошло до тебя, приложению нужно твоё разрешение на push-уведомления. На следующем шаге устройство спросит тебя об этом.",
+    "tr": "Bildirimin sana ulaşması için uygulamanın anlık bildirim iznine ihtiyacı var. Bir sonraki adımda cihazın bunu soracak.",
+    "zh": "为了让通知送达，应用需要你允许推送通知。下一步你的设备会询问你。"
+  },
+  "housing_free_apartments_notification": {
+    "de": "Bei freien Wohnungen benachrichtigen",
+    "en": "Notify me about free apartments",
+    "ar": "أبلغني عن الشقق المتاحة",
+    "es": "Avisarme de pisos libres",
+    "fr": "Me prévenir des logements libres",
+    "ru": "Сообщать о свободных квартирах",
+    "tr": "Boş daireler için bana bildir",
+    "zh": "有空房时通知我"
+  },
+  "housing_free_apartments_notification_hint": {
+    "de": "Sollen wir dir eine Push-Nachricht schicken, sobald eine Wohnung frei wird?",
+    "en": "Should we send you a push notification as soon as an apartment becomes free?",
+    "ar": "هل ترغب في أن نرسل لك إشعارًا فور توفر شقة؟",
+    "es": "¿Quieres que te enviemos una notificación push en cuanto quede libre un piso?",
+    "fr": "Veux-tu qu'on t'envoie une notification push dès qu'un logement se libère ?",
+    "ru": "Отправить тебе push-уведомление, как только освободится квартира?",
+    "tr": "Bir daire boşaldığında sana anlık bildirim gönderelim mi?",
+    "zh": "有房间空出时，要给你发送推送通知吗？"
+  },
+  "housing_free_apartments_notification_enabled": {
+    "de": "Wir schicken dir eine Push-Nachricht, sobald eine Wohnung frei wird.",
+    "en": "We will send you a push notification as soon as an apartment becomes free.",
+    "ar": "سنرسل لك إشعارًا فور توفر شقة.",
+    "es": "Te enviaremos una notificación push en cuanto quede libre un piso.",
+    "fr": "Nous t'enverrons une notification push dès qu'un logement se libère.",
+    "ru": "Мы пришлём тебе push-уведомление, как только освободится квартира.",
+    "tr": "Bir daire boşaldığında sana anlık bildirim göndereceğiz.",
+    "zh": "有房间空出时，我们会给你发送推送通知。"
   }
 }

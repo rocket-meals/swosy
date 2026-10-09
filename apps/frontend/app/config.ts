@@ -217,7 +217,10 @@ export function getVersionPatch() {
         // 106: merge of master (backend feedback pages)
         // 107: push notifications offered after app feedback, feature wish or comment
         //     (iOS: own modal first, the system dialog is no longer shown at app start)
-        return 107;
+        // 108: our explanation before the system push dialog on Android too, nowhere asked unprompted
+        //     (app start, food offers, washing machines); food reminder uses it; housing: options
+        //     modal, hint panel and button in the "free rooms" modal to be notified about free apartments
+        return 108;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

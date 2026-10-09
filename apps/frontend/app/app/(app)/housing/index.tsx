@@ -19,7 +19,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import useToast from '@/hooks/useToast';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import useHousingSortingModal from '@/hooks/useHousingSortingModal';
+import useHousingOptionsModal from '@/hooks/useHousingOptionsModal';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import useLastOpenedBuildings from '@/hooks/useLastOpenedBuildings';
 import { TranslationKeys } from '@/locales/keys';
@@ -32,6 +32,7 @@ import { addDistanceToApartments, getSortedApartments } from './utils';
 import HousingHeader from './components/HousingHeader';
 import HousingListHeader from './components/HousingListHeader';
 import HousingListEmpty from './components/HousingListEmpty';
+import { FreeApartmentsNotificationPanel } from '@/components/FreeApartmentsNotification';
 import CardDimensionHelper, { MIN_CARD_WIDTH } from '@/helper/CardDimensionHelper';
 
 const apartmentsHelper = new ApartmentsHelper();
@@ -71,7 +72,7 @@ const Index: React.FC = () => {
 	const [listWidth, setListWidth] = useState<number | null>(null);
 
 	// Helpers
-	const { openHousingSortingModal } = useHousingSortingModal();
+	const { openHousingOptionsModal } = useHousingOptionsModal();
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
 	const { buildingsLastOpenedIds } = useLastOpenedBuildings();
 
@@ -278,6 +279,10 @@ const Index: React.FC = () => {
 
 	const ListHeader = useMemo(
 		() => (
+			<>
+			<View style={{ paddingHorizontal: itemGap, paddingTop: 10 }}>
+				<FreeApartmentsNotificationPanel />
+			</View>
 			<HousingListHeader
 				screenWidth={screenWidth}
 				housingTranslations={housingTranslations}
@@ -288,8 +293,9 @@ const Index: React.FC = () => {
 				setQuery={setQuery}
 				translate={translate}
 			/>
+			</>
 		),
-		[screenWidth, housingTranslations, language, housingAreaColor, theme, query, translate]
+		[screenWidth, housingTranslations, language, housingAreaColor, theme, query, translate, itemGap]
 	);
 
 	const ListEmpty = useMemo(
@@ -315,7 +321,7 @@ const Index: React.FC = () => {
 					theme={theme}
 					translate={translate}
 					drawerPosition={drawerPosition}
-					openHousingSortingModal={openHousingSortingModal}
+					openOptionsModal={openHousingOptionsModal}
 				/>
 
 				<View style={{ flex: 1, alignItems: 'center' }}>

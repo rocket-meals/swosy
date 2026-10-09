@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { View, Text } from 'react-native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Entypo, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
 import { DrawerNavigationProp } from 'expo-router/drawer';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
@@ -16,7 +16,7 @@ interface HousingHeaderProps {
 	theme: any;
 	translate: (key: string) => string;
 	drawerPosition: string;
-	openHousingSortingModal: () => void;
+	openOptionsModal: () => void;
 }
 
 const HeaderIconButton = ({
@@ -45,10 +45,10 @@ function makeMenuTrigger(onToggleDrawer: () => void, iconColor: string) {
 	);
 }
 
-function makeSortTrigger(onSort: () => void, iconColor: string) {
+function makeOptionsTrigger(onPress: () => void, iconColor: string) {
 	return (triggerProps: object) => (
-		<HeaderIconButton triggerProps={triggerProps} onPress={onSort}>
-			<MaterialIcons name="sort" size={24} color={iconColor} />
+		<HeaderIconButton triggerProps={triggerProps} onPress={onPress}>
+			<Entypo name="dots-three-vertical" size={22} color={iconColor} />
 		</HeaderIconButton>
 	);
 }
@@ -57,7 +57,7 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 	theme,
 	translate,
 	drawerPosition,
-	openHousingSortingModal,
+	openOptionsModal,
 }) => {
 	const navigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
 
@@ -105,11 +105,11 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 				<View style={[styles.col2, { gap: isWeb ? 30 : 15 }]}>
 					<CustomTooltip
 						placement="top"
-						trigger={makeSortTrigger(openHousingSortingModal, theme.header.text)}
+						trigger={makeOptionsTrigger(openOptionsModal, theme.header.text)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-								{`${translate(TranslationKeys.sort)}: ${translate(TranslationKeys.apartments)}`}
+								{translate(TranslationKeys.more_options)}
 							</TooltipText>
 						</TooltipContent>
 					</CustomTooltip>

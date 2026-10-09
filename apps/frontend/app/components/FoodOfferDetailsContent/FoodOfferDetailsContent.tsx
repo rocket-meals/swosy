@@ -17,7 +17,6 @@ import { DELETE_FOOD_FEEDBACK_LOCAL, SET_FOOD_DETAILS_LAST_TAB, UPDATE_FOOD_FEED
 import { FoodOfferDetailTab } from '@/constants/TabEnums';
 import { MarkingContent } from '@/components/MarkingBottomSheet';
 import usePlatformHelper from '@/helper/platformHelper';
-import { NotificationHelper } from '@/helper/NotificationHelper';
 import { syncCurrentDevicePushNotificationState } from '@/helper/PushNotificationDeviceSync';
 import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -28,6 +27,7 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import useFoodFeedbackPermissions from '@/hooks/useFoodFeedbackPermissions';
 import useFoodNotificationModal from '@/hooks/useFoodNotificationModal';
+import usePushNotificationOptInPrompt from '@/hooks/usePushNotificationOptInPrompt';
 import FoodHeader from '@/app/(app)/foodoffers/details/components/FoodHeader';
 import NotificationSection from '@/app/(app)/foodoffers/details/components/NotificationSection';
 import TabController from '@/app/(app)/foodoffers/details/components/TabController';
@@ -101,7 +101,8 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const openRatingLockedModal = useCallback(() => {
         openAccountRequiredModal({ verifiedAccountRequired: ratingRequiresVerifiedAccount });
     }, [openAccountRequiredModal, ratingRequiresVerifiedAccount]);
-    const { openNotificationConfirmModal, openNotificationPermissionModal } = useFoodNotificationModal();
+    const { openNotificationConfirmModal } = useFoodNotificationModal();
+    const { ensurePushNotificationPermission } = usePushNotificationOptInPrompt();
 
     // Initialisierung mit dem zuletzt gespeicherten Reiter.
     // Ist der gespeicherte Wert kein gültiger Tab (z. B. null, undefined oder ein veralteter Wert),
@@ -293,19 +294,12 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             await updateFoodFeedbackNotification();
             return;
         }
-        const permission = await NotificationHelper.ensureDeviceNotificationPermission();
-        if (permission?.granted) {
+        // Explains first and only then shows the system dialog (shown only once on iOS). Without the
+        // permission the reminder would never arrive, so it is not switched on then.
+        if (await ensurePushNotificationPermission()) {
             await updateFoodFeedbackNotification();
-            // The stored device still carries the old permission/push token - without refreshing it
-            // the backend has no token to send the reminder to.
-            await updateDeviceInfo();
-            return;
         }
-        // Without the system permission the reminder would never arrive. iOS only shows its
-        // permission dialog once, so instead of leaving the toggle silently dead we explain the
-        // situation and offer the way to the system settings.
-        openNotificationPermissionModal();
-    }, [user, isSmartPhone, previousFeedback, updateFoodFeedbackNotification, updateDeviceInfo, openNotificationConfirmModal, openNotificationPermissionModal, openAccountRequiredModal]);
+    }, [user, isSmartPhone, previousFeedback, updateFoodFeedbackNotification, ensurePushNotificationPermission, openNotificationConfirmModal, openAccountRequiredModal]);
 
     const pagerViewStyle = useMemo(() => [
         styles.pagerView,

@@ -26,9 +26,9 @@ const Index = () => {
 
 		(async () => {
 
-			// iOS shows its permission dialog only once - it is asked for after our own explanation
-			// (usePushNotificationOptInPrompt), not right at app start.
-			const token = await registerForPushNotificationsAsync({ requestPermission: Platform.OS !== 'ios' });
+			// The system permission dialog can be shown only once on iOS (twice on Android 13+), so it
+			// is never shown at app start - only after our own explanation (usePushNotificationOptInPrompt).
+			const token = await registerForPushNotificationsAsync({ requestPermission: false });
 			if (token) {
 				await syncCurrentDevicePushNotificationState({ profile, dispatch });
 			}

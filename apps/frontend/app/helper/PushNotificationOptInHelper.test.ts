@@ -1,15 +1,32 @@
-import { getPushNotificationOptInAction, PUSH_NOTIFICATION_OPT_IN_ASK_AGAIN_AFTER_MS } from './PushNotificationOptInHelper';
+import { getPushNotificationOptInAction, getPushNotificationPermissionStep, PUSH_NOTIFICATION_OPT_IN_ASK_AGAIN_AFTER_MS } from './PushNotificationOptInHelper';
 
 const now = new Date('2026-10-09T12:00:00.000Z');
 const undetermined = { granted: false, canAskAgain: true };
+const granted = { granted: true, canAskAgain: true };
+const blocked = { granted: false, canAskAgain: false };
 
-describe('getPushNotificationOptInAction', () => {
-	it('explains first on iOS before the one-time system dialog', () => {
-		expect(getPushNotificationOptInAction({ platform: 'ios', permission: undetermined, lastAskedAt: null, now })).toBe('explain');
+describe('getPushNotificationPermissionStep', () => {
+	it.each(['ios', 'android'])('explains first on %s before the system dialog', platform => {
+		expect(getPushNotificationPermissionStep({ platform, permission: undetermined })).toBe('explain');
 	});
 
-	it('asks the system directly on Android', () => {
-		expect(getPushNotificationOptInAction({ platform: 'android', permission: undetermined, lastAskedAt: null, now })).toBe('request');
+	it('needs nothing when the permission is already granted', () => {
+		expect(getPushNotificationPermissionStep({ platform: 'ios', permission: granted })).toBe('granted');
+	});
+
+	it('sends to the system settings when the system no longer allows asking', () => {
+		expect(getPushNotificationPermissionStep({ platform: 'android', permission: blocked })).toBe('open_settings');
+	});
+
+	it('has no system permission on web or when it could not be read', () => {
+		expect(getPushNotificationPermissionStep({ platform: 'web', permission: undetermined })).toBe('unsupported');
+		expect(getPushNotificationPermissionStep({ platform: 'ios', permission: undefined })).toBe('unsupported');
+	});
+});
+
+describe('getPushNotificationOptInAction', () => {
+	it.each(['ios', 'android'])('explains first on %s', platform => {
+		expect(getPushNotificationOptInAction({ platform, permission: undetermined, lastAskedAt: null, now })).toBe('explain');
 	});
 
 	it('does nothing on web', () => {
@@ -17,11 +34,11 @@ describe('getPushNotificationOptInAction', () => {
 	});
 
 	it('only syncs the token when the permission is already granted', () => {
-		expect(getPushNotificationOptInAction({ platform: 'ios', permission: { granted: true, canAskAgain: true }, lastAskedAt: null, now })).toBe('sync');
+		expect(getPushNotificationOptInAction({ platform: 'ios', permission: granted, lastAskedAt: null, now })).toBe('sync');
 	});
 
 	it('does not ask when the system no longer allows asking', () => {
-		expect(getPushNotificationOptInAction({ platform: 'ios', permission: { granted: false, canAskAgain: false }, lastAskedAt: null, now })).toBe('none');
+		expect(getPushNotificationOptInAction({ platform: 'ios', permission: blocked, lastAskedAt: null, now })).toBe('none');
 	});
 
 	it('does not ask again shortly after the last time', () => {
@@ -35,6 +52,6 @@ describe('getPushNotificationOptInAction', () => {
 	});
 
 	it('ignores an unreadable stored date', () => {
-		expect(getPushNotificationOptInAction({ platform: 'android', permission: undetermined, lastAskedAt: 'garbage', now })).toBe('request');
+		expect(getPushNotificationOptInAction({ platform: 'android', permission: undetermined, lastAskedAt: 'garbage', now })).toBe('explain');
 	});
 });

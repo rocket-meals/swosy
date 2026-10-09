@@ -7,7 +7,8 @@ import ProjectButton from '@/components/ProjectButton';
 import { getValue, setValue } from '@/constants/AsyncStorageHelper';
 import { NotificationHelper } from '@/helper/NotificationHelper';
 import { syncCurrentDevicePushNotificationState } from '@/helper/PushNotificationDeviceSync';
-import { getPushNotificationOptInAction } from '@/helper/PushNotificationOptInHelper';
+import { getPushNotificationOptInAction, getPushNotificationPermissionStep } from '@/helper/PushNotificationOptInHelper';
+import useFoodNotificationModal from '@/hooks/useFoodNotificationModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
@@ -17,53 +18,72 @@ import { configureStore } from '@/redux/store';
 const LAST_ASKED_STORAGE_KEY = 'push_notification_opt_in_prompt_last_asked_at';
 
 /**
- * Asks a user with a profile whether they want push notifications, right after they did
- * something they may get an answer to (app feedback, feature wish, comment on a food).
+ * The system permission dialog for push notifications can be shown only once on iOS (twice on
+ * Android 13+). A "no" there can only be undone in the system settings. So on both platforms the
+ * app never shows it without first explaining in its own modal, and only triggers it when the
+ * user agreed there:
  *
- * iOS shows its system permission dialog exactly once - a "no" there can only be undone in the
- * system settings. On iOS we therefore first explain in our own modal and only trigger the system
- * dialog when the user agreed. On Android the system dialog can be shown again, so it is shown
- * directly. See {@link getPushNotificationOptInAction} for when nothing is asked.
+ * - {@link askForPushNotifications}: our suggestion after the user did something they may get an
+ *   answer to (app feedback, feature wish, comment). Not repeated within 14 days.
+ * - {@link ensurePushNotificationPermission}: the user switched on something that needs push
+ *   notifications (food reminder, free apartments). Resolves whether the permission is there.
  */
 const usePushNotificationOptInPrompt = () => {
 	const { show, close } = useMyScrollViewModal();
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
+	const { openNotificationPermissionModal } = useFoodNotificationModal();
 
 	// The profile is read when needed: the callers update it (e.g. a feedback) right before asking.
 	const syncDevice = useCallback(async () => {
 		await syncCurrentDevicePushNotificationState({ profile: configureStore.getState().authReducer.profile, dispatch });
 	}, [dispatch]);
 
-	const requestSystemPermission = useCallback(async () => {
-		const permission = await NotificationHelper.requestDeviceNotificationPermission();
-		if (permission?.granted) {
-			await syncDevice();
-		}
-	}, [syncDevice]);
-
-	const showExplanationModal = useCallback(() => {
-		show({
-			title: translate(TranslationKeys.notification),
-			children: (
-				<View style={{ gap: 12 }}>
-					<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.push_notification_opt_in_description)}</Text>
-					<ProjectButton
-						text={translate(TranslationKeys.push_notification_opt_in_accept)}
-						onPress={() => {
-							close();
-							void requestSystemPermission();
-						}}
-						style={{ marginVertical: 0 }}
-					/>
-					<TouchableOpacity onPress={close} style={{ alignSelf: 'center', paddingVertical: 6 }}>
-						<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.push_notification_opt_in_later)}</Text>
-					</TouchableOpacity>
-				</View>
-			),
-		});
-	}, [close, requestSystemPermission, show, theme.screen.text, translate]);
+	/** Shows our explanation. Resolves `true` when the user agreed there and the system granted it. */
+	const explainAndRequest = useCallback(
+		(description: string) =>
+			new Promise<boolean>(resolve => {
+				let settled = false;
+				const settle = (granted: boolean) => {
+					if (!settled) {
+						settled = true;
+						resolve(granted);
+					}
+				};
+				const accept = async () => {
+					settled = true;
+					close();
+					const permission = await NotificationHelper.requestDeviceNotificationPermission();
+					if (permission?.granted) {
+						await syncDevice();
+					}
+					resolve(!!permission?.granted);
+				};
+				show(
+					{
+						title: translate(TranslationKeys.notification),
+						children: (
+							<View style={{ gap: 12 }}>
+								<Text style={{ color: theme.screen.text }}>{description}</Text>
+								<ProjectButton text={translate(TranslationKeys.push_notification_opt_in_accept)} onPress={() => void accept()} style={{ marginVertical: 0 }} />
+								<TouchableOpacity
+									onPress={() => {
+										settle(false);
+										close();
+									}}
+									style={{ alignSelf: 'center', paddingVertical: 6 }}
+								>
+									<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.push_notification_opt_in_later)}</Text>
+								</TouchableOpacity>
+							</View>
+						),
+					},
+					{ onClosed: () => settle(false) }
+				);
+			}),
+		[close, show, syncDevice, theme.screen.text, translate]
+	);
 
 	const askForPushNotifications = useCallback(async () => {
 		if (!configureStore.getState().authReducer.profile?.id) {
@@ -85,14 +105,33 @@ const usePushNotificationOptInPrompt = () => {
 			return;
 		}
 		await setValue(LAST_ASKED_STORAGE_KEY, now.toISOString());
-		if (action === 'explain') {
-			showExplanationModal();
-		} else {
-			await requestSystemPermission();
-		}
-	}, [requestSystemPermission, showExplanationModal, syncDevice]);
+		await explainAndRequest(translate(TranslationKeys.push_notification_opt_in_description));
+	}, [explainAndRequest, syncDevice, translate]);
 
-	return { askForPushNotifications };
+	/**
+	 * Without a system permission to ask for (web) this resolves `true`: whether a push can reach
+	 * the user's phones is then up to the permission on those devices.
+	 */
+	const ensurePushNotificationPermission = useCallback(async (): Promise<boolean> => {
+		const step = getPushNotificationPermissionStep({
+			platform: Platform.OS,
+			permission: await NotificationHelper.getDeviceNotificationPermission(),
+		});
+		if (step === 'unsupported') {
+			return true;
+		}
+		if (step === 'granted') {
+			await syncDevice();
+			return true;
+		}
+		if (step === 'open_settings') {
+			openNotificationPermissionModal();
+			return false;
+		}
+		return explainAndRequest(translate(TranslationKeys.push_notification_permission_explanation));
+	}, [explainAndRequest, openNotificationPermissionModal, syncDevice, translate]);
+
+	return { askForPushNotifications, ensurePushNotificationPermission };
 };
 
 export default usePushNotificationOptInPrompt;
