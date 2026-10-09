@@ -260,6 +260,11 @@
       },
       {
         "type": "endpoint",
+        "name": "workflows-schedules-endpoint",
+        "source": "src/workflows-schedules-endpoint/index.ts"
+      },
+      {
+        "type": "endpoint",
         "name": "bundle-health-endpoint",
         "source": "src/bundle-health-endpoint/index.ts"
       },

@@ -17,6 +17,8 @@ aus `repo-depkit-common` und der Übersetzungskatalog.
 | App-Feedbacks    | `/admin/rocket-meals/app-feedbacks`      | Rückmeldungen aus dem Feedback-Formular der App und Bewertungen aus App Store / Google Play. Gleicher Aufbau wie die Speise-Feedbacks: Status-Filter mit Anzahl, Filter nach Quelle (App, App Store, Google Play) und Daumen hoch/runter, Sortierung nach Datum, Suche, Seitengröße, „Als erledigt markieren“ einzeln und per Checkbox. Quelle, Sortierung und Seitengröße merkt sich der Browser. |
 | App-Feedback     | `/admin/rocket-meals/app-feedbacks/:id`  | Titel und Text als erste Nachricht, Gerät und Kontakt-E-Mail im Kopf, derselbe Chat wie bei den Speise-Feedbacks (Status-Chip, Enter sendet, Aktualisierung alle 20 s). Bei einer Store-Bewertung schreibt die Eingabe die öffentliche Antwort im Store (`app_feedbacks.response`); der `app-reviews-pull-hook` veröffentlicht sie automatisch. Pro Bewertung gibt es nur eine Antwort – ein Hinweis über der Eingabe sagt, dass eine neue Nachricht die bisherige ersetzt. |
 | Live-Puls        | `/admin/rocket-meals/live-pulse`         | Für den zweiten Bildschirm: wer heute aktiv war (Avatar, Nickname, „vor 3 Minuten“; Ring grün unter 15 min, orange unter 1 h), ein Ticker aus Speise-Feedbacks, angekündigten Mensa-Besuchen, neuen Profilen und anonymen `app_usage_events`, Kennzahlen (aktiv in den letzten 15 min, heute aktiv, neue Profile, Gerichte angesehen, Speise-Feedbacks) und ein Balkendiagramm der aktiven Nutzer pro Stunde aus `directus_activity`. Aktualisiert sich alle 30 s.                                                                                      |
+| Workflows        | `/admin/rocket-meals/workflows`          | Eine Kachel je Workflow: Ampel (grün = der letzte Lauf, der etwas getan hat, ging durch; rot = er schlug fehl; pulsierend = läuft gerade; übersprungene Läufe zählen nicht), Schalter zum Aktivieren/Deaktivieren, Play-Knopf zum manuellen Starten, Zeitplan, nächster Lauf mit Countdown und zuletzt erfolgreicher Lauf. Namen kommen aus dem Backend-Katalog (`workflow_name_*`). Sortierung „Automatisch“: fehlgeschlagene zuerst, dann die übrigen aktiven alphabetisch (`workflows-runs-cleanup` als letzter aktiver), deaktivierte und auf diesem Server nicht eingerichtete am Ende. Die Reihenfolge wird nur beim Öffnen der Seite (oder beim Wechsel der Sortierung) berechnet, Klicks verschieben keine Kachel. Filter Alle/Probleme/Laufend/Deaktiviert, Suche. |
+| Workflow         | `/admin/rocket-meals/workflows/:id`      | Schalter, „Jetzt starten“ und „Mit Input starten“ (JSON), Zeitplan mit Cron-Ausdruck und den nächsten 5 Läufen, Quote ohne Fehler und Ø Laufzeit der geladenen Läufe, Liste der Läufe (Status, Start, Dauer, ausgelöst von Person oder automatisch) mit Filter. Ein Klick öffnet den Lauf in einer Seitenleiste mit Log, Input, Output und Result-Hash; ein laufender Lauf aktualisiert sein Log alle 3 s. |
 
 ### Status eines Speise-Feedbacks
 
@@ -142,6 +144,19 @@ Die Avatare werden absichtlich auf dem Server gezeichnet: die DiceBear-Stile sin
 JavaScript und würden sonst mit jeder Seite der Directus-Oberfläche geladen. Die Stunden fragt die
 Seite einzeln mit Zeitstempeln ab statt mit Directus' `hour()`, damit in der Zeitzone des Browsers
 gezählt wird.
+
+### Workflows: woher die Daten kommen
+
+| Anzeige             | Quelle |
+| ------------------- | ------ |
+| Kacheln, Schalter   | `workflows` (`enabled`), gelesen und geschrieben mit den Rechten des Nutzers. Aktiv ist nur `enabled = true`, genau wie im Zeitplan. |
+| Ampel, zuletzt erfolgreich | `workflows_runs`, je Workflow und Status das späteste `date_started` (Aggregat, nur `success` und `failed`) plus alle Läufe mit `running` |
+| Zeitplan, nächster Lauf, Input-Vorlage | `GET /rocket-meals-workflows/schedules` (`workflows-schedules-endpoint`). Die Cron-Ausdrücke stehen im Code der Hooks, nicht in der Datenbank; der Server rechnet die nächsten Läufe in seiner eigenen Zeitzone (`TZ` des Containers) aus. Workflows, die der Endpoint nicht kennt, sind auf diesem Server nicht eingerichtet und lassen sich nicht starten. |
+| Starten             | `POST /items/workflows_runs` mit `{ workflow, state: "running", input? }` – der `workflows-runs-hook` startet den Lauf und lehnt ihn ab, wenn der Workflow deaktiviert ist oder schon läuft. |
+
+Ein neuer Workflow bekommt seinen Namen als Key `workflow_name_<id>` im Backend-Katalog und einen
+Eintrag in `WorkflowsPageHelper.WORKFLOW_NAME_KEYS`; ohne Eintrag zeigt die Seite die ID. Braucht ein
+Lauf ein Input, liefert `getInputTemplate()` im `WorkflowRunJobInterface` die Vorlage für den Start-Dialog.
 
 Ideen für weitere Seiten: Wohnheim-Verwaltung, Renner/Penner-Listen der Speisen.
 
