@@ -913,6 +913,10 @@ export const TranslationKeys = {
 	push_notification_opt_in_later: 'push_notification_opt_in_later',
 	push_notification_permission_explanation: 'push_notification_permission_explanation',
 	housing_free_apartments_notification: 'housing_free_apartments_notification',
+	group_areas: 'group_areas',
+	canteen_settings: 'canteen_settings',
+	housing_settings: 'housing_settings',
+	campus_settings: 'campus_settings',
 	housing_free_apartments_notification_hint: 'housing_free_apartments_notification_hint',
 	housing_free_apartments_notification_enabled: 'housing_free_apartments_notification_enabled',
 } as const;

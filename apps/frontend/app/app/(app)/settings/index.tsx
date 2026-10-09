@@ -22,12 +22,12 @@ import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLE
 import { performLogout } from '@/helper/logoutHelper';
 import { sqliteKeyValueStorage, migrateAsyncStorageToSqlite } from '@/redux/storage/sqliteStorage';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
-import { formatPrice, getImageUrl, showFormatedPrice } from '@/constants/HelperFunctions';
+import { getImageUrl } from '@/constants/HelperFunctions';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { ServerAPI } from '@/redux/actions';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { CollectibleAt, DatabaseTypes, CampusSortOption, GuestAccountHelper } from 'repo-depkit-common';
+import { CollectibleAt, DatabaseTypes, GuestAccountHelper } from 'repo-depkit-common';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
@@ -42,20 +42,15 @@ import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import useCustomerConfig from '@/hooks/useCustomerConfig';
 import useCustomerConfigModal from '@/hooks/useCustomerConfigModal';
-import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import useThemeSettingsModal from '@/hooks/useThemeSettingsModal';
 import useMenuPositionModal from '@/hooks/useMenuPositionModal';
 import useCardColumnsModal from '@/hooks/useCardColumnsModal';
 import useFirstDayOfWeekModal from '@/hooks/useFirstDayOfWeekModal';
-import useHousingSortingModal from '@/hooks/useHousingSortingModal';
-import useHousingSettingsRows from '@/hooks/useHousingSettingsRows';
-import useFoodofferSettingsRows from '@/hooks/useFoodofferSettingsRows';
 import SettingsGroupRows from '@/components/SettingsGroupRows';
-import useCampusSortingModal from '@/hooks/useCampusSortingModal';
-import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
-import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityModal';
+import useFoodofferSettingsModal from '@/hooks/useFoodofferSettingsModal';
+import useHousingOptionsModal from '@/hooks/useHousingOptionsModal';
+import useCampusSettingsModal from '@/hooks/useCampusSettingsModal';
 import useAppRatingScore from '@/hooks/useAppRatingScore';
-import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar, SettingsListSqliteStorage } from 'repo-depkit-common-ui';
 import { formatBytes, getAsyncStorageUsage, clearAsyncStorage, AsyncStorageKeyUsage } from '@/helper/AsyncStorageUsageHelper';
 import { FriendsContent } from '@/components/FriendsContent';
@@ -102,27 +97,14 @@ const Settings = () => {
         const isGuestUser = isRegisteredUser && GuestAccountHelper.isGuestEmail(user?.email);
         const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
         const { openLanguageModal } = useLanguageModal();
-        const { openFoodofferSortingModal } = useFoodofferSortingModal();
         const { openThemeSettingsModal } = useThemeSettingsModal();
+        const { openFoodofferSettingsModal } = useFoodofferSettingsModal();
+        const { openHousingSettingsModal } = useHousingOptionsModal();
+        const { openCampusSettingsModal } = useCampusSettingsModal();
         const { openMenuPositionModal } = useMenuPositionModal();
         const { openCardColumnsModal } = useCardColumnsModal();
         const { openFirstDayOfWeekModal } = useFirstDayOfWeekModal();
-        const { openHousingSortingModal } = useHousingSortingModal();
-        const { openCampusSortingModal } = useCampusSortingModal();
-        const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
-        const { openCanteenVisitsVisibilityModal } = useCanteenVisitsVisibilityModal();
         const { score: appRatingScore, setScore: setAppRatingScore, showDebugRatingModal, appRatingData } = useAppRatingScore();
-        const { openPriceGroupSettingsModal } = useMyScrollviewModalPriceGroupSettings();
-        const openEatingHabits = useCallback(() => router.navigate('/eating-habits'), []);
-        const foodofferSettingsRows = useFoodofferSettingsRows({
-                onCanteen: openChangeMyCanteenSelectionModal,
-                onPriceGroup: openPriceGroupSettingsModal,
-                onEatingHabits: openEatingHabits,
-                onSort: openFoodofferSortingModal,
-                iconSize: 24,
-                withNativeIds: true,
-        });
-        const housingSettingsRows = useHousingSettingsRows({ onSort: openHousingSortingModal, iconSize: 24 });
 
         const { avatarConfig: settingsAvatarConfig, openEditor: openAvatarEditor } = useAvatarProfileEditor();
 
@@ -134,10 +116,9 @@ const Settings = () => {
                 });
         }, [showScrollViewModal, translate]);
 
-        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, campusesSortBy } = useAppSelector((state) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer } = useAppSelector((state) => state.settings);
         const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
         const osmConsent = useAppSelector((state) => ((state.settings as any).osmVectorMapConsent ?? false) as boolean);
-        const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'off';
         const { friendships } = useAppSelector((state) => state.friendships);
         const acceptedFriendsCount = useMemo(
                 () => friendships.filter((f) => f.friendship_status === 'accepted').length,
@@ -163,6 +144,7 @@ const Settings = () => {
         );
 
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+        const housing_area_color = appSettings?.housing_area_color ? appSettings?.housing_area_color : primaryColor;
         const campus_area_color = appSettings?.campus_area_color ? appSettings?.campus_area_color : primaryColor;
 
         const customerServerUrl = useCustomerServerUrl();
@@ -182,33 +164,8 @@ const Settings = () => {
         );
 
 
-        const campusSortingOptionLabels: Partial<Record<CampusSortOption, string>> = useMemo(
-                () => ({
-                        [CampusSortOption.INTELLIGENT]: 'sort_option_intelligent',
-                        [CampusSortOption.DISTANCE]: 'sort_option_distance',
-                        [CampusSortOption.ALPHABETICAL]: 'sort_option_alphabetical',
-                        [CampusSortOption.NONE]: 'sort_option_none',
-                }),
-                []
-        );
 
-        const campusSortingLabel = useMemo(
-                () => translate(campusSortingOptionLabels[campusesSortBy as CampusSortOption] ?? 'sort_option_none'),
-                [campusSortingOptionLabels, campusesSortBy, translate]
-        );
 
-        const canteenVisitsVisibilityLabel = useMemo(() => {
-                switch (canteenVisitsVisibility) {
-                        case 'all':
-                                return translate(TranslationKeys.canteen_visits_visibility_all);
-                        case 'friends_only':
-                                return translate(TranslationKeys.canteen_visits_visibility_friends_only);
-                        case 'off':
-                                return translate(TranslationKeys.canteen_visits_visibility_off);
-                        default:
-                                return translate(TranslationKeys.canteen_visits_visibility_all);
-                }
-        }, [canteenVisitsVisibility, translate]);
 
         const saveNickname = useCallback(
                 async (value: string) => {
@@ -644,45 +601,31 @@ const Settings = () => {
 				</View>
 			),
 		},
-			// === Canteen Usage ===
+			// === Areas: one row per area, opening that area's settings ===
 			{
-			key: 'section-canteen',
+			key: 'section-areas',
 			element: (
 				<View style={sectionStyle}>
-					<SettingsGroupTitle nativeID={ComponentIds.SETTINGS_GROUP_CANTEEN_USAGE}>{translate(TranslationKeys.group_canteen_usage)}</SettingsGroupTitle>
+					<SettingsGroupTitle nativeID={ComponentIds.SETTINGS_GROUP_CANTEEN_USAGE}>{translate(TranslationKeys.group_areas)}</SettingsGroupTitle>
 					<View style={groupStyle}>
 						<SettingsGroupRows
 							rows={[
-								foodofferSettingsRows.canteen,
-								foodofferSettingsRows.priceGroup,
 								{
-									key: 'account-balance',
+									key: 'canteen-settings',
 									render: (groupPosition, showSeparator) => (
-										<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition={groupPosition} showSeparator={showSeparator} />
+										<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="restaurant-menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.canteen_settings)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodofferSettingsModal} groupPosition={groupPosition} showSeparator={showSeparator} />
 									),
 								},
-								foodofferSettingsRows.eatingHabits,
-								foodofferSettingsRows.sort,
-								foodofferSettingsRows.averageRating,
-								showFriendsInSettings && {
-									key: 'canteen-visits-visibility',
+								appSettings?.housing_enabled && {
+									key: 'housing-settings',
 									render: (groupPosition, showSeparator) => (
-										<SettingsList
-											iconBgColor={foods_area_color}
-											leftIcon={<MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />}
-											label={translate(TranslationKeys.canteen_visits_visibility)}
-											value={canteenVisitsVisibilityLabel}
-											rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-											handleFunction={openCanteenVisitsVisibilityModal}
-											groupPosition={groupPosition}
-											showSeparator={showSeparator}
-										/>
+										<SettingsList iconBgColor={housing_area_color} leftIcon={<MaterialIcons name="home" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.housing_settings)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openHousingSettingsModal} groupPosition={groupPosition} showSeparator={showSeparator} />
 									),
 								},
-								{
-									key: 'notification',
+								appSettings?.campus_enabled && {
+									key: 'campus-settings',
 									render: (groupPosition, showSeparator) => (
-										<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition={groupPosition} showSeparator={showSeparator} />
+										<SettingsList iconBgColor={campus_area_color} leftIcon={<MaterialIcons name="school" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.campus_settings)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openCampusSettingsModal} groupPosition={groupPosition} showSeparator={showSeparator} />
 									),
 								},
 							]}
@@ -735,44 +678,6 @@ const Settings = () => {
 			),
 		},
 		);
-
-		// === Housing (conditional) ===
-		if (appSettings?.housing_enabled) {
-			rows.push({
-				key: 'section-housing',
-				element: (
-					<View style={sectionStyle}>
-						<SettingsGroupTitle>{translate(TranslationKeys.housing)}</SettingsGroupTitle>
-						<View style={groupStyle}>
-							<SettingsGroupRows rows={housingSettingsRows} />
-						</View>
-					</View>
-				),
-			});
-		}
-
-		// === Campus (conditional) ===
-		if (appSettings?.campus_enabled) {
-			rows.push({
-				key: 'section-campus',
-				element: (
-					<View style={sectionStyle}>
-						<SettingsGroupTitle>{translate(TranslationKeys.campus)}</SettingsGroupTitle>
-						<View style={groupStyle}>
-							<SettingsList
-								iconBgColor={campus_area_color}
-								leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />}
-								label={translate(TranslationKeys.sort)}
-								value={campusSortingLabel}
-								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-								handleFunction={openCampusSortingModal}
-								groupPosition="single"
-							/>
-						</View>
-					</View>
-				),
-			});
-		}
 
 		// === App Management ===
 		rows.push(
@@ -1010,17 +915,17 @@ const Settings = () => {
 	}, [
 		translate, primaryColor, theme, isRegisteredUser, user?.id, profile, nickNameLocal,
 		logoutButtonLabel, logoutButtonHandler, openNicknameSheet, openLanguageModal, languageName,
-		handleDeleteAccount, foods_area_color, foodofferSettingsRows, housingSettingsRows,
+		handleDeleteAccount, foods_area_color, housing_area_color, openFoodofferSettingsModal, openHousingSettingsModal, openCampusSettingsModal,
 		openColorSchemeSheet, openMenuPositionModal,
 		openCardColumnsModal, openFirstDayOfWeekModal, selectedTheme, drawerPosition,
 		amountColumnsForcard, firstDayOfTheWeek, appSettings?.housing_enabled, appSettings?.friends_enabled,
 		appSettings?.campus_enabled,
-		campus_area_color, campusSortingLabel, openCampusSortingModal, handleCheckForUpdates,
+		campus_area_color, handleCheckForUpdates,
 		openCollectibleSettingsModal, termsAndPrivacyConsentAcceptedDate, isManagement, dispatch,
 		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,
 		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
 		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey, osmConsent,
-		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal, openAccountRequiredModal,
+		acceptedFriendsCount, showFriendsInSettings, openFriendsModal, openAccountRequiredModal,
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 		settingsAvatarConfig, openAvatarEditor,
 		appSettings?.foods_ratings_average_display,
