@@ -7,7 +7,8 @@
  *    (`ai_suggests_publish`, `ai_suggests_decline`, `ai_suggests_merge` with `related_to`), a human
  *    decides. Without a configured provider this step is skipped.
  * 2. Mail to support with everything that waits for a decision and the likes that changed since the
- *    last report. No mail when there is nothing to tell.
+ *    last report. No mail when nothing changed since the last mail: the wishes in review (id,
+ *    status, note) are compared by a hash stored as `result_hash` of the last successful run.
  * 3. `likes_amount_last_checked` is set to the current `likes_amount`, so the next mail only shows
  *    what changed since this one.
  */
@@ -22,6 +23,7 @@ import { SingleWorkflowRun } from '../workflows-runs-hook/WorkflowRunJobInterfac
 import { DirectusOpenAiCompatibleClient } from '../helpers/ai/DirectusOpenAiCompatibleClient';
 import { FeatureWishModeration } from './FeatureWishModeration';
 import { FeatureWishDailyReport } from './FeatureWishDailyReport';
+import { WorkflowResultHash } from '../helpers/itemServiceHelpers/WorkflowsRunHelper';
 
 const HOOK_NAME = 'feature-wishes-daily-workflow';
 const WORKFLOW_ID = 'feature-wishes-daily';
@@ -40,6 +42,7 @@ class FeatureWishesDailyWorkflow extends SingleWorkflowRun {
     const helper = myDatabaseHelper.getItemsServiceHelper<FeatureWish>(CollectionNames.FEATURE_WHISHES);
     const runNotes: string[] = [];
     let failed = false;
+    let resultHash: WorkflowResultHash | null = null;
 
     try {
       runNotes.push(await this.reviewWithAi(context, helper));
@@ -63,6 +66,9 @@ class FeatureWishesDailyWorkflow extends SingleWorkflowRun {
         limit: -1,
       });
       const likeChanges = published.filter(wish => FeatureWishDailyReport.getDelta(wish) !== 0);
+      const currentHash = new WorkflowResultHash({ in_review: FeatureWishDailyReport.getReviewHash(inReview) });
+      const previousHash = await myDatabaseHelper.getWorkflowsRunsHelper().getPreviousResultHash(context.workflowRun, context.logger);
+      const reviewChanged = WorkflowResultHash.isError(previousHash) || !currentHash.isSame(previousHash);
 
       const serverInfo = await myDatabaseHelper.getServerInfo();
       const report = FeatureWishDailyReport.build({
@@ -71,13 +77,15 @@ class FeatureWishesDailyWorkflow extends SingleWorkflowRun {
         inReview,
         likeChanges,
         runNotes,
+        reviewChanged,
       });
       if (report) {
         await myDatabaseHelper.sendMail({ recipient: MailAdresses.SupportMail, subject: report.subject, markdown_content: report.markdown });
         await context.logger.appendLog(`Mail sent: ${inReview.length} waiting, ${likeChanges.length} with changed likes`);
       } else {
-        await context.logger.appendLog('Nothing to report, no mail sent');
+        await context.logger.appendLog('Nothing changed since the last mail, no mail sent');
       }
+      resultHash = currentHash;
 
       for (const wish of likeChanges) {
         await helper.updateOneWithoutHookTrigger({ primary_key: wish.id, update: { likes_amount_last_checked: wish.likes_amount ?? 0 } });
@@ -87,7 +95,10 @@ class FeatureWishesDailyWorkflow extends SingleWorkflowRun {
       await context.logger.appendLog('Report failed: ' + (error instanceof Error ? error.message : String(error)));
     }
 
-    return context.logger.getFinalLogWithStateAndParams({ state: failed ? WORKFLOW_RUN_STATE.FAILED : WORKFLOW_RUN_STATE.SUCCESS });
+    return context.logger.getFinalLogWithStateAndParams({
+      state: failed ? WORKFLOW_RUN_STATE.FAILED : WORKFLOW_RUN_STATE.SUCCESS,
+      ...(resultHash ? { result_hash: resultHash.getHash() } : {}),
+    });
   }
 
   /** Lets the AI suggest a decision for the wishes in `draft`. Returns a line for the mail. */
