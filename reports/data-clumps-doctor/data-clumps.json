@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-09T13:10:21.950Z",
+  "report_timestamp": "2026-10-09T14:14:44.639Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
           "median": 1,
-          "maximum": 146,
-          "average": 1.5322182615848643,
-          "amountSavedValuesForKeys": 5588,
+          "maximum": 150,
+          "average": 1.5323585161115625,
+          "amountSavedValuesForKeys": 5659,
           "amountKeys": 33
         },
         "invertedParameterToMethods": {
           "median": 1.5,
           "maximum": 81,
-          "average": 2.2854330708661417,
-          "amountSavedValuesForKeys": 2322,
+          "average": 2.3051823416506716,
+          "amountSavedValuesForKeys": 2402,
           "amountKeys": 24
         },
         "invertedParameterToClasses": {
           "median": 1,
-          "maximum": 146,
-          "average": 1.5449267348631464,
-          "amountSavedValuesForKeys": 5588,
+          "maximum": 150,
+          "average": 1.544908544908545,
+          "amountSavedValuesForKeys": 5659,
           "amountKeys": 33
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4906,
-        "detection_time_ms": 138,
+        "ast_generation_time_ms": 5918,
+        "detection_time_ms": 157,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 208.3,
-          "os_memory_free": 14731468800,
-          "os_memory_total": 16765378560,
+          "os_uptime": 387.1,
+          "os_memory_free": 14790684672,
+          "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
-          "os_cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
-          "os_cpu_speed": 3200
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
+          "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 47,
-    "amount_files_with_data_clumps": 34,
-    "amount_methods_with_data_clumps": 12,
-    "fields_to_fields_data_clump": 102,
+    "amount_classes_or_interfaces_with_data_clumps": 51,
+    "amount_files_with_data_clumps": 35,
+    "amount_methods_with_data_clumps": 14,
+    "fields_to_fields_data_clump": 114,
     "parameters_to_fields_data_clump": 2,
-    "parameters_to_parameters_data_clump": 12,
-    "amount_data_clumps": 116
+    "parameters_to_parameters_data_clump": 14,
+    "amount_data_clumps": 130
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "741fbe59b7c8e3ace053dc36484aeb35ec0d6213",
-    "project_commit_hash": "741fbe59b7c8e3ace053dc36484aeb35ec0d6213",
+    "project_version": "8dce75fd83a99466a1d7faf3555fd3565e8958ee",
+    "project_commit_hash": "8dce75fd83a99466a1d7faf3555fd3565e8958ee",
     "project_tag": null,
-    "project_commit_date": "1791551282",
+    "project_commit_date": "1791555153",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 765,
-    "number_of_classes_or_interfaces": 1721,
-    "number_of_methods": 2025,
-    "number_of_data_fields": 5588,
-    "number_of_method_parameters": 2322
+    "number_of_files": 768,
+    "number_of_classes_or_interfaces": 1739,
+    "number_of_methods": 2077,
+    "number_of_data_fields": 5659,
+    "number_of_method_parameters": 2402
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -1352,6 +1352,200 @@
         "cluster_type": 2
       }
     },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime-datenowlanguage": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime-datenowlanguage",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "from_class_or_interface_name": "WorkflowsPageHelper",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper",
+      "from_method_name": "formatRelative",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "to_class_or_interface_name": "WorkflowsPageHelper",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper",
+      "to_method_name": "formatPointInTime",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative/parameter/date": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative/parameter/date",
+          "name": "date",
+          "type": "string | Date",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime/parameter/date",
+            "name": "date",
+            "type": "string | Date",
+            "modifiers": [],
+            "position": {
+              "startLine": 593,
+              "startColumn": 28,
+              "endLine": 593,
+              "endColumn": 66
+            }
+          },
+          "position": {
+            "startLine": 572,
+            "startColumn": 25,
+            "endLine": 572,
+            "endColumn": 63
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative/parameter/now": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative/parameter/now",
+          "name": "now",
+          "type": "Date",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime/parameter/now",
+            "name": "now",
+            "type": "Date",
+            "modifiers": [],
+            "position": {
+              "startLine": 593,
+              "startColumn": 68,
+              "endLine": 593,
+              "endColumn": 77
+            }
+          },
+          "position": {
+            "startLine": 572,
+            "startColumn": 65,
+            "endLine": 572,
+            "endColumn": 74
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative/parameter/language": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative/parameter/language",
+          "name": "language",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime/parameter/language",
+            "name": "language",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 593,
+              "startColumn": 79,
+              "endLine": 593,
+              "endColumn": 107
+            }
+          },
+          "position": {
+            "startLine": 572,
+            "startColumn": 76,
+            "endLine": 572,
+            "endColumn": 104
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 6,
+        "cluster_type": 1
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative-datenowlanguage": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative-datenowlanguage",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "from_class_or_interface_name": "WorkflowsPageHelper",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper",
+      "from_method_name": "formatPointInTime",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "to_class_or_interface_name": "WorkflowsPageHelper",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper",
+      "to_method_name": "formatRelative",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime/parameter/date": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime/parameter/date",
+          "name": "date",
+          "type": "string | Date",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative/parameter/date",
+            "name": "date",
+            "type": "string | Date",
+            "modifiers": [],
+            "position": {
+              "startLine": 572,
+              "startColumn": 25,
+              "endLine": 572,
+              "endColumn": 63
+            }
+          },
+          "position": {
+            "startLine": 593,
+            "startColumn": 28,
+            "endLine": 593,
+            "endColumn": 66
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime/parameter/now": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime/parameter/now",
+          "name": "now",
+          "type": "Date",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative/parameter/now",
+            "name": "now",
+            "type": "Date",
+            "modifiers": [],
+            "position": {
+              "startLine": 572,
+              "startColumn": 65,
+              "endLine": 572,
+              "endColumn": 74
+            }
+          },
+          "position": {
+            "startLine": 593,
+            "startColumn": 68,
+            "endLine": 593,
+            "endColumn": 77
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime/parameter/language": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatPointInTime/parameter/language",
+          "name": "language",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/class/WorkflowsPageHelper/method/formatRelative/parameter/language",
+            "name": "language",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 572,
+              "startColumn": 76,
+              "endLine": 572,
+              "endColumn": 104
+            }
+          },
+          "position": {
+            "startLine": 593,
+            "startColumn": 79,
+            "endLine": 593,
+            "endColumn": 107
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 6,
+        "cluster_type": 1
+      }
+    },
     "parameters_to_fields_data_clump-apps/frontend/app/components/IBANInput/IBANInput.tsx-apps/frontend/app/components/IBANInput/IBANInput.tsx/interface/IBANInputProps/method/onChange-apps/frontend/app/components/IBANInput/IBANInput.tsx/interface/IBANInputProps-idvaluecustom_type": {
       "type": "data_clump",
       "key": "parameters_to_fields_data_clump-apps/frontend/app/components/IBANInput/IBANInput.tsx-apps/frontend/app/components/IBANInput/IBANInput.tsx/interface/IBANInputProps/method/onChange-apps/frontend/app/components/IBANInput/IBANInput.tsx/interface/IBANInputProps-idvaluecustom_type",
@@ -1445,7 +1639,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 6,
+        "cluster_id": 7,
         "cluster_type": 1
       }
     },
@@ -1542,8 +1736,105 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 7,
+        "cluster_id": 8,
         "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser-first_namelast_nameemail": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser-first_namelast_nameemail",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser",
+      "from_class_or_interface_name": "DocumentUser",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser",
+      "to_class_or_interface_name": "WorkflowRunUser",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/first_name": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/first_name",
+          "name": "first_name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/first_name",
+            "name": "first_name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 58,
+              "startColumn": 46,
+              "endLine": 58,
+              "endColumn": 73
+            }
+          },
+          "position": {
+            "startLine": 32,
+            "startColumn": 3,
+            "endLine": 32,
+            "endColumn": 30
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/last_name": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/last_name",
+          "name": "last_name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/last_name",
+            "name": "last_name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 58,
+              "startColumn": 74,
+              "endLine": 58,
+              "endColumn": 100
+            }
+          },
+          "position": {
+            "startLine": 33,
+            "startColumn": 3,
+            "endLine": 33,
+            "endColumn": 29
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/email": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/email",
+          "name": "email",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/email",
+            "name": "email",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 58,
+              "startColumn": 101,
+              "endLine": 58,
+              "endColumn": 122
+            }
+          },
+          "position": {
+            "startLine": 34,
+            "startColumn": 3,
+            "endLine": 34,
+            "endColumn": 25
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 9,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser-apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource-first_namelast_nameemail": {
@@ -1639,8 +1930,8 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 8,
-        "cluster_type": 2
+        "cluster_id": 9,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-fieldssortlimit": {
@@ -1736,7 +2027,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 9,
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -1858,7 +2149,129 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 9,
+        "cluster_id": 10,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery-fieldsfiltersortlimit": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery-fieldsfiltersortlimit",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery",
+      "from_class_or_interface_name": "ExtendedListRestQuery",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery",
+      "to_class_or_interface_name": "WorkflowsQuery",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/fields": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/fields",
+          "name": "fields",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/fields",
+            "name": "fields",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 3,
+              "endLine": 27,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 35,
+            "startColumn": 3,
+            "endLine": 35,
+            "endColumn": 18
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/filter": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/filter",
+          "name": "filter",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/filter",
+            "name": "filter",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 3,
+              "endLine": 28,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 36,
+            "startColumn": 3,
+            "endLine": 36,
+            "endColumn": 18
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/sort": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/sort",
+          "name": "sort",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/sort",
+            "name": "sort",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 3,
+              "endLine": 29,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 37,
+            "startColumn": 3,
+            "endLine": 37,
+            "endColumn": 16
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/limit": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/limit",
+          "name": "limit",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/limit",
+            "name": "limit",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 3,
+              "endLine": 30,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 38,
+            "startColumn": 3,
+            "endLine": 38,
+            "endColumn": 17
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -1980,7 +2393,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 10,
+        "cluster_id": 11,
         "cluster_type": 2
       }
     },
@@ -2077,7 +2490,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -2199,7 +2612,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -2296,7 +2709,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -2393,7 +2806,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -2490,7 +2903,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -2587,7 +3000,104 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow-idstatedate_created": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow-idstatedate_created",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
+      "from_class_or_interface_name": "AppFeedbackListItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow",
+      "to_class_or_interface_name": "WorkflowRunRow",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 61,
+              "startColumn": 3,
+              "endLine": 61,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 3,
+            "endLine": 25,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/state": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/state",
+          "name": "state",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow/memberField/state",
+            "name": "state",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 63,
+              "startColumn": 3,
+              "endLine": 63,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 36,
+            "startColumn": 3,
+            "endLine": 36,
+            "endColumn": 25
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 64,
+              "startColumn": 3,
+              "endLine": 64,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 40,
+            "startColumn": 3,
+            "endLine": 40,
+            "endColumn": 32
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -2709,7 +3219,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -2856,7 +3366,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -3093,7 +3603,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -3190,7 +3700,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -3287,7 +3797,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -3384,7 +3894,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -3481,7 +3991,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -3603,7 +4113,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -3700,7 +4210,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -3962,7 +4472,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 13,
         "cluster_type": 2
       }
     },
@@ -4084,7 +4594,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -4181,7 +4691,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -4278,7 +4788,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -4450,7 +4960,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -4547,7 +5057,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -4669,7 +5179,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -4766,7 +5276,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -4863,7 +5373,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -4960,7 +5470,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -5057,7 +5567,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -5154,7 +5664,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 9,
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -5251,7 +5761,104 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 9,
+        "cluster_id": 10,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery-fieldslimitsort": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery-fieldslimitsort",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery",
+      "from_class_or_interface_name": "FriendshipNetworkQuery",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery",
+      "to_class_or_interface_name": "WorkflowsQuery",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/fields": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/fields",
+          "name": "fields",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/fields",
+            "name": "fields",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 3,
+              "endLine": 27,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 91,
+            "startColumn": 3,
+            "endLine": 91,
+            "endColumn": 18
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/limit": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/limit",
+          "name": "limit",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/limit",
+            "name": "limit",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 3,
+              "endLine": 30,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 92,
+            "startColumn": 3,
+            "endLine": 92,
+            "endColumn": 17
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/sort": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/sort",
+          "name": "sort",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/sort",
+            "name": "sort",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 3,
+              "endLine": 29,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 93,
+            "startColumn": 3,
+            "endLine": 93,
+            "endColumn": 16
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -5348,7 +5955,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -5470,7 +6077,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -5567,7 +6174,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -5689,7 +6296,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 13,
         "cluster_type": 2
       }
     },
@@ -5786,7 +6393,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -5883,7 +6490,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -6055,7 +6662,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -6177,7 +6784,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -6274,7 +6881,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -6396,7 +7003,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -6493,7 +7100,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -6590,7 +7197,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -6687,7 +7294,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -6784,7 +7391,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -6881,7 +7488,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -6978,7 +7585,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -7075,7 +7682,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -7222,7 +7829,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -7319,7 +7926,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -7416,7 +8023,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -7538,7 +8145,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 9,
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -7635,7 +8242,154 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 9,
+        "cluster_id": 10,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery-fieldsfiltersortlimitaggregate": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery-fieldsfiltersortlimitaggregate",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery",
+      "from_class_or_interface_name": "LivePulseQuery",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery",
+      "to_class_or_interface_name": "WorkflowsQuery",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/fields": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/fields",
+          "name": "fields",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/fields",
+            "name": "fields",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 3,
+              "endLine": 27,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 121,
+            "startColumn": 3,
+            "endLine": 121,
+            "endColumn": 19
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/filter": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/filter",
+          "name": "filter",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/filter",
+            "name": "filter",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 3,
+              "endLine": 28,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 122,
+            "startColumn": 3,
+            "endLine": 122,
+            "endColumn": 19
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/sort": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/sort",
+          "name": "sort",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/sort",
+            "name": "sort",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 3,
+              "endLine": 29,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 123,
+            "startColumn": 3,
+            "endLine": 123,
+            "endColumn": 17
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/limit": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/limit",
+          "name": "limit",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/limit",
+            "name": "limit",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 3,
+              "endLine": 30,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 124,
+            "startColumn": 3,
+            "endLine": 124,
+            "endColumn": 18
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/aggregate": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/aggregate",
+          "name": "aggregate",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/aggregate",
+            "name": "aggregate",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 32,
+              "startColumn": 3,
+              "endLine": 32,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 125,
+            "startColumn": 3,
+            "endLine": 125,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -7732,7 +8486,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -7829,7 +8583,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -7926,7 +8680,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -8048,7 +8802,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -8145,7 +8899,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -8242,7 +8996,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -8364,7 +9118,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -8511,7 +9265,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -8608,7 +9362,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -8705,7 +9459,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -8802,7 +9556,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -8924,7 +9678,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -9021,7 +9775,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -9118,7 +9872,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -9215,7 +9969,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -9312,7 +10066,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -9409,7 +10163,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -9506,7 +10260,664 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-idstatedate_created": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem-idstatedate_created",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow",
+      "from_class_or_interface_name": "WorkflowRunRow",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem",
+      "to_class_or_interface_name": "AppFeedbackListItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow/memberField/id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 3,
+              "endLine": 25,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 61,
+            "startColumn": 3,
+            "endLine": 61,
+            "endColumn": 14
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow/memberField/state": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow/memberField/state",
+          "name": "state",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/state",
+            "name": "state",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 36,
+              "startColumn": 3,
+              "endLine": 36,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 63,
+            "startColumn": 3,
+            "endLine": 63,
+            "endColumn": 25
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow/memberField/date_created": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunRow/memberField/date_created",
+          "name": "date_created",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatHelper.ts/interface/AppFeedbackListItem/memberField/date_created",
+            "name": "date_created",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 40,
+              "startColumn": 3,
+              "endLine": 40,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 64,
+            "startColumn": 3,
+            "endLine": 64,
+            "endColumn": 32
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 12,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser-first_namelast_nameemail": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser-first_namelast_nameemail",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser",
+      "from_class_or_interface_name": "WorkflowRunUser",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser",
+      "to_class_or_interface_name": "DocumentUser",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/first_name": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/first_name",
+          "name": "first_name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/first_name",
+            "name": "first_name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 32,
+              "startColumn": 3,
+              "endLine": 32,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 58,
+            "startColumn": 46,
+            "endLine": 58,
+            "endColumn": 73
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/last_name": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/last_name",
+          "name": "last_name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/last_name",
+            "name": "last_name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 33,
+              "startColumn": 3,
+              "endLine": 33,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 58,
+            "startColumn": 74,
+            "endLine": 58,
+            "endColumn": 100
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/email": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/email",
+          "name": "email",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts/interface/DocumentUser/memberField/email",
+            "name": "email",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 34,
+              "startColumn": 3,
+              "endLine": 34,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 58,
+            "startColumn": 101,
+            "endLine": 58,
+            "endColumn": 122
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 9,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser-apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource-first_namelast_nameemail": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser-apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource-first_namelast_nameemail",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser",
+      "from_class_or_interface_name": "WorkflowRunUser",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/helper/UserDisplayNameHelper.ts",
+      "to_class_or_interface_key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource",
+      "to_class_or_interface_name": "UserDisplayNameSource",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/first_name": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/first_name",
+          "name": "first_name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/first_name",
+            "name": "first_name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 5,
+              "startColumn": 2,
+              "endLine": 5,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 58,
+            "startColumn": 46,
+            "endLine": 58,
+            "endColumn": 73
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/last_name": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/last_name",
+          "name": "last_name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/last_name",
+            "name": "last_name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 6,
+              "startColumn": 2,
+              "endLine": 6,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 58,
+            "startColumn": 74,
+            "endLine": 58,
+            "endColumn": 100
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/email": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/email",
+          "name": "email",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/email",
+            "name": "email",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 58,
+            "startColumn": 101,
+            "endLine": 58,
+            "endColumn": 122
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 9,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-fieldsfiltersortlimit": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery-fieldsfiltersortlimit",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery",
+      "from_class_or_interface_name": "WorkflowsQuery",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery",
+      "to_class_or_interface_name": "ExtendedListRestQuery",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/fields": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/fields",
+          "name": "fields",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/fields",
+            "name": "fields",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 35,
+              "startColumn": 3,
+              "endLine": 35,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 3,
+            "endLine": 27,
+            "endColumn": 19
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/filter": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/filter",
+          "name": "filter",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/filter",
+            "name": "filter",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 36,
+              "startColumn": 3,
+              "endLine": 36,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 28,
+            "startColumn": 3,
+            "endLine": 28,
+            "endColumn": 19
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/sort": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/sort",
+          "name": "sort",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/sort",
+            "name": "sort",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 37,
+              "startColumn": 3,
+              "endLine": 37,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 17
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/limit": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/limit",
+          "name": "limit",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts/interface/ExtendedListRestQuery/memberField/limit",
+            "name": "limit",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 38,
+              "startColumn": 3,
+              "endLine": 38,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 3,
+            "endLine": 30,
+            "endColumn": 18
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-fieldssortlimit": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery-fieldssortlimit",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery",
+      "from_class_or_interface_name": "WorkflowsQuery",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery",
+      "to_class_or_interface_name": "FriendshipNetworkQuery",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/fields": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/fields",
+          "name": "fields",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/fields",
+            "name": "fields",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 91,
+              "startColumn": 3,
+              "endLine": 91,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 3,
+            "endLine": 27,
+            "endColumn": 19
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/sort": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/sort",
+          "name": "sort",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/sort",
+            "name": "sort",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 93,
+              "startColumn": 3,
+              "endLine": 93,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 17
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/limit": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/limit",
+          "name": "limit",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts/interface/FriendshipNetworkQuery/memberField/limit",
+            "name": "limit",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 92,
+              "startColumn": 3,
+              "endLine": 92,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 3,
+            "endLine": 30,
+            "endColumn": 18
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-fieldsfiltersortlimitaggregate": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery-fieldsfiltersortlimitaggregate",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery",
+      "from_class_or_interface_name": "WorkflowsQuery",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery",
+      "to_class_or_interface_name": "LivePulseQuery",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/fields": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/fields",
+          "name": "fields",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/fields",
+            "name": "fields",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 121,
+              "startColumn": 3,
+              "endLine": 121,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 3,
+            "endLine": 27,
+            "endColumn": 19
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/filter": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/filter",
+          "name": "filter",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/filter",
+            "name": "filter",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 122,
+              "startColumn": 3,
+              "endLine": 122,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 28,
+            "startColumn": 3,
+            "endLine": 28,
+            "endColumn": 19
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/sort": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/sort",
+          "name": "sort",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/sort",
+            "name": "sort",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 123,
+              "startColumn": 3,
+              "endLine": 123,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 17
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/limit": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/limit",
+          "name": "limit",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/limit",
+            "name": "limit",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 124,
+              "startColumn": 3,
+              "endLine": 124,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 3,
+            "endLine": 30,
+            "endColumn": 18
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/aggregate": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowsQuery/memberField/aggregate",
+          "name": "aggregate",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts/interface/LivePulseQuery/memberField/aggregate",
+            "name": "aggregate",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 125,
+              "startColumn": 3,
+              "endLine": 125,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 32,
+            "startColumn": 3,
+            "endLine": 32,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -9603,7 +11014,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 14,
         "cluster_type": 2
       }
     },
@@ -9700,7 +11111,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 7,
+        "cluster_id": 8,
         "cluster_type": 2
       }
     },
@@ -9797,8 +11208,105 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 8,
-        "cluster_type": 2
+        "cluster_id": 9,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/helper/UserDisplayNameHelper.ts-apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser-first_namelast_nameemail": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/helper/UserDisplayNameHelper.ts-apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser-first_namelast_nameemail",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/helper/UserDisplayNameHelper.ts",
+      "from_class_or_interface_key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource",
+      "from_class_or_interface_name": "UserDisplayNameSource",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser",
+      "to_class_or_interface_name": "WorkflowRunUser",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/first_name": {
+          "key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/first_name",
+          "name": "first_name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/first_name",
+            "name": "first_name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 58,
+              "startColumn": 46,
+              "endLine": 58,
+              "endColumn": 73
+            }
+          },
+          "position": {
+            "startLine": 5,
+            "startColumn": 2,
+            "endLine": 5,
+            "endColumn": 29
+          }
+        },
+        "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/last_name": {
+          "key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/last_name",
+          "name": "last_name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/last_name",
+            "name": "last_name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 58,
+              "startColumn": 74,
+              "endLine": 58,
+              "endColumn": 100
+            }
+          },
+          "position": {
+            "startLine": 6,
+            "startColumn": 2,
+            "endLine": 6,
+            "endColumn": 28
+          }
+        },
+        "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/email": {
+          "key": "apps/frontend/app/helper/UserDisplayNameHelper.ts/interface/UserDisplayNameSource/memberField/email",
+          "name": "email",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/WorkflowsPageHelper.ts/interface/WorkflowRunUser/memberField/email",
+            "name": "email",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 58,
+              "startColumn": 101,
+              "endLine": 58,
+              "endColumn": 122
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 24
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 9,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/frontend/app/helper/courseTimetable/StudipImporter.ts-apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource-apps/scripts/asc-api.ts/interface/JsonApiResource-typeidattributes": {
@@ -9894,7 +11402,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 15,
         "cluster_type": 2
       }
     },
@@ -10016,7 +11524,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 10,
+        "cluster_id": 11,
         "cluster_type": 2
       }
     },
@@ -10113,7 +11621,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 14,
         "cluster_type": 2
       }
     },
@@ -10235,7 +11743,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -10357,7 +11865,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -10454,7 +11962,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 15,
         "cluster_type": 2
       }
     },
@@ -10551,7 +12059,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 2
       }
     },
@@ -10648,7 +12156,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -10745,7 +12253,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -10892,7 +12400,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -10989,7 +12497,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -11111,7 +12619,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -11208,7 +12716,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -11305,7 +12813,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -11402,7 +12910,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -11499,7 +13007,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -11596,7 +13104,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -11693,7 +13201,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -11790,7 +13298,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -11887,7 +13395,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 2
       }
     },
@@ -11996,7 +13504,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 18,
+        "cluster_id": 19,
         "cluster_type": 2
       }
     },
@@ -12105,7 +13613,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 18,
+        "cluster_id": 19,
         "cluster_type": 2
       }
     },
@@ -12202,7 +13710,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 19,
+        "cluster_id": 20,
         "cluster_type": 2
       }
     },
@@ -12299,7 +13807,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 19,
+        "cluster_id": 20,
         "cluster_type": 2
       }
     }

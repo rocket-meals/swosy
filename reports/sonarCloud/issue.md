@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 4 | 4 |
-| 🐛 Reliability | 395 | 46 |
-| 🔧 Maintainability | 729 | 0 |
+| 🐛 Reliability | 398 | 46 |
+| 🔧 Maintainability | 739 | 0 |
 
-**Total issues:** 1128 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1141 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -19,8 +19,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/sync-fork.yml#L4
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue:365
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue#L365
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue:364
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue#L364
 
 - **Make sure that using this pseudorandom number generator is safe here.**
   apps/frontend/app/helper/courseTimetable/CourseTimetableModel.ts:164
@@ -30,7 +30,7 @@
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:10
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L10
 
-## 🐛 Reliability (46/395)
+## 🐛 Reliability (46/398)
 
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
   apps/accessibilityTester/src/index.ts:104

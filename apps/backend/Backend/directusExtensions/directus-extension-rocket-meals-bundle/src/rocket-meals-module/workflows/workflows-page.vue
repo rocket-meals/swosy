@@ -19,6 +19,7 @@ import { BackendTranslationKeys } from '../../helpers/translations/BackendTransl
 import ModuleNavigation from '../module-navigation.vue';
 import WorkflowStatusDot from './workflow-status-dot.vue';
 import WorkflowStartDialog from './workflow-start-dialog.vue';
+import WorkflowCard from './workflow-card.vue';
 
 const api = useApi();
 const router = useRouter();
@@ -107,29 +108,8 @@ const upNext = computed(() => {
   return next;
 });
 
-function healthLabel(item: WorkflowOverviewItem): string {
-  return translate(WorkflowsPageHelper.getHealthLabelKey(item.health));
-}
-
-function scheduleLabel(item: WorkflowOverviewItem): string {
-  return WorkflowsPageHelper.describeSchedule(item.schedule?.cron, language.value, translate);
-}
-
-function nextRunOf(item: WorkflowOverviewItem): Date | undefined {
-  return item.registered ? WorkflowsPageHelper.getNextRun(item, now.value) : undefined;
-}
-
 function relative(date: Date | string | undefined): string {
   return WorkflowsPageHelper.formatRelative(date, now.value, language.value);
-}
-
-function pointInTime(date: Date | string | undefined): string {
-  return WorkflowsPageHelper.formatPointInTime(date, now.value, language.value);
-}
-
-function startTooltip(item: WorkflowOverviewItem): string {
-  const reason = WorkflowsPageHelper.getStartBlockedReasonKey(item);
-  return translate(reason ?? BackendTranslationKeys.rocket_meals_module_workflows_start);
 }
 
 function openDetail(item: WorkflowOverviewItem) {
@@ -245,46 +225,7 @@ onBeforeUnmount(() => {
       <div v-else-if="visibleItems.length === 0" class="empty type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_workflows_no_match) }}</div>
 
       <div v-else class="grid">
-        <div v-for="item in visibleItems" :key="item.id" class="tile" :class="{ inactive: WorkflowsPageHelper.isInactive(item) }" role="link" tabindex="0" @click="openDetail(item)" @keydown.enter.self="openDetail(item)">
-          <div class="tile-head">
-            <workflow-status-dot :state="item.health" :title="healthLabel(item)" class="tile-dot" />
-            <div class="tile-name dim">
-              <div class="name">{{ nameOf(item.id) }}</div>
-              <div class="workflow-id type-note">{{ item.id }}</div>
-            </div>
-            <button class="switch" role="switch" :aria-checked="item.enabled" :aria-label="translate(item.enabled ? BackendTranslationKeys.rocket_meals_module_workflows_disable : BackendTranslationKeys.rocket_meals_module_workflows_enable)" :title="translate(item.enabled ? BackendTranslationKeys.rocket_meals_module_workflows_disable : BackendTranslationKeys.rocket_meals_module_workflows_enable)" @click.stop="toggleEnabled(item)" @keydown.enter.stop>
-              <span class="track" />
-            </button>
-          </div>
-
-          <dl class="meta dim">
-            <dt><v-icon name="schedule" x-small />{{ translate(BackendTranslationKeys.rocket_meals_module_workflows_schedule) }}</dt>
-            <dd>{{ scheduleLabel(item) }}</dd>
-            <dt><v-icon name="update" x-small />{{ translate(BackendTranslationKeys.rocket_meals_module_workflows_next_run) }}</dt>
-            <dd>
-              <span v-if="!item.registered" class="muted">{{ translate(BackendTranslationKeys.rocket_meals_module_workflows_not_registered) }}</span>
-              <span v-else-if="!item.schedule?.cron" class="muted">{{ translate(BackendTranslationKeys.rocket_meals_module_workflows_schedule_manual) }}</span>
-              <span v-else-if="!item.enabled" class="muted">{{ translate(BackendTranslationKeys.rocket_meals_module_workflows_paused) }}</span>
-              <template v-else-if="nextRunOf(item)">
-                <span>{{ relative(nextRunOf(item)) }}</span> <span class="muted">· {{ pointInTime(nextRunOf(item)) }}</span>
-              </template>
-              <span v-else class="muted">–</span>
-            </dd>
-            <dt><v-icon name="history" x-small />{{ translate(BackendTranslationKeys.rocket_meals_module_workflows_last_success) }}</dt>
-            <dd>
-              <template v-if="item.lastSuccessAt">
-                <span>{{ relative(item.lastSuccessAt) }}</span> <span class="muted">· {{ pointInTime(item.lastSuccessAt) }}</span>
-              </template>
-              <span v-else class="muted">{{ translate(BackendTranslationKeys.rocket_meals_module_workflows_never) }}</span>
-            </dd>
-          </dl>
-
-          <div class="tile-foot">
-            <button class="play" :disabled="!WorkflowsPageHelper.canStart(item)" :title="startTooltip(item)" :aria-label="startTooltip(item)" @click.stop="onPlay(item)" @keydown.enter.stop>
-              <v-icon :name="item.health === WorkflowHealth.RUNNING ? 'hourglass_top' : 'play_arrow'" filled />
-            </button>
-          </div>
-        </div>
+        <workflow-card v-for="item in visibleItems" :key="item.id" :item="item" :now="now" @open="openDetail(item)" @toggle="toggleEnabled(item)" @play="onPlay(item)" />
       </div>
     </div>
 
@@ -386,158 +327,8 @@ onBeforeUnmount(() => {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
   gap: 1rem;
-}
-
-.tile {
-  display: flex;
-  flex-direction: column;
-  gap: 0.875rem;
-  min-inline-size: 0;
-  padding: 1rem;
-  background: var(--theme--background);
-  border: var(--theme--border-width) solid var(--theme--border-color-subdued);
-  border-radius: var(--theme--border-radius);
-  cursor: pointer;
-  transition: border-color var(--fast) var(--transition);
-}
-
-.tile:hover,
-.tile:focus-visible {
-  border-color: var(--theme--border-color);
-}
-
-.tile.inactive .dim {
-  opacity: 0.55;
-}
-
-.tile-head {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
-}
-
-.tile-dot {
-  margin-block-start: 0.3rem;
-}
-
-.tile-name {
-  flex: 1;
-  min-inline-size: 0;
-}
-
-.name {
-  color: var(--theme--foreground-accent);
-  font-weight: 600;
-  overflow-wrap: anywhere;
-}
-
-.workflow-id {
-  font-family: var(--theme--fonts--monospace--font-family, monospace);
-  font-size: 0.75rem;
-  overflow-wrap: anywhere;
-}
-
-.meta {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.25rem 0.75rem;
-  margin: 0;
-  font-size: 0.875rem;
-}
-
-.meta dt {
-  display: flex;
-  align-self: start;
-  white-space: nowrap;
-  gap: 0.375rem;
-  align-items: center;
-  color: var(--theme--foreground-subdued);
-}
-
-.meta dd {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 0.25rem;
-  min-inline-size: 0;
-  margin: 0;
-  overflow: visible;
-  white-space: normal;
-  text-overflow: clip;
-  color: var(--theme--foreground-accent);
-  font-variant-numeric: tabular-nums;
-}
-
-.muted {
-  color: var(--theme--foreground-subdued);
-}
-
-.tile-foot {
-  display: flex;
-  justify-content: flex-end;
-  padding-block-start: 0.75rem;
-  border-block-start: var(--theme--border-width) solid var(--theme--border-color-subdued);
-}
-
-.switch {
-  flex: none;
-  padding: 0.25rem;
-  background: none;
-  cursor: pointer;
-}
-
-.track {
-  position: relative;
-  display: block;
-  inline-size: 2.25rem;
-  block-size: 1.25rem;
-  background: var(--theme--border-color);
-  border-radius: 1rem;
-  transition: background var(--fast) var(--transition);
-}
-
-.track::after {
-  position: absolute;
-  inset-block-start: 2px;
-  inset-inline-start: 2px;
-  inline-size: calc(1.25rem - 4px);
-  block-size: calc(1.25rem - 4px);
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
-  transition: transform var(--fast) var(--transition);
-  content: '';
-}
-
-.switch[aria-checked='true'] .track {
-  background: var(--theme--primary);
-}
-
-.switch[aria-checked='true'] .track::after {
-  transform: translateX(1rem);
-}
-
-.play {
-  display: grid;
-  place-items: center;
-  inline-size: 2.5rem;
-  block-size: 2.5rem;
-  color: var(--foreground-inverted, #fff);
-  background: var(--theme--primary);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform var(--fast) var(--transition);
-}
-
-.play:hover:not(:disabled) {
-  transform: scale(1.06);
-}
-
-.play:disabled {
-  color: var(--theme--foreground-subdued);
-  background: var(--theme--background-normal);
-  cursor: not-allowed;
 }
 
 @media (max-width: 40rem) {

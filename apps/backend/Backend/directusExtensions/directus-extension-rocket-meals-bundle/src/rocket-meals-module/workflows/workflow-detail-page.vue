@@ -16,6 +16,8 @@ import ModuleNavigation from '../module-navigation.vue';
 import WorkflowStatusDot from './workflow-status-dot.vue';
 import WorkflowStartDialog from './workflow-start-dialog.vue';
 import WorkflowRunDrawer from './workflow-run-drawer.vue';
+import WorkflowSwitch from './workflow-switch.vue';
+import WorkflowPlayButton from './workflow-play-button.vue';
 
 const props = defineProps<{ workflowId: string }>();
 
@@ -49,7 +51,6 @@ const RUN_FILTERS: { value: WorkflowRunsFilter; labelKey: BackendTranslationKeys
 
 const name = computed(() => WorkflowsPageHelper.getName(props.workflowId, translate));
 const canStart = computed(() => !!item.value && WorkflowsPageHelper.canStart(item.value));
-const startTooltip = computed(() => translate((item.value && WorkflowsPageHelper.getStartBlockedReasonKey(item.value)) ?? BackendTranslationKeys.rocket_meals_module_workflows_start));
 const upcoming = computed(() => (item.value?.enabled && item.value.registered ? WorkflowsPageHelper.getUpcomingRuns(item.value, now.value) : []));
 const stats = computed(() => WorkflowsPageHelper.getRunStats(runs.value));
 
@@ -161,7 +162,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <private-view :title="name" :icon="page.icon">
+  <private-view :title="name" :icon="WorkflowsPageHelper.getIcon(workflowId)">
     <template #title-outer:prepend>
       <v-button class="back" rounded icon secondary exact :to="RocketMealsModulePages.getRoute(page)" :title="translate(BackendTranslationKeys.rocket_meals_module_workflows_back)">
         <v-icon name="arrow_back" />
@@ -199,17 +200,12 @@ onBeforeUnmount(() => {
           </div>
         </div>
         <div v-if="item" class="actions">
-          <button class="switch" role="switch" :aria-checked="item.enabled" @click="toggleEnabled">
-            <span class="track" />
-            <span>{{ translate(item.enabled ? BackendTranslationKeys.rocket_meals_module_workflows_enabled : BackendTranslationKeys.rocket_meals_module_workflows_disabled) }}</span>
-          </button>
+          <workflow-switch :enabled="item.enabled" show-label @toggle="toggleEnabled" />
           <v-button secondary :disabled="!canStart" @click="openStartDialog()">
             <v-icon name="data_object" left />
             {{ translate(BackendTranslationKeys.rocket_meals_module_workflows_start_with_input) }}
           </v-button>
-          <button class="play" :disabled="!canStart" :title="startTooltip" :aria-label="startTooltip" @click="onPlay">
-            <v-icon :name="item.health === WorkflowHealth.RUNNING ? 'hourglass_top' : 'play_arrow'" filled />
-          </button>
+          <workflow-play-button :item="item" @play="onPlay" />
         </div>
       </div>
 
@@ -584,64 +580,6 @@ tbody tr.selected td {
   display: flex;
   justify-content: center;
   margin-block-start: 0.75rem;
-}
-
-.switch {
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.25rem;
-  color: var(--theme--foreground);
-  background: none;
-  cursor: pointer;
-}
-
-.track {
-  position: relative;
-  display: block;
-  inline-size: 2.25rem;
-  block-size: 1.25rem;
-  background: var(--theme--border-color);
-  border-radius: 1rem;
-  transition: background var(--fast) var(--transition);
-}
-
-.track::after {
-  position: absolute;
-  inset-block-start: 2px;
-  inset-inline-start: 2px;
-  inline-size: calc(1.25rem - 4px);
-  block-size: calc(1.25rem - 4px);
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
-  transition: transform var(--fast) var(--transition);
-  content: '';
-}
-
-.switch[aria-checked='true'] .track {
-  background: var(--theme--primary);
-}
-
-.switch[aria-checked='true'] .track::after {
-  transform: translateX(1rem);
-}
-
-.play {
-  display: grid;
-  place-items: center;
-  inline-size: 2.5rem;
-  block-size: 2.5rem;
-  color: var(--foreground-inverted, #fff);
-  background: var(--theme--primary);
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.play:disabled {
-  color: var(--theme--foreground-subdued);
-  background: var(--theme--background-normal);
-  cursor: not-allowed;
 }
 
 @media (max-width: 60rem) {
