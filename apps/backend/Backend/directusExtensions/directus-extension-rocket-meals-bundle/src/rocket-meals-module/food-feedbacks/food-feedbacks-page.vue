@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Page "Speise-Feedbacks": the latest food feedbacks with a comment, filterable by chat status,
- * canteen, food and rating, sortable by date or rating. Feedbacks can be marked as done right
+ * Page "Speise-Feedbacks": the latest food feedbacks, by default those with a comment. Filterable
+ * by content (comment and/or rating), chat status, canteen, food and rating, sortable by date or rating. Feedbacks can be marked as done right
  * from the list – one by one or several selected at once. Every row leads to the chat with the
  * author (`food-feedback-chat-page.vue`).
  */
@@ -11,7 +11,7 @@ import { useRouter } from 'vue-router';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { FoodFeedbackChatActions } from '../../helpers/rocket-meals-module/FoodFeedbackChatActions';
-import { FoodFeedbackChatHelper, FoodFeedbackListSort, FoodFeedbackRatingFilter, type FoodFeedbackListItem, type FoodFeedbackListOptions } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import { FoodFeedbackChatHelper, FoodFeedbackContentFilter, FoodFeedbackListSort, FoodFeedbackRatingFilter, type FoodFeedbackListItem, type FoodFeedbackListOptions } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
@@ -51,6 +51,7 @@ const storedSettings = readStoredSettings();
 
 const activeFilter = ref<FoodFeedbackChatFilter>(FoodFeedbackChatFilter.OPEN);
 const search = ref('');
+const contents = ref<FoodFeedbackContentFilter[]>([...FoodFeedbackChatHelper.DEFAULT_CONTENT_FILTERS]);
 const foodSearch = ref('');
 const canteenIds = ref<string[]>(Array.isArray(storedSettings.canteenIds) ? storedSettings.canteenIds.map(String) : []);
 const ratingFilter = ref<FoodFeedbackRatingFilter>(FoodFeedbackRatingFilter.ALL);
@@ -69,6 +70,7 @@ const resolvingIds = ref<string[]>([]);
 const apiRoot = String(api.defaults?.baseURL ?? '/');
 
 const listOptions = computed<FoodFeedbackListOptions>(() => ({
+  contents: contents.value,
   canteenIds: canteenIds.value,
   foodSearch: foodSearch.value,
   rating: ratingFilter.value,
@@ -78,7 +80,10 @@ const listOptions = computed<FoodFeedbackListOptions>(() => ({
 
 const pageCount = computed(() => FoodFeedbackChatHelper.getPageCount(total.value, pageSize.value));
 const canteenItems = computed(() => canteens.value.map(canteen => ({ text: canteen.alias || canteen.id, value: canteen.id })));
-const ratingItems = computed(() => FoodFeedbackChatHelper.RATING_FILTERS.map(rating => ({ text: translate(FoodFeedbackChatHelper.getRatingFilterLabelKey(rating)), value: rating })));
+const contentItems = FoodFeedbackChatHelper.CONTENT_FILTERS.map(content => ({ text: translate(FoodFeedbackChatHelper.getContentFilterLabelKey(content)), value: content }));
+/** The rating filter only shows up once feedbacks with a rating are listed. */
+const ratingFilterAvailable = computed(() => FoodFeedbackChatHelper.isRatingFilterAvailable(contents.value));
+const ratingItems = computed(() => FoodFeedbackChatHelper.getRatingFilters(contents.value).map(rating => ({ text: translate(FoodFeedbackChatHelper.getRatingFilterLabelKey(rating)), value: rating })));
 const sortItems = computed(() => FoodFeedbackChatHelper.SORTS.map(option => ({ text: translate(FoodFeedbackChatHelper.getSortLabelKey(option)), value: option })));
 const pageSizeItems = FoodFeedbackChatHelper.PAGE_SIZE_OPTIONS.map(size => ({ text: String(size), value: size }));
 
@@ -210,7 +215,13 @@ watch([search, foodSearch], () => {
     }
   }, 300);
 });
-watch([canteenIds, ratingFilter, sort, pageSize], () => {
+// A rating group that is no longer offered falls back to all ratings.
+watch(contents, () => {
+  if (!ratingItems.value.some(item => item.value === ratingFilter.value)) {
+    ratingFilter.value = FoodFeedbackRatingFilter.ALL;
+  }
+});
+watch([contents, canteenIds, ratingFilter, sort, pageSize], () => {
   storeSettings({ canteenIds: canteenIds.value, sort: sort.value, pageSize: pageSize.value });
   if (currentPage.value === 1) {
     reload();
@@ -257,6 +268,9 @@ onMounted(() => {
 
       <div class="toolbar">
         <div class="toolbar-item toolbar-wide">
+          <v-select v-model="contents" :items="contentItems" multiple :placeholder="translate(BackendTranslationKeys.rocket_meals_module_content_any)" />
+        </div>
+        <div class="toolbar-item toolbar-wide">
           <v-input v-model="foodSearch" type="search" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_search_food)">
             <template #prepend><v-icon name="restaurant" small /></template>
           </v-input>
@@ -264,7 +278,7 @@ onMounted(() => {
         <div class="toolbar-item toolbar-wide">
           <v-select v-model="canteenIds" :items="canteenItems" multiple show-deselect :placeholder="translate(BackendTranslationKeys.rocket_meals_module_all_canteens)" :disabled="canteenItems.length === 0" />
         </div>
-        <div class="toolbar-item">
+        <div v-if="ratingFilterAvailable" class="toolbar-item">
           <v-select v-model="ratingFilter" :items="ratingItems" />
         </div>
         <div class="toolbar-item">
@@ -307,7 +321,7 @@ onMounted(() => {
                 {{ formatDateTime(feedback.date_created) }}
               </span>
             </div>
-            <q class="comment">{{ feedback.comment }}</q>
+            <q v-if="FoodFeedbackChatStatusHelper.hasComment(feedback)" class="comment">{{ feedback.comment }}</q>
             <div class="feedback-actions">
               <v-button v-if="FoodFeedbackChatHelper.canMarkResolved(feedback)" small secondary :loading="isResolving(feedback)" @click.stop="markResolved([feedback])">
                 <v-icon name="task_alt" left small />

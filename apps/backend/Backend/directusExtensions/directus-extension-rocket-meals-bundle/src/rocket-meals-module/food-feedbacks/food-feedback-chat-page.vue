@@ -209,7 +209,7 @@ watch(() => props.feedbackId, load);
         </div>
 
         <support-chat-conversation
-          :opening="{ text: feedback.comment ?? '', date: feedback.date_created }"
+          :opening="FoodFeedbackChatStatusHelper.hasComment(feedback) ? { text: feedback.comment ?? '', date: feedback.date_created } : null"
           :user-nickname="FoodFeedbackChatHelper.getNickname(feedback.profile)"
           :messages="messages"
           :can-write="canWrite"

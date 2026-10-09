@@ -59,8 +59,16 @@ export enum FoodFeedbackRatingFilter {
   NONE = 'none',
 }
 
+/** What a feedback has to contain to be listed. Several selected = any of them. */
+export enum FoodFeedbackContentFilter {
+  WITH_COMMENT = 'with_comment',
+  WITH_RATING = 'with_rating',
+}
+
 /** Everything the list can be narrowed down by, besides the status chips. */
 export type FoodFeedbackListOptions = {
+  /** Only feedbacks with one of these contents; empty = with comment or rating. Default: with comment. */
+  contents?: readonly FoodFeedbackContentFilter[] | null;
   /** Only feedbacks of these canteens; empty = all canteens. */
   canteenIds?: readonly string[] | null;
   /** Part of the food name. */
@@ -78,6 +86,9 @@ export class FoodFeedbackChatHelper {
 
   public static readonly SORTS: readonly FoodFeedbackListSort[] = [FoodFeedbackListSort.NEWEST, FoodFeedbackListSort.OLDEST, FoodFeedbackListSort.RATING_WORST, FoodFeedbackListSort.RATING_BEST];
   public static readonly RATING_FILTERS: readonly FoodFeedbackRatingFilter[] = [FoodFeedbackRatingFilter.ALL, FoodFeedbackRatingFilter.BAD, FoodFeedbackRatingFilter.MEDIUM, FoodFeedbackRatingFilter.GOOD, FoodFeedbackRatingFilter.NONE];
+  public static readonly CONTENT_FILTERS: readonly FoodFeedbackContentFilter[] = [FoodFeedbackContentFilter.WITH_COMMENT, FoodFeedbackContentFilter.WITH_RATING];
+  /** Support mainly answers comments, so only those are listed until more is asked for. */
+  public static readonly DEFAULT_CONTENT_FILTERS: readonly FoodFeedbackContentFilter[] = [FoodFeedbackContentFilter.WITH_COMMENT];
 
   /** Edge length in px of the food image in the list (requested at twice the size for HiDPI). */
   public static readonly FOOD_IMAGE_SIZE = 64;
@@ -160,9 +171,34 @@ export class FoodFeedbackChatHelper {
     }
   }
 
-  /** The status filter combined with canteen, food and rating of the options. */
+  /** The selected contents; `undefined` = the default, empty = all contents. */
+  static getContents(contents?: readonly FoodFeedbackContentFilter[] | null): FoodFeedbackContentFilter[] {
+    const known = (contents ?? FoodFeedbackChatHelper.DEFAULT_CONTENT_FILTERS).filter(content => FoodFeedbackChatHelper.CONTENT_FILTERS.includes(content));
+    return known.length > 0 ? known : [...FoodFeedbackChatHelper.CONTENT_FILTERS];
+  }
+
+  /** Whether the rating filter applies – only when feedbacks with a rating are listed. */
+  static isRatingFilterAvailable(contents?: readonly FoodFeedbackContentFilter[] | null): boolean {
+    return FoodFeedbackChatHelper.getContents(contents).includes(FoodFeedbackContentFilter.WITH_RATING);
+  }
+
+  /** The rating groups offered: "without rating" only makes sense when feedbacks with only a comment are listed too. */
+  static getRatingFilters(contents?: readonly FoodFeedbackContentFilter[] | null): FoodFeedbackRatingFilter[] {
+    const withComment = FoodFeedbackChatHelper.getContents(contents).includes(FoodFeedbackContentFilter.WITH_COMMENT);
+    return FoodFeedbackChatHelper.RATING_FILTERS.filter(rating => withComment || rating !== FoodFeedbackRatingFilter.NONE);
+  }
+
+  /** The Directus filter of the selected contents, any of them has to be present. */
+  static buildContentFilter(contents?: readonly FoodFeedbackContentFilter[] | null): DirectusFilter {
+    const parts = FoodFeedbackChatHelper.getContents(contents).map(content => (content === FoodFeedbackContentFilter.WITH_RATING ? { rating: { _nnull: true } } : { comment: { _nempty: true } }));
+    return parts.length === 1 ? parts[0]! : { _or: parts };
+  }
+
+  /** The status filter combined with content, canteen, food and rating of the options. */
   static buildFilter(filter: FoodFeedbackChatFilter, options: FoodFeedbackListOptions = {}): DirectusFilter {
-    const parts: DirectusFilter[] = [FoodFeedbackChatStatusHelper.buildFilter(filter)];
+    const statusFilter = FoodFeedbackChatStatusHelper.buildStatusFilter(filter);
+    const contentAndStatus = [FoodFeedbackChatHelper.buildContentFilter(options.contents), ...(statusFilter ? [statusFilter] : [])];
+    const parts: DirectusFilter[] = [{ _and: contentAndStatus }];
     const canteenIds = (options.canteenIds ?? []).filter(id => !!id);
     if (canteenIds.length > 0) {
       parts.push({ canteen: { _in: canteenIds } });
@@ -171,7 +207,7 @@ export class FoodFeedbackChatHelper {
     if (foodSearch) {
       parts.push({ food: { alias: { _icontains: foodSearch } } });
     }
-    const ratingFilter = FoodFeedbackChatHelper.buildRatingFilter(options.rating);
+    const ratingFilter = FoodFeedbackChatHelper.isRatingFilterAvailable(options.contents) ? FoodFeedbackChatHelper.buildRatingFilter(options.rating) : undefined;
     if (ratingFilter) {
       parts.push(ratingFilter);
     }
@@ -232,6 +268,15 @@ export class FoodFeedbackChatHelper {
         return BackendTranslationKeys.rocket_meals_module_sort_rating_worst;
       case FoodFeedbackListSort.RATING_BEST:
         return BackendTranslationKeys.rocket_meals_module_sort_rating_best;
+    }
+  }
+
+  static getContentFilterLabelKey(content: FoodFeedbackContentFilter): BackendTranslationKeys {
+    switch (content) {
+      case FoodFeedbackContentFilter.WITH_COMMENT:
+        return BackendTranslationKeys.rocket_meals_module_content_with_comment;
+      case FoodFeedbackContentFilter.WITH_RATING:
+        return BackendTranslationKeys.rocket_meals_module_content_with_rating;
     }
   }
 
