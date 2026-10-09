@@ -510,6 +510,7 @@ export type Chats = {
   id: string;
   initial_message?: string | null;
   linked_entities: string;
+  linked_to_feature_whishes: any[] | FeatureWhishes[];
   messages: any[] | ChatMessages[];
   participants: any[] | ChatsParticipants[];
   sort?: number | null;
@@ -1117,11 +1118,11 @@ export type DirectusVersions = {
 
 export type FeatureWhishes = {
   alias?: string | null;
+  chat?: string | Chats | null;
   date_created?: string | null;
   date_updated?: string | null;
   description?: string | null;
   id: string;
-  likes?: number | null;
   likes_amount?: number | null;
   likes_amount_last_checked?: number | null;
   moderation_note_intern?: string | null;

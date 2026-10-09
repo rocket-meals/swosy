@@ -29,8 +29,7 @@
           "text": "$t:archived",
           "value": "archived"
         }
-      ],
-      "showAsDot": true
+      ]
     },
     "field": "status",
     "group": null,

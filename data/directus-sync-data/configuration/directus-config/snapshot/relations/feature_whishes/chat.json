@@ -1,0 +1,25 @@
+{
+  "collection": "feature_whishes",
+  "field": "chat",
+  "related_collection": "chats",
+  "meta": {
+    "junction_field": null,
+    "many_collection": "feature_whishes",
+    "many_field": "chat",
+    "one_allowed_collections": null,
+    "one_collection": "chats",
+    "one_collection_field": null,
+    "one_deselect_action": "nullify",
+    "one_field": "linked_to_feature_whishes",
+    "sort_field": null
+  },
+  "schema": {
+    "table": "feature_whishes",
+    "column": "chat",
+    "foreign_key_table": "chats",
+    "foreign_key_column": "id",
+    "constraint_name": "feature_whishes_chat_foreign",
+    "on_update": "NO ACTION",
+    "on_delete": "SET NULL"
+  }
+}

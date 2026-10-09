@@ -5,15 +5,18 @@
   "meta": {
     "collection": "feature_whishes",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{status}}: {{title}} ({{id}})"
+    },
     "field": "related_to",
     "group": null,
     "hidden": false,
     "interface": "select-dropdown-m2o",
     "note": null,
     "options": {
-      "enableLink": true
+      "enableLink": true,
+      "template": "{{status}}: {{title}} ({{id}})"
     },
     "readonly": false,
     "required": false,

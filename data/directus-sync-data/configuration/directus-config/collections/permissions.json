@@ -1507,13 +1507,17 @@
   {
     "fields": [
       "id",
+      "status",
+      "alias",
+      "tags",
       "title",
       "description",
-      "related_to",
-      "status",
-      "profile"
+      "profile",
+      "related_to"
     ],
-    "presets": null,
+    "presets": {
+      "profile": "$CURRENT_USER.profile"
+    },
     "validation": {
       "_and": [
         {
@@ -1557,18 +1561,6 @@
           "profile": {
             "_eq": "$CURRENT_USER.profile"
           }
-        },
-        {
-          "status": {
-            "_in": [
-              "like",
-              "draft",
-              "ai_suggests_publish",
-              "ai_suggests_decline",
-              "ai_suggests_merge",
-              "archived"
-            ]
-          }
         }
       ]
     },
@@ -1581,7 +1573,9 @@
     "fields": [
       "id",
       "status",
+      "user_created",
       "date_created",
+      "user_updated",
       "date_updated",
       "alias",
       "tags",
@@ -1591,7 +1585,8 @@
       "profile",
       "likes_amount",
       "related_to",
-      "moderation_note_public"
+      "moderation_note_public",
+      "sort"
     ],
     "presets": null,
     "validation": null,
@@ -1622,6 +1617,8 @@
     "fields": [
       "title",
       "description",
+      "tags",
+      "alias",
       "status"
     ],
     "presets": null,
@@ -3426,6 +3423,8 @@
       "title",
       "description",
       "related_to",
+      "tags",
+      "alias",
       "status"
     ],
     "presets": null,
@@ -3493,7 +3492,8 @@
       "date_updated",
       "alias",
       "tags",
-      "moderation_note_public"
+      "moderation_note_public",
+      "sort"
     ],
     "presets": null,
     "validation": null,

@@ -1,20 +1,21 @@
 [
   {
-    "mcp_system_prompt_enabled": true,
     "product_updates": false,
     "collaborative_editing_enabled": false,
     "public_registration": false,
-    "public_registration_verify_email": true,
-    "mcp_enabled": true,
     "mcp_allow_deletes": false,
+    "mcp_enabled": true,
+    "public_registration_verify_email": true,
+    "mcp_system_prompt_enabled": true,
     "custom_css": null,
-    "mcp_system_prompt": null,
     "auth_login_attempts": 25,
-    "basemaps": null,
+    "mcp_system_prompt": null,
     "ai_system_prompt": null,
     "public_note": null,
-    "ai_openai_compatible_name": null,
     "ai_openai_compatible_base_url": null,
+    "ai_openai_compatible_name": null,
+    "ai_openai_compatible_models": null,
+    "basemaps": null,
     "module_bar": [
       {
         "type": "module",
@@ -64,8 +65,6 @@
       }
     ],
     "custom_aspect_ratios": null,
-    "storage_asset_presets": null,
-    "ai_openai_compatible_models": null,
     "ai_openai_allowed_models": [
       "gpt-5-nano",
       "gpt-5-mini",
@@ -81,9 +80,10 @@
       "gemini-3.6-flash",
       "gemini-3.5-flash"
     ],
+    "theme_dark_overrides": null,
     "theme_light_overrides": null,
     "public_registration_email_filter": null,
-    "theme_dark_overrides": null,
+    "storage_asset_presets": null,
     "project_status": null,
     "org_name": "Baumgartner Software UG (haftungsbeschränkt)",
     "project_usage": "commercial",
