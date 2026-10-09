@@ -107,6 +107,14 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     await updateLastUpdateDate(collection);
   });
 
+  // Schema changes (e.g. colors and icons of the choices of a field) are system events, not item
+  // events. Apps that cache field definitions refetch them when "directus_fields" changes.
+  for (const fieldsEvent of ['fields.create', 'fields.update', 'fields.delete']) {
+    action(fieldsEvent, async () => {
+      await updateLastUpdateDate(CollectionNames.DIRECTUS_FIELDS);
+    });
+  }
+
   action('*' + '.items.delete', async meta => {
     // get the collection which was deleted
     let collection = meta.collection;

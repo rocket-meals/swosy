@@ -26,6 +26,7 @@ export enum CollectionNames {
   MAILS = 'mails',
   MAILS_FILES = 'mails_files',
   DIRECTUS_FILES = 'directus_files',
+  DIRECTUS_FIELDS = 'directus_fields',
   DASHBOARDS = 'directus_dashboards',
   PANELS = 'directus_panels',
   FEATURE_WHISHES = 'feature_whishes',

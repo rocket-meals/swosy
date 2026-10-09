@@ -6,10 +6,13 @@
  *   it is a like (`related_to` set, no text) or a wish (`draft`), and sets `status` and `profile`.
  *   The Directus policies only allow exactly these fields, so nothing else can be set from outside.
  * - Editing by the author sends the wish back to review.
- * - `likes_amount` is recounted from the `merged` and `like` rows whenever one of them changes.
+ * - `likes_amount` is recounted (the author plus the `merged` and `like` rows) whenever a row is
+ *   created, changes its status or is deleted. Nobody can like their own wish.
+ * - The author gets a push notification when their wish is published.
  * - Deleting a wish deletes its duplicates and likes first, because `related_to` uses "prevent the
  *   deletion" (Directus offers nothing else for a relation to the same collection).
- * - Deleting a profile or a user deletes their wishes and likes.
+ * - Deleting a profile or a user deletes their wishes and likes. App users may delete their own
+ *   wishes (with account any of them, without account the ones that are not public).
  *
  * Filter hooks run before Directus checks the permissions. They therefore only change the payload
  * for app users and never delete anything on their behalf; side effects happen in the actions.
@@ -21,7 +24,7 @@ import { MyDatabaseHelper, MyEventContext } from '../helpers/MyDatabaseHelper';
 import { AccountabilityHelper } from '../helpers/AccountabilityHelper';
 import { createMyForbiddenError } from '../helpers/MyDirectusError';
 import { EventHelper } from '../helpers/EventHelper';
-import { HookKeysHelper } from '../helpers/HookKeysHelper';
+import { HookKeysHelper, HookMetaWithKeys } from '../helpers/HookKeysHelper';
 import { FeatureWishService } from './FeatureWishService';
 
 const HOOK_NAME = 'feature-wishes-hook';
@@ -51,6 +54,9 @@ function getKeysFromFilterInput(input: unknown): PrimaryKey[] {
 
 /** Wish ids of profiles or users being deleted, kept from the filter (before the delete) to the action (after it). */
 const pendingOwnerDeletions = new Map<string, string[]>();
+
+/** Wish ids that become published with an update, kept from the filter to the action. */
+const pendingPublished = new Map<string, string[]>();
 
 function getPendingKey(event: string, keys: PrimaryKey[]): string {
   return event + ':' + keys.map(String).sort().join(',');
@@ -86,9 +92,14 @@ export default defineHook(async ({ filter, action }, apiContext) => {
 
     if (result.isLike) {
       const targetId = result.payload.related_to as string;
-      const [target] = await service.readMany([targetId], ['id', 'status']);
+      const [target] = await service.readMany([targetId], ['id', 'status', 'profile']);
       if (target?.status !== FeatureWishStatus.PUBLISHED) {
         throw createMyForbiddenError('Only published feature wishes can be liked.');
+      }
+      // The author already counts as the first like.
+      const targetProfileId = typeof target.profile === 'string' ? target.profile : (target.profile?.id ?? null);
+      if (profileId && targetProfileId === profileId) {
+        throw createMyForbiddenError('Your own feature wish already counts your like.');
       }
       if (profileId && (await service.hasLikeOfProfile(profileId, targetId))) {
         throw createMyForbiddenError('This feature wish is already liked.');
@@ -97,7 +108,7 @@ export default defineHook(async ({ filter, action }, apiContext) => {
     return result.payload;
   });
 
-  filter(FEATURE_WISHES + '.items.update', async (input, _meta, eventContext: MyEventContext) => {
+  filter(FEATURE_WISHES + '.items.update', async (input, meta, eventContext: MyEventContext) => {
     const payload = (input ?? {}) as Partial<DatabaseTypes.FeatureWhishes>;
     if (isAppUser(eventContext.accountability)) {
       const text = FeatureWishHelper.validateText(payload);
@@ -106,6 +117,19 @@ export default defineHook(async ({ filter, action }, apiContext) => {
       }
       // Changed text has to be reviewed again.
       return { title: text.title, description: text.description, status: FeatureWishStatus.DRAFT };
+    }
+    if (payload.status === FeatureWishStatus.PUBLISHED) {
+      // Remember which wishes become public now, their authors get a push after the update.
+      const keys = HookKeysHelper.getKeysFromMeta(meta as HookMetaWithKeys);
+      try {
+        const rows = await createService(eventContext).readMany(keys, ['id', 'status']);
+        const newlyPublished = rows.filter(row => row.status !== FeatureWishStatus.PUBLISHED).map(row => String(row.id));
+        if (newlyPublished.length > 0) {
+          pendingPublished.set(getPendingKey('publish', keys), newlyPublished);
+        }
+      } catch (error) {
+        apiContext.logger.error(`${HOOK_NAME}: could not check which wishes get published: ${error instanceof Error ? error.message : String(error)}`);
+      }
     }
     // A suggested or confirmed original no longer applies once the wish gets another decision.
     if (payload.status && STATUSES_WITHOUT_RELATION.includes(payload.status) && !('related_to' in payload)) {
@@ -116,20 +140,26 @@ export default defineHook(async ({ filter, action }, apiContext) => {
 
   filter(FEATURE_WISHES + '.items.delete', async (input, _meta, eventContext: MyEventContext) => {
     const keys = getKeysFromFilterInput(input);
-    // App users may only delete their likes and unpublished wishes, nobody points to those. Their
-    // request is not authorized yet at this point, so nothing is deleted on their behalf here.
-    if (isAppUser(eventContext.accountability) || keys.length === 0) {
+    if (keys.length === 0) {
       return input;
     }
-    await createService(eventContext).deleteDependents(keys);
+    const service = createService(eventContext);
+    if (isAppUser(eventContext.accountability)) {
+      // Directus checks the permissions only after this filter. Duplicates and likes are deleted on
+      // behalf of an app user only when the wishes are their own, with the same rules as the policies.
+      const profileId = await service.getProfileIdOfUser(eventContext.accountability?.user);
+      const rows = await service.readMany(keys, ['id', 'status', 'profile']);
+      if (rows.length !== keys.length || !FeatureWishHelper.mayAppUserDelete(rows, profileId)) {
+        return input;
+      }
+    }
+    await service.deleteDependents(keys);
     return input;
   });
 
-  action(FEATURE_WISHES + '.items.create', async (meta, eventContext: MyEventContext) => {
-    const payload = (meta.payload ?? {}) as Partial<DatabaseTypes.FeatureWhishes>;
-    if (FeatureWishHelper.countsAsLike(payload)) {
-      await recountSafely(eventContext);
-    }
+  action(FEATURE_WISHES + '.items.create', async (_meta, eventContext: MyEventContext) => {
+    // A new wish starts with the like of its author, a new like or duplicate counts for its wish.
+    await recountSafely(eventContext);
   });
 
   action(FEATURE_WISHES + '.items.update', async (meta, eventContext: MyEventContext) => {
@@ -148,6 +178,16 @@ export default defineHook(async ({ filter, action }, apiContext) => {
     }
     if ('status' in payload || 'related_to' in payload) {
       await recountSafely(eventContext);
+    }
+    const pendingKey = getPendingKey('publish', keys);
+    const publishedIds = pendingPublished.get(pendingKey);
+    pendingPublished.delete(pendingKey);
+    if (publishedIds && publishedIds.length > 0) {
+      try {
+        await createService().notifyAuthorsAboutPublishing(publishedIds);
+      } catch (error) {
+        apiContext.logger.error(`${HOOK_NAME}: could not notify the authors of ${publishedIds.join(', ')}: ${error instanceof Error ? error.message : String(error)}`);
+      }
     }
   });
 

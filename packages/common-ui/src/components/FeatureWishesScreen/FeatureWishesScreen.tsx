@@ -40,35 +40,35 @@ const DEFAULT_ITEMS: FeatureWishItem[] = [
 		id: '1',
 		title: 'Dark Mode',
 		description: 'Add a dark mode for the entire app to reduce eye strain and save battery life.',
-		likes: 42,
+		likes_amount: 42,
 		status: 'published',
 	},
 	{
 		id: '2',
 		title: 'Weekly Plan Widget',
 		description: 'Show the weekly meal plan as a home screen widget so users can see what is available at a glance.',
-		likes: 31,
+		likes_amount: 31,
 		status: 'published',
 	},
 	{
 		id: '3',
 		title: 'Calorie Counter',
 		description: 'Add a feature to track daily calorie intake based on the meals consumed in the canteen.',
-		likes: 28,
+		likes_amount: 28,
 		status: 'draft',
 	},
 	{
 		id: '4',
 		title: 'Favorites List',
 		description: 'Allow users to mark dishes as favorites and create a personal list of favorite meals.',
-		likes: 19,
+		likes_amount: 19,
 		status: 'draft',
 	},
 	{
 		id: '5',
 		title: 'Push Notifications for Favorite Meals',
 		description: 'Receive notifications when a specific favorite dish is available on the menu.',
-		likes: 15,
+		likes_amount: 15,
 		status: 'published',
 	},
 ];
@@ -91,7 +91,7 @@ function applyLikeToggle(
 		setItems(prevItems =>
 			prevItems.map(item => {
 				if (item.id !== id) return item;
-				return { ...item, likes: (item.likes ?? 0) + (wasLiked ? -1 : 1) };
+				return { ...item, likes_amount: (item.likes_amount ?? 0) + (wasLiked ? -1 : 1) };
 			})
 		);
 		return next;
@@ -142,7 +142,7 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 					i.description?.toLowerCase().includes(query)
 			);
 		}
-		return [...filtered].sort((a, b) => (b.likes ?? 0) - (a.likes ?? 0));
+		return [...filtered].sort((a, b) => (b.likes_amount ?? 0) - (a.likes_amount ?? 0));
 	}, [items, activeFilter, searchText]);
 
 	const handleLike = useCallback((id: string) => {
@@ -173,7 +173,7 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 				id: `${Date.now()}-${MathHelper.random().toString(36).slice(2, 9)}`,
 				title,
 				description,
-				likes: 0,
+				likes_amount: 0,
 				status: STATUS_DRAFT,
 				date_created: new Date().toISOString(),
 			};
@@ -265,7 +265,7 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 					rightElement={
 						<SettingsListLikeButton
 							liked={isLiked}
-							likeCount={item.likes ?? 0}
+							likeCount={item.likes_amount ?? 0}
 							onPressLike={() => handleLike(item.id ?? '')}
 							primaryColor={resolvedPrimaryColor}
 						/>

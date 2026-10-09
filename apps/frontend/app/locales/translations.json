@@ -8798,5 +8798,55 @@
     "ru": "Отправить пожелание",
     "tr": "İstek gönder",
     "zh": "提交心愿"
+  },
+  "feature_wishes_update": {
+    "de": "Aktualisieren",
+    "en": "Update",
+    "ar": "تحديث",
+    "es": "Actualizar",
+    "fr": "Mettre à jour",
+    "ru": "Обновить",
+    "tr": "Güncelle",
+    "zh": "更新"
+  },
+  "feature_wishes_delete_question": {
+    "de": "Möchtest du diesen Wunsch wirklich löschen?",
+    "en": "Do you really want to delete this wish?",
+    "ar": "هل تريد حقًا حذف هذا الطلب؟",
+    "es": "¿De verdad quieres eliminar este deseo?",
+    "fr": "Veux-tu vraiment supprimer ce souhait ?",
+    "ru": "Ты действительно хочешь удалить это пожелание?",
+    "tr": "Bu isteği gerçekten silmek istiyor musun?",
+    "zh": "你确定要删除这个心愿吗？"
+  },
+  "feature_wishes_deleted": {
+    "de": "Dein Wunsch wurde gelöscht.",
+    "en": "Your wish was deleted.",
+    "ar": "تم حذف طلبك.",
+    "es": "Tu deseo se ha eliminado.",
+    "fr": "Ton souhait a été supprimé.",
+    "ru": "Твоё пожелание удалено.",
+    "tr": "İsteğin silindi.",
+    "zh": "你的心愿已删除。"
+  },
+  "feature_wishes_edit_published_hint": {
+    "de": "Nach dem Aktualisieren wird dein Wunsch erneut geprüft. Bis dahin ist er für andere nicht sichtbar.",
+    "en": "After updating, your wish will be reviewed again. Until then others cannot see it.",
+    "ar": "بعد التحديث ستتم مراجعة طلبك مرة أخرى. حتى ذلك الحين لن يتمكن الآخرون من رؤيته.",
+    "es": "Después de actualizarlo, tu deseo se revisará de nuevo. Hasta entonces nadie más podrá verlo.",
+    "fr": "Après la mise à jour, ton souhait sera vérifié à nouveau. D'ici là, les autres ne pourront pas le voir.",
+    "ru": "После обновления твоё пожелание будет проверено снова. До этого другие его не увидят.",
+    "tr": "Güncellemeden sonra isteğin yeniden incelenecek. O zamana kadar başkaları onu göremez.",
+    "zh": "更新后，你的心愿将再次审核。在此之前其他人看不到它。"
+  },
+  "feature_wishes_likes": {
+    "de": "Likes",
+    "en": "Likes",
+    "ar": "إعجابات",
+    "es": "Me gusta",
+    "fr": "J'aime",
+    "ru": "Отметки «нравится»",
+    "tr": "Beğeni",
+    "zh": "点赞"
   }
 }

@@ -1508,8 +1508,6 @@
     "fields": [
       "id",
       "status",
-      "alias",
-      "tags",
       "title",
       "description",
       "profile",
@@ -1573,9 +1571,7 @@
     "fields": [
       "id",
       "status",
-      "user_created",
       "date_created",
-      "user_updated",
       "date_updated",
       "alias",
       "tags",
@@ -1617,8 +1613,6 @@
     "fields": [
       "title",
       "description",
-      "tags",
-      "alias",
       "status"
     ],
     "presets": null,
@@ -1634,42 +1628,21 @@
     "permissions": {
       "_and": [
         {
-          "_and": [
-            {
-              "profile": {
-                "_eq": "$CURRENT_USER.profile"
-              }
-            },
-            {
-              "_or": [
-                {
-                  "status": {
-                    "_eq": "draft"
-                  }
-                },
-                {
-                  "status": {
-                    "_eq": "archived"
-                  }
-                },
-                {
-                  "status": {
-                    "_eq": "ai_suggests_publish"
-                  }
-                },
-                {
-                  "status": {
-                    "_eq": "ai_suggests_decline"
-                  }
-                },
-                {
-                  "status": {
-                    "_eq": "ai_suggests_merge"
-                  }
-                }
-              ]
-            }
-          ]
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        },
+        {
+          "status": {
+            "_in": [
+              "published",
+              "draft",
+              "ai_suggests_publish",
+              "ai_suggests_decline",
+              "ai_suggests_merge",
+              "archived"
+            ]
+          }
         }
       ]
     },
@@ -3423,8 +3396,6 @@
       "title",
       "description",
       "related_to",
-      "tags",
-      "alias",
       "status"
     ],
     "presets": null,
@@ -3459,18 +3430,14 @@
     "permissions": {
       "_and": [
         {
-          "_and": [
-            {
-              "status": {
-                "_eq": "like"
-              }
-            },
-            {
-              "profile": {
-                "_null": true
-              }
-            }
-          ]
+          "profile": {
+            "_null": true
+          }
+        },
+        {
+          "status": {
+            "_neq": "published"
+          }
         }
       ]
     },

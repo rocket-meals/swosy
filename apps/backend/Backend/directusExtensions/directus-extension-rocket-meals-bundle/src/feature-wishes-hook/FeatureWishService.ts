@@ -2,6 +2,8 @@ import { PrimaryKey } from '@directus/types';
 import { CollectionNames, DatabaseTypes, FeatureWishHelper, FeatureWishStatus } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
+import { PushNotificationHelper } from '../helpers/PushNotificationHelper';
+import { BackendLanguageResolver, BackendTranslationKeys } from '../helpers/translations';
 
 type FeatureWish = DatabaseTypes.FeatureWhishes;
 
@@ -54,8 +56,8 @@ export class FeatureWishService {
   }
 
   /**
-   * Recomputes `likes_amount` of every wish from the `merged` and `like` rows pointing to it and
-   * writes only the values that changed. Written directly to the table, so `date_updated` (and
+   * Recomputes `likes_amount` of every wish (its author plus the `merged` and `like` rows pointing
+   * to it) and writes only the values that changed. Written directly to the table, so `date_updated` (and
    * with it the 30 day timer of archived wishes) stays untouched and no hooks run again.
    */
   async recountAllLikes(): Promise<number> {
@@ -75,7 +77,7 @@ export class FeatureWishService {
 
     let changed = 0;
     for (const wish of wishes) {
-      const expected = counts[wish.id] ?? 0;
+      const expected = FeatureWishHelper.getExpectedLikesAmount(wish.id, counts);
       if (wish.likes_amount !== expected) {
         await helper.updateOneWithoutHookTrigger({ primary_key: wish.id, update: { likes_amount: expected } });
         changed++;
@@ -174,6 +176,33 @@ export class FeatureWishService {
         update: { related_to: null, moderation_note_intern: null, moderation_note_public: null },
       });
     }
+  }
+
+  /** Tells the authors (with account and a device for pushes) that their wish is public now. */
+  async notifyAuthorsAboutPublishing(wishIds: PrimaryKey[]): Promise<number> {
+    const wishes = await this.readMany(wishIds, ['id', 'title', 'profile']);
+    const languageResolver = new BackendLanguageResolver(this.myDatabaseHelper);
+    let sent = 0;
+    for (const wish of wishes) {
+      const profileId = typeof wish.profile === 'string' ? wish.profile : (wish.profile?.id ?? null);
+      if (!profileId) {
+        continue;
+      }
+      const devices = await this.myDatabaseHelper.getDevicesHelper().readManyByProfileId(profileId);
+      const expoPushTokens = PushNotificationHelper.getExpoPushTokensFromDevices(devices);
+      if (expoPushTokens.length === 0) {
+        continue;
+      }
+      const profile = await this.myDatabaseHelper.getProfilesHelper().readOne(profileId).catch(() => undefined);
+      const language = await languageResolver.resolveForProfile(profile);
+      await this.myDatabaseHelper.getPushNotificationsHelper().createOne({
+        expo_push_tokens: expoPushTokens,
+        message_title: language.translate(BackendTranslationKeys.notification_feature_wish_published_title),
+        message_body: language.translate(BackendTranslationKeys.notification_feature_wish_published_body, { title: wish.title ?? '' }),
+      });
+      sent++;
+    }
+    return sent;
   }
 
   async findIdsOfProfiles(profileIds: PrimaryKey[]): Promise<string[]> {
