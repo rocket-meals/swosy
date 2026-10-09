@@ -221,7 +221,8 @@ export function getVersionPatch() {
         //     (app start, food offers, washing machines); food reminder uses it; housing: options
         //     modal, hint panel and button in the "free rooms" modal to be notified about free apartments
         // 109: free apartment push notification on the housing screen is a plain switch now
-        return 109;
+        // 110: housing options show the sort row in the housing color with the current choice
+        return 110;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

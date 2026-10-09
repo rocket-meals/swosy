@@ -5,16 +5,20 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import SettingsList from '@/components/SettingsList/SettingsList';
 import { FreeApartmentsNotificationToggle } from '@/components/FreeApartmentsNotification';
-import useHousingSortingModal from '@/hooks/useHousingSortingModal';
+import useHousingSortingModal, { getHousingSortOptionLabel } from '@/hooks/useHousingSortingModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { useAppSelector } from '@/redux/hooks';
 
 const HousingOptionsContent: React.FC<{ onSort: () => void }> = ({ onSort }) => {
 	const { translate } = useLanguage();
+	const apartmentsSortBy = useAppSelector(state => state.settings.apartmentsSortBy);
+	const primaryColor = useAppSelector(state => state.settings.primaryColor);
+	const housingAreaColor = useAppSelector(state => state.settings.appSettings?.housing_area_color) || primaryColor;
 
 	return (
 		<View style={styles.container}>
-			<SettingsList title={translate(TranslationKeys.sort)} leftIcon={<MaterialIcons name="sort" size={20} />} onPress={onSort} groupPosition="top" showSeparator={true} />
+			<SettingsList iconBgColor={housingAreaColor} title={translate(TranslationKeys.sort)} value={translate(getHousingSortOptionLabel(apartmentsSortBy))} leftIcon={<MaterialIcons name="sort" size={20} />} onPress={onSort} groupPosition="top" showSeparator={true} />
 			<FreeApartmentsNotificationToggle groupPosition="bottom" />
 		</View>
 	);
