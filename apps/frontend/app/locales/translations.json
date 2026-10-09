@@ -8518,5 +8518,285 @@
     "ru": "Или с именем пользователя и паролем Stud.IP",
     "tr": "Ya da Stud.IP kullanıcı adı ve şifresiyle",
     "zh": "或使用 Stud.IP 用户名和密码"
+  },
+  "feature_wishes_tile_title": {
+    "de": "Welches Feature fehlt dir?",
+    "en": "Which feature are you missing?",
+    "ar": "ما الميزة التي تفتقدها؟",
+    "es": "¿Qué función echas de menos?",
+    "fr": "Quelle fonctionnalité te manque ?",
+    "ru": "Какой функции тебе не хватает?",
+    "tr": "Hangi özellik eksik?",
+    "zh": "你还缺少什么功能？"
+  },
+  "feature_wishes_own": {
+    "de": "Deine Wünsche",
+    "en": "Your wishes",
+    "ar": "طلباتك",
+    "es": "Tus deseos",
+    "fr": "Tes souhaits",
+    "ru": "Твои пожелания",
+    "tr": "İsteklerin",
+    "zh": "你的心愿"
+  },
+  "feature_wishes_popular": {
+    "de": "Beliebteste Wünsche",
+    "en": "Most popular wishes",
+    "ar": "الطلبات الأكثر شعبية",
+    "es": "Deseos más populares",
+    "fr": "Souhaits les plus populaires",
+    "ru": "Самые популярные пожелания",
+    "tr": "En popüler istekler",
+    "zh": "最受欢迎的心愿"
+  },
+  "feature_wishes_empty": {
+    "de": "Noch keine Wünsche freigegeben. Reich gern den ersten ein.",
+    "en": "No wishes published yet. Feel free to submit the first one.",
+    "ar": "لا توجد طلبات منشورة بعد. أرسل أول طلب.",
+    "es": "Todavía no hay deseos publicados. Envía el primero.",
+    "fr": "Aucun souhait publié pour l'instant. Propose le premier.",
+    "ru": "Пока нет опубликованных пожеланий. Предложи первое.",
+    "tr": "Henüz yayınlanmış istek yok. İlkini sen gönder.",
+    "zh": "还没有已发布的心愿。欢迎提交第一个。"
+  },
+  "feature_wishes_form_title": {
+    "de": "Dein Wunsch",
+    "en": "Your wish",
+    "ar": "طلبك",
+    "es": "Tu deseo",
+    "fr": "Ton souhait",
+    "ru": "Твоё пожелание",
+    "tr": "İsteğin",
+    "zh": "你的心愿"
+  },
+  "feature_wishes_field_title": {
+    "de": "Kurzer Titel",
+    "en": "Short title",
+    "ar": "عنوان قصير",
+    "es": "Título corto",
+    "fr": "Titre court",
+    "ru": "Короткий заголовок",
+    "tr": "Kısa başlık",
+    "zh": "简短标题"
+  },
+  "feature_wishes_field_description": {
+    "de": "Beschreibung (optional)",
+    "en": "Description (optional)",
+    "ar": "الوصف (اختياري)",
+    "es": "Descripción (opcional)",
+    "fr": "Description (facultative)",
+    "ru": "Описание (необязательно)",
+    "tr": "Açıklama (isteğe bağlı)",
+    "zh": "描述（可选）"
+  },
+  "feature_wishes_hint": {
+    "de": "Wir sammeln alle Wünsche und prüfen sie, bevor andere sie sehen können. Ob und wann ein Wunsch umgesetzt wird, können wir nicht versprechen. Bitte schreib keine Namen oder andere persönlichen Daten hinein.",
+    "en": "We collect all wishes and review them before others can see them. We cannot promise whether or when a wish will be implemented. Please do not include names or other personal data.",
+    "ar": "نجمع كل الطلبات ونراجعها قبل أن يتمكن الآخرون من رؤيتها. لا يمكننا أن نعد بما إذا كان الطلب سيُنفذ أو متى. يرجى عدم كتابة أسماء أو بيانات شخصية أخرى.",
+    "es": "Recopilamos todos los deseos y los revisamos antes de que otras personas puedan verlos. No podemos prometer si un deseo se hará realidad ni cuándo. Por favor, no incluyas nombres ni otros datos personales.",
+    "fr": "Nous recueillons tous les souhaits et les vérifions avant que d'autres personnes puissent les voir. Nous ne pouvons pas promettre si ni quand un souhait sera réalisé. Merci de ne pas indiquer de noms ni d'autres données personnelles.",
+    "ru": "Мы собираем все пожелания и проверяем их, прежде чем их увидят другие. Мы не можем обещать, будет ли и когда будет реализовано пожелание. Пожалуйста, не указывай имена и другие личные данные.",
+    "tr": "Tüm istekleri topluyor ve başkaları görmeden önce inceliyoruz. Bir isteğin hayata geçip geçmeyeceğine ya da ne zaman geçeceğine dair söz veremiyoruz. Lütfen isim veya başka kişisel veriler yazma.",
+    "zh": "我们会收集所有心愿，并在其他人看到之前进行审核。我们无法承诺心愿是否会实现或何时实现。请不要填写姓名或其他个人信息。"
+  },
+  "feature_wishes_submitted": {
+    "de": "Danke! Dein Wunsch wird jetzt geprüft.",
+    "en": "Thank you! Your wish will now be reviewed.",
+    "ar": "شكرًا! ستتم مراجعة طلبك الآن.",
+    "es": "¡Gracias! Ahora revisaremos tu deseo.",
+    "fr": "Merci ! Ton souhait va maintenant être vérifié.",
+    "ru": "Спасибо! Теперь твоё пожелание будет проверено.",
+    "tr": "Teşekkürler! İsteğin şimdi incelenecek.",
+    "zh": "谢谢！你的心愿将进行审核。"
+  },
+  "feature_wishes_updated": {
+    "de": "Dein Wunsch wird erneut geprüft.",
+    "en": "Your wish will be reviewed again.",
+    "ar": "ستتم مراجعة طلبك مرة أخرى.",
+    "es": "Revisaremos tu deseo de nuevo.",
+    "fr": "Ton souhait va être vérifié à nouveau.",
+    "ru": "Твоё пожелание будет проверено снова.",
+    "tr": "İsteğin yeniden incelenecek.",
+    "zh": "你的心愿将再次进行审核。"
+  },
+  "feature_wishes_daily_limit": {
+    "de": "Du hast heute schon drei Wünsche eingereicht. Morgen kannst du weitere einreichen.",
+    "en": "You have already submitted three wishes today. You can submit more tomorrow.",
+    "ar": "لقد أرسلت ثلاثة طلبات اليوم بالفعل. يمكنك إرسال المزيد غدًا.",
+    "es": "Hoy ya has enviado tres deseos. Mañana podrás enviar más.",
+    "fr": "Tu as déjà envoyé trois souhaits aujourd'hui. Tu pourras en envoyer d'autres demain.",
+    "ru": "Сегодня ты уже отправил(а) три пожелания. Завтра можно будет отправить ещё.",
+    "tr": "Bugün zaten üç istek gönderdin. Yarın yenilerini gönderebilirsin.",
+    "zh": "你今天已经提交了三个心愿。明天可以继续提交。"
+  },
+  "feature_wishes_title_missing": {
+    "de": "Bitte gib einen kurzen Titel ein.",
+    "en": "Please enter a short title.",
+    "ar": "يرجى إدخال عنوان قصير.",
+    "es": "Introduce un título corto.",
+    "fr": "Merci d'indiquer un titre court.",
+    "ru": "Пожалуйста, введи короткий заголовок.",
+    "tr": "Lütfen kısa bir başlık gir.",
+    "zh": "请输入简短标题。"
+  },
+  "feature_wishes_error": {
+    "de": "Das hat leider nicht geklappt. Bitte versuch es später noch einmal.",
+    "en": "That did not work. Please try again later.",
+    "ar": "لم ينجح ذلك. يرجى المحاولة مرة أخرى لاحقًا.",
+    "es": "No ha funcionado. Inténtalo de nuevo más tarde.",
+    "fr": "Cela n'a pas fonctionné. Réessaie plus tard.",
+    "ru": "Не получилось. Попробуй позже.",
+    "tr": "Bu işe yaramadı. Lütfen daha sonra tekrar dene.",
+    "zh": "操作未成功。请稍后再试。"
+  },
+  "feature_wishes_status_in_review": {
+    "de": "Wird geprüft",
+    "en": "In review",
+    "ar": "قيد المراجعة",
+    "es": "En revisión",
+    "fr": "En cours de vérification",
+    "ru": "На проверке",
+    "tr": "İnceleniyor",
+    "zh": "审核中"
+  },
+  "feature_wishes_status_declined": {
+    "de": "Nicht veröffentlicht",
+    "en": "Not published",
+    "ar": "غير منشور",
+    "es": "No publicado",
+    "fr": "Non publié",
+    "ru": "Не опубликовано",
+    "tr": "Yayınlanmadı",
+    "zh": "未发布"
+  },
+  "feature_wishes_status_submitted": {
+    "de": "Eingereicht",
+    "en": "Submitted",
+    "ar": "تم الإرسال",
+    "es": "Enviado",
+    "fr": "Envoyé",
+    "ru": "Отправлено",
+    "tr": "Gönderildi",
+    "zh": "已提交"
+  },
+  "feature_wishes_progress_collected": {
+    "de": "Gesammelt",
+    "en": "Collected",
+    "ar": "تم الجمع",
+    "es": "Recopilado",
+    "fr": "Recueilli",
+    "ru": "Собрано",
+    "tr": "Toplandı",
+    "zh": "已收集"
+  },
+  "feature_wishes_progress_planned": {
+    "de": "Geplant",
+    "en": "Planned",
+    "ar": "مخطط له",
+    "es": "Planificado",
+    "fr": "Prévu",
+    "ru": "Запланировано",
+    "tr": "Planlandı",
+    "zh": "已计划"
+  },
+  "feature_wishes_progress_in_progress": {
+    "de": "In Umsetzung",
+    "en": "In progress",
+    "ar": "قيد التنفيذ",
+    "es": "En desarrollo",
+    "fr": "En cours de réalisation",
+    "ru": "В работе",
+    "tr": "Geliştiriliyor",
+    "zh": "开发中"
+  },
+  "feature_wishes_progress_released": {
+    "de": "Umgesetzt",
+    "en": "Implemented",
+    "ar": "تم التنفيذ",
+    "es": "Implementado",
+    "fr": "Réalisé",
+    "ru": "Реализовано",
+    "tr": "Hayata geçirildi",
+    "zh": "已实现"
+  },
+  "feature_wishes_progress_not_planned": {
+    "de": "Nicht geplant",
+    "en": "Not planned",
+    "ar": "غير مخطط له",
+    "es": "No planificado",
+    "fr": "Non prévu",
+    "ru": "Не запланировано",
+    "tr": "Planlanmadı",
+    "zh": "暂无计划"
+  },
+  "feature_wishes_merged_hint": {
+    "de": "Dein Wunsch wurde hier zusammengeführt.",
+    "en": "Your wish was merged into this one.",
+    "ar": "تم دمج طلبك مع هذا الطلب.",
+    "es": "Tu deseo se ha unido a este.",
+    "fr": "Ton souhait a été fusionné avec celui-ci.",
+    "ru": "Твоё пожелание объединено с этим.",
+    "tr": "İsteğin bununla birleştirildi.",
+    "zh": "你的心愿已合并到这里。"
+  },
+  "feature_wishes_removed_on": {
+    "de": "Wird entfernt am",
+    "en": "Will be removed on",
+    "ar": "سيُحذف في",
+    "es": "Se eliminará el",
+    "fr": "Sera supprimé le",
+    "ru": "Будет удалено",
+    "tr": "Silinme tarihi",
+    "zh": "将删除于"
+  },
+  "feature_wishes_revise_hint": {
+    "de": "Du kannst deinen Wunsch überarbeiten und erneut einreichen.",
+    "en": "You can revise your wish and submit it again.",
+    "ar": "يمكنك تعديل طلبك وإرساله مرة أخرى.",
+    "es": "Puedes revisar tu deseo y enviarlo de nuevo.",
+    "fr": "Tu peux retravailler ton souhait et l'envoyer à nouveau.",
+    "ru": "Ты можешь доработать пожелание и отправить его снова.",
+    "tr": "İsteğini düzenleyip yeniden gönderebilirsin.",
+    "zh": "你可以修改心愿后重新提交。"
+  },
+  "feature_wishes_like": {
+    "de": "Gefällt mir",
+    "en": "Like",
+    "ar": "إعجاب",
+    "es": "Me gusta",
+    "fr": "J'aime",
+    "ru": "Нравится",
+    "tr": "Beğen",
+    "zh": "喜欢"
+  },
+  "feature_wishes_unlike": {
+    "de": "Gefällt mir nicht mehr",
+    "en": "Remove like",
+    "ar": "إزالة الإعجاب",
+    "es": "Quitar me gusta",
+    "fr": "Retirer le j'aime",
+    "ru": "Убрать отметку «нравится»",
+    "tr": "Beğeniyi kaldır",
+    "zh": "取消喜欢"
+  },
+  "feature_wishes_note_from_team": {
+    "de": "Hinweis vom Team",
+    "en": "Note from the team",
+    "ar": "ملاحظة من الفريق",
+    "es": "Nota del equipo",
+    "fr": "Note de l'équipe",
+    "ru": "Примечание команды",
+    "tr": "Ekipten not",
+    "zh": "团队备注"
+  },
+  "feature_wishes_submit": {
+    "de": "Wunsch einreichen",
+    "en": "Submit a wish",
+    "ar": "إرسال طلب",
+    "es": "Enviar un deseo",
+    "fr": "Proposer un souhait",
+    "ru": "Отправить пожелание",
+    "tr": "İstek gönder",
+    "zh": "提交心愿"
   }
 }

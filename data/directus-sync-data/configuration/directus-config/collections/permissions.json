@@ -1507,13 +1507,11 @@
   {
     "fields": [
       "id",
-      "status",
-      "alias",
-      "tags",
       "title",
       "description",
-      "profile",
-      "related_to"
+      "related_to",
+      "status",
+      "profile"
     ],
     "presets": null,
     "validation": {
@@ -1559,6 +1557,18 @@
           "profile": {
             "_eq": "$CURRENT_USER.profile"
           }
+        },
+        {
+          "status": {
+            "_in": [
+              "like",
+              "draft",
+              "ai_suggests_publish",
+              "ai_suggests_decline",
+              "ai_suggests_merge",
+              "archived"
+            ]
+          }
         }
       ]
     },
@@ -1571,9 +1581,7 @@
     "fields": [
       "id",
       "status",
-      "user_created",
       "date_created",
-      "user_updated",
       "date_updated",
       "alias",
       "tags",
@@ -1614,8 +1622,7 @@
     "fields": [
       "title",
       "description",
-      "tags",
-      "alias"
+      "status"
     ],
     "presets": null,
     "validation": {
@@ -3419,8 +3426,6 @@
       "title",
       "description",
       "related_to",
-      "tags",
-      "alias",
       "status"
     ],
     "presets": null,

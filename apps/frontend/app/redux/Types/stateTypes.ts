@@ -78,6 +78,15 @@ export type SettingsState = {
         mapClusterPixelRadius: number;
         foodoffersShowSeparatedMarkingsBreakdown: boolean | null;
         foodoffersShowAverageRatingOnCard: boolean | null;
+        featureWishesLocal?: FeatureWishesLocalState;
+}
+
+/** Feature wishes data kept on the device, see `featureWishesLocal` in the settings reducer. */
+export type FeatureWishesLocalState = {
+	tileHiddenAt: string | null;
+	ownWishes: { id: string; title: string }[];
+	likeIdsByWishId: Record<string, string>;
+	submittedAt: string[];
 }
 
 export type FoodState = {

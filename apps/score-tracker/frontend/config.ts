@@ -74,7 +74,8 @@ export function getVersionPatch() {
 	// 44: common: DefaultProfileHelper (scientist default nickname + avatar for new profiles)
 	// 45: common: DefaultProfileHelper.findScientist
 	// 46: common: default scientist nickname without number
-	return 46;
+	// 47: common: FeatureWishHelper and collection name feature_whishes
+	return 47;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
