@@ -46,5 +46,46 @@
     "icon": "bookmark",
     "role": "e0d3b51c-8f50-4844-a788-b5152180bf43",
     "_syncId": "fcfa20ed-b8de-4d8b-abbc-34fad7845930"
+  },
+  {
+    "refresh_interval": null,
+    "filter": {
+      "_and": [
+        {
+          "status": {
+            "_in": [
+              "draft",
+              "ai_suggests_publish",
+              "ai_suggests_decline",
+              "ai_suggests_merge"
+            ]
+          }
+        }
+      ]
+    },
+    "layout_options": null,
+    "layout_query": {
+      "tabular": {
+        "fields": [
+          "status",
+          "title",
+          "description",
+          "related_to",
+          "moderation_note_intern",
+          "date_created"
+        ],
+        "sort": [
+          "date_created"
+        ]
+      }
+    },
+    "layout": "tabular",
+    "search": null,
+    "collection": "feature_whishes",
+    "bookmark": "Zu prüfen (inkl. KI-Vorschläge)",
+    "color": null,
+    "icon": "gavel",
+    "role": null,
+    "_syncId": "71889e99-d682-476c-bd1a-95956067fed4"
   }
 ]

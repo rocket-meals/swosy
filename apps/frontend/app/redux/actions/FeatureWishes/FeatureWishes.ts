@@ -56,7 +56,11 @@ export class FeatureWishesHelper extends CollectionHelper<FeatureWish> {
 			return [];
 		}
 		const client = ServerAPI.getClient() as any;
-		const response = await client.request(customEndpoint<{ data: FeatureWishState[] }>({ path: '/feature-wishes/status', method: 'GET', params: { ids: ids.join(',') } }));
+		const response = await client.request(customEndpoint<FeatureWishState[] | { data: FeatureWishState[] }>({ path: '/feature-wishes/status', method: 'GET', params: { ids: ids.join(',') } }));
+		// The SDK unwraps `{ data }` itself, older versions do not.
+		if (Array.isArray(response)) {
+			return response;
+		}
 		return response?.data ?? [];
 	}
 
