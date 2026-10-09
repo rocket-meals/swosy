@@ -63,10 +63,26 @@ describe('FeatureWishModeration.parseDecisions', () => {
 });
 
 describe('FeatureWishDailyReport', () => {
-  const base = { projectName: 'Studi Futter', itemBaseUrl: 'https://example.com/admin/content/feature_whishes/', runNotes: [] };
+  const base = { projectName: 'Studi Futter', itemBaseUrl: 'https://example.com/admin/content/feature_whishes/', runNotes: [], reviewChanged: true };
+  const waiting = { id: 'a', status: FeatureWishStatus.AI_SUGGESTS_PUBLISH, title: 'Widget', moderation_note_intern: 'KI: passt' };
+  const liked = { id: 'b', status: FeatureWishStatus.PUBLISHED, title: 'Dark Mode', likes_amount: 3, likes_amount_last_checked: 1 };
 
   it('sends no mail when nothing waits and no like changed', () => {
     expect(FeatureWishDailyReport.build({ ...base, inReview: [], likeChanges: [] })).toBeNull();
+  });
+
+  it('sends no mail when the wishes in review are the same as in the last mail and no like changed', () => {
+    expect(FeatureWishDailyReport.build({ ...base, reviewChanged: false, inReview: [waiting], likeChanges: [] })).toBeNull();
+    expect(FeatureWishDailyReport.build({ ...base, reviewChanged: true, inReview: [waiting], likeChanges: [] })).not.toBeNull();
+    expect(FeatureWishDailyReport.build({ ...base, reviewChanged: false, inReview: [waiting], likeChanges: [liked] })).not.toBeNull();
+  });
+
+  it('changes the review hash only when a wish, its status or the note of the AI changes', () => {
+    const hash = FeatureWishDailyReport.getReviewHash([waiting, { ...waiting, id: 'c', status: FeatureWishStatus.DRAFT }]);
+    expect(FeatureWishDailyReport.getReviewHash([{ ...waiting, id: 'c', status: FeatureWishStatus.DRAFT }, waiting])).toBe(hash);
+    expect(FeatureWishDailyReport.getReviewHash([waiting, { ...waiting, id: 'c', status: FeatureWishStatus.AI_SUGGESTS_DECLINE }])).not.toBe(hash);
+    expect(FeatureWishDailyReport.getReviewHash([waiting, { ...waiting, id: 'c', status: FeatureWishStatus.DRAFT, moderation_note_intern: 'neu' }])).not.toBe(hash);
+    expect(FeatureWishDailyReport.getReviewHash([waiting])).not.toBe(hash);
   });
 
   it('lists wishes in review with the suggestion and likes sorted by change', () => {
@@ -96,7 +112,10 @@ describe('DirectusOpenAiCompatibleClient', () => {
       ai_openai_compatible_name: 'Agent Board',
       ai_openai_compatible_base_url: ' https://board.example.com/v1 ',
       ai_openai_compatible_api_key: 'key',
-      ai_openai_compatible_headers: JSON.stringify([{ header: 'X-Team', value: 'rocket' }, { header: '', value: 'x' }]),
+      ai_openai_compatible_headers: JSON.stringify([
+        { header: 'X-Team', value: 'rocket' },
+        { header: '', value: 'x' },
+      ]),
       ai_openai_compatible_models: [{ id: 'claude' }, 'second', { name: 'no id' }],
     });
     expect(settings).toEqual({ name: 'Agent Board', baseUrl: 'https://board.example.com/v1', apiKey: 'key', headers: { 'X-Team': 'rocket' }, models: ['claude', 'second'] });
@@ -120,7 +139,13 @@ describe('DirectusOpenAiCompatibleClient', () => {
     } as any;
     const client = new DirectusOpenAiCompatibleClient({ name: null, baseUrl: 'https://x', apiKey: 'k', headers: {}, models: ['model-a'] }, fakeOpenAi);
     await expect(client.chatJson({ system: 's', user: 'u' })).resolves.toEqual({ ok: true });
-    expect(calls[0]).toMatchObject({ model: 'model-a', messages: [{ role: 'system', content: 's' }, { role: 'user', content: 'u' }] });
+    expect(calls[0]).toMatchObject({
+      model: 'model-a',
+      messages: [
+        { role: 'system', content: 's' },
+        { role: 'user', content: 'u' },
+      ],
+    });
   });
 
   // Runs only against a real provider: FEATURE_WISHES_AI_BASE_URL, FEATURE_WISHES_AI_API_KEY, FEATURE_WISHES_AI_MODEL.

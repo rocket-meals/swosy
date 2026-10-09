@@ -1,4 +1,5 @@
 import { DatabaseTypes, FeatureWishStatus } from 'repo-depkit-common';
+import { HashHelper } from '../helpers/HashHelper';
 
 type FeatureWish = DatabaseTypes.FeatureWhishes;
 
@@ -12,6 +13,8 @@ export type FeatureWishDailyReportInput = {
   likeChanges: FeatureWish[];
   /** What happened in this run, e.g. how many wishes the AI reviewed. */
   runNotes: string[];
+  /** False when the wishes in review are the same as in the last mail (see `getReviewHash`). */
+  reviewChanged: boolean;
 };
 
 const SUGGESTION_LABELS: Record<string, string> = {
@@ -27,12 +30,13 @@ function inline(text: string | null | undefined): string {
 }
 
 /**
- * The evening mail about feature wishes for support. Null when nothing waits for a decision and no
- * like changed, so no empty mail is sent.
+ * The evening mail about feature wishes for support. Null when nothing changed since the last mail
+ * (same wishes in review with the same suggestion, no like changed) or when there is nothing to
+ * tell at all, so no repeated or empty mail is sent.
  */
 export class FeatureWishDailyReport {
   static build(input: FeatureWishDailyReportInput): { subject: string; markdown: string } | null {
-    if (input.inReview.length === 0 && input.likeChanges.length === 0) {
+    if (input.likeChanges.length === 0 && (input.inReview.length === 0 || !input.reviewChanged)) {
       return null;
     }
     const lines: string[] = [`# Feature-Wünsche: ${input.projectName}`, ''];
@@ -72,6 +76,15 @@ export class FeatureWishDailyReport {
       subject: `${input.projectName} - Feature-Wünsche: ${input.inReview.length} offen, ${input.likeChanges.length} mit neuen Likes`,
       markdown: lines.join('\n'),
     };
+  }
+
+  /**
+   * Fingerprint of the wishes in review: id, status and note of the AI. Stored as `result_hash` of
+   * the run, so the next run can tell whether anything new waits for a decision.
+   */
+  static getReviewHash(inReview: Pick<FeatureWish, 'id' | 'status' | 'moderation_note_intern'>[]): string {
+    const state = inReview.map(wish => ({ id: wish.id, status: wish.status, note: wish.moderation_note_intern ?? null })).sort((a, b) => a.id.localeCompare(b.id));
+    return HashHelper.getHashFromObject(state);
   }
 
   static getDelta(wish: Pick<FeatureWish, 'likes_amount' | 'likes_amount_last_checked'>): number {
