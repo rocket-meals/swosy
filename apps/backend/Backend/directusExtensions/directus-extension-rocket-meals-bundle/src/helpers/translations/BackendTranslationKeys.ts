@@ -55,6 +55,10 @@ export const BackendTranslationKeys = {
   notification_support_answer_title: 'notification_support_answer_title',
   notification_feature_wish_published_title: 'notification_feature_wish_published_title',
   notification_feature_wish_published_body: 'notification_feature_wish_published_body',
+  notification_free_apartments_title: 'notification_free_apartments_title',
+  notification_free_apartments_body_single: 'notification_free_apartments_body_single',
+  notification_free_apartments_body_many: 'notification_free_apartments_body_many',
+  notification_free_apartments_body_unnamed: 'notification_free_apartments_body_unnamed',
 
   // Insights panels shipped by Rocket Meals ("[Erweitert]", see helpers/extended-panels)
   extended_panel_list_name: 'extended_panel_list_name',
@@ -222,6 +226,7 @@ export const BackendTranslationKeys = {
   workflow_name_feature_wishes_daily: 'workflow_name_feature_wishes_daily',
   workflow_name_file_cleanup: 'workflow_name_file_cleanup',
   workflow_name_food_image_ai_generation: 'workflow_name_food_image_ai_generation',
+  workflow_name_apartments_free_notify: 'workflow_name_apartments_free_notify',
   workflow_name_food_notify: 'workflow_name_food_notify',
   workflow_name_food_sync: 'workflow_name_food_sync',
   workflow_name_foods_translation_fix_missing: 'workflow_name_foods_translation_fix_missing',

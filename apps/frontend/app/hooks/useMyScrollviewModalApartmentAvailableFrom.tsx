@@ -5,6 +5,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
+import { FreeApartmentsNotificationModalSection } from '@/components/FreeApartmentsNotification';
 
 const useMyScrollviewModalApartmentAvailableFrom = () => {
 	const { show, close } = useMyScrollViewModal();
@@ -24,6 +25,7 @@ const useMyScrollviewModalApartmentAvailableFrom = () => {
 						<Text style={[styles.text, { color: theme.screen.text }]}>
 							{translate(TranslationKeys.free_from)}: {formatted}
 						</Text>
+						<FreeApartmentsNotificationModalSection />
 					</View>
 				),
 			});

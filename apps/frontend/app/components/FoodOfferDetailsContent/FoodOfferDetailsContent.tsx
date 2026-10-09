@@ -13,13 +13,11 @@ import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks'
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { DELETE_FOOD_FEEDBACK_LOCAL, SET_FOOD_DETAILS_LAST_TAB, UPDATE_FOOD_FEEDBACK_LOCAL, UPDATE_PROFILE } from '@/redux/Types/types';
+import { DELETE_FOOD_FEEDBACK_LOCAL, SET_FOOD_DETAILS_LAST_TAB, UPDATE_FOOD_FEEDBACK_LOCAL } from '@/redux/Types/types';
 import { FoodOfferDetailTab } from '@/constants/TabEnums';
 import { MarkingContent } from '@/components/MarkingBottomSheet';
 import usePlatformHelper from '@/helper/platformHelper';
-import { NotificationHelper } from '@/helper/NotificationHelper';
-import { getCurrentDevice, getDeviceIdentifier, getDeviceInformationWithoutPushToken } from '@/helper/DeviceHelper';
-import { ProfileHelper } from '@/redux/actions/Profile/Profile';
+import { syncCurrentDevicePushNotificationState } from '@/helper/PushNotificationDeviceSync';
 import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/ColorHelper';
@@ -29,6 +27,7 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import useFoodFeedbackPermissions from '@/hooks/useFoodFeedbackPermissions';
 import useFoodNotificationModal from '@/hooks/useFoodNotificationModal';
+import usePushNotificationOptInPrompt from '@/hooks/usePushNotificationOptInPrompt';
 import FoodHeader from '@/app/(app)/foodoffers/details/components/FoodHeader';
 import NotificationSection from '@/app/(app)/foodoffers/details/components/NotificationSection';
 import TabController from '@/app/(app)/foodoffers/details/components/TabController';
@@ -82,7 +81,6 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
         return result;
     }, [ownFoodFeedbacks, initialFoodId]);
 
-    const profileHelper = useMemo(() => new ProfileHelper(), []);
     const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 
     const { foodDetails, foodAttributes, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId, onOfferNoLongerAvailable, showFoodWhenOfferMissing });
@@ -103,7 +101,8 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const openRatingLockedModal = useCallback(() => {
         openAccountRequiredModal({ verifiedAccountRequired: ratingRequiresVerifiedAccount });
     }, [openAccountRequiredModal, ratingRequiresVerifiedAccount]);
-    const { openNotificationConfirmModal, openNotificationPermissionModal } = useFoodNotificationModal();
+    const { openNotificationConfirmModal } = useFoodNotificationModal();
+    const { ensurePushNotificationPermission } = usePushNotificationOptInPrompt();
 
     // Initialisierung mit dem zuletzt gespeicherten Reiter.
     // Ist der gespeicherte Wert kein gültiger Tab (z. B. null, undefined oder ein veralteter Wert),
@@ -267,44 +266,8 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     }, [screenWidth]);
 
     const updateDeviceInfo = useCallback(async () => {
-        try {
-            const deviceInformationsWithoutPushToken = getDeviceInformationWithoutPushToken();
-            const deviceInformationsId = getDeviceIdentifier(deviceInformationsWithoutPushToken);
-            const pushTokenObj = await NotificationHelper.loadDeviceNotificationPermission();
-            let deviceInformationsWithPushToken = {
-                ...deviceInformationsWithoutPushToken,
-                pushTokenObj: pushTokenObj,
-            };
-
-            let newDevices = profile?.devices ? [...profile.devices] : [];
-            let foundDevice = getCurrentDevice(deviceInformationsId, newDevices);
-            if (!foundDevice) {
-                newDevices.push(deviceInformationsWithPushToken as any);
-            } else {
-                const deviceInformationsForUpdate = {
-                    ...foundDevice,
-                    ...deviceInformationsWithPushToken,
-                };
-                if (JSON.stringify(foundDevice) === JSON.stringify(deviceInformationsForUpdate)) {
-                    return;
-                }
-                const index = newDevices.indexOf(foundDevice);
-                newDevices[index] = deviceInformationsForUpdate;
-            }
-            const result = (await profileHelper.updateProfile({
-                ...profile,
-                devices: newDevices,
-            })) as DatabaseTypes.Profiles;
-            if (result) {
-                dispatch({
-                    type: UPDATE_PROFILE,
-                    payload: result,
-                });
-            }
-        } catch (e) {
-            console.error('Error updating device information:', e);
-        }
-    }, [profile, dispatch, profileHelper]);
+        await syncCurrentDevicePushNotificationState({ profile, dispatch });
+    }, [profile, dispatch]);
 
     const deviceInfoUpdatedRef = useRef(false);
 
@@ -331,19 +294,12 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             await updateFoodFeedbackNotification();
             return;
         }
-        const permission = await NotificationHelper.ensureDeviceNotificationPermission();
-        if (permission?.granted) {
+        // Explains first and only then shows the system dialog (shown only once on iOS). Without the
+        // permission the reminder would never arrive, so it is not switched on then.
+        if (await ensurePushNotificationPermission()) {
             await updateFoodFeedbackNotification();
-            // The stored device still carries the old permission/push token - without refreshing it
-            // the backend has no token to send the reminder to.
-            await updateDeviceInfo();
-            return;
         }
-        // Without the system permission the reminder would never arrive. iOS only shows its
-        // permission dialog once, so instead of leaving the toggle silently dead we explain the
-        // situation and offer the way to the system settings.
-        openNotificationPermissionModal();
-    }, [user, isSmartPhone, previousFeedback, updateFoodFeedbackNotification, updateDeviceInfo, openNotificationConfirmModal, openNotificationPermissionModal, openAccountRequiredModal]);
+    }, [user, isSmartPhone, previousFeedback, updateFoodFeedbackNotification, ensurePushNotificationPermission, openNotificationConfirmModal, openAccountRequiredModal]);
 
     const pagerViewStyle = useMemo(() => [
         styles.pagerView,

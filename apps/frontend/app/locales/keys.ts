@@ -908,6 +908,13 @@ export const TranslationKeys = {
 	feature_wishes_deleted: 'feature_wishes_deleted',
 	feature_wishes_edit_published_hint: 'feature_wishes_edit_published_hint',
 	feature_wishes_likes: 'feature_wishes_likes',
+	push_notification_opt_in_description: 'push_notification_opt_in_description',
+	push_notification_opt_in_accept: 'push_notification_opt_in_accept',
+	push_notification_opt_in_later: 'push_notification_opt_in_later',
+	push_notification_permission_explanation: 'push_notification_permission_explanation',
+	housing_free_apartments_notification: 'housing_free_apartments_notification',
+	housing_free_apartments_notification_hint: 'housing_free_apartments_notification_hint',
+	housing_free_apartments_notification_enabled: 'housing_free_apartments_notification_enabled',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];

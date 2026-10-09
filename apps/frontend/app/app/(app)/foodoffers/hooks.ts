@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Dimensions, Platform } from 'react-native';
+import { Dimensions } from 'react-native';
 import { useDispatch, useStore, shallowEqual } from 'react-redux';
 import { DatabaseTypes, FoodSortOption } from 'repo-depkit-common';
 import { addDays, format, parse } from 'date-fns';
@@ -300,19 +300,6 @@ export const useSheetHandling = (
         closeSheet,
         isActive
     };
-};
-
-export const useNotifications = () => {
-    const requestPermissions = async () => {
-        const Notifications = await import('expo-notifications');
-        const { status } = await Notifications.getPermissionsAsync();
-        if (status !== 'granted') {
-            await Notifications.requestPermissionsAsync();
-        }
-    };
-    useEffect(() => {
-        if (Platform.OS !== 'web') requestPermissions();
-    }, []);
 };
 
 export const useAnimationLogic = (

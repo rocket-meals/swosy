@@ -2,7 +2,15 @@
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 
-export async function registerForPushNotificationsAsync(): Promise<string | null> {
+/**
+ * Returns the Expo push token of this device.
+ *
+ * With `requestPermission: false` the system permission dialog is never shown: the token is only
+ * returned when the user already allowed notifications. iOS shows that dialog exactly once, so on
+ * iOS it must not be spent at app start but only after our own explanation (see
+ * usePushNotificationOptInPrompt).
+ */
+export async function registerForPushNotificationsAsync(options: { requestPermission: boolean } = { requestPermission: true }): Promise<string | null> {
   try {
     if (Platform.OS === 'web') {
       return null;
@@ -19,7 +27,7 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
-    if (existingStatus !== 'granted') {
+    if (existingStatus !== 'granted' && options.requestPermission) {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }

@@ -19,6 +19,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { FeedbacksProps } from './types';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import useFoodFeedbackPermissions from '@/hooks/useFoodFeedbackPermissions';
+import usePushNotificationOptInPrompt from '@/hooks/usePushNotificationOptInPrompt';
 
 const loadingState = {
 	submitLoading: false,
@@ -58,6 +59,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 	const [comment, setComment] = useState('');
 	const [adminFeedbacks, setAdminFeedbacks] = useState<DatabaseTypes.FoodsFeedbacks[]>([]);
 	const { openAccountRequiredModal } = useAccountRequiredModal();
+	const { askForPushNotifications } = usePushNotificationOptInPrompt();
 	const isCommentInputLocked = !user?.id || !canWriteComments;
 	const openCommentLockedModal = () => openAccountRequiredModal({ verifiedAccountRequired: writingCommentsRequiresVerifiedAccount });
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
@@ -120,6 +122,9 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 			// Clear comment and reset loading state
 			setComment('');
 			setLoading(loadingState);
+			if (string !== null) {
+				void askForPushNotifications();
+			}
 		} catch (error) {
 			console.error('Error submitting comment feedback:', error);
 			setLoading(loadingState);
