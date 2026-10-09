@@ -1,25 +1,32 @@
 Key,Message,Component,Line
+"AaEgW3fxZD3sa3XwaWz-","Prefer `String#replaceAll()` over `String#split().join()`.","rocket-meals_rocket-meals:apps/frontend/app/helper/DirectusFieldChoiceHelper.ts",78
 "AaEgOr9CMxMq9SokM_4G","Replace this union type with a type alias.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FilterSelectHelper.ts",27
+"AaEgW1TtZD3sa3XwaWz2","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",191
+"AaEgW1TtZD3sa3XwaWz3","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",196
+"AaEgW1TtZD3sa3XwaWz4","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",197
+"AaEgW1TtZD3sa3XwaWz5","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",198
+"AaEgW3fxZD3sa3XwaWz8","""primary"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/helper/DirectusFieldChoiceHelper.ts",20
+"AaEgW3fxZD3sa3XwaWz9","""text"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/helper/DirectusFieldChoiceHelper.ts",20
+"AaEgW3MOZD3sa3XwaWz7","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/FeatureWishes/FeatureWishes.ts",98
+"AaEgW0DTZD3sa3XwaWz1","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common/src/FeatureWishHelper.ts",214
 "AaEfwi2YowdoI0qOTfg_","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts",67
 "AaEfwi2mowdoI0qOTfhA","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/index.ts",83
 "AaEfwi2mowdoI0qOTfhB","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/index.ts",128
 "AaEfwi2mowdoI0qOTfhC","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/index.ts",131
 "AaEfwhpJowdoI0qOTfg9","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/DirectusOpenAiCompatibleClient.ts",66
 "AaEeHn9dbxLRAgU_Hjxf","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-cleanup-workflow/index.ts",63
-"AaEeHnkzbxLRAgU_HjxT","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",80
-"AaEeHnkzbxLRAgU_HjxU","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",97
-"AaEeHnkzbxLRAgU_HjxV","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",152
-"AaEeHnkzbxLRAgU_HjxW","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",159
-"AaEeHnkzbxLRAgU_HjxX","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",161
-"AaEeHnkzbxLRAgU_HjxY","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",163
-"AaEeHnkzbxLRAgU_HjxZ","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",172
-"AaEeHnlAbxLRAgU_Hjxa","`STATUSES_WITHOUT_RELATION` should be a `Set`, and use `STATUSES_WITHOUT_RELATION.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts",32
-"AaEeHnlAbxLRAgU_Hjxc","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts",59
-"AaEeHnlAbxLRAgU_Hjxd","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts",100
-"AaEeHnlAbxLRAgU_Hjxe","Refactor this function to not always return the same value.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts",117
-"AaEeHpAmbxLRAgU_Hjxg","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx",312
-"AaEeHmiHbxLRAgU_HjxR","Unnecessary `.getTime()` call.","rocket-meals_rocket-meals:packages/common/src/FeatureWishHelper.ts",214
-"AaEeHmiHbxLRAgU_HjxS","Unnecessary `.getTime()` call.","rocket-meals_rocket-meals:packages/common/src/FeatureWishHelper.ts",246
+"AaEeHnkzbxLRAgU_HjxT","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",82
+"AaEeHnkzbxLRAgU_HjxU","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",99
+"AaEeHnkzbxLRAgU_HjxV","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",154
+"AaEeHnkzbxLRAgU_HjxW","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",161
+"AaEeHnkzbxLRAgU_HjxX","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",163
+"AaEeHnkzbxLRAgU_HjxY","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",165
+"AaEeHnkzbxLRAgU_HjxZ","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/FeatureWishService.ts",174
+"AaEeHnlAbxLRAgU_Hjxa","`STATUSES_WITHOUT_RELATION` should be a `Set`, and use `STATUSES_WITHOUT_RELATION.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts",35
+"AaEeHnlAbxLRAgU_Hjxc","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts",65
+"AaEeHnlAbxLRAgU_Hjxe","Refactor this function to not always return the same value.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts",141
+"AaEeHmiHbxLRAgU_HjxR","Unnecessary `.getTime()` call.","rocket-meals_rocket-meals:packages/common/src/FeatureWishHelper.ts",241
+"AaEeHmiHbxLRAgU_HjxS","Unnecessary `.getTime()` call.","rocket-meals_rocket-meals:packages/common/src/FeatureWishHelper.ts",273
 "AaEd3QFN3-vgGJSjS5PD","Async method 'get' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/RedisHelper.ts",38
 "AaEd3QFN3-vgGJSjS5PE","Async method 'set' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/RedisHelper.ts",54
 "AaEd3QFN3-vgGJSjS5PF","Async method 'get' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/RedisHelper.ts",67
@@ -50,7 +57,7 @@ Key,Message,Component,Line
 "AaEXB8j_-_xqPaPbi5uq","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimetableViews/StudipImportSheet.tsx",38
 "AaEWb5lecRawMmRJQMIl","Consider removing 'undefined' type or '?' specifier, one of them is redundant.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/BackendUsageEventHelper.ts",32
 "AaEWb5lecRawMmRJQMIm","Consider removing 'undefined' type or '?' specifier, one of them is redundant.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/BackendUsageEventHelper.ts",33
-"AaEWj86wCV1trJHF7F0m","'@/redux/Types/types' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",59
+"AaEWj86wCV1trJHF7F0m","'@/redux/Types/types' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",60
 "AaEWj-GSCV1trJHF7F0v","This branch's code block is the same as the block for the branch on line 73.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useAuthSessionGuard.ts",75
 "AaEWj9z2CV1trJHF7F0p","Mark this member as `readonly`.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",44
 "AaEWj9z2CV1trJHF7F0q","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",144
@@ -671,7 +678,7 @@ Key,Message,Component,Line
 "AaD3G95TTd3UR4iHDm7u","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/components/FileUpload/FileUpload.tsx",83
 "AaD3G-S7Td3UR4iHDm8H","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/interceptor.ts",24
 "AaD3G80HTd3UR4iHDm1v","Async method 'init' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/OpenAIChat.ts",8
-"AaD3G9lWTd3UR4iHDm6V","Async arrow function 'autoLogin' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",151
+"AaD3G9lWTd3UR4iHDm6V","Async arrow function 'autoLogin' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",152
 "AaD3G9_ETd3UR4iHDm72","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/components/RssFeed/index.tsx",60
 "AaD3G9_ETd3UR4iHDm73","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/components/RssFeed/index.tsx",61
 "AaD3G88HTd3UR4iHDm15","Async method 'getServerInfoNoInternetTest' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts",120

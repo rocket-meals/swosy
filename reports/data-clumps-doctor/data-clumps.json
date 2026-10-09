@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-09T10:31:21.903Z",
+  "report_timestamp": "2026-10-09T11:07:04.597Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,65 +8,65 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 143,
-          "average": 1.5265794600612301,
-          "amountSavedValuesForKeys": 5485,
-          "amountKeys": 31
+          "average": 1.5275852509010257,
+          "amountSavedValuesForKeys": 5510,
+          "amountKeys": 32
         },
         "invertedParameterToMethods": {
           "median": 1.5,
           "maximum": 81,
-          "average": 2.272357723577236,
-          "amountSavedValuesForKeys": 2236,
+          "average": 2.2681451612903225,
+          "amountSavedValuesForKeys": 2250,
           "amountKeys": 24
         },
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 143,
-          "average": 1.5394330620263823,
-          "amountSavedValuesForKeys": 5485,
-          "amountKeys": 31
+          "average": 1.5403969807100923,
+          "amountSavedValuesForKeys": 5510,
+          "amountKeys": 32
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4273,
-        "detection_time_ms": 115,
+        "ast_generation_time_ms": 4323,
+        "detection_time_ms": 105,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 192.59,
-          "os_memory_free": 14698790912,
-          "os_memory_total": 16765378560,
+          "os_uptime": 265.99,
+          "os_memory_free": 14770581504,
+          "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
-          "os_cpu_model": "Intel(R) Xeon(R) 6973P-C",
-          "os_cpu_speed": 3601
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
+          "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 41,
-    "amount_files_with_data_clumps": 31,
+    "amount_classes_or_interfaces_with_data_clumps": 43,
+    "amount_files_with_data_clumps": 32,
     "amount_methods_with_data_clumps": 12,
-    "fields_to_fields_data_clump": 58,
+    "fields_to_fields_data_clump": 60,
     "parameters_to_fields_data_clump": 2,
     "parameters_to_parameters_data_clump": 12,
-    "amount_data_clumps": 72
+    "amount_data_clumps": 74
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "83ea57be66e0885366fbce77fa6d951a179d9d44",
-    "project_commit_hash": "83ea57be66e0885366fbce77fa6d951a179d9d44",
+    "project_version": "1c49a2f6a687cbf77a9ff0e84d622a9407fe427f",
+    "project_commit_hash": "1c49a2f6a687cbf77a9ff0e84d622a9407fe427f",
     "project_tag": null,
-    "project_commit_date": "1791541754",
+    "project_commit_date": "1791543899",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 759,
-    "number_of_classes_or_interfaces": 1698,
-    "number_of_methods": 1957,
-    "number_of_data_fields": 5485,
-    "number_of_method_parameters": 2236
+    "number_of_files": 761,
+    "number_of_classes_or_interfaces": 1705,
+    "number_of_methods": 1966,
+    "number_of_data_fields": 5510,
+    "number_of_method_parameters": 2250
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -1449,9 +1449,9 @@
         "cluster_type": 1
       }
     },
-    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts/interface/ModerationCandidate-apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry-idtitledescription": {
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts/interface/ModerationCandidate-apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView-idtitledescription": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts/interface/ModerationCandidate-apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry-idtitledescription",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts/interface/ModerationCandidate-apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView-idtitledescription",
       "probability": 1,
       "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts",
       "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts/interface/ModerationCandidate",
@@ -1459,8 +1459,8 @@
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx",
-      "to_class_or_interface_key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry",
-      "to_class_or_interface_name": "OwnWishEntry",
+      "to_class_or_interface_key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView",
+      "to_class_or_interface_name": "WishView",
       "to_method_key": null,
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
@@ -1472,14 +1472,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry/memberField/id",
+            "key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView/memberField/id",
             "name": "id",
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 25,
+              "startLine": 31,
               "startColumn": 2,
-              "endLine": 25,
+              "endLine": 31,
               "endColumn": 13
             }
           },
@@ -1497,14 +1497,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry/memberField/title",
+            "key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView/memberField/title",
             "name": "title",
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 26,
+              "startLine": 32,
               "startColumn": 2,
-              "endLine": 26,
+              "endLine": 32,
               "endColumn": 16
             }
           },
@@ -1522,14 +1522,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry/memberField/description",
+            "key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView/memberField/description",
             "name": "description",
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 27,
+              "startLine": 33,
               "startColumn": 2,
-              "endLine": 27,
+              "endLine": 33,
               "endColumn": 29
             }
           },
@@ -5488,13 +5488,13 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx-apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts/interface/ModerationCandidate-idtitledescription": {
+    "fields_to_fields_data_clump-apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx-apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts/interface/ModerationCandidate-idtitledescription": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx-apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts/interface/ModerationCandidate-idtitledescription",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx-apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts/interface/ModerationCandidate-idtitledescription",
       "probability": 1,
       "from_file_path": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx",
-      "from_class_or_interface_key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry",
-      "from_class_or_interface_name": "OwnWishEntry",
+      "from_class_or_interface_key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView",
+      "from_class_or_interface_name": "WishView",
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-daily-workflow/FeatureWishModeration.ts",
@@ -5504,8 +5504,8 @@
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
       "data_clump_data": {
-        "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry/memberField/id": {
-          "key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry/memberField/id",
+        "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView/memberField/id": {
+          "key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView/memberField/id",
           "name": "id",
           "type": "string",
           "probability": 1,
@@ -5523,14 +5523,14 @@
             }
           },
           "position": {
-            "startLine": 25,
+            "startLine": 31,
             "startColumn": 2,
-            "endLine": 25,
+            "endLine": 31,
             "endColumn": 13
           }
         },
-        "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry/memberField/title": {
-          "key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry/memberField/title",
+        "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView/memberField/title": {
+          "key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView/memberField/title",
           "name": "title",
           "type": "string",
           "probability": 1,
@@ -5548,14 +5548,14 @@
             }
           },
           "position": {
-            "startLine": 26,
+            "startLine": 32,
             "startColumn": 2,
-            "endLine": 26,
+            "endLine": 32,
             "endColumn": 16
           }
         },
-        "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry/memberField/description": {
-          "key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/OwnWishEntry/memberField/description",
+        "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView/memberField/description": {
+          "key": "apps/frontend/app/components/FeatureWishes/useFeatureWishesModal.tsx/interface/WishView/memberField/description",
           "name": "description",
           "type": "string | null",
           "probability": 1,
@@ -5573,9 +5573,9 @@
             }
           },
           "position": {
-            "startLine": 27,
+            "startLine": 33,
             "startColumn": 2,
-            "endLine": 27,
+            "endLine": 33,
             "endColumn": 29
           }
         }
@@ -6433,6 +6433,200 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 16,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/context/SettingsContext.tsx-packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType-packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps-primaryColoronAccountRequiredlanguage": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/context/SettingsContext.tsx-packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType-packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps-primaryColoronAccountRequiredlanguage",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/context/SettingsContext.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType",
+      "from_class_or_interface_name": "SettingsContextType",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/context/SettingsContext.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps",
+      "to_class_or_interface_name": "SettingsProviderProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType/memberField/primaryColor": {
+          "key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType/memberField/primaryColor",
+          "name": "primaryColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps/memberField/primaryColor",
+            "name": "primaryColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 14,
+              "startColumn": 2,
+              "endLine": 14,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 5,
+            "startColumn": 2,
+            "endLine": 5,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType/memberField/onAccountRequired": {
+          "key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType/memberField/onAccountRequired",
+          "name": "onAccountRequired",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps/memberField/onAccountRequired",
+            "name": "onAccountRequired",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 33
+            }
+          },
+          "position": {
+            "startLine": 6,
+            "startColumn": 2,
+            "endLine": 6,
+            "endColumn": 33
+          }
+        },
+        "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType/memberField/language": {
+          "key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType/memberField/language",
+          "name": "language",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps/memberField/language",
+            "name": "language",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 20
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 17,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/context/SettingsContext.tsx-packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps-packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType-primaryColoronAccountRequiredlanguage": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/context/SettingsContext.tsx-packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps-packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType-primaryColoronAccountRequiredlanguage",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/context/SettingsContext.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps",
+      "from_class_or_interface_name": "SettingsProviderProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/context/SettingsContext.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType",
+      "to_class_or_interface_name": "SettingsContextType",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps/memberField/primaryColor": {
+          "key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps/memberField/primaryColor",
+          "name": "primaryColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType/memberField/primaryColor",
+            "name": "primaryColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 5,
+              "startColumn": 2,
+              "endLine": 5,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 14,
+            "startColumn": 2,
+            "endLine": 14,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps/memberField/onAccountRequired": {
+          "key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps/memberField/onAccountRequired",
+          "name": "onAccountRequired",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType/memberField/onAccountRequired",
+            "name": "onAccountRequired",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 6,
+              "startColumn": 2,
+              "endLine": 6,
+              "endColumn": 33
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 33
+          }
+        },
+        "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps/memberField/language": {
+          "key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsProviderProps/memberField/language",
+          "name": "language",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/context/SettingsContext.tsx/interface/SettingsContextType/memberField/language",
+            "name": "language",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 20
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 17,
         "cluster_type": 2
       }
     },
@@ -7392,7 +7586,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -7501,7 +7695,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -7598,7 +7792,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 18,
+        "cluster_id": 19,
         "cluster_type": 2
       }
     },
@@ -7695,7 +7889,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 18,
+        "cluster_id": 19,
         "cluster_type": 2
       }
     }
