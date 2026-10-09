@@ -13,12 +13,9 @@
 import { Accountability } from '@directus/types';
 import { AccountabilityHelper } from './AccountabilityHelper';
 import { KeyValueStore, SharedStore } from './RedisHelper';
+import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED, BACKEND_USAGE_EVENT_TYPE_FOOD, BACKEND_USAGE_SESSION_PREFIX } from './BackendUsageEventNames';
 
-/** `session_id` prefix of every event written by the backend. */
-export const BACKEND_USAGE_SESSION_PREFIX = 'Backend_';
-
-export const BACKEND_USAGE_EVENT_TYPE_FOOD = 'food';
-export const BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED = 'food_details_opened';
+export { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED, BACKEND_USAGE_EVENT_TYPE_FOOD, BACKEND_USAGE_SESSION_PREFIX };
 
 export type BackendUsageEvent = {
   event_type: string;

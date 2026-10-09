@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import { spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { builtinModules } from 'node:module';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -14,6 +15,14 @@ import { pathToFileURL } from 'node:url';
  * eigenen Node-Prozess als ES-Modul geladen, so wie Directus es tut.
  */
 const DIST_API_PATH = path.join(__dirname, '..', '..', 'dist', 'api.js');
+
+/**
+ * `dist/app.js` läuft im Browser, in der Directus-Oberfläche. Importiert es ein Node-Modul
+ * (`assert`, `net`, …), kann der Browser es nicht auflösen und Directus lädt **keine** App-Extension
+ * des Bundles: Modul „Rocket Meals“ und Panels fehlen dann. Passiert ist das, als `LivePulseHelper`
+ * eine Konstante aus `BackendUsageEventHelper` importiert hat, das Redis (`ioredis`) mitzieht.
+ */
+const DIST_APP_PATH = path.join(__dirname, '..', '..', 'dist', 'app.js');
 
 describe('extension bundle', () => {
   const distExists = existsSync(DIST_API_PATH);
@@ -35,5 +44,12 @@ describe('extension bundle', () => {
     const { endpoints } = JSON.parse(lastLine) as { endpoints: string[] };
     expect(endpoints).toContain('guest-account-endpoint');
     expect(endpoints).toContain('bundle-health-endpoint');
+  });
+
+  (existsSync(DIST_APP_PATH) ? it : it.skip)('app part imports no Node built-ins', () => {
+    const source = readFileSync(DIST_APP_PATH, 'utf8');
+    const imported = [...source.matchAll(/(?:from|import)\s*["']([^"'./][^"']*)["']/g)].map(match => match[1]!);
+    const builtins = new Set(builtinModules.flatMap(name => [name, `node:${name}`]));
+    expect(imported.filter(name => builtins.has(name))).toEqual([]);
   });
 });

@@ -67,7 +67,7 @@ const anonymized = computed(() => displayMode.value === DisplayMode.ANONYMIZED);
 const visibleNetwork = computed(() => FriendshipNetworkHelper.filterNetwork(network.value, { showAccepted: showAccepted.value, showPending: showPending.value, minGroupSize: minGroupSize.value }));
 
 /** The key figures ignore the line checkboxes, hiding the lines does not make friendships go away. */
-const stats = computed(() => FriendshipNetworkHelper.getStats(FriendshipNetworkHelper.filterNetwork(network.value, { showAccepted: true, showPending: true, minGroupSize: minGroupSize.value })));
+const stats = computed(() => FriendshipNetworkHelper.getStats(network.value, minGroupSize.value));
 
 const numberFormat = computed(() => new Intl.NumberFormat(language.value, { maximumFractionDigits: 1 }));
 
@@ -82,7 +82,7 @@ const kpis = computed(() => [
 const groupSizeItems = computed(() =>
   FriendshipNetworkHelper.GROUP_SIZE_OPTIONS.map(size => ({
     value: size,
-    text: size <= 1 ? translate(BackendTranslationKeys.rocket_meals_module_friendship_network_group_size_all) : translate(BackendTranslationKeys.rocket_meals_module_friendship_network_group_size_min, { count: size }),
+    text: translate(BackendTranslationKeys.rocket_meals_module_friendship_network_group_size_min, { count: size }),
   }))
 );
 
@@ -120,7 +120,7 @@ function displayName(profile: FriendshipNetworkProfile): string {
 }
 
 function groupColor(node: Pick<FriendshipNetworkNode, 'groupIndex' | 'groupSize'>): string {
-  if (anonymized.value || node.groupSize < 3 || node.groupIndex < 0) {
+  if (node.groupSize < 3 || node.groupIndex < 0) {
     return 'var(--theme--foreground-subdued)';
   }
   return GROUP_COLORS[node.groupIndex % GROUP_COLORS.length] ?? 'var(--theme--foreground-subdued)';
@@ -312,6 +312,11 @@ function centerOn(id: string) {
   }
 }
 
+/** A click in the network selects a profile, a second click on it lets it go again. */
+function toggleProfile(id: string) {
+  selectedId.value = selectedId.value === id ? undefined : id;
+}
+
 function selectProfile(id: string, center = false) {
   selectedId.value = id;
   if (center) {
@@ -419,7 +424,7 @@ const clipPathId = `friendship-network-avatar-${Math.random().toString(36).slice
                 <g class="links">
                   <line v-for="link in renderLinks" :key="link.key" class="link" :class="{ pending: link.pending, active: link.active, dimmed: link.dimmed }" :x1="link.x1" :y1="link.y1" :x2="link.x2" :y2="link.y2" />
                 </g>
-                <g v-for="item in renderNodes" :key="item.node.id" class="node" :class="{ selected: item.selected, dimmed: item.dimmed }" :transform="`translate(${item.x},${item.y})`" role="button" tabindex="0" :aria-label="item.ariaLabel" :aria-pressed="item.selected" @click="selectProfile(item.node.id)" @keydown.enter.prevent="selectProfile(item.node.id)" @keydown.space.prevent="selectProfile(item.node.id)">
+                <g v-for="item in renderNodes" :key="item.node.id" class="node" :class="{ selected: item.selected, dimmed: item.dimmed }" :transform="`translate(${item.x},${item.y})`" role="button" tabindex="0" :aria-label="item.ariaLabel" :aria-pressed="item.selected" @click="toggleProfile(item.node.id)" @keydown.enter.prevent="toggleProfile(item.node.id)" @keydown.space.prevent="toggleProfile(item.node.id)">
                   <title>{{ item.ariaLabel }}</title>
                   <circle class="node-fill" :r="item.radius" />
                   <image v-if="item.avatar" :href="item.avatar" :x="-item.radius" :y="-item.radius" :width="item.radius * 2" :height="item.radius * 2" :clip-path="`url(#${clipPathId})`" preserveAspectRatio="xMidYMid slice" @error="onAvatarError(item.node.profile)" />

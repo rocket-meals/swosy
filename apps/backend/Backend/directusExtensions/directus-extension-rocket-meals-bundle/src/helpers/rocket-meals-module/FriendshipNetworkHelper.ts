@@ -63,7 +63,7 @@ export type FriendshipNetwork = {
 export type FriendshipNetworkFilter = {
   showAccepted: boolean;
   showPending: boolean;
-  /** Profiles in smaller groups are hidden. 1 shows every profile, also the ones with only open requests. */
+  /** Friendships of smaller groups are hidden. Open requests are not part of a group and always shown. */
   minGroupSize: number;
 };
 
@@ -97,7 +97,7 @@ export class FriendshipNetworkHelper {
   static readonly FRIENDSHIPS_ENDPOINT = `/items/${CollectionNames.FRIENDSHIPS}`;
 
   /** Choices of the filter "group size". */
-  static readonly GROUP_SIZE_OPTIONS: readonly number[] = [1, 2, 3, 5, 10];
+  static readonly GROUP_SIZE_OPTIONS: readonly number[] = [2, 3, 5, 10];
   static readonly DEFAULT_MIN_GROUP_SIZE = 2;
 
   static readonly MIN_NODE_RADIUS = 12;
@@ -228,26 +228,37 @@ export class FriendshipNetworkHelper {
     return result;
   }
 
-  /** The part of the network the filters leave. A link needs both of its profiles. */
+  /**
+   * The part of the network the filters leave. The checkboxes decide which links are shown, and a
+   * profile is shown when at least one of its links is: with only open requests checked, the
+   * network shows the requests and the profiles involved, friends without a request disappear.
+   * The group size only applies to friendships, both profiles of a friendship are in the same group.
+   */
   static filterNetwork(network: FriendshipNetwork, filter: FriendshipNetworkFilter): FriendshipNetwork {
-    const nodes = network.nodes.filter(node => node.groupSize >= filter.minGroupSize);
-    const visible = new Set(nodes.map(node => node.id));
+    const groupSizes = new Map(network.nodes.map(node => [node.id, node.groupSize]));
     const links = network.links.filter(link => {
-      const statusShown = link.status === FriendshipNetworkLinkStatus.ACCEPTED ? filter.showAccepted : filter.showPending;
-      return statusShown && visible.has(link.sourceId) && visible.has(link.targetId);
+      if (link.status === FriendshipNetworkLinkStatus.PENDING) {
+        return filter.showPending;
+      }
+      return filter.showAccepted && (groupSizes.get(link.sourceId) ?? 0) >= filter.minGroupSize;
     });
-    return { nodes, links };
+    const visible = new Set(links.flatMap(link => [link.sourceId, link.targetId]));
+    return { nodes: network.nodes.filter(node => visible.has(node.id)), links };
   }
 
-  /** Key figures of the given (usually filtered) network, counted from its nodes and links. */
-  static getStats(network: FriendshipNetwork): FriendshipNetworkStats {
-    const friendships = network.links.filter(link => link.status === FriendshipNetworkLinkStatus.ACCEPTED).length;
-    const profilesWithFriends = network.nodes.filter(node => node.friendCount > 0).length;
+  /**
+   * Key figures. The friendship figures follow the group size, the open requests are all of them.
+   * The checkboxes do not change them: hiding the lines does not make friendships go away.
+   */
+  static getStats(network: FriendshipNetwork, minGroupSize: number): FriendshipNetworkStats {
+    const friendshipNetwork = FriendshipNetworkHelper.filterNetwork(network, { showAccepted: true, showPending: false, minGroupSize });
+    const friendships = friendshipNetwork.links.length;
+    const profilesWithFriends = friendshipNetwork.nodes.length;
     return {
       profilesWithFriends,
       friendships,
-      pendingRequests: network.links.length - friendships,
-      largestGroupSize: network.nodes.reduce((max, node) => Math.max(max, node.groupSize), 0),
+      pendingRequests: network.links.filter(link => link.status === FriendshipNetworkLinkStatus.PENDING).length,
+      largestGroupSize: friendshipNetwork.nodes.reduce((max, node) => Math.max(max, node.groupSize), 0),
       averageFriends: profilesWithFriends === 0 ? 0 : (2 * friendships) / profilesWithFriends,
     };
   }
