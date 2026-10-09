@@ -18,13 +18,7 @@ type RawSettingsRow = {
   ai_openai_compatible_models?: unknown;
 };
 
-const SETTINGS_COLUMNS = [
-  'ai_openai_compatible_name',
-  'ai_openai_compatible_base_url',
-  'ai_openai_compatible_api_key',
-  'ai_openai_compatible_headers',
-  'ai_openai_compatible_models',
-];
+const SETTINGS_COLUMNS = ['ai_openai_compatible_name', 'ai_openai_compatible_base_url', 'ai_openai_compatible_api_key', 'ai_openai_compatible_headers', 'ai_openai_compatible_models'];
 
 function parseJsonValue(value: unknown): unknown {
   if (typeof value !== 'string') {
@@ -94,12 +88,14 @@ export class DirectusOpenAiCompatibleClient {
   }
 
   /**
-   * Reads the provider from `directus_settings`. Read straight from the table: the services hide
-   * secrets on read, and these values never leave the backend.
+   * Reads the provider from the Directus settings, the same way the AI assistant of the Directus app
+   * does. The API key is stored encrypted (`special: encrypt`), only the SettingsService without
+   * accountability returns it decrypted. A raw read from `directus_settings` would send the cipher
+   * text as bearer token (401). These values never leave the backend.
    */
   static async fromDirectusSettings(apiContext: ApiContext): Promise<DirectusOpenAiCompatibleClient | null> {
-    const database = apiContext.database as unknown as (table: string) => { first: (...columns: string[]) => Promise<RawSettingsRow | undefined> };
-    const row = await database('directus_settings').first(...SETTINGS_COLUMNS);
+    const settingsService = new apiContext.services.SettingsService({ schema: await apiContext.getSchema(), accountability: null });
+    const row = (await settingsService.readSingleton({ fields: SETTINGS_COLUMNS })) as RawSettingsRow | undefined;
     const settings = DirectusOpenAiCompatibleClient.parseSettings(row);
     return settings ? new DirectusOpenAiCompatibleClient(settings) : null;
   }

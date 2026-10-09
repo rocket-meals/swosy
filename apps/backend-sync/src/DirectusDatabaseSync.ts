@@ -9,7 +9,7 @@ import { createRequire } from 'node:module';
 import { FetchIgnoreSelfSignedCertHelper } from './FetchIgnoreSelfSignedCertHelper';
 import { DirectusConnectionOptions } from './DirectusConnectionOptions';
 import { migrateSettingsSyncIdToPlaceholder } from './DirectusSyncSettingsIdMigration';
-import { cleanSettingsDumpFile, mergeOverwriteItems } from './DirectusSettingsDumpHelper';
+import { buildAiOpenAiCompatibleSettingsFromEnv, cleanSettingsDumpFile, mergeOverwriteItems } from './DirectusSettingsDumpHelper';
 
 const require = createRequire(import.meta.url);
 
@@ -87,6 +87,7 @@ export class DirectusDatabaseSync {
     await migrateSettingsSyncIdToPlaceholder(this.config.directusInstanceUrl, headers.get('cookie') ?? '');
     await this.pushDirectusSyncSchemas();
     await this.applyModuleBar(headers, moduleBar);
+    await this.applyAiOpenAiCompatibleSettingsFromEnv(headers);
     await this.uploadSchemas(headers);
   }
 
@@ -254,6 +255,31 @@ export class DirectusDatabaseSync {
     }
 
     console.log(' -  Applied module bar');
+  }
+
+  // The OpenAI-compatible provider is not part of the dump (see INSTANCE_SPECIFIC_SETTINGS_FIELDS), so
+  // a push keeps whatever is configured in Directus. Only when the envs are set they are written here.
+  private async applyAiOpenAiCompatibleSettingsFromEnv(headers: any) {
+    const patch = buildAiOpenAiCompatibleSettingsFromEnv(process.env);
+    if (!patch) {
+      console.log(' -  No ROCKET_MEALS_AI_OPENAI_COMPATIBLE_* envs set, keeping the AI provider configured in Directus');
+      return;
+    }
+    console.log('Applying OpenAI-compatible AI provider from envs, fields: ' + Object.keys(patch).join(', '));
+    const response = await FetchIgnoreSelfSignedCertHelper.fetch(`${this.getUrlSettings()}`, {
+      method: 'PATCH',
+      headers: {
+        Cookie: headers.get('cookie'),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(patch),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status} message: ${response.statusText}`);
+    }
+
+    console.log(' -  Applied OpenAI-compatible AI provider');
   }
 
   // Validates a CLI-controlled value against an anchored allowlist pattern before it is

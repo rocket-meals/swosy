@@ -100,6 +100,23 @@ Similar steps can be made for local testing
   - `http://127.0.0.1/rocket-meals/api/admin/settings/project`
     - Check "Generate Types" Extension
 
+### AI provider (OpenAI-compatible)
+
+The OpenAI-compatible provider (Settings → AI: name, base URL, API key, headers, models) is
+configured per server and is **not** part of the sync dump, so a sync push keeps what is set in
+Directus. Optionally it can be set from the `.env`. Only envs that are set are applied on every
+push, all other fields stay as configured in Directus:
+
+```
+ROCKET_MEALS_AI_OPENAI_COMPATIBLE_NAME="Rocket Meals AI"
+ROCKET_MEALS_AI_OPENAI_COMPATIBLE_BASE_URL="https://ai.rocket-meals.de/v1"
+ROCKET_MEALS_AI_OPENAI_COMPATIBLE_API_KEY="sk-..."
+# comma separated model ids, or the raw Directus JSON list
+ROCKET_MEALS_AI_OPENAI_COMPATIBLE_MODELS="model-a,model-b"
+# JSON object, or the raw Directus JSON list of { "header", "value" }
+ROCKET_MEALS_AI_OPENAI_COMPATIBLE_HEADERS='{"X-Custom-Header":"value"}'
+```
+
 ## Configure SSO
 
 - Check that a role for "User" exists
