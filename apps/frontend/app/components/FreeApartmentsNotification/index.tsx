@@ -77,7 +77,7 @@ export const FreeApartmentsNotificationToggle: React.FC<{ groupPosition: 'top' |
 			label={translate(TranslationKeys.housing_free_apartments_notification)}
 			isEnabled={isEnabled}
 			onToggle={() => void toggle()}
-			disabled={saving}
+			loading={saving}
 			valueActive={translate(TranslationKeys.active)}
 			valueInactive={translate(TranslationKeys.inactive)}
 			groupPosition={groupPosition}

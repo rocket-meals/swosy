@@ -186,6 +186,7 @@ const Settings = () => {
                 () => ({
                         [CampusSortOption.INTELLIGENT]: 'sort_option_intelligent',
                         [CampusSortOption.DISTANCE]: 'sort_option_distance',
+                        [CampusSortOption.LAST_OPENED]: 'sort_option_last_opened',
                         [CampusSortOption.ALPHABETICAL]: 'sort_option_alphabetical',
                         [CampusSortOption.NONE]: 'sort_option_none',
                 }),

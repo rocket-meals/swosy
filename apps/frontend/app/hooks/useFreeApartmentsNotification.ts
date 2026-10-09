@@ -35,11 +35,12 @@ const useFreeApartmentsNotification = () => {
 				openAccountRequiredModal();
 				return;
 			}
-			if (enabled && !(await ensurePushNotificationPermission())) {
-				return;
-			}
+			// Busy from the start: asking for the push permission and registering the device can take a moment.
 			setSaving(true);
 			try {
+				if (enabled && !(await ensurePushNotificationPermission())) {
+					return;
+				}
 				const result = (await new ProfileHelper().updateProfile({ id: profile.id, notifiy_on_free_apartments: enabled })) as DatabaseTypes.Profiles;
 				if (result) {
 					dispatch({ type: UPDATE_PROFILE, payload: result });
