@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 4 | 4 |
-| 🐛 Reliability | 398 | 46 |
-| 🔧 Maintainability | 739 | 0 |
+| 🐛 Reliability | 402 | 46 |
+| 🔧 Maintainability | 746 | 0 |
 
-**Total issues:** 1141 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1152 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -30,7 +30,7 @@
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:10
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L10
 
-## 🐛 Reliability (46/398)
+## 🐛 Reliability (46/402)
 
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
   apps/accessibilityTester/src/index.ts:104
@@ -71,6 +71,14 @@
 - **Async arrow function has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/admin-password-setup-from-env/index.ts:8
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/admin-password-setup-from-env/index.ts#L8
+
+- **Async arrow function has no 'await' expression.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apartments-free-notify-schedule-hook/index.ts:43
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apartments-free-notify-schedule-hook/index.ts#L43
+
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apartments-free-notify-schedule-hook/index.ts:44
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apartments-free-notify-schedule-hook/index.ts#L44
 
 - **Async arrow function has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts:107
@@ -207,12 +215,4 @@
 - **Async method 'getFoodsListForParser' has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts:125
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts#L125
-
-- **Async method 'getMarkingsJSONList' has no 'await' expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:484
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L484
-
-- **Async arrow function has no 'await' expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts:116
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts#L116
 
