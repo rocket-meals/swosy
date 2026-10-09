@@ -11,9 +11,10 @@ import { useRouter } from 'vue-router';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { FoodFeedbackChatActions } from '../../helpers/rocket-meals-module/FoodFeedbackChatActions';
-import { FoodFeedbackChatHelper, FoodFeedbackContentFilter, FoodFeedbackListSort, FoodFeedbackRatingFilter, type FoodFeedbackListItem, type FoodFeedbackListOptions } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import { FoodFeedbackChatHelper, FoodFeedbackContentFilter, FoodFeedbackListSort, FoodFeedbackRatingFilter, type FoodFeedbackCanteenOption, type FoodFeedbackListItem, type FoodFeedbackListOptions } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
+import FilterSelect from '../filter-select.vue';
 import ModuleNavigation from '../module-navigation.vue';
 import FoodFeedbackRating from './food-feedback-rating.vue';
 import FoodFeedbackStatusChip from './food-feedback-status-chip.vue';
@@ -61,7 +62,7 @@ const currentPage = ref(1);
 const feedbacks = ref<FoodFeedbackListItem[]>([]);
 const total = ref(0);
 const counts = ref<Partial<Record<FoodFeedbackChatFilter, number>>>({});
-const canteens = ref<{ id: string; alias?: string | null }[]>([]);
+const canteens = ref<FoodFeedbackCanteenOption[]>([]);
 const loading = ref(false);
 const loadError = ref(false);
 const selectedIds = ref<string[]>([]);
@@ -79,12 +80,13 @@ const listOptions = computed<FoodFeedbackListOptions>(() => ({
 }));
 
 const pageCount = computed(() => FoodFeedbackChatHelper.getPageCount(total.value, pageSize.value));
-const canteenItems = computed(() => canteens.value.map(canteen => ({ text: canteen.alias || canteen.id, value: canteen.id })));
-const contentItems = FoodFeedbackChatHelper.CONTENT_FILTERS.map(content => ({ text: translate(FoodFeedbackChatHelper.getContentFilterLabelKey(content)), value: content }));
+/** Canteens show their picture; one without picture shows the canteen icon. */
+const canteenItems = computed(() => canteens.value.map(canteen => ({ text: canteen.alias || canteen.id, value: canteen.id, imageUrl: FoodFeedbackChatHelper.getCanteenImageUrl(canteen, apiRoot), icon: 'storefront' })));
+const contentItems = FoodFeedbackChatHelper.CONTENT_FILTERS.map(content => ({ text: translate(FoodFeedbackChatHelper.getContentFilterLabelKey(content)), value: content, icon: FoodFeedbackChatHelper.getContentFilterIcon(content) }));
 /** The rating filter only shows up once feedbacks with a rating are listed. */
 const ratingFilterAvailable = computed(() => FoodFeedbackChatHelper.isRatingFilterAvailable(contents.value));
-const ratingItems = computed(() => FoodFeedbackChatHelper.getRatingFilters(contents.value).map(rating => ({ text: translate(FoodFeedbackChatHelper.getRatingFilterLabelKey(rating)), value: rating })));
-const sortItems = computed(() => FoodFeedbackChatHelper.SORTS.map(option => ({ text: translate(FoodFeedbackChatHelper.getSortLabelKey(option)), value: option })));
+const ratingItems = computed(() => FoodFeedbackChatHelper.getRatingFilters(contents.value).map(rating => ({ text: translate(FoodFeedbackChatHelper.getRatingFilterLabelKey(rating)), value: rating, icon: FoodFeedbackChatHelper.getRatingFilterIcon(rating), iconColor: FoodFeedbackChatHelper.getRatingFilterColor(rating) })));
+const sortItems = computed(() => FoodFeedbackChatHelper.SORTS.map(option => ({ text: translate(FoodFeedbackChatHelper.getSortLabelKey(option)), value: option, icon: FoodFeedbackChatHelper.getSortIcon(option) })));
 const pageSizeItems = FoodFeedbackChatHelper.PAGE_SIZE_OPTIONS.map(size => ({ text: String(size), value: size }));
 
 /** Feedbacks of this page that can be marked as done – only those can be selected. */
@@ -268,7 +270,7 @@ onMounted(() => {
 
       <div class="toolbar">
         <div class="toolbar-item toolbar-wide">
-          <v-select v-model="contents" :items="contentItems" multiple :placeholder="translate(BackendTranslationKeys.rocket_meals_module_content_any)" />
+          <filter-select v-model="contents" :items="contentItems" multiple :placeholder="translate(BackendTranslationKeys.rocket_meals_module_content_any)" placeholder-icon="checklist" />
         </div>
         <div class="toolbar-item toolbar-wide">
           <v-input v-model="foodSearch" type="search" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_search_food)">
@@ -276,13 +278,13 @@ onMounted(() => {
           </v-input>
         </div>
         <div class="toolbar-item toolbar-wide">
-          <v-select v-model="canteenIds" :items="canteenItems" multiple show-deselect :placeholder="translate(BackendTranslationKeys.rocket_meals_module_all_canteens)" :disabled="canteenItems.length === 0" />
+          <filter-select v-model="canteenIds" :items="canteenItems" multiple :placeholder="translate(BackendTranslationKeys.rocket_meals_module_all_canteens)" placeholder-icon="storefront" :disabled="canteenItems.length === 0" />
         </div>
         <div v-if="ratingFilterAvailable" class="toolbar-item">
-          <v-select v-model="ratingFilter" :items="ratingItems" />
+          <filter-select v-model="ratingFilter" :items="ratingItems" />
         </div>
         <div class="toolbar-item">
-          <v-select v-model="sort" :items="sortItems" />
+          <filter-select v-model="sort" :items="sortItems" />
         </div>
       </div>
 

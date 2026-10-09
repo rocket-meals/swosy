@@ -1,42 +1,42 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-09T08:20:32.626Z",
+  "report_timestamp": "2026-10-09T09:27:34.902Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 142,
-          "average": 1.5246861924686193,
-          "amountSavedValuesForKeys": 5466,
+          "average": 1.524247491638796,
+          "amountSavedValuesForKeys": 5469,
           "amountKeys": 31
         },
         "invertedParameterToMethods": {
           "median": 1,
           "maximum": 81,
-          "average": 2.270854788877446,
-          "amountSavedValuesForKeys": 2205,
+          "average": 2.2713257965056526,
+          "amountSavedValuesForKeys": 2210,
           "amountKeys": 24
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 142,
-          "average": 1.5375527426160338,
-          "amountSavedValuesForKeys": 5466,
+          "average": 1.5370994940978078,
+          "amountSavedValuesForKeys": 5469,
           "amountKeys": 31
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 5707,
-        "detection_time_ms": 138,
+        "ast_generation_time_ms": 5580,
+        "detection_time_ms": 128,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 144.46,
-          "os_memory_free": 14770597888,
+          "os_uptime": 158.77,
+          "os_memory_free": 14801203200,
           "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -55,18 +55,18 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "c73902e186e1f909fe7a6adfc4569f2ee0cd1495",
-    "project_commit_hash": "c73902e186e1f909fe7a6adfc4569f2ee0cd1495",
+    "project_version": "3037cdf5d9c4175e78bf307e04bc078071250d4b",
+    "project_commit_hash": "3037cdf5d9c4175e78bf307e04bc078071250d4b",
     "project_tag": null,
-    "project_commit_date": "1791533900",
+    "project_commit_date": "1791537925",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 758,
     "number_of_classes_or_interfaces": 1693,
-    "number_of_methods": 1934,
-    "number_of_data_fields": 5466,
-    "number_of_method_parameters": 2205
+    "number_of_methods": 1939,
+    "number_of_data_fields": 5469,
+    "number_of_method_parameters": 2210
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -701,9 +701,9 @@
             "type": "FoodFeedbackChatFilter",
             "modifiers": [],
             "position": {
-              "startLine": 187,
+              "startLine": 223,
               "startColumn": 25,
-              "endLine": 187,
+              "endLine": 223,
               "endColumn": 55
             }
           },
@@ -726,9 +726,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 187,
+              "startLine": 223,
               "startColumn": 57,
-              "endLine": 187,
+              "endLine": 223,
               "endColumn": 69
             }
           },
@@ -751,9 +751,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 187,
+              "startLine": 223,
               "startColumn": 71,
-              "endLine": 187,
+              "endLine": 223,
               "endColumn": 93
             }
           },
@@ -999,9 +999,9 @@
             }
           },
           "position": {
-            "startLine": 187,
+            "startLine": 223,
             "startColumn": 25,
-            "endLine": 187,
+            "endLine": 223,
             "endColumn": 55
           }
         },
@@ -1024,9 +1024,9 @@
             }
           },
           "position": {
-            "startLine": 187,
+            "startLine": 223,
             "startColumn": 57,
-            "endLine": 187,
+            "endLine": 223,
             "endColumn": 69
           }
         },
@@ -1049,9 +1049,9 @@
             }
           },
           "position": {
-            "startLine": 187,
+            "startLine": 223,
             "startColumn": 71,
-            "endLine": 187,
+            "endLine": 223,
             "endColumn": 93
           }
         }
@@ -1089,16 +1089,16 @@
             "type": "FoodFeedbackChatFilter",
             "modifiers": [],
             "position": {
-              "startLine": 204,
+              "startLine": 240,
               "startColumn": 26,
-              "endLine": 204,
+              "endLine": 240,
               "endColumn": 56
             }
           },
           "position": {
-            "startLine": 187,
+            "startLine": 223,
             "startColumn": 25,
-            "endLine": 187,
+            "endLine": 223,
             "endColumn": 55
           }
         },
@@ -1114,16 +1114,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 204,
+              "startLine": 240,
               "startColumn": 97,
-              "endLine": 204,
+              "endLine": 240,
               "endColumn": 119
             }
           },
           "position": {
-            "startLine": 187,
+            "startLine": 223,
             "startColumn": 71,
-            "endLine": 187,
+            "endLine": 223,
             "endColumn": 93
           }
         },
@@ -1139,16 +1139,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper\").FoodFeedbackListOptions",
             "modifiers": [],
             "position": {
-              "startLine": 204,
+              "startLine": 240,
               "startColumn": 58,
-              "endLine": 204,
+              "endLine": 240,
               "endColumn": 95
             }
           },
           "position": {
-            "startLine": 187,
+            "startLine": 223,
             "startColumn": 95,
-            "endLine": 187,
+            "endLine": 223,
             "endColumn": 132
           }
         }
@@ -1186,16 +1186,16 @@
             "type": "FoodFeedbackChatFilter",
             "modifiers": [],
             "position": {
-              "startLine": 187,
+              "startLine": 223,
               "startColumn": 25,
-              "endLine": 187,
+              "endLine": 223,
               "endColumn": 55
             }
           },
           "position": {
-            "startLine": 204,
+            "startLine": 240,
             "startColumn": 26,
-            "endLine": 204,
+            "endLine": 240,
             "endColumn": 56
           }
         },
@@ -1211,16 +1211,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FoodFeedbackChatHelper\").FoodFeedbackListOptions",
             "modifiers": [],
             "position": {
-              "startLine": 187,
+              "startLine": 223,
               "startColumn": 95,
-              "endLine": 187,
+              "endLine": 223,
               "endColumn": 132
             }
           },
           "position": {
-            "startLine": 204,
+            "startLine": 240,
             "startColumn": 58,
-            "endLine": 204,
+            "endLine": 240,
             "endColumn": 95
           }
         },
@@ -1236,16 +1236,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 187,
+              "startLine": 223,
               "startColumn": 71,
-              "endLine": 187,
+              "endLine": 223,
               "endColumn": 93
             }
           },
           "position": {
-            "startLine": 204,
+            "startLine": 240,
             "startColumn": 97,
-            "endLine": 204,
+            "endLine": 240,
             "endColumn": 119
           }
         }

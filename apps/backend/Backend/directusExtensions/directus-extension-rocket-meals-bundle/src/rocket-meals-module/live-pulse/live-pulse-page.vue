@@ -364,34 +364,36 @@ onBeforeUnmount(() => {
 
         <section class="panel">
           <h2 class="panel-title type-label">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed) }}</h2>
-          <div v-if="feed.length === 0 && !loading" class="empty type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_nothing_happened) }}</div>
-          <transition-group v-else tag="ul" name="feed" class="feed">
-            <li v-for="item in feed" :key="item.key" class="feed-item" :class="{ fresh: freshKeys.has(item.key) }">
-              <div v-if="avatarUrl(item.profile, LivePulseHelper.FEED_AVATAR_SIZE)" class="feed-avatar">
-                <img class="avatar-image" :src="avatarUrl(item.profile, LivePulseHelper.FEED_AVATAR_SIZE)" alt="" loading="lazy" @error="onAvatarError(item.profile)" />
-              </div>
-              <div v-else-if="foodImageUrl(item)" class="feed-avatar">
-                <img class="food-image" :src="foodImageUrl(item)" alt="" loading="lazy" @error="onFoodImageError(item)" />
-              </div>
-              <div v-else class="feed-avatar feed-icon"><v-icon :name="feedIcon(item)" small /></div>
-              <div class="feed-body">
-                <div class="feed-line">
-                  <strong v-if="item.type === LivePulseFeedType.USAGE_EVENT">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_anonymous_session) }}</strong>
-                  <strong v-else-if="item.type === LivePulseFeedType.FOOD_OPENED">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_someone) }}</strong>
-                  <strong v-else>{{ getNickname(item.profile) }}</strong>
-                  {{ feedText(item) }}
-                  <food-feedback-rating v-if="item.type === LivePulseFeedType.RATING || item.type === LivePulseFeedType.COMMENT" :rating="item.rating" />
+          <div class="feed-scroll">
+            <div v-if="feed.length === 0 && !loading" class="empty type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_nothing_happened) }}</div>
+            <transition-group v-else tag="ul" name="feed" class="feed">
+              <li v-for="item in feed" :key="item.key" class="feed-item" :class="{ fresh: freshKeys.has(item.key) }">
+                <div v-if="avatarUrl(item.profile, LivePulseHelper.FEED_AVATAR_SIZE)" class="feed-avatar">
+                  <img class="avatar-image" :src="avatarUrl(item.profile, LivePulseHelper.FEED_AVATAR_SIZE)" alt="" loading="lazy" @error="onAvatarError(item.profile)" />
                 </div>
-                <q v-if="item.comment" class="feed-comment">{{ item.comment }}</q>
-                <div class="feed-meta type-note">
-                  <template v-if="item.canteenName && item.type !== LivePulseFeedType.CANTEEN_VISIT">{{ item.canteenName }} · </template>
-                  <template v-if="item.visitDate">{{ formatVisitDate(item.visitDate) }} · </template>
-                  <template v-if="item.platform">{{ item.platform }} · </template>
-                  {{ relative(item.date) }}
+                <div v-else-if="foodImageUrl(item)" class="feed-avatar">
+                  <img class="food-image" :src="foodImageUrl(item)" alt="" loading="lazy" @error="onFoodImageError(item)" />
                 </div>
-              </div>
-            </li>
-          </transition-group>
+                <div v-else class="feed-avatar feed-icon"><v-icon :name="feedIcon(item)" small /></div>
+                <div class="feed-body">
+                  <div class="feed-line">
+                    <strong v-if="item.type === LivePulseFeedType.USAGE_EVENT">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_anonymous_session) }}</strong>
+                    <strong v-else-if="item.type === LivePulseFeedType.FOOD_OPENED">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_someone) }}</strong>
+                    <strong v-else>{{ getNickname(item.profile) }}</strong>
+                    {{ feedText(item) }}
+                    <food-feedback-rating v-if="item.type === LivePulseFeedType.RATING || item.type === LivePulseFeedType.COMMENT" :rating="item.rating" />
+                  </div>
+                  <q v-if="item.comment" class="feed-comment">{{ item.comment }}</q>
+                  <div class="feed-meta type-note">
+                    <template v-if="item.canteenName && item.type !== LivePulseFeedType.CANTEEN_VISIT">{{ item.canteenName }} · </template>
+                    <template v-if="item.visitDate">{{ formatVisitDate(item.visitDate) }} · </template>
+                    <template v-if="item.platform">{{ item.platform }} · </template>
+                    {{ relative(item.date) }}
+                  </div>
+                </div>
+              </li>
+            </transition-group>
+          </div>
         </section>
       </div>
     </div>
@@ -576,6 +578,14 @@ onBeforeUnmount(() => {
   background: var(--live-pulse-recent);
 }
 
+/* Fixed height, the ticker scrolls inside – the page below does not move when entries arrive. */
+.feed-scroll {
+  block-size: 32rem;
+  max-block-size: 70vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .feed {
   position: relative;
   display: flex;
@@ -587,6 +597,8 @@ onBeforeUnmount(() => {
 }
 
 .feed-item {
+  position: relative;
+  isolation: isolate;
   display: flex;
   gap: 0.75rem;
   align-items: flex-start;
@@ -594,8 +606,19 @@ onBeforeUnmount(() => {
   border-radius: var(--theme--border-radius);
 }
 
-.feed-item.fresh {
-  animation: feed-fresh 4s ease-out;
+/*
+ * The highlight runs on a pseudo element, not on the entry: Vue's transition-group decides from
+ * the first entry whether moves are animated, and an animation longer than the move transition
+ * on it makes Vue skip the move – the older entries then jump down instead of gliding.
+ */
+.feed-item.fresh::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  animation: feed-fresh 4s ease-out forwards;
+  content: '';
+  pointer-events: none;
 }
 
 @keyframes feed-fresh {
@@ -723,7 +746,7 @@ onBeforeUnmount(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .pulse,
-  .feed-item.fresh {
+  .feed-item.fresh::before {
     animation: none;
   }
 

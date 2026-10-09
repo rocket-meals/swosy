@@ -214,7 +214,8 @@ export function getVersionPatch() {
         // 103: feature wishes: wishes submitted without account stay under "Deine Wünsche" after signing in
         // 104: feature wishes: details with delete and update, likes of own wishes, icons and colors of the states from Directus
         // 105: common-ui: MyButton with translated action buttons (save, submit, update, edit, cancel, delete)
-        return 105;
+        // 106: merge of master (backend feedback pages)
+        return 106;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
