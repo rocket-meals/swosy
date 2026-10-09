@@ -114,6 +114,11 @@
         "source": "src/feature-wishes-cleanup-workflow/index.ts"
       },
       {
+        "type": "hook",
+        "name": "feature-wishes-daily-workflow",
+        "source": "src/feature-wishes-daily-workflow/index.ts"
+      },
+      {
         "type": "endpoint",
         "name": "feature-wishes-endpoint",
         "source": "src/feature-wishes-endpoint/index.ts"
