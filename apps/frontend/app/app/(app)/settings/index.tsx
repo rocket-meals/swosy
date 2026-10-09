@@ -3,7 +3,7 @@ import { Alert, Dimensions, FlatList, SafeAreaView, Text, TouchableOpacity, View
 import MyImage from '@/components/MyImage';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
-import { Languages, PriceGroupKey } from './types';
+import { Languages } from './types';
 import { AntDesign, Entypo, Feather, FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { horizontalScreenPadding, isWeb } from '@/constants/Constants';
 import SettingsList from '@/components/SettingsList';
@@ -16,19 +16,18 @@ import { router } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
-import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
 import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_CONSENT } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import { sqliteKeyValueStorage, migrateAsyncStorageToSqlite } from '@/redux/storage/sqliteStorage';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
-import { excerpt, formatPrice, getImageUrl, showFormatedPrice } from '@/constants/HelperFunctions';
+import { formatPrice, getImageUrl, showFormatedPrice } from '@/constants/HelperFunctions';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { ServerAPI } from '@/redux/actions';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { CollectibleAt, DatabaseTypes, ApartmentSortOption, CampusSortOption, FoodSortOption, GuestAccountHelper } from 'repo-depkit-common';
+import { CollectibleAt, DatabaseTypes, CampusSortOption, GuestAccountHelper } from 'repo-depkit-common';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
@@ -48,8 +47,10 @@ import useThemeSettingsModal from '@/hooks/useThemeSettingsModal';
 import useMenuPositionModal from '@/hooks/useMenuPositionModal';
 import useCardColumnsModal from '@/hooks/useCardColumnsModal';
 import useFirstDayOfWeekModal from '@/hooks/useFirstDayOfWeekModal';
-import useHousingSortingModal, { getHousingSortOptionLabel } from '@/hooks/useHousingSortingModal';
-import { FreeApartmentsNotificationToggle } from '@/components/FreeApartmentsNotification';
+import useHousingSortingModal from '@/hooks/useHousingSortingModal';
+import useHousingSettingsRows from '@/hooks/useHousingSettingsRows';
+import useFoodofferSettingsRows from '@/hooks/useFoodofferSettingsRows';
+import SettingsGroupRows from '@/components/SettingsGroupRows';
 import useCampusSortingModal from '@/hooks/useCampusSortingModal';
 import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
 import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityModal';
@@ -60,7 +61,6 @@ import { formatBytes, getAsyncStorageUsage, clearAsyncStorage, AsyncStorageKeyUs
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
 import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
-import FoodoffersAverageRatingToggle from '@/components/FoodoffersAverageRatingToggle';
 import { useFeatureWishesModal } from '@/components/FeatureWishes/useFeatureWishesModal';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
@@ -113,6 +113,16 @@ const Settings = () => {
         const { openCanteenVisitsVisibilityModal } = useCanteenVisitsVisibilityModal();
         const { score: appRatingScore, setScore: setAppRatingScore, showDebugRatingModal, appRatingData } = useAppRatingScore();
         const { openPriceGroupSettingsModal } = useMyScrollviewModalPriceGroupSettings();
+        const openEatingHabits = useCallback(() => router.navigate('/eating-habits'), []);
+        const foodofferSettingsRows = useFoodofferSettingsRows({
+                onCanteen: openChangeMyCanteenSelectionModal,
+                onPriceGroup: openPriceGroupSettingsModal,
+                onEatingHabits: openEatingHabits,
+                onSort: openFoodofferSortingModal,
+                iconSize: 24,
+                withNativeIds: true,
+        });
+        const housingSettingsRows = useHousingSettingsRows({ onSort: openHousingSortingModal, iconSize: 24 });
 
         const { avatarConfig: settingsAvatarConfig, openEditor: openAvatarEditor } = useAvatarProfileEditor();
 
@@ -124,7 +134,7 @@ const Settings = () => {
                 });
         }, [showScrollViewModal, translate]);
 
-        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy, apartmentsSortBy, campusesSortBy } = useAppSelector((state) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, campusesSortBy } = useAppSelector((state) => state.settings);
         const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
         const osmConsent = useAppSelector((state) => ((state.settings as any).osmVectorMapConsent ?? false) as boolean);
         const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'off';
@@ -137,7 +147,6 @@ const Settings = () => {
                 () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
                 [nickNameLocal, profile?.id, profile?.nickname]
         );
-        const selectedCanteen = useSelectedCanteen();
         const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
         const profileHelper = useMemo(() => new ProfileHelper(), []);
         const customerConfig = useCustomerConfig();
@@ -154,7 +163,6 @@ const Settings = () => {
         );
 
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-        const housing_area_color = appSettings?.housing_area_color ? appSettings?.housing_area_color : primaryColor;
         const campus_area_color = appSettings?.campus_area_color ? appSettings?.campus_area_color : primaryColor;
 
         const customerServerUrl = useCustomerServerUrl();
@@ -173,31 +181,6 @@ const Settings = () => {
                 [collectibleItemSize, collectibleSizeOptions]
         );
 
-        const sortingOptionLabels: Partial<Record<FoodSortOption, string>> = useMemo(
-                () => ({
-                        [FoodSortOption.INTELLIGENT]: 'sort_option_intelligent',
-                        [FoodSortOption.FAVORITE]: 'sort_option_favorite',
-                        [FoodSortOption.EATING]: 'eating_habits',
-                        [FoodSortOption.FOOD_CATEGORY]: 'sort_option_food_category',
-                        [FoodSortOption.FOODOFFER_CATEGORY]: 'sort_option_foodoffer_category',
-                        [FoodSortOption.RATING]: 'sort_option_public_rating',
-                        [FoodSortOption.PRICE_ASCENDING]: 'sort_option_price_ascending',
-                        [FoodSortOption.PRICE_DESCENDING]: 'sort_option_price_descending',
-                        [FoodSortOption.ALPHABETICAL]: 'sort_option_alphabetical',
-                        [FoodSortOption.NONE]: 'sort_option_none',
-                }),
-                []
-        );
-
-        const sortingLabel = useMemo(
-                () => translate(sortingOptionLabels[sortBy as FoodSortOption] ?? 'sort_option_none'),
-                [sortBy, sortingOptionLabels, translate]
-        );
-
-        const housingSortingLabel = useMemo(
-                () => translate(getHousingSortOptionLabel(apartmentsSortBy as ApartmentSortOption)),
-                [apartmentsSortBy, translate]
-        );
 
         const campusSortingOptionLabels: Partial<Record<CampusSortOption, string>> = useMemo(
                 () => ({
@@ -514,17 +497,6 @@ const Settings = () => {
 		router.navigate('/(user)/delete-user');
 	};
 
-        const priceGroups: Record<PriceGroupKey, { label: string }> = {
-                [PriceGroupKey.student]: {
-                        label: translate(TranslationKeys.price_group_student),
-                },
-                [PriceGroupKey.employee]: {
-                        label: translate(TranslationKeys.price_group_employee),
-                },
-                [PriceGroupKey.guest]: {
-                        label: translate(TranslationKeys.price_group_guest),
-                },
-        };
 
         const openCollectibleSizeModal = useCallback(() => {
                 showScrollViewModal(
@@ -679,30 +651,42 @@ const Settings = () => {
 				<View style={sectionStyle}>
 					<SettingsGroupTitle nativeID={ComponentIds.SETTINGS_GROUP_CANTEEN_USAGE}>{translate(TranslationKeys.group_canteen_usage)}</SettingsGroupTitle>
 					<View style={groupStyle}>
-						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="restaurant-menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.canteen)} value={excerpt(String(selectedCanteen?.alias), 30)} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={openChangeMyCanteenSelectionModal} groupPosition="top" nativeID={ComponentIds.SETTINGS_CANTEEN} />
-						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="euro" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.price_group)} value={profile?.price_group && priceGroups[profile.price_group as PriceGroupKey] ? priceGroups[profile.price_group as PriceGroupKey].label : ''} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openPriceGroupSettingsModal} groupPosition="middle" />
-						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition="middle" />
-						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="bag-add-sharp" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.eating_habits)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/eating-habits')} groupPosition="middle" nativeID={ComponentIds.SETTINGS_EATING_HABITS} />
-						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.sort)} value={sortingLabel} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodofferSortingModal} groupPosition="middle" />
-						{appSettings?.foods_ratings_average_display === true && (
-							<FoodoffersAverageRatingToggle
-								groupPosition="middle"
-								iconBgColor={foods_area_color}
-								iconSize={24}
-							/>
-						)}
-						{showFriendsInSettings && (
-							<SettingsList
-								iconBgColor={foods_area_color}
-								leftIcon={<MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />}
-								label={translate(TranslationKeys.canteen_visits_visibility)}
-								value={canteenVisitsVisibilityLabel}
-								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-								handleFunction={openCanteenVisitsVisibilityModal}
-								groupPosition="middle"
-							/>
-						)}
-						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition="bottom" />
+						<SettingsGroupRows
+							rows={[
+								foodofferSettingsRows.canteen,
+								foodofferSettingsRows.priceGroup,
+								{
+									key: 'account-balance',
+									render: (groupPosition, showSeparator) => (
+										<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition={groupPosition} showSeparator={showSeparator} />
+									),
+								},
+								foodofferSettingsRows.eatingHabits,
+								foodofferSettingsRows.sort,
+								foodofferSettingsRows.averageRating,
+								showFriendsInSettings && {
+									key: 'canteen-visits-visibility',
+									render: (groupPosition, showSeparator) => (
+										<SettingsList
+											iconBgColor={foods_area_color}
+											leftIcon={<MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />}
+											label={translate(TranslationKeys.canteen_visits_visibility)}
+											value={canteenVisitsVisibilityLabel}
+											rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+											handleFunction={openCanteenVisitsVisibilityModal}
+											groupPosition={groupPosition}
+											showSeparator={showSeparator}
+										/>
+									),
+								},
+								{
+									key: 'notification',
+									render: (groupPosition, showSeparator) => (
+										<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition={groupPosition} showSeparator={showSeparator} />
+									),
+								},
+							]}
+						/>
 					</View>
 				</View>
 			),
@@ -760,16 +744,7 @@ const Settings = () => {
 					<View style={sectionStyle}>
 						<SettingsGroupTitle>{translate(TranslationKeys.housing)}</SettingsGroupTitle>
 						<View style={groupStyle}>
-							<SettingsList
-								iconBgColor={housing_area_color}
-								leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />}
-								label={translate(TranslationKeys.sort)}
-								value={housingSortingLabel}
-								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-								handleFunction={openHousingSortingModal}
-								groupPosition="top"
-							/>
-							<FreeApartmentsNotificationToggle groupPosition="bottom" iconSize={24} />
+							<SettingsGroupRows rows={housingSettingsRows} />
 						</View>
 					</View>
 				),
@@ -1035,11 +1010,11 @@ const Settings = () => {
 	}, [
 		translate, primaryColor, theme, isRegisteredUser, user?.id, profile, nickNameLocal,
 		logoutButtonLabel, logoutButtonHandler, openNicknameSheet, openLanguageModal, languageName,
-		handleDeleteAccount, foods_area_color, selectedCanteen?.alias, priceGroups, openChangeMyCanteenSelectionModal,
-		openFoodofferSortingModal, sortingLabel, openColorSchemeSheet, openMenuPositionModal,
+		handleDeleteAccount, foods_area_color, foodofferSettingsRows, housingSettingsRows,
+		openColorSchemeSheet, openMenuPositionModal,
 		openCardColumnsModal, openFirstDayOfWeekModal, selectedTheme, drawerPosition,
 		amountColumnsForcard, firstDayOfTheWeek, appSettings?.housing_enabled, appSettings?.friends_enabled,
-		housing_area_color, housingSortingLabel, openHousingSortingModal, appSettings?.campus_enabled,
+		appSettings?.campus_enabled,
 		campus_area_color, campusSortingLabel, openCampusSortingModal, handleCheckForUpdates,
 		openCollectibleSettingsModal, termsAndPrivacyConsentAcceptedDate, isManagement, dispatch,
 		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,

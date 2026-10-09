@@ -1,13 +1,14 @@
 import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Ionicons, MaterialIcons, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList/SettingsList';
 import { useAppSelector } from '@/redux/hooks';
-import { shallowEqual } from 'react-redux';
-import FoodoffersAverageRatingToggle from '@/components/FoodoffersAverageRatingToggle';
+import SettingsGroupRows, { SettingsGroupRow } from '@/components/SettingsGroupRows';
+import useFoodofferSettingsRows from '@/hooks/useFoodofferSettingsRows';
+import { useTheme } from '@/hooks/useTheme';
 
 interface FoodOffersOptionsContentProps {
 	closeSheet: () => void;
@@ -26,21 +27,7 @@ const styles = StyleSheet.create({
 	},
 });
 
-type NavigationOption = {
-	key: string;
-	kind: 'navigation';
-	title: string;
-	icon: React.ReactNode;
-	onPress: () => void;
-};
-
-type BooleanToggleOption = {
-	key: string;
-	kind: 'boolean';
-};
-
-type OptionItem = NavigationOption | BooleanToggleOption;
-
+/** Content of the food offers options: the same canteen settings as in the settings screen, plus what only matters here. */
 const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	closeSheet,
 	onSort,
@@ -52,103 +39,48 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	onSettings,
 }) => {
 	const { translate } = useLanguage();
-	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
+	const { theme } = useTheme();
+	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
+	const foodsAreaColor = useAppSelector((state) => state.settings.appSettings?.foods_area_color) || primaryColor;
 
-	const options: OptionItem[] = [
-		{
-			key: 'canteen',
-			kind: 'navigation',
-			title: translate(TranslationKeys.canteen),
-			icon: <MaterialIcons name="restaurant-menu" size={20} />,
-			onPress: () => { onCanteen(); },
-		},
-		{
-			key: 'calendar',
-			kind: 'navigation',
-			title: translate(TranslationKeys.date),
-			icon: <MaterialIcons name="calendar-month" size={20} />,
-			onPress: () => { onCalendar(); },
-		},
-		{
-			key: 'sort',
-			kind: 'navigation',
-			title: translate(TranslationKeys.sort),
-			icon: <MaterialIcons name="sort" size={20} />,
-			onPress: () => { onSort(); },
-		},
-		{
-			key: 'priceGroup',
-			kind: 'navigation',
-			title: translate(TranslationKeys.price_group),
-			icon: <FontAwesome6 name="euro-sign" size={20} />,
-			onPress: () => { closeSheet(); onPriceGroup(); },
-		},
-		{
-			key: 'eatingHabits',
-			kind: 'navigation',
-			title: translate(TranslationKeys.eating_habits),
-			icon: <Ionicons name="bag-add" size={20} />,
-			onPress: () => { closeSheet(); onEatingHabits(); },
-		},
-		{
-			key: 'businessHours',
-			kind: 'navigation',
-			title: translate(TranslationKeys.businesshours),
-			icon: <MaterialCommunityIcons name="clock-time-eight" size={20} />,
-			onPress: () => { onBusinessHours(); },
-		},
-	];
-
-	if (appSettings?.foods_ratings_average_display === true) {
-		options.push({
-			key: 'showAverageRatingOnCard',
-			kind: 'boolean',
-		});
-	}
-
-	options.push({
-		key: 'settings',
-		kind: 'navigation',
-		title: translate(TranslationKeys.further_settings),
-		icon: <MaterialCommunityIcons name="cog-outline" size={20} />,
-		onPress: () => { closeSheet(); onSettings(); },
+	const onPriceGroupClosingSheet = useCallback(() => { closeSheet(); onPriceGroup(); }, [closeSheet, onPriceGroup]);
+	const onEatingHabitsClosingSheet = useCallback(() => { closeSheet(); onEatingHabits(); }, [closeSheet, onEatingHabits]);
+	const sharedRows = useFoodofferSettingsRows({
+		onCanteen,
+		onPriceGroup: onPriceGroupClosingSheet,
+		onEatingHabits: onEatingHabitsClosingSheet,
+		onSort,
 	});
+
+	const navigationRow = (key: string, title: string, icon: React.ReactNode, onPress: () => void): SettingsGroupRow => ({
+		key,
+		render: (groupPosition, showSeparator) => (
+			<SettingsList
+				iconBgColor={foodsAreaColor}
+				leftIcon={icon}
+				title={title}
+				rightIcon={<Octicons name="chevron-right" size={20} color={theme.screen.icon} />}
+				onPress={onPress}
+				groupPosition={groupPosition}
+				showSeparator={showSeparator}
+			/>
+		),
+	});
+
+	const rows = [
+		sharedRows.canteen,
+		navigationRow('calendar', translate(TranslationKeys.date), <MaterialIcons name="calendar-month" size={20} />, onCalendar),
+		sharedRows.priceGroup,
+		sharedRows.eatingHabits,
+		sharedRows.sort,
+		sharedRows.averageRating,
+		navigationRow('businessHours', translate(TranslationKeys.businesshours), <MaterialCommunityIcons name="clock-time-eight" size={20} />, onBusinessHours),
+		navigationRow('settings', translate(TranslationKeys.further_settings), <MaterialCommunityIcons name="cog-outline" size={20} />, () => { closeSheet(); onSettings(); }),
+	];
 
 	return (
 		<View style={styles.container}>
-			{options.map((option, index) => {
-				let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
-				if (options.length === 1) {
-					groupPosition = 'single';
-				} else if (index === 0) {
-					groupPosition = 'top';
-				} else if (index === options.length - 1) {
-					groupPosition = 'bottom';
-				} else {
-					groupPosition = 'middle';
-				}
-				const showSeparator = index !== options.length - 1;
-
-				if (option.kind === 'boolean') {
-					return (
-						<FoodoffersAverageRatingToggle
-							key={option.key}
-							groupPosition={groupPosition}
-						/>
-					);
-				}
-
-				return (
-					<SettingsList
-						key={option.key}
-						title={option.title}
-						leftIcon={option.icon}
-						onPress={option.onPress}
-						groupPosition={groupPosition}
-						showSeparator={showSeparator}
-					/>
-				);
-			})}
+			<SettingsGroupRows rows={rows} />
 		</View>
 	);
 };

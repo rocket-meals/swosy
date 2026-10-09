@@ -224,7 +224,9 @@ export function getVersionPatch() {
         // 110: housing options show the sort row in the housing color with the current choice
         // 111: settings: free apartment push switch under housing, canteen notification row
         //      in the foods color, housing sort shows "last opened" too
-        return 111;
+        // 112: housing and canteen settings are shared rows: the options modals and the
+        //      settings screen show the same settings, color and current values
+        return 112;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

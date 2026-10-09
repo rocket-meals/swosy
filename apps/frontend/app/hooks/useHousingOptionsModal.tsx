@@ -1,30 +1,24 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import SettingsList from '@/components/SettingsList/SettingsList';
-import { FreeApartmentsNotificationToggle } from '@/components/FreeApartmentsNotification';
-import useHousingSortingModal, { getHousingSortOptionLabel } from '@/hooks/useHousingSortingModal';
+import SettingsGroupRows from '@/components/SettingsGroupRows';
+import useHousingSettingsRows from '@/hooks/useHousingSettingsRows';
+import useHousingSortingModal from '@/hooks/useHousingSortingModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { useAppSelector } from '@/redux/hooks';
 
 const HousingOptionsContent: React.FC<{ onSort: () => void }> = ({ onSort }) => {
-	const { translate } = useLanguage();
-	const apartmentsSortBy = useAppSelector(state => state.settings.apartmentsSortBy);
-	const primaryColor = useAppSelector(state => state.settings.primaryColor);
-	const housingAreaColor = useAppSelector(state => state.settings.appSettings?.housing_area_color) || primaryColor;
+	const rows = useHousingSettingsRows({ onSort });
 
 	return (
 		<View style={styles.container}>
-			<SettingsList iconBgColor={housingAreaColor} title={translate(TranslationKeys.sort)} value={translate(getHousingSortOptionLabel(apartmentsSortBy))} leftIcon={<MaterialIcons name="sort" size={20} />} onPress={onSort} groupPosition="top" showSeparator={true} />
-			<FreeApartmentsNotificationToggle groupPosition="bottom" />
+			<SettingsGroupRows rows={rows} />
 		</View>
 	);
 };
 
-/** "More options" of the housing screen (like the food offers): sorting and the notification about free apartments. */
+/** "More options" of the housing screen (like the food offers): the same housing settings as in the settings screen. */
 const useHousingOptionsModal = () => {
 	const { show } = useMyScrollViewModal();
 	const { translate } = useLanguage();
