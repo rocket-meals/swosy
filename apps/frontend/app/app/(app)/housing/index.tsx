@@ -32,7 +32,7 @@ import { addDistanceToApartments, getSortedApartments } from './utils';
 import HousingHeader from './components/HousingHeader';
 import HousingListHeader from './components/HousingListHeader';
 import HousingListEmpty from './components/HousingListEmpty';
-import { FreeApartmentsNotificationPanel } from '@/components/FreeApartmentsNotification';
+import { FreeApartmentsNotificationToggle } from '@/components/FreeApartmentsNotification';
 import CardDimensionHelper, { MIN_CARD_WIDTH } from '@/helper/CardDimensionHelper';
 
 const apartmentsHelper = new ApartmentsHelper();
@@ -281,7 +281,7 @@ const Index: React.FC = () => {
 		() => (
 			<>
 			<View style={{ paddingHorizontal: itemGap, paddingTop: 10 }}>
-				<FreeApartmentsNotificationPanel />
+				<FreeApartmentsNotificationToggle groupPosition="single" />
 			</View>
 			<HousingListHeader
 				screenWidth={screenWidth}

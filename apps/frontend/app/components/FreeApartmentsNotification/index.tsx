@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import SettingsListBoolean from '@/components/SettingsListBoolean';
-import { getValue, setValue } from '@/constants/AsyncStorageHelper';
 import { myContrastColor } from '@/helper/ColorHelper';
 import useFreeApartmentsNotification from '@/hooks/useFreeApartmentsNotification';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -11,16 +10,13 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { useAppSelector } from '@/redux/hooks';
 
-// Belongs to the device: whether the hint at the top of the housing screen was closed. Not cleared on logout.
-const PANEL_DISMISSED_STORAGE_KEY = 'housing_free_apartments_notification_panel_dismissed';
-
 const useHousingAreaColor = (): string => {
 	const primaryColor = useAppSelector(state => state.settings.primaryColor);
 	const housingAreaColor = useAppSelector(state => state.settings.appSettings?.housing_area_color);
 	return housingAreaColor || primaryColor;
 };
 
-/** Button that switches the notification on, used in the panel and in the "free rooms" modal. */
+/** Button that switches the notification on, used in the "free rooms" modal. */
 const FreeApartmentsNotificationButton: React.FC<{ onEnabled?: () => void }> = ({ onEnabled }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
@@ -68,7 +64,7 @@ export const FreeApartmentsNotificationModalSection: React.FC = () => {
 	);
 };
 
-/** Switch for the options modal of the housing screen. */
+/** Switch at the top of the housing screen and in its options modal. */
 export const FreeApartmentsNotificationToggle: React.FC<{ groupPosition: 'top' | 'middle' | 'bottom' | 'single' }> = ({ groupPosition }) => {
 	const { translate } = useLanguage();
 	const housingAreaColor = useHousingAreaColor();
@@ -91,54 +87,6 @@ export const FreeApartmentsNotificationToggle: React.FC<{ groupPosition: 'top' |
 	);
 };
 
-/**
- * Hint at the top of the housing screen offering the notification about free apartments. Hidden
- * once the notification is on or the user closed it.
- */
-export const FreeApartmentsNotificationPanel: React.FC = () => {
-	const { translate } = useLanguage();
-	const { theme } = useTheme();
-	const housingAreaColor = useHousingAreaColor();
-	const selectedTheme = useAppSelector(state => state.settings.selectedTheme);
-	const { isEnabled } = useFreeApartmentsNotification();
-	// Hidden until the stored state is read, so a closed panel does not flash up.
-	const [dismissed, setDismissed] = useState<boolean | null>(null);
-
-	useEffect(() => {
-		let active = true;
-		getValue(PANEL_DISMISSED_STORAGE_KEY).then(value => {
-			if (active) setDismissed(value === true);
-		});
-		return () => {
-			active = false;
-		};
-	}, []);
-
-	const dismiss = useCallback(() => {
-		setDismissed(true);
-		void setValue(PANEL_DISMISSED_STORAGE_KEY, true);
-	}, []);
-
-	if (dismissed !== false || isEnabled) {
-		return null;
-	}
-
-	return (
-		<View style={[styles.panel, { backgroundColor: theme.card.background, borderColor: housingAreaColor }]}>
-			<View style={styles.panelHeader}>
-				<View style={[styles.iconCircle, { backgroundColor: housingAreaColor }]}>
-					<MaterialCommunityIcons name="door-open" size={22} color={myContrastColor(housingAreaColor, theme as Parameters<typeof myContrastColor>[1], selectedTheme === 'dark')} />
-				</View>
-				<Text style={[styles.text, styles.panelText, { color: theme.screen.text }]}>{translate(TranslationKeys.housing_free_apartments_notification_hint)}</Text>
-				<TouchableOpacity onPress={dismiss} hitSlop={10} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.hide)}>
-					<MaterialIcons name="close" size={22} color={theme.screen.text} />
-				</TouchableOpacity>
-			</View>
-			<FreeApartmentsNotificationButton />
-		</View>
-	);
-};
-
 const styles = StyleSheet.create({
 	section: {
 		gap: 12,
@@ -150,29 +98,6 @@ const styles = StyleSheet.create({
 	},
 	centered: {
 		textAlign: 'center',
-	},
-	panel: {
-		width: '100%',
-		borderWidth: 1,
-		borderRadius: 14,
-		padding: 14,
-		gap: 12,
-		marginBottom: 12,
-	},
-	panelHeader: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 12,
-	},
-	panelText: {
-		flex: 1,
-	},
-	iconCircle: {
-		width: 40,
-		height: 40,
-		borderRadius: 20,
-		alignItems: 'center',
-		justifyContent: 'center',
 	},
 	button: {
 		flexDirection: 'row',
