@@ -4,8 +4,7 @@ import { PushNotificationHelper } from '../helpers/PushNotificationHelper';
 import { BackendLanguageResolver, BackendTranslationKeys, ResolvedBackendLanguage } from '../helpers/translations';
 
 /** `available_from_notified`: the `available_from` the profiles were last notified about. */
-export type ApartmentForFreeNotification = Pick<DatabaseTypes.Apartments, 'id' | 'available_from'> & {
-  available_from_notified?: string | null;
+export type ApartmentForFreeNotification = Pick<DatabaseTypes.Apartments, 'id' | 'available_from' | 'available_from_notified'> & {
   building?: { alias?: string | null } | string | null;
 };
 
@@ -115,7 +114,7 @@ export class FreeApartmentsNotifier {
 
     const apartmentsHelper = this.myDatabaseHelper.getApartmentsHelper();
     for (const apartment of apartments) {
-      await apartmentsHelper.updateOne(apartment.id, { available_from_notified: apartment.available_from } as Partial<DatabaseTypes.Apartments>);
+      await apartmentsHelper.updateOne(apartment.id, { available_from_notified: apartment.available_from });
     }
     await log('Notified profiles: ' + notifiedProfiles + ', failed: ' + failedProfiles);
     return { apartments: apartments.length, profiles: notifiedProfiles, failedProfiles };
