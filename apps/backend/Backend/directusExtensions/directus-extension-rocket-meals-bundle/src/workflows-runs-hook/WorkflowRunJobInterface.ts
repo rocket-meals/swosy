@@ -59,6 +59,9 @@ export interface WorkflowRunJobInterface {
   getDeleteFinishedWorkflowRunsAfterDays(): number | undefined;
   getDeleteFailedWorkflowRunsAfterDays(): number | undefined;
 
+  /** JSON a run of this workflow expects in `input` – prefilled when it is started by hand in the Rocket Meals module. */
+  getInputTemplate?(): string | undefined;
+
   handleWorkflowRunsWantToRun(modifiableInput: Partial<DatabaseTypes.WorkflowsRuns>, workflowruns: Partial<DatabaseTypes.WorkflowsRuns>[], alreadyRunningWorkflowruns: DatabaseTypes.WorkflowsRuns[]): ResultHandleWorkflowRunsWantToRun;
 
   runJob(context: WorkflowRunContext): Promise<Partial<DatabaseTypes.WorkflowsRuns>>;

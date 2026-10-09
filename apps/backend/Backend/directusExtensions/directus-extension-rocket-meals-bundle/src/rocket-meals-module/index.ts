@@ -8,6 +8,8 @@ import AppFeedbackChatPage from './app-feedbacks/app-feedback-chat-page.vue';
 import McpInstructionPage from './mcp-instruction/mcp-instruction-page.vue';
 import LivePulsePage from './live-pulse/live-pulse-page.vue';
 import FriendshipNetworkPage from './friendship-network/friendship-network-page.vue';
+import WorkflowsPage from './workflows/workflows-page.vue';
+import WorkflowDetailPage from './workflows/workflow-detail-page.vue';
 import ProfilesPage from './profiles/profiles-page.vue';
 import ProfileDetailsPage from './profiles/profile-details-page.vue';
 import ProfilePushPage from './profiles/profile-push-page.vue';
@@ -84,6 +86,15 @@ export default defineModule({
     {
       path: RocketMealsModulePages.FRIENDSHIP_NETWORK.path,
       component: FriendshipNetworkPage,
+    },
+    {
+      path: RocketMealsModulePages.WORKFLOWS.path,
+      component: WorkflowsPage,
+    },
+    {
+      path: `${RocketMealsModulePages.WORKFLOWS.path}/:workflowId`,
+      component: WorkflowDetailPage,
+      props: true,
     },
     {
       path: RocketMealsModulePages.MCP_INSTRUCTION.path,

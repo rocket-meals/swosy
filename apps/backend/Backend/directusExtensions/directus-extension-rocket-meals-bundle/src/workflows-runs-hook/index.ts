@@ -32,6 +32,7 @@ export class WorkflowScheduleHelper {
 
   static async registerScheduleToCreateWorkflowRuns(config: { workflowId: string; cronOject: CronObject; myDatabaseHelper: MyDatabaseHelper; schedule: ScheduleFromExtension }): Promise<void> {
     let cronString = CronHelper.getCronString(config.cronOject);
+    WorkflowScheduler.registerSchedule(config.workflowId, cronString);
     config.schedule(cronString, async () => {
       try {
         let workflowId = config.workflowId;
@@ -52,6 +53,8 @@ export class WorkflowScheduleHelper {
 
 export class WorkflowScheduler {
   private static registeredWorkflows: { [p: string]: WorkflowRunJobInterface } = {};
+  /** Cron string per workflow id – only for display (next run in the Rocket Meals module); Directus' `schedule()` does the firing. */
+  private static registeredSchedules: { [p: string]: string } = {};
 
   static registerWorkflow(workflowRunJobInterface: WorkflowRunJobInterface): void {
     let workflowId = workflowRunJobInterface.getWorkflowId();
@@ -67,6 +70,15 @@ export class WorkflowScheduler {
 
   static getRegisteredWorkflowsIds(): string[] {
     return Object.keys(WorkflowScheduler.registeredWorkflows);
+  }
+
+  static registerSchedule(workflowId: string, cronString: string): void {
+    WorkflowScheduler.registeredSchedules[workflowId] = cronString;
+  }
+
+  /** `undefined` for a workflow without schedule – it only runs when started by hand. */
+  static getRegisteredSchedule(workflowId: string): string | undefined {
+    return WorkflowScheduler.registeredSchedules[workflowId];
   }
 }
 

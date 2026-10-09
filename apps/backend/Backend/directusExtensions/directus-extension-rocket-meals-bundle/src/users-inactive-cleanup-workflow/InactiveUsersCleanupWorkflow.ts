@@ -2,7 +2,7 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { SingleWorkflowRun } from '../workflows-runs-hook/WorkflowRunJobInterface';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
-import { INACTIVE_USERS_CLEANUP_EXPECTED_INPUT, INACTIVE_USERS_CLEANUP_WORKFLOW_ID, InactiveUsersCleanupHelper, InactiveUsersCleanupInput } from './InactiveUsersCleanupHelper';
+import { INACTIVE_USERS_CLEANUP_DEFAULT_DAYS_INACTIVE, INACTIVE_USERS_CLEANUP_EXPECTED_INPUT, INACTIVE_USERS_CLEANUP_WORKFLOW_ID, InactiveUsersCleanupHelper, InactiveUsersCleanupInput } from './InactiveUsersCleanupHelper';
 
 /**
  * Counts users whose last access is older than `days_inactive` days and - only with `delete_users: true` -
@@ -12,6 +12,12 @@ import { INACTIVE_USERS_CLEANUP_EXPECTED_INPUT, INACTIVE_USERS_CLEANUP_WORKFLOW_
 export class InactiveUsersCleanupWorkflow extends SingleWorkflowRun {
   getWorkflowId(): string {
     return INACTIVE_USERS_CLEANUP_WORKFLOW_ID;
+  }
+
+  /** Counting only – deleting has to be switched on deliberately. */
+  getInputTemplate(): string {
+    const input: InactiveUsersCleanupInput = { delete_users: false, days_inactive: INACTIVE_USERS_CLEANUP_DEFAULT_DAYS_INACTIVE };
+    return JSON.stringify(input, null, 2);
   }
 
   async runJob(context: WorkflowRunContext): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
