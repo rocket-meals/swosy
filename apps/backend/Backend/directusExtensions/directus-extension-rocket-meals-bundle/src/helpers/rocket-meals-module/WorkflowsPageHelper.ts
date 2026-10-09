@@ -168,6 +168,34 @@ export class WorkflowsPageHelper {
     'workflows-runs-cleanup': BackendTranslationKeys.workflow_name_workflows_runs_cleanup,
   };
 
+  /** Icon of the tile (Material Symbols, as everywhere in Directus). An id missing here gets the page icon. */
+  public static readonly WORKFLOW_ICONS: Readonly<Record<string, string>> = {
+    'app-reviews-pull': 'reviews',
+    'app-usage-events-cleanup': 'auto_delete',
+    'cashregister-parse': 'point_of_sale',
+    'collectible-events-repeat': 'event_repeat',
+    'feature-wishes-cleanup': 'cleaning_services',
+    'feature-wishes-daily': 'lightbulb',
+    'file-cleanup': 'folder_delete',
+    'food-image-ai-generation': 'auto_awesome',
+    'food-notify': 'notifications_active',
+    'food-sync': 'restaurant_menu',
+    'foods-translation-fix-missing': 'translate',
+    'housing-contract-sync-hannover': 'contract',
+    'housing-sync': 'apartment',
+    'news-sync': 'newspaper',
+    'users-inactive-cleanup': 'person_remove',
+    'utilization-canteen-calculation': 'groups',
+    'washingmachines-parse': 'local_laundry_service',
+    'workflows-runs-cleanup': 'history_toggle_off',
+  };
+
+  public static readonly DEFAULT_WORKFLOW_ICON = 'account_tree';
+
+  static getIcon(workflowId: string): string {
+    return WorkflowsPageHelper.WORKFLOW_ICONS[workflowId] ?? WorkflowsPageHelper.DEFAULT_WORKFLOW_ICON;
+  }
+
   static getName(workflowId: string, translate: Translate): string {
     const key = WorkflowsPageHelper.WORKFLOW_NAME_KEYS[workflowId];
     return key ? translate(key) : workflowId;

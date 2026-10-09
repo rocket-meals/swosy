@@ -178,6 +178,12 @@ describe('WorkflowsPageHelper', () => {
       expect(WorkflowsPageHelper.getName('unknown-workflow', translateDe)).toBe('unknown-workflow');
     });
 
+    it('has an icon for every named workflow and falls back to the page icon', () => {
+      expect(Object.keys(WorkflowsPageHelper.WORKFLOW_ICONS).sort()).toEqual(Object.keys(WorkflowsPageHelper.WORKFLOW_NAME_KEYS).sort());
+      expect(WorkflowsPageHelper.getIcon('food-sync')).toBe('restaurant_menu');
+      expect(WorkflowsPageHelper.getIcon('unknown-workflow')).toBe(RocketMealsModulePages.WORKFLOWS.icon);
+    });
+
     it('describes schedules in words', () => {
       expect(WorkflowsPageHelper.describeSchedule('0 */5 * * * *', 'de', translateDe)).toBe('Alle 5 Minuten');
       expect(WorkflowsPageHelper.describeSchedule('0 0 4 * * *', 'de', translateDe)).toBe('Täglich um 04:00');
