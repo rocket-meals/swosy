@@ -33,16 +33,43 @@ describe('AppFeedbackChatHelper', () => {
   });
 
   it('combines status, source and thumbs up / down', () => {
-    expect(AppFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.RESOLVED, { source: AppFeedbackSourceFilter.APPLE, type: AppFeedbackTypeFilter.NEGATIVE })).toEqual({
+    expect(AppFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.RESOLVED, { sources: [AppFeedbackSourceFilter.APPLE], types: [AppFeedbackTypeFilter.NEGATIVE] })).toEqual({
       _and: [AppFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.RESOLVED), AppFeedbackChatStatusHelper.buildSourceFilter(AppFeedbackSourceFilter.APPLE), { positive: { _eq: false } }],
     });
-    expect(AppFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.ALL, { type: AppFeedbackTypeFilter.POSITIVE })).toEqual({ positive: { _eq: true } });
+    expect(AppFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.ALL, { types: [AppFeedbackTypeFilter.POSITIVE] })).toEqual({ positive: { _eq: true } });
+  });
+
+  it('matches any of the ticked sources, none or all ticked means all sources', () => {
+    expect(AppFeedbackChatHelper.buildSourcesFilter([AppFeedbackSourceFilter.GOOGLE_PLAY, AppFeedbackSourceFilter.APPLE])).toEqual({
+      _or: [AppFeedbackChatStatusHelper.buildSourceFilter(AppFeedbackSourceFilter.APPLE), AppFeedbackChatStatusHelper.buildSourceFilter(AppFeedbackSourceFilter.GOOGLE_PLAY)],
+    });
+    expect(AppFeedbackChatHelper.buildSourcesFilter([])).toBeUndefined();
+    expect(AppFeedbackChatHelper.buildSourcesFilter(null)).toBeUndefined();
+    expect(AppFeedbackChatHelper.buildSourcesFilter([AppFeedbackSourceFilter.ALL])).toBeUndefined();
+    expect(AppFeedbackChatHelper.buildSourcesFilter([...AppFeedbackChatHelper.SELECTABLE_SOURCES])).toBeUndefined();
+    expect(AppFeedbackChatHelper.getSources(['apple', 'unknown', 'all', 'apple'])).toEqual([AppFeedbackSourceFilter.APPLE]);
+  });
+
+  it('matches any of the ticked thumbs, none ticked means all', () => {
+    expect(AppFeedbackChatHelper.buildTypesFilter([AppFeedbackTypeFilter.NEGATIVE, AppFeedbackTypeFilter.POSITIVE])).toEqual({ _or: [{ positive: { _eq: true } }, { positive: { _eq: false } }] });
+    expect(AppFeedbackChatHelper.buildTypesFilter([])).toBeUndefined();
+    expect(AppFeedbackChatHelper.buildTypesFilter([AppFeedbackTypeFilter.ALL])).toBeUndefined();
+  });
+
+  it('shows the brand icons of the stores and thumbs in the filters', () => {
+    expect(AppFeedbackChatHelper.getSourceFilterIcon(AppFeedbackSourceFilter.APPLE)).toBe('apple');
+    expect(AppFeedbackChatHelper.getSourceFilterIcon(AppFeedbackSourceFilter.GOOGLE_PLAY)).toBe('google_play');
+    expect(AppFeedbackChatHelper.getSourceIcon({ source_identifier: 'apple' })).toBe('apple');
+    expect(AppFeedbackChatHelper.getSourceIcon({ source_identifier: null })).toBe('smartphone');
+    expect(AppFeedbackChatHelper.getTypeFilterIcon(AppFeedbackTypeFilter.POSITIVE)).toBe('thumb_up');
+    expect(AppFeedbackChatHelper.getTypeFilterIcon(AppFeedbackTypeFilter.NEGATIVE)).toBe('thumb_down');
+    expect(AppFeedbackChatHelper.getTypeFilterColor(AppFeedbackTypeFilter.ALL)).toBeUndefined();
   });
 
   it('counts with the same filter and search as the list', () => {
-    expect(AppFeedbackChatHelper.buildCountQuery(FoodFeedbackChatFilter.NEW, { source: AppFeedbackSourceFilter.APP }, ' x ')).toEqual({
+    expect(AppFeedbackChatHelper.buildCountQuery(FoodFeedbackChatFilter.NEW, { sources: [AppFeedbackSourceFilter.APP] }, ' x ')).toEqual({
       aggregate: JSON.stringify({ count: ['id'] }),
-      filter: JSON.stringify(AppFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.NEW, { source: AppFeedbackSourceFilter.APP })),
+      filter: JSON.stringify(AppFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.NEW, { sources: [AppFeedbackSourceFilter.APP] })),
       search: 'x',
     });
   });

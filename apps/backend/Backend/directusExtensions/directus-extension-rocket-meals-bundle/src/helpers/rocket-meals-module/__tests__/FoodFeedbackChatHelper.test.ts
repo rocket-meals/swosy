@@ -121,12 +121,26 @@ describe('FoodFeedbackChatHelper', () => {
     }
   });
 
+  it('has an icon for every sort, content and rating filter', () => {
+    const icons = [...FoodFeedbackChatHelper.SORTS.map(FoodFeedbackChatHelper.getSortIcon), ...FoodFeedbackChatHelper.CONTENT_FILTERS.map(FoodFeedbackChatHelper.getContentFilterIcon), ...FoodFeedbackChatHelper.RATING_FILTERS.map(FoodFeedbackChatHelper.getRatingFilterIcon)];
+    for (const icon of icons) {
+      expect(icon.length).toBeGreaterThan(0);
+    }
+    expect(new Set(FoodFeedbackChatHelper.SORTS.map(FoodFeedbackChatHelper.getSortIcon)).size).toBe(FoodFeedbackChatHelper.SORTS.length);
+    expect(FoodFeedbackChatHelper.getRatingFilterColor(FoodFeedbackRatingFilter.GOOD)).toBe('var(--theme--success)');
+    expect(FoodFeedbackChatHelper.getRatingFilterColor(FoodFeedbackRatingFilter.ALL)).toBeUndefined();
+  });
+
   it('shows the food image as thumbnail, else the remote url', () => {
     expect(FoodFeedbackChatHelper.getFoodImageUrl({ food: { id: 'f', image: 'file-1' } }, '/rocket-meals/api/')).toBe('/rocket-meals/api/assets/file-1?width=128&height=128&fit=cover&quality=80');
     expect(FoodFeedbackChatHelper.getFoodImageUrl({ food: { id: 'f', image: { id: 'file-2' } } }, '/api')).toBe('/api/assets/file-2?width=128&height=128&fit=cover&quality=80');
     expect(FoodFeedbackChatHelper.getFoodImageUrl({ food: { id: 'f', image: null, image_remote_url: 'https://x/y.jpg' } })).toBe('https://x/y.jpg');
     expect(FoodFeedbackChatHelper.getFoodImageUrl({ food: { id: 'f' } })).toBeUndefined();
     expect(FoodFeedbackChatHelper.getFoodImageUrl({ food: 'f' })).toBeUndefined();
+    expect(FoodFeedbackChatHelper.getCanteenImageUrl({ id: 'c', image: 'file-3' }, '/api/')).toBe('/api/assets/file-3?width=48&height=48&fit=cover&quality=80');
+    expect(FoodFeedbackChatHelper.getCanteenImageUrl({ id: 'c', image_remote_url: 'https://x/c.jpg' })).toBe('https://x/c.jpg');
+    expect(FoodFeedbackChatHelper.getCanteenImageUrl({ id: 'c' })).toBeUndefined();
+    expect(FoodFeedbackChatHelper.buildCanteensQuery().fields).toBe('id,alias,image,image_remote_url');
   });
 
   it('can mark open feedbacks with an author as done', () => {

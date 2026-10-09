@@ -78,6 +78,12 @@ export type FoodFeedbackListOptions = {
   pageSize?: number | null;
 };
 
+/** A canteen of the canteen filter, with its picture. */
+export type FoodFeedbackCanteenOption = { id: string; alias?: string | null; image?: string | { id: string } | null; image_remote_url?: string | null };
+
+/** Something with a picture: a Directus file or else a remote URL (foods, canteens). */
+type ItemWithImage = { image?: string | { id: string } | null; image_remote_url?: string | null };
+
 type DirectusFilter = Record<string, unknown>;
 
 export class FoodFeedbackChatHelper {
@@ -92,6 +98,8 @@ export class FoodFeedbackChatHelper {
 
   /** Edge length in px of the food image in the list (requested at twice the size for HiDPI). */
   public static readonly FOOD_IMAGE_SIZE = 64;
+  /** Edge length in px of the canteen picture in the canteen filter. */
+  public static readonly CANTEEN_IMAGE_SIZE = 24;
 
   /** Fields of the list. */
   public static readonly LIST_FIELDS = ['id', 'comment', 'rating', 'date_created', 'date_updated', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'canteen.id', 'canteen.alias', 'profile.id', 'profile.nickname', 'profile.language', 'chat.id', 'chat.conversation_state', 'chat.date_updated'];
@@ -251,7 +259,7 @@ export class FoodFeedbackChatHelper {
 
   /** URL parameters to load the canteens for the canteen filter. */
   static buildCanteensQuery() {
-    return { fields: 'id,alias', sort: 'sort,alias', limit: -1 };
+    return { fields: 'id,alias,image,image_remote_url', sort: 'sort,alias', limit: -1 };
   }
 
   static getPageCount(total: number, pageSize?: number | null): number {
@@ -268,6 +276,57 @@ export class FoodFeedbackChatHelper {
         return BackendTranslationKeys.rocket_meals_module_sort_rating_worst;
       case FoodFeedbackListSort.RATING_BEST:
         return BackendTranslationKeys.rocket_meals_module_sort_rating_best;
+    }
+  }
+
+  static getSortIcon(sort: FoodFeedbackListSort): string {
+    switch (sort) {
+      case FoodFeedbackListSort.NEWEST:
+        return 'update';
+      case FoodFeedbackListSort.OLDEST:
+        return 'history';
+      case FoodFeedbackListSort.RATING_WORST:
+        return 'trending_down';
+      case FoodFeedbackListSort.RATING_BEST:
+        return 'trending_up';
+    }
+  }
+
+  static getContentFilterIcon(content: FoodFeedbackContentFilter): string {
+    switch (content) {
+      case FoodFeedbackContentFilter.WITH_COMMENT:
+        return 'chat_bubble';
+      case FoodFeedbackContentFilter.WITH_RATING:
+        return 'star';
+    }
+  }
+
+  static getRatingFilterIcon(rating: FoodFeedbackRatingFilter): string {
+    switch (rating) {
+      case FoodFeedbackRatingFilter.ALL:
+        return 'star_half';
+      case FoodFeedbackRatingFilter.BAD:
+        return 'sentiment_dissatisfied';
+      case FoodFeedbackRatingFilter.MEDIUM:
+        return 'sentiment_neutral';
+      case FoodFeedbackRatingFilter.GOOD:
+        return 'sentiment_very_satisfied';
+      case FoodFeedbackRatingFilter.NONE:
+        return 'star_outline';
+    }
+  }
+
+  /** A Directus theme colour of a rating group, `undefined` for the neutral ones. */
+  static getRatingFilterColor(rating: FoodFeedbackRatingFilter): string | undefined {
+    switch (rating) {
+      case FoodFeedbackRatingFilter.BAD:
+        return 'var(--theme--danger)';
+      case FoodFeedbackRatingFilter.MEDIUM:
+        return 'var(--theme--warning)';
+      case FoodFeedbackRatingFilter.GOOD:
+        return 'var(--theme--success)';
+      default:
+        return undefined;
     }
   }
 
@@ -304,13 +363,23 @@ export class FoodFeedbackChatHelper {
     if (!food || typeof food === 'string') {
       return undefined;
     }
-    const fileId = typeof food.image === 'object' && food.image !== null ? food.image.id : food.image;
+    return FoodFeedbackChatHelper.getImageUrl(food, apiRoot, FoodFeedbackChatHelper.FOOD_IMAGE_SIZE);
+  }
+
+  /** The URL of the canteen picture in the canteen filter, like {@link getFoodImageUrl}. */
+  static getCanteenImageUrl(canteen: FoodFeedbackCanteenOption, apiRoot: string = '/'): string | undefined {
+    return FoodFeedbackChatHelper.getImageUrl(canteen, apiRoot, FoodFeedbackChatHelper.CANTEEN_IMAGE_SIZE);
+  }
+
+  /** The Directus file as square thumbnail of twice `size` px (HiDPI), else the remote URL, else `undefined`. */
+  private static getImageUrl(item: ItemWithImage, apiRoot: string, size: number): string | undefined {
+    const fileId = typeof item.image === 'object' && item.image !== null ? item.image.id : item.image;
     if (fileId) {
       const root = apiRoot.endsWith('/') ? apiRoot : `${apiRoot}/`;
-      const size = FoodFeedbackChatHelper.FOOD_IMAGE_SIZE * 2;
-      return `${root}assets/${encodeURIComponent(fileId)}?width=${size}&height=${size}&fit=cover&quality=80`;
+      const edge = size * 2;
+      return `${root}assets/${encodeURIComponent(fileId)}?width=${edge}&height=${edge}&fit=cover&quality=80`;
     }
-    return food.image_remote_url || undefined;
+    return item.image_remote_url || undefined;
   }
 
   /** Whether a feedback can be marked as done from the list: not done yet, and someone to show the chat to. */

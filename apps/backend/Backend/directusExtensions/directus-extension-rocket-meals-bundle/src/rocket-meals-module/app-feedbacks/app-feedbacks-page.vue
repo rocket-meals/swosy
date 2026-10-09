@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
  * Page "App-Feedbacks": the latest feedbacks on the app – from the feedback form in the app and
- * reviews pulled from the App Store and Google Play – filterable by chat status, source and
- * thumbs up / down, sortable by date. Feedbacks can be marked as done right from the list – one
- * by one or several selected at once, without answering (also store reviews and anonymous ones,
+ * reviews pulled from the App Store and Google Play – filterable by chat status, sources and
+ * thumbs up / down (several can be ticked, none ticked means all), sortable by date. Feedbacks
+ * can be marked as done right from the list – one by one or several selected at once, without answering (also store reviews and anonymous ones,
  * e.g. positive feedback). Every row leads to the chat with the author
  * (`app-feedback-chat-page.vue`), store reviews to their public answer.
  */
@@ -18,6 +18,7 @@ import { AppFeedbackAnswerChannel, AppFeedbackChatHelper, AppFeedbackTypeFilter,
 import { FoodFeedbackChatHelper, FoodFeedbackListSort } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
+import FilterSelect from '../filter-select.vue';
 import ModuleNavigation from '../module-navigation.vue';
 import FoodFeedbackRating from '../food-feedbacks/food-feedback-rating.vue';
 import FoodFeedbackStatusChip from '../food-feedbacks/food-feedback-status-chip.vue';
@@ -30,9 +31,10 @@ const { translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.APP_FEEDBACKS;
 
-/** Source, sort and page size are remembered per browser. */
+/** Sources, sort and page size are remembered per browser. */
 const SETTINGS_STORAGE_KEY = 'rocket-meals-module.app-feedbacks.list-settings';
-type StoredListSettings = Pick<AppFeedbackListOptions, 'source' | 'sort' | 'pageSize'>;
+/** `source` is the single source stored before several could be ticked. */
+type StoredListSettings = Pick<AppFeedbackListOptions, 'sources' | 'sort' | 'pageSize'> & { source?: AppFeedbackSourceFilter };
 
 function readStoredSettings(): StoredListSettings {
   try {
@@ -55,8 +57,8 @@ const storedSettings = readStoredSettings();
 
 const activeFilter = ref<FoodFeedbackChatFilter>(FoodFeedbackChatFilter.OPEN);
 const search = ref('');
-const source = ref<AppFeedbackSourceFilter>(storedSettings.source && AppFeedbackChatStatusHelper.SOURCE_FILTERS.includes(storedSettings.source) ? storedSettings.source : AppFeedbackSourceFilter.ALL);
-const typeFilter = ref<AppFeedbackTypeFilter>(AppFeedbackTypeFilter.ALL);
+const sources = ref<AppFeedbackSourceFilter[]>(AppFeedbackChatHelper.getSources(storedSettings.sources ?? (storedSettings.source ? [storedSettings.source] : [])));
+const types = ref<AppFeedbackTypeFilter[]>([]);
 const sort = ref<FoodFeedbackListSort>(storedSettings.sort && AppFeedbackChatHelper.SORTS.includes(storedSettings.sort) ? storedSettings.sort : FoodFeedbackListSort.NEWEST);
 const pageSize = ref<number>(FoodFeedbackChatHelper.getPageSize(storedSettings.pageSize));
 const currentPage = ref(1);
@@ -69,16 +71,16 @@ const selectedIds = ref<string[]>([]);
 const resolvingIds = ref<string[]>([]);
 
 const listOptions = computed<AppFeedbackListOptions>(() => ({
-  source: source.value,
-  type: typeFilter.value,
+  sources: sources.value,
+  types: types.value,
   sort: sort.value,
   pageSize: pageSize.value,
 }));
 
 const pageCount = computed(() => FoodFeedbackChatHelper.getPageCount(total.value, pageSize.value));
-const sourceItems = computed(() => AppFeedbackChatStatusHelper.SOURCE_FILTERS.map(option => ({ text: translate(AppFeedbackChatHelper.getSourceFilterLabelKey(option)), value: option })));
-const typeItems = computed(() => AppFeedbackChatHelper.TYPE_FILTERS.map(option => ({ text: translate(AppFeedbackChatHelper.getTypeFilterLabelKey(option)), value: option })));
-const sortItems = computed(() => AppFeedbackChatHelper.SORTS.map(option => ({ text: translate(FoodFeedbackChatHelper.getSortLabelKey(option)), value: option })));
+const sourceItems = computed(() => AppFeedbackChatHelper.SELECTABLE_SOURCES.map(option => ({ text: translate(AppFeedbackChatHelper.getSourceFilterLabelKey(option)), value: option, icon: AppFeedbackChatHelper.getSourceFilterIcon(option) })));
+const typeItems = computed(() => AppFeedbackChatHelper.SELECTABLE_TYPES.map(option => ({ text: translate(AppFeedbackChatHelper.getTypeFilterLabelKey(option)), value: option, icon: AppFeedbackChatHelper.getTypeFilterIcon(option), iconColor: AppFeedbackChatHelper.getTypeFilterColor(option) })));
+const sortItems = computed(() => AppFeedbackChatHelper.SORTS.map(option => ({ text: translate(FoodFeedbackChatHelper.getSortLabelKey(option)), value: option, icon: FoodFeedbackChatHelper.getSortIcon(option) })));
 const pageSizeItems = FoodFeedbackChatHelper.PAGE_SIZE_OPTIONS.map(size => ({ text: String(size), value: size }));
 
 /** Feedbacks of this page that can be marked as done – only those can be selected. */
@@ -228,8 +230,8 @@ watch(search, () => {
     }
   }, 300);
 });
-watch([source, typeFilter, sort, pageSize], () => {
-  storeSettings({ source: source.value, sort: sort.value, pageSize: pageSize.value });
+watch([sources, types, sort, pageSize], () => {
+  storeSettings({ sources: sources.value, sort: sort.value, pageSize: pageSize.value });
   if (currentPage.value === 1) {
     reload();
   } else {
@@ -272,13 +274,13 @@ onMounted(reload);
 
       <div class="toolbar">
         <div class="toolbar-item">
-          <v-select v-model="source" :items="sourceItems" />
+          <filter-select v-model="sources" :items="sourceItems" multiple :placeholder="translate(BackendTranslationKeys.rocket_meals_module_source_all)" :placeholder-icon="AppFeedbackChatHelper.getSourceFilterIcon(AppFeedbackSourceFilter.ALL)" />
         </div>
         <div class="toolbar-item">
-          <v-select v-model="typeFilter" :items="typeItems" />
+          <filter-select v-model="types" :items="typeItems" multiple :placeholder="translate(BackendTranslationKeys.rocket_meals_module_feedback_type_all)" :placeholder-icon="AppFeedbackChatHelper.getTypeFilterIcon(AppFeedbackTypeFilter.ALL)" />
         </div>
         <div class="toolbar-item">
-          <v-select v-model="sort" :items="sortItems" />
+          <filter-select v-model="sort" :items="sortItems" />
         </div>
       </div>
 

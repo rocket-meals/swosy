@@ -52,8 +52,10 @@ export enum AppFeedbackTypeFilter {
 
 /** Everything the list can be narrowed down by, besides the status chips. */
 export type AppFeedbackListOptions = {
-  source?: AppFeedbackSourceFilter | null;
-  type?: AppFeedbackTypeFilter | null;
+  /** Only feedbacks from one of these sources; empty = all sources. */
+  sources?: readonly AppFeedbackSourceFilter[] | null;
+  /** Only feedbacks with one of these thumbs; empty = all, also those without thumb. */
+  types?: readonly AppFeedbackTypeFilter[] | null;
   sort?: FoodFeedbackListSort | null;
   pageSize?: number | null;
 };
@@ -78,29 +80,13 @@ export class AppFeedbackChatHelper {
   /** App feedbacks can only be ordered by date – they have no rating of their own. */
   public static readonly SORTS: readonly FoodFeedbackListSort[] = [FoodFeedbackListSort.NEWEST, FoodFeedbackListSort.OLDEST];
   public static readonly TYPE_FILTERS: readonly AppFeedbackTypeFilter[] = [AppFeedbackTypeFilter.ALL, AppFeedbackTypeFilter.POSITIVE, AppFeedbackTypeFilter.NEGATIVE];
+  /** The sources that can be ticked in the source filter – none ticked means all. */
+  public static readonly SELECTABLE_SOURCES: readonly AppFeedbackSourceFilter[] = AppFeedbackChatStatusHelper.SOURCE_FILTERS.filter(source => source !== AppFeedbackSourceFilter.ALL);
+  /** Thumbs up / down that can be ticked in the type filter – none ticked means all. */
+  public static readonly SELECTABLE_TYPES: readonly AppFeedbackTypeFilter[] = AppFeedbackChatHelper.TYPE_FILTERS.filter(type => type !== AppFeedbackTypeFilter.ALL);
 
   /** Fields of the list and the chat page. */
-  public static readonly LIST_FIELDS = [
-    'id',
-    'title',
-    'content',
-    'positive',
-    'contact_email',
-    'source_identifier',
-    'source_rating_raw',
-    'response',
-    'state',
-    'device_platform',
-    'device_brand',
-    'device_system_version',
-    'date_created',
-    'date_updated',
-    'profile.id',
-    'profile.nickname',
-    'chat.id',
-    'chat.conversation_state',
-    'chat.date_updated',
-  ];
+  public static readonly LIST_FIELDS = ['id', 'title', 'content', 'positive', 'contact_email', 'source_identifier', 'source_rating_raw', 'response', 'state', 'device_platform', 'device_brand', 'device_system_version', 'date_created', 'date_updated', 'profile.id', 'profile.nickname', 'chat.id', 'chat.conversation_state', 'chat.date_updated'];
 
   static readonly APP_FEEDBACKS_ENDPOINT = `/items/${CollectionNames.APP_FEEDBACKS}`;
 
@@ -116,9 +102,48 @@ export class AppFeedbackChatHelper {
     }
   }
 
-  /** The status filter combined with source and type of the options; `{}` matches everything. */
+  /** The known, ticked sources in the order of the filter; `ALL` and unknown values are dropped. */
+  static getSources(sources?: readonly unknown[] | null): AppFeedbackSourceFilter[] {
+    const selected = Array.isArray(sources) ? sources : [];
+    return AppFeedbackChatHelper.SELECTABLE_SOURCES.filter(source => selected.includes(source));
+  }
+
+  /** The known, ticked thumbs in the order of the filter; `ALL` and unknown values are dropped. */
+  static getTypes(types?: readonly unknown[] | null): AppFeedbackTypeFilter[] {
+    const selected = Array.isArray(types) ? types : [];
+    return AppFeedbackChatHelper.SELECTABLE_TYPES.filter(type => selected.includes(type));
+  }
+
+  /** Any of the given parts; `undefined` when none applies or all `selectableCount` options are ticked. */
+  private static buildAnyFilter(parts: (DirectusFilter | undefined)[], selectableCount: number): DirectusFilter | undefined {
+    const filters = parts.filter((part): part is DirectusFilter => !!part);
+    if (filters.length === 0 || parts.length >= selectableCount) {
+      return undefined;
+    }
+    return filters.length === 1 ? filters[0]! : { _or: filters };
+  }
+
+  /** The Directus filter of the ticked sources, `undefined` for all sources. */
+  static buildSourcesFilter(sources?: readonly AppFeedbackSourceFilter[] | null): DirectusFilter | undefined {
+    const selected = AppFeedbackChatHelper.getSources(sources);
+    return AppFeedbackChatHelper.buildAnyFilter(
+      selected.map(source => AppFeedbackChatStatusHelper.buildSourceFilter(source)),
+      AppFeedbackChatHelper.SELECTABLE_SOURCES.length
+    );
+  }
+
+  /**
+   * The Directus filter of the ticked thumbs, `undefined` for none ticked. Both ticked still
+   * leaves out feedbacks without thumb – they match neither.
+   */
+  static buildTypesFilter(types?: readonly AppFeedbackTypeFilter[] | null): DirectusFilter | undefined {
+    const parts = AppFeedbackChatHelper.getTypes(types).map(type => AppFeedbackChatHelper.buildTypeFilter(type));
+    return AppFeedbackChatHelper.buildAnyFilter(parts, Number.POSITIVE_INFINITY);
+  }
+
+  /** The status filter combined with sources and types of the options; `{}` matches everything. */
   static buildFilter(filter: FoodFeedbackChatFilter, options: AppFeedbackListOptions = {}): DirectusFilter {
-    const parts = [AppFeedbackChatStatusHelper.buildFilter(filter), AppFeedbackChatStatusHelper.buildSourceFilter(options.source), AppFeedbackChatHelper.buildTypeFilter(options.type)].filter((part): part is DirectusFilter => !!part);
+    const parts = [AppFeedbackChatStatusHelper.buildFilter(filter), AppFeedbackChatHelper.buildSourcesFilter(options.sources), AppFeedbackChatHelper.buildTypesFilter(options.types)].filter((part): part is DirectusFilter => !!part);
     if (parts.length === 0) {
       return {};
     }
@@ -173,6 +198,43 @@ export class AppFeedbackChatHelper {
     }
   }
 
+  /** The icon of a source in the source filter – the brand icons of the stores. */
+  static getSourceFilterIcon(source: AppFeedbackSourceFilter): string {
+    switch (source) {
+      case AppFeedbackSourceFilter.ALL:
+        return 'apps';
+      case AppFeedbackSourceFilter.APP:
+        return 'smartphone';
+      case AppFeedbackSourceFilter.APPLE:
+        return 'apple';
+      case AppFeedbackSourceFilter.GOOGLE_PLAY:
+        return 'google_play';
+    }
+  }
+
+  static getTypeFilterIcon(type: AppFeedbackTypeFilter): string {
+    switch (type) {
+      case AppFeedbackTypeFilter.ALL:
+        return 'thumbs_up_down';
+      case AppFeedbackTypeFilter.POSITIVE:
+        return 'thumb_up';
+      case AppFeedbackTypeFilter.NEGATIVE:
+        return 'thumb_down';
+    }
+  }
+
+  /** A Directus theme colour of the thumb, `undefined` for all. */
+  static getTypeFilterColor(type: AppFeedbackTypeFilter): string | undefined {
+    switch (type) {
+      case AppFeedbackTypeFilter.POSITIVE:
+        return 'var(--theme--success)';
+      case AppFeedbackTypeFilter.NEGATIVE:
+        return 'var(--theme--danger)';
+      default:
+        return undefined;
+    }
+  }
+
   static getTypeFilterLabelKey(type: AppFeedbackTypeFilter): BackendTranslationKeys {
     switch (type) {
       case AppFeedbackTypeFilter.ALL:
@@ -199,11 +261,11 @@ export class AppFeedbackChatHelper {
   static getSourceIcon(feedback: Pick<AppFeedbackListItem, 'source_identifier'>): string {
     switch (feedback.source_identifier) {
       case AppFeedbackSourceIdentifier.APPLE:
-        return 'phone_iphone';
+        return AppFeedbackChatHelper.getSourceFilterIcon(AppFeedbackSourceFilter.APPLE);
       case AppFeedbackSourceIdentifier.GOOGLE_PLAY:
-        return 'android';
+        return AppFeedbackChatHelper.getSourceFilterIcon(AppFeedbackSourceFilter.GOOGLE_PLAY);
       default:
-        return 'smartphone';
+        return AppFeedbackChatHelper.getSourceFilterIcon(AppFeedbackSourceFilter.APP);
     }
   }
 
