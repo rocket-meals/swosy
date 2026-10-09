@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 4 | 4 |
 | 🐛 Reliability | 398 | 46 |
-| 🔧 Maintainability | 740 | 0 |
+| 🔧 Maintainability | 739 | 0 |
 
-**Total issues:** 1142 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1141 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
