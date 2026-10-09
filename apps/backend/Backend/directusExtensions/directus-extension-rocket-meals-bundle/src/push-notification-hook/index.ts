@@ -143,6 +143,13 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       }
     }
 
+    // The number on the app icon (iOS); 0 removes it, empty leaves it as it is.
+    let badge: number | undefined = undefined; // can't be null, otherwise it will result in an error from expo
+    const badgeRaw = typeof payload.ios_badge_count === 'string' ? Number.parseInt(payload.ios_badge_count, 10) : payload.ios_badge_count;
+    if (typeof badgeRaw === 'number' && Number.isInteger(badgeRaw) && badgeRaw >= 0) {
+      badge = badgeRaw;
+    }
+
     const messages = expoPushTokens.map(token => ({
       to: token,
       sound: 'default',
@@ -150,6 +157,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       body: body, // Replace with the actual field name
       data: data, // Replace with the actual field name
       richContent: richContent, // https://github.com/expo/expo/discussions/27980#discussioncomment-12934879
+      badge: badge, // https://docs.expo.dev/push-notifications/sending-notifications/#message-request-format
     }));
 
     console.log('Messages:');

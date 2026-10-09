@@ -2,7 +2,7 @@
  * RocketMealsModulePages.ts – the pages of the `Rocket Meals` module in the Directus app.
  *
  * The module is the place for backend tools that do not fit Directus' generic content views:
- * today the food and app feedback chats, the MCP instruction, the live pulse and the friendship network, later e.g. housing management or top/flop lists of dishes.
+ * today the food and app feedback chats, the other chats, the profiles (with push messages), the MCP instruction, the live pulse and the friendship network, later e.g. housing management or top/flop lists of dishes.
  * A new page is one entry here plus a route in `src/rocket-meals-module/index.ts`; the side
  * navigation and the overview page are built from this list.
  */
@@ -41,6 +41,33 @@ export class RocketMealsModulePages {
     descriptionKey: BackendTranslationKeys.rocket_meals_module_app_feedbacks_description,
   };
 
+  /**
+   * Profiles: search by nickname, and the details of one profile (`profiles/<id>`) with its devices,
+   * feedbacks and chats. From there support starts a chat (`profiles/<id>/chat`) or sends a push
+   * message to all devices of the profile (`profiles/<id>/push`). Every link to a profile in the
+   * module leads here.
+   */
+  public static readonly PROFILES: RocketMealsModulePage = {
+    path: 'profiles',
+    icon: 'person_search',
+    labelKey: BackendTranslationKeys.rocket_meals_module_profiles,
+    descriptionKey: BackendTranslationKeys.rocket_meals_module_profiles_description,
+  };
+
+  /** Chats that belong to no food or app feedback, newest first – e.g. the ones support started from a profile. */
+  public static readonly CHATS: RocketMealsModulePage = {
+    path: 'chats',
+    icon: 'forum',
+    labelKey: BackendTranslationKeys.rocket_meals_module_chats,
+    descriptionKey: BackendTranslationKeys.rocket_meals_module_chats_description,
+  };
+
+  /** Sub path of a profile: start a chat with it. */
+  public static readonly PROFILE_CHAT_SEGMENT = 'chat';
+
+  /** Sub path of a profile: send it a push message. */
+  public static readonly PROFILE_PUSH_SEGMENT = 'push';
+
   /** Who is active in the app right now – meant to stay open on a second screen during the day. */
   public static readonly LIVE_PULSE: RocketMealsModulePage = {
     path: 'live-pulse',
@@ -66,7 +93,7 @@ export class RocketMealsModulePages {
   };
 
   /** All pages, in the order of the navigation. */
-  public static readonly PAGES: readonly RocketMealsModulePage[] = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE, RocketMealsModulePages.FRIENDSHIP_NETWORK];
+  public static readonly PAGES: readonly RocketMealsModulePage[] = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.CHATS, RocketMealsModulePages.PROFILES, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE, RocketMealsModulePages.FRIENDSHIP_NETWORK];
 
   /**
    * The full URL of a page, e.g. for a link in a mail to support:
@@ -75,6 +102,11 @@ export class RocketMealsModulePages {
   static getAdminUrl(publicUrl: string, page?: RocketMealsModulePage, ...segments: string[]): string {
     const baseUrl = publicUrl.endsWith('/') ? publicUrl.slice(0, -1) : publicUrl;
     return `${baseUrl}/admin${RocketMealsModulePages.getRoute(page, ...segments)}`;
+  }
+
+  /** The details page of a profile, `/rocket-meals/profiles/<id>` – the target of every profile link in the module. */
+  static getProfileRoute(profileId: string): string {
+    return RocketMealsModulePages.getRoute(RocketMealsModulePages.PROFILES, profileId);
   }
 
   /** `/rocket-meals/food-feedbacks/abc` – a path for the Vue router of the Directus app. */

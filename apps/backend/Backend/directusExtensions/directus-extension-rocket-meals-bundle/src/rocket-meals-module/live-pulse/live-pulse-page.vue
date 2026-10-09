@@ -39,6 +39,8 @@ const hourly = ref<number[]>([]);
 const hourlyDay = ref<string | undefined>();
 /** Ticker entries that slid in while the page is open – highlighted briefly. */
 const freshKeys = ref<Set<string>>(new Set());
+/** Food offers of the ticker that still exist – the others link to their food instead. */
+const existingFoodofferIds = ref<Set<string>>(new Set());
 /** New ticker entries waiting to slide in, oldest first. */
 let pendingFeed: LivePulseFeedItem[] = [];
 let revealTimer: ReturnType<typeof setTimeout> | undefined;
@@ -81,6 +83,7 @@ async function loadFeed(time: Date) {
   const foodsQuery = LivePulseHelper.buildFoodsQuery(LivePulseHelper.getUsageEventFoodIds(usageEvents));
   const foods = foodsQuery ? await getItemsOrEmpty<LivePulseFood>(LivePulseHelper.FOODS_ENDPOINT, foodsQuery) : [];
   const next = LivePulseHelper.buildFeed({ foodFeedbacks, canteenVisits, newProfiles, usageEvents, foods });
+  await loadExistingFoodoffers([...next, ...feed.value, ...pendingFeed]);
   // On the first load everything is there at once – only what arrives while the page is open slides in.
   if (feed.value.length === 0 && pendingFeed.length === 0) {
     feed.value = next;
@@ -92,6 +95,12 @@ async function loadFeed(time: Date) {
   if (!revealTimer) {
     revealNext();
   }
+}
+
+async function loadExistingFoodoffers(items: LivePulseFeedItem[]) {
+  const query = LivePulseHelper.buildExistingFoodoffersQuery(LivePulseHelper.getFeedFoodofferIds(items));
+  const foodoffers = query ? await getItemsOrEmpty<{ id: string }>(LivePulseHelper.FOODOFFERS_ENDPOINT, query) : [];
+  existingFoodofferIds.value = new Set(foodoffers.map(foodoffer => String(foodoffer.id)));
 }
 
 /** Slides the oldest queued entry in on top and plans the next one. */
@@ -202,8 +211,23 @@ function formatVisitDate(date: string | null | undefined): string {
   return new Intl.DateTimeFormat(language.value, { weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(year, month - 1, day));
 }
 
-function feedText(item: LivePulseFeedItem): string {
-  const food = item.foodName ?? translate(BackendTranslationKeys.rocket_meals_module_live_pulse_unknown_food);
+/** Stands in for the food name while translating, so the name can be cut out and rendered as a link. */
+const FOOD_MARKER = '\uE000';
+
+function foodName(item: LivePulseFeedItem): string {
+  return item.foodName ?? translate(BackendTranslationKeys.rocket_meals_module_live_pulse_unknown_food);
+}
+
+function foodRoute(item: LivePulseFeedItem): string | undefined {
+  return LivePulseHelper.getFoodRoute(item, existingFoodofferIds.value);
+}
+
+/** The ticker text around the food name; `found` is false for entries without a food. */
+function feedTextParts(item: LivePulseFeedItem): { before: string; after: string; found: boolean } {
+  return LivePulseHelper.splitAtMarker(feedText(item, FOOD_MARKER), FOOD_MARKER);
+}
+
+function feedText(item: LivePulseFeedItem, food: string): string {
   switch (item.type) {
     case LivePulseFeedType.RATING:
       return translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_rated, { food });
@@ -330,14 +354,14 @@ onBeforeUnmount(() => {
             <h2 class="panel-title type-label">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_right_now_active) }}</h2>
             <div v-if="profiles.length === 0 && !loading" class="empty type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_nobody_right_now) }}</div>
             <div v-else class="people">
-              <div v-for="profile in profiles" :key="profile.id" class="person" :title="translate(LivePulseHelper.getPresenceLabelKey(presenceOf(profile)))">
+              <router-link v-for="profile in profiles" :key="profile.id" class="person" :to="LivePulseHelper.getProfileRoute(profile)" :title="translate(LivePulseHelper.getPresenceLabelKey(presenceOf(profile)))">
                 <div class="avatar" :class="`presence-${presenceOf(profile)}`">
                   <img v-if="avatarUrl(profile, LivePulseHelper.AVATAR_SIZE)" class="avatar-image" :src="avatarUrl(profile, LivePulseHelper.AVATAR_SIZE)" alt="" loading="lazy" @error="onAvatarError(profile)" />
                   <div v-else class="avatar-image initials">{{ LivePulseHelper.getInitials(profile.nickname) }}</div>
                 </div>
                 <span class="person-name">{{ getNickname(profile) }}</span>
                 <span class="person-time type-note">{{ relative(profile.date_updated) }}</span>
-              </div>
+              </router-link>
             </div>
             <div class="legend type-note">
               <span><i class="dot presence-now" />{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_presence_now) }}</span>
@@ -368,19 +392,20 @@ onBeforeUnmount(() => {
             <div v-if="feed.length === 0 && !loading" class="empty type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_nothing_happened) }}</div>
             <transition-group v-else tag="ul" name="feed" class="feed">
               <li v-for="item in feed" :key="item.key" class="feed-item" :class="{ fresh: freshKeys.has(item.key) }">
-                <div v-if="avatarUrl(item.profile, LivePulseHelper.FEED_AVATAR_SIZE)" class="feed-avatar">
+                <router-link v-if="avatarUrl(item.profile, LivePulseHelper.FEED_AVATAR_SIZE)" class="feed-avatar" :to="LivePulseHelper.getProfileRoute(item.profile)">
                   <img class="avatar-image" :src="avatarUrl(item.profile, LivePulseHelper.FEED_AVATAR_SIZE)" alt="" loading="lazy" @error="onAvatarError(item.profile)" />
-                </div>
-                <div v-else-if="foodImageUrl(item)" class="feed-avatar">
+                </router-link>
+                <component :is="foodRoute(item) ? 'router-link' : 'div'" v-else-if="foodImageUrl(item)" class="feed-avatar" :to="foodRoute(item)">
                   <img class="food-image" :src="foodImageUrl(item)" alt="" loading="lazy" @error="onFoodImageError(item)" />
-                </div>
+                </component>
                 <div v-else class="feed-avatar feed-icon"><v-icon :name="feedIcon(item)" small /></div>
                 <div class="feed-body">
                   <div class="feed-line">
                     <strong v-if="item.type === LivePulseFeedType.USAGE_EVENT">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_anonymous_session) }}</strong>
                     <strong v-else-if="item.type === LivePulseFeedType.FOOD_OPENED">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_someone) }}</strong>
+                    <router-link v-else-if="LivePulseHelper.getProfileRoute(item.profile)" class="feed-link" :to="LivePulseHelper.getProfileRoute(item.profile)"><strong>{{ getNickname(item.profile) }}</strong></router-link>
                     <strong v-else>{{ getNickname(item.profile) }}</strong>
-                    {{ feedText(item) }}
+                    <template v-if="feedTextParts(item).found">{{ feedTextParts(item).before }}<router-link v-if="foodRoute(item)" class="feed-link food-link" :to="foodRoute(item)">{{ foodName(item) }}</router-link><template v-else>{{ foodName(item) }}</template>{{ feedTextParts(item).after }}</template><template v-else>{{ feedTextParts(item).before }}</template>
                     <food-feedback-rating v-if="item.type === LivePulseFeedType.RATING || item.type === LivePulseFeedType.COMMENT" :rating="item.rating" />
                   </div>
                   <q v-if="item.comment" class="feed-comment">{{ item.comment }}</q>
@@ -507,6 +532,8 @@ onBeforeUnmount(() => {
 }
 
 .person {
+  color: inherit;
+  text-decoration: none;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -519,6 +546,11 @@ onBeforeUnmount(() => {
   padding: 3px;
   border: 3px solid var(--live-pulse-today);
   border-radius: 50%;
+}
+
+.person:hover .person-name,
+.person:focus-visible .person-name {
+  text-decoration: underline;
 }
 
 .avatar.presence-now {
@@ -655,6 +687,20 @@ onBeforeUnmount(() => {
 
 .feed-avatar {
   flex: none;
+}
+
+.feed-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.feed-link:hover,
+.feed-link:focus-visible {
+  text-decoration: underline;
+}
+
+.food-link {
+  color: var(--theme--primary);
 }
 
 .feed-avatar .avatar-image {
