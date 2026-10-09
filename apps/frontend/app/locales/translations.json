@@ -8908,45 +8908,5 @@
     "ru": "Мы пришлём тебе push-уведомление, как только освободится квартира.",
     "tr": "Bir daire boşaldığında sana anlık bildirim göndereceğiz.",
     "zh": "有房间空出时，我们会给你发送推送通知。"
-  },
-  "group_areas": {
-    "de": "Bereiche",
-    "en": "Areas",
-    "ar": "الأقسام",
-    "es": "Áreas",
-    "fr": "Rubriques",
-    "ru": "Разделы",
-    "tr": "Bölümler",
-    "zh": "板块"
-  },
-  "canteen_settings": {
-    "de": "Mensa-Einstellungen",
-    "en": "Canteen settings",
-    "ar": "إعدادات المطعم الجامعي",
-    "es": "Ajustes del comedor",
-    "fr": "Paramètres du restaurant universitaire",
-    "ru": "Настройки столовой",
-    "tr": "Yemekhane ayarları",
-    "zh": "食堂设置"
-  },
-  "housing_settings": {
-    "de": "Wohn-Einstellungen",
-    "en": "Housing settings",
-    "ar": "إعدادات السكن",
-    "es": "Ajustes de alojamiento",
-    "fr": "Paramètres du logement",
-    "ru": "Настройки жилья",
-    "tr": "Konut ayarları",
-    "zh": "住房设置"
-  },
-  "campus_settings": {
-    "de": "Campus-Einstellungen",
-    "en": "Campus settings",
-    "ar": "إعدادات الحرم الجامعي",
-    "es": "Ajustes del campus",
-    "fr": "Paramètres du campus",
-    "ru": "Настройки кампуса",
-    "tr": "Kampüs ayarları",
-    "zh": "校园设置"
   }
 }

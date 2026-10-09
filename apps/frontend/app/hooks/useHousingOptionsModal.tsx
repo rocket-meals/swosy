@@ -31,15 +31,7 @@ const useHousingOptionsModal = () => {
 		});
 	}, [openHousingSortingModal, show, translate]);
 
-	/** The same content for the settings screen, titled as housing settings. */
-	const openHousingSettingsModal = useCallback(() => {
-		show({
-			title: translate(TranslationKeys.housing_settings),
-			children: <HousingOptionsContent onSort={openHousingSortingModal} />,
-		});
-	}, [openHousingSortingModal, show, translate]);
-
-	return { openHousingOptionsModal, openHousingSettingsModal };
+	return { openHousingOptionsModal };
 };
 
 const styles = StyleSheet.create({

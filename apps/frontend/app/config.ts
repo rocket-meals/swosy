@@ -226,9 +226,7 @@ export function getVersionPatch() {
         //      in the foods color, housing sort shows "last opened" too
         // 112: housing and canteen settings are shared rows: the options modals and the
         //      settings screen show the same settings, color and current values
-        // 113: settings screen shows one row per area (canteen, housing, campus) that
-        //      opens that area's settings in a modal
-        return 113;
+        return 112;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
