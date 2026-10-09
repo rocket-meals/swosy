@@ -148,6 +148,7 @@ export class WorkflowsPageHelper {
 
   /** Name of every workflow the bundle registers. An id missing here is shown as it is. */
   public static readonly WORKFLOW_NAME_KEYS: Readonly<Record<string, BackendTranslationKeys>> = {
+    'apartments-free-notify': BackendTranslationKeys.workflow_name_apartments_free_notify,
     'app-reviews-pull': BackendTranslationKeys.workflow_name_app_reviews_pull,
     'app-usage-events-cleanup': BackendTranslationKeys.workflow_name_app_usage_events_cleanup,
     'cashregister-parse': BackendTranslationKeys.workflow_name_cashregister_parse,
@@ -170,6 +171,7 @@ export class WorkflowsPageHelper {
 
   /** Icon of the tile (Material Symbols, as everywhere in Directus). An id missing here gets the page icon. */
   public static readonly WORKFLOW_ICONS: Readonly<Record<string, string>> = {
+    'apartments-free-notify': 'door_open',
     'app-reviews-pull': 'reviews',
     'app-usage-events-cleanup': 'auto_delete',
     'cashregister-parse': 'point_of_sale',

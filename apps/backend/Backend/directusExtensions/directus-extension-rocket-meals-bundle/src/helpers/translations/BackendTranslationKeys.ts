@@ -226,6 +226,7 @@ export const BackendTranslationKeys = {
   workflow_name_feature_wishes_daily: 'workflow_name_feature_wishes_daily',
   workflow_name_file_cleanup: 'workflow_name_file_cleanup',
   workflow_name_food_image_ai_generation: 'workflow_name_food_image_ai_generation',
+  workflow_name_apartments_free_notify: 'workflow_name_apartments_free_notify',
   workflow_name_food_notify: 'workflow_name_food_notify',
   workflow_name_food_sync: 'workflow_name_food_sync',
   workflow_name_foods_translation_fix_missing: 'workflow_name_foods_translation_fix_missing',

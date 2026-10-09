@@ -220,8 +220,8 @@
       },
       {
         "type": "hook",
-        "name": "apartments-free-notify-hook",
-        "source": "src/apartments-free-notify-hook/index.ts"
+        "name": "apartments-free-notify-schedule-hook",
+        "source": "src/apartments-free-notify-schedule-hook/index.ts"
       },
       {
         "type": "endpoint",

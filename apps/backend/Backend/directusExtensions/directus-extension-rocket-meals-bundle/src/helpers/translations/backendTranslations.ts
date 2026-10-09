@@ -1993,6 +1993,16 @@ export const backendTranslations: TranslationResources = {
     tr: 'Yemek görsellerini yapay zekâ ile oluştur',
     zh: '用 AI 生成菜品图片',
   },
+  workflow_name_apartments_free_notify: {
+    de: 'Benachrichtigungen zu freien Wohnungen',
+    en: 'Free apartment notifications',
+    ar: 'إشعارات الشقق المتاحة',
+    es: 'Avisos de pisos libres',
+    fr: 'Notifications des logements libres',
+    ru: 'Уведомления о свободных квартирах',
+    tr: 'Boş daire bildirimleri',
+    zh: '空房通知',
+  },
   workflow_name_food_notify: {
     de: 'Benachrichtigungen zu Lieblingsspeisen',
     en: 'Favourite food notifications',
