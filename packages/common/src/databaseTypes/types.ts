@@ -1,5 +1,6 @@
 export type Apartments = {
   available_from?: string | null;
+  available_from_notified?: string | null;
   building?: string | Buildings | null;
   date_created?: string | null;
   date_updated?: string | null;
