@@ -1,6 +1,9 @@
 Key,Message,Component,Line
+"AaEoD-bHQRNFsK2vn7XG","Assign this positional parameter to a local variable.","rocket-meals_rocket-meals:scripts/update-and-generate-env.sh",84
 "AaEn-zKmE3G1IiUCpWnG","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FeatureWishModuleActions.ts",80
 "AaEn-zKmE3G1IiUCpWnH","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FeatureWishModuleActions.ts",87
+"AaEoD-ZGQRNFsK2vn7XE","Prefer top-level await over using a promise chain.","rocket-meals_rocket-meals:scripts/maintenance-window.mjs",66
+"AaEoD-bHQRNFsK2vn7XH","Assign this positional parameter to a local variable.","rocket-meals_rocket-meals:scripts/update-and-generate-env.sh",106
 "AaEmOWJUHOGTnYf8KF4o","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/OpenCountHelper.ts",57
 "AaEmOWlfHOGTnYf8KF4p","Use <output> instead of the status role to ensure accessibility across all devices.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/overview-page.vue",53
 "AaEl7G3MIbC7Rohp_Rrs","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ChatMessageMailHelper.ts",64

@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 4 | 4 |
-| 🐛 Reliability | 402 | 46 |
-| 🔧 Maintainability | 753 | 0 |
+| 🔒 Security | 5 | 5 |
+| 🐛 Reliability | 402 | 45 |
+| 🔧 Maintainability | 756 | 0 |
 
-**Total issues:** 1159 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1163 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (4/4)
+## 🔒 Security (5/5)
 
 - **Move this write permission from workflow level to job level.**
   .github/workflows/sync-fork.yml:4
@@ -30,7 +30,11 @@
   apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs:10
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/public/paddleocr/ort-wasm-simd-threaded.mjs#L10
 
-## 🐛 Reliability (46/402)
+- **Log Injection via unsanitized user input**
+  scripts/maintenance-window.mjs:51
+  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/maintenance-window.mjs#L51
+
+## 🐛 Reliability (45/402)
 
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
   apps/accessibilityTester/src/index.ts:104
@@ -211,8 +215,4 @@
 - **Async method 'getFoodoffersForParser' has no 'await' expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts:229
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts#L229
-
-- **Async method 'getFoodsListForParser' has no 'await' expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts:125
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts#L125
 
