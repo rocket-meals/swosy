@@ -64,8 +64,8 @@ export const FreeApartmentsNotificationModalSection: React.FC = () => {
 	);
 };
 
-/** Switch at the top of the housing screen and in its options modal. */
-export const FreeApartmentsNotificationToggle: React.FC<{ groupPosition: 'top' | 'middle' | 'bottom' | 'single' }> = ({ groupPosition }) => {
+/** Switch at the top of the housing screen, in its options modal and in the settings. */
+export const FreeApartmentsNotificationToggle: React.FC<{ groupPosition: 'top' | 'middle' | 'bottom' | 'single'; iconSize?: number }> = ({ groupPosition, iconSize = 20 }) => {
 	const { translate } = useLanguage();
 	const housingAreaColor = useHousingAreaColor();
 	const { isEnabled, toggle, isAccountRequired, openAccountRequiredModal, saving } = useFreeApartmentsNotification();
@@ -73,11 +73,11 @@ export const FreeApartmentsNotificationToggle: React.FC<{ groupPosition: 'top' |
 	return (
 		<SettingsListBoolean
 			iconBgColor={housingAreaColor}
-			leftIcon={<MaterialIcons name={isEnabled ? 'notifications-active' : 'notifications-off'} size={20} />}
+			leftIcon={<MaterialIcons name={isEnabled ? 'notifications-active' : 'notifications-off'} size={iconSize} />}
 			label={translate(TranslationKeys.housing_free_apartments_notification)}
 			isEnabled={isEnabled}
 			onToggle={() => void toggle()}
-			disabled={saving}
+			loading={saving}
 			valueActive={translate(TranslationKeys.active)}
 			valueInactive={translate(TranslationKeys.inactive)}
 			groupPosition={groupPosition}

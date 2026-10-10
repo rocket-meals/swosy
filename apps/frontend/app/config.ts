@@ -222,9 +222,14 @@ export function getVersionPatch() {
         //     modal, hint panel and button in the "free rooms" modal to be notified about free apartments
         // 109: free apartment push notification on the housing screen is a plain switch now
         // 110: housing options show the sort row in the housing color with the current choice
-        // 111: common: app feedback state kept in sync with its chat
-        // 112: common: chats.mail_pending_since for delayed chat mails
-        return 112;
+        // 111: settings: free apartment push switch under housing, canteen notification row
+        //      in the foods color, housing sort shows "last opened" too
+        // 112: housing and canteen settings are shared rows: the options modals and the
+        //      settings screen show the same settings, color and current values
+        // 113: settings list the canteen and housing settings directly again (shared rows stay);
+        //      the free apartment push switch shows a spinner while it is being switched
+        // 114: common: app feedback state kept in sync with its chat, delayed chat mails
+        return 114;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

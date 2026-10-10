@@ -81,8 +81,8 @@ export function getVersionPatch() {
 	// 54: common: FeatureWishHelper author like and delete rules, CollectionNames.DIRECTUS_FIELDS
 	// 55: common-ui: MyButton with translated action buttons (save, submit, update, edit, cancel, delete)
 	// 56: merge of master (backend feedback pages)
-	// 57: common: app feedback state kept in sync with its chat
-	// 58: common: chats.mail_pending_since for delayed chat mails
+	// 57: common-ui: SettingsListBoolean can show a loading spinner
+	// 58: common: app feedback state kept in sync with its chat, delayed chat mails
 	return 58;
 }
 

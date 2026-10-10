@@ -93,6 +93,7 @@ export const playbookRegistryData: PlaybookEntryData[] = [
 			label: { type: 'text', defaultValue: 'Boolean setting' },
 			isEnabled: { type: 'boolean', defaultValue: true },
 			disabled: { type: 'boolean', defaultValue: false },
+			loading: { type: 'boolean', defaultValue: false },
 		},
 	},
 	{

@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-09T21:08:06.815Z",
+  "report_timestamp": "2026-10-09T22:34:49.752Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 150,
-          "average": 1.5314949986482833,
-          "amountSavedValuesForKeys": 5665,
+          "average": 1.5296655879180152,
+          "amountSavedValuesForKeys": 5672,
           "amountKeys": 33
         },
         "invertedParameterToMethods": {
@@ -20,52 +20,52 @@
           "amountKeys": 23
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 150,
-          "average": 1.5440174434450804,
-          "amountSavedValuesForKeys": 5665,
+          "average": 1.542142468733007,
+          "amountSavedValuesForKeys": 5672,
           "amountKeys": 33
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 5717,
-        "detection_time_ms": 146,
+        "ast_generation_time_ms": 4499,
+        "detection_time_ms": 119,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 367.11,
-          "os_memory_free": 14734516224,
-          "os_memory_total": 16770748416,
+          "os_uptime": 181.85,
+          "os_memory_free": 14722072576,
+          "os_memory_total": 16765378560,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
-          "os_cpu_speed": 0
+          "os_cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+          "os_cpu_speed": 3496
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 51,
-    "amount_files_with_data_clumps": 35,
+    "amount_classes_or_interfaces_with_data_clumps": 49,
+    "amount_files_with_data_clumps": 33,
     "amount_methods_with_data_clumps": 14,
-    "fields_to_fields_data_clump": 114,
+    "fields_to_fields_data_clump": 112,
     "parameters_to_fields_data_clump": 2,
     "parameters_to_parameters_data_clump": 14,
-    "amount_data_clumps": 130
+    "amount_data_clumps": 128
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "701ab952a23ebba3b1f28e63576f6ab94ab107b6",
-    "project_commit_hash": "701ab952a23ebba3b1f28e63576f6ab94ab107b6",
+    "project_version": "62acfa52946c4bc5dd397863f4d40429430ae11f",
+    "project_commit_hash": "62acfa52946c4bc5dd397863f4d40429430ae11f",
     "project_tag": null,
-    "project_commit_date": "1791579973",
+    "project_commit_date": "1791585177",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 771,
-    "number_of_classes_or_interfaces": 1746,
+    "number_of_files": 773,
+    "number_of_classes_or_interfaces": 1747,
     "number_of_methods": 2087,
-    "number_of_data_fields": 5665,
+    "number_of_data_fields": 5672,
     "number_of_method_parameters": 2411
   },
   "detector": {
@@ -11625,250 +11625,6 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx-apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem-apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption-keytitleicononPress": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx-apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem-apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption-keytitleicononPress",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx",
-      "from_class_or_interface_key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem",
-      "from_class_or_interface_name": "OptionItem",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx",
-      "to_class_or_interface_key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption",
-      "to_class_or_interface_name": "NavigationOption",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/key": {
-          "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/key",
-          "name": "key",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/key",
-            "name": "key",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 30,
-              "startColumn": 2,
-              "endLine": 30,
-              "endColumn": 14
-            }
-          },
-          "position": {
-            "startLine": 22,
-            "startColumn": 2,
-            "endLine": 22,
-            "endColumn": 14
-          }
-        },
-        "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/title": {
-          "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 32,
-              "startColumn": 2,
-              "endLine": 32,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 23,
-            "startColumn": 2,
-            "endLine": 23,
-            "endColumn": 16
-          }
-        },
-        "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/icon": {
-          "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/icon",
-          "name": "icon",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/icon",
-            "name": "icon",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {
-              "startLine": 33,
-              "startColumn": 2,
-              "endLine": 33,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 24,
-            "startColumn": 2,
-            "endLine": 24,
-            "endColumn": 24
-          }
-        },
-        "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/onPress": {
-          "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/onPress",
-          "name": "onPress",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/onPress",
-            "name": "onPress",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {
-              "startLine": 34,
-              "startColumn": 2,
-              "endLine": 34,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 25,
-            "startColumn": 2,
-            "endLine": 25,
-            "endColumn": 22
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 16,
-        "cluster_type": 2
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx-apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption-apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem-keytitleicononPress": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx-apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption-apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem-keytitleicononPress",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx",
-      "from_class_or_interface_key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption",
-      "from_class_or_interface_name": "NavigationOption",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx",
-      "to_class_or_interface_key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem",
-      "to_class_or_interface_name": "OptionItem",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/key": {
-          "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/key",
-          "name": "key",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/key",
-            "name": "key",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 22,
-              "startColumn": 2,
-              "endLine": 22,
-              "endColumn": 14
-            }
-          },
-          "position": {
-            "startLine": 30,
-            "startColumn": 2,
-            "endLine": 30,
-            "endColumn": 14
-          }
-        },
-        "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/title": {
-          "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 23,
-              "startColumn": 2,
-              "endLine": 23,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 32,
-            "startColumn": 2,
-            "endLine": 32,
-            "endColumn": 16
-          }
-        },
-        "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/icon": {
-          "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/icon",
-          "name": "icon",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/icon",
-            "name": "icon",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {
-              "startLine": 24,
-              "startColumn": 2,
-              "endLine": 24,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 33,
-            "startColumn": 2,
-            "endLine": 33,
-            "endColumn": 24
-          }
-        },
-        "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/onPress": {
-          "key": "apps/frontend/app/hooks/useMyScrollviewModalFoodOffersOptions.tsx/interface/NavigationOption/memberField/onPress",
-          "name": "onPress",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/hooks/useMyScrollviewModalCourseTimetableOptions.tsx/interface/OptionItem/memberField/onPress",
-            "name": "onPress",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {
-              "startLine": 25,
-              "startColumn": 2,
-              "endLine": 25,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 34,
-            "startColumn": 2,
-            "endLine": 34,
-            "endColumn": 22
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 16,
-        "cluster_type": 2
-      }
-    },
     "fields_to_fields_data_clump-apps/scripts/asc-api.ts-apps/scripts/asc-api.ts/interface/JsonApiResource-apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource-typeidattributes": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/scripts/asc-api.ts-apps/scripts/asc-api.ts/interface/JsonApiResource-apps/frontend/app/helper/courseTimetable/StudipImporter.ts/interface/JsonApiResource-typeidattributes",
@@ -12059,7 +11815,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -12156,7 +11912,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 18,
+        "cluster_id": 17,
         "cluster_type": 2
       }
     },
@@ -12253,7 +12009,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 18,
+        "cluster_id": 17,
         "cluster_type": 2
       }
     },
@@ -13395,7 +13151,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -13504,7 +13260,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 19,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -13613,7 +13369,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 19,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -13710,7 +13466,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 20,
+        "cluster_id": 19,
         "cluster_type": 2
       }
     },
@@ -13807,7 +13563,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 20,
+        "cluster_id": 19,
         "cluster_type": 2
       }
     }
