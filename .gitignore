@@ -11,6 +11,10 @@ apps/score-tracker/maestro-tests/generated/*
 # Ignore the env files
 .env
 
+# Durations of the last backend restarts, written by scripts/update-and-generate-env.sh
+.restart-durations
+.restart-durations.tmp
+
 apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/coverage/
 apps/backend/Backend/directusExtensions/.registry/
 

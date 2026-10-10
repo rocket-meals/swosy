@@ -232,7 +232,8 @@ export function getVersionPatch() {
         // 115: common: profiles.email_notifications
         // 116: common: app feedback status only from state
         // 117: common: profiles.email_notifications removed again
-        return 117;
+        // 118: maintenance banner from app_settings.maintenance_start/_end
+        return 118;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

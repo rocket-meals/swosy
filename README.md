@@ -229,12 +229,26 @@ Dieselbe Regel gilt sinngemäß für Reliability- und Maintainability-Findings.
 
 Das Skript `scripts/update-and-generate-env.sh` führt folgende Schritte aus:
 
-1. `docker compose down`
-2. `git fetch` + `git reset --hard`
-3. `git pull` im `rocket-meals-envs`-Repository (holt den aktuellsten Stand)
-4. `.env` aus dem `rocket-meals-envs`-Repository generieren
-5. `docker compose build`
-6. `docker compose up -d`
+1. `git fetch` in `rocket-meals` und `rocket-meals-envs`. Gibt es in beiden keine neuen Commits, läuft Directus und ist
+   kein Neustart erzwungen, endet das Skript hier ohne Neustart.
+2. `git reset --hard` + `git pull` im `rocket-meals-envs`-Repository
+3. `.env` aus dem `rocket-meals-envs`-Repository generieren
+4. `docker compose build`, während die alten Container noch laufen (kein Ausfall beim Bauen)
+5. Wartung in `app_settings.maintenance_start` / `maintenance_end` eintragen und gegebenenfalls bis zum angekündigten
+   Zeitpunkt warten
+6. `docker compose down` + `docker compose up -d`, warten bis `/server/health` antwortet
+7. Dauer des Neustarts in `.restart-durations` speichern (nicht im Git) und das eigene Wartungsfenster wieder leeren
+
+Optionen werden als Umgebungsvariablen übergeben:
+
+| Variable | Standard | Bedeutung |
+| --- | --- | --- |
+| `ROCKET_MEALS_FORCE_RESTART` | `false` | `true` startet auch ohne neue Commits neu |
+| `ROCKET_MEALS_ANNOUNCE_MINUTES` | `0` | So viele Minuten nach der Ankündigung wird neu gestartet |
+
+Das angekündigte Ende ist die längste der letzten zehn gemessenen Neustart-Dauern plus 20 %, aufgerundet auf volle
+5 Minuten (ohne Messwerte: 10 Minuten). Die Zeiten werden als Berliner Ortszeit geschrieben, wie Directus sie auch im
+Admin-Bereich anzeigt. Ein von Hand eingetragenes Wartungsfenster wird nach dem Neustart nicht gelöscht.
 
 ### Voraussetzung
 
@@ -281,9 +295,12 @@ CRON_SCHEDULE="30 21 * * 6" CRON_LOG_FILE="/workspace/rocket-meals/logs/update-a
 ### 3) Automatisch täglich per GitHub Action
 
 Der Workflow `🔁 Daily Backend Restart` (`.github/workflows/backend-daily-restart.yml`) führt das Skript
-**täglich um 19:00 Uhr deutscher Zeit** per SSH auf allen Backend-Servern aus (`test`, `swosy`, `studi-futter`),
-also Update + Neustart. Er läuft nur im Repository `rocket-meals/rocket-meals`, nicht in Forks, und lässt sich
-zusätzlich manuell starten.
+**täglich um 19:00 Uhr deutscher Zeit** per SSH auf allen Backend-Servern aus (`test`, `swosy`, `studi-futter`).
+Nur wenn es neue Commits gibt, kündigt er die Wartung in der App an und startet **30 Minuten später** neu.
+Er läuft nur im Repository `rocket-meals/rocket-meals`, nicht in Forks, und lässt sich zusätzlich manuell starten,
+dann auch mit `force_restart` und einer eigenen Vorlaufzeit (`announce_minutes`).
+
+`🚀 Deploy Backend (Manual)` erzwingt den Neustart standardmäßig und startet ohne Vorlaufzeit neu.
 
 Eine Stunde vorher, um **18:00 Uhr**, läuft die Fork-Synchronisierung (`.github/workflows/sync-fork.yml`), damit
 die Kunden-Server (`rocket-meals/swosy`, `rocket-meals/studi-futter`) beim Neustart den aktuellen Stand holen.
