@@ -1048,7 +1048,7 @@
               "participants": {
                 "profiles_id": {
                   "id": {
-                    "_nin": [
+                    "_in": [
                       "$CURRENT_USER.profile"
                     ]
                   }
