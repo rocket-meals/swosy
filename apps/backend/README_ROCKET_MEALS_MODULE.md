@@ -89,8 +89,8 @@ nur dieses Feld, nie den Chat.
   - **Weder Profil noch E-Mail** (anonym) → keine Antwort möglich, nur „Als erledigt markieren“.
 - Store-Bewertungen haben nie einen Chat. Sobald `app_feedbacks.response` gesetzt wird (im Modul,
   direkt in Directus oder beim Abholen aus dem Store), veröffentlicht der `app-reviews-pull-hook` die
-  Antwort im Store und setzt `state = closed`. Ältere Bewertungen mit Antwort, aber offenem `state`,
-  zählen ebenfalls als „Erledigt“.
+  Antwort im Store und setzt `state = closed`. Es zählt nur `state`: eine ältere Bewertung mit
+  Antwort, aber offenem `state`, bleibt offen, bis sie jemand schließt.
 
 ### Mails zu Chat-Nachrichten
 

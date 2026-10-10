@@ -230,7 +230,8 @@ export function getVersionPatch() {
         //      the free apartment push switch shows a spinner while it is being switched
         // 114: common: app feedback state kept in sync with its chat, delayed chat mails
         // 115: common: profiles.email_notifications
-        return 115;
+        // 116: common: app feedback status only from state
+        return 116;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

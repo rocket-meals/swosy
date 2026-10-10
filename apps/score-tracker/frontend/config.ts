@@ -81,7 +81,8 @@ export function getVersionPatch() {
 	// 51: common-ui: SettingsListBoolean can show a loading spinner
 	// 52: common: app feedback state kept in sync with its chat, delayed chat mails
 	// 53: common: profiles.email_notifications
-	return 53;
+	// 54: common: app feedback status only from state
+	return 54;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

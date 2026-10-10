@@ -75,7 +75,8 @@ export function getVersionPatch() {
 	// 45: common: app feedback state kept in sync with its chat
 	// 46: common: chats.mail_pending_since for delayed chat mails
 	// 47: common: profiles.email_notifications
-	return 47;
+	// 48: common: app feedback status only from state
+	return 48;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
