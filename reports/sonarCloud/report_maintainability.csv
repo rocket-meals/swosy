@@ -1,4 +1,6 @@
 Key,Message,Component,Line
+"AaEmOWJUHOGTnYf8KF4o","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/OpenCountHelper.ts",53
+"AaEmOWlfHOGTnYf8KF4p","Use <output> instead of the status role to ensure accessibility across all devices.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/overview-page.vue",53
 "AaEl7G3MIbC7Rohp_Rrs","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ChatMessageMailHelper.ts",64
 "AaEl7G3MIbC7Rohp_Rrt","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ChatMessageMailHelper.ts",78
 "AaEl7G3MIbC7Rohp_Rru","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ChatMessageMailHelper.ts",95
