@@ -27,7 +27,7 @@ export class WorkflowRunLogger {
       primary_key: workflowRunId,
       update: {
         log: log,
-      }
+      },
     });
   }
 
@@ -61,6 +61,12 @@ export interface WorkflowRunJobInterface {
 
   /** JSON a run of this workflow expects in `input` – prefilled when it is started by hand in the Rocket Meals module. */
   getInputTemplate?(): string | undefined;
+
+  /**
+   * Whether the workflow needs the OpenAI-compatible provider of the Directus settings (Settings → AI).
+   * Without one the Rocket Meals module greys it out and asks to configure the AI.
+   */
+  requiresAi?(): boolean;
 
   handleWorkflowRunsWantToRun(modifiableInput: Partial<DatabaseTypes.WorkflowsRuns>, workflowruns: Partial<DatabaseTypes.WorkflowsRuns>[], alreadyRunningWorkflowruns: DatabaseTypes.WorkflowsRuns[]): ResultHandleWorkflowRunsWantToRun;
 

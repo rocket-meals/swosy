@@ -24,9 +24,11 @@ import { DirectusOpenAiCompatibleClient } from '../helpers/ai/DirectusOpenAiComp
 import { FeatureWishModeration } from './FeatureWishModeration';
 import { FeatureWishDailyReport } from './FeatureWishDailyReport';
 import { WorkflowResultHash } from '../helpers/itemServiceHelpers/WorkflowsRunHelper';
+import { RocketMealsModulePages } from '../helpers/rocket-meals-module/RocketMealsModulePages';
+import { FeatureWishModuleHelper } from '../helpers/rocket-meals-module/FeatureWishModuleHelper';
 
 const HOOK_NAME = 'feature-wishes-daily-workflow';
-const WORKFLOW_ID = 'feature-wishes-daily';
+const WORKFLOW_ID = FeatureWishModuleHelper.AI_REVIEW_WORKFLOW_ID;
 
 const REPORT_FIELDS = ['id', 'title', 'description', 'status', 'likes_amount', 'likes_amount_last_checked', 'moderation_note_intern'];
 
@@ -35,6 +37,11 @@ type FeatureWish = DatabaseTypes.FeatureWhishes;
 class FeatureWishesDailyWorkflow extends SingleWorkflowRun {
   getWorkflowId(): string {
     return WORKFLOW_ID;
+  }
+
+  /** The AI review is what this workflow is started for by hand – without a provider it only mails. */
+  requiresAi(): boolean {
+    return true;
   }
 
   async runJob(context: WorkflowRunContext): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
@@ -73,7 +80,8 @@ class FeatureWishesDailyWorkflow extends SingleWorkflowRun {
       const serverInfo = await myDatabaseHelper.getServerInfo();
       const report = FeatureWishDailyReport.build({
         projectName: serverInfo?.project?.project_name || 'Rocket Meals',
-        itemBaseUrl: `${myDatabaseHelper.getServerUrl()}/admin/content/${CollectionNames.FEATURE_WHISHES}/`,
+        // The page of the wish in the module `Rocket Meals`, where it is decided on.
+        itemBaseUrl: `${RocketMealsModulePages.getAdminUrl(myDatabaseHelper.getServerUrl(), RocketMealsModulePages.FEATURE_WISHES)}/`,
         inReview,
         likeChanges,
         runNotes,

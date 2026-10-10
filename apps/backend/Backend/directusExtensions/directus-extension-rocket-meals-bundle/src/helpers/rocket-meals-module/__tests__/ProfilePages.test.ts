@@ -83,7 +83,7 @@ describe('ChatQueryHelper', () => {
     expect(ChatQueryHelper.buildChatsFilter({ profileId: 'p1' })).toEqual({ participants: { _some: { profiles_id: { _eq: 'p1' } } } });
     const filter = ChatQueryHelper.buildChatsFilter({ withoutFeedbackChats: true, status: FoodFeedbackChatFilter.WAITING_FOR_USER, search: ' Hallo ' });
     expect(filter).toEqual({
-      _and: [{ food_feedbacks: { _none: { id: { _nnull: true } } } }, { app_feedbacks: { _none: { id: { _nnull: true } } } }, { conversation_state: { _eq: 'waiting_for_user' } }, { alias: { _icontains: 'Hallo' } }],
+      _and: [{ food_feedbacks: { _none: { id: { _nnull: true } } } }, { app_feedbacks: { _none: { id: { _nnull: true } } } }, { linked_to_feature_whishes: { _none: { id: { _nnull: true } } } }, { conversation_state: { _eq: 'waiting_for_user' } }, { alias: { _icontains: 'Hallo' } }],
     });
     expect(ChatQueryHelper.buildStatusFilter(FoodFeedbackChatFilter.OPEN)).toEqual({ _or: [{ conversation_state: { _null: true } }, { conversation_state: { _eq: 'waiting_for_support' } }] });
     expect(ChatQueryHelper.buildStatusFilter(FoodFeedbackChatFilter.ALL)).toBeUndefined();
@@ -92,7 +92,9 @@ describe('ChatQueryHelper', () => {
   it('sends a chat to the page that answers it', () => {
     expect(ChatQueryHelper.getRoute({ id: 'c1', food_feedbacks: [{ id: 'f1' }] })).toBe('/rocket-meals/food-feedbacks/f1');
     expect(ChatQueryHelper.getRoute({ id: 'c1', app_feedbacks: ['a1'] })).toBe('/rocket-meals/app-feedbacks/a1');
-    expect(ChatQueryHelper.getRoute({ id: 'c1', food_feedbacks: [], app_feedbacks: [] })).toBe('/rocket-meals/chats/c1');
+    expect(ChatQueryHelper.getRoute({ id: 'c1', linked_to_feature_whishes: [{ id: 'w1' }] })).toBe('/rocket-meals/feature-wishes/w1');
+    expect(ChatQueryHelper.getKind({ id: 'c1', linked_to_feature_whishes: ['w1'] })).toBe(ModuleChatKind.FEATURE_WISH);
+    expect(ChatQueryHelper.getRoute({ id: 'c1', food_feedbacks: [], app_feedbacks: [], linked_to_feature_whishes: [] })).toBe('/rocket-meals/chats/c1');
     expect(ChatQueryHelper.getKind({ id: 'c1' })).toBe(ModuleChatKind.OTHER);
   });
 

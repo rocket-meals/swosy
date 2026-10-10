@@ -197,9 +197,16 @@ export class ChatMessageMailHelper {
     const humanReadableDate = DateHelper.getHumanReadableDateAndTime(new Date());
     const subject = `${project_name} - Chat - Neue Nachricht - ${humanReadableDate}`;
 
+    const relatedFeatureWishes = await this.findRelatedItems(
+      () => new ItemsServiceHelper<DatabaseTypes.FeatureWhishes>(this.myDatabaseHelper, CollectionNames.FEATURE_WHISHES).readByQuery({ filter: { chat: { _eq: chatId } }, fields: ['id', 'title'], limit: -1 }),
+      chatId,
+      'feature wishes'
+    );
+
     const feedbackLinks = [
       ...relatedAppFeedbacks.map(appFeedback => `- App-Feedback "${appFeedback.title || appFeedback.id}": [Antworten](${RocketMealsModulePages.getAdminUrl(publicUrl, RocketMealsModulePages.APP_FEEDBACKS, appFeedback.id)})`),
       ...relatedFoodFeedbacks.map(foodFeedback => `- Speise-Feedback "${foodFeedback.comment || foodFeedback.id}": [Antworten](${RocketMealsModulePages.getAdminUrl(publicUrl, RocketMealsModulePages.FOOD_FEEDBACKS, foodFeedback.id)})`),
+      ...relatedFeatureWishes.map(featureWish => `- Feature-Wunsch "${featureWish.title || featureWish.id}": [Antworten](${RocketMealsModulePages.getAdminUrl(publicUrl, RocketMealsModulePages.FEATURE_WISHES, featureWish.id)})`),
     ].join('\n');
 
     const lines = [`Im Chat "${chat?.alias || chatId}" gibt es neue Nachrichten.`, '', '## Nachrichten', '', ChatMailDigestHelper.joinMessages(messages)];

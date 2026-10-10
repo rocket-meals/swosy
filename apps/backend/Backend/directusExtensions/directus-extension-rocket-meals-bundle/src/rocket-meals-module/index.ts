@@ -5,6 +5,8 @@ import FoodFeedbacksPage from './food-feedbacks/food-feedbacks-page.vue';
 import FoodFeedbackChatPage from './food-feedbacks/food-feedback-chat-page.vue';
 import AppFeedbacksPage from './app-feedbacks/app-feedbacks-page.vue';
 import AppFeedbackChatPage from './app-feedbacks/app-feedback-chat-page.vue';
+import FeatureWishesPage from './feature-wishes/feature-wishes-page.vue';
+import FeatureWishPage from './feature-wishes/feature-wish-page.vue';
 import McpInstructionPage from './mcp-instruction/mcp-instruction-page.vue';
 import LivePulsePage from './live-pulse/live-pulse-page.vue';
 import FriendshipNetworkPage from './friendship-network/friendship-network-page.vue';
@@ -49,6 +51,15 @@ export default defineModule({
     {
       path: `${RocketMealsModulePages.APP_FEEDBACKS.path}/:feedbackId`,
       component: AppFeedbackChatPage,
+      props: true,
+    },
+    {
+      path: RocketMealsModulePages.FEATURE_WISHES.path,
+      component: FeatureWishesPage,
+    },
+    {
+      path: `${RocketMealsModulePages.FEATURE_WISHES.path}/:wishId`,
+      component: FeatureWishPage,
       props: true,
     },
     {

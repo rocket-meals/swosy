@@ -2,6 +2,7 @@
 /**
  * Tile of one workflow on the page "Workflows" (`module-card` look): icon with traffic light, name,
  * on / off switch, schedule, next run, last success and – right next to them – the start button.
+ * A workflow that misses something on this server (e.g. the AI) is greyed out with a hint how to fix it.
  */
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { WorkflowsPageHelper, type WorkflowOverviewItem } from '../../helpers/rocket-meals-module/WorkflowsPageHelper';
@@ -10,6 +11,7 @@ import ModuleCard from '../module-card.vue';
 import WorkflowStatusDot from './workflow-status-dot.vue';
 import WorkflowSwitch from './workflow-switch.vue';
 import WorkflowPlayButton from './workflow-play-button.vue';
+import WorkflowBlockedHint from './workflow-blocked-hint.vue';
 
 const props = defineProps<{
   item: WorkflowOverviewItem;
@@ -72,6 +74,10 @@ function nextRun(): Date | undefined {
       </li>
     </ul>
 
+    <template v-if="WorkflowsPageHelper.getBlockedReason(item)" #hint>
+      <workflow-blocked-hint :item="item" class="blocked" />
+    </template>
+
     <template #aside>
       <workflow-play-button :item="item" @play="emit('play')" />
     </template>
@@ -107,5 +113,9 @@ function nextRun(): Date | undefined {
 
 .muted {
   color: var(--theme--foreground-subdued);
+}
+
+.blocked {
+  margin-block-start: 0.5rem;
 }
 </style>
