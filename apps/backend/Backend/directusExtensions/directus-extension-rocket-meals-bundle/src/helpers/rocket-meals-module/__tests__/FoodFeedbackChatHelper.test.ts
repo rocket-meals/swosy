@@ -2,6 +2,7 @@ import { describe, expect, it } from '@jest/globals';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common';
 import { FoodFeedbackChatHelper, FoodFeedbackContentFilter, FoodFeedbackListSort, FoodFeedbackRatingFilter } from '../FoodFeedbackChatHelper';
 import { FoodFeedbackChatActions } from '../FoodFeedbackChatActions';
+import { ModuleListHelper } from '../ModuleListHelper';
 import { RocketMealsModulePages } from '../RocketMealsModulePages';
 import { AppExtensionLanguageHelper } from '../../app-extensions/AppExtensionLanguageHelper';
 import { BackendTranslationKeys } from '../../translations/BackendTranslationKeys';
@@ -13,7 +14,7 @@ describe('FoodFeedbackChatHelper', () => {
     it('sorts newest first, pages, searches and uses the shared filter', () => {
       const query = FoodFeedbackChatHelper.buildListQuery(FoodFeedbackChatFilter.OPEN, 3, '  Pasta ');
       expect(query.sort).toBe('-date_created');
-      expect(query.limit).toBe(FoodFeedbackChatHelper.PAGE_SIZE);
+      expect(query.limit).toBe(ModuleListHelper.PAGE_SIZE);
       expect(query.page).toBe(3);
       expect(query.search).toBe('Pasta');
       expect(query.meta).toBe('filter_count');
@@ -36,17 +37,7 @@ describe('FoodFeedbackChatHelper', () => {
     });
   });
 
-  it('counts pages', () => {
-    expect(FoodFeedbackChatHelper.getPageCount(0)).toBe(1);
-    expect(FoodFeedbackChatHelper.getPageCount(25)).toBe(1);
-    expect(FoodFeedbackChatHelper.getPageCount(26)).toBe(2);
-    expect(FoodFeedbackChatHelper.getPageCount(26, 10)).toBe(3);
-  });
-
-  it('only accepts offered page sizes', () => {
-    expect(FoodFeedbackChatHelper.getPageSize(50)).toBe(50);
-    expect(FoodFeedbackChatHelper.getPageSize(7)).toBe(FoodFeedbackChatHelper.PAGE_SIZE);
-    expect(FoodFeedbackChatHelper.getPageSize(null)).toBe(FoodFeedbackChatHelper.PAGE_SIZE);
+  it('pages with the chosen page size', () => {
     expect(FoodFeedbackChatHelper.buildListQuery(FoodFeedbackChatFilter.ALL, 1, null, { pageSize: 100 }).limit).toBe(100);
   });
 

@@ -14,6 +14,7 @@ import { AppFeedbackChatHelper } from './AppFeedbackChatHelper';
 import { FoodFeedbackChatHelper } from './FoodFeedbackChatHelper';
 import { LivePulseHelper } from './LivePulseHelper';
 import { RocketMealsModulePages } from './RocketMealsModulePages';
+import { ModuleListHelper } from './ModuleListHelper';
 
 type DirectusFilter = Record<string, unknown>;
 
@@ -51,7 +52,7 @@ export type ModuleProfileDevice = {
 export type ModuleProfileQuery = Record<string, string | number>;
 
 export class ProfileDetailsHelper {
-  public static readonly SEARCH_PAGE_SIZE = 25;
+  public static readonly SEARCH_PAGE_SIZE = ModuleListHelper.PAGE_SIZE;
   /** Food and app feedbacks shown on the details page, newest first. */
   public static readonly FEEDBACK_LIMIT = 10;
   public static readonly AVATAR_SIZE = 96;
@@ -136,10 +137,6 @@ export class ProfileDetailsHelper {
       query.filter = JSON.stringify(filter);
     }
     return query;
-  }
-
-  static getPageCount(total: number): number {
-    return Math.max(1, Math.ceil(total / ProfileDetailsHelper.SEARCH_PAGE_SIZE));
   }
 
   static buildProfileQuery(): ModuleProfileQuery {

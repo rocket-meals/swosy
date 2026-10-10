@@ -3,6 +3,7 @@ import { AppFeedbackChatStatusHelper, AppFeedbackSourceFilter, FoodFeedbackChatF
 import { AppFeedbackChatActions } from '../AppFeedbackChatActions';
 import { AppFeedbackChatHelper, AppFeedbackTypeFilter } from '../AppFeedbackChatHelper';
 import { FoodFeedbackChatHelper, FoodFeedbackListSort } from '../FoodFeedbackChatHelper';
+import { ModuleListHelper } from '../ModuleListHelper';
 import { AppExtensionLanguageHelper } from '../../app-extensions/AppExtensionLanguageHelper';
 import { BackendTranslationKeys } from '../../translations/BackendTranslationKeys';
 
@@ -13,7 +14,7 @@ describe('AppFeedbackChatHelper', () => {
     it('sorts newest first, pages, searches and uses the shared filter', () => {
       const query = AppFeedbackChatHelper.buildListQuery(FoodFeedbackChatFilter.OPEN, 2, '  Absturz ');
       expect(query.sort).toBe('-date_created');
-      expect(query.limit).toBe(FoodFeedbackChatHelper.PAGE_SIZE);
+      expect(query.limit).toBe(ModuleListHelper.PAGE_SIZE);
       expect(query.page).toBe(2);
       expect(query.search).toBe('Absturz');
       expect(query.meta).toBe('filter_count');

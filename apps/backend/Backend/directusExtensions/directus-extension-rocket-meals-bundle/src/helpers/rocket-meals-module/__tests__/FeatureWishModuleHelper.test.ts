@@ -5,7 +5,7 @@ import { BackendTranslationKeys } from '../../translations/BackendTranslationKey
 import { ChatQueryHelper } from '../ChatQueryHelper';
 import { FeatureWishModuleActions } from '../FeatureWishModuleActions';
 import { FeatureWishListFilter, FeatureWishListSort, FeatureWishModuleHelper, type FeatureWishListItem } from '../FeatureWishModuleHelper';
-import { FoodFeedbackChatHelper } from '../FoodFeedbackChatHelper';
+import { ModuleListHelper } from '../ModuleListHelper';
 
 type ApiCall = { method: string; url: string; data: unknown };
 
@@ -49,7 +49,7 @@ describe('FeatureWishModuleHelper', () => {
     it('sorts newest first, pages and searches', () => {
       const query = FeatureWishModuleHelper.buildListQuery(FeatureWishListFilter.IN_REVIEW, 2, '  Dark Mode ');
       expect(query.sort).toBe('-date_created');
-      expect(query.limit).toBe(FoodFeedbackChatHelper.PAGE_SIZE);
+      expect(query.limit).toBe(ModuleListHelper.PAGE_SIZE);
       expect(query.page).toBe(2);
       expect(query.search).toBe('Dark Mode');
       expect(query.meta).toBe('filter_count');

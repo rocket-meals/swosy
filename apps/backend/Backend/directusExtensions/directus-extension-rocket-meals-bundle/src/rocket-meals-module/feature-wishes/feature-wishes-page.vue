@@ -19,12 +19,20 @@ import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExt
 import { FeatureWishModuleActions, type FeatureWishUpdateResult } from '../../helpers/rocket-meals-module/FeatureWishModuleActions';
 import { FeatureWishListFilter, FeatureWishListSort, FeatureWishModuleHelper, type FeatureWishListItem, type FeatureWishListOptions } from '../../helpers/rocket-meals-module/FeatureWishModuleHelper';
 import { FoodFeedbackChatHelper } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import { ModuleListHelper } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { WorkflowsActions } from '../../helpers/rocket-meals-module/WorkflowsActions';
 import { WorkflowHealth, WorkflowsPageHelper, type WorkflowOverviewItem } from '../../helpers/rocket-meals-module/WorkflowsPageHelper';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
+import { useModuleStatusList } from '../composables/useModuleStatusList';
 import FilterSelect from '../filter-select.vue';
 import ModuleNavigation from '../module-navigation.vue';
+import ListContent from '../module-list/list-content.vue';
+import ListPagination from '../module-list/list-pagination.vue';
+import ListRow from '../module-list/list-row.vue';
+import ListSearchActions from '../module-list/list-search-actions.vue';
+import ListSelectionBar from '../module-list/list-selection-bar.vue';
+import StatusFilterChips from '../module-list/status-filter-chips.vue';
 import FeatureWishChip from './feature-wish-chip.vue';
 import WorkflowCard from '../workflows/workflow-card.vue';
 
@@ -37,41 +45,13 @@ const { translate, formatDateTime } = useAppExtensionTranslate();
 const page = RocketMealsModulePages.FEATURE_WISHES;
 
 /** Sort and page size are remembered per browser. */
-const SETTINGS_STORAGE_KEY = 'rocket-meals-module.feature-wishes.list-settings';
-type StoredListSettings = Pick<FeatureWishListOptions, 'sort' | 'pageSize'>;
+const SETTINGS_STORAGE_KEY = ModuleListHelper.getSettingsStorageKey('feature-wishes');
+const settingsStorage = typeof window !== 'undefined' ? window.localStorage : undefined;
+const storedSettings = ModuleListHelper.readSettings<FeatureWishListOptions>(settingsStorage, SETTINGS_STORAGE_KEY);
 
-function readStoredSettings(): StoredListSettings {
-  try {
-    const raw = window.localStorage.getItem(SETTINGS_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as StoredListSettings) : {};
-  } catch {
-    return {};
-  }
-}
-
-function storeSettings(settings: StoredListSettings) {
-  try {
-    window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
-  } catch {
-    // Storage unavailable (private mode, blocked) – the settings just are not remembered.
-  }
-}
-
-const storedSettings = readStoredSettings();
-
-const activeFilter = ref<FeatureWishListFilter>(FeatureWishListFilter.IN_REVIEW);
-const search = ref('');
 const progresses = ref<FeatureWishProgress[]>([]);
-const sort = ref<FeatureWishListSort>(storedSettings.sort && FeatureWishModuleHelper.SORTS.includes(storedSettings.sort) ? storedSettings.sort : FeatureWishListSort.NEWEST);
-const pageSize = ref<number>(FoodFeedbackChatHelper.getPageSize(storedSettings.pageSize));
-const currentPage = ref(1);
-const wishes = ref<FeatureWishListItem[]>([]);
-const total = ref(0);
-const counts = ref<Partial<Record<FeatureWishListFilter, number>>>({});
-const loading = ref(false);
-const loadError = ref(false);
-const selectedIds = ref<string[]>([]);
-const updatingIds = ref<string[]>([]);
+const sort = ref<FeatureWishListSort>(ModuleListHelper.pickAllowed(storedSettings.sort, FeatureWishModuleHelper.SORTS, FeatureWishListSort.NEWEST));
+const pageSize = ref<number>(ModuleListHelper.getPageSize(storedSettings.pageSize));
 
 const listOptions = computed<FeatureWishListOptions>(() => ({
   progresses: progresses.value,
@@ -79,7 +59,37 @@ const listOptions = computed<FeatureWishListOptions>(() => ({
   pageSize: pageSize.value,
 }));
 
-const pageCount = computed(() => FoodFeedbackChatHelper.getPageCount(total.value, pageSize.value));
+const {
+  activeFilter,
+  search,
+  currentPage,
+  items: wishes,
+  total,
+  counts,
+  loading,
+  loadError,
+  pageCount,
+  reload,
+  selectFilter,
+  selectedItems: selectedWishes,
+  allSelected,
+  someSelected,
+  isSelected,
+  toggleSelected,
+  toggleSelectAll,
+  isUpdating,
+  runUpdate,
+} = useModuleStatusList<FeatureWishListItem, FeatureWishListFilter, FeatureWishListOptions>({
+  name: 'feature wishes',
+  endpoint: FeatureWishModuleHelper.FEATURE_WISHES_ENDPOINT,
+  filters: FeatureWishModuleHelper.FILTERS,
+  initialFilter: FeatureWishListFilter.IN_REVIEW,
+  options: listOptions,
+  buildListQuery: FeatureWishModuleHelper.buildListQuery,
+  buildCountQuery: FeatureWishModuleHelper.buildCountQuery,
+});
+
+const statusChips = computed(() => FeatureWishModuleHelper.FILTERS.map(filter => ({ value: filter, label: translate(FeatureWishModuleHelper.getFilterLabelKey(filter)), count: counts.value[filter] })));
 const progressItems = computed(() =>
   FeatureWishModuleHelper.PROGRESSES.map(progress => {
     const presentation = FeatureWishModuleHelper.getProgressPresentation(progress)!;
@@ -87,114 +97,18 @@ const progressItems = computed(() =>
   })
 );
 const sortItems = computed(() => FeatureWishModuleHelper.SORTS.map(option => ({ text: translate(FeatureWishModuleHelper.getSortLabelKey(option)), value: option, icon: FeatureWishModuleHelper.getSortIcon(option) })));
-const pageSizeItems = FoodFeedbackChatHelper.PAGE_SIZE_OPTIONS.map(size => ({ text: String(size), value: size }));
 
-const selectedWishes = computed(() => wishes.value.filter(wish => selectedIds.value.includes(wish.id)));
-const allSelected = computed(() => wishes.value.length > 0 && selectedWishes.value.length === wishes.value.length);
-const someSelected = computed(() => selectedWishes.value.length > 0 && !allSelected.value);
 const selectedWithSuggestion = computed(() => selectedWishes.value.filter(FeatureWishModuleHelper.canAcceptSuggestion));
 const selectedToPublish = computed(() => selectedWishes.value.filter(FeatureWishModuleHelper.canPublish));
 const selectedToArchive = computed(() => selectedWishes.value.filter(FeatureWishModuleHelper.canArchive));
-
-let latestRequest = 0;
-
-async function loadWishes() {
-  const request = ++latestRequest;
-  loading.value = true;
-  try {
-    const response = await api.get(FeatureWishModuleHelper.FEATURE_WISHES_ENDPOINT, {
-      params: FeatureWishModuleHelper.buildListQuery(activeFilter.value, currentPage.value, search.value, listOptions.value),
-    });
-    if (request === latestRequest) {
-      wishes.value = response.data?.data ?? [];
-      total.value = response.data?.meta?.filter_count ?? wishes.value.length;
-      loadError.value = false;
-      // Keep only selections that are still visible.
-      selectedIds.value = selectedIds.value.filter(id => wishes.value.some(wish => wish.id === id));
-    }
-  } catch (error) {
-    console.error('[rocket-meals-module] loading feature wishes failed', error);
-    if (request === latestRequest) {
-      wishes.value = [];
-      loadError.value = true;
-    }
-  } finally {
-    if (request === latestRequest) {
-      loading.value = false;
-    }
-  }
-}
-
-let latestCountRequest = 0;
-
-async function loadCounts() {
-  const request = ++latestCountRequest;
-  const entries = await Promise.all(
-    FeatureWishModuleHelper.FILTERS.map(async filter => {
-      try {
-        const response = await api.get(FeatureWishModuleHelper.FEATURE_WISHES_ENDPOINT, {
-          params: FeatureWishModuleHelper.buildCountQuery(filter, listOptions.value, search.value),
-        });
-        return [filter, Number(response.data?.data?.[0]?.count?.id ?? 0)] as const;
-      } catch {
-        return [filter, undefined] as const;
-      }
-    })
-  );
-  if (request === latestCountRequest) {
-    counts.value = Object.fromEntries(entries.filter(([, count]) => count !== undefined));
-  }
-}
-
-function reload() {
-  loadWishes();
-  loadCounts();
-}
-
-function selectFilter(filter: FeatureWishListFilter) {
-  activeFilter.value = filter;
-  currentPage.value = 1;
-}
 
 function openWish(wish: FeatureWishListItem) {
   router.push(RocketMealsModulePages.getRoute(page, wish.id));
 }
 
-function isSelected(wish: FeatureWishListItem) {
-  return selectedIds.value.includes(wish.id);
-}
-
-function toggleSelected(wish: FeatureWishListItem, selected: boolean) {
-  const others = selectedIds.value.filter(id => id !== wish.id);
-  selectedIds.value = selected ? [...others, wish.id] : others;
-}
-
-function toggleSelectAll(selected: boolean) {
-  selectedIds.value = selected ? wishes.value.map(wish => wish.id) : [];
-}
-
-function isUpdating(wish: FeatureWishListItem) {
-  return updatingIds.value.includes(wish.id);
-}
-
 /** Runs a decision on the wishes that are not being updated already, then reloads the list. */
-async function decide(wishesToUpdate: readonly FeatureWishListItem[], update: (pending: FeatureWishListItem[]) => Promise<FeatureWishUpdateResult>) {
-  const pending = wishesToUpdate.filter(wish => !isUpdating(wish));
-  if (pending.length === 0) {
-    return;
-  }
-  const pendingIds = pending.map(wish => wish.id);
-  updatingIds.value = [...updatingIds.value, ...pendingIds];
-  try {
-    const result = await update(pending);
-    selectedIds.value = selectedIds.value.filter(id => !result.updatedIds.includes(id));
-    if (result.failedIds.length > 0) {
-      notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_feature_wish_update_failed), type: 'error' });
-    }
-  } finally {
-    updatingIds.value = updatingIds.value.filter(id => !pendingIds.includes(id));
-    reload();
-  }
+function decide(wishesToUpdate: readonly FeatureWishListItem[], update: (pending: FeatureWishListItem[]) => Promise<FeatureWishUpdateResult>) {
+  return runUpdate(wishesToUpdate, update, BackendTranslationKeys.rocket_meals_module_feature_wish_update_failed);
 }
 
 function acceptSuggestions(wishesToUpdate: readonly FeatureWishListItem[]) {
@@ -278,30 +192,8 @@ async function startAiWorkflow() {
   workflowTimer = setTimeout(loadAiWorkflow, WorkflowsPageHelper.REFRESH_WHILE_RUNNING_MS);
 }
 
-let searchTimeout: ReturnType<typeof setTimeout> | undefined;
-watch(search, () => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    if (currentPage.value === 1) {
-      reload();
-    } else {
-      currentPage.value = 1;
-      loadCounts();
-    }
-  }, 300);
-});
-watch([progresses, sort, pageSize], () => {
-  storeSettings({ sort: sort.value, pageSize: pageSize.value });
-  if (currentPage.value === 1) {
-    reload();
-  } else {
-    currentPage.value = 1;
-    loadCounts();
-  }
-});
-watch([activeFilter, currentPage], loadWishes);
+watch([sort, pageSize], () => ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { sort: sort.value, pageSize: pageSize.value }));
 onMounted(() => {
-  reload();
   loadAiWorkflow();
   clockTimer = setInterval(() => {
     now.value = new Date();
@@ -324,25 +216,13 @@ onBeforeUnmount(() => {
     </template>
 
     <template #actions>
-      <div class="search">
-        <v-input v-model="search" type="search" small :placeholder="translate(BackendTranslationKeys.search)">
-          <template #prepend><v-icon name="search" small /></template>
-        </v-input>
-      </div>
-      <v-button v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_refresh)" rounded icon secondary :loading="loading" @click="reload">
-        <v-icon name="refresh" />
-      </v-button>
+      <list-search-actions v-model="search" :loading="loading" @refresh="reload" />
     </template>
 
     <div class="feature-wishes">
       <workflow-card v-if="aiWorkflow" :item="aiWorkflow" :now="now" @open="openAiWorkflow" @toggle="toggleAiWorkflow" @play="startAiWorkflow" />
 
-      <div class="filters">
-        <button v-for="filter in FeatureWishModuleHelper.FILTERS" :key="filter" class="filter" :class="{ active: filter === activeFilter }" @click="selectFilter(filter)">
-          {{ translate(FeatureWishModuleHelper.getFilterLabelKey(filter)) }}
-          <span v-if="counts[filter] !== undefined" class="count">{{ counts[filter] }}</span>
-        </button>
-      </div>
+      <status-filter-chips :model-value="activeFilter" :filters="statusChips" @update:model-value="selectFilter" />
 
       <div class="toolbar">
         <div class="toolbar-item">
@@ -353,9 +233,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div v-if="wishes.length > 0" class="selection-bar">
-        <v-checkbox :model-value="allSelected" :indeterminate="someSelected" :label="selectedWishes.length > 0 ? translate(BackendTranslationKeys.rocket_meals_module_selected_count, { count: selectedWishes.length }) : translate(BackendTranslationKeys.rocket_meals_module_select_all_on_page)" @update:model-value="toggleSelectAll" />
-        <span class="spacer" />
+      <list-selection-bar v-if="wishes.length > 0" :selected-count="selectedWishes.length" :all-selected="allSelected" :some-selected="someSelected" @toggle-all="toggleSelectAll">
         <v-button v-if="selectedWithSuggestion.length > 0" small :loading="selectedWithSuggestion.some(isUpdating)" @click="acceptSuggestions(selectedWithSuggestion)">
           <v-icon name="robot_2" left small />
           {{ translate(BackendTranslationKeys.rocket_meals_module_feature_wish_accept_selected_suggestions) }}
@@ -368,19 +246,10 @@ onBeforeUnmount(() => {
           <v-icon name="public" left small />
           {{ translate(BackendTranslationKeys.rocket_meals_module_feature_wish_publish_selected) }}
         </v-button>
-      </div>
+      </list-selection-bar>
 
-      <v-notice v-if="loadError" type="danger">{{ translate(BackendTranslationKeys.rocket_meals_module_load_failed) }}</v-notice>
-
-      <div v-else-if="!loading && wishes.length === 0" class="empty type-note">
-        {{ translate(BackendTranslationKeys.no_data_found) }}
-      </div>
-
-      <div v-else class="list" :class="{ loading }">
-        <div v-for="wish in wishes" :key="wish.id" class="wish" :class="{ selected: isSelected(wish) }" @click="openWish(wish)">
-          <div class="wish-select" @click.stop>
-            <v-checkbox :model-value="isSelected(wish)" @update:model-value="toggleSelected(wish, $event)" />
-          </div>
+      <list-content :loading="loading" :load-error="loadError" :empty="wishes.length === 0">
+        <list-row v-for="wish in wishes" :key="wish.id" selectable :selected="isSelected(wish)" @open="openWish(wish)" @update:selected="toggleSelected(wish, $event)">
           <div v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_feature_wish_likes, { count: FeatureWishModuleHelper.getLikes(wish) })" class="likes">
             <v-icon name="thumb_up" small />
             <span class="likes-count">{{ FeatureWishModuleHelper.getLikes(wish) }}</span>
@@ -421,17 +290,10 @@ onBeforeUnmount(() => {
               </v-button>
             </div>
           </div>
-        </div>
-      </div>
+        </list-row>
+      </list-content>
 
-      <div v-if="total > 0" class="pagination">
-        <v-pagination v-if="pageCount > 1" v-model="currentPage" :length="pageCount" :total-visible="7" show-first-last />
-        <span class="spacer" />
-        <div class="page-size">
-          <span class="type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_items_per_page) }}</span>
-          <v-select v-model="pageSize" class="page-size-select" :items="pageSizeItems" inline />
-        </div>
-      </div>
+      <list-pagination v-model:page="currentPage" v-model:page-size="pageSize" :page-count="pageCount" :total="total" />
     </div>
   </private-view>
 </template>
@@ -446,10 +308,6 @@ onBeforeUnmount(() => {
   padding-block-start: 0;
 }
 
-.search {
-  inline-size: 16rem;
-}
-
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -459,84 +317,6 @@ onBeforeUnmount(() => {
 .toolbar-item {
   flex: 1 1 10rem;
   min-inline-size: 0;
-}
-
-.selection-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-  min-block-size: 2.5rem;
-  padding: 0 1.25rem;
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.filter {
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.375rem 0.875rem;
-  color: var(--theme--foreground);
-  background: var(--theme--background-subdued);
-  border: var(--theme--border-width) solid var(--theme--border-color-subdued);
-  border-radius: 2rem;
-  cursor: pointer;
-}
-
-.filter.active {
-  color: var(--foreground-inverted, #fff);
-  background: var(--theme--primary);
-  border-color: var(--theme--primary);
-}
-
-.count {
-  min-inline-size: 1.5rem;
-  padding: 0 0.375rem;
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-align: center;
-  background: rgb(0 0 0 / 0.12);
-  border-radius: 1rem;
-}
-
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  transition: opacity var(--fast) var(--transition);
-}
-
-.list.loading {
-  opacity: 0.6;
-}
-
-.wish {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  padding: 1rem 1.25rem;
-  background: var(--theme--background-subdued);
-  border: var(--theme--border-width) solid var(--theme--border-color-subdued);
-  border-radius: var(--theme--border-radius);
-  cursor: pointer;
-  transition: border-color var(--fast) var(--transition);
-}
-
-.wish:hover,
-.wish.selected {
-  border-color: var(--theme--primary);
-}
-
-.wish-select {
-  flex: none;
-  inline-size: 1.5rem;
-  padding-block-start: 0.25rem;
-  cursor: default;
 }
 
 .likes {
@@ -607,23 +387,5 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: flex-end;
-}
-
-.empty {
-  padding: 3rem 0;
-  text-align: center;
-}
-
-.pagination {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
-}
-
-.page-size {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
 }
 </style>

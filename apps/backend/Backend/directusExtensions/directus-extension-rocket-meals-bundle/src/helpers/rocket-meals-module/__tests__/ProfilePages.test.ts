@@ -2,6 +2,7 @@ import { describe, expect, it } from '@jest/globals';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus } from 'repo-depkit-common';
 import { ChatQueryHelper, ModuleChatKind } from '../ChatQueryHelper';
 import { ProfileChatActions } from '../ProfileChatActions';
+import { ModuleListHelper } from '../ModuleListHelper';
 import { ProfileDetailsHelper } from '../ProfileDetailsHelper';
 import { PushNotificationComposeHelper } from '../PushNotificationComposeHelper';
 import { RocketMealsModulePages } from '../RocketMealsModulePages';
@@ -39,8 +40,8 @@ describe('ProfileDetailsHelper', () => {
     expect(query.filter).toBeUndefined();
     expect(query.sort).toBe('-date_updated');
     expect(query.page).toBe(1);
-    expect(ProfileDetailsHelper.getPageCount(26)).toBe(2);
-    expect(ProfileDetailsHelper.getPageCount(0)).toBe(1);
+    expect(ModuleListHelper.getPageCount(26)).toBe(2);
+    expect(ModuleListHelper.getPageCount(0)).toBe(1);
   });
 
   it('reads the push tokens of the devices, once per token', () => {
