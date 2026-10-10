@@ -2,7 +2,7 @@
  * RocketMealsModulePages.ts – the pages of the `Rocket Meals` module in the Directus app.
  *
  * The module is the place for backend tools that do not fit Directus' generic content views:
- * today the food and app feedback chats, the other chats, the profiles (with push messages), the MCP instruction, the live pulse, the friendship network and the workflows, later e.g. housing management or top/flop lists of dishes.
+ * today the food and app feedback chats, the feature wishes, the other chats, the profiles (with push messages), the MCP instruction, the live pulse, the friendship network and the workflows, later e.g. housing management or top/flop lists of dishes.
  * A new page is one entry here plus a route in `src/rocket-meals-module/index.ts`; the side
  * navigation and the overview page are built from this list.
  */
@@ -39,6 +39,17 @@ export class RocketMealsModulePages {
     icon: 'feedback',
     labelKey: BackendTranslationKeys.rocket_meals_module_app_feedbacks,
     descriptionKey: BackendTranslationKeys.rocket_meals_module_app_feedbacks_description,
+  };
+
+  /**
+   * Feature wishes of the users: decide on the ones in review (also on the suggestion of the AI),
+   * set the progress of published ones and write to the author in a chat (`feature-wishes/<id>`).
+   */
+  public static readonly FEATURE_WISHES: RocketMealsModulePage = {
+    path: 'feature-wishes',
+    icon: 'lightbulb',
+    labelKey: BackendTranslationKeys.rocket_meals_module_feature_wishes,
+    descriptionKey: BackendTranslationKeys.rocket_meals_module_feature_wishes_description,
   };
 
   /**
@@ -101,7 +112,7 @@ export class RocketMealsModulePages {
   };
 
   /** All pages, in the order of the navigation. */
-  public static readonly PAGES: readonly RocketMealsModulePage[] = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.CHATS, RocketMealsModulePages.PROFILES, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE, RocketMealsModulePages.FRIENDSHIP_NETWORK, RocketMealsModulePages.WORKFLOWS];
+  public static readonly PAGES: readonly RocketMealsModulePage[] = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.FEATURE_WISHES, RocketMealsModulePages.CHATS, RocketMealsModulePages.PROFILES, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE, RocketMealsModulePages.FRIENDSHIP_NETWORK, RocketMealsModulePages.WORKFLOWS];
 
   /**
    * The full URL of a page, e.g. for a link in a mail to support:

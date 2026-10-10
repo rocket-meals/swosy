@@ -1,6 +1,6 @@
 /**
  * ChatQueryHelper.ts – how the module `Rocket Meals` reads chats and their messages, in one place:
- * the chat pages of food and app feedbacks, the page "Chats", a single chat and the chats of a
+ * the chat pages of food and app feedbacks and feature wishes, the page "Chats", a single chat and the chats of a
  * profile all build their requests here, with the filters as options instead of hand-written JSON.
  *
  * Plain logic without Vue or Directus app imports, so it can be unit tested in Node.
@@ -26,6 +26,7 @@ export type ModuleChat = {
   participants?: { id?: number | string; profiles_id?: ModuleProfile | string | null }[] | null;
   food_feedbacks?: Relation[] | null;
   app_feedbacks?: Relation[] | null;
+  linked_to_feature_whishes?: Relation[] | null;
 };
 
 /** A message as the module shows it, including who wrote it in the backend. */
@@ -42,6 +43,7 @@ export type ModuleChatMessage = {
 export enum ModuleChatKind {
   FOOD_FEEDBACK = 'food_feedback',
   APP_FEEDBACK = 'app_feedback',
+  FEATURE_WISH = 'feature_wish',
   /** Belongs to no feedback, e.g. started by support from a profile. */
   OTHER = 'other',
 }
@@ -49,7 +51,7 @@ export enum ModuleChatKind {
 export type ChatListOptions = {
   /** Only chats this profile takes part in. */
   profileId?: string | null;
-  /** Leave out the chats of food and app feedbacks – they have their own pages. */
+  /** Leave out the chats of food and app feedbacks and of feature wishes – they have their own pages. */
   withoutFeedbackChats?: boolean;
   /** Only chats in this status; `ALL` or nothing = every status. */
   status?: FoodFeedbackChatFilter | null;
@@ -74,7 +76,7 @@ export class ChatQueryHelper {
   /** Fields of a chat message: the profile with avatar for user messages, the backend user for support messages. */
   public static readonly MESSAGE_FIELDS: readonly string[] = ['id', 'chat', 'message', 'date_created', ...ProfileDetailsHelper.relatedFields('profile'), 'user_created.id', 'user_created.first_name', 'user_created.last_name', 'user_created.email'];
 
-  public static readonly CHAT_FIELDS: readonly string[] = ['id', 'alias', 'conversation_state', 'initial_message', 'date_created', 'date_updated', 'participants.id', ...ProfileDetailsHelper.relatedFields('participants.profiles_id'), 'food_feedbacks.id', 'app_feedbacks.id'];
+  public static readonly CHAT_FIELDS: readonly string[] = ['id', 'alias', 'conversation_state', 'initial_message', 'date_created', 'date_updated', 'participants.id', ...ProfileDetailsHelper.relatedFields('participants.profiles_id'), 'food_feedbacks.id', 'app_feedbacks.id', 'linked_to_feature_whishes.id'];
 
   /** All messages of a chat, oldest first. */
   static buildMessagesQuery(chatId: string): ChatQuery {
@@ -122,7 +124,7 @@ export class ChatQueryHelper {
   static buildChatsFilter(options: ChatListOptions = {}): DirectusFilter | undefined {
     const parts: DirectusFilter[] = [];
     if (options.withoutFeedbackChats) {
-      parts.push({ food_feedbacks: { _none: { id: { _nnull: true } } } }, { app_feedbacks: { _none: { id: { _nnull: true } } } });
+      parts.push({ food_feedbacks: { _none: { id: { _nnull: true } } } }, { app_feedbacks: { _none: { id: { _nnull: true } } } }, { linked_to_feature_whishes: { _none: { id: { _nnull: true } } } });
     }
     const profileId = options.profileId?.trim();
     if (profileId) {
@@ -180,6 +182,9 @@ export class ChatQueryHelper {
     if (ChatQueryHelper.getFirstId(chat.app_feedbacks)) {
       return ModuleChatKind.APP_FEEDBACK;
     }
+    if (ChatQueryHelper.getFirstId(chat.linked_to_feature_whishes)) {
+      return ModuleChatKind.FEATURE_WISH;
+    }
     return ModuleChatKind.OTHER;
   }
 
@@ -193,6 +198,10 @@ export class ChatQueryHelper {
     if (appFeedbackId) {
       return RocketMealsModulePages.getRoute(RocketMealsModulePages.APP_FEEDBACKS, appFeedbackId);
     }
+    const featureWishId = ChatQueryHelper.getFirstId(chat.linked_to_feature_whishes);
+    if (featureWishId) {
+      return RocketMealsModulePages.getRoute(RocketMealsModulePages.FEATURE_WISHES, featureWishId);
+    }
     return RocketMealsModulePages.getRoute(RocketMealsModulePages.CHATS, chat.id);
   }
 
@@ -202,6 +211,8 @@ export class ChatQueryHelper {
         return RocketMealsModulePages.FOOD_FEEDBACKS.icon;
       case ModuleChatKind.APP_FEEDBACK:
         return RocketMealsModulePages.APP_FEEDBACKS.icon;
+      case ModuleChatKind.FEATURE_WISH:
+        return RocketMealsModulePages.FEATURE_WISHES.icon;
       default:
         return RocketMealsModulePages.CHATS.icon;
     }

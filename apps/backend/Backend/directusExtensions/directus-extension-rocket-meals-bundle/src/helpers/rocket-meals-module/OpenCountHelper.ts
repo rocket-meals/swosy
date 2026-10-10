@@ -1,9 +1,10 @@
 /**
  * OpenCountHelper.ts – the badges on the overview page of the module `Rocket Meals`: how many food
- * feedbacks, app feedbacks and other chats still wait for support.
+ * feedbacks, app feedbacks, feature wishes and other chats still wait for support.
  *
- * "Open" means the same as the filter chip "Offen" on each page (new or waiting for support), with
- * the default filters of that page, so the badge matches what the page lists when it is opened.
+ * "Open" means the same as the filter chip "Offen" on each page (new or waiting for support), for
+ * feature wishes the chip "Zu prüfen", with the default filters of that page, so the badge matches
+ * what the page lists when it is opened.
  *
  * Plain logic without Vue or Directus app imports, so it can be unit tested in Node.
  */
@@ -12,6 +13,7 @@
 import { FoodFeedbackChatFilter } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { AppFeedbackChatHelper } from './AppFeedbackChatHelper';
 import { ChatQueryHelper } from './ChatQueryHelper';
+import { FeatureWishListFilter, FeatureWishModuleHelper } from './FeatureWishModuleHelper';
 import { FoodFeedbackChatHelper } from './FoodFeedbackChatHelper';
 import { RocketMealsModulePages, type RocketMealsModulePage } from './RocketMealsModulePages';
 
@@ -32,6 +34,8 @@ export class OpenCountHelper {
         return { endpoint: FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT, params: FoodFeedbackChatHelper.buildCountQuery(FoodFeedbackChatFilter.OPEN) };
       case RocketMealsModulePages.APP_FEEDBACKS.path:
         return { endpoint: AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT, params: AppFeedbackChatHelper.buildCountQuery(FoodFeedbackChatFilter.OPEN) };
+      case RocketMealsModulePages.FEATURE_WISHES.path:
+        return { endpoint: FeatureWishModuleHelper.FEATURE_WISHES_ENDPOINT, params: FeatureWishModuleHelper.buildCountQuery(FeatureWishListFilter.IN_REVIEW) };
       case RocketMealsModulePages.CHATS.path:
         return { endpoint: ChatQueryHelper.CHATS_ENDPOINT, params: OpenCountHelper.buildOpenChatsCountQuery() };
       default:

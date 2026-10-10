@@ -24,6 +24,7 @@ import { DirectusOpenAiCompatibleClient } from '../helpers/ai/DirectusOpenAiComp
 import { FeatureWishModeration } from './FeatureWishModeration';
 import { FeatureWishDailyReport } from './FeatureWishDailyReport';
 import { WorkflowResultHash } from '../helpers/itemServiceHelpers/WorkflowsRunHelper';
+import { RocketMealsModulePages } from '../helpers/rocket-meals-module/RocketMealsModulePages';
 
 const HOOK_NAME = 'feature-wishes-daily-workflow';
 const WORKFLOW_ID = 'feature-wishes-daily';
@@ -73,7 +74,8 @@ class FeatureWishesDailyWorkflow extends SingleWorkflowRun {
       const serverInfo = await myDatabaseHelper.getServerInfo();
       const report = FeatureWishDailyReport.build({
         projectName: serverInfo?.project?.project_name || 'Rocket Meals',
-        itemBaseUrl: `${myDatabaseHelper.getServerUrl()}/admin/content/${CollectionNames.FEATURE_WHISHES}/`,
+        // The page of the wish in the module `Rocket Meals`, where it is decided on.
+        itemBaseUrl: `${RocketMealsModulePages.getAdminUrl(myDatabaseHelper.getServerUrl(), RocketMealsModulePages.FEATURE_WISHES)}/`,
         inReview,
         likeChanges,
         runNotes,

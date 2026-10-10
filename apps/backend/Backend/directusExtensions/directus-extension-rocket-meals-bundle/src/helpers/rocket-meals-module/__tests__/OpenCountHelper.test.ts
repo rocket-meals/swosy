@@ -1,7 +1,8 @@
 import { describe, expect, it } from '@jest/globals';
-import { FoodFeedbackChatFilter } from 'repo-depkit-common';
+import { FeatureWishHelper, FoodFeedbackChatFilter } from 'repo-depkit-common';
 import { AppFeedbackChatHelper } from '../AppFeedbackChatHelper';
 import { ChatQueryHelper } from '../ChatQueryHelper';
+import { FeatureWishModuleHelper } from '../FeatureWishModuleHelper';
 import { FoodFeedbackChatHelper } from '../FoodFeedbackChatHelper';
 import { OpenCountHelper } from '../OpenCountHelper';
 import { RocketMealsModulePages } from '../RocketMealsModulePages';
@@ -22,6 +23,12 @@ describe('OpenCountHelper', () => {
       });
     });
 
+    it('counts the feature wishes in review like the chip "Zu prüfen" of their page', () => {
+      const request = OpenCountHelper.getRequest(RocketMealsModulePages.FEATURE_WISHES);
+      expect(request?.endpoint).toBe(FeatureWishModuleHelper.FEATURE_WISHES_ENDPOINT);
+      expect(JSON.parse(request!.params.filter!)).toEqual({ status: { _in: FeatureWishHelper.IN_REVIEW_STATUSES } });
+    });
+
     it('counts open chats without feedback', () => {
       const request = OpenCountHelper.getRequest(RocketMealsModulePages.CHATS);
       expect(request?.endpoint).toBe(ChatQueryHelper.CHATS_ENDPOINT);
@@ -30,7 +37,7 @@ describe('OpenCountHelper', () => {
     });
 
     it('has no request for pages without open items', () => {
-      const pagesWithCount = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.CHATS];
+      const pagesWithCount = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.FEATURE_WISHES, RocketMealsModulePages.CHATS];
       RocketMealsModulePages.PAGES.filter(page => !pagesWithCount.includes(page)).forEach(page => {
         expect(OpenCountHelper.getRequest(page)).toBeUndefined();
       });
