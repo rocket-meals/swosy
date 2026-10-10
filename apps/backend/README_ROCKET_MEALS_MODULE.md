@@ -92,16 +92,29 @@ nur dieses Feld, nie den Chat.
 
 ### Mails zu Chat-Nachrichten
 
-Der `chat-conversation-state-hook` prüft vor jeder Mail die Adresse (`ChatMailRecipientHelper`):
+Mails gehen **zeitversetzt** raus, damit eine laufende Unterhaltung nicht pro Nachricht eine Mail
+auslöst (`ChatMailDigestHelper`):
 
-- Empfänger sind die anderen Teilnehmer des Chats (Adresse ihres Directus-Accounts) und bei einer
-  Antwort des Supports zusätzlich die Kontakt-E-Mail des App-Feedbacks.
+- Der `chat-conversation-state-hook` verschickt selbst keine Mail. Er merkt sich die erste noch
+  nicht gemailte Nachricht in `chats.mail_pending_since`. Jede Nachricht aktualisiert
+  `chats.date_updated`.
+- Der `chat-mail-schedule` schaut jede Minute nach Chats mit `mail_pending_since`, deren
+  `date_updated` mindestens 5 Minuten zurückliegt, und schickt dann **eine** Mail pro Empfänger mit
+  allen Nachrichten, die er noch nicht gesehen hat: was andere nach seiner eigenen letzten Nachricht
+  geschrieben haben. Wer inzwischen selbst geantwortet hat, bekommt nichts.
+- Push-Benachrichtigungen bei Antworten des Supports gehen weiterhin sofort raus.
+
+Vor jeder Mail wird die Adresse geprüft (`ChatMailRecipientHelper`):
+
+- Empfänger sind die Teilnehmer des Chats und die Autoren verknüpfter Feedbacks (Adresse ihres
+  Directus-Accounts und die Kontakt-E-Mail ihres App-Feedbacks).
 - Gast-Accounts (`guest-…@guest.example.com`) und alle anderen Adressen unter `example.com` bekommen
   keine Mail, ebenso Nutzer mit `email_notifications = false`.
 - Die Directus-Standardadresse `admin@example.com` steht für den Support: die Mail geht an die
   Support-Adresse.
-- Schreibt ein Nutzer, bekommt der Support eine Mail mit Link auf die Chat-Seite im Modul
-  (`RocketMealsModulePages.getAdminUrl`), egal ob der Chat zu einem Feedback gehört.
+- Der Support bekommt eine Mail über alles, was Nutzer seit seiner letzten Antwort geschrieben haben,
+  mit Link auf die Chat-Seite im Modul (`RocketMealsModulePages.getAdminUrl`), egal ob der Chat zu
+  einem Feedback gehört.
 - Die Mail an den Nutzer enthält bewusst keinen Link in die App: Gäste der nativen App hätten in der
   Web-App keinen Zugriff auf ihren Chat. Stattdessen verweist sie auf den Menüpunkt „Chats“.
 

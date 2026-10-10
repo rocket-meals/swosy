@@ -223,7 +223,8 @@ export function getVersionPatch() {
         // 109: free apartment push notification on the housing screen is a plain switch now
         // 110: housing options show the sort row in the housing color with the current choice
         // 111: common: app feedback state kept in sync with its chat
-        return 111;
+        // 112: common: chats.mail_pending_since for delayed chat mails
+        return 112;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

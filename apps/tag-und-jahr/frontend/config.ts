@@ -73,7 +73,8 @@ export function getVersionPatch() {
 	// 43: common-ui: MyButton with translated action buttons (save, submit, update, edit, cancel, delete)
 	// 44: merge of master (backend feedback pages)
 	// 45: common: app feedback state kept in sync with its chat
-	return 45;
+	// 46: common: chats.mail_pending_since for delayed chat mails
+	return 46;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

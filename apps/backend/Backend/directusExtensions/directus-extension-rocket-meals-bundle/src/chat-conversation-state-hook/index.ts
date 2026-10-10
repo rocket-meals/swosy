@@ -1,4 +1,4 @@
-import {ChatHelper, CollectionNames, DatabaseTypes, DateHelper, MailAdresses} from 'repo-depkit-common';
+import {ChatHelper, CollectionNames, DatabaseTypes} from 'repo-depkit-common';
 import {ItemsServiceHelper} from '../helpers/ItemsServiceHelper';
 import {MyDatabaseHelper} from '../helpers/MyDatabaseHelper';
 import {PushNotificationHelper} from '../helpers/PushNotificationHelper';
@@ -7,9 +7,6 @@ import {PrimaryKey} from "@directus/types";
 import {MyDefineHook} from "../helpers/MyDefineHook";
 import {BackendLanguageResolver} from '../helpers/translations/BackendLanguageResolver';
 import {BackendTranslationKeys} from '../helpers/translations/BackendTranslationKeys';
-import {AppFeedbackAnswerMail} from '../helpers/rocket-meals-module/AppFeedbackAnswerMail';
-import {RocketMealsModulePages} from '../helpers/rocket-meals-module/RocketMealsModulePages';
-import {ChatMailRecipientHelper, ChatMailRecipientKind} from '../helpers/ChatMailRecipientHelper';
 import {AppFeedbackStateSyncHelper} from '../helpers/AppFeedbackStateSyncHelper';
 import {HookKeysHelper} from '../helpers/HookKeysHelper';
 
@@ -74,41 +71,31 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
 
     console.log(`${HOOK_NAME}: Conversation state:`, conversationState);
 
+    // This update also bumps `chats.date_updated`, which restarts the wait for the mails below.
     await chatsHelper.updateOne(chatId, { conversation_state: conversationState });
 
-    const relatedAppFeedbacks = await findRelatedItems(() => myDatabaseHelper.getAppFeedbacksHelper().findItems({ chat: chatId }), chatId, 'app feedbacks');
-    const relatedFoodFeedbacks = await findRelatedItems(() => myDatabaseHelper.getFoodFeedbacksHelper().findItems({ chat: chatId }), chatId, 'food feedbacks');
-
-    const profilesToNotify = await collectProfilesToNotify(chatId, message, relatedAppFeedbacks, relatedFoodFeedbacks, myDatabaseHelper);
-    console.log(`${HOOK_NAME}: Profiles to notify for chat ${chatId}:`, Array.from(profilesToNotify));
-
-    let mailRecipients: AnswerMailRecipients = { users: new Map(), mailSupport: false };
+    // Mails are not sent here: `chat-mail-schedule` sends them once the chat was quiet for a few
+    // minutes, so an active conversation does not send a mail per message (see ChatMailDigestHelper).
     try {
-      mailRecipients = await collectAnswerMailRecipients(profilesToNotify, message, relatedAppFeedbacks, messageFromAdmin, myDatabaseHelper);
-    } catch (error) {
-      console.error(`${HOOK_NAME}: Failed to collect the mail recipients of chat message ${messageId}`, error);
-    }
-
-    // A message of a user is for support, so is one to a participant that stands for support.
-    if (!messageFromAdmin || mailRecipients.mailSupport) {
-      try {
-        await notifySupportAboutChatMessage(chatId, message, relatedAppFeedbacks, relatedFoodFeedbacks, myDatabaseHelper);
-      } catch (error) {
-        console.error(`${HOOK_NAME}: Failed to notify support about chat message ${messageId}`, error);
+      const chat = await chatsHelper.readOne(chatId, { fields: ['id', 'mail_pending_since'] });
+      if (!chat?.mail_pending_since) {
+        await chatsHelper.updateOne(chatId, { mail_pending_since: message?.date_created || new Date().toISOString() });
       }
-    }
-
-    try {
-      await mailAnswerToRecipients(chatId, message, relatedAppFeedbacks, mailRecipients.users, myDatabaseHelper);
     } catch (error) {
-      console.error(`${HOOK_NAME}: Failed to mail chat message ${messageId} to the other participants`, error);
+      console.error(`${HOOK_NAME}: Failed to note the pending mails of chat ${chatId}`, error);
     }
 
+    // Pushes go out right away, but only for answers of support.
     if (!messageFromAdmin) {
       return;
     }
 
+    const relatedAppFeedbacks = await findRelatedItems(() => myDatabaseHelper.getAppFeedbacksHelper().findItems({ chat: chatId }), chatId, 'app feedbacks');
+    const relatedFoodFeedbacks = await findRelatedItems(() => myDatabaseHelper.getFoodFeedbacksHelper().findItems({ chat: chatId }), chatId, 'food feedbacks');
+
     try {
+      const profilesToNotify = await collectProfilesToNotify(chatId, message, relatedAppFeedbacks, relatedFoodFeedbacks, myDatabaseHelper);
+      console.log(`${HOOK_NAME}: Profiles to notify for chat ${chatId}:`, Array.from(profilesToNotify));
       await pushAnswerToProfiles(profilesToNotify, message, myDatabaseHelper);
     } catch (error) {
       console.error(`${HOOK_NAME}: Failed to send push notifications for chat message ${messageId}`, error);
@@ -123,154 +110,6 @@ async function findRelatedItems<T>(load: () => Promise<T[]>, chatId: string, lab
   } catch (error) {
     console.error(`${HOOK_NAME}: Failed to load related ${label} for chat ${chatId}`, error);
     return [];
-  }
-}
-
-/**
- * Mail support about a message it has to read: one of a user, or one to a participant whose
- * address stands for support (`ChatMailRecipientHelper`). Support answers those requests from its
- * mailbox, so a reply that only lands in the chat would go unnoticed. The links lead to the chat
- * pages of the module "Rocket Meals", where support answers. Internal mail to support, hence
- * German like the other reports.
- */
-async function notifySupportAboutChatMessage(
-  chatId: string,
-  message: DatabaseTypes.ChatMessages,
-  relatedAppFeedbacks: DatabaseTypes.AppFeedbacks[],
-  relatedFoodFeedbacks: DatabaseTypes.FoodsFeedbacks[],
-  myDatabaseHelper: MyDatabaseHelper
-): Promise<void> {
-  const chatsHelper = new ItemsServiceHelper<DatabaseTypes.Chats>(myDatabaseHelper, CollectionNames.CHATS);
-  const chat = await chatsHelper.readOne(chatId);
-
-  const server_info = await myDatabaseHelper.getServerInfo();
-  const project_name = server_info?.project?.project_name || 'Rocket Meals';
-  const publicUrl = myDatabaseHelper.getServerUrl();
-
-  const humanReadableDate = DateHelper.getHumanReadableDateAndTime(new Date());
-  const subject = `${project_name} - Chat - Neue Nachricht - ${humanReadableDate}`;
-
-  const chatAlias = chat?.alias || chatId;
-  const messageText = message?.message || '';
-  const feedbackLinks = [
-    ...relatedAppFeedbacks.map(appFeedback => `- App-Feedback "${appFeedback.title || appFeedback.id}": [Antworten](${RocketMealsModulePages.getAdminUrl(publicUrl, RocketMealsModulePages.APP_FEEDBACKS, appFeedback.id)})`),
-    ...relatedFoodFeedbacks.map(foodFeedback => `- Speise-Feedback "${foodFeedback.comment || foodFeedback.id}": [Antworten](${RocketMealsModulePages.getAdminUrl(publicUrl, RocketMealsModulePages.FOOD_FEEDBACKS, foodFeedback.id)})`),
-  ].join('\n');
-
-  const lines = [`Im Chat "${chatAlias}" gibt es eine neue Nachricht.`, '', '## Nachricht', '', messageText];
-  if (feedbackLinks) {
-    lines.push('', '## Antworten', '', feedbackLinks);
-  }
-  const markdown_content = lines.join('\n');
-
-  await myDatabaseHelper.sendMail({
-    recipient: MailAdresses.SupportMail,
-    subject: subject,
-    markdown_content: markdown_content,
-  });
-
-  console.log(`${HOOK_NAME}: Notified support about a new message in chat ${chatId}`);
-}
-
-/** Where the mail about a message goes: addresses of users (with the profile for the language), and whether support gets one. */
-type AnswerMailRecipients = {
-  /** Lower-cased address → the address as written and the profile it belongs to. */
-  users: Map<string, { email: string; profileId?: PrimaryKey }>;
-  mailSupport: boolean;
-};
-
-/**
- * The addresses to mail about a message, checked before anything goes out
- * ({@link ChatMailRecipientHelper}): the account address of every other participant, and for an
- * answer of support also the contact email the author left in the app feedback. Guests and other
- * `example.com` addresses get nothing, the default admin stands for support. Users who switched
- * off mails in Directus (`email_notifications`) get nothing either.
- */
-async function collectAnswerMailRecipients(
-  profileIds: Set<PrimaryKey>,
-  message: DatabaseTypes.ChatMessages,
-  relatedAppFeedbacks: DatabaseTypes.AppFeedbacks[],
-  messageFromAdmin: boolean,
-  myDatabaseHelper: MyDatabaseHelper
-): Promise<AnswerMailRecipients> {
-  const recipients: AnswerMailRecipients = { users: new Map(), mailSupport: false };
-  const addRecipient = (email: string | null | undefined, profileId: PrimaryKey | undefined) => {
-    const recipient = ChatMailRecipientHelper.classify(email);
-    if (recipient.kind === ChatMailRecipientKind.SUPPORT) {
-      recipients.mailSupport = true;
-    } else if (recipient.kind === ChatMailRecipientKind.USER) {
-      const key = recipient.email.toLowerCase();
-      if (!recipients.users.has(key)) {
-        recipients.users.set(key, { email: recipient.email, profileId });
-      }
-    }
-  };
-
-  if (profileIds.size > 0) {
-    const users = await myDatabaseHelper.getUsersHelper().readByQuery({
-      filter: { profile: { _in: Array.from(profileIds) } },
-      fields: ['id', 'email', 'profile', 'email_notifications'],
-      limit: -1,
-    });
-    for (const user of users) {
-      if (user.email_notifications === false) {
-        continue;
-      }
-      addRecipient(user.email, ItemsServiceHelper.getPrimaryKeyFromItemOrString(user.profile));
-    }
-  }
-
-  if (messageFromAdmin) {
-    const senderProfileId = ItemsServiceHelper.getPrimaryKeyFromItemOrString(message?.profile);
-    for (const appFeedback of relatedAppFeedbacks) {
-      const ownerProfileId = ItemsServiceHelper.getPrimaryKeyFromItemOrString(appFeedback.profile);
-      const writtenByOwner = !!senderProfileId && String(senderProfileId) === String(ownerProfileId);
-      if (!writtenByOwner) {
-        addRecipient(appFeedback.contact_email, ownerProfileId);
-      }
-    }
-  }
-
-  return recipients;
-}
-
-/**
- * Mail a message to the other participants, in the language of their profile. The mail contains
- * the message and points to the menu item "Chats" of the app to reply there; in the chat of an app
- * feedback it also quotes the feedback.
- */
-async function mailAnswerToRecipients(
-  chatId: string,
-  message: DatabaseTypes.ChatMessages,
-  relatedAppFeedbacks: DatabaseTypes.AppFeedbacks[],
-  recipients: AnswerMailRecipients['users'],
-  myDatabaseHelper: MyDatabaseHelper
-): Promise<void> {
-  if (recipients.size === 0) {
-    return;
-  }
-
-  const server_info = await myDatabaseHelper.getServerInfo();
-  const projectName = server_info?.project?.project_name || 'Rocket Meals';
-  const languageResolver = new BackendLanguageResolver(myDatabaseHelper);
-  const profilesHelper = myDatabaseHelper.getProfilesHelper();
-  const appFeedback = relatedAppFeedbacks[0];
-
-  for (const { email, profileId } of recipients.values()) {
-    try {
-      // Without a readable profile the mail still goes out, in the default language.
-      const profile = profileId ? await profilesHelper.readOne(profileId).catch(() => undefined) : undefined;
-      const language = await languageResolver.resolveForProfile(profile);
-      const mailInput = { answer: message?.message, projectName, translate: language.translate, supportEmail: MailAdresses.SupportMail, recipient: email };
-      const mail = appFeedback ? AppFeedbackAnswerMail.buildChatAnswer({ ...mailInput, feedback: appFeedback }) : AppFeedbackAnswerMail.buildChatAnswerWithoutFeedback(mailInput);
-      if (!mail) {
-        continue;
-      }
-      await myDatabaseHelper.sendMail(mail);
-      console.log(`${HOOK_NAME}: Mailed the message in chat ${chatId} to a participant`);
-    } catch (error) {
-      console.error(`${HOOK_NAME}: Failed to mail the message in chat ${chatId} to a participant`, error);
-    }
   }
 }
 
