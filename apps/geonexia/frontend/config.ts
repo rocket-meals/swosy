@@ -82,7 +82,11 @@ export function getVersionPatch() {
 	// 55: common-ui: MyButton with translated action buttons (save, submit, update, edit, cancel, delete)
 	// 56: merge of master (backend feedback pages)
 	// 57: common-ui: SettingsListBoolean can show a loading spinner
-	return 57;
+	// 58: common: app feedback state kept in sync with its chat, delayed chat mails
+	// 59: common: profiles.email_notifications
+	// 60: common: app feedback status only from state
+	// 61: common: profiles.email_notifications removed again
+	return 61;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

@@ -4,10 +4,12 @@
  * Two cases, depending on how the feedback is answered (`AppFeedbackChatHelper.getAnswerChannel`):
  * - **By mail** (no profile, but a contact email): the answer is the whole conversation. The mail
  *   contains it and asks not to reply – nobody reads the sender address.
- * - **In the chat** (the author has a profile and left a contact email): the answer is in the app.
- *   The mail contains it and points to the menu item "Chats" of the app to reply there – no link,
- *   the web app would not know a guest of the native app. The support address is named for authors
- *   who cannot use the app.
+ * - **In the chat** (the author has a profile): the answer is in the app. The mail goes to the
+ *   account address of the author or the contact email of the feedback, whichever has a mailbox
+ *   (`ChatMailRecipientHelper`). It contains the answer and points to the menu item "Chats" of the
+ *   app to reply there – no link, the web app would not know a guest of the native app. The
+ *   support address is named for authors who cannot use the app. A chat without app feedback
+ *   (e.g. of a food feedback) gets the same mail without the quoted feedback.
  *
  * Plain logic without Directus imports, so it can be unit tested in Node.
  */
@@ -29,6 +31,12 @@ type AppFeedbackAnswerMailInput = {
 export type AppFeedbackChatAnswerMailInput = AppFeedbackAnswerMailInput & {
   /** The address authors can write to when they cannot answer in the app. */
   supportEmail: string;
+  /** Where the mail goes – the contact email of the feedback when not given. */
+  recipient?: string;
+};
+
+export type ChatAnswerMailInput = Omit<AppFeedbackChatAnswerMailInput, 'feedback' | 'recipient'> & {
+  recipient: string;
 };
 
 export type AppFeedbackAnswerMailContent = {
@@ -53,12 +61,26 @@ export class AppFeedbackAnswerMail {
 
   /** The note about a new answer in the chat of a feedback, for authors who left a contact email. */
   static buildChatAnswer(input: AppFeedbackChatAnswerMailInput): AppFeedbackAnswerMailContent | undefined {
-    return AppFeedbackAnswerMail.build(input, BackendTranslationKeys.app_feedback_chat_answer_mail_intro, [input.translate(BackendTranslationKeys.app_feedback_chat_answer_mail_reply_hint, { email: input.supportEmail })]);
+    return AppFeedbackAnswerMail.build(input, BackendTranslationKeys.app_feedback_chat_answer_mail_intro, [input.translate(BackendTranslationKeys.app_feedback_chat_answer_mail_reply_hint, { email: input.supportEmail })], input.recipient);
   }
 
-  /** `undefined` when there is no valid contact email or no answer text. */
-  private static build(input: AppFeedbackAnswerMailInput, introKey: BackendTranslationKeys, closing: string[]): AppFeedbackAnswerMailContent | undefined {
-    const recipient = AppFeedbackChatHelper.getContactEmail(input.feedback);
+  /** The note about a new answer in a chat that belongs to no app feedback. `undefined` without answer text. */
+  static buildChatAnswerWithoutFeedback(input: ChatAnswerMailInput): AppFeedbackAnswerMailContent | undefined {
+    const answer = input.answer?.trim();
+    if (!answer) {
+      return undefined;
+    }
+    const { translate } = input;
+    return {
+      recipient: input.recipient,
+      subject: translate(BackendTranslationKeys.chat_answer_mail_subject, { project: input.projectName }),
+      markdown_content: [translate(BackendTranslationKeys.chat_answer_mail_intro), '', answer, '', translate(BackendTranslationKeys.app_feedback_chat_answer_mail_reply_hint, { email: input.supportEmail })].join('\n'),
+    };
+  }
+
+  /** `undefined` when there is no recipient (given or valid contact email) or no answer text. */
+  private static build(input: AppFeedbackAnswerMailInput, introKey: BackendTranslationKeys, closing: string[], recipientOverride?: string): AppFeedbackAnswerMailContent | undefined {
+    const recipient = recipientOverride ?? AppFeedbackChatHelper.getContactEmail(input.feedback);
     const answer = input.answer?.trim();
     if (!recipient || !answer) {
       return undefined;

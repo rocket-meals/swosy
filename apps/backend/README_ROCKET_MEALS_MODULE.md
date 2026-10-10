@@ -58,36 +58,83 @@ Mensa-Mitarbeitenden mit eigener Rolle richtig als Support gewertet.
 
 ### Status eines App-Feedbacks
 
-Dieselben Status wie bei den Speise-Feedbacks, ebenfalls aus `chats.conversation_state`. Unterschiede:
+Dieselben Status wie bei den Speise-Feedbacks, aber sie stehen **am App-Feedback selbst** in
+`app_feedbacks.state` – so zeigt auch ein Export von `app_feedbacks` den Stand. Das Modul liest
+nur dieses Feld, nie den Chat.
 
-- Der `app-feedbacks-hook` legt den Chat schon beim Absenden an, wenn der Nutzer ein Profil hat –
-  ein App-Feedback startet also meist als „Wartet auf Antwort“. „Neu“ (kein Chat) bleibt für ältere
-  Feedbacks oder wenn das Anlegen fehlschlug; die erste Antwort legt ihn dann genauso an wie der
-  Hook (`AppFeedbackChatStatusHelper.buildChatForFeedback`).
+| Status             | `app_feedbacks.state` | `chats.conversation_state` |
+| ------------------ | --------------------- | -------------------------- |
+| Neu                | `open` (oder leer)    | bleibt, wie er ist         |
+| Wartet auf Antwort | `waiting_for_support` | `waiting_for_support`      |
+| Beantwortet        | `waiting_for_user`    | `waiting_for_user`         |
+| Erledigt           | `closed`              | `resolved`                 |
+
+- **Abgleich in beide Richtungen** (`AppFeedbackStateSyncHelper`): Ändert sich der Status eines
+  Chats – nach jeder Nachricht oder von Hand –, übernimmt der `chat-conversation-state-hook` ihn in
+  die verknüpften App-Feedbacks. Setzt das Modul `state`, gibt der `app-feedbacks-hook` ihn an den
+  Chat weiter, damit der Nutzer ihn in der App sieht. Geschrieben wird nur, wenn sich der Wert
+  ändert. Ältere Feedbacks werden nicht nachträglich abgeglichen, sie springen bei der nächsten
+  Nachricht oder Statusänderung um.
+- Der `app-feedbacks-hook` legt den Chat schon beim Absenden an, wenn der Nutzer ein Profil hat.
+  Das Feedback bleibt „Neu“, bis jemand schreibt.
 - Wie ein App-Feedback beantwortet wird, hängt davon ab, was der Nutzer hinterlassen hat
   (`AppFeedbackChatHelper.getAnswerChannel`):
-  - **Profil vorhanden** → Chat. Antwortet jemand anderes als der Autor, bekommt der Autor eine
-    Push-Benachrichtigung (falls ein Gerät mit Push-Token hinterlegt ist) und – wenn eine gültige
-    Kontakt-E-Mail dabei ist – eine Mail mit der Antwort und dem
-    Hinweis, bitte über die App zu antworten (notfalls per Mail an den Support). Beides verschickt
-    der `chat-conversation-state-hook`, in der Sprache aus `profiles.language`.
+  - **Profil vorhanden** → Chat. Antwortet der Support, bekommt der Autor eine
+    Push-Benachrichtigung und eine Mail (siehe unten).
   - **Kein Profil, aber Kontakt-E-Mail** → kein Chat, sondern ein Antwortfeld mit Hinweis auf die
     Adresse. Die Antwort landet in `app_feedbacks.response`, das Feedback wird zugleich erledigt
     (`state = closed`), und der `app-feedbacks-hook` mailt die Antwort mit dem Hinweis, nicht auf
-    die Mail zu antworten. Pro Feedback gibt es eine Antwort.
-  - **Weder Profil noch E-Mail** (anonym) → keine Antwort möglich; die Detailseite bietet nur
-    „Als erledigt markieren“.
-- Schreibt der Nutzer im Chat eines App- oder Speise-Feedbacks, bekommt der Support eine Mail mit
-  Link auf die Chat-Seite im Modul (`RocketMealsModulePages.getAdminUrl`). Antwortet der Support im
-  Chat eines Speise-Feedbacks, bekommt der Autor ebenfalls eine Push-Benachrichtigung.
-- Die Mail enthält bewusst keinen Link in die App: Gäste der nativen App hätten in der Web-App
-  keinen Zugriff auf ihren Chat. Stattdessen verweist sie auf den Menüpunkt „Chats“.
-- Store-Bewertungen haben nie einen Chat: ohne Antwort im Store sind sie „Neu“, mit Antwort
-  „Beantwortet“.
-- Store-Bewertungen und anonyme Feedbacks lassen sich trotzdem ohne Antwort als erledigt markieren
-  (z. B. positives Feedback) – in der Liste einzeln oder per Checkbox, im Chat über den Status-Chip
-  (dort auch wieder öffnen). Da es keinen Chat gibt, steht das in `app_feedbacks.state = closed`;
-  ein Feedback mit Chat richtet sich weiter nur nach dem Chat.
+    die Mail zu antworten. Das ist die einzige Mail, die eine Änderung an einem App-Feedback
+    auslöst.
+  - **Weder Profil noch E-Mail** (anonym) → keine Antwort möglich, nur „Als erledigt markieren“.
+- Store-Bewertungen haben nie einen Chat. Sobald `app_feedbacks.response` gesetzt wird (im Modul,
+  direkt in Directus oder beim Abholen aus dem Store), veröffentlicht der `app-reviews-pull-hook` die
+  Antwort im Store und setzt `state = closed`. Es zählt nur `state`: eine ältere Bewertung mit
+  Antwort, aber offenem `state`, bleibt offen, bis sie jemand schließt.
+
+### Mails zu Chat-Nachrichten
+
+Mails gehen **zeitversetzt** raus, damit eine laufende Unterhaltung nicht pro Nachricht eine Mail
+auslöst (`ChatMailDigestHelper`):
+
+- Der `chat-conversation-state-hook` verschickt selbst keine Mail. Er merkt sich die erste noch
+  nicht gemailte Nachricht in `chats.mail_pending_since` und startet pro Nachricht einen Timer
+  (`setTimeout`, 5 Minuten).
+- Läuft der Timer ab, schaut er in der Datenbank nach, ob es im Chat inzwischen eine neuere
+  Nachricht gibt. Dann übernimmt deren Timer und dieser tut nichts. Sonst schickt er **eine** Mail
+  pro Empfänger mit allen Nachrichten, die der Empfänger noch nicht gesehen hat: was andere nach
+  seiner eigenen letzten Nachricht geschrieben haben. Wer inzwischen selbst geantwortet hat, bekommt
+  nichts.
+- Push-Benachrichtigungen bei Antworten des Supports gehen weiterhin sofort raus.
+
+> **Mehrere Instanzen:** Das Backend läuft mit mehreren Directus-Instanzen. Der Timer läuft nur
+> auf der Instanz, die die Nachricht gespeichert hat, und die Prüfung „gibt es eine neuere
+> Nachricht?“ geht über die gemeinsame Datenbank. So verschickt genau eine Instanz die Mail, auch
+> wenn die Nachrichten eines Chats über verschiedene Instanzen kommen. Wird eine Instanz während der
+> 5 Minuten neu gestartet, geht ihr Timer verloren. `mail_pending_since` bleibt dann gesetzt, und die
+> Mails gehen mit der nächsten Nachricht im Chat raus.
+>
+> Ein Directus-`schedule()` in einer Extension läuft dagegen **nicht** auf jeder Instanz, solange
+> `SYNCHRONIZATION_STORE: "redis"` gesetzt ist (wie in `apps/backend/docker-compose.yaml`): Directus
+> stimmt jeden Tick über Redis ab, und genau eine Instanz führt ihn aus. Ausprobiert mit
+> Directus 11.17.4 und 2 Replikas, Cron alle 5 Sekunden: mit Redis jeder Tick einmal (abwechselnd
+> auf beiden Instanzen), mit `SYNCHRONIZATION_STORE: "memory"` jeder Tick zweimal. Die Abstimmung
+> gilt pro Tick, nicht für die Laufzeit: dauert ein Lauf länger als der Abstand zwischen zwei Ticks,
+> kann der nächste Tick auf einer anderen Instanz schon parallel starten.
+
+Vor jeder Mail wird die Adresse geprüft (`ChatMailRecipientHelper`):
+
+- Empfänger sind die Teilnehmer des Chats und die Autoren verknüpfter Feedbacks (Adresse ihres
+  Directus-Accounts und die Kontakt-E-Mail ihres App-Feedbacks).
+- Gast-Accounts (`guest-…@guest.example.com`) und alle anderen Adressen unter `example.com` bekommen
+  keine Mail.
+- Die Directus-Standardadresse `admin@example.com` steht für den Support: die Mail geht an die
+  Support-Adresse.
+- Der Support bekommt eine Mail über alles, was Nutzer seit seiner letzten Antwort geschrieben haben,
+  mit Link auf die Chat-Seite im Modul (`RocketMealsModulePages.getAdminUrl`), egal ob der Chat zu
+  einem Feedback gehört.
+- Die Mail an den Nutzer enthält bewusst keinen Link in die App: Gäste der nativen App hätten in der
+  Web-App keinen Zugriff auf ihren Chat. Stattdessen verweist sie auf den Menüpunkt „Chats“.
 
 Die gemeinsamen Teile beider Feedback-Seiten liegen in `src/rocket-meals-module/support-chat/`
 (Verlauf + Eingabe, Status-Menü) und `src/helpers/rocket-meals-module/SupportChatActions.ts`

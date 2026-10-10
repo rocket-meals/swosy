@@ -1,4 +1,5 @@
 import { AppFeedbackContentHelper } from './AppFeedbackContentHelper';
+import { ChatConversationState } from './ChatConversationState';
 import { AppFeedbackSourceIdentifier } from './AppFeedbackSourceIdentifier';
 import { ChatHelper } from './ChatHelper';
 import { type DirectusFilterObject, FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from './FoodFeedbackChatStatusHelper';
@@ -19,13 +20,19 @@ export type AppFeedbackWithChat = {
 };
 
 /**
- * Values of `app_feedbacks.state`. Only {@link AppFeedbackState.CLOSED} is looked at: it marks a
- * feedback without chat as done – a store review or an anonymous feedback support has nothing to
- * answer to (e.g. a positive one). A feedback with a chat takes its status from the chat.
+ * Values of `app_feedbacks.state` – the status of a feedback, kept on the feedback itself so an
+ * export of `app_feedbacks` shows it without looking at the chat. A feedback with a chat mirrors
+ * `chats.conversation_state` (both directions, see `chat-conversation-state-hook` and
+ * `app-feedbacks-hook`): a message of the user sets {@link WAITING_FOR_SUPPORT}, one of support
+ * {@link WAITING_FOR_USER}. Any other value (empty, the former `in_review`) counts as {@link OPEN}.
  */
 export enum AppFeedbackState {
+  /** Nobody has answered yet. */
   OPEN = 'open',
-  IN_REVIEW = 'in_review',
+  /** The user wrote the last message – support has to answer. */
+  WAITING_FOR_SUPPORT = 'waiting_for_support',
+  /** Support answered. */
+  WAITING_FOR_USER = 'waiting_for_user',
   CLOSED = 'closed',
 }
 
@@ -41,17 +48,14 @@ export enum AppFeedbackSourceFilter {
  * App feedbacks (`app_feedbacks`) and their support chats (`app_feedbacks.chat`).
  *
  * They use the same statuses and status filters as food feedbacks
- * ({@link FoodFeedbackChatStatus}, {@link FoodFeedbackChatFilter}) – both only look at the linked
- * chat. Unlike a food feedback, an app feedback from a user with a profile gets its chat right
- * away from the `app-feedbacks-hook`; "new" (no chat) is left for older feedbacks or a failed
- * chat creation. Feedbacks without profile – anonymous ones and app store reviews – cannot be
- * answered in a chat. A store review is answered publicly in its store instead
- * (`app_feedbacks.response`): without answer it is "new", with one "waiting for user".
- * A feedback without chat can also be marked as done without any answer
- * (`app_feedbacks.state` = {@link AppFeedbackState.CLOSED}).
+ * ({@link FoodFeedbackChatStatus}, {@link FoodFeedbackChatFilter}), but read them from
+ * `app_feedbacks.state` only ({@link AppFeedbackState}) – never from the chat. The hooks keep
+ * `state` and `chats.conversation_state` in sync. An app feedback from a user with a profile gets
+ * its chat right away from the `app-feedbacks-hook`. Feedbacks without profile – anonymous ones
+ * and app store reviews – cannot be answered in a chat. A store review is answered publicly in its
+ * store instead (`app_feedbacks.response`): answering closes it (`state` = `closed`).
  *
- * Used by the `app-feedbacks-hook` and the backend module "Rocket Meals", so both create the chat
- * the same way.
+ * Used by the hooks and the backend module "Rocket Meals", so both create the chat the same way.
  */
 export class AppFeedbackChatStatusHelper {
   public static readonly FILTERS: readonly FoodFeedbackChatFilter[] = FoodFeedbackChatStatusHelper.FILTERS;
@@ -66,51 +70,92 @@ export class AppFeedbackChatStatusHelper {
   /** Makes it obvious in the chat list of the app what kind of chat this is. */
   public static readonly CHAT_ALIAS_PREFIX = 'Feedback: ';
 
-  static getStatus(feedback: Pick<AppFeedbackWithChat, 'chat' | 'source_identifier' | 'response' | 'state'>): FoodFeedbackChatStatus {
-    if (AppFeedbackChatStatusHelper.isClosedWithoutChat(feedback)) {
-      return FoodFeedbackChatStatus.RESOLVED;
+  /** The statuses support can set by hand on a feedback that has or can get a chat. */
+  public static readonly SELECTABLE_STATUSES_WITH_CHAT: readonly FoodFeedbackChatStatus[] = [FoodFeedbackChatStatus.NEW, ...FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES];
+
+  /** The status of a feedback, read from `app_feedbacks.state` only. */
+  static getStatus(feedback: Pick<AppFeedbackWithChat, 'state'>): FoodFeedbackChatStatus {
+    switch (feedback.state) {
+      case AppFeedbackState.CLOSED:
+        return FoodFeedbackChatStatus.RESOLVED;
+      case AppFeedbackState.WAITING_FOR_SUPPORT:
+        return FoodFeedbackChatStatus.WAITING_FOR_SUPPORT;
+      case AppFeedbackState.WAITING_FOR_USER:
+        return FoodFeedbackChatStatus.WAITING_FOR_USER;
+      default:
+        return FoodFeedbackChatStatus.NEW;
     }
-    return AppFeedbackChatStatusHelper.getOpenStatus(feedback);
   }
 
-  /** The status a feedback has (again) when it is not marked as done via `state` – the chat or the store answer decides. */
-  static getOpenStatus(feedback: Pick<AppFeedbackWithChat, 'chat' | 'source_identifier' | 'response'>): FoodFeedbackChatStatus {
-    if (AppFeedbackChatStatusHelper.isStoreReview(feedback)) {
-      return (feedback.response ?? '').trim().length > 0 ? FoodFeedbackChatStatus.WAITING_FOR_USER : FoodFeedbackChatStatus.NEW;
+  /** The `app_feedbacks.state` behind a status. */
+  static getStateForStatus(status: FoodFeedbackChatStatus): AppFeedbackState {
+    switch (status) {
+      case FoodFeedbackChatStatus.WAITING_FOR_SUPPORT:
+        return AppFeedbackState.WAITING_FOR_SUPPORT;
+      case FoodFeedbackChatStatus.WAITING_FOR_USER:
+        return AppFeedbackState.WAITING_FOR_USER;
+      case FoodFeedbackChatStatus.RESOLVED:
+        return AppFeedbackState.CLOSED;
+      case FoodFeedbackChatStatus.NEW:
+        return AppFeedbackState.OPEN;
     }
-    return FoodFeedbackChatStatusHelper.getStatus(feedback);
+  }
+
+  /** The `app_feedbacks.state` a feedback takes over from its chat, `undefined` for an unknown chat state. */
+  static getStateForConversationState(conversationState: string | null | undefined): AppFeedbackState | undefined {
+    switch (conversationState) {
+      case ChatConversationState.WAITING_FOR_SUPPORT:
+        return AppFeedbackState.WAITING_FOR_SUPPORT;
+      case ChatConversationState.WAITING_FOR_USER:
+        return AppFeedbackState.WAITING_FOR_USER;
+      case ChatConversationState.RESOLVED:
+        return AppFeedbackState.CLOSED;
+      default:
+        return undefined;
+    }
+  }
+
+  /**
+   * The `chats.conversation_state` the chat of a feedback takes over from its `state`. `undefined`
+   * for {@link AppFeedbackState.OPEN}: a chat has no "nobody answered yet", it keeps its state.
+   */
+  static getConversationStateForState(state: string | null | undefined): ChatConversationState | undefined {
+    switch (state) {
+      case AppFeedbackState.WAITING_FOR_SUPPORT:
+        return ChatConversationState.WAITING_FOR_SUPPORT;
+      case AppFeedbackState.WAITING_FOR_USER:
+        return ChatConversationState.WAITING_FOR_USER;
+      case AppFeedbackState.CLOSED:
+        return ChatConversationState.RESOLVED;
+      default:
+        return undefined;
+    }
   }
 
   /** Whether a feedback matches a filter – the in-memory counterpart of {@link buildFilter}. */
-  static matchesFilter(feedback: Pick<AppFeedbackWithChat, 'chat' | 'source_identifier' | 'response' | 'state'>, filter: FoodFeedbackChatFilter): boolean {
+  static matchesFilter(feedback: Pick<AppFeedbackWithChat, 'state'>, filter: FoodFeedbackChatFilter): boolean {
     return FoodFeedbackChatStatusHelper.statusMatchesFilter(AppFeedbackChatStatusHelper.getStatus(feedback), filter);
   }
 
-  /** The Directus filter for `app_feedbacks`, `undefined` for all of them. Store reviews never have a chat. */
+  /** The Directus filter for `app_feedbacks`, `undefined` for all of them. Only looks at `state`, never at the chat. */
   static buildFilter(filter: FoodFeedbackChatFilter): DirectusFilterObject | undefined {
-    const storeSources = AppFeedbackChatStatusHelper.STORE_SOURCES;
-    const withoutChat: DirectusFilterObject = { chat: { _null: true } };
-    const storeReview: DirectusFilterObject = { source_identifier: { _in: storeSources } };
-    const notStoreReview: DirectusFilterObject = { _or: [{ source_identifier: { _null: true } }, { source_identifier: { _nin: storeSources } }] };
-    // `_neq` alone would drop rows without state.
-    const notClosed: DirectusFilterObject = { _or: [{ state: { _null: true } }, { state: { _neq: AppFeedbackState.CLOSED } }] };
-    const closedWithoutChat: DirectusFilterObject = { _and: [withoutChat, { state: { _eq: AppFeedbackState.CLOSED } }] };
-    const newFeedback: DirectusFilterObject = {
-      _and: [notClosed, { _or: [{ _and: [notStoreReview, withoutChat] }, { _and: [storeReview, { response: { _empty: true } }] }] }],
-    };
-    const answeredStoreReview: DirectusFilterObject = { _and: [storeReview, { response: { _nempty: true } }, notClosed] };
+    const inState = (state: AppFeedbackState): DirectusFilterObject => ({ state: { _eq: state } });
+    // Everything that is not one of the other states is open – `_nin` alone would drop rows without state.
+    const open: DirectusFilterObject = { _or: [{ state: { _null: true } }, { state: { _nin: [AppFeedbackState.WAITING_FOR_SUPPORT, AppFeedbackState.WAITING_FOR_USER, AppFeedbackState.CLOSED] } }] };
 
     switch (filter) {
       case FoodFeedbackChatFilter.OPEN:
-        return { _or: [newFeedback, FoodFeedbackChatStatusHelper.buildStatusFilter(FoodFeedbackChatFilter.WAITING_FOR_SUPPORT)] };
+        return { _or: [open, inState(AppFeedbackState.WAITING_FOR_SUPPORT)] };
       case FoodFeedbackChatFilter.NEW:
-        return newFeedback;
+        return open;
+      case FoodFeedbackChatFilter.WAITING_FOR_SUPPORT:
+        return inState(AppFeedbackState.WAITING_FOR_SUPPORT);
       case FoodFeedbackChatFilter.WAITING_FOR_USER:
-        return { _or: [FoodFeedbackChatStatusHelper.buildStatusFilter(filter), answeredStoreReview] };
+        return inState(AppFeedbackState.WAITING_FOR_USER);
       case FoodFeedbackChatFilter.RESOLVED:
-        return { _or: [FoodFeedbackChatStatusHelper.buildStatusFilter(filter), closedWithoutChat] };
-      default:
-        return FoodFeedbackChatStatusHelper.buildStatusFilter(filter);
+        return inState(AppFeedbackState.CLOSED);
+      case FoodFeedbackChatFilter.ALL:
+        return undefined;
     }
   }
 
@@ -133,16 +178,8 @@ export class AppFeedbackChatStatusHelper {
     return !!feedback.source_identifier && (AppFeedbackChatStatusHelper.STORE_SOURCES as readonly string[]).includes(feedback.source_identifier);
   }
 
-  /** Whether a feedback without chat was marked as done via `state`. */
-  static isClosedWithoutChat(feedback: Pick<AppFeedbackWithChat, 'chat' | 'state'>): boolean {
-    return !RelationHelper.isSet(feedback.chat as RelationValue) && feedback.state === AppFeedbackState.CLOSED;
-  }
-
-  /**
-   * Whether the status of a feedback is kept in `app_feedbacks.state` instead of a chat: it has no
-   * chat and will not get one – a store review, or a feedback without profile.
-   */
-  static isStatusWithoutChat(feedback: Pick<AppFeedbackWithChat, 'chat' | 'profile' | 'source_identifier'>): boolean {
+  /** Whether a feedback has no chat and will not get one – a store review, or a feedback without profile. */
+  static isWithoutChat(feedback: Pick<AppFeedbackWithChat, 'chat' | 'profile' | 'source_identifier'>): boolean {
     return !RelationHelper.isSet(feedback.chat as RelationValue) && (AppFeedbackChatStatusHelper.isStoreReview(feedback) || !AppFeedbackChatStatusHelper.canStartChat(feedback));
   }
 

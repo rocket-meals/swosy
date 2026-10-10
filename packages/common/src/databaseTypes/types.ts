@@ -512,6 +512,7 @@ export type Chats = {
   initial_message?: string | null;
   linked_entities: string;
   linked_to_feature_whishes: any[] | FeatureWhishes[];
+  mail_pending_since?: string | null;
   messages: any[] | ChatMessages[];
   participants: any[] | ChatsParticipants[];
   sort?: number | null;

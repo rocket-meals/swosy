@@ -228,7 +228,11 @@ export function getVersionPatch() {
         //      settings screen show the same settings, color and current values
         // 113: settings list the canteen and housing settings directly again (shared rows stay);
         //      the free apartment push switch shows a spinner while it is being switched
-        return 113;
+        // 114: common: app feedback state kept in sync with its chat, delayed chat mails
+        // 115: common: profiles.email_notifications
+        // 116: common: app feedback status only from state
+        // 117: common: profiles.email_notifications removed again
+        return 117;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

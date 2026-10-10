@@ -1,4 +1,4 @@
-import { AppFeedbackChatStatusHelper, CollectionNames, CronHelper, DatabaseTypes } from 'repo-depkit-common';
+import { AppFeedbackChatStatusHelper, AppFeedbackState, CollectionNames, CronHelper, DatabaseTypes } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MyDefineHook } from '../helpers/MyDefineHook';
 import { AppReviewsPullHelper, PulledAppReview } from './AppReviewsPullHelper';
@@ -48,9 +48,11 @@ async function syncSingleReview(review: PulledAppReview, appFeedbacksHelper: Ret
     const existingResponse = existingFeedback.response?.trim() || '';
     const newResponse = review.response?.trim() || '';
     if (newResponse && existingResponse !== newResponse) {
+      // An answer in the store closes the review, like an answer from the module does.
       await appFeedbacksHelper.updateOne(existingFeedback.id, {
         response: review.response,
         feedback_read_by_support: true,
+        state: AppFeedbackState.CLOSED,
       });
       return 'updated';
     }
@@ -60,6 +62,7 @@ async function syncSingleReview(review: PulledAppReview, appFeedbacksHelper: Ret
   const createData: Partial<DatabaseTypes.AppFeedbacks> = { ...review };
   if (review.response) {
     createData.feedback_read_by_support = true;
+    createData.state = AppFeedbackState.CLOSED;
   }
   await appFeedbacksHelper.createOne(createData);
   return 'created';
@@ -164,6 +167,9 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
       if (!isConfigured) {
         throw new Error(`Cannot set response for ${feedback.source_identifier} review: store not configured`);
       }
+
+      // Answering a store review is all there is to do – it is done with that.
+      payloadTyped.state = AppFeedbackState.CLOSED;
 
       const responseHelper = new AppStoreReviewsResponseHelper(filterMyDatabaseHelper, logger);
       await responseHelper.respondToReview({ ...feedback, response: payloadTyped.response });
