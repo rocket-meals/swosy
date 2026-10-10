@@ -2881,9 +2881,7 @@
       "positive",
       "title",
       "content",
-      "profile",
       "contact_email",
-      "response",
       "priority",
       "response_read_by_user",
       "device_platform",
@@ -2894,7 +2892,6 @@
       "display_fontscale",
       "display_height",
       "display_width",
-      "state",
       "data"
     ],
     "presets": null,
