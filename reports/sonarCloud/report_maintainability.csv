@@ -1,4 +1,10 @@
 Key,Message,Component,Line
+"AaEl7G3MIbC7Rohp_Rrs","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ChatMessageMailHelper.ts",64
+"AaEl7G3MIbC7Rohp_Rrt","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ChatMessageMailHelper.ts",78
+"AaEl7G3MIbC7Rohp_Rru","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ChatMessageMailHelper.ts",95
+"AaEl7G3MIbC7Rohp_Rrv","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ChatMessageMailHelper.ts",236
+"AaEl7G3MIbC7Rohp_Rrw","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ChatMessageMailHelper.ts",237
+"AaEl7G3MIbC7Rohp_Rrx","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ChatMessageMailHelper.ts",243
 "AaEiILnow1Jsv7NK4TI9","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusSettingsDumpHelper.ts",126
 "AaEhX8zu7-uP4aiYAcXX","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apartments-free-notify-schedule-hook/FreeApartmentsNotifier.ts",117
 "AaEhX8zu7-uP4aiYAcXT","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/apartments-free-notify-schedule-hook/FreeApartmentsNotifier.ts",97
@@ -56,19 +62,15 @@ Key,Message,Component,Line
 "AaEdxlU2dNglamWRK1SV","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts",302
 "AaEdxlU2dNglamWRK1SW","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/FriendshipNetworkHelper.ts",326
 "AaEdxlpTdNglamWRK1SZ","Use <address> or <details> or <fieldset> or <optgroup> instead of the group role to ensure accessibility across all devices.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue",416
-"AaEb5dNGUnE48ujNDeg7","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts",122
-"AaEb5dNGUnE48ujNDeg8","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts",124
-"AaEb5c-TUnE48ujNDeg3","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",233
-"AaEb5c-TUnE48ujNDeg4","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",237
-"AaEb5c-TUnE48ujNDeg5","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",238
-"AaEb5c-TUnE48ujNDeg6","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",240
+"AaEb5dNGUnE48ujNDeg7","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts",139
+"AaEb5dNGUnE48ujNDeg8","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts",141
+"AaEb5c-TUnE48ujNDeg3","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",164
+"AaEb5c-TUnE48ujNDeg4","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",168
+"AaEb5c-TUnE48ujNDeg5","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",169
+"AaEb5c-TUnE48ujNDeg6","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",171
 "AaEaprJRXgmOCQIVkX9r","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-usage-events-cleanup-schedule/index.ts",56
 "AaEapqAgXgmOCQIVkX9p","Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",451
 "AaEapqAgXgmOCQIVkX9q","'payload.food_id' will use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",495
-"AaEb5c-TUnE48ujNDeg0","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",186
-"AaEb5c-TUnE48ujNDeg1","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",187
-"AaEb5c-TUnE48ujNDeg2","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",200
-"AaEX2IUO5mctjMn_PiSE","Do not pass function directly to `.filter(…)`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/AppFeedbackChatActions.ts",45
 "AaEWj9vPCV1trJHF7F0n","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListSessionDebug/index.tsx",63
 "AaEWj9vPCV1trJHF7F0o","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListSessionDebug/index.tsx",63
 "AaEWj93ECV1trJHF7F0r","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/redux/storage/sqliteStorage.ts",170
@@ -459,7 +461,7 @@ Key,Message,Component,Line
 "AaD3G-eJTd3UR4iHDm9X","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3313
 "AaD3G-eJTd3UR4iHDm9Y","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3319
 "AaD3G-eJTd3UR4iHDm9Z","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3340
-"AaD3G9RcTd3UR4iHDm5D","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts",107
+"AaD3G9RcTd3UR4iHDm5D","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts",110
 "AaD3G9IBTd3UR4iHDm3b","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index.ts",117
 "AaD3G9IBTd3UR4iHDm3e","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index.ts",404
 "AaD3G9IBTd3UR4iHDm3f","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index.ts",444
@@ -527,8 +529,8 @@ Key,Message,Component,Line
 "AaD3G9TdTd3UR4iHDm5a","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",137
 "AaD3G9B8Td3UR4iHDm2k","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",1208
 "AaD3G9UjTd3UR4iHDm5q","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-cleanup-schedule/index.ts",93
-"AaD3G9RcTd3UR4iHDm5F","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts",169
-"AaD3G9RcTd3UR4iHDm5E","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts",157
+"AaD3G9RcTd3UR4iHDm5F","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts",175
+"AaD3G9RcTd3UR4iHDm5E","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts",160
 "AaD3G9SFTd3UR4iHDm5M","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/friendships-pending-cleanup-schedule/index.ts",10
 "AaD3G-AJTd3UR4iHDm75","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts",71
 "AaD3G9RsTd3UR4iHDm5G","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/friendships-hook/index.ts",9
@@ -597,11 +599,11 @@ Key,Message,Component,Line
 "AaD3G9D9Td3UR4iHDm26","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",104
 "AaD3G9D9Td3UR4iHDm27","Async method 'getMarkingsJSONList' has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",484
 "AaD3G9OtTd3UR4iHDm4d","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/activity-auto-cleanup-schedule/index.ts",6
-"AaD3G9PyTd3UR4iHDm4u","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts",107
+"AaD3G9PyTd3UR4iHDm4u","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts",108
 "AaD3G9KBTd3UR4iHDm3r","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/index.ts",102
 "AaD3G9BhTd3UR4iHDm2D","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/index.ts",43
-"AaD3G9M3Td3UR4iHDm4D","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",16
-"AaD3G9M3Td3UR4iHDm4E","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",311
+"AaD3G9M3Td3UR4iHDm4D","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",18
+"AaD3G9M3Td3UR4iHDm4E","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts",242
 "AaD3G9LkTd3UR4iHDm3w","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collections-last-update-hook/index.ts",8
 "AaD3G9S_Td3UR4iHDm5V","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-rating-calculate-hook/index.ts",8
 "AaD3G9PlTd3UR4iHDm4t","Async arrow function has no 'await' expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/index.ts",7
