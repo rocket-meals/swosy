@@ -899,6 +899,26 @@
     "tr": "Bakımın Tahmini Sonu",
     "zh": "预计维护结束时间"
   },
+  "maintenance_upcoming_notice": {
+    "de": "Um {{start}} Uhr startet der Server kurz neu. Bis etwa {{end}} Uhr sind einige Funktionen nicht verfügbar.",
+    "en": "The server will restart briefly at {{start}}. Some features may be unavailable until about {{end}}.",
+    "ar": "سيُعاد تشغيل الخادم لفترة قصيرة في الساعة {{start}}. قد لا تتوفر بعض الميزات حتى الساعة {{end}} تقريبًا.",
+    "es": "El servidor se reiniciará brevemente a las {{start}}. Algunas funciones pueden no estar disponibles hasta aproximadamente las {{end}}.",
+    "fr": "Le serveur redémarrera brièvement à {{start}}. Certaines fonctionnalités peuvent être indisponibles jusqu'à environ {{end}}.",
+    "ru": "В {{start}} сервер ненадолго перезапустится. Некоторые функции могут быть недоступны примерно до {{end}}.",
+    "tr": "Sunucu {{start}} saatinde kısa süreliğine yeniden başlatılacak. Bazı özellikler yaklaşık {{end}} saatine kadar kullanılamayabilir.",
+    "zh": "服务器将于 {{start}} 短暂重启。部分功能在 {{end}} 左右之前可能无法使用。"
+  },
+  "maintenance_active_notice": {
+    "de": "Der Server wird gerade neu gestartet. Bis etwa {{end}} Uhr sind einige Funktionen nicht verfügbar.",
+    "en": "The server is restarting right now. Some features may be unavailable until about {{end}}.",
+    "ar": "يُعاد تشغيل الخادم الآن. قد لا تتوفر بعض الميزات حتى الساعة {{end}} تقريبًا.",
+    "es": "El servidor se está reiniciando ahora. Algunas funciones pueden no estar disponibles hasta aproximadamente las {{end}}.",
+    "fr": "Le serveur est en cours de redémarrage. Certaines fonctionnalités peuvent être indisponibles jusqu'à environ {{end}}.",
+    "ru": "Сервер сейчас перезапускается. Некоторые функции могут быть недоступны примерно до {{end}}.",
+    "tr": "Sunucu şu anda yeniden başlatılıyor. Bazı özellikler yaklaşık {{end}} saatine kadar kullanılamayabilir.",
+    "zh": "服务器正在重启。部分功能在 {{end}} 左右之前可能无法使用。"
+  },
   "use_cached_version": {
     "de": "Gespeicherte Version verwenden",
     "en": "Use Cached Version",

@@ -1,10 +1,14 @@
 name: "🔁 Daily Backend Restart"
 
-# Restarts every backend server daily at 19:00 German time by running the same
+# Updates every backend server daily from 19:00 German time by running the same
 # SSH deploy as "🚀 Deploy Backend (Manual)": scripts/update-and-generate-env.sh
-# pulls the server's repository, regenerates .env, rebuilds and restarts all
-# containers. The fork sync (sync-fork.yml) runs one hour earlier at 18:00,
-# so the swosy and studi-futter servers pick up the latest upstream state.
+# pulls the server's repository, regenerates .env and rebuilds the images. Only
+# when rocket-meals or rocket-meals-envs has new commits (or force_restart is
+# set) it writes the maintenance window to app_settings.maintenance_start/_end,
+# so the app can tell its users, and restarts all containers (after
+# announce_minutes, 0 by default). Without new commits nothing is restarted.
+# The fork sync (sync-fork.yml) runs one hour earlier at 18:00, so the swosy and
+# studi-futter servers pick up the latest upstream state.
 #
 # Only runs on rocket-meals/rocket-meals - forks receive this file through the
 # fork sync, but must never restart the servers themselves.
@@ -16,6 +20,17 @@ on:
     - cron: '0 17 * * *' # 19:00 CEST
     - cron: '0 18 * * *' # 19:00 CET
   workflow_dispatch:
+    inputs:
+      force_restart:
+        description: 'Restart even without new commits in rocket-meals or rocket-meals-envs'
+        required: false
+        type: boolean
+        default: false
+      announce_minutes:
+        description: 'Minutes between the maintenance announcement in the app and the restart'
+        required: false
+        type: string
+        default: '0'
 
 concurrency:
   group: ${{ github.workflow }}
@@ -68,3 +83,6 @@ jobs:
         with:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_SERVER_HOST: ${{ matrix.host }}
+          # Scheduled runs have no inputs: no forced restart, no notice period.
+          FORCE_RESTART: ${{ inputs.force_restart == true && 'true' || 'false' }}
+          ANNOUNCE_MINUTES: ${{ inputs.announce_minutes || '0' }}

@@ -19,6 +19,16 @@ on:
         required: false
         type: string
         default: ''
+      force_restart:
+        description: 'Restart even without new commits in rocket-meals or rocket-meals-envs'
+        required: false
+        type: boolean
+        default: true
+      announce_minutes:
+        description: 'Minutes between the maintenance announcement in the app and the restart (0 = restart right away)'
+        required: false
+        type: string
+        default: '0'
 
 jobs:
   resolve-hosts:
@@ -74,3 +84,5 @@ jobs:
         with:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_SERVER_HOST: ${{ matrix.host }}
+          FORCE_RESTART: ${{ inputs.force_restart && 'true' || 'false' }}
+          ANNOUNCE_MINUTES: ${{ inputs.announce_minutes }}

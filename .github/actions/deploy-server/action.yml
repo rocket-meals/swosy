@@ -1,5 +1,5 @@
 name: 'Deploy to Server'
-description: 'Deploy to a server via SSH by running the update-and-generate-env script, then wait until the backend is reachable again'
+description: 'Deploy to a server via SSH by running the update-and-generate-env script, then wait until the backend is reachable again (unless the script skipped the restart)'
 
 inputs:
   DEPLOY_SSH_KEY:
@@ -12,6 +12,14 @@ inputs:
     description: 'Path of the Directus health endpoint used to check reachability'
     required: false
     default: '/rocket-meals/api/server/health'
+  FORCE_RESTART:
+    description: 'Restart even when neither rocket-meals nor rocket-meals-envs has new commits ("true" or "false")'
+    required: false
+    default: 'false'
+  ANNOUNCE_MINUTES:
+    description: 'Announce the maintenance in app_settings and restart only after this many minutes'
+    required: false
+    default: '0'
   REACHABLE_TIMEOUT_SECONDS:
     description: 'How long to wait after the deploy for the backend to become reachable again'
     required: false
@@ -35,9 +43,21 @@ runs:
         DEPLOY_SERVER_HOST: ${{ inputs.DEPLOY_SERVER_HOST }}
         HEALTH_PATH: ${{ inputs.HEALTH_PATH }}
         REACHABLE_TIMEOUT_SECONDS: ${{ inputs.REACHABLE_TIMEOUT_SECONDS }}
+        FORCE_RESTART: ${{ inputs.FORCE_RESTART }}
+        ANNOUNCE_MINUTES: ${{ inputs.ANNOUNCE_MINUTES }}
         POLL_INTERVAL_SECONDS: 5
       run: |
         set -uo pipefail
+        # Both values end up in the remote command line, so only accept the
+        # expected shapes.
+        if [ "$FORCE_RESTART" != "true" ] && [ "$FORCE_RESTART" != "false" ]; then
+          echo "::error::FORCE_RESTART must be 'true' or 'false', got '$FORCE_RESTART'"
+          exit 1
+        fi
+        if ! [[ "$ANNOUNCE_MINUTES" =~ ^[0-9]+$ ]]; then
+          echo "::error::ANNOUNCE_MINUTES must be a whole number, got '$ANNOUNCE_MINUTES'"
+          exit 1
+        fi
         HEALTH_URL="https://${DEPLOY_SERVER_HOST}${HEALTH_PATH}"
         MONITOR_DIR="$(mktemp -d "$RUNNER_TEMP/deploy-monitor.XXXXXX")"
 
@@ -64,9 +84,16 @@ runs:
         MONITOR_PID=$!
 
         echo "🚀 Connecting to $DEPLOY_SERVER_HOST as deploy user..."
+        # The options are passed as environment variables instead of
+        # arguments, so the script version still on the server (which runs
+        # before it pulls the new one) ignores them instead of failing.
+        # ServerAlive keeps the session open while the script waits for the
+        # announced maintenance window.
         SSH_EXIT=0
-        ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -i ~/.ssh/deploy_key deploy@"$DEPLOY_SERVER_HOST" \
-          'sudo bash -l -c "cd /root/rocket-meals && ./scripts/update-and-generate-env.sh"' || SSH_EXIT=$?
+        { ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o ServerAliveInterval=60 -o ServerAliveCountMax=10 \
+          -i ~/.ssh/deploy_key deploy@"$DEPLOY_SERVER_HOST" \
+          "sudo bash -l -c \"cd /root/rocket-meals && ROCKET_MEALS_FORCE_RESTART=$FORCE_RESTART ROCKET_MEALS_ANNOUNCE_MINUTES=$ANNOUNCE_MINUTES ./scripts/update-and-generate-env.sh\"" \
+          2>&1 | tee "$MONITOR_DIR/ssh.log"; } || SSH_EXIT=$?
 
         touch "$MONITOR_DIR/stop"
         wait "$MONITOR_PID" 2>/dev/null || true
@@ -76,6 +103,12 @@ runs:
           exit "$SSH_EXIT"
         fi
         echo "✅ Deploy script finished on $DEPLOY_SERVER_HOST"
+
+        # Marker printed by update-and-generate-env.sh when nothing changed.
+        if grep -q '^ROCKET_MEALS_RESTART_SKIPPED$' "$MONITOR_DIR/ssh.log"; then
+          echo "⏭️ $DEPLOY_SERVER_HOST: no new commits, restart skipped" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+        fi
 
         # The containers are started with "up -d", so Directus may still be
         # booting. The job only counts as completed once the server is
