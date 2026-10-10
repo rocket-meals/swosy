@@ -912,6 +912,16 @@ export const backendTranslations: TranslationResources = {
     tr: '{{count}} seçildi',
     zh: '已选择 {{count}} 项',
   },
+  rocket_meals_module_open_count: {
+    de: '{{count}} offen',
+    en: '{{count}} open',
+    ar: '{{count}} مفتوح',
+    es: '{{count}} abiertos',
+    fr: '{{count}} ouvert(s)',
+    ru: 'Открыто: {{count}}',
+    tr: '{{count}} açık',
+    zh: '{{count}} 项待处理',
+  },
   rocket_meals_module_select_all_on_page: {
     de: 'Alle auf dieser Seite auswählen',
     en: 'Select all on this page',
