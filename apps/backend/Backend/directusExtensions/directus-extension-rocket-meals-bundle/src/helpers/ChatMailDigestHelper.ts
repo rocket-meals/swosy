@@ -1,11 +1,16 @@
 /**
  * ChatMailDigestHelper.ts – the rules for the delayed mails about chat messages.
  *
- * A message does not send a mail right away: the `chat-conversation-state-hook` only notes in
- * `chats.mail_pending_since` that there is something to mail. Once the chat was quiet for
- * {@link QUIET_MINUTES} (`chats.date_updated`, which every message bumps), the
- * `chat-mail-schedule` sends one mail per recipient with everything they have not seen yet. An
- * active conversation therefore sends no mail at all, and a burst of messages only one.
+ * A message does not send a mail right away: the `chat-conversation-state-hook` notes in
+ * `chats.mail_pending_since` that there is something to mail and starts a timer. After
+ * {@link QUIET_MINUTES} it looks into the database: was a newer message written in the chat, its
+ * timer takes over and this one does nothing. Otherwise it sends one mail per recipient with
+ * everything they have not seen yet. An active conversation therefore sends no mail at all, and a
+ * burst of messages only one.
+ *
+ * The timer runs on the instance that saved the message – with several instances behind a load
+ * balancer exactly one of them sends. A Directus `schedule()` would run on every instance and mail
+ * several times.
  *
  * Plain logic without Directus imports, so it can be unit tested in Node.
  */
@@ -14,10 +19,7 @@ export class ChatMailDigestHelper {
   /** How long a chat has to be quiet before its mails go out. */
   static readonly QUIET_MINUTES = 5;
 
-  /** Chats last changed before this point in time are quiet. */
-  static getQuietCutoff(now: Date): string {
-    return new Date(now.getTime() - ChatMailDigestHelper.QUIET_MINUTES * 60 * 1000).toISOString();
-  }
+  static readonly QUIET_MS = ChatMailDigestHelper.QUIET_MINUTES * 60 * 1000;
 
   /**
    * The messages a recipient has not seen: those written by others after the recipient's own last

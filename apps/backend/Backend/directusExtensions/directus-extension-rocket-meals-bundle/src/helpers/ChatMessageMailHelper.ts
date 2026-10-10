@@ -32,6 +32,35 @@ export class ChatMessageMailHelper {
 
   constructor(private readonly myDatabaseHelper: MyDatabaseHelper) {}
 
+  /**
+   * Called {@link ChatMailDigestHelper.QUIET_MS} after a message was saved. Does nothing when a
+   * newer message was written meanwhile (its own timer takes over) or the mails were sent already.
+   * Otherwise it takes over `chats.mail_pending_since` and mails everything written since then.
+   */
+  async sendMailsIfQuiet(chatId: string, messageId: PrimaryKey, messageDate: string): Promise<void> {
+    const chatMessagesHelper = new ItemsServiceHelper<DatabaseTypes.ChatMessages>(this.myDatabaseHelper, CollectionNames.CHAT_MESSAGES);
+    // Messages of the same millisecond are ordered by id, so exactly one of them counts as the last.
+    const newerMessages = await chatMessagesHelper.readByQuery({
+      filter: { _and: [{ chat: { _eq: chatId } }, { _or: [{ date_created: { _gt: messageDate } }, { _and: [{ date_created: { _eq: messageDate } }, { id: { _gt: messageId } }] }] }] },
+      fields: ['id'],
+      limit: 1,
+    });
+    if (newerMessages.length > 0) {
+      return;
+    }
+
+    const chatsHelper = new ItemsServiceHelper<DatabaseTypes.Chats>(this.myDatabaseHelper, CollectionNames.CHATS);
+    const chat = await chatsHelper.readOne(chatId, { fields: ['id', 'mail_pending_since'] });
+    const since = chat?.mail_pending_since;
+    if (!since) {
+      return;
+    }
+    // Cleared first: a message written meanwhile notes itself again and is mailed by its own timer
+    // instead of getting lost.
+    await chatsHelper.updateOne(chatId, { mail_pending_since: null }, { disableEventEmit: true });
+    await this.sendMailsForChat(chatId, since);
+  }
+
   /** Mails everything written in the chat since `since`. */
   async sendMailsForChat(chatId: string, since: string): Promise<void> {
     const chatMessagesHelper = new ItemsServiceHelper<DatabaseTypes.ChatMessages>(this.myDatabaseHelper, CollectionNames.CHAT_MESSAGES);

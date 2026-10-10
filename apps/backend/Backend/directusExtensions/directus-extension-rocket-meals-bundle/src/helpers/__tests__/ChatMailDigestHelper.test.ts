@@ -35,9 +35,8 @@ describe('ChatMailDigestHelper.joinMessages', () => {
   });
 });
 
-describe('ChatMailDigestHelper.getQuietCutoff', () => {
-  it('lies the quiet time before now', () => {
-    const now = new Date('2026-10-10T10:00:00.000Z');
-    expect(ChatMailDigestHelper.getQuietCutoff(now)).toBe('2026-10-10T09:55:00.000Z');
+describe('ChatMailDigestHelper.QUIET_MS', () => {
+  it('is the quiet time in milliseconds', () => {
+    expect(ChatMailDigestHelper.QUIET_MS).toBe(5 * 60 * 1000);
   });
 });

@@ -13,7 +13,7 @@
     "group": null,
     "hidden": true,
     "interface": "datetime",
-    "note": "Date of the first message not mailed yet. Set by the chat-conversation-state-hook, cleared by the chat-mail-schedule once the chat was quiet for a few minutes.",
+    "note": "Date of the first message not mailed yet. Set by the chat-conversation-state-hook, cleared by the timer of the last message once the chat was quiet for 5 minutes.",
     "options": null,
     "readonly": true,
     "required": false,

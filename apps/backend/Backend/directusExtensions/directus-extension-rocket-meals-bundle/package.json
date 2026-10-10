@@ -50,11 +50,6 @@
       },
       {
         "type": "hook",
-        "name": "chat-mail-schedule",
-        "source": "src/chat-mail-schedule/index.ts"
-      },
-      {
-        "type": "hook",
         "name": "app-reviews-pull-hook",
         "source": "src/app-reviews-pull-hook/index.ts"
       },

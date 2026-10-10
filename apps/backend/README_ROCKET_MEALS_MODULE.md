@@ -96,13 +96,24 @@ Mails gehen **zeitversetzt** raus, damit eine laufende Unterhaltung nicht pro Na
 auslöst (`ChatMailDigestHelper`):
 
 - Der `chat-conversation-state-hook` verschickt selbst keine Mail. Er merkt sich die erste noch
-  nicht gemailte Nachricht in `chats.mail_pending_since`. Jede Nachricht aktualisiert
-  `chats.date_updated`.
-- Der `chat-mail-schedule` schaut jede Minute nach Chats mit `mail_pending_since`, deren
-  `date_updated` mindestens 5 Minuten zurückliegt, und schickt dann **eine** Mail pro Empfänger mit
-  allen Nachrichten, die er noch nicht gesehen hat: was andere nach seiner eigenen letzten Nachricht
-  geschrieben haben. Wer inzwischen selbst geantwortet hat, bekommt nichts.
+  nicht gemailte Nachricht in `chats.mail_pending_since` und startet pro Nachricht einen Timer
+  (`setTimeout`, 5 Minuten).
+- Läuft der Timer ab, schaut er in der Datenbank nach, ob es im Chat inzwischen eine neuere
+  Nachricht gibt. Dann übernimmt deren Timer und dieser tut nichts. Sonst schickt er **eine** Mail
+  pro Empfänger mit allen Nachrichten, die der Empfänger noch nicht gesehen hat: was andere nach
+  seiner eigenen letzten Nachricht geschrieben haben. Wer inzwischen selbst geantwortet hat, bekommt
+  nichts.
 - Push-Benachrichtigungen bei Antworten des Supports gehen weiterhin sofort raus.
+
+> **Mehrere Instanzen:** Das Backend läuft mit mehreren Directus-Instanzen. Deshalb gibt es für die
+> Chat-Mails bewusst **keinen** Directus-`schedule()`: der liefe auf jeder Instanz und würde
+> dieselben Mails mehrfach verschicken. Der Timer läuft nur auf der Instanz, die die Nachricht
+> gespeichert hat, und die Prüfung „gibt es eine neuere Nachricht?“ geht über die gemeinsame
+> Datenbank. So verschickt genau eine Instanz die Mail, auch wenn die Nachrichten eines Chats über
+> verschiedene Instanzen kommen. Wird eine Instanz während der 5 Minuten neu gestartet, geht ihr
+> Timer verloren. `mail_pending_since` bleibt dann gesetzt, und die Mails gehen mit der nächsten
+> Nachricht im Chat raus. Dasselbe gilt für jeden neuen zeitversetzten Versand: nie über
+> `schedule()`, wenn er nicht auf jeder Instanz laufen darf.
 
 Vor jeder Mail wird die Adresse geprüft (`ChatMailRecipientHelper`):
 

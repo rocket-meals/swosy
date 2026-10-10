@@ -9,6 +9,9 @@ import {BackendLanguageResolver} from '../helpers/translations/BackendLanguageRe
 import {BackendTranslationKeys} from '../helpers/translations/BackendTranslationKeys';
 import {AppFeedbackStateSyncHelper} from '../helpers/AppFeedbackStateSyncHelper';
 import {HookKeysHelper} from '../helpers/HookKeysHelper';
+import {ChatMailDigestHelper} from '../helpers/ChatMailDigestHelper';
+import {ChatMessageMailHelper} from '../helpers/ChatMessageMailHelper';
+import {ApiContext} from '../helpers/ApiContext';
 
 const HOOK_NAME = 'chat_conversation_state';
 
@@ -71,16 +74,18 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
 
     console.log(`${HOOK_NAME}: Conversation state:`, conversationState);
 
-    // This update also bumps `chats.date_updated`, which restarts the wait for the mails below.
     await chatsHelper.updateOne(chatId, { conversation_state: conversationState });
 
-    // Mails are not sent here: `chat-mail-schedule` sends them once the chat was quiet for a few
-    // minutes, so an active conversation does not send a mail per message (see ChatMailDigestHelper).
+    // Mails are not sent here but once the chat was quiet for a few minutes, so an active
+    // conversation does not send a mail per message (see ChatMailDigestHelper). The timer runs on
+    // this instance only – a Directus `schedule()` would run on every instance and mail several times.
     try {
       const chat = await chatsHelper.readOne(chatId, { fields: ['id', 'mail_pending_since'] });
+      const messageDate = message?.date_created || new Date().toISOString();
       if (!chat?.mail_pending_since) {
-        await chatsHelper.updateOne(chatId, { mail_pending_since: message?.date_created || new Date().toISOString() });
+        await chatsHelper.updateOne(chatId, { mail_pending_since: messageDate });
       }
+      scheduleMails(apiContext, chatId, messageId, messageDate);
     } catch (error) {
       console.error(`${HOOK_NAME}: Failed to note the pending mails of chat ${chatId}`, error);
     }
@@ -102,6 +107,21 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
     }
   });
 });
+
+/**
+ * Looks into the chat {@link ChatMailDigestHelper.QUIET_MS} after a message. A restart of the
+ * instance in between drops the timer; the mails then go out after the next message in the chat,
+ * which still finds `mail_pending_since` set.
+ */
+function scheduleMails(apiContext: ApiContext, chatId: string, messageId: string, messageDate: string): void {
+  const timer = setTimeout(() => {
+    new ChatMessageMailHelper(new MyDatabaseHelper(apiContext)).sendMailsIfQuiet(chatId, messageId, messageDate).catch(error => {
+      console.error(`${HOOK_NAME}: Failed to send the mails of chat ${chatId}`, error);
+    });
+  }, ChatMailDigestHelper.QUIET_MS);
+  // A pending timer must not keep the process alive on shutdown.
+  (timer as unknown as { unref?: () => void }).unref?.();
+}
 
 /** The feedbacks a chat belongs to; empty when they cannot be read – notifications are best effort. */
 async function findRelatedItems<T>(load: () => Promise<T[]>, chatId: string, label: string): Promise<T[]> {
