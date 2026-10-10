@@ -78,7 +78,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
 
     // Mails are not sent here but once the chat was quiet for a few minutes, so an active
     // conversation does not send a mail per message (see ChatMailDigestHelper). The timer runs on
-    // this instance only – a Directus `schedule()` would run on every instance and mail several times.
+    // this instance only, the check for a newer message goes through the shared database.
     try {
       const chat = await chatsHelper.readOne(chatId, { fields: ['id', 'mail_pending_since'] });
       const messageDate = message?.date_created || new Date().toISOString();

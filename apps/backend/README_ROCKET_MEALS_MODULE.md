@@ -105,15 +105,20 @@ auslöst (`ChatMailDigestHelper`):
   nichts.
 - Push-Benachrichtigungen bei Antworten des Supports gehen weiterhin sofort raus.
 
-> **Mehrere Instanzen:** Das Backend läuft mit mehreren Directus-Instanzen. Deshalb gibt es für die
-> Chat-Mails bewusst **keinen** Directus-`schedule()`: der liefe auf jeder Instanz und würde
-> dieselben Mails mehrfach verschicken. Der Timer läuft nur auf der Instanz, die die Nachricht
-> gespeichert hat, und die Prüfung „gibt es eine neuere Nachricht?“ geht über die gemeinsame
-> Datenbank. So verschickt genau eine Instanz die Mail, auch wenn die Nachrichten eines Chats über
-> verschiedene Instanzen kommen. Wird eine Instanz während der 5 Minuten neu gestartet, geht ihr
-> Timer verloren. `mail_pending_since` bleibt dann gesetzt, und die Mails gehen mit der nächsten
-> Nachricht im Chat raus. Dasselbe gilt für jeden neuen zeitversetzten Versand: nie über
-> `schedule()`, wenn er nicht auf jeder Instanz laufen darf.
+> **Mehrere Instanzen:** Das Backend läuft mit mehreren Directus-Instanzen. Der Timer läuft nur
+> auf der Instanz, die die Nachricht gespeichert hat, und die Prüfung „gibt es eine neuere
+> Nachricht?“ geht über die gemeinsame Datenbank. So verschickt genau eine Instanz die Mail, auch
+> wenn die Nachrichten eines Chats über verschiedene Instanzen kommen. Wird eine Instanz während der
+> 5 Minuten neu gestartet, geht ihr Timer verloren. `mail_pending_since` bleibt dann gesetzt, und die
+> Mails gehen mit der nächsten Nachricht im Chat raus.
+>
+> Ein Directus-`schedule()` in einer Extension läuft dagegen **nicht** auf jeder Instanz, solange
+> `SYNCHRONIZATION_STORE: "redis"` gesetzt ist (wie in `apps/backend/docker-compose.yaml`): Directus
+> stimmt jeden Tick über Redis ab, und genau eine Instanz führt ihn aus. Ausprobiert mit
+> Directus 11.17.4 und 2 Replikas, Cron alle 5 Sekunden: mit Redis jeder Tick einmal (abwechselnd
+> auf beiden Instanzen), mit `SYNCHRONIZATION_STORE: "memory"` jeder Tick zweimal. Die Abstimmung
+> gilt pro Tick, nicht für die Laufzeit: dauert ein Lauf länger als der Abstand zwischen zwei Ticks,
+> kann der nächste Tick auf einer anderen Instanz schon parallel starten.
 
 Vor jeder Mail wird die Adresse geprüft (`ChatMailRecipientHelper`):
 

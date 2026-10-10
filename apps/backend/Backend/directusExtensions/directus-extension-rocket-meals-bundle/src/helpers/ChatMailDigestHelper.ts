@@ -8,9 +8,8 @@
  * everything they have not seen yet. An active conversation therefore sends no mail at all, and a
  * burst of messages only one.
  *
- * The timer runs on the instance that saved the message – with several instances behind a load
- * balancer exactly one of them sends. A Directus `schedule()` would run on every instance and mail
- * several times.
+ * The timer runs on the instance that saved the message, and the check for a newer message goes
+ * through the shared database – with several instances exactly one of them sends.
  *
  * Plain logic without Directus imports, so it can be unit tested in Node.
  */
