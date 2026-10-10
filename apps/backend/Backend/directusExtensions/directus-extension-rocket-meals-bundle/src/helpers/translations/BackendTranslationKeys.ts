@@ -52,6 +52,8 @@ export const BackendTranslationKeys = {
   app_feedback_answer_mail_no_reply_hint: 'app_feedback_answer_mail_no_reply_hint',
   app_feedback_chat_answer_mail_intro: 'app_feedback_chat_answer_mail_intro',
   app_feedback_chat_answer_mail_reply_hint: 'app_feedback_chat_answer_mail_reply_hint',
+  chat_answer_mail_subject: 'chat_answer_mail_subject',
+  chat_answer_mail_intro: 'chat_answer_mail_intro',
   notification_support_answer_title: 'notification_support_answer_title',
   notification_feature_wish_published_title: 'notification_feature_wish_published_title',
   notification_feature_wish_published_body: 'notification_feature_wish_published_body',

@@ -14,6 +14,7 @@ import { HookKeysHelper } from '../helpers/HookKeysHelper';
 import { AppFeedbackAnswerMail } from '../helpers/rocket-meals-module/AppFeedbackAnswerMail';
 import { AppFeedbackAnswerChannel, AppFeedbackChatHelper } from '../helpers/rocket-meals-module/AppFeedbackChatHelper';
 import { BackendTranslator } from '../helpers/translations/BackendTranslator';
+import { AppFeedbackStateSyncHelper } from '../helpers/AppFeedbackStateSyncHelper';
 
 const SCHEDULE_NAME = 'activity_auto_cleanup';
 
@@ -112,6 +113,22 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
 
   const toMail = MailAdresses.SupportMail;
 
+  // The state set on a feedback (e.g. in the module "Rocket Meals") is also the state of its chat,
+  // so the author sees it in the app. The other direction is in `chat-conversation-state-hook`.
+  action(CollectionNames.APP_FEEDBACKS + '.items.update', async (meta, eventContext) => {
+    const payload = meta.payload as Partial<DatabaseTypes.AppFeedbacks> | undefined;
+    if (!payload?.state) {
+      return;
+    }
+    try {
+      await AppFeedbackStateSyncHelper.syncChatsFromFeedbacks(new MyDatabaseHelper(apiContext, eventContext), HookKeysHelper.getKeysFromMeta(meta), payload.state);
+    } catch (error) {
+      console.error('app-feedbacks-hook: Failed to sync the state of chats with their app feedback', error);
+    }
+  });
+
+  // Only an answer in `response` to a feedback without profile but with contact email is mailed –
+  // any other change of a feedback sends nothing.
   action(CollectionNames.APP_FEEDBACKS + '.items.update', async meta => {
     const payload = meta.payload as Partial<DatabaseTypes.AppFeedbacks> | undefined;
     if (!payload?.response || payload.response.trim() === '') {

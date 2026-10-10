@@ -78,7 +78,8 @@ export function getVersionPatch() {
 	// 48: common: FeatureWishHelper author like and delete rules, CollectionNames.DIRECTUS_FIELDS
 	// 49: common-ui: MyButton with translated action buttons (save, submit, update, edit, cancel, delete)
 	// 50: merge of master (backend feedback pages)
-	return 50;
+	// 51: common: app feedback state kept in sync with its chat
+	return 51;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

@@ -14,17 +14,17 @@
  * field instead, the answer goes to `app_feedbacks.response`, the `app-feedbacks-hook` mails it and
  * the feedback is done. Without contact email (anonymous) it can only be marked as done.
  *
- * A feedback without chat that will not get one – a store review or one without profile – can
- * still be marked as done (and opened again) without answering; that is kept in
- * `app_feedbacks.state`.
+ * The status shown and set here is `app_feedbacks.state` only. The hooks keep it in sync with the
+ * chat: a message of the user sets "waiting for support", the `app-feedbacks-hook` passes a status
+ * set here on to the chat. A feedback without chat that will not get one – a store review or one
+ * without profile – can only be marked as done (and opened again).
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { AppFeedbackChatStatusHelper } from 'repo-depkit-common/src/AppFeedbackChatStatusHelper';
-import { ChatConversationState } from 'repo-depkit-common/src/ChatConversationState';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
-import { FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
+import { FoodFeedbackChatStatus } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { AppFeedbackChatActions } from '../../helpers/rocket-meals-module/AppFeedbackChatActions';
@@ -32,7 +32,6 @@ import { AppFeedbackAnswerChannel, AppFeedbackChatHelper, type AppFeedbackListIt
 import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { ChatQueryHelper } from '../../helpers/rocket-meals-module/ChatQueryHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
-import { SupportChatActions } from '../../helpers/rocket-meals-module/SupportChatActions';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
 import FoodFeedbackRating from '../food-feedbacks/food-feedback-rating.vue';
@@ -70,11 +69,11 @@ const contactEmail = computed(() => (feedback.value ? AppFeedbackChatHelper.getC
 const sentMailAnswer = computed(() => (answerChannel.value === AppFeedbackAnswerChannel.MAIL ? feedback.value?.response?.trim() || undefined : undefined));
 const status = computed(() => (feedback.value ? AppFeedbackChatStatusHelper.getStatus(feedback.value) : FoodFeedbackChatStatus.NEW));
 const canWrite = computed(() => !!feedback.value && (isStoreReview.value || AppFeedbackChatStatusHelper.canStartChat(feedback.value)));
-const isStatusWithoutChat = computed(() => !!feedback.value && AppFeedbackChatStatusHelper.isStatusWithoutChat(feedback.value));
-/** The statuses the menu offers: every chat status, or open / done for a feedback without chat. */
+const isWithoutChat = computed(() => !!feedback.value && AppFeedbackChatStatusHelper.isWithoutChat(feedback.value));
+/** The statuses the menu offers: every status, or open / done for a feedback without chat. */
 const selectableStatuses = computed<FoodFeedbackChatStatus[]>(() => {
-  if (!feedback.value || !isStatusWithoutChat.value) {
-    return [...FoodFeedbackChatStatusHelper.SELECTABLE_STATUSES];
+  if (!feedback.value || !isWithoutChat.value) {
+    return [...AppFeedbackChatStatusHelper.SELECTABLE_STATUSES_WITH_CHAT];
   }
   return [AppFeedbackChatStatusHelper.getOpenStatus(feedback.value), FoodFeedbackChatStatus.RESOLVED];
 });
@@ -145,13 +144,6 @@ async function ensureChat(): Promise<string> {
   return AppFeedbackChatActions.ensureChat(api, feedback.value);
 }
 
-async function setConversationState(state: ChatConversationState) {
-  if (!chatId.value) {
-    return;
-  }
-  await SupportChatActions.setConversationState(api, chatId.value, state);
-}
-
 /** Sends an answer – as chat message, or for a store review as its public answer. */
 async function sendMessage(text: string): Promise<boolean> {
   if (!canWrite.value || !feedback.value) {
@@ -174,12 +166,12 @@ async function sendMessage(text: string): Promise<boolean> {
   // The answer is saved – what follows only updates the page, so a failure there must not look like a failed send.
   try {
     if (!isStoreReview.value) {
+      await AppFeedbackChatActions.setAnsweredInChat(api, feedback.value);
       await loadFeedback();
-      // Set explicitly as well: the hook only recognises support by the app access of the writer.
-      await setConversationState(ChatHelper.getConversationStateAfterMessage(true));
       await loadMessages();
+    } else {
+      await loadFeedback();
     }
-    await loadFeedback();
   } catch (error) {
     console.error('[rocket-meals-module] reloading app feedback after the answer failed', error);
     notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_load_failed), type: 'warning' });
@@ -216,43 +208,17 @@ async function sendMailAnswer() {
   }
 }
 
-/** Marks a feedback without chat as done or opens it again – no chat is created for it. */
-async function changeStatusWithoutChat(nextStatus: FoodFeedbackChatStatus) {
+/** Sets the status by hand – on the feedback, the `app-feedbacks-hook` passes it on to the chat. */
+async function changeStatus(nextStatus: FoodFeedbackChatStatus) {
   if (!feedback.value || nextStatus === status.value || updatingState.value) {
     return;
   }
   updatingState.value = true;
   try {
-    await AppFeedbackChatActions.setResolvedWithoutChat(api, feedback.value, nextStatus === FoodFeedbackChatStatus.RESOLVED);
+    await AppFeedbackChatActions.setStatus(api, feedback.value, nextStatus);
     await loadFeedback();
   } catch (error) {
     console.error('[rocket-meals-module] updating app feedback state failed', error);
-    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_status_change_failed), type: 'error' });
-  } finally {
-    updatingState.value = false;
-  }
-}
-
-/** Sets the status by hand. A feedback without chat gets one first – the status lives in `chats.conversation_state`. */
-async function changeStatus(nextStatus: FoodFeedbackChatStatus) {
-  if (isStatusWithoutChat.value) {
-    await changeStatusWithoutChat(nextStatus);
-    return;
-  }
-  const nextState = FoodFeedbackChatStatusHelper.getConversationStateForStatus(nextStatus);
-  if (!nextState || nextStatus === status.value || updatingState.value || !canWrite.value) {
-    return;
-  }
-  updatingState.value = true;
-  try {
-    if (!chatId.value) {
-      await ensureChat();
-      await loadFeedback();
-    }
-    await setConversationState(nextState);
-    await loadFeedback();
-  } catch (error) {
-    console.error('[rocket-meals-module] updating chat state failed', error);
     notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_status_change_failed), type: 'error' });
   } finally {
     updatingState.value = false;
@@ -301,7 +267,7 @@ watch(() => props.feedbackId, load);
 
       <template v-else-if="feedback">
         <div class="feedback-info">
-          <support-chat-status-menu :status="status" :statuses="selectableStatuses" :can-write="canWrite || isStatusWithoutChat" :updating="updatingState" @change="changeStatus" />
+          <support-chat-status-menu :status="status" :statuses="selectableStatuses" :can-write="!!feedback" :updating="updatingState" @change="changeStatus" />
           <v-icon v-if="AppFeedbackChatHelper.getTypeIcon(feedback)" :name="AppFeedbackChatHelper.getTypeIcon(feedback) ?? ''" small :class="AppFeedbackChatHelper.isPositive(feedback) ? 'positive' : 'negative'" />
           <span class="type-label">{{ feedbackTitle ?? translate(BackendTranslationKeys.rocket_meals_module_no_title) }}</span>
           <food-feedback-rating :rating="feedback.source_rating_raw" />

@@ -294,6 +294,27 @@ export const backendTranslations: TranslationResources = {
     tr: 'Bize uygulamada „Sohbetler“ menü öğesi üzerinden yanıt verebilirsiniz. Bu mümkün değilse bize {{email}} adresinden e-posta ile de ulaşabilirsiniz.',
     zh: '您可以在应用的“聊天”菜单中回复我们。如果无法做到，也可以发送邮件至 {{email}} 联系我们。',
   },
+  /** Mail about a new answer in a chat that belongs to no app feedback (e.g. a food feedback). */
+  chat_answer_mail_subject: {
+    de: '{{project}}: Neue Antwort im Chat',
+    en: '{{project}}: New reply in your chat',
+    ar: '{{project}}: رد جديد في محادثتك',
+    es: '{{project}}: Nueva respuesta en tu chat',
+    fr: '{{project}} : Nouvelle réponse dans votre discussion',
+    ru: '{{project}}: Новый ответ в вашем чате',
+    tr: '{{project}}: Sohbetinizde yeni bir yanıt',
+    zh: '{{project}}：您的聊天中有新回复',
+  },
+  chat_answer_mail_intro: {
+    de: 'Hallo, in deinem Chat gibt es eine neue Antwort:',
+    en: 'Hello, there is a new reply in your chat:',
+    ar: 'مرحبًا، هناك رد جديد في محادثتك:',
+    es: 'Hola, hay una nueva respuesta en tu chat:',
+    fr: 'Bonjour, il y a une nouvelle réponse dans votre discussion :',
+    ru: 'Здравствуйте, в вашем чате появился новый ответ:',
+    tr: 'Merhaba, sohbetinizde yeni bir yanıt var:',
+    zh: '您好，您的聊天中有一条新回复：',
+  },
   notification_support_answer_title: {
     de: 'Neue Antwort vom Support',
     en: 'New reply from support',

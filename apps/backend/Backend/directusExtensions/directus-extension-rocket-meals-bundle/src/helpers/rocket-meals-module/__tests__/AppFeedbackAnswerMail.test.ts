@@ -45,13 +45,37 @@ describe('AppFeedbackAnswerMail.buildChatAnswer', () => {
     expect(mail?.markdown_content).not.toContain('http');
     expect(mail?.markdown_content).not.toContain('Bitte antworte nicht');
   });
+
+  it('goes to the given recipient instead of the contact email', () => {
+    const mail = AppFeedbackAnswerMail.buildChatAnswer({ feedback: { contact_email: null, title: 'Absturz' }, recipient: 'account@studentenwerk.de', answer: 'Behoben.', projectName: 'Swosy', translate: germanTranslate, supportEmail: 'support@example.com' });
+
+    expect(mail?.recipient).toBe('account@studentenwerk.de');
+    expect(mail?.markdown_content).toContain('> Absturz');
+  });
+});
+
+describe('AppFeedbackAnswerMail.buildChatAnswerWithoutFeedback', () => {
+  it('contains the answer and the reply hint, without a quoted feedback', () => {
+    const mail = AppFeedbackAnswerMail.buildChatAnswerWithoutFeedback({ recipient: 'user@studentenwerk.de', answer: ' Danke für den Hinweis. ', projectName: 'Swosy', translate: germanTranslate, supportEmail: 'support@example.com' });
+
+    expect(mail?.recipient).toBe('user@studentenwerk.de');
+    expect(mail?.subject).toBe('Swosy: Neue Antwort im Chat');
+    expect(mail?.markdown_content).toContain('Danke für den Hinweis.');
+    expect(mail?.markdown_content).toContain('„Chats“');
+    expect(mail?.markdown_content).not.toContain('##');
+  });
+
+  it('builds no mail without answer text', () => {
+    expect(AppFeedbackAnswerMail.buildChatAnswerWithoutFeedback({ recipient: 'user@studentenwerk.de', answer: '  ', projectName: 'Swosy', translate: germanTranslate, supportEmail: 'support@example.com' })).toBeUndefined();
+  });
 });
 
 describe('texts of the answer mails', () => {
   it('use neither dashes nor semicolons (writing rule of the README)', () => {
     const mail = AppFeedbackAnswerMail.buildMailAnswer({ feedback, answer: 'Danke.', projectName: 'Swosy', translate: germanTranslate });
     const chatMail = AppFeedbackAnswerMail.buildChatAnswer({ feedback, answer: 'Danke.', projectName: 'Swosy', translate: germanTranslate, supportEmail: 'support@example.com' });
-    for (const text of [mail?.subject, mail?.markdown_content, chatMail?.markdown_content]) {
+    const chatMailWithoutFeedback = AppFeedbackAnswerMail.buildChatAnswerWithoutFeedback({ recipient: 'user@studentenwerk.de', answer: 'Danke.', projectName: 'Swosy', translate: germanTranslate, supportEmail: 'support@example.com' });
+    for (const text of [mail?.subject, mail?.markdown_content, chatMail?.markdown_content, chatMailWithoutFeedback?.subject, chatMailWithoutFeedback?.markdown_content]) {
       expect(text).not.toMatch(/[–—;；؛]/);
     }
   });

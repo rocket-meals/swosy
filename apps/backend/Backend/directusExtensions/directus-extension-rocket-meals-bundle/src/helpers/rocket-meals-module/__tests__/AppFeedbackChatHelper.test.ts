@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { AppFeedbackChatStatusHelper, AppFeedbackSourceFilter, FoodFeedbackChatFilter } from 'repo-depkit-common';
+import { AppFeedbackChatStatusHelper, AppFeedbackSourceFilter, FoodFeedbackChatFilter, FoodFeedbackChatStatus } from 'repo-depkit-common';
 import { AppFeedbackChatActions } from '../AppFeedbackChatActions';
 import { AppFeedbackChatHelper, AppFeedbackTypeFilter } from '../AppFeedbackChatHelper';
 import { FoodFeedbackChatHelper, FoodFeedbackListSort } from '../FoodFeedbackChatHelper';
@@ -87,8 +87,10 @@ describe('AppFeedbackChatHelper', () => {
   });
 
   it('marks every open feedback as done – also store reviews and feedbacks without profile', () => {
-    expect(AppFeedbackChatHelper.canMarkResolved({ id: 'a', chat: { id: 'c', conversation_state: 'waiting_for_support' } })).toBe(true);
-    expect(AppFeedbackChatHelper.canMarkResolved({ id: 'a', chat: { id: 'c', conversation_state: 'resolved' } })).toBe(false);
+    expect(AppFeedbackChatHelper.canMarkResolved({ id: 'a', state: 'waiting_for_support', chat: { id: 'c', conversation_state: 'waiting_for_support' } })).toBe(true);
+    expect(AppFeedbackChatHelper.canMarkResolved({ id: 'a', state: 'closed', chat: { id: 'c', conversation_state: 'resolved' } })).toBe(false);
+    // Only the state of the feedback counts, not the one of its chat.
+    expect(AppFeedbackChatHelper.canMarkResolved({ id: 'a', state: 'open', chat: { id: 'c', conversation_state: 'resolved' } })).toBe(true);
     expect(AppFeedbackChatHelper.canMarkResolved({ id: 'a', profile: 'p', chat: null })).toBe(true);
     expect(AppFeedbackChatHelper.canMarkResolved({ id: 'a', profile: null, chat: null })).toBe(true);
     expect(AppFeedbackChatHelper.canMarkResolved({ id: 'a', source_identifier: 'apple' })).toBe(true);
@@ -139,34 +141,37 @@ describe('AppFeedbackChatActions', () => {
     expect(calls).toEqual([]);
   });
 
-  it('marks chats as done via the chat and feedbacks without chat via their state', async () => {
+  it('marks feedbacks as done via their state in one request – the hook passes it on to the chat', async () => {
     const { api, calls } = createApi();
     const result = await AppFeedbackChatActions.markResolved(api, [
       { id: 'f1', chat: { id: 'c1', conversation_state: 'waiting_for_support' } },
       { id: 'f2', profile: 'p2', chat: null },
-      { id: 'f3', profile: null, chat: null },
       { id: 'r1', source_identifier: 'apple' },
     ]);
-    expect(result.resolvedIds.sort()).toEqual(['f1', 'f2', 'f3', 'r1']);
-    expect(result.failedIds).toEqual([]);
-    expect(calls[0]).toEqual({ method: 'patch', url: FoodFeedbackChatHelper.CHATS_ENDPOINT, data: { keys: ['c1'], data: { conversation_state: 'resolved' } } });
-    expect(calls).toContainEqual({ method: 'patch', url: `${FoodFeedbackChatHelper.CHATS_ENDPOINT}/100`, data: { conversation_state: 'resolved' } });
-    expect(calls[calls.length - 1]).toEqual({ method: 'patch', url: AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT, data: { keys: ['f3', 'r1'], data: { state: 'closed' } } });
+    expect(result).toEqual({ resolvedIds: ['f1', 'f2', 'r1'], failedIds: [] });
+    expect(calls).toEqual([{ method: 'patch', url: AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT, data: { keys: ['f1', 'f2', 'r1'], data: { state: 'closed' } } }]);
   });
 
-  it('marks a feedback without chat as done or open again via its state', async () => {
+  it('reports all feedbacks as failed when the request fails', async () => {
+    const api = { post: async () => ({}), patch: async () => Promise.reject(new Error('forbidden')) };
+    expect(await AppFeedbackChatActions.markResolved(api, [{ id: 'f1' }])).toEqual({ resolvedIds: [], failedIds: ['f1'] });
+  });
+
+  it('sets the status by hand and after an answer in the chat via the state', async () => {
     const { api, calls } = createApi();
-    await AppFeedbackChatActions.setResolvedWithoutChat(api, { id: 'r1' }, true);
-    await AppFeedbackChatActions.setResolvedWithoutChat(api, { id: 'r1' }, false);
+    await AppFeedbackChatActions.setStatus(api, { id: 'f1' }, FoodFeedbackChatStatus.RESOLVED);
+    await AppFeedbackChatActions.setStatus(api, { id: 'f1' }, FoodFeedbackChatStatus.NEW);
+    await AppFeedbackChatActions.setAnsweredInChat(api, { id: 'f1' });
     expect(calls).toEqual([
-      { method: 'patch', url: `${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/r1`, data: { state: 'closed' } },
-      { method: 'patch', url: `${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/r1`, data: { state: 'open' } },
+      { method: 'patch', url: `${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/f1`, data: { state: 'closed' } },
+      { method: 'patch', url: `${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/f1`, data: { state: 'open' } },
+      { method: 'patch', url: `${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/f1`, data: { state: 'waiting_for_user' } },
     ]);
   });
 
   it('answers a store review via its response field', async () => {
     const { api, calls } = createApi();
     await AppFeedbackChatActions.setStoreResponse(api, { id: 'r1' }, 'Danke!');
-    expect(calls).toEqual([{ method: 'patch', url: `${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/r1`, data: { response: 'Danke!' } }]);
+    expect(calls).toEqual([{ method: 'patch', url: `${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/r1`, data: { response: 'Danke!', state: 'waiting_for_user' } }]);
   });
 });

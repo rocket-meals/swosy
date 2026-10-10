@@ -11,7 +11,7 @@
     "group": null,
     "hidden": false,
     "interface": "select-dropdown",
-    "note": null,
+    "note": "Status of the feedback. Kept in sync with the conversation state of its chat by the hooks.",
     "options": {
       "choices": [
         {
@@ -19,8 +19,12 @@
           "value": "open"
         },
         {
-          "text": "in review",
-          "value": "in_review"
+          "text": "waiting for support (user replied)",
+          "value": "waiting_for_support"
+        },
+        {
+          "text": "waiting for user (answered)",
+          "value": "waiting_for_user"
         },
         {
           "text": "solved / closed",

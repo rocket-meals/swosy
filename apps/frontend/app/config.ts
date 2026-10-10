@@ -222,7 +222,8 @@ export function getVersionPatch() {
         //     modal, hint panel and button in the "free rooms" modal to be notified about free apartments
         // 109: free apartment push notification on the housing screen is a plain switch now
         // 110: housing options show the sort row in the housing color with the current choice
-        return 110;
+        // 111: common: app feedback state kept in sync with its chat
+        return 111;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
