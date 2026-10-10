@@ -18,6 +18,7 @@ import WorkflowStartDialog from './workflow-start-dialog.vue';
 import WorkflowRunDrawer from './workflow-run-drawer.vue';
 import WorkflowSwitch from './workflow-switch.vue';
 import WorkflowPlayButton from './workflow-play-button.vue';
+import WorkflowBlockedHint from './workflow-blocked-hint.vue';
 
 const props = defineProps<{ workflowId: string }>();
 
@@ -190,6 +191,8 @@ onBeforeUnmount(() => {
 
     <div class="workflow">
       <v-notice v-if="loadError" type="danger">{{ translate(BackendTranslationKeys.rocket_meals_module_load_failed) }}</v-notice>
+
+      <workflow-blocked-hint v-if="item" :item="item" />
 
       <div class="head">
         <div class="title">

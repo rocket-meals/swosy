@@ -3915,4 +3915,26 @@ export const backendTranslations: TranslationResources = {
     tr: 'Kaydı aç',
     zh: '打开条目',
   },
+  /** Hinweis an einem Workflow, der KI braucht, wenn unter Einstellungen > KI kein Anbieter eingetragen ist. */
+  rocket_meals_module_workflows_ai_not_configured: {
+    de: 'Dieser Workflow braucht KI. Unter Einstellungen > KI ist noch kein OpenAI-kompatibler Anbieter eingetragen.',
+    en: 'This workflow needs AI. No OpenAI-compatible provider is configured under Settings > AI yet.',
+    ar: 'يحتاج سير العمل هذا إلى الذكاء الاصطناعي. لم يتم إعداد أي مزوّد متوافق مع OpenAI في الإعدادات > الذكاء الاصطناعي بعد.',
+    es: 'Este flujo de trabajo necesita IA. Aún no hay ningún proveedor compatible con OpenAI configurado en Ajustes > IA.',
+    fr: 'Ce workflow a besoin de l’IA. Aucun fournisseur compatible OpenAI n’est encore configuré dans Paramètres > IA.',
+    ru: 'Этому процессу нужен ИИ. В разделе «Настройки > ИИ» ещё не указан провайдер, совместимый с OpenAI.',
+    tr: 'Bu iş akışı yapay zekâ gerektirir. Ayarlar > Yapay Zekâ altında henüz OpenAI uyumlu bir sağlayıcı yapılandırılmadı.',
+    zh: '此工作流需要 AI。尚未在“设置 > AI”中配置兼容 OpenAI 的提供商。',
+  },
+  /** Link zu den KI-Einstellungen von Directus. */
+  rocket_meals_module_workflows_configure_ai: {
+    de: 'KI konfigurieren',
+    en: 'Configure AI',
+    ar: 'إعداد الذكاء الاصطناعي',
+    es: 'Configurar IA',
+    fr: 'Configurer l’IA',
+    ru: 'Настроить ИИ',
+    tr: 'Yapay zekâyı yapılandır',
+    zh: '配置 AI',
+  },
 };

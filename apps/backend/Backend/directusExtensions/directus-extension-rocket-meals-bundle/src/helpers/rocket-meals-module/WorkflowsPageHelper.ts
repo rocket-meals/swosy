@@ -34,6 +34,12 @@ export type WorkflowsQuery = {
   meta?: string;
 };
 
+/** Why a workflow cannot run on this server although it is set up. */
+export enum WorkflowBlockedReason {
+  /** It needs the OpenAI-compatible provider of the Directus settings, and none is configured. */
+  AI_NOT_CONFIGURED = 'ai_not_configured',
+}
+
 /** One entry of `GET /rocket-meals-workflows/schedules`. */
 export type WorkflowScheduleInfo = {
   workflow_id: string;
@@ -43,6 +49,8 @@ export type WorkflowScheduleInfo = {
   next_runs: string[];
   /** JSON prefilled when the workflow is started by hand, if it expects an input. */
   input_template: string | null;
+  /** Set when something the workflow needs is missing; missing from older servers. */
+  blocked_reason?: WorkflowBlockedReason | null;
 };
 
 export type WorkflowsSchedulesResponse = {
@@ -194,6 +202,9 @@ export class WorkflowsPageHelper {
 
   public static readonly DEFAULT_WORKFLOW_ICON = 'account_tree';
 
+  /** Where the AI provider is configured in the Directus app. */
+  public static readonly AI_SETTINGS_ROUTE = '/settings/ai';
+
   static getIcon(workflowId: string): string {
     return WorkflowsPageHelper.WORKFLOW_ICONS[workflowId] ?? WorkflowsPageHelper.DEFAULT_WORKFLOW_ICON;
   }
@@ -304,15 +315,23 @@ export class WorkflowsPageHelper {
     });
   }
 
-  /** Can be started right now: enabled, set up on this server and not already running. */
+  /** What the workflow is missing on this server, `undefined` when nothing. */
+  static getBlockedReason(item: WorkflowOverviewItem): WorkflowBlockedReason | undefined {
+    return item.schedule?.blocked_reason ?? undefined;
+  }
+
+  /** Can be started right now: enabled, set up on this server, not missing anything and not already running. */
   static canStart(item: WorkflowOverviewItem): boolean {
-    return item.enabled && item.registered && item.health !== WorkflowHealth.RUNNING;
+    return item.enabled && item.registered && !WorkflowsPageHelper.getBlockedReason(item) && item.health !== WorkflowHealth.RUNNING;
   }
 
   /** Why the start button is greyed out, `undefined` when it is not. */
   static getStartBlockedReasonKey(item: WorkflowOverviewItem): BackendTranslationKeys | undefined {
     if (!item.registered) {
       return BackendTranslationKeys.rocket_meals_module_workflows_not_registered;
+    }
+    if (WorkflowsPageHelper.getBlockedReason(item) === WorkflowBlockedReason.AI_NOT_CONFIGURED) {
+      return BackendTranslationKeys.rocket_meals_module_workflows_ai_not_configured;
     }
     if (!item.enabled) {
       return BackendTranslationKeys.rocket_meals_module_workflows_start_disabled_hint;
@@ -323,9 +342,9 @@ export class WorkflowsPageHelper {
     return undefined;
   }
 
-  /** Disabled and not set up on this server: nothing to look after – they go to the end. */
+  /** Disabled, not set up on this server or missing something (e.g. the AI): nothing to look after – they go to the end. */
   static isInactive(item: WorkflowOverviewItem): boolean {
-    return !item.enabled || !item.registered;
+    return !item.enabled || !item.registered || !!WorkflowsPageHelper.getBlockedReason(item);
   }
 
   static isProblem(item: WorkflowOverviewItem): boolean {

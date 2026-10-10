@@ -6,7 +6,8 @@
  * - `to` makes the whole card a link; without it the card emits `click` (Enter works too), so it can
  *   hold buttons of its own (`actions`, `aside`) – those must stop their click from reaching the card.
  * - Slots: `badge` sits on the corner of the icon, `actions` right of the title, the default slot
- *   below the title, `aside` right of the default slot (bottom aligned).
+ *   below the title, `aside` right of the default slot (bottom aligned), `hint` at the bottom and never
+ *   greyed out, e.g. why the card is `inactive`.
  */
 defineProps<{
   icon: string;
@@ -40,6 +41,7 @@ const emit = defineEmits<{ (event: 'click'): void }>();
         <div class="card-main dim"><slot /></div>
         <div v-if="$slots.aside" class="card-aside"><slot name="aside" /></div>
       </div>
+      <slot name="hint" />
     </div>
   </component>
 </template>

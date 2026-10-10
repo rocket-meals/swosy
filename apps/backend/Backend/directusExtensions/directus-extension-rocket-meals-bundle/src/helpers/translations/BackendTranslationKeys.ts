@@ -411,6 +411,8 @@ export const BackendTranslationKeys = {
   rocket_meals_module_feature_wish_chat_alias: 'rocket_meals_module_feature_wish_chat_alias',
   rocket_meals_module_feature_wish_without_account: 'rocket_meals_module_feature_wish_without_account',
   rocket_meals_module_feature_wish_open_item: 'rocket_meals_module_feature_wish_open_item',
+  rocket_meals_module_workflows_ai_not_configured: 'rocket_meals_module_workflows_ai_not_configured',
+  rocket_meals_module_workflows_configure_ai: 'rocket_meals_module_workflows_configure_ai',
 } as const;
 
 export type BackendTranslationKeys = (typeof BackendTranslationKeys)[keyof typeof BackendTranslationKeys];

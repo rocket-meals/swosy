@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { WorkflowHealth, WorkflowRunsFilter, WorkflowsFilter, WorkflowsPageHelper, WorkflowsSort, type WorkflowOverviewItem } from '../WorkflowsPageHelper';
+import { WorkflowBlockedReason, WorkflowHealth, WorkflowRunsFilter, WorkflowsFilter, WorkflowsPageHelper, WorkflowsSort, type WorkflowOverviewItem } from '../WorkflowsPageHelper';
 import { BackendTranslator } from '../../translations/BackendTranslator';
 import { BackendTranslationKeys } from '../../translations/BackendTranslationKeys';
 import { RocketMealsModulePages } from '../RocketMealsModulePages';
@@ -85,6 +85,17 @@ describe('WorkflowsPageHelper', () => {
       expect(WorkflowsPageHelper.getStartBlockedReasonKey(item('a', { enabled: false }))).toBe(BackendTranslationKeys.rocket_meals_module_workflows_start_disabled_hint);
       expect(WorkflowsPageHelper.getStartBlockedReasonKey(item('a', { health: WorkflowHealth.RUNNING }))).toBe(BackendTranslationKeys.rocket_meals_module_workflows_start_running_hint);
       expect(WorkflowsPageHelper.getStartBlockedReasonKey(item('a', { registered: false }))).toBe(BackendTranslationKeys.rocket_meals_module_workflows_not_registered);
+    });
+
+    it('greys out a workflow that needs AI when none is configured, with the hint as reason', () => {
+      const blocked = item('ai', { schedule: { workflow_id: 'ai', cron: null, next_runs: [], input_template: null, blocked_reason: WorkflowBlockedReason.AI_NOT_CONFIGURED } });
+      expect(WorkflowsPageHelper.getBlockedReason(blocked)).toBe(WorkflowBlockedReason.AI_NOT_CONFIGURED);
+      expect(WorkflowsPageHelper.canStart(blocked)).toBe(false);
+      expect(WorkflowsPageHelper.isInactive(blocked)).toBe(true);
+      expect(WorkflowsPageHelper.getStartBlockedReasonKey(blocked)).toBe(BackendTranslationKeys.rocket_meals_module_workflows_ai_not_configured);
+      const ready = item('ai', { schedule: { workflow_id: 'ai', cron: null, next_runs: [], input_template: null, blocked_reason: null } });
+      expect(WorkflowsPageHelper.getBlockedReason(ready)).toBeUndefined();
+      expect(WorkflowsPageHelper.canStart(ready)).toBe(true);
     });
 
     it('treats every workflow as set up when the schedules could not be loaded', () => {

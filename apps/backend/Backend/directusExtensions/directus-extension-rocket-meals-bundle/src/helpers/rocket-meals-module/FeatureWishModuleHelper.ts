@@ -84,6 +84,8 @@ export class FeatureWishModuleHelper {
   public static readonly PROGRESSES: readonly FeatureWishProgress[] = [FeatureWishProgress.COLLECTED, FeatureWishProgress.PLANNED, FeatureWishProgress.IN_PROGRESS, FeatureWishProgress.RELEASED, FeatureWishProgress.NOT_PLANNED];
   /** The statuses support can set by hand; `merged` needs an original and has its own action. */
   public static readonly SELECTABLE_STATUSES: readonly FeatureWishStatus[] = [FeatureWishStatus.DRAFT, FeatureWishStatus.PUBLISHED, FeatureWishStatus.ARCHIVED];
+  /** The workflow that lets the AI suggest decisions (`feature-wishes-daily-workflow`), shown on top of the page. */
+  public static readonly AI_REVIEW_WORKFLOW_ID = 'feature-wishes-daily';
   /** How many published wishes the "duplicate of" selection offers. */
   public static readonly MERGE_TARGET_LIMIT = 300;
 

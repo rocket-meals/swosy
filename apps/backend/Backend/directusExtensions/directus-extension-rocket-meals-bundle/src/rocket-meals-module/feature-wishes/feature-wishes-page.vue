@@ -6,9 +6,13 @@
  * take over the suggestion of the AI, publish or archive. Every row leads to the details of the
  * wish (`feature-wish-page.vue`) with the notes, the progress and the chat with the author. Likes
  * are rows of the same collection but never show up here.
+ *
+ * On top sits the tile of the workflow that lets the AI sort the new wishes
+ * (`FeatureWishModuleHelper.AI_REVIEW_WORKFLOW_ID`), to start it right here. Without a configured AI
+ * it is greyed out with a hint where to configure it. People who may not read workflows do not see it.
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { FeatureWishStatus, type FeatureWishProgress } from 'repo-depkit-common/src/FeatureWishHelper';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
@@ -16,10 +20,13 @@ import { FeatureWishModuleActions, type FeatureWishUpdateResult } from '../../he
 import { FeatureWishListFilter, FeatureWishListSort, FeatureWishModuleHelper, type FeatureWishListItem, type FeatureWishListOptions } from '../../helpers/rocket-meals-module/FeatureWishModuleHelper';
 import { FoodFeedbackChatHelper } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
+import { WorkflowsActions } from '../../helpers/rocket-meals-module/WorkflowsActions';
+import { WorkflowHealth, WorkflowsPageHelper, type WorkflowOverviewItem } from '../../helpers/rocket-meals-module/WorkflowsPageHelper';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import FilterSelect from '../filter-select.vue';
 import ModuleNavigation from '../module-navigation.vue';
 import FeatureWishChip from './feature-wish-chip.vue';
+import WorkflowCard from '../workflows/workflow-card.vue';
 
 const api = useApi();
 const router = useRouter();
@@ -206,6 +213,71 @@ function getAuthorLabel(wish: FeatureWishListItem): string {
   return wish.profile ? translate(BackendTranslationKeys.rocket_meals_module_user) : translate(BackendTranslationKeys.rocket_meals_module_feature_wish_without_account);
 }
 
+/** The tile of the AI review workflow; `undefined` when it cannot be read (no permission) or does not exist. */
+const aiWorkflow = ref<WorkflowOverviewItem | undefined>();
+const now = ref(new Date());
+let workflowTimer: ReturnType<typeof setTimeout> | undefined;
+let clockTimer: ReturnType<typeof setInterval> | undefined;
+
+async function loadAiWorkflow() {
+  clearTimeout(workflowTimer);
+  const wasRunning = aiWorkflow.value?.health === WorkflowHealth.RUNNING;
+  try {
+    const overview = await WorkflowsActions.loadOverview(api);
+    aiWorkflow.value = overview.find(item => item.id === FeatureWishModuleHelper.AI_REVIEW_WORKFLOW_ID);
+  } catch {
+    aiWorkflow.value = undefined;
+  }
+  const running = aiWorkflow.value?.health === WorkflowHealth.RUNNING;
+  if (wasRunning && !running) {
+    // The AI is done – its suggestions show up in the list.
+    reload();
+  }
+  if (running) {
+    workflowTimer = setTimeout(loadAiWorkflow, WorkflowsPageHelper.REFRESH_WHILE_RUNNING_MS);
+  }
+}
+
+function openAiWorkflow() {
+  if (aiWorkflow.value) {
+    router.push(RocketMealsModulePages.getRoute(RocketMealsModulePages.WORKFLOWS, aiWorkflow.value.id));
+  }
+}
+
+async function toggleAiWorkflow() {
+  const item = aiWorkflow.value;
+  if (!item) {
+    return;
+  }
+  const enabled = !item.enabled;
+  item.enabled = enabled;
+  try {
+    await WorkflowsActions.setEnabled(api, item.id, enabled);
+  } catch (error) {
+    console.error('[rocket-meals-module] switching the AI review workflow failed', error);
+    item.enabled = !enabled;
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_workflows_toggle_failed), type: 'error' });
+  }
+}
+
+async function startAiWorkflow() {
+  const item = aiWorkflow.value;
+  if (!item || !WorkflowsPageHelper.canStart(item)) {
+    return;
+  }
+  const name = WorkflowsPageHelper.getName(item.id, translate);
+  try {
+    await WorkflowsActions.start(api, item.id, item.schedule?.input_template ?? null);
+    item.health = WorkflowHealth.RUNNING;
+    item.runningSince = new Date().toISOString();
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_workflows_started, { name }) });
+  } catch (error) {
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_workflows_start_failed, { name, error: WorkflowsActions.getErrorMessage(error) }), type: 'error' });
+  }
+  clearTimeout(workflowTimer);
+  workflowTimer = setTimeout(loadAiWorkflow, WorkflowsPageHelper.REFRESH_WHILE_RUNNING_MS);
+}
+
 let searchTimeout: ReturnType<typeof setTimeout> | undefined;
 watch(search, () => {
   clearTimeout(searchTimeout);
@@ -228,7 +300,17 @@ watch([progresses, sort, pageSize], () => {
   }
 });
 watch([activeFilter, currentPage], loadWishes);
-onMounted(reload);
+onMounted(() => {
+  reload();
+  loadAiWorkflow();
+  clockTimer = setInterval(() => {
+    now.value = new Date();
+  }, 1_000);
+});
+onBeforeUnmount(() => {
+  clearTimeout(workflowTimer);
+  clearInterval(clockTimer);
+});
 </script>
 
 <template>
@@ -253,6 +335,8 @@ onMounted(reload);
     </template>
 
     <div class="feature-wishes">
+      <workflow-card v-if="aiWorkflow" :item="aiWorkflow" :now="now" @open="openAiWorkflow" @toggle="toggleAiWorkflow" @play="startAiWorkflow" />
+
       <div class="filters">
         <button v-for="filter in FeatureWishModuleHelper.FILTERS" :key="filter" class="filter" :class="{ active: filter === activeFilter }" @click="selectFilter(filter)">
           {{ translate(FeatureWishModuleHelper.getFilterLabelKey(filter)) }}
