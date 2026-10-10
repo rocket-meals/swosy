@@ -46,7 +46,8 @@ async function main() {
 	if (MAINTENANCE_ACTION === 'clear') {
 		const current = await request('/items/app_settings?fields=maintenance_start', { headers });
 		const currentStart = current.data?.maintenance_start ?? null;
-		if (!currentStart || !currentStart.startsWith(MAINTENANCE_START)) {
+		// Compared as points in time: Directus returns e.g. "...:00.000Z" for "...:00Z".
+		if (!currentStart || new Date(currentStart).getTime() !== new Date(MAINTENANCE_START).getTime()) {
 			console.log(`Maintenance window not cleared, maintenance_start is ${currentStart} instead of ${MAINTENANCE_START}`);
 			return;
 		}

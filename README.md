@@ -247,8 +247,8 @@ Optionen werden als Umgebungsvariablen übergeben:
 | `ROCKET_MEALS_ANNOUNCE_MINUTES` | `0` | So viele Minuten nach der Ankündigung wird neu gestartet |
 
 Das angekündigte Ende ist die längste der letzten zehn gemessenen Neustart-Dauern plus 20 %, aufgerundet auf volle
-5 Minuten (ohne Messwerte: 10 Minuten). Die Zeiten werden als Berliner Ortszeit geschrieben, wie Directus sie auch im
-Admin-Bereich anzeigt. Ein von Hand eingetragenes Wartungsfenster wird nach dem Neustart nicht gelöscht.
+5 Minuten (ohne Messwerte: 10 Minuten). Die Felder sind `timestamp`-Felder (UTC), die App zeigt sie in der Zeitzone
+des Geräts an. Ein von Hand eingetragenes Wartungsfenster wird nach dem Neustart nicht gelöscht.
 
 ### Voraussetzung
 
@@ -296,9 +296,9 @@ CRON_SCHEDULE="30 21 * * 6" CRON_LOG_FILE="/workspace/rocket-meals/logs/update-a
 
 Der Workflow `🔁 Daily Backend Restart` (`.github/workflows/backend-daily-restart.yml`) führt das Skript
 **täglich um 19:00 Uhr deutscher Zeit** per SSH auf allen Backend-Servern aus (`test`, `swosy`, `studi-futter`).
-Nur wenn es neue Commits gibt, kündigt er die Wartung in der App an und startet **30 Minuten später** neu.
+Nur wenn es neue Commits gibt, trägt er die Wartung für die App ein und startet direkt neu (ohne Vorlaufzeit).
 Er läuft nur im Repository `rocket-meals/rocket-meals`, nicht in Forks, und lässt sich zusätzlich manuell starten,
-dann auch mit `force_restart` und einer eigenen Vorlaufzeit (`announce_minutes`).
+dann auch mit `force_restart` und einer Vorlaufzeit (`announce_minutes`).
 
 `🚀 Deploy Backend (Manual)` erzwingt den Neustart standardmäßig und startet ohne Vorlaufzeit neu.
 

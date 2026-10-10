@@ -79,11 +79,9 @@ fi
 
 # --- Hilfsfunktionen für das Wartungsfenster ---
 
-# Directus speichert maintenance_start/_end als dateTime ohne Zeitzone und läuft
-# mit TZ=Europe/Berlin. Die Zeitpunkte werden daher als Berliner Ortszeit
-# geschrieben, genau wie ein Admin sie in Directus eintragen würde.
-format_berlin_time() {
-  TZ=Europe/Berlin date -d "@$1" '+%Y-%m-%dT%H:%M:%S'
+# maintenance_start/_end sind timestamp-Felder (mit Zeitzone), daher UTC.
+format_utc_time() {
+  date -u -d "@$1" '+%Y-%m-%dT%H:%M:%SZ'
 }
 
 # Längste der letzten Neustart-Dauern, damit das angezeigte Ende eher zu spät
@@ -199,8 +197,8 @@ MAINTENANCE_START_EPOCH=$(( NOW_EPOCH + ANNOUNCE_MINUTES * 60 ))
 ESTIMATED_SECONDS="$(estimate_restart_seconds)"
 # 20 % Puffer, aufgerundet auf volle 5 Minuten
 ESTIMATED_SECONDS=$(( (ESTIMATED_SECONDS * 12 / 10 + 299) / 300 * 300 ))
-MAINTENANCE_START="$(format_berlin_time "$MAINTENANCE_START_EPOCH")"
-MAINTENANCE_END="$(format_berlin_time $(( MAINTENANCE_START_EPOCH + ESTIMATED_SECONDS )))"
+MAINTENANCE_START="$(format_utc_time "$MAINTENANCE_START_EPOCH")"
+MAINTENANCE_END="$(format_utc_time $(( MAINTENANCE_START_EPOCH + ESTIMATED_SECONDS )))"
 
 if is_directus_running; then
   log "Kündige Wartung an: $MAINTENANCE_START bis voraussichtlich $MAINTENANCE_END"

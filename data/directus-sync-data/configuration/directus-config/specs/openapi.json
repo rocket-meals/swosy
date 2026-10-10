@@ -61052,7 +61052,7 @@
           "maintenance_start": {
             "nullable": true,
             "type": "string",
-            "format": "date-time"
+            "format": "timestamp"
           },
           "date_privacy_policy_updated": {
             "nullable": true,
@@ -61062,7 +61062,7 @@
           "maintenance_end": {
             "nullable": true,
             "type": "string",
-            "format": "date-time"
+            "format": "timestamp"
           },
           "foods_ratings_type_for_unverified": {
             "nullable": true,

@@ -4,8 +4,8 @@
  *
  * The backend restart (scripts/update-and-generate-env.sh) writes both fields
  * shortly before it restarts the server, an admin can also enter them by hand
- * in Directus. The fields are dateTime without time zone in Berlin local time,
- * so they are parsed as local time of the device.
+ * in Directus. Both are timestamp fields (UTC), so every device shows them in
+ * its own time zone.
  */
 
 /** How long before maintenance_start the app starts to warn. */

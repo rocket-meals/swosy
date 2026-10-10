@@ -233,7 +233,8 @@ export function getVersionPatch() {
         // 116: common: app feedback status only from state
         // 117: common: profiles.email_notifications removed again
         // 118: maintenance banner from app_settings.maintenance_start/_end
-        return 118;
+        // 119: maintenance window read as UTC timestamps
+        return 119;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

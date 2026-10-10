@@ -1,7 +1,7 @@
 {
   "collection": "app_settings",
   "field": "maintenance_start",
-  "type": "dateTime",
+  "type": "timestamp",
   "meta": {
     "collection": "app_settings",
     "conditions": null,
@@ -33,7 +33,7 @@
   "schema": {
     "name": "maintenance_start",
     "table": "app_settings",
-    "data_type": "timestamp without time zone",
+    "data_type": "timestamp with time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,
