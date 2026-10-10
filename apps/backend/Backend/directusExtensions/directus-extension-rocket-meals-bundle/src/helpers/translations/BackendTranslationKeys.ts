@@ -117,6 +117,7 @@ export const BackendTranslationKeys = {
   rocket_meals_module_mark_selected_resolved: 'rocket_meals_module_mark_selected_resolved',
   rocket_meals_module_mark_resolved_failed: 'rocket_meals_module_mark_resolved_failed',
   rocket_meals_module_selected_count: 'rocket_meals_module_selected_count',
+  rocket_meals_module_open_count: 'rocket_meals_module_open_count',
   rocket_meals_module_select_all_on_page: 'rocket_meals_module_select_all_on_page',
   rocket_meals_module_search_food: 'rocket_meals_module_search_food',
   rocket_meals_module_all_canteens: 'rocket_meals_module_all_canteens',

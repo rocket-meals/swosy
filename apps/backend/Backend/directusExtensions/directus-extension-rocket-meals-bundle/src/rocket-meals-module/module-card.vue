@@ -82,7 +82,8 @@ const emit = defineEmits<{ (event: 'click'): void }>();
   inset-block-end: -0.125rem;
   inset-inline-end: -0.25rem;
   display: flex;
-  border-radius: 50%;
+  /* Round for a dot, a pill for a count. */
+  border-radius: 999px;
   box-shadow: 0 0 0 2px var(--theme--background-subdued);
 }
 
