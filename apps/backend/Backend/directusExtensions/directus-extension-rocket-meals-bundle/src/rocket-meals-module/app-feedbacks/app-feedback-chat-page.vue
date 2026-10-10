@@ -75,7 +75,8 @@ const selectableStatuses = computed<FoodFeedbackChatStatus[]>(() => {
   if (!feedback.value || !isWithoutChat.value) {
     return [...AppFeedbackChatStatusHelper.SELECTABLE_STATUSES_WITH_CHAT];
   }
-  return [AppFeedbackChatStatusHelper.getOpenStatus(feedback.value), FoodFeedbackChatStatus.RESOLVED];
+  // An answered store review stays done: its answer is public in the store.
+  return AppFeedbackChatStatusHelper.isAnsweredStoreReview(feedback.value) ? [FoodFeedbackChatStatus.RESOLVED] : [FoodFeedbackChatStatus.NEW, FoodFeedbackChatStatus.RESOLVED];
 });
 const userNickname = computed(() => FoodFeedbackChatHelper.getNickname(feedback.value?.profile));
 const userLabel = computed(() => (userNickname.value ? translate(BackendTranslationKeys.rocket_meals_module_user_with_nickname, { nickname: userNickname.value }) : translate(BackendTranslationKeys.rocket_meals_module_user)));

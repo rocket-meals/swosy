@@ -77,9 +77,9 @@ export class AppFeedbackChatActions {
   /**
    * Answers a store review: the text goes to `app_feedbacks.response`, and the
    * `app-reviews-pull-hook` publishes it in the App Store or on Google Play (it rejects the write
-   * when that store is not configured). The review then waits for the user.
+   * when that store is not configured). The review is done with that – the hook closes it as well.
    */
   static async setStoreResponse(api: SupportChatApiClient, feedback: Pick<AppFeedbackListItem, 'id'>, response: string): Promise<void> {
-    await api.patch(`${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/${feedback.id}`, { response, state: AppFeedbackState.WAITING_FOR_USER });
+    await api.patch(`${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/${feedback.id}`, { response, state: AppFeedbackState.CLOSED });
   }
 }

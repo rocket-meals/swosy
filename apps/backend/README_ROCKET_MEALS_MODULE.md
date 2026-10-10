@@ -87,8 +87,10 @@ nur dieses Feld, nie den Chat.
     die Mail zu antworten. Das ist die einzige Mail, die eine Änderung an einem App-Feedback
     auslöst.
   - **Weder Profil noch E-Mail** (anonym) → keine Antwort möglich, nur „Als erledigt markieren“.
-- Store-Bewertungen haben nie einen Chat. Die Antwort im Store setzt sie auf „Beantwortet“. Ältere
-  Bewertungen mit Antwort, aber ohne `state`, zählen ebenfalls als „Beantwortet“.
+- Store-Bewertungen haben nie einen Chat. Sobald `app_feedbacks.response` gesetzt wird (im Modul,
+  direkt in Directus oder beim Abholen aus dem Store), veröffentlicht der `app-reviews-pull-hook` die
+  Antwort im Store und setzt `state = closed`. Ältere Bewertungen mit Antwort, aber offenem `state`,
+  zählen ebenfalls als „Erledigt“.
 
 ### Mails zu Chat-Nachrichten
 
@@ -125,7 +127,8 @@ Vor jeder Mail wird die Adresse geprüft (`ChatMailRecipientHelper`):
 - Empfänger sind die Teilnehmer des Chats und die Autoren verknüpfter Feedbacks (Adresse ihres
   Directus-Accounts und die Kontakt-E-Mail ihres App-Feedbacks).
 - Gast-Accounts (`guest-…@guest.example.com`) und alle anderen Adressen unter `example.com` bekommen
-  keine Mail, ebenso Nutzer mit `email_notifications = false`.
+  keine Mail, ebenso Profile mit `profiles.email_notifications = false` (leer zählt als ja). Die
+  Einstellung hängt am Profil, nicht am Directus-User, weil mehrere User dasselbe Profil haben können.
 - Die Directus-Standardadresse `admin@example.com` steht für den Support: die Mail geht an die
   Support-Adresse.
 - Der Support bekommt eine Mail über alles, was Nutzer seit seiner letzten Antwort geschrieben haben,

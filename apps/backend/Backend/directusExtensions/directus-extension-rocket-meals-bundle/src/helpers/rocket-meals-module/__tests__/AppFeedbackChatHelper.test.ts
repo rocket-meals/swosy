@@ -172,6 +172,6 @@ describe('AppFeedbackChatActions', () => {
   it('answers a store review via its response field', async () => {
     const { api, calls } = createApi();
     await AppFeedbackChatActions.setStoreResponse(api, { id: 'r1' }, 'Danke!');
-    expect(calls).toEqual([{ method: 'patch', url: `${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/r1`, data: { response: 'Danke!', state: 'waiting_for_user' } }]);
+    expect(calls).toEqual([{ method: 'patch', url: `${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/r1`, data: { response: 'Danke!', state: 'closed' } }]);
   });
 });

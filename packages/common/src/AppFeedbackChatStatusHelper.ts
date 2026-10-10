@@ -53,8 +53,8 @@ export enum AppFeedbackSourceFilter {
  * `state` and `chats.conversation_state` in sync. An app feedback from a user with a profile gets
  * its chat right away from the `app-feedbacks-hook`. Feedbacks without profile – anonymous ones
  * and app store reviews – cannot be answered in a chat. A store review is answered publicly in its
- * store instead (`app_feedbacks.response`): an open one with an answer counts as "waiting for user"
- * as well, also for reviews answered before `state` was kept.
+ * store instead (`app_feedbacks.response`): answering closes it, and an open one with an answer
+ * counts as done as well (answered before `state` was kept, or pulled with an answer).
  *
  * Used by the hooks and the backend module "Rocket Meals", so both create the chat the same way.
  */
@@ -84,16 +84,16 @@ export class AppFeedbackChatStatusHelper {
       case AppFeedbackState.WAITING_FOR_USER:
         return FoodFeedbackChatStatus.WAITING_FOR_USER;
       default:
-        return AppFeedbackChatStatusHelper.getOpenStatus(feedback);
+        return AppFeedbackChatStatusHelper.isAnsweredStoreReview(feedback) ? FoodFeedbackChatStatus.RESOLVED : FoodFeedbackChatStatus.NEW;
     }
   }
 
-  /** The status of an open feedback – an answered store review waits for the user, all others are new. */
-  static getOpenStatus(feedback: Pick<AppFeedbackWithChat, 'source_identifier' | 'response'>): FoodFeedbackChatStatus {
-    if (AppFeedbackChatStatusHelper.isStoreReview(feedback) && (feedback.response ?? '').trim().length > 0) {
-      return FoodFeedbackChatStatus.WAITING_FOR_USER;
-    }
-    return FoodFeedbackChatStatus.NEW;
+  /**
+   * Whether a store review has its public answer. Answering closes it (`state` = `closed`); a review
+   * answered before that – or pulled from the store with an answer – counts as done as well.
+   */
+  static isAnsweredStoreReview(feedback: Pick<AppFeedbackWithChat, 'source_identifier' | 'response'>): boolean {
+    return AppFeedbackChatStatusHelper.isStoreReview(feedback) && (feedback.response ?? '').trim().length > 0;
   }
 
   /** The `app_feedbacks.state` behind a status. */
@@ -165,9 +165,9 @@ export class AppFeedbackChatStatusHelper {
       case FoodFeedbackChatFilter.WAITING_FOR_SUPPORT:
         return inState(AppFeedbackState.WAITING_FOR_SUPPORT);
       case FoodFeedbackChatFilter.WAITING_FOR_USER:
-        return { _or: [inState(AppFeedbackState.WAITING_FOR_USER), answeredStoreReview] };
+        return inState(AppFeedbackState.WAITING_FOR_USER);
       case FoodFeedbackChatFilter.RESOLVED:
-        return inState(AppFeedbackState.CLOSED);
+        return { _or: [inState(AppFeedbackState.CLOSED), answeredStoreReview] };
       case FoodFeedbackChatFilter.ALL:
         return undefined;
     }

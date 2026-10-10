@@ -24,8 +24,8 @@ type UserRecipient = { email: string; profileId: PrimaryKey };
  *   after their own last message – to the address of their Directus account and the contact email
  *   of their app feedback. Before anything goes out, every address is checked
  *   ({@link ChatMailRecipientHelper}): guests and other `example.com` addresses get nothing, the
- *   default admin stands for support. Users who switched off mails in Directus
- *   (`email_notifications`) get nothing either.
+ *   default admin stands for support. A profile with `profiles.email_notifications = false` gets
+ *   nothing either (empty counts as yes).
  */
 export class ChatMessageMailHelper {
   private readonly adminCache = new Map<string, boolean>();
@@ -166,13 +166,22 @@ export class ChatMessageMailHelper {
   private async collectEmailsOfProfile(profileId: PrimaryKey, relatedAppFeedbacks: DatabaseTypes.AppFeedbacks[]): Promise<string[]> {
     const emails: string[] = [];
     try {
+      // The setting lives on the profile – several users can share one profile.
+      const profile = await this.myDatabaseHelper.getProfilesHelper().readOne(profileId, { fields: ['id', 'email_notifications'] });
+      if (profile?.email_notifications === false) {
+        return [];
+      }
+    } catch (error) {
+      console.error(`${HELPER_NAME}: Failed to read the mail setting of profile ${profileId}`, error);
+    }
+    try {
       const users = await this.myDatabaseHelper.getUsersHelper().readByQuery({
         filter: { profile: { _eq: profileId } },
-        fields: ['id', 'email', 'email_notifications'],
+        fields: ['id', 'email'],
         limit: -1,
       });
       for (const user of users) {
-        if (user.email && user.email_notifications !== false) {
+        if (user.email) {
           emails.push(user.email);
         }
       }
