@@ -231,7 +231,8 @@ export function getVersionPatch() {
         // 114: common: app feedback state kept in sync with its chat, delayed chat mails
         // 115: common: profiles.email_notifications
         // 116: common: app feedback status only from state
-        return 116;
+        // 117: common: profiles.email_notifications removed again
+        return 117;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -1913,7 +1913,6 @@ export type Profiles = {
   date_privacy_policy_accepted?: string | null;
   date_updated?: string | null;
   devices: any[] | Devices[];
-  email_notifications?: boolean | null;
   foods_feedbacks: any[] | FoodsFeedbacks[];
   friendships_received: any[] | Friendships[];
   friendships_requested: any[] | Friendships[];

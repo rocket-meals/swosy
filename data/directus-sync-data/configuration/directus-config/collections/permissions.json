@@ -2473,8 +2473,7 @@
       "avatar",
       "credit_balance_last_transaction",
       "credit_balance_date_updated",
-      "verified",
-      "email_notifications"
+      "verified"
     ],
     "presets": null,
     "validation": null,
@@ -2524,8 +2523,7 @@
       "notifiy_on_free_apartments",
       "avatar",
       "credit_balance_last_transaction",
-      "credit_balance_date_updated",
-      "email_notifications"
+      "credit_balance_date_updated"
     ],
     "presets": null,
     "validation": {

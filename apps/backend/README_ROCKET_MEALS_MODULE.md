@@ -127,8 +127,7 @@ Vor jeder Mail wird die Adresse geprüft (`ChatMailRecipientHelper`):
 - Empfänger sind die Teilnehmer des Chats und die Autoren verknüpfter Feedbacks (Adresse ihres
   Directus-Accounts und die Kontakt-E-Mail ihres App-Feedbacks).
 - Gast-Accounts (`guest-…@guest.example.com`) und alle anderen Adressen unter `example.com` bekommen
-  keine Mail, ebenso Profile mit `profiles.email_notifications = false` (leer zählt als ja). Die
-  Einstellung hängt am Profil, nicht am Directus-User, weil mehrere User dasselbe Profil haben können.
+  keine Mail.
 - Die Directus-Standardadresse `admin@example.com` steht für den Support: die Mail geht an die
   Support-Adresse.
 - Der Support bekommt eine Mail über alles, was Nutzer seit seiner letzten Antwort geschrieben haben,
