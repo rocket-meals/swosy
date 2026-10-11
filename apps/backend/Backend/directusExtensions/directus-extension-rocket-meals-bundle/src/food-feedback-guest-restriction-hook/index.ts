@@ -29,7 +29,7 @@ function getProfileId(profile: DatabaseTypes.FoodsFeedbacks['profile'] | undefin
   return profile?.id ?? undefined;
 }
 
-export default defineHook(async ({ filter }, apiContext) => {
+export default defineHook(({ filter }, apiContext) => {
   async function readUnverifiedProfile(myDatabaseHelper: MyDatabaseHelper, profileIds: string[]): Promise<ProfileVerification | undefined> {
     if (profileIds.length === 0) {
       return undefined;

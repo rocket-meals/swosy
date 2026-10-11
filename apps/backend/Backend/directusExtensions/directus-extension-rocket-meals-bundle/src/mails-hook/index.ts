@@ -149,7 +149,7 @@ Sie können die Anhänge über folgende Links herunterladen:
   return markdown_content;
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ schedule, action, filter }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ schedule, action, filter }, apiContext) => {
 
   async function sendMail(options: EmailOptions) {
     let { MailService } = apiContext.services;
@@ -164,7 +164,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     return await mailService.send(options);
   }
 
-  filter('shares.create', async (input, meta, eventContext) => {
+  filter('shares.create', (input, meta, eventContext) => {
     //console.log("Filter: shares.create: ")
     //console.log(JSON.stringify(input, null, 2));
     //console.log("Accountability: ")

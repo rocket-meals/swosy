@@ -26,7 +26,7 @@ import * as path from 'node:path';
 
 import { MaestroTestCase } from './MaestroTestCase';
 
-export async function generateMaestroTests(testsDir: string, generatedDir: string): Promise<void> {
+export function generateMaestroTests(testsDir: string, generatedDir: string): Promise<void> {
 	fs.mkdirSync(generatedDir, { recursive: true });
 
 	const testFiles = fs
@@ -35,7 +35,7 @@ export async function generateMaestroTests(testsDir: string, generatedDir: strin
 
 	if (testFiles.length === 0) {
 		console.log('No test files found in', testsDir);
-		return;
+		return Promise.resolve();
 	}
 
 	for (const testFile of testFiles) {
@@ -63,4 +63,5 @@ export async function generateMaestroTests(testsDir: string, generatedDir: strin
 			console.log(`Generated: ${outputPath}`);
 		}
 	}
+	return Promise.resolve();
 }

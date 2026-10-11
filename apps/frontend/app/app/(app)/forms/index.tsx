@@ -54,7 +54,7 @@ setLoading(false);
 useFocusEffect(
 useCallback(() => {
 if (category_id) {
-getAllForms();
+void getAllForms();
 }
 return () => {};
 }, [category_id])

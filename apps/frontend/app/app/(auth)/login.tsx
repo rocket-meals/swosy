@@ -69,8 +69,8 @@ export default function Login() {
 	};
 
 	useEffect(() => {
-		getAppSettings();
-		getProviders();
+		void getAppSettings();
+		void getProviders();
 	}, []);
 
 	// Fallback for the native SSO flow: when the auth redirect opens the app as
@@ -80,8 +80,8 @@ export default function Login() {
 	const deepLinkCode = Array.isArray(code) ? code[0] : code;
 	useEffect(() => {
 		if (deepLinkCode) {
-			completeLoginFromDeepLinkCode(deepLinkCode, token => {
-				handleUserLogin(token);
+			void completeLoginFromDeepLinkCode(deepLinkCode, token => {
+				void handleUserLogin(token);
 			});
 		}
 	}, [deepLinkCode]);
@@ -104,7 +104,7 @@ export default function Login() {
 		}
 		dispatch({ type: UPDATE_MANAGEMENT, payload: isManagement });
 
-		updateLoginStatus(dispatch, user as DatabaseTypes.DirectusUsers);
+		void updateLoginStatus(dispatch, user as DatabaseTypes.DirectusUsers);
 		const currentDate = getCurrentDate();
 
 		dispatch({
@@ -188,7 +188,7 @@ export default function Login() {
 
 	const handleAnonymousLogin = () => {
 		// @ts-ignore
-		updateLoginStatus(dispatch, { id: '' });
+		void updateLoginStatus(dispatch, { id: '' });
 		router.replace('/(app)');
 		const currentDate = getCurrentDate();
 
@@ -239,7 +239,7 @@ export default function Login() {
 
 	useFocusEffect(
 		useCallback(() => {
-			getWikis();
+			void getWikis();
 		}, [])
 	);
 

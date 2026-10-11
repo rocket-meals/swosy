@@ -13,7 +13,7 @@ import { McpAccessTokenHelper } from '../helpers/McpAccessTokenHelper';
 
 const HOOK_NAME = 'mcp-public-user-hook';
 
-export default defineHook(async ({ init }, apiContext) => {
+export default defineHook(({ init }, apiContext) => {
   init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
     try {
       await new McpAccessTokenHelper(new MyDatabaseHelper(apiContext)).ensurePublicUser();

@@ -15,7 +15,7 @@ import {ApiContext} from '../helpers/ApiContext';
 
 const HOOK_NAME = 'chat_conversation_state';
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ action }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, ({ action }, apiContext) => {
   // The state of a chat – set below on every message, or by hand in the module – is also the state
   // of its app feedbacks, so an export of `app_feedbacks` shows it.
   action(CollectionNames.CHATS + '.items.update', async (meta, eventContext) => {

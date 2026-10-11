@@ -112,7 +112,7 @@ const NotificationScreen = () => {
 
 	useEffect(() => {
 		if (foodFeedbacks.length > 0) {
-			getFoodDetails();
+			void getFoodDetails();
 		}
 	}, [foodFeedbacks]);
 

@@ -53,7 +53,7 @@ export default function RoutesScreen() {
 				text: 'Delete All',
 				style: 'destructive',
 				onPress: () => {
-					deleteAllRoutes();
+					void deleteAllRoutes();
 					refreshRoutes();
 				},
 			},

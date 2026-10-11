@@ -46,7 +46,7 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, initialPitch
 				setHtml(htmlContent);
 			}
 		};
-		loadHtml();
+		void loadHtml();
 		return () => {
 			isMounted = false;
 		};

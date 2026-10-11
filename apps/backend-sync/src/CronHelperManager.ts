@@ -20,7 +20,7 @@ const runningTasks: Set<string> = new Set();
 
 export function registerShutdownJobs(){
   // Halteprozess offen, sichere Beendigung bei SIGINT / SIGTERM
-  const shutdown = async () => {
+  const shutdown = () => {
     console.log('Beende Backend-Sync Service...');
     stopAllCronJobs();
     // Warte kurz, damit laufende Tasks sauber enden können

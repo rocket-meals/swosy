@@ -386,7 +386,7 @@ const Index = () => {
 	useFocusEffect(
 		useCallback(() => {
 			if (form_id) {
-				loadFormSubmissions(1);
+				void loadFormSubmissions(1);
 			}
 			return () => {};
 		}, [form_id, selectedOption, sortOption])
@@ -397,7 +397,7 @@ const Index = () => {
 	}, [sortFormSubmissions, sortOption]);
 
 	const handleSearchFilter = () => {
-		loadFormSubmissions(1);
+		void loadFormSubmissions(1);
 	};
 
 	useEffect(() => {

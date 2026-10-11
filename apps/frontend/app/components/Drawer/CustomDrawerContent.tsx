@@ -119,7 +119,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 
 	useEffect(() => {
 		if (!wikis || wikis.length === 0) {
-			getWikis();
+			void getWikis();
 		}
 	}, []);
 

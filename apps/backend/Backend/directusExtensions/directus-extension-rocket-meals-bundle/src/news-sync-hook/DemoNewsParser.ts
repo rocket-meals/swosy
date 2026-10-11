@@ -5,8 +5,8 @@ import { WorkflowRunLogger } from '../workflows-runs-hook/WorkflowRunJobInterfac
 
 export class DemoNewsParser implements NewsParserInterface {
 
-  async getNewsItems(workflowRun?: DatabaseTypes.WorkflowsRuns, logger?: WorkflowRunLogger): Promise<NewsTypeForParser[]> {
-    return [this.getDemoNewsItem('1'), this.getDemoNewsItem('2'), this.getDemoNewsItem('3')];
+  getNewsItems(workflowRun?: DatabaseTypes.WorkflowsRuns, logger?: WorkflowRunLogger): Promise<NewsTypeForParser[]> {
+    return Promise.resolve([this.getDemoNewsItem('1'), this.getDemoNewsItem('2'), this.getDemoNewsItem('3')]);
   }
 
   getDemoNewsItem(external_identifier: string): NewsTypeForParser {

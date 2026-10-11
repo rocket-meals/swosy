@@ -80,7 +80,7 @@ const FileUpload = ({ id, value, onChange, error, isDisabled, custom_type, offli
 			});
 			if (!result.canceled && result.assets.length > 0) {
 				const buffers = await Promise.all(
-					result.assets.map(async file => {
+					result.assets.map(file => {
 						return {
 							name: file.name || `file_${Date.now()}`,
 							type: file.mimeType || 'application/octet-stream',

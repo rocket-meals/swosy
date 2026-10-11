@@ -215,7 +215,7 @@ const Index = () => {
 							isArrowRight={false}
 							text="Baumgartner Software UG"
 							onPress={() => {
-								openInBrowser('https://baumgartner-software.de/homepage/');
+								void openInBrowser('https://baumgartner-software.de/homepage/');
 							}}
 						/>
 						<SupportFAQ
@@ -223,7 +223,7 @@ const Index = () => {
 							text="Rocket Meals"
 							isArrowRight={false}
 							onPress={() => {
-								openInBrowser('https://rocket-meals.de/homepage/');
+								void openInBrowser('https://rocket-meals.de/homepage/');
 							}}
 						/>
 					</View>

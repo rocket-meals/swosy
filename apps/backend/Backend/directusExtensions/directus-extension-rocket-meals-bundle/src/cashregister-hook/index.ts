@@ -40,7 +40,7 @@ class CashRegisterWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async ({ action, init, filter, schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,({ action, init, filter, schedule }, apiContext) => {
   let usedParser: CashregisterTransactionParserInterface | null = null;
   let cronObject: CronObject | null = null;
 
@@ -67,7 +67,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async ({ a
 
   WorkflowScheduler.registerWorkflow(new CashRegisterWorkflow(usedParser));
 
-  WorkflowScheduleHelper.registerScheduleToCreateWorkflowRuns({
+  void WorkflowScheduleHelper.registerScheduleToCreateWorkflowRuns({
     workflowId: 'cashregister-parse',
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,

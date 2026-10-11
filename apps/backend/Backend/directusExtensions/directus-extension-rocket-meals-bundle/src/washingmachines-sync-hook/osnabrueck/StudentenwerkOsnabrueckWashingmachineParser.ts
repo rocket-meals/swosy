@@ -123,7 +123,7 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
    * @param html the raw informations
    * @returns {Promise<Array>} the parsed JSON
    */
-  static async parseTerminalsRawFromIntercardToJSON(html: string): Promise<IntercardWasher[]> {
+  static parseTerminalsRawFromIntercardToJSON(html: string): Promise<IntercardWasher[]> {
     let answer: IntercardWasher[] = []; // prepare an empty array to fill
 
     try {
@@ -159,6 +159,6 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
       console.error('Error parsing HTML', e);
     }
 
-    return answer;
+    return Promise.resolve(answer);
   }
 }

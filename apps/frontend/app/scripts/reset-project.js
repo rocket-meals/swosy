@@ -79,4 +79,4 @@ const moveDirectories = async () => {
 	}
 };
 
-moveDirectories();
+void moveDirectories();

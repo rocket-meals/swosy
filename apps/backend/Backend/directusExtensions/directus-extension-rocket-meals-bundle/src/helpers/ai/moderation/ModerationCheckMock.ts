@@ -11,7 +11,7 @@ export class ModerationCheckMock implements ModerationCheckInterface {
         this.props = props;
     }
 
-    async checkTextModeration(text: string): Promise<ModerationCheckResult> {
+    checkTextModeration(text: string): Promise<ModerationCheckResult> {
         let result = ModerationCheckResultHelper.createEmptyModerationCheckResult()
         const badWords = this.props?.badWords;
         if(badWords){
@@ -21,7 +21,7 @@ export class ModerationCheckMock implements ModerationCheckInterface {
                 }
             }
         }
-        return result;
+        return Promise.resolve(result);
     }
 
 }

@@ -31,7 +31,7 @@ export class AutoTranslatorSettings {
     await this.translationSettingsService.setAutoTranslationSettings(newSettings);
   }
 
-  async getAuthKey() {
+  getAuthKey() {
     return this.apiKey;
   }
 }

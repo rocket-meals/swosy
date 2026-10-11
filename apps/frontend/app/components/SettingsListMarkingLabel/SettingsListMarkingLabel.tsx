@@ -158,7 +158,7 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 
 					const result = (await profileHelper.updateProfile(profileData)) as DatabaseTypes.Profiles;
 					if (result) {
-						fetchProfile();
+						void fetchProfile();
 						(like ? setLikeLoading : setDislikeLoading)(false);
 					}
 				} catch (error) {

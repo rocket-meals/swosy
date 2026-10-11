@@ -78,7 +78,7 @@ const useCollectionFolder = (collection: CollectionNames) => {
 			}
 		};
 
-		loadFolder();
+		void loadFolder();
 
 		return () => {
 			isMounted = false;
@@ -107,7 +107,7 @@ const useCollectionFields = (collection: CollectionNames) => {
 			}
 		};
 
-		loadFields();
+		void loadFields();
 
 		return () => {
 			isMounted = false;

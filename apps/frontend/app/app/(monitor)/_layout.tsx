@@ -71,7 +71,7 @@ export default function MonitorLayout() {
 	};
 
 	useEffect(() => {
-		getAllData();
+		void getAllData();
 	}, []);
 
 	if (loading) {

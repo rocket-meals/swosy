@@ -289,7 +289,7 @@ export class ParseSchedule {
     return dict;
   }
 
-  async getFoodsService() {
+  getFoodsService() {
     return this.context.myDatabaseHelper.getFoodsHelper();
   }
 

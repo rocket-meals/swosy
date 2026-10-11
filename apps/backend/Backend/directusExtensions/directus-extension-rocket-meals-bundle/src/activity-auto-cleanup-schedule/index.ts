@@ -3,7 +3,7 @@ import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'activity_auto_cleanup';
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, ({ schedule }, apiContext) => {
   const isProduction = true;
 
   const cronFrequencyEveryDayAt4AM = '0 4 * * *';

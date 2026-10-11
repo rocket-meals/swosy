@@ -37,22 +37,24 @@ export function getKvDatabase(dbName?: string): Promise<never> {
 	return Promise.reject(new Error('getKvDatabase is not available on web (localStorage backend)'));
 }
 
-export async function getStorageItem(key: string, dbName?: string): Promise<string | null> {
+export function getStorageItem(key: string, dbName?: string): Promise<string | null> {
 	const storage = getLocalStorage();
-	if (!storage) return null;
-	return storage.getItem(keyPrefix(dbName) + key);
+	if (!storage) return Promise.resolve(null);
+	return Promise.resolve(storage.getItem(keyPrefix(dbName) + key));
 }
 
-export async function setStorageItem(key: string, value: string, dbName?: string): Promise<void> {
+export function setStorageItem(key: string, value: string, dbName?: string): Promise<void> {
 	const storage = getLocalStorage();
-	if (!storage) return;
+	if (!storage) return Promise.resolve();
 	storage.setItem(keyPrefix(dbName) + key, value);
+	return Promise.resolve();
 }
 
-export async function removeStorageItem(key: string, dbName?: string): Promise<void> {
+export function removeStorageItem(key: string, dbName?: string): Promise<void> {
 	const storage = getLocalStorage();
-	if (!storage) return;
+	if (!storage) return Promise.resolve();
 	storage.removeItem(keyPrefix(dbName) + key);
+	return Promise.resolve();
 }
 
 export type SqliteStorageKeyUsage = { key: string; bytes: number };
@@ -60,11 +62,11 @@ export type SqliteStorageKeyUsage = { key: string; bytes: number };
 // Powers the debug "storage usage" settings list (see SettingsListSqliteStorage) - lists
 // every key owned by this helper with its approximate size. Skips internal sentinel keys
 // wrapped in double underscores, mirroring the native implementation.
-export async function getStorageUsage(
+export function getStorageUsage(
 	dbName?: string
 ): Promise<{ items: SqliteStorageKeyUsage[]; totalBytes: number }> {
 	const storage = getLocalStorage();
-	if (!storage) return { items: [], totalBytes: 0 };
+	if (!storage) return Promise.resolve({ items: [], totalBytes: 0 });
 	const prefix = keyPrefix(dbName);
 	const items: SqliteStorageKeyUsage[] = [];
 	for (let i = 0; i < storage.length; i++) {
@@ -76,15 +78,15 @@ export async function getStorageUsage(
 	}
 	items.sort((a, b) => b.bytes - a.bytes);
 	const totalBytes = items.reduce((sum, item) => sum + item.bytes, 0);
-	return { items, totalBytes };
+	return Promise.resolve({ items, totalBytes });
 }
 
 // Full dump of this helper's keys for backup/export. Unlike getStorageUsage this includes
 // the internal sentinel keys (e.g. migration markers) on purpose: a restored backup should
 // put the storage into exactly the state it was exported in.
-export async function getAllStorageEntries(dbName?: string): Promise<Record<string, string>> {
+export function getAllStorageEntries(dbName?: string): Promise<Record<string, string>> {
 	const storage = getLocalStorage();
-	if (!storage) return {};
+	if (!storage) return Promise.resolve({});
 	const prefix = keyPrefix(dbName);
 	const entries: Record<string, string> = {};
 	for (let i = 0; i < storage.length; i++) {
@@ -92,7 +94,7 @@ export async function getAllStorageEntries(dbName?: string): Promise<Record<stri
 		if (!fullKey?.startsWith(prefix)) continue;
 		entries[fullKey.slice(prefix.length)] = storage.getItem(fullKey) ?? '';
 	}
-	return entries;
+	return Promise.resolve(entries);
 }
 
 // Backup restore counterpart to getAllStorageEntries: replaces every key owned by this
@@ -107,9 +109,9 @@ export async function replaceAllStorageEntries(entries: Record<string, string>, 
 	}
 }
 
-export async function clearStorage(dbName?: string): Promise<void> {
+export function clearStorage(dbName?: string): Promise<void> {
 	const storage = getLocalStorage();
-	if (!storage) return;
+	if (!storage) return Promise.resolve();
 	const prefix = keyPrefix(dbName);
 	// Collect first - removing while iterating shifts localStorage's key indices.
 	const keysToRemove: string[] = [];
@@ -120,4 +122,5 @@ export async function clearStorage(dbName?: string): Promise<void> {
 	for (const fullKey of keysToRemove) {
 		storage.removeItem(fullKey);
 	}
+	return Promise.resolve();
 }

@@ -66,8 +66,8 @@ export default function Settings() {
 
 	// Hydrate persisted settings once.
 	useEffect(() => {
-		loadClockSettingsAsync().then(setClockSettings);
-		loadFoodWidgetSettingsAsync().then((stored) => {
+		void loadClockSettingsAsync().then(setClockSettings);
+		void loadFoodWidgetSettingsAsync().then((stored) => {
 			if (stored) {
 				storedCanteenAliasRef.current = stored.canteenAlias;
 				setServerKey(stored.serverKey);

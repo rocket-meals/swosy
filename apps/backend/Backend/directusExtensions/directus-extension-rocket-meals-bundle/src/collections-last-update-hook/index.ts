@@ -5,7 +5,7 @@ import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'collections_dates_last_update';
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ action, init }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ action, init }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
   const excludeCollections = new Set([CollectionNames.COLLECTIONS_DATES_LAST_UPDATE]);

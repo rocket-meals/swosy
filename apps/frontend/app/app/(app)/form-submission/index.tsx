@@ -1222,7 +1222,7 @@ const Index = () => {
 				if (parts) {
 					const collection = parts?.length > 2 ? parts.slice(2).join('-') : '';
 					if (parts[0] === 'value_custom') {
-						fetchCollection(collection);
+						void fetchCollection(collection);
 					}
 				}
 			});
@@ -1232,7 +1232,7 @@ const Index = () => {
 	useFocusEffect(
 		useCallback(() => {
 			if (form_submission_id) {
-				fetchAllFormAnswers();
+				void fetchAllFormAnswers();
 			}
 			return () => {};
 		}, [form_submission_id])
@@ -1259,7 +1259,7 @@ const Index = () => {
 				// silently ignore
 			}
 		};
-		fetchFolderIds();
+		void fetchFolderIds();
 	}, []);
 
 	let aliasExcerptLength = 22;

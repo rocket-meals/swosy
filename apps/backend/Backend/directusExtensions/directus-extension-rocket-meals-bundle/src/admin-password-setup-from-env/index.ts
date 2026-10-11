@@ -5,7 +5,7 @@ import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
 
 const SCHEDULE_NAME = 'activity_auto_cleanup';
 
-export default defineHook(async ({ init }, apiContext) => {
+export default defineHook(({ init }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
   let envAdminEmail = EnvVariableHelper.getAdminEmail();

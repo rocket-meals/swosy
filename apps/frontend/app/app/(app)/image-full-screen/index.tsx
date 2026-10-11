@@ -285,7 +285,7 @@ export default function ImageFullScreen() {
 						label="Download Image"
 						handleFunction={() => {
 							setModalVisible(false);
-							downloadImage();
+							void downloadImage();
 						}}
 						groupPosition="single"
 					/>

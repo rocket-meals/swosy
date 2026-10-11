@@ -122,7 +122,7 @@ export class FoodTL1Parser implements FoodParserInterface {
   /**
    * @implements FoodParserInterface
    */
-  async getFoodsListForParser() {
+  getFoodsListForParser(): Promise<FoodsInformationTypeForParser[]> {
     let foodIdToRawFoodofferDict = FoodTL1Parser.getFoodIdToRawFoodofferDict(this.rawFoodoffersJSONList);
     let foodIds = Object.keys(foodIdToRawFoodofferDict);
     let foodsJSONList: FoodsInformationTypeForParser[] = [];
@@ -135,7 +135,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         }
       }
     }
-    return foodsJSONList;
+    return Promise.resolve(foodsJSONList);
   }
 
   getFoodCategoryFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): string | null {
@@ -179,7 +179,7 @@ export class FoodTL1Parser implements FoodParserInterface {
   /**
    * @implements FoodParserInterface
    */
-  async getCanteensList(): Promise<CanteensTypeForParser[]> {
+  getCanteensList(): Promise<CanteensTypeForParser[]> {
     let rawFoodoffers = this.rawFoodoffersJSONList;
     let canteenLabelsDict: { [x: string]: CanteensTypeForParser } = {};
     for (let rawFoodoffer of rawFoodoffers) {
@@ -192,7 +192,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         };
       }
     }
-    return DictHelper.getValueListFromDict(canteenLabelsDict);
+    return Promise.resolve(DictHelper.getValueListFromDict(canteenLabelsDict));
   }
 
   /**
@@ -226,7 +226,7 @@ export class FoodTL1Parser implements FoodParserInterface {
   /**
    * @implements FoodParserInterface
    */
-  async getFoodoffersForParser(): Promise<FoodoffersTypeForParser[]> {
+  getFoodoffersForParser(): Promise<FoodoffersTypeForParser[]> {
     const result: FoodoffersTypeForParser[] = [];
     let rawFoodoffers = this.rawFoodoffersJSONList;
     for (let rawFoodoffer of rawFoodoffers) {
@@ -266,7 +266,7 @@ export class FoodTL1Parser implements FoodParserInterface {
       result.push(foodofferForParser);
     }
 
-    return result;
+    return Promise.resolve(result);
   }
 
   filterZsNummernOnlyForPassedExternalMarkingIdentifiersFromMarkingParser(markings: string[]) {
@@ -291,10 +291,10 @@ export class FoodTL1Parser implements FoodParserInterface {
     return total_marking_external_identifier_list;
   }
 
-  async getRawFoodofferJSONListFromRawReport(rawReport: string | Buffer | undefined): Promise<RawFoodofferInformationListType> {
+  getRawFoodofferJSONListFromRawReport(rawReport: string | Buffer | undefined): Promise<RawFoodofferInformationListType> {
     let jsonListFromCsvString = CSVExportParser.getListOfLineObjectsWithParams(rawReport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_TAB, true);
     let groupedRawFoodofferItemsFromReport = FoodTL1Parser._groupParsedReportItemsToFoodofferListsItems(jsonListFromCsvString);
-    return this.getRawFoodofferJSONListFromGroupedList(groupedRawFoodofferItemsFromReport);
+    return Promise.resolve(this.getRawFoodofferJSONListFromGroupedList(groupedRawFoodofferItemsFromReport));
   }
 
   /**

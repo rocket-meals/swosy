@@ -47,7 +47,7 @@ const SettingsListHexTile: React.FC<Props> = ({
 			setSvgUri(null);
 			return;
 		}
-		(async () => {
+		void (async () => {
 			try {
 				const asset = Asset.fromModule(entry.source as number);
 				await asset.downloadAsync();

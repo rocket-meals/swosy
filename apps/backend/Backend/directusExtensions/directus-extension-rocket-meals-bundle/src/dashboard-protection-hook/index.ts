@@ -31,7 +31,7 @@ function isAdminEmail(email: string | null | undefined): boolean {
   return email.trim().toLowerCase() === adminEmail.trim().toLowerCase();
 }
 
-export default defineHook(async ({ filter }, apiContext) => {
+export default defineHook(({ filter }, apiContext) => {
   async function getActingUserInfo(myDatabaseHelper: MyDatabaseHelper, accountability: Accountability | null | undefined): Promise<ActingUserInfo> {
     const userId = accountability?.user;
     if (!userId) {

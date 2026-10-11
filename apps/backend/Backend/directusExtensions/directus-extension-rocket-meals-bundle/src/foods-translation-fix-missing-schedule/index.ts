@@ -525,6 +525,6 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async (registerFunctions, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, (registerFunctions, apiContext) => {
   WorkflowScheduler.registerWorkflow(new FoodsTranslationFixMissingWorkflow());
 });

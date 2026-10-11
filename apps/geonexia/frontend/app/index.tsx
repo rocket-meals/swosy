@@ -2882,7 +2882,7 @@ function InterruptedRecoveryContent({
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		loadRoutes().then((r) => {
+		void loadRoutes().then((r) => {
 			setRoutes(r);
 			setLoading(false);
 		});
@@ -3924,7 +3924,7 @@ function persistRecordingSnapshotIfDue(options: {
 		// Save a snapshot at most every 10 seconds to limit I/O.
 		if (now - lastSnapshotSaveRef.current >= 10_000) {
 			lastSnapshotSaveRef.current = now;
-			saveRecordingSnapshot({
+			void saveRecordingSnapshot({
 				startedAt: startTimeRef.current,
 				accumulatedSeconds: accumulatedSecondsRef.current,
 				segmentStart: startTimeRef.current,
@@ -4790,7 +4790,7 @@ export default function RecordScreen() {
 
 	// Load persisted OSM consent on mount
 	useEffect(() => {
-		loadOsmConsent().then((consented) => {
+		void loadOsmConsent().then((consented) => {
 			if (consented) setOsmConsent(true);
 		});
 	}, []);
@@ -4827,13 +4827,13 @@ export default function RecordScreen() {
 				const snapshot = await loadRecordingSnapshot();
 				if (!snapshot || snapshot.routePoints.length < 2) {
 					// No interrupted recording or too few points – nothing to recover.
-					clearRecordingSnapshot();
+					void clearRecordingSnapshot();
 					return;
 				}
 				const ageMs = Date.now() - snapshot.savedAt;
 				// Discard snapshots older than 24 hours – they are likely stale.
 				if (ageMs > 24 * 60 * 60 * 1000) {
-					clearRecordingSnapshot();
+					void clearRecordingSnapshot();
 					return;
 				}
 
@@ -4844,12 +4844,12 @@ export default function RecordScreen() {
 							snapshot={snapshot}
 							theme={theme}
 							onDiscard={() => {
-								clearRecordingSnapshot();
+								void clearRecordingSnapshot();
 								closeRecoveryModal();
 							}}
 							onSave={async (activity) => {
 								try { await saveActivity(activity); } catch (err) { console.warn('[RecordScreen] Failed to save recovered activity:', err); }
-								clearRecordingSnapshot();
+								void clearRecordingSnapshot();
 								closeRecoveryModal();
 								router.push(`/activities/${activity.id}`);
 							}}
@@ -5011,7 +5011,7 @@ export default function RecordScreen() {
 
 	const handleConsent = useCallback(() => {
 		setOsmConsent(true);
-		saveOsmConsent(true);
+		void saveOsmConsent(true);
 	}, []);
 
 	const sendRouteToMap = useCallback((points: RoutePoint[]) => {
@@ -5171,7 +5171,7 @@ export default function RecordScreen() {
 		};
 		activity.computed = computeActivityData(activity, enclosedCells);
 		try {
-			saveActivity(activity);
+			void saveActivity(activity);
 			showAlert(
 				'Activity Saved',
 				`Route saved: ${routeCells.length} hex tiles, ${enclosedCells.length} enclosed.`,
@@ -5213,7 +5213,7 @@ export default function RecordScreen() {
 			walkedEdges: computeEdgesFromHexTiles(routeCells),
 		};
 		try {
-			saveRoute(route);
+			void saveRoute(route);
 			showAlert('Route gespeichert', `"${route.name}" wurde als Route gespeichert.`);
 		} catch {
 			showAlert('Fehler', 'Die Route konnte nicht gespeichert werden.');
@@ -5945,7 +5945,7 @@ export default function RecordScreen() {
 		debugReplayTimeoutsRef.current = [];
 
 		// Clear the crash-recovery snapshot since this is a clean stop.
-		clearRecordingSnapshot();
+		void clearRecordingSnapshot();
 
 		if (timerRef.current) {
 			clearInterval(timerRef.current);

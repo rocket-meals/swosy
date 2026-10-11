@@ -68,7 +68,7 @@ const RssFeed: React.FC<RssFeedProps> = ({ urls, switchIntervalInSeconds }) => {
 				setLoading(false);
 			}
 		};
-		fetchFeeds();
+		void fetchFeeds();
 	}, [urls]);
 
 	useEffect(() => {

@@ -218,7 +218,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
         if (newRating === RatingHelper.MAX_RATING) {
             addPointsForFoodRating5Stars();
         }
-        handleFoodRating({
+        void handleFoodRating({
             foodId: foodDetails?.id,
             profileId: profile?.id,
             userId: user?.id || '',

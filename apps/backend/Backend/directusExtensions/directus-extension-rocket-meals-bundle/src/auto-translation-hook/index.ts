@@ -99,7 +99,7 @@ function registerCollectionAutoTranslation(filter: any, apiContext: ApiContext) 
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(scheduleNameAutoTranslation, async ({ filter, action, init, schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(scheduleNameAutoTranslation, ({ filter, action, init, schedule }, apiContext) => {
 
   action(EventHelper.SERVER_START_EVENT, async (meta, context) => {
     let myDatabaseHelper = new MyDatabaseHelper(apiContext, context);

@@ -114,7 +114,7 @@ async function collectCollectionFileReferences(
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, ({ schedule }, apiContext) => {
   const cronString = CronHelper.getCronString(CronHelper.EVERY_FRIDAY_AT_8AM);
 
   schedule(cronString, async () => {

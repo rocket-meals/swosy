@@ -81,7 +81,7 @@ const Index = () => {
 				})
 			);
 		} else {
-			getAllFoodAttributes();
+			void getAllFoodAttributes();
 		}
 	}, [initialFoodAttributes]);
 

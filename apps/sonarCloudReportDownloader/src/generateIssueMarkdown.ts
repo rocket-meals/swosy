@@ -320,7 +320,7 @@ function resolveWithinRepoRoot(candidatePath: string): string {
   return resolved;
 }
 
-async function main() {
+function main() {
   const inputDir = resolveWithinRepoRoot(argv['input-dir']);
   const outputPath = resolveWithinRepoRoot(argv['output']);
   const maxIssues: number = argv['max-issues'];
@@ -352,7 +352,9 @@ async function main() {
   console.log(`✅ Issue markdown saved to ${outputPath}`);
 }
 
-main().catch(err => {
+try {
+  main();
+} catch (err) {
   console.error('Error:', err);
   process.exit(1);
-});
+}

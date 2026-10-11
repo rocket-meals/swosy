@@ -179,7 +179,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				console.error('Error fetching canteen feedback labels', e);
 			}
 		};
-		fetchLabels();
+		void fetchLabels();
 	}, [dispatch]);
 
 	// Cleanup server loading timer on unmount
@@ -494,7 +494,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	};
 
 	const onEndReached = () => {
-		loadNext();
+		void loadNext();
 	};
 
 	const onRefresh = async () => {

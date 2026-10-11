@@ -22,10 +22,10 @@ export class NanoidHelper {
    * @param size Length of the generated id
    * @returns Random id consisting of the given number of characters
    */
-  public static async getNanoid(size: number): Promise<string> {
+  public static getNanoid(size: number): Promise<string> {
     // old short-unique-id is slow
     const uid = new ShortUniqueId({ length: size });
-    return uid.randomUUID(size);
+    return Promise.resolve(uid.randomUUID(size));
 
     //Error: crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported
     //    swosy-rocket-meals-directus-5         |     at file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:18:50438

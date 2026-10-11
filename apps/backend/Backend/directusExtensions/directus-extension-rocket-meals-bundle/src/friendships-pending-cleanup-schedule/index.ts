@@ -7,7 +7,7 @@ const SCHEDULE_NAME = 'friendships_pending_cleanup';
 
 const PENDING_DAYS_THRESHOLD = 31;
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, ({ schedule }, apiContext) => {
   const cronFrequency = '0 20 * * 3'; // every Wednesday at 20:00
 
   schedule(cronFrequency, async () => {

@@ -4,7 +4,7 @@ import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'food_feedback_report';
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ schedule, filter }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ schedule, filter }, apiContext) => {
 
   const collection = CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES;
 

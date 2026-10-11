@@ -63,7 +63,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 
 	useEffect(() => {
 		if (campusDetails) {
-			loadApartmentWithWashingMachinesFromServer(campusDetails?.apartments[0]);
+			void loadApartmentWithWashingMachinesFromServer(campusDetails?.apartments[0]);
 		}
 	}, [campusDetails]);
 
@@ -123,9 +123,9 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 	useEffect(() => {
 		if (washingMachines && washingMachines?.length > 0) {
 			if (Platform.OS !== 'web') {
-				hasNotificationPermission().then(granted => {
+				void hasNotificationPermission().then(granted => {
 					if (granted) {
-						scheduleNotifications();
+						void scheduleNotifications();
 					}
 				});
 			}

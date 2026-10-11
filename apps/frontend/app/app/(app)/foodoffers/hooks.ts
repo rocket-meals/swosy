@@ -210,7 +210,7 @@ export const useFoodOffersData = (
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-        Promise.all([fetchFoods(true), fetchCanteenLabels()]).finally(() => setRefreshing(false));
+        void Promise.all([fetchFoods(true), fetchCanteenLabels()]).finally(() => setRefreshing(false));
     }, [fetchFoods, fetchCanteenLabels]);
 
     useEffect(() => {

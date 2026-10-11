@@ -122,8 +122,8 @@ export function useModuleStatusList<TItem extends ModuleListItem, TFilter extend
   }
 
   function reload() {
-    loadItems();
-    loadCounts();
+    void loadItems();
+    void loadCounts();
   }
 
   /** After a change of the search or the options: back to page 1 – the page watcher then loads the list. */
@@ -132,7 +132,7 @@ export function useModuleStatusList<TItem extends ModuleListItem, TFilter extend
       reload();
     } else {
       currentPage.value = 1;
-      loadCounts();
+      void loadCounts();
     }
   }
 

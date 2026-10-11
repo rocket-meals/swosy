@@ -37,7 +37,7 @@ const persistConfig = {
 const rootReducer = (state: any, action: any) => {
 	if (action.type === 'RESET_STORE') {
 		const { settings } = state;
-		sqliteKeyValueStorage.clear(); // optional: force clear all storage too
+		void sqliteKeyValueStorage.clear(); // optional: force clear all storage too
 		state = { settings };
 	}
 	return reducer(state, action);

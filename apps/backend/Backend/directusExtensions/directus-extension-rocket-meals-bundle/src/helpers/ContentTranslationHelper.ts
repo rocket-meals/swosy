@@ -183,7 +183,7 @@ export class ContentTranslationHelper {
     return ContentTranslationHelper.updateItemTranslationsForItemWithTranslationsFetched(itemWithTranslations, config);
   }
 
-  static async _getUpdateInformationForTranslations<
+  static _getUpdateInformationForTranslations<
     T extends ItemWithExistingTranslations, // T must have an id and translations field
     E extends ExistingTranslation, // the collection of the related translations
   >(options: {

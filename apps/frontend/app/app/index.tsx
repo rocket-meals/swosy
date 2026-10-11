@@ -24,7 +24,7 @@ const Index = () => {
 
 		let subscription: Subscription | undefined;
 
-		(async () => {
+		void (async () => {
 
 			// The system permission dialog can be shown only once on iOS (twice on Android 13+), so it
 			// is never shown at app start - only after our own explanation (usePushNotificationOptInPrompt).

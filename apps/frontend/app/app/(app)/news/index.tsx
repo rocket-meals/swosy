@@ -24,7 +24,7 @@ const Index = () => {
 
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
-		fetchAllNews().finally(() => setRefreshing(false));
+		void fetchAllNews().finally(() => setRefreshing(false));
 	}, []);
 
 	const fetchAllNews = async () => {
@@ -56,7 +56,7 @@ const Index = () => {
 
 	useEffect(() => {
 		if (!news || news.length === 0) {
-			fetchAllNews();
+			void fetchAllNews();
 		}
 	}, []);
 

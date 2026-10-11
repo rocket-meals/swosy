@@ -139,7 +139,7 @@ export class DirectusDatabaseSync {
     console.log(' -  Saved collections');
   }
 
-  private async copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder() {
+  private copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder() {
     // copy all files except .DS_Store from directusConfigOverwriteCollectionsPath to directusConfigCollectionsPath
 
     const absolutePathCollections = path.resolve(__dirname, this.directusConfigOverwriteCollectionsPath);

@@ -39,7 +39,7 @@ class NewsParseWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async ({ action, init, schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,({ action, init, schedule }, apiContext) => {
   let usedParser: NewsParserInterface | null = null;
   switch (EnvVariableHelper.getSyncForCustomer()) {
     case SyncForCustomerEnum.TEST:
@@ -58,7 +58,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async ({ a
   }
 
   let myDatabaseHelper = new MyDatabaseHelper(apiContext);
-  WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+  void WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
     workflowRunInterface: new NewsParseWorkflow(usedParser),
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,

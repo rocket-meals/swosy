@@ -315,7 +315,7 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 				}
 			};
 
-			checkNfcStatus();
+			void checkNfcStatus();
 		}, [addDebugError])
 	);
 

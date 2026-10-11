@@ -6,7 +6,7 @@ import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'push_notification';
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ filter }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ filter }, apiContext) => {
   const collectionName = CollectionNames.PUSH_NOTIFICATIONS;
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 

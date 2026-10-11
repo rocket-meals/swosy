@@ -85,7 +85,7 @@ const SupportFaq = () => {
 							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
 							handleFunction={() => {
 								if (appSettings?.app_stores_url_to_apple) {
-									openInBrowser(appSettings?.app_stores_url_to_apple);
+									void openInBrowser(appSettings?.app_stores_url_to_apple);
 								}
 							}}
 							groupPosition="top"
@@ -97,7 +97,7 @@ const SupportFaq = () => {
 							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
 							handleFunction={() => {
 								if (appSettings?.app_stores_url_to_google) {
-									openInBrowser(appSettings?.app_stores_url_to_google);
+									void openInBrowser(appSettings?.app_stores_url_to_google);
 								}
 							}}
 							groupPosition="middle"
@@ -125,7 +125,7 @@ const SupportFaq = () => {
 							value="Baumgartner Software UG"
 							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
 							handleFunction={() => {
-								openInBrowser('https://baumgartner-software.de');
+								void openInBrowser('https://baumgartner-software.de');
 							}}
 							groupPosition="middle"
 						/>
@@ -136,7 +136,7 @@ const SupportFaq = () => {
                                                         value="Rocket Meals"
 							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
 							handleFunction={() => {
-								openInBrowser('https://rocket-meals.de');
+								void openInBrowser('https://rocket-meals.de');
 							}}
                                                         groupPosition="bottom"
                                                 />

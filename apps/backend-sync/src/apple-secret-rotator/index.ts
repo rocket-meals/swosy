@@ -79,7 +79,7 @@ function setEnvValue(hostEnvFilePath: string, key: string, value: string) {
   console.log("["+HOOK_NAME+"] Updated " + key + " in " + hostEnvFilePath);
 }
 
-async function refreshSecret(config: AppleClientSecretCredentials, hostEnvFilePath: string) {
+function refreshSecret(config: AppleClientSecretCredentials, hostEnvFilePath: string) {
   try {
     const result = generateAppleClientSecret(config);
     let token = result.token;

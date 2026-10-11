@@ -585,7 +585,7 @@ export default function RouteDetailScreen() {
 		const redLineEdges = computeEdgesFromRoutePoints(reference.routePoints, RED_LINE_GRID_RESOLUTION);
 		const updatedRoute: SavedRoute = { ...route, walkedEdgesRedLine: redLineEdges, walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION };
 		try {
-			saveRoute(updatedRoute);
+			void saveRoute(updatedRoute);
 			setRoute(updatedRoute);
 		} catch {
 			// Non-critical: display will fall back to walkedEdges
@@ -704,7 +704,7 @@ export default function RouteDetailScreen() {
 
 		let cancelled = false;
 
-		(async () => {
+		void (async () => {
 			setFeaturesLoading(true);
 
 			// 1. Build hex tile → features dict
@@ -733,7 +733,7 @@ export default function RouteDetailScreen() {
 
 		let cancelled = false;
 
-		(async () => {
+		void (async () => {
 			let tiles: string[];
 
 			// Use cached enclosed tiles if already stored on the route object to
@@ -795,7 +795,7 @@ export default function RouteDetailScreen() {
 
 		let cancelled = false;
 
-		(async () => {
+		void (async () => {
 			try {
 				const suggestions = await suggestRouteNamesForHexTiles(route.hexTiles, enclosedTiles);
 				if (!cancelled) {
@@ -965,7 +965,7 @@ export default function RouteDetailScreen() {
 			walkedEdgesRedLineResolution: undefined,
 		};
 		try {
-			saveRoute(updatedRoute);
+			void saveRoute(updatedRoute);
 			// Reset query guards and state so enclosed tiles and features are
 			// recalculated for the updated hex tile set.
 			resetTileQueryState();
@@ -1051,10 +1051,10 @@ export default function RouteDetailScreen() {
 				<ManualActivityContent
 					route={route}
 					onSave={(activity) => {
-						saveActivity(activity);
+						void saveActivity(activity);
 						// Also add activity ID to route.activityIds
 						const updatedIds = [...new Set([...(route.activityIds ?? []), activity.id])];
-						saveRoute({ ...route, activityIds: updatedIds });
+						void saveRoute({ ...route, activityIds: updatedIds });
 						setRoute({ ...route, activityIds: updatedIds });
 						setRouteActivities((prev) => [activity, ...prev]);
 						// Apply the route's hex tiles and edges to the in-memory map state
@@ -1160,7 +1160,7 @@ export default function RouteDetailScreen() {
 					text: 'Löschen',
 					style: 'destructive',
 					onPress: () => {
-						deleteRoute(route.id);
+						void deleteRoute(route.id);
 						router.replace('/routes');
 					},
 				},

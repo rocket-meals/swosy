@@ -62,7 +62,7 @@ function getPendingKey(event: string, keys: PrimaryKey[]): string {
   return event + ':' + keys.map(String).sort().join(',');
 }
 
-export default defineHook(async ({ filter, action }, apiContext) => {
+export default defineHook(({ filter, action }, apiContext) => {
   const createService = (eventContext?: MyEventContext) => new FeatureWishService(new MyDatabaseHelper(apiContext, eventContext));
 
   async function recountSafely(eventContext?: MyEventContext) {

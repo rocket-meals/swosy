@@ -173,7 +173,7 @@ const Index = () => {
 
 	useFocusEffect(
 		useCallback(() => {
-			getAllCategories();
+			void getAllCategories();
 			return () => {};
 		}, [offlineMode])
 	);

@@ -375,7 +375,7 @@ export const HoursSheetContent: React.FC = () => {
 
 	useEffect(() => {
 		if (selectedCanteen) {
-			fetchSelectedBuilding();
+			void fetchSelectedBuilding();
 		}
 	}, [selectedCanteen]);
 

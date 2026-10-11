@@ -125,7 +125,7 @@ const Index = () => {
 		if (localFoodCategories.length > 0) {
 			setFoodCategories(localFoodCategories);
 		} else {
-			getFoodCategories();
+			void getFoodCategories();
 		}
 	}, [localFoodCategories]);
 
@@ -133,7 +133,7 @@ const Index = () => {
 		if (localFoodOfferCategories.length > 0) {
 			setFoodOfferCategories(localFoodOfferCategories);
 		} else {
-			getFoodOfferCategories();
+			void getFoodOfferCategories();
 		}
 	}, [localFoodOfferCategories]);
 
@@ -216,7 +216,7 @@ const Index = () => {
 			}
 		};
 
-		fetchAliases();
+		void fetchAliases();
 	}, [foodAttributesData, foodAttributesDict, language]);
 
 	const getCanteensWithBuildings = async () => {
@@ -428,9 +428,9 @@ const Index = () => {
 			refreshIntervalRef.current = setInterval(
 				() => {
 					if (isConnected) {
-						fetchFoods();
+						void fetchFoods();
 						if (monitor_additional_canteens_id) {
-							fetchOptionalFoods();
+							void fetchOptionalFoods();
 						}
 					}
 				},
@@ -447,10 +447,10 @@ const Index = () => {
 
 	useEffect(() => {
 		if (canteens_id) {
-			fetchFoods();
+			void fetchFoods();
 		}
 		if (monitor_additional_canteens_id) {
-			fetchOptionalFoods();
+			void fetchOptionalFoods();
 		}
 	}, [canteens_id, monitor_additional_canteens_id]);
 
@@ -490,7 +490,7 @@ const Index = () => {
 		[markings, theme, mode]
 	);
 
-	const fetchCurrentFoodCategory = async (foodList: any, setCategoryState: any, foodCategories: DatabaseTypes.FoodsCategories[]) => {
+	const fetchCurrentFoodCategory = (foodList: any, setCategoryState: any, foodCategories: DatabaseTypes.FoodsCategories[]) => {
 		if (!foodList) return;
 
 		const newCategories: any = {};
@@ -508,8 +508,8 @@ const Index = () => {
 	};
 
 	useEffect(() => {
-		if (foods?.length > 0) fetchCurrentFoodCategory(foods, setMainFoodCategories, foodCategories);
-		if (optionalFoods?.length > 0) fetchCurrentFoodCategory(optionalFoods, setOptionalFoodCategories, foodCategories);
+		if (foods?.length > 0) void fetchCurrentFoodCategory(foods, setMainFoodCategories, foodCategories);
+		if (optionalFoods?.length > 0) void fetchCurrentFoodCategory(optionalFoods, setOptionalFoodCategories, foodCategories);
 	}, [foods, optionalFoods, foodCategories]);
 
 	useEffect(() => {

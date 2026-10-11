@@ -14,7 +14,7 @@ import {MyDefineHook} from "../helpers/MyDefineHook";
 const HOOK_NAME = 'forms-sync-hook';
 
 function registerHookPresentCreateFormSubmissionIllegalState(registerFunctions: RegisterFunctions, apiContext: ApiContext) {
-  registerFunctions.filter<Partial<DatabaseTypes.FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS + '.items.create', async (input, meta, eventContext) => {
+  registerFunctions.filter<Partial<DatabaseTypes.FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS + '.items.create', (input, meta, eventContext) => {
     if (input.state !== FormSubmissionState.DRAFT && !!input.state) {
       // if state is set and not draft -> throw error
       throw new Error('Only form submissions with state draft are allowed to be created.');
@@ -45,7 +45,7 @@ function registerHookPreventUpdateFormSubmissionIllegalState(registerFunctions: 
 
 function registerHookHandleFormSubmissionDateSubmitted(registerFunctions: RegisterFunctions, apiContext: ApiContext) {
   // Handle the update of the form submission state
-  registerFunctions.filter<Partial<DatabaseTypes.FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS + '.items.update', async (input, meta, eventContext) => {
+  registerFunctions.filter<Partial<DatabaseTypes.FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS + '.items.update', (input, meta, eventContext) => {
     if (input.state === FormSubmissionState.SUBMITTED) {
       input.date_submitted = new Date().toISOString();
     }
@@ -503,7 +503,7 @@ async function sendFormExtractMail(form: DatabaseTypes.Forms, formExtract: Datab
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async (registerFunctions, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,(registerFunctions, apiContext) => {
   // Allow only drafts to be created
   registerHookToCreateFormAnswersForFormSubmission(registerFunctions, apiContext);
 

@@ -62,7 +62,7 @@ export const ServerStatusLoader: React.FC<ServerStatusFlowLoaderProps> = ({ chil
 	}
 
 	useEffect(() => {
-		loadInformation();
+		void loadInformation();
 	}, [primaryColor]);
 
 	return <>{children}</>;

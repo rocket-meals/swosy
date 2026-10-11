@@ -468,7 +468,7 @@ function resolveRouteForImportedActivity(
 				...match.route,
 				activityIds: [...new Set([...(match.route.activityIds ?? []), activity.id])],
 			};
-			saveRoute(updatedRoute);
+			void saveRoute(updatedRoute);
 			const idx = existingRoutes.findIndex((r) => r.id === match.route.id);
 			if (idx >= 0) existingRoutes[idx] = updatedRoute;
 		} else {
@@ -498,7 +498,7 @@ function resolveRouteForImportedActivity(
 				walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
 				activityIds: [activity.id],
 			};
-			saveRoute(newRoute);
+			void saveRoute(newRoute);
 			existingRoutes.push(newRoute);
 			routeId = newRoute.id;
 		}
@@ -523,7 +523,7 @@ export default function ActivitiesScreen() {
 
 	const loadData = useCallback(() => {
 		setLoading(true);
-		Promise.all([loadActivities(), loadRoutes()])
+		void Promise.all([loadActivities(), loadRoutes()])
 			.then(([acts, rts]) => {
 				setActivities(acts);
 				setRoutes(rts);
@@ -584,7 +584,7 @@ export default function ActivitiesScreen() {
 
 			const activityToSave: SavedActivity =
 				routeId !== activity.routeId ? { ...activity, routeId } : activity;
-			saveActivity(activityToSave);
+			void saveActivity(activityToSave);
 			applyImportedHexTiles(activityToSave);
 		}
 		closeImportModal();
@@ -743,11 +743,11 @@ export default function ActivitiesScreen() {
 	// Persists a manually-entered activity, links it to its route, applies its
 	// hex tiles/edges to the in-memory map state, then closes the modal and navigates to it.
 	const handleManualActivitySave = useCallback((activity: SavedActivity, selectedRoute: SavedRoute) => {
-		saveActivity(activity);
+		void saveActivity(activity);
 		// Add activity ID to route.activityIds
 		const updatedIds = [...new Set([...(selectedRoute.activityIds ?? []), activity.id])];
 		const updatedRoute = { ...selectedRoute, activityIds: updatedIds };
-		saveRoute(updatedRoute);
+		void saveRoute(updatedRoute);
 		setRoutes((prev) => prev.map((r) => r.id === updatedRoute.id ? updatedRoute : r));
 		setActivities((prev) => [activity, ...prev]);
 		// Apply the route's hex tiles and edges to the in-memory map state

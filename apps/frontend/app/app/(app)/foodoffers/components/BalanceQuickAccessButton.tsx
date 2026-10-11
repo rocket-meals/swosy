@@ -89,7 +89,7 @@ const BalanceQuickAccessButton: React.FC<BalanceQuickAccessButtonProps> = ({ sty
 				}
 			};
 
-			checkNfcStatus();
+			void checkNfcStatus();
 			return () => {
 				isCurrent = false;
 			};

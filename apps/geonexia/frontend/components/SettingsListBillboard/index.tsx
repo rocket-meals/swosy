@@ -34,7 +34,7 @@ const SettingsListBillboard: React.FC<Props> = ({
 			return;
 		}
 		const sprite = OBJECT_SPRITES[spriteIndex];
-		(async () => {
+		void (async () => {
 			try {
 				const asset = Asset.fromModule(sprite.source as number);
 				await asset.downloadAsync();

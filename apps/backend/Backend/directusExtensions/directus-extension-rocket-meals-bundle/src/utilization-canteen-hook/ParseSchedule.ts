@@ -290,7 +290,7 @@ export class ParseSchedule {
     return value_forecast_current;
   }
 
-  async getInterval(intervalMinutes: number, date: Date): Promise<Interval[]> {
+  getInterval(intervalMinutes: number, date: Date): Promise<Interval[]> {
     let minutesPerDay = 24 * 60;
     let interval: Interval[] = [];
     let currentDate = new Date(date);
@@ -318,7 +318,7 @@ export class ParseSchedule {
       });
     }
 
-    return interval;
+    return Promise.resolve(interval);
   }
 
   async getAllCanteens() {

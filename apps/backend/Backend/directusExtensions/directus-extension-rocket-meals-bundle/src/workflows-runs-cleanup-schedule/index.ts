@@ -90,10 +90,10 @@ class WorkflowsRunsCleanupWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({schedule}, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, ({schedule}, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
-  WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+  void WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
     workflowRunInterface: new WorkflowsRunsCleanupWorkflow(),
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,

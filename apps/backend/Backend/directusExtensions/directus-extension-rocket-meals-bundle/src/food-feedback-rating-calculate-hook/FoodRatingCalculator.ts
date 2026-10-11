@@ -31,7 +31,7 @@ export class FoodRatingCalculator {
   recalculateFoodIdsRatingsNonBlocking(food_ids: string[], ignore_food_feedback_ids?: string[]) {
     for (let food_id of food_ids) {
       // await // we do not want to block the deletion of the food_feedbacks
-      this.recalculateFoodRating(food_id, ignore_food_feedback_ids).then(r => {
+      void this.recalculateFoodRating(food_id, ignore_food_feedback_ids).then(r => {
         // do nothing, we do not want to block the deletion of the food_feedbacks
       });
     }

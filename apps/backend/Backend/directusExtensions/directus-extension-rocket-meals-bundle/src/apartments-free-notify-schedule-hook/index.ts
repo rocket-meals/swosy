@@ -40,8 +40,8 @@ class ApartmentsFreeNotifyWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ schedule }, apiContext) => {
-  WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, ({ schedule }, apiContext) => {
+  void WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
     workflowRunInterface: new ApartmentsFreeNotifyWorkflow(),
     myDatabaseHelper: new MyDatabaseHelper(apiContext),
     schedule: schedule,

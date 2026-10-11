@@ -23,11 +23,11 @@ function calculateMaxPoints(eventData: Partial<DatabaseTypes.CollectibleEvents>)
   }, 0);
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ filter }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, ({ filter }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
   const collectibleEventsHelper = myDatabaseHelper.getCollectibleEventsHelper();
 
-  filter(CollectionNames.COLLECTIBLE_EVENTS + '.items.create', async payload => {
+  filter(CollectionNames.COLLECTIBLE_EVENTS + '.items.create', payload => {
     const isArrayPayload = Array.isArray(payload);
     const payloadArray = normalizePayload(payload);
 

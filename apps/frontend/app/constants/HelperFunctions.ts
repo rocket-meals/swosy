@@ -29,7 +29,7 @@ export const generateCodeChallenge = async (codeVerifier: string) => {
 };
 
 // Update the login status
-export const updateLoginStatus = async (dispatch: any, payload: DatabaseTypes.DirectusUsers) => {
+export const updateLoginStatus = (dispatch: any, payload: DatabaseTypes.DirectusUsers) => {
 	dispatch({ type: UPDATE_LOGIN, payload });
 };
 

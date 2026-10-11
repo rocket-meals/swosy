@@ -89,7 +89,7 @@ const FeedbackScreen = () => {
 
 	useFocusEffect(
 		useCallback(() => {
-			fetchDeviceInfo();
+			void fetchDeviceInfo();
 		}, [prefilledTitle])
 	);
 
@@ -118,13 +118,13 @@ const FeedbackScreen = () => {
 	useFocusEffect(
 		useCallback(() => {
 			if (app_feedbacks_id && profile?.id) {
-				fetchFeedbackById();
+				void fetchFeedbackById();
 			}
 			return () => {};
 		}, [app_feedbacks_id, profile?.id])
 	);
 
-	const fetchDeviceInfo = async () => {
+	const fetchDeviceInfo = () => {
 		setInputValues({
 			title: prefilledTitle,
 			content: '',
@@ -291,7 +291,7 @@ const FeedbackScreen = () => {
 	};
 
 	const handleSendDebugRequest = () => {
-		handleCreateAppFeedback({
+		void handleCreateAppFeedback({
 			title: translate(TranslationKeys.debug_request_default_title),
 			content: translate(TranslationKeys.debug_request_default_content),
 		});
@@ -318,7 +318,7 @@ const FeedbackScreen = () => {
 			try {
 				await appFeedback.updateAppFeedback(String(app_feedbacks_id), sanitizedInput);
 				setLoading(false);
-				fetchDeviceInfo();
+				void fetchDeviceInfo();
 				toast('Feedback updated successfully! Thank you for your input.', 'success');
 				router.navigate('/support-ticket');
 			} catch (e: any) {
@@ -453,9 +453,9 @@ const FeedbackScreen = () => {
 							]}
 							onPress={() => {
 								if (app_feedbacks_id) {
-									handleUpdateAppFeedback();
+									void handleUpdateAppFeedback();
 								} else {
-									handleCreateAppFeedback();
+									void handleCreateAppFeedback();
 								}
 							}}
 							disabled={isSubmitDisabled}

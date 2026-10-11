@@ -5,12 +5,13 @@ import { LLMInterface, LLMMessage, LLMResponse } from './LLMInterface';
 export class OpenAIChat implements LLMInterface {
   protected openai: OpenAI | null = null;
 
-  async init(): Promise<void> {
+  init(): Promise<void> {
     const apiKey = EnvVariableHelper.getEnvVariable('AI_OPENAI_API_KEY') || EnvVariableHelper.getEnvVariable('LLM_OPENAI_API_KEY');
     if (!apiKey) {
-      throw new Error('OpenAI API key not provided');
+      return Promise.reject(new Error('OpenAI API key not provided'));
     }
     this.openai = new OpenAI({ apiKey });
+    return Promise.resolve();
   }
 
   async sendRequest<T = any>(options: { messages: LLMMessage[]; sessionId?: string }): Promise<LLMResponse<T>> {

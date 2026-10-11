@@ -344,7 +344,7 @@ const ChatDetailsScreen = () => {
                         }
                 };
 
-                resolveLinkedFoodFeedback();
+                void resolveLinkedFoodFeedback();
 
                 return () => {
                         isMounted = false;
@@ -380,7 +380,7 @@ const ChatDetailsScreen = () => {
                         }
                 };
 
-                resolveLinkedAppFeedback();
+                void resolveLinkedAppFeedback();
 
                 return () => {
                         isMounted = false;

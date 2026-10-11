@@ -99,7 +99,7 @@ function TerrainThumbnailIcon({ terrainEntry }: Readonly<{ terrainEntry: Terrain
 
 	useEffect(() => {
 		let cancelled = false;
-		(async () => {
+		void (async () => {
 			try {
 				const asset = Asset.fromModule(terrainEntry.source as number);
 				await asset.downloadAsync();
@@ -378,7 +378,7 @@ export default function HexTextureConfigScreen() {
 		if (!entry) return;
 		const key = selectedTerrainKey;
 		let cancelled = false;
-		(async () => {
+		void (async () => {
 			try {
 				const asset = Asset.fromModule(entry.source as number);
 				await asset.downloadAsync();

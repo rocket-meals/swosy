@@ -23,7 +23,7 @@ export class StudentenwerkHannoverNewsParser implements NewsParserInterface {
 
   async getRealNewsItems(logger?: WorkflowRunLogger, limitAmountNews?: number): Promise<NewsTypeForParser[]> {
     if (logger) {
-      logger.appendLog('Fetching news from Studentenwerk Hannover');
+      void logger.appendLog('Fetching news from Studentenwerk Hannover');
     }
 
     try {
@@ -31,7 +31,7 @@ export class StudentenwerkHannoverNewsParser implements NewsParserInterface {
       return StudentenwerkHannoverNewsParser.parseNewsItems(response, logger, limitAmountNews);
     } catch (error: any) {
       if (logger) {
-        logger.appendLog('Error fetching or parsing news page: ' + error.toString());
+        void logger.appendLog('Error fetching or parsing news page: ' + error.toString());
       }
       console.error('Error fetching or parsing news page:', error);
       throw new Error(`Failed to fetch or parse news page: ${error.toString()}`);
@@ -48,7 +48,7 @@ export class StudentenwerkHannoverNewsParser implements NewsParserInterface {
 
   static async parseNewsItems(html: string, logger?: WorkflowRunLogger, limitAmountNews?: number): Promise<NewsTypeForParser[]> {
     if (logger) {
-      logger.appendLog('Parsing news items from HTML');
+      void logger.appendLog('Parsing news items from HTML');
     }
 
     const $newsIndexArticle = cheerioLoad(html);
@@ -58,12 +58,12 @@ export class StudentenwerkHannoverNewsParser implements NewsParserInterface {
     let limit = limitAmountNews ? Math.min(limitAmountNews, articleItems.length) : articleItems.length;
 
     if (logger) {
-      logger.appendLog(`Found ${articleItems.length} articles, limiting to ${limit}`);
+      void logger.appendLog(`Found ${articleItems.length} articles, limiting to ${limit}`);
     }
 
     for (let index = 0; index < articleItems.length && index < limit; index++) {
       if (logger) {
-        logger.appendLog(`Processing article at index ${index}`);
+        void logger.appendLog(`Processing article at index ${index}`);
       }
 
       let element: CheerioElement | undefined = articleItems[index];
@@ -73,7 +73,7 @@ export class StudentenwerkHannoverNewsParser implements NewsParserInterface {
 
       if (!header) {
         if (logger) {
-          logger.appendLog(`Skipping article at index ${index} due to missing header`);
+          void logger.appendLog(`Skipping article at index ${index} due to missing header`);
         }
         continue; // Skip this article if header is missing
       }
@@ -106,7 +106,7 @@ export class StudentenwerkHannoverNewsParser implements NewsParserInterface {
     }
 
     if (logger) {
-      logger.appendLog(`Parsed ${data.length} news items`);
+      void logger.appendLog(`Parsed ${data.length} news items`);
     }
 
     data.reverse(); // latest news are on top
