@@ -78,7 +78,8 @@ export enum HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS {
  * Die Felder, aus denen die interne Kennung eines Mietverhältnisses entsteht:
  * VO-Nummer + Mieternummer + Mietbeginn.
  *
- * TODO: Die Mieternummer (`PERSONNR`) ist **nicht eindeutig**. Institute halten mehrere Zimmer NOSONAR S1135 - bewusst offen: die Umstellung braucht erst eine Migration der vorhandenen internal_custom_id-Werte (siehe unten)
+ * Offener Punkt (verfolgt in https://github.com/rocket-meals/rocket-meals/issues/3984):
+ * Die Mieternummer (`PERSONNR`) ist **nicht eindeutig**. Institute halten mehrere Zimmer
  * gleichzeitig, und dasselbe Zimmer wird nacheinander neu vermietet – eine Mieternummer steht
  * deshalb für mehrere Mietverhältnisse, nicht für eines. Damit kann die hier gebildete Kennung
  * zwei verschiedene Mietverhältnisse zusammenfallen lassen.

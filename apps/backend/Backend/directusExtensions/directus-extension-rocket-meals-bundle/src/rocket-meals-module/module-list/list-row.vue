@@ -8,7 +8,7 @@ defineEmits<{ open: []; 'update:selected': [selected: boolean] }>();
 </script>
 
 <template>
-  <div class="row" :class="{ selected }" tabindex="0" @click="$emit('open')" @keydown.enter.self="$emit('open')" @keydown.space.self.prevent="$emit('open')"><!-- NOSONAR Web:S6845 - the row is interactive (click, Enter and Space open it) but cannot take role="button": a button's children are presentational, which would hide the nested selection checkbox from screen readers -->
+  <div class="row" :class="{ selected }" tabindex="0" @click="$emit('open')" @keydown.enter.self="$emit('open')" @keydown.space.self.prevent="$emit('open')"><!-- Web:S6845 is suppressed for this file in sonar-project.properties (NOSONAR does not work in templates/CSS): the row is interactive (click, Enter and Space open it) but cannot take role="button": a button's children are presentational, which would hide the nested selection checkbox from screen readers -->
     <div class="row-select" @click.stop @keydown.stop>
       <v-checkbox v-if="selectable" :model-value="selected" @update:model-value="$emit('update:selected', $event)" />
     </div>

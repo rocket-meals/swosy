@@ -413,7 +413,7 @@ const clipPathId = `friendship-network-avatar-${useId()}`;
       <div class="columns">
         <section class="panel graph-panel">
           <div class="graph">
-            <svg ref="svgElement" class="graph-svg" role="group" :aria-label="translate(page.labelKey)"><!-- NOSONAR Web:S6819 - an <svg> drawing cannot be replaced by <fieldset>/<details>, role="group" names the container of the interactive profile nodes (role="img" would hide those buttons) -->
+            <svg ref="svgElement" class="graph-svg" role="group" :aria-label="translate(page.labelKey)"><!-- Web:S6819 is suppressed for this file in sonar-project.properties (NOSONAR does not work in templates/CSS): an <svg> drawing cannot be replaced by <fieldset>/<details>, role="group" names the container of the interactive profile nodes (role="img" would hide those buttons) -->
               <defs>
                 <clipPath :id="clipPathId" clipPathUnits="objectBoundingBox">
                   <circle cx="0.5" cy="0.5" r="0.5" />

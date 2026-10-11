@@ -21,7 +21,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ fil
       }
       for (const userId of usersIds) {
         // for all users which get deleted
-        await AvatarHelper.deleteAvatarOfUser(myDatabaseHelper, userId); //delete avatar file // NOSONAR S9382 - sequential on purpose: one DB lookup and file delete per deleted user inside a filter hook, bounded DB/storage load
+        await AvatarHelper.deleteAvatarOfUser(myDatabaseHelper, userId); // NOSONAR S9382 - delete avatar file, - sequential on purpose: one DB lookup and file delete per deleted user inside a filter hook, bounded DB/storage load
       }
 
       return payload;
