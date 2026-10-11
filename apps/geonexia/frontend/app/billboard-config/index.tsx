@@ -117,7 +117,7 @@ function SpriteThumbnailIcon({ spriteIndex }: Readonly<{ spriteIndex: number }>)
 		let cancelled = false;
 		const sprite = OBJECT_SPRITES[spriteIndex];
 		if (!sprite) return;
-		(async () => {
+		void (async () => {
 			try {
 				const asset = Asset.fromModule(sprite.source as number);
 				await asset.downloadAsync();
@@ -350,7 +350,7 @@ export default function BillboardConfigScreen() {
 		const sprite = OBJECT_SPRITES[selectedSpriteIndex];
 		const idx = selectedSpriteIndex;
 		let cancelled = false;
-		(async () => {
+		void (async () => {
 			try {
 				const asset = Asset.fromModule(sprite.source as number);
 				await asset.downloadAsync();

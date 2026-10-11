@@ -6,7 +6,7 @@ import { HookKeysHelper } from '../helpers/HookKeysHelper';
 
 const HOOK_NAME = 'friendships-hook';
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ filter }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, ({ filter }, apiContext) => {
   filter(CollectionNames.FRIENDSHIPS + '.items.update', async (payload, meta, eventContext) => {
     const typedPayload = payload as Partial<DatabaseTypes.Friendships>;
     const isBeingAccepted = typedPayload?.friendship_status === FriendshipStatus.ACCEPTED;

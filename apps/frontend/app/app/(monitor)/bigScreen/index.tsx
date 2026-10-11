@@ -280,10 +280,10 @@ const Index = () => {
 
 	useEffect(() => {
 		if (foodCategories.length === 0) {
-			fetchAndSetFoodCategories(foodCategoriesHelper, dispatch);
+			void fetchAndSetFoodCategories(foodCategoriesHelper, dispatch);
 		}
 		if (foodOfferCategories.length === 0) {
-			fetchAndSetFoodOffersCategories(foodOffersCategoriesHelper, dispatch);
+			void fetchAndSetFoodOffersCategories(foodOffersCategoriesHelper, dispatch);
 		}
 	}, [foodCategories, foodOfferCategories]);
 
@@ -320,7 +320,7 @@ const Index = () => {
 			refreshIntervalRef.current = setInterval(
 				() => {
 					if (isConnected) {
-						fetchFoods();
+						void fetchFoods();
 					} else {
 						console.log('Offline: Skipping API call');
 					}
@@ -334,7 +334,7 @@ const Index = () => {
 
 	useEffect(() => {
 		if (params?.canteens_id) {
-			fetchFoods();
+			void fetchFoods();
 		}
 	}, [params?.foodCategoryIds, params?.canteens_id]);
 

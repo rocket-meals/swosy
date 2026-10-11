@@ -213,7 +213,7 @@ const OnboardingScreen = () => {
 			}
 		};
 
-		loadCanteens();
+		void loadCanteens();
 	}, [isManagement, canteenHelper, buildingsHelper, dispatch]);
 
 	// Auto-select canteen from profile once canteens are loaded. Deliberately no fallback to
@@ -262,7 +262,7 @@ const OnboardingScreen = () => {
 				console.error('[Onboarding] Failed to load profile avatars:', error);
 			}
 		};
-		loadProfileAvatars();
+		void loadProfileAvatars();
 	}, []);
 
 	// Fades a slot out, swaps in the avatar at poolIdx, fades back in, then calls onComplete.
@@ -590,7 +590,7 @@ const OnboardingScreen = () => {
 		);
 	}, [showModal, closeModal, translate, markingsBreakdownOptions, currentMarkingsBreakdownId, dispatch, primaryColor]);
 
-	const handleClearMarkings = useCallback(async () => {
+	const handleClearMarkings = useCallback(() => {
 		if (!profile) return;
 		const updatedProfile = { ...profile, markings: [] };
 		dispatch({ type: UPDATE_PROFILE, payload: updatedProfile });

@@ -88,9 +88,9 @@ function persistHexTileRecords(records: Record<string, HexTileRecord>, ref: Debo
 		ref.timer = setTimeout(() => {
 			const currentIsDevMode = store.getState().hexTiles.isDevMode;
 			if (currentIsDevMode) {
-				saveDevHexTileState(records);
+				void saveDevHexTileState(records);
 			} else {
-				saveHexTileState(records);
+				void saveHexTileState(records);
 			}
 			ref.timer = null;
 		}, 500);
@@ -107,9 +107,9 @@ function persistWalkedEdges(walkedEdges: string[], ref: DebounceRef<string[]>): 
 			const currentIsDevMode = store.getState().hexTiles.isDevMode;
 			const currentEdges = store.getState().hexTiles.walkedEdges;
 			if (currentIsDevMode) {
-				saveDevWalkedEdges(currentEdges);
+				void saveDevWalkedEdges(currentEdges);
 			} else {
-				saveWalkedEdges(currentEdges);
+				void saveWalkedEdges(currentEdges);
 			}
 			ref.timer = null;
 		}, 500);
@@ -125,9 +125,9 @@ function persistWalkedEdgesRedLine(walkedEdgesRedLine: string[], ref: DebounceRe
 			const currentIsDevMode = store.getState().hexTiles.isDevMode;
 			const currentEdgesRedLine = store.getState().hexTiles.walkedEdgesRedLine;
 			if (currentIsDevMode) {
-				saveDevWalkedEdgesRedLine(currentEdgesRedLine);
+				void saveDevWalkedEdgesRedLine(currentEdgesRedLine);
 			} else {
-				saveWalkedEdgesRedLine(currentEdgesRedLine);
+				void saveWalkedEdgesRedLine(currentEdgesRedLine);
 			}
 			ref.timer = null;
 		}, 500);
@@ -188,7 +188,7 @@ store.subscribe(() => {
 	persistDebounced(state.displaySettings, displaySettingsRef, saveDisplaySettings);
 
 	persistImmediate(state.playerInformation, playerInformationRef, (playerInformation) => {
-		savePlayerInformation({ homeHexTile: playerInformation.homeHexTile });
+		void savePlayerInformation({ homeHexTile: playerInformation.homeHexTile });
 	});
 
 	persistDebounced(state.replaySettings, replaySettingsRef, saveReplaySettings);

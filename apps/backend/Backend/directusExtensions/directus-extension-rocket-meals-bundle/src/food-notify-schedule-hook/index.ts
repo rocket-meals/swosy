@@ -29,10 +29,10 @@ class FoodNotifyWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async ({ action, schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,({ action, schedule }, apiContext) => {
   let myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
-  WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+  void WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
     workflowRunInterface: new FoodNotifyWorkflow(),
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,

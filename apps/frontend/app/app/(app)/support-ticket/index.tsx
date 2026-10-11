@@ -41,7 +41,7 @@ const Index = () => {
 
 	useFocusEffect(
 		useCallback(() => {
-			getAllTickets();
+			void getAllTickets();
 			return () => {};
 		}, [])
 	);

@@ -21,7 +21,7 @@ export const setAuthorizationToken = (token: string | null) => {
 
 // Request Interceptor
 axiosInstance.interceptors.request.use(
-	async config => {
+	config => {
 		return config;
 	},
 	error => {

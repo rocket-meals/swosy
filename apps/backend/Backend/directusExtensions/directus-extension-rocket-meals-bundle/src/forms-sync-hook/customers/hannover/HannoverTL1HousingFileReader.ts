@@ -240,7 +240,7 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
 }
         */
 
-  private async parseTl1ImportElementToImportHousingContract(housingContract: Tl1ImportHousingContract): Promise<ImportHousingContract> {
+  private parseTl1ImportElementToImportHousingContract(housingContract: Tl1ImportHousingContract): Promise<ImportHousingContract> {
     let result: ImportHousingContract = {
       [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.WOHNUNGSNUMMER]: this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNUMMER),
       [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.WOHNUNGSNAME]: this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNAME),
@@ -263,7 +263,7 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
       [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.ADRESSE_NEU]: this.getAdresseNeu(housingContract),
     };
 
-    return result;
+    return Promise.resolve(result);
   }
 
   private getAdresseHeimat(housingContract: Tl1ImportHousingContract): string | null {

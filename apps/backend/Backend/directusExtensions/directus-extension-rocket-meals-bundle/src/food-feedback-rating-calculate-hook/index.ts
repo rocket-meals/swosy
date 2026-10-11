@@ -5,7 +5,7 @@ import { DeletePermissionHelper } from '../helpers/DeletePermissionHelper';
 
 const SCHEDULE_NAME = 'food_feedback_rating_calculate';
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ action, filter }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ action, filter }, apiContext) => {
   const foodRatingCalculator = new FoodRatingCalculator(apiContext);
 
   const collection = CollectionNames.FOODS_FEEDBACKS;

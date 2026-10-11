@@ -42,11 +42,11 @@ const VerticalScrollTopFood: React.FC = () => {
 	};
 
 	useEffect(() => {
-		fetchImages();
+		void fetchImages();
 	}, []);
 
 	const loadMoreImages = () => {
-		fetchImages();
+		void fetchImages();
 	};
 
 	const [speedPercent, setSpeedPercent] = useState(5);

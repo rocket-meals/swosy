@@ -35,8 +35,8 @@ export class RedisKeyValueStore implements KeyValueStore {
     return (await this.client.set(key, value, 'PX', ttlMs, 'NX')) === 'OK';
   }
 
-  async get(key: string): Promise<string | null> {
-    return this.client.get(key);
+  get(key: string): Promise<string | null> {
+    return Promise.resolve(this.client.get(key));
   }
 
   async del(...keys: string[]): Promise<void> {
@@ -51,9 +51,10 @@ export class MemoryKeyValueStore implements KeyValueStore {
 
   constructor(private readonly now: () => number = Date.now) {}
 
-  async set(key: string, value: string, ttlMs: number): Promise<void> {
+  set(key: string, value: string, ttlMs: number): Promise<void> {
     this.removeExpired();
     this.entries.set(key, { value, expiresAt: this.now() + ttlMs });
+    return Promise.resolve();
   }
 
   async setIfAbsent(key: string, value: string, ttlMs: number): Promise<boolean> {
@@ -64,22 +65,23 @@ export class MemoryKeyValueStore implements KeyValueStore {
     return true;
   }
 
-  async get(key: string): Promise<string | null> {
+  get(key: string): Promise<string | null> {
     const entry = this.entries.get(key);
     if (!entry) {
-      return null;
+      return Promise.resolve(null);
     }
     if (this.now() >= entry.expiresAt) {
       this.entries.delete(key);
-      return null;
+      return Promise.resolve(null);
     }
-    return entry.value;
+    return Promise.resolve(entry.value);
   }
 
-  async del(...keys: string[]): Promise<void> {
+  del(...keys: string[]): Promise<void> {
     for (const key of keys) {
       this.entries.delete(key);
     }
+    return Promise.resolve();
   }
 
   get size(): number {

@@ -64,7 +64,7 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 			}
 		}
 
-		loadUpdates();
+		void loadUpdates();
 	}, []);
 
 	useEffect(() => {

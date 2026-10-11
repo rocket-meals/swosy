@@ -476,15 +476,15 @@ async function rebuildWorldFromActivitiesIfStale(
 			const routes = await loadRoutes();
 			applyRouteBenches(rebuiltRecords, sorted, routes);
 			if (isDevMode) {
-				saveDevHexTileState(rebuiltRecords);
-				saveDevWalkedEdges(rebuiltEdges);
-				saveDevWalkedEdgesRedLine(rebuiltEdgesRedLine);
-				saveDevWorldBuildingId(WORLD_BUILDING_ID);
+				void saveDevHexTileState(rebuiltRecords);
+				void saveDevWalkedEdges(rebuiltEdges);
+				void saveDevWalkedEdgesRedLine(rebuiltEdgesRedLine);
+				void saveDevWorldBuildingId(WORLD_BUILDING_ID);
 			} else {
-				saveHexTileState(rebuiltRecords);
-				saveWalkedEdges(rebuiltEdges);
-				saveWalkedEdgesRedLine(rebuiltEdgesRedLine);
-				saveWorldBuildingId(WORLD_BUILDING_ID);
+				void saveHexTileState(rebuiltRecords);
+				void saveWalkedEdges(rebuiltEdges);
+				void saveWalkedEdgesRedLine(rebuiltEdgesRedLine);
+				void saveWorldBuildingId(WORLD_BUILDING_ID);
 			}
 			store.dispatch(setDevMode({ isDevMode, records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesRedLine: rebuiltEdgesRedLine }));
 			// Fire-and-forget: fetch features for enclosed tiles
@@ -498,9 +498,9 @@ async function rebuildWorldFromActivitiesIfStale(
 	// No activities or rebuild failed – still update the stored ID so we
 	// don't attempt a rebuild on every subsequent launch.
 	if (isDevMode) {
-		saveDevWorldBuildingId(WORLD_BUILDING_ID);
+		void saveDevWorldBuildingId(WORLD_BUILDING_ID);
 	} else {
-		saveWorldBuildingId(WORLD_BUILDING_ID);
+		void saveWorldBuildingId(WORLD_BUILDING_ID);
 	}
 	return false;
 }

@@ -24,7 +24,7 @@ const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, conten
   }, [item.image, item.image_remote_url]);
 
   const handlePress = useCallback(() => {
-    if (item.link) CommonSystemActionHelper.openExternalURL(item.link, true);
+    if (item.link) void CommonSystemActionHelper.openExternalURL(item.link, true);
   }, [item.link]);
 
   return (

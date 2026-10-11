@@ -234,7 +234,8 @@ export function getVersionPatch() {
         // 117: common: profiles.email_notifications removed again
         // 118: maintenance banner from app_settings.maintenance_start/_end
         // 119: maintenance window read as UTC timestamps
-        return 119;
+        // 120: SonarCloud reliability: floating promises marked with void, async without await removed
+        return 120;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -74,4 +74,4 @@ async function main() {
 }
 
 // Starte den Service
-main();
+void main();

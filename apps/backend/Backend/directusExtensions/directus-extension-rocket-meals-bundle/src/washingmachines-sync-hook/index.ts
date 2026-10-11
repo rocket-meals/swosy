@@ -143,7 +143,7 @@ class WashingmachinesWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async (registerFunctions: RegisterFunctions, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,(registerFunctions: RegisterFunctions, apiContext) => {
   const { schedule } = registerFunctions;
 
   registerWashingmachinesFilterUpdate(apiContext, registerFunctions);
@@ -167,7 +167,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async (reg
 
   let myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
-  WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+  void WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
     workflowRunInterface: new WashingmachinesWorkflow(usedParser),
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,

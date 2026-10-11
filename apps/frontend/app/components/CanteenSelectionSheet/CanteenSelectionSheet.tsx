@@ -87,7 +87,7 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({ closeShee
 	};
 
 	useEffect(() => {
-		getCanteensWithBuildings();
+		void getCanteensWithBuildings();
 	}, [isManagement]);
 
 	return (

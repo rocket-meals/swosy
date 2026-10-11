@@ -44,8 +44,8 @@ const Index = () => {
 	};
 
 	const fetchFoods = () => {
-		fetchMostLikedFoods();
-		fetchMostDisLikedFoods();
+		void fetchMostLikedFoods();
+		void fetchMostDisLikedFoods();
 	};
 
 	useEffect(() => {

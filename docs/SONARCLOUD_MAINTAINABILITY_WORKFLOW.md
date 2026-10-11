@@ -21,7 +21,7 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
    `KEYWORD_QUOTES` im Script bei Bedarf ergänzen.
 
    Für alle Kategorien (Bugs/Reliability, Maintainability, Security) gibt es
-   zusätzlich `node scripts/sonar-sort-and-group.js [reliability|maintainability|security|all] [--top N|all] [--details] [--json]`
+   zusätzlich `node reports/sonarCloud/sonar-sort-and-group.js [reliability|maintainability|security|all] [--top N|all] [--details] [--json]`
    (Default: `reliability`). Gleiche Normalisierung, zeigt pro Typ zusätzlich die
    Anzahl betroffener Dateien, mit `--details` alle Fundstellen (`Datei:Zeile`).
 

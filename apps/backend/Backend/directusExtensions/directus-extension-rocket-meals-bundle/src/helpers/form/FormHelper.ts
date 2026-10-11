@@ -548,7 +548,7 @@ export class FormHelper {
     return `### ${fieldName}` + MarkdownHelper.getMarkdownNewLine();
   }
 
-  public static async generateMarkdownContentFromForm(params: FormGenerationParams): Promise<string> {
+  public static generateMarkdownContentFromForm(params: FormGenerationParams): Promise<string> {
     const { form, formExtractRelevantInformation, myDatabaseHelperInterface } = params;
     let markdownNewLine = MarkdownHelper.getMarkdownNewLine();
 
@@ -590,7 +590,7 @@ export class FormHelper {
     markdownContent += `Hash: ${hashValue}`;
     markdownContent += markdownNewLine;
 
-    return markdownContent;
+    return Promise.resolve(markdownContent);
   }
 
   public static async generatePdfFromHtml(html: string, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface, requestOptions?: RequestOptions, options?: PdfGeneratorOptions): Promise<Buffer> {

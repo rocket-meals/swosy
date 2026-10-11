@@ -231,7 +231,7 @@ const Index: React.FC = () => {
 	// Effects
 	useEffect(() => {
 		let mounted = true;
-		(async () => {
+		void (async () => {
 			const hasData = campuses && campuses.length > 0;
 			if (!hasData) setLoading(true);
 

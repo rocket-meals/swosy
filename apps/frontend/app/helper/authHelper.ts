@@ -218,7 +218,7 @@ export const handleNativeLogin = async (loginUrl: string, redirectUrl: string, c
 		}
 		handledCodes.add(code);
 		addLoginLog(`Auth-Code empfangen (${source}), starte Token-Austausch`);
-		clearPendingCodeVerifier();
+		void clearPendingCodeVerifier();
 		dismissBrowserSafely();
 		getToken(codeVerifier, code);
 		return true;

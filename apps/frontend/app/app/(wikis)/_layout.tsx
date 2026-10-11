@@ -25,7 +25,7 @@ export default function FoodOfferLayout() {
 
 	useEffect(() => {
 		if (wikis?.length === 0) {
-			getWikis();
+			void getWikis();
 		}
 	}, [wikis]);
 	return (

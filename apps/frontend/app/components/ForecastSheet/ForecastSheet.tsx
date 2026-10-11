@@ -128,7 +128,7 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({ forDate, canteen }) => {
 
         useEffect(() => {
                 if (canteen) {
-                        getUtilization(forDate);
+                        void getUtilization(forDate);
                 } else {
                         setForecastEntries([]);
                         setCurrentUtilizationGroup(null);

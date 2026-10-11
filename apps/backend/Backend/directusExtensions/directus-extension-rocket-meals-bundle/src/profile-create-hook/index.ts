@@ -6,7 +6,7 @@ import { getInitialProfileForUser } from './InitialProfileHelper';
 
 const SCHEDULE_NAME = 'profile_create';
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ filter, schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ filter, schedule }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
   let users_service = myDatabaseHelper.getUsersHelper();

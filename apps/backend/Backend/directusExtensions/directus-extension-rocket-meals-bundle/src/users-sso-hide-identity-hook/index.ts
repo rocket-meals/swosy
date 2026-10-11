@@ -14,8 +14,8 @@ function hasDifferentProviderThanDefault(partialUserInput: Partial<DatabaseTypes
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ action, filter }, apiContext) => {
-  filter(EventHelper.USERS_CREATE_EVENT, async (input, meta, context) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ action, filter }, apiContext) => {
+  filter(EventHelper.USERS_CREATE_EVENT, (input, meta, context) => {
     const partialUserInput = input as Partial<DatabaseTypes.DirectusUsers>;
     if (hasDifferentProviderThanDefault(partialUserInput)) {
       partialUserInput.first_name = null;

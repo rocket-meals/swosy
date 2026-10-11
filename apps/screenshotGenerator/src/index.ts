@@ -75,7 +75,7 @@ const urls = screens.map((screen: string) =>
   ])
 );
 
-(async () => {
+void (async () => {
   let browser = await puppeteer.launch({
     args: [`--lang=${browserLang}`, '--no-sandbox', '--disable-setuid-sandbox'],
   });

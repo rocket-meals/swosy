@@ -40,7 +40,7 @@ const FoodWishlist = () => {
 			setFoods([]);
 			return;
 		}
-		Promise.all(
+		void Promise.all(
 			wishlistFeedbacks.map((feedback: DatabaseTypes.FoodsFeedbacks) =>
 				fetchFoodDetailsById(String(feedback.food)).catch(() => null)
 			)
@@ -56,7 +56,7 @@ const FoodWishlist = () => {
 		if (foods.length === 0 || !selectedCanteen?.id) return;
 		const canteenId = String(selectedCanteen.id);
 		const dates: Record<string, string | null> = {};
-		Promise.all(
+		void Promise.all(
 			foods.map(async (food) => {
 				const foodId = String(food.id);
 				try {

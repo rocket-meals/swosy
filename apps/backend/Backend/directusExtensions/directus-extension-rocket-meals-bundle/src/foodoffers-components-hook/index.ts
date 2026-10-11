@@ -5,7 +5,7 @@ import {DeletePermissionHelper} from '../helpers/DeletePermissionHelper';
 
 const SCHEDULE_NAME = 'foodoffers-components-hook';
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ filter }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, ({ filter }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
   filter(CollectionNames.FOODOFFER_COMPONENTS + '.items.delete', async (payloadModifiable, _meta, eventContext) => {

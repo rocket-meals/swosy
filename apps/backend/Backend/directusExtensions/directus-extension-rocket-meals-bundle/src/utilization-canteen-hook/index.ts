@@ -27,10 +27,10 @@ class UtilizationCanteenCalculationWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async ({ init, action, schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,({ init, action, schedule }, apiContext) => {
   let myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
-  WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+  void WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
     workflowRunInterface: new UtilizationCanteenCalculationWorkflow(),
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,

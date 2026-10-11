@@ -140,7 +140,7 @@ export default function useCourseTimetableLunchSuggestions(days: LunchSuggestion
 			);
 			if (!cancelled) setSuggestions(result);
 		};
-		run();
+		void run();
 		return () => {
 			cancelled = true;
 		};

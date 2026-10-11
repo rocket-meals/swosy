@@ -67,7 +67,7 @@ store.subscribe(() => {
 	const { selectedMode } = state.theme;
 	if (selectedMode !== _lastSavedThemeMode) {
 		_lastSavedThemeMode = selectedMode;
-		saveThemeMode(selectedMode);
+		void saveThemeMode(selectedMode);
 	}
 
 	const game = state.game;
@@ -88,7 +88,7 @@ store.subscribe(() => {
 			store.dispatch(archiveGame(buildHistoryEntry(game, { id: game.matchId, endedAt: game.endedAt ?? Date.now() })));
 		}
 		_gameTimer = scheduleDebouncedSave(_gameTimer, 300, () => {
-			saveGameState({
+			void saveGameState({
 				players: game.players,
 				rounds: game.rounds,
 				status: game.status,
@@ -110,7 +110,7 @@ store.subscribe(() => {
 	if (friends !== _lastSavedFriends) {
 		_lastSavedFriends = friends;
 		_friendsTimer = scheduleDebouncedSave(_friendsTimer, 300, () => {
-			saveFriends(friends.friends);
+			void saveFriends(friends.friends);
 			_friendsTimer = null;
 		});
 	}
@@ -119,7 +119,7 @@ store.subscribe(() => {
 	if (gameTypes !== _lastSavedGameTypes) {
 		_lastSavedGameTypes = gameTypes;
 		_gameTypesTimer = scheduleDebouncedSave(_gameTypesTimer, 300, () => {
-			saveGameTypes(gameTypes.gameTypes);
+			void saveGameTypes(gameTypes.gameTypes);
 			_gameTypesTimer = null;
 		});
 	}
@@ -128,7 +128,7 @@ store.subscribe(() => {
 	if (gameHistory !== _lastSavedHistory) {
 		_lastSavedHistory = gameHistory;
 		_historyTimer = scheduleDebouncedSave(_historyTimer, 300, () => {
-			saveGameHistory(gameHistory.entries);
+			void saveGameHistory(gameHistory.entries);
 			_historyTimer = null;
 		});
 	}
@@ -138,14 +138,14 @@ store.subscribe(() => {
 		_lastSavedAppSettings = appSettings;
 		// `onboardingCompleted` is tri-state in the slice (undefined until
 		// hydrated) but persisted as a plain boolean.
-		saveAppSettings({ ...appSettings, onboardingCompleted: appSettings.onboardingCompleted === true });
+		void saveAppSettings({ ...appSettings, onboardingCompleted: appSettings.onboardingCompleted === true });
 	}
 
 	const debug = state.debug;
 	if (debug !== _lastSavedDebug) {
 		_lastSavedDebug = debug;
 		_debugTimer = scheduleDebouncedSave(_debugTimer, 300, () => {
-			saveDebugState(debug);
+			void saveDebugState(debug);
 			_debugTimer = null;
 		});
 	}

@@ -76,7 +76,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 		// Update the entry
 		try {
 			const result = (await canteenFeedbackLabelEntryHelper.updateCanteenFeedbackLabelEntry(profile.id, ownCanteenFeedBackLabelEntries, label?.id, likeStats, selectedCanteen.id, date)) as DatabaseTypes.CanteensFeedbacksLabelsEntries;
-			getLabelEntries(label?.id);
+			void getLabelEntries(label?.id);
 			dispatch({
 				type: result ? UPDATE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES : DELETE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES,
 				payload: result || labelData.id,
@@ -103,7 +103,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 
 	useEffect(() => {
 		if (label?.id) {
-			getLabelEntries(label?.id);
+			void getLabelEntries(label?.id);
 		}
 	}, [label?.id, date]);
 

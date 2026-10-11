@@ -494,7 +494,7 @@ const Settings = () => {
 
         const logoutButtonHandler = useMemo(() => (isRegisteredUser ? handleLogout : handleLogin), [handleLogin, handleLogout, isRegisteredUser]);
 
-	const handleDeleteAccount = async () => {
+	const handleDeleteAccount = () => {
 		router.navigate('/(user)/delete-user');
 	};
 

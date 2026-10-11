@@ -241,7 +241,7 @@ export class DirectusTestServerSetup {
    * Starts the Directus server process
    * @param env Environment variables
    */
-  private async startServer(env: Record<string, string>): Promise<void> {
+  private startServer(env: Record<string, string>): Promise<void> {
     this.log('Starting Directus server process...');
 
     this.directusProcess = spawn('npx', ['directus', 'start'], {
@@ -251,6 +251,7 @@ export class DirectusTestServerSetup {
     });
 
     this.setupProcessHandlers();
+    return Promise.resolve();
   }
 
   /**

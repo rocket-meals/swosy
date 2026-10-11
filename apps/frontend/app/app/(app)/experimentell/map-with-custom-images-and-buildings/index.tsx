@@ -161,7 +161,7 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
                 console.warn('Failed to load airplane.glb. Ensure the asset exists at @/assets/3dmodels/airplane.glb:', e);
             }
         };
-        loadGlb();
+        void loadGlb();
         return () => {
             isMounted = false;
         };

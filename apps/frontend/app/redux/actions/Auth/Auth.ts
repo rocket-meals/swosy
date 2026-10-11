@@ -289,7 +289,7 @@ export class ServerAPI {
 		];
 	}
 
-	static async readRemoteRoles() {
+	static readRemoteRoles() {
 		return this.getClient().request<DatabaseTypes.DirectusRoles[]>(
 			readRoles({
 				fields: ['*'],
@@ -299,7 +299,7 @@ export class ServerAPI {
 		);
 	}
 
-	static async readRemotePolicies() {
+	static readRemotePolicies() {
 		return this.getClient().request<DatabaseTypes.DirectusPolicies[]>(
 			readPolicies({
 				fields: ['*', 'permissions.*', 'roles.*'],
@@ -336,7 +336,7 @@ export class ServerAPI {
 		return `${this.getServerUrl()}/auth/login/${provider?.name?.toLowerCase()}?redirect=${redirectURL}`;
 	}
 
-	static async getMe() {
+	static getMe() {
 		return this.getClient().request(readMe({ fields: ['*'] }));
 	}
 

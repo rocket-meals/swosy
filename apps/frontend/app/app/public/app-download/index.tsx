@@ -33,13 +33,13 @@ const AppDownloadSelection = () => {
 
 	const handleOpenAppleStore = () => {
 		if (appSettings?.app_stores_url_to_apple) {
-			CommonSystemActionHelper.openExternalURL(appSettings.app_stores_url_to_apple, true);
+			void CommonSystemActionHelper.openExternalURL(appSettings.app_stores_url_to_apple, true);
 		}
 	};
 
 	const handleOpenGooglePlay = () => {
 		if (appSettings?.app_stores_url_to_google) {
-			CommonSystemActionHelper.openExternalURL(appSettings.app_stores_url_to_google, true);
+			void CommonSystemActionHelper.openExternalURL(appSettings.app_stores_url_to_google, true);
 		}
 	};
 

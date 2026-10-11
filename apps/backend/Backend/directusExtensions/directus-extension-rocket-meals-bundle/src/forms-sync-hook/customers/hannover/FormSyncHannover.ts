@@ -18,7 +18,7 @@ export class FormSyncHannover {
     }
 
     // Schedule to create new form_submissions based on the provided CSV file
-    WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+    void WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
       workflowRunInterface: new FormHousingContractsWorkflowHannover(DIRECTUS_TL1_HOUSING_EXPORT_PATH),
       myDatabaseHelper: myDatabaseHelper,
       schedule: triggerContext.schedule,

@@ -25,9 +25,9 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
     this.contracts = data;
   }
 
-  async getCurrentResultHash(): Promise<WorkflowResultHash> {
+  getCurrentResultHash(): Promise<WorkflowResultHash> {
     let hash = this.reader.getResultHash(this.contracts);
-    return new WorkflowResultHash(hash);
+    return Promise.resolve(new WorkflowResultHash(hash));
   }
 
   private static getFormImportSyncFormAnswerValue(contract: ImportHousingContract, key: keyof ImportHousingContract): Partial<DatabaseTypes.FormAnswers> {
@@ -69,7 +69,7 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
     return formAnswers;
   }
 
-  async getData(logger?: WorkflowRunLogger): Promise<FormImportSyncFormSubmissions[]> {
+  getData(logger?: WorkflowRunLogger): Promise<FormImportSyncFormSubmissions[]> {
     let result: FormImportSyncFormSubmissions[] = [];
     for (let contract of this.contracts) {
       let internal_custom_id = this.reader.getHousingContractInternalCustomId(contract);
@@ -87,7 +87,7 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
         result.push(formSubmission);
       }
     }
-    return result;
+    return Promise.resolve(result);
   }
 
   getFormAlias(): string {

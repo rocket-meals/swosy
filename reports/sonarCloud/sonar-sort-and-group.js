@@ -12,7 +12,7 @@
  * Groups are sorted by number of occurrences (descending), ties by message.
  *
  * Usage:
- *   node scripts/sonar-sort-and-group.js [category|path/to/report.csv] [options]
+ *   node reports/sonarCloud/sonar-sort-and-group.js [category|path/to/report.csv] [options]
  *
  *   category: reliability (= bugs, default) | maintainability | security | all
  *
@@ -24,8 +24,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const repoRoot = fs.realpathSync(path.resolve(__dirname, '..'));
-const reportDir = path.join(repoRoot, 'reports', 'sonarCloud');
+const repoRoot = fs.realpathSync(path.resolve(__dirname, '..', '..'));
+const reportDir = __dirname;
 const COMPONENT_PREFIX = 'rocket-meals_rocket-meals:';
 
 const CATEGORY_FILES = {

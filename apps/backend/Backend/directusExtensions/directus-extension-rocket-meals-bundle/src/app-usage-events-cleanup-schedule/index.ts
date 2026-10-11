@@ -53,8 +53,8 @@ class AppUsageEventsCleanupWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ schedule }, apiContext) => {
-  WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, ({ schedule }, apiContext) => {
+  void WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
     workflowRunInterface: new AppUsageEventsCleanupWorkflow(new ItemsServiceCreator(apiContext)),
     myDatabaseHelper: new MyDatabaseHelper(apiContext),
     schedule: schedule,

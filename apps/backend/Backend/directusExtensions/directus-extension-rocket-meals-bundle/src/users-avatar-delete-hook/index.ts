@@ -7,7 +7,7 @@ import {CollectionNames} from 'repo-depkit-common';
 
 const SCHEDULE_NAME = 'users_avatar_delete';
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ filter }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ filter }, apiContext) => {
   filter(
     EventHelper.USERS_DELETE_EVENT,
     // @ts-ignore

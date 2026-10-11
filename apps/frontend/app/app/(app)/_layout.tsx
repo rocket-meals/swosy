@@ -149,9 +149,9 @@ export default function Layout() {
 	const selectedCanteen = useSelectedCanteen();
 
 	useEffect(() => {
-		const autoLogin = async () => {
+		const autoLogin = () => {
 			if (kioskMode && !loggedIn) {
-				updateLoginStatus(dispatch, { id: '' } as any);
+				void updateLoginStatus(dispatch, { id: '' } as any);
 				const currentDate = format(new Date(), 'dd.MM.yyyy HH:mm:ss');
 				dispatch({ type: UPDATE_PRIVACY_POLICY_DATE, payload: currentDate });
 				const demoProfile: DatabaseTypes.Profiles = {
@@ -168,7 +168,7 @@ export default function Layout() {
 				dispatch({ type: UPDATE_PROFILE, payload: demoProfile });
 			}
 		};
-		autoLogin();
+		void autoLogin();
 	}, [kioskMode, loggedIn]);
 
 	useEffect(() => {
@@ -187,7 +187,7 @@ export default function Layout() {
 				}
 			}
 		};
-		selectCanteen();
+		void selectCanteen();
 	}, [kioskMode, selectedCanteen]);
 
 	const fetchFields = async () => {
@@ -203,7 +203,7 @@ export default function Layout() {
 	};
 
 	useEffect(() => {
-		fetchFields();
+		void fetchFields();
 	}, []);
 
 	const getFoodFeedBackLabels = async () => {
@@ -275,14 +275,14 @@ export default function Layout() {
 				profile = await restoreProfileAfterSessionExpiry(profile);
 			}
 			if (profile?.id) {
-				getOwnFeedback(profile?.id);
-				getFeedbackEntries(profile?.id);
-				getCanteenFeedbackEntries(profile?.id);
+				void getOwnFeedback(profile?.id);
+				void getFeedbackEntries(profile?.id);
+				void getCanteenFeedbackEntries(profile?.id);
 				dispatch({ type: UPDATE_PROFILE, payload: profile });
-				fetchChats();
-				fetchFriendships(profile?.id);
+				void fetchChats();
+				void fetchFriendships(profile?.id);
 				// Sync defaults: transfer locally stored values to the online profile if missing
-				syncProfileDefaults(profile);
+				void syncProfileDefaults(profile);
 			}
 		} catch (error) {
 			console.error('Error fetching profiles:', error);
@@ -653,7 +653,7 @@ export default function Layout() {
 			if (result) {
 				const serverMap = transformUpdateDatesToMap(result);
 				if (!kioskMode && shouldFetch([CollectionKeys.POPUP_EVENTS, CollectionKeys.POPUP_EVENTS_TRANSLATIONS], serverMap, lastUpdatedMap)) {
-					getAllEvents();
+					void getAllEvents();
 				}
 				await Promise.all(
 					fetchConfig.map(({ key, action }) => {
@@ -690,10 +690,10 @@ export default function Layout() {
 
 	useEffect(() => {
 		if (user?.id) {
-			fetchProfile();
+			void fetchProfile();
 		}
 		resetCalendarSelectedDate();
-		getAllCollectionDatesLastUpdate();
+		void getAllCollectionDatesLastUpdate();
 	}, [user]);
 
 	const drawerScreenOptions = useMemo(

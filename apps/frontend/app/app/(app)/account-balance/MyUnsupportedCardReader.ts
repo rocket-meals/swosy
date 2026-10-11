@@ -9,15 +9,15 @@ export default class MyUnsupportedCardReader implements MyCardReaderInterface {
 		return this.isNfcSupported();
 	}
 
-	async isNfcSupported(): Promise<MyCardReaderResponseSupport> {
+	isNfcSupported(): Promise<MyCardReaderResponseSupport> {
 		if (isExpoGo) {
-			return { result: false, message: 'NFC is not supported in Expo Go' };
+			return Promise.resolve({ result: false, message: 'NFC is not supported in Expo Go' });
 		}
-		return { result: false, message: 'NFC is not supported on this device' };
+		return Promise.resolve({ result: false, message: 'NFC is not supported on this device' });
 	}
 
-	async readCard(callBack: (answer: CardResponse | undefined) => Promise<void>, showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string): Promise<void> {
-		throw new Error('NFC is not supported on this device');
+	readCard(callBack: (answer: CardResponse | undefined) => Promise<void>, showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string): Promise<void> {
+		return Promise.reject(new Error('NFC is not supported on this device'));
 	}
 
 	async cancelRead(): Promise<void> {

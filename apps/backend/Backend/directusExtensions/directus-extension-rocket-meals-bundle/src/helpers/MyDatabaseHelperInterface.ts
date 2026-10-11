@@ -117,14 +117,14 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
     return this.getServerInfoNoInternetTest();
   }
 
-  async getServerInfoNoInternetTest(): Promise<ServerInfo> {
-    return {
+  getServerInfoNoInternetTest(): Promise<ServerInfo> {
+    return Promise.resolve({
       project: {
         project_name: 'Rocket Meals',
         project_color: '#D14610',
         project_logo: undefined,
       },
-    };
+    });
   }
 
   getServerPort(): string {
@@ -138,8 +138,8 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
    * Bewusst kein Sonderweg: Die Beispiel-`AppSettings` gehen durch dieselbe Auflösung wie die
    * Einstellungen aus der Datenbank, die Logo-URL ist also eine echte Asset-URL.
    */
-  async getDocumentOrganization(): Promise<DocumentOrganization> {
-    return DocumentOrganizationHelper.resolveDocumentOrganization(MyDatabaseTestableHelper.getExampleAppSettings(), this);
+  getDocumentOrganization(): Promise<DocumentOrganization> {
+    return Promise.resolve(DocumentOrganizationHelper.resolveDocumentOrganization(MyDatabaseTestableHelper.getExampleAppSettings(), this));
   }
 
   /**
@@ -164,11 +164,11 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
    * Offline-Ersatz für den Nutzer-Lookup: Die Beispiel-Id liefert die Beispiel-Person, jede
    * andere Id nichts. Tests kommen damit ohne Datenbank aus.
    */
-  async getDocumentUserById(userId: string): Promise<DocumentUser | null> {
+  getDocumentUserById(userId: string): Promise<DocumentUser | null> {
     if (userId === MyDatabaseTestableHelper.EXAMPLE_DOCUMENT_USER_ID) {
-      return MyDatabaseTestableHelper.getExampleDocumentUser();
+      return Promise.resolve(MyDatabaseTestableHelper.getExampleDocumentUser());
     }
-    return null;
+    return Promise.resolve(null);
   }
 
   /** Die `app_settings`, mit denen Beispiel-Dokumente erzeugt werden – reine Musterdaten. */
@@ -222,8 +222,8 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
     return (await this.getPublicClient().request(serverInfo())) as unknown as ServerInfo;
   }
 
-  async getAdminBearerToken(): Promise<string | undefined> {
-    return undefined;
+  getAdminBearerToken(): Promise<string | undefined> {
+    return Promise.resolve(undefined);
   }
 }
 

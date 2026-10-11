@@ -83,7 +83,8 @@ export function getVersionPatch() {
 	// 53: common: profiles.email_notifications
 	// 54: common: app feedback status only from state
 	// 55: common: profiles.email_notifications removed again
-	return 55;
+	// 56: SonarCloud reliability: floating promises marked with void, async without await removed
+	return 56;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

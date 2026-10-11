@@ -111,7 +111,7 @@ const ReportScreen = () => {
 				}
 			}
 		};
-		load();
+		void load();
 		return () => {
 			cancelled = true;
 		};

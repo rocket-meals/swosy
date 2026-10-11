@@ -71,7 +71,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 				console.error('Error fetching foodoffer components:', error);
 			}
 		};
-		fetchComponents();
+		void fetchComponents();
 	}, [offerId]);
 
 	const mappedFoodOfferMarkings = useMemo(() => {

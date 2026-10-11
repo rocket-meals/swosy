@@ -481,7 +481,7 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
         return null;
     }
 
-    async getMarkingsJSONList(): Promise<MarkingsTypeForParser[]> {
+    getMarkingsJSONList(): Promise<MarkingsTypeForParser[]> {
         let markingsList: MarkingsTypeForParser[] = [];
         let html = this.getFirstNotEmptyHtml();
         if(html) {
@@ -566,7 +566,7 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
 
         }
 
-        return markingsList;
+        return Promise.resolve(markingsList);
     }
 
     shouldCreateNewMarkingsWhenTheyDoNotExistYet(): boolean {

@@ -154,10 +154,10 @@ class CollectibleEventsRepeatWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, ({ schedule }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
-  WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+  void WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
     workflowRunInterface: new CollectibleEventsRepeatWorkflow(),
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,

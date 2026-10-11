@@ -25,7 +25,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
     return SystemFileHelper.readFileSync(this.path_to_tl1_export, this.encoding);
   }
 
-  async getMarkingsJSONList(): Promise<MarkingsTypeForParser[]> {
+  getMarkingsJSONList(): Promise<MarkingsTypeForParser[]> {
     let markings: MarkingsTypeForParser[] = [];
     for (const parsedLineObject of this.parsedReport) {
       if (parsedLineObject) {
@@ -35,7 +35,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
         }
       }
     }
-    return markings;
+    return Promise.resolve(markings);
   }
 
   private static getMarkingJSONFromRawMarking(rawMarking: { [p: string]: string }): MarkingsTypeForParser | null {

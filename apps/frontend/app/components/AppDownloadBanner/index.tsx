@@ -64,7 +64,7 @@ const AppDownloadBanner: React.FC = () => {
 	}, []);
 
 	const handleOpenStore = useCallback((url: string) => {
-		CommonSystemActionHelper.openExternalURL(url, true);
+		void CommonSystemActionHelper.openExternalURL(url, true);
 	}, []);
 
 	const projectLogo = serverInfo?.info?.project?.project_logo ? getImageUrl(serverInfo.info.project.project_logo) : null;

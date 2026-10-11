@@ -167,7 +167,7 @@ export default function DiceScreen() {
 
 	useEffect(() => {
 		let cancelled = false;
-		loadDiceHistory().then((entries) => {
+		void loadDiceHistory().then((entries) => {
 			historyLoadedRef.current = true;
 			if (!cancelled) setHistory(entries);
 		});

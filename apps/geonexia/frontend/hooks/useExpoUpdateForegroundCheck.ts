@@ -27,7 +27,7 @@ export function useExpoUpdateForegroundCheck() {
 
 		const subscription = AppState.addEventListener('change', (nextState) => {
 			if (appState.current.match(/inactive|background/) && nextState === 'active' && !isRecordingActive()) {
-				checkAndApplyUpdate();
+				void checkAndApplyUpdate();
 			}
 			appState.current = nextState;
 		});

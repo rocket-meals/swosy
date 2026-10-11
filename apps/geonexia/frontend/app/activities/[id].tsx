@@ -786,9 +786,9 @@ function makeActivityDetailHeaderLeft(color: string, onPress: () => void) {
  * not applicable or fails. Extracted from the activity-loading effect to keep
  * its cognitive complexity manageable.
  */
-async function migrateActivityComputedField(a: SavedActivity): Promise<SavedActivity> {
+function migrateActivityComputedField(a: SavedActivity): Promise<SavedActivity> {
 	if (a.computed || (a.hexTilesOrdered?.length ?? 0) === 0 || !isH3Available()) {
-		return a;
+		return Promise.resolve(a);
 	}
 	try {
 		const h3Res = a.h3Resolution ?? H3_RESOLUTION_FALLBACK;
@@ -800,11 +800,11 @@ async function migrateActivityComputedField(a: SavedActivity): Promise<SavedActi
 			: getEffectiveEnclosedHexTiles(a);
 		const computedData = computeActivityData(a, enclosed);
 		const updated = { ...a, computed: computedData };
-		saveActivity(updated);
-		return updated;
+		void saveActivity(updated);
+		return Promise.resolve(updated);
 	} catch {
 		// Migration failed; continue without computed
-		return a;
+		return Promise.resolve(a);
 	}
 }
 
@@ -820,7 +820,7 @@ function migrateActivityStatsQuartiles(a: SavedActivity): SavedActivity {
 	}
 	const { q1SpeedKmh, q3SpeedKmh } = computeActivityStats(a.routePoints);
 	const updated = { ...a, stats: { ...a.stats, q1SpeedKmh, q3SpeedKmh } };
-	saveActivity(updated);
+	void saveActivity(updated);
 	return updated;
 }
 
@@ -1536,7 +1536,7 @@ export default function ActivityDetailScreen() {
 						const removedCount = activity.routePoints.length - filtered.length;
 						const newStats = computeActivityStats(filtered);
 						const updated: SavedActivity = { ...activity, routePoints: filtered, stats: newStats };
-						saveActivity(updated);
+						void saveActivity(updated);
 						setActivity(updated);
 						const pointsSuffix = removedCount !== 1 ? 's' : '';
 						showAlert(
@@ -1584,7 +1584,7 @@ export default function ActivityDetailScreen() {
 						}
 						const newComputed = computeActivityData(activity, enclosedTiles);
 						const updated: SavedActivity = { ...activity, computed: newComputed };
-						saveActivity(updated);
+						void saveActivity(updated);
 						setActivity(updated);
 						showAlert('Fertig', 'Berechnete Werte wurden neu berechnet.');
 					},
@@ -1608,7 +1608,7 @@ export default function ActivityDetailScreen() {
 			children: (
 				<DeleteConfirmContent
 					onConfirm={() => {
-						deleteActivity(activity.id);
+						void deleteActivity(activity.id);
 						closeModal();
 						router.replace('/activities');
 					}}
@@ -1626,14 +1626,14 @@ export default function ActivityDetailScreen() {
 		const numVal = trimmed === '' ? null : Number.parseFloat(trimmed);
 		if (trimmed !== '' && (numVal === null || Number.isNaN(numVal))) return;
 		const updated: SavedActivity = { ...activity, weatherTemperature: numVal };
-		saveActivity(updated);
+		void saveActivity(updated);
 		setActivity(updated);
 	}, [activity]);
 
 	const handleWeatherTypeChange = useCallback((type: WeatherType | null) => {
 		if (!activity) return;
 		const updated: SavedActivity = { ...activity, weatherType: type };
-		saveActivity(updated);
+		void saveActivity(updated);
 		setActivity(updated);
 	}, [activity]);
 
@@ -1641,7 +1641,7 @@ export default function ActivityDetailScreen() {
 		if (!activity) return;
 		// Tap same star again → clear rating
 		const updated: SavedActivity = { ...activity, rating: activity.rating === newRating ? null : newRating };
-		saveActivity(updated);
+		void saveActivity(updated);
 		setActivity(updated);
 	}, [activity]);
 

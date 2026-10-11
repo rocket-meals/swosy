@@ -101,7 +101,7 @@ async function analyzeScreen(browser: Browser, screen: string): Promise<ScreenRe
   }
 }
 
-(async () => {
+void (async () => {
   console.log(`Running accessibility audit against ${baseUrl}`);
   console.log(`Rule tags: ${tags.join(', ')}`);
   console.log(`Report directory: ${reportDir}`);

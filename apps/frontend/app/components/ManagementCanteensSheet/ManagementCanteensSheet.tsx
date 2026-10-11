@@ -85,7 +85,7 @@ const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({ close
 	};
 
 	useEffect(() => {
-		getCanteensWithBuildings();
+		void getCanteensWithBuildings();
 	}, [isManagement]);
 
 	useEffect(() => {

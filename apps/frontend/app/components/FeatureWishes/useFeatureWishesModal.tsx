@@ -478,7 +478,7 @@ const FeatureWishesList: React.FC<FeatureWishesListProps> = ({ openForm, openDet
 	useEffect(() => {
 		// The colors and icons usually come with the regular update, this covers a first start.
 		if (!choicesByField?.[STATUS_CHOICES_KEY] || !choicesByField?.[PROGRESS_CHOICES_KEY]) {
-			loadFeatureWishFieldChoices(dispatch);
+			void loadFeatureWishFieldChoices(dispatch);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);

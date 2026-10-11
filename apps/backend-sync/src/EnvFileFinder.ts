@@ -1,13 +1,13 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 
-async function findFileUpwards(startDir: string, filename: string): Promise<string | null> {
+function findFileUpwards(startDir: string, filename: string): Promise<string | null> {
   let currentDir = startDir;
 
   while (true) {
     const potentialPath = path.join(currentDir, filename);
     if (fs.existsSync(potentialPath)) {
-      return potentialPath;
+      return Promise.resolve(potentialPath);
     }
 
     const parentDir = path.dirname(currentDir);
@@ -17,7 +17,7 @@ async function findFileUpwards(startDir: string, filename: string): Promise<stri
     currentDir = parentDir;
   }
 
-  return null;
+  return Promise.resolve(null);
 }
 
 export async function findEnvFile(): Promise<string | null> {

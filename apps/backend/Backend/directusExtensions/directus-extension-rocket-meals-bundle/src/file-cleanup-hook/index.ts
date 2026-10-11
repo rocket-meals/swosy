@@ -342,11 +342,11 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default defineHook(async (registerFunctions: RegisterFunctions, apiContext) => {
+export default defineHook((registerFunctions: RegisterFunctions, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
   // Schedule to create new form_submissions based on the provided CSV file
-  WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+  void WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
     workflowRunInterface: new FileCleanupWorkflow(),
     myDatabaseHelper: myDatabaseHelper,
     schedule: registerFunctions.schedule,

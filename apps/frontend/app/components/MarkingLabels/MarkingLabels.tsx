@@ -250,7 +250,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 					// Update profile on the server
 					const result = (await profileHelper.updateProfile(profileData)) as DatabaseTypes.Profiles;
 					if (result) {
-						fetchProfile();
+						void fetchProfile();
 						setLoadingState(false);
 					}
 				} catch (error) {

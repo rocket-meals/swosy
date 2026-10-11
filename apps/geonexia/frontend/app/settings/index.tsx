@@ -202,14 +202,14 @@ function TTSLogContent({
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		loadTTSLog().then((log) => {
+		void loadTTSLog().then((log) => {
 			setEntries(log.slice().reverse()); // newest first
 			setLoading(false);
 		});
 	}, []);
 
 	const handleClear = useCallback(() => {
-		clearTTSLog();
+		void clearTTSLog();
 		setEntries([]);
 		onClear();
 	}, [onClear]);
@@ -420,12 +420,12 @@ export default function SettingsScreen() {
 			children: (
 				<ResetConfirmContent
 					onConfirm={() => {
-						deleteAllActivities();
+						void deleteAllActivities();
 						dispatch(loadPersistedState({}));
 						dispatch(loadWalkedEdgesState([]));
 						dispatch(loadWalkedEdgesRedLineState([]));
-						saveWalkedEdges([]);
-						saveWalkedEdgesRedLine([]);
+						void saveWalkedEdges([]);
+						void saveWalkedEdgesRedLine([]);
 						closeResetModal();
 					}}
 					onCancel={closeResetModal}
@@ -438,7 +438,7 @@ export default function SettingsScreen() {
 	const handleToggleDebugMode = useCallback(() => {
 		const next = !isDebugMode;
 		dispatch(setDebugMode(next));
-		saveDebugModeFlag(next);
+		void saveDebugModeFlag(next);
 	}, [dispatch, isDebugMode]);
 
 	const handleOpenSpeechSettings = useCallback(() => {
@@ -472,18 +472,18 @@ export default function SettingsScreen() {
 	const handleToggleDevMode = useCallback(async () => {
 		const { records: currentRecords, isDevMode: currentIsDevMode, walkedEdges: currentEdges, walkedEdgesRedLine: currentEdgesRedLine } = store.getState().hexTiles;
 		if (currentIsDevMode) {
-			saveDevHexTileState(currentRecords);
-			saveDevWalkedEdges(currentEdges);
-			saveDevWalkedEdgesRedLine(currentEdgesRedLine);
+			void saveDevHexTileState(currentRecords);
+			void saveDevWalkedEdges(currentEdges);
+			void saveDevWalkedEdgesRedLine(currentEdgesRedLine);
 			const [prodRecords, prodEdges, prodEdgesRedLine] = await Promise.all([loadHexTileState(), loadWalkedEdges(), loadWalkedEdgesRedLine()]);
-			saveDevModeFlag(false);
+			void saveDevModeFlag(false);
 			dispatch(setDevMode({ isDevMode: false, records: prodRecords, walkedEdges: prodEdges, walkedEdgesRedLine: prodEdgesRedLine }));
 		} else {
-			saveHexTileState(currentRecords);
-			saveWalkedEdges(currentEdges);
-			saveWalkedEdgesRedLine(currentEdgesRedLine);
+			void saveHexTileState(currentRecords);
+			void saveWalkedEdges(currentEdges);
+			void saveWalkedEdgesRedLine(currentEdgesRedLine);
 			const [devRecords, devEdges, devEdgesRedLine] = await Promise.all([loadDevHexTileState(), loadDevWalkedEdges(), loadDevWalkedEdgesRedLine()]);
-			saveDevModeFlag(true);
+			void saveDevModeFlag(true);
 			dispatch(setDevMode({ isDevMode: true, records: devRecords, walkedEdges: devEdges, walkedEdgesRedLine: devEdgesRedLine }));
 		}
 	}, [dispatch]);

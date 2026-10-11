@@ -64,7 +64,7 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 	const openStore = useCallback(
 		(storeUrl: string, store: StoreTarget) => {
 			addLog(`Opening ${store} store URL`);
-			CommonSystemActionHelper.openExternalURL(storeUrl, true);
+			void CommonSystemActionHelper.openExternalURL(storeUrl, true);
 		},
 		[addLog]
 	);

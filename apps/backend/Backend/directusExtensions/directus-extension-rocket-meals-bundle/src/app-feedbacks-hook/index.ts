@@ -105,7 +105,7 @@ async function mailResponseToContactEmail(myDatabaseHelper: MyDatabaseHelper, ap
   console.log(`app-feedbacks-hook: Mailed the response of app feedback ${app_feedback.id} to its contact email`);
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ schedule, action }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, ({ schedule, action }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
   const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 

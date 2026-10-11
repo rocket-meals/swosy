@@ -23,7 +23,7 @@ export default function Index() {
 	// made in the settings screen show up immediately.
 	useFocusEffect(
 		useCallback(() => {
-			loadClockSettingsAsync().then(setClockSettings);
+			void loadClockSettingsAsync().then(setClockSettings);
 		}, [])
 	);
 
@@ -32,12 +32,12 @@ export default function Index() {
 	// the current display options as props), the experimental food widget gets
 	// today's menu (if configured in settings).
 	useEffect(() => {
-		loadClockSettingsAsync().then((settings) => syncWidgetTimeline(settings));
-		refreshFoodWidgetFromStoredSettingsAsync();
+		void loadClockSettingsAsync().then((settings) => syncWidgetTimeline(settings));
+		void refreshFoodWidgetFromStoredSettingsAsync();
 		const subscription = AppState.addEventListener('change', (state) => {
 			if (state === 'active') {
-				loadClockSettingsAsync().then((settings) => syncWidgetTimeline(settings));
-				refreshFoodWidgetFromStoredSettingsAsync();
+				void loadClockSettingsAsync().then((settings) => syncWidgetTimeline(settings));
+				void refreshFoodWidgetFromStoredSettingsAsync();
 			}
 		});
 		return () => subscription.remove();

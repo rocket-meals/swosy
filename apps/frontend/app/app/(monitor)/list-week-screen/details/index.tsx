@@ -163,7 +163,7 @@ const Index = () => {
 
 			setFoods(newFoods);
 			if (newFoods) {
-				fetchCurrentFoodCategory(newFoods);
+				void fetchCurrentFoodCategory(newFoods);
 			}
 		} catch (error) {
 			console.error('Error fetching Food Offers:', error);
@@ -172,7 +172,7 @@ const Index = () => {
 	};
 
 	useEffect(() => {
-		fetchFoods();
+		void fetchFoods();
 		setThemeMode('light');
 	}, [canteens_id, date_iso]);
 

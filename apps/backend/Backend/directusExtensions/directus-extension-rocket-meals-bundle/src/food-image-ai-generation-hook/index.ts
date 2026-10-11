@@ -192,11 +192,11 @@ class FoodImageAiGenerationWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async (registerFunctions, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,(registerFunctions, apiContext) => {
   const { schedule } = registerFunctions;
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
-  WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+  void WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
     workflowRunInterface: new FoodImageAiGenerationWorkflow(),
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,

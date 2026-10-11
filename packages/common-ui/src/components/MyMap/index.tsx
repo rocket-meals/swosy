@@ -147,7 +147,7 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 					setHtmlUri(htmlFilePath);
 				}
 			};
-			loadHtml();
+			void loadHtml();
 			return () => {
 				isMounted = false;
 			};
@@ -191,7 +191,7 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 		// When no initialCenter is provided and auto-center is enabled, request location on mount.
 		useEffect(() => {
 			if (initialCenter || centerAtUserLocationIfNoInitialPosition === false) return;
-			(async () => {
+			void (async () => {
 				try {
 					const { status } = await Location.requestForegroundPermissionsAsync();
 					if (status !== 'granted') return;

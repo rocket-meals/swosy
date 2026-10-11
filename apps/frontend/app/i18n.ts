@@ -14,7 +14,7 @@ const languageDetector = {
 	type: 'languageDetector' as const,
 	async: true,
 	detect: (callback: any) => {
-		sqliteKeyValueStorage.getItem('user-language').then((language) => {
+		void sqliteKeyValueStorage.getItem('user-language').then((language) => {
 			if (language) {
 				callback(language);
 			} else {
@@ -24,7 +24,7 @@ const languageDetector = {
 	},
 	init: () => {},
 	cacheUserLanguage: (language: string) => {
-		sqliteKeyValueStorage.setItem('user-language', language);
+		void sqliteKeyValueStorage.setItem('user-language', language);
 	},
 };
 

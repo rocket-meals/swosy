@@ -226,7 +226,7 @@ export class NotificationHelper {
 	}
 
 	static setNotificationChannelAsync(channel: string) {
-		getNotificationsModule().then(Notifications => {
+		void getNotificationsModule().then(Notifications => {
 			if (!Notifications) {
 				return;
 			}

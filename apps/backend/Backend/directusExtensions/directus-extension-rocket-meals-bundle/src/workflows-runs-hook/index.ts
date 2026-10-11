@@ -30,7 +30,7 @@ export class WorkflowScheduleHelper {
     });
   }
 
-  static async registerScheduleToCreateWorkflowRuns(config: { workflowId: string; cronOject: CronObject; myDatabaseHelper: MyDatabaseHelper; schedule: ScheduleFromExtension }): Promise<void> {
+  static registerScheduleToCreateWorkflowRuns(config: { workflowId: string; cronOject: CronObject; myDatabaseHelper: MyDatabaseHelper; schedule: ScheduleFromExtension }): Promise<void> {
     let cronString = CronHelper.getCronString(config.cronOject);
     WorkflowScheduler.registerSchedule(config.workflowId, cronString);
     config.schedule(cronString, async () => {
@@ -48,6 +48,7 @@ export class WorkflowScheduleHelper {
         console.error(e);
       }
     });
+    return Promise.resolve();
   }
 }
 
@@ -358,7 +359,7 @@ async function handleActionOnUpdateOrCreateIfWorkflowRunShouldBeDeleted(payload:
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ action, init, filter, schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ action, init, filter, schedule }, apiContext) => {
   init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
     let myDatabaseHelper = new MyDatabaseHelper(apiContext);
     // App started, resetting workflow parsing

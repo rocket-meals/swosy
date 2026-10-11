@@ -12,11 +12,11 @@ export class FoodWebParserRawReportTestReaderAachen implements FoodWebParserAach
     }
   }
 
-  async getHtmlFilesForCanteens(): Promise<CanteenNamesToHtmlFileDict> {
+  getHtmlFilesForCanteens(): Promise<CanteenNamesToHtmlFileDict> {
     if (this.canteensHtmlFilesMap) {
-      return this.canteensHtmlFilesMap;
+      return Promise.resolve(this.canteensHtmlFilesMap);
     }
-    return FoodWebParserRawReportTestReaderAachen.getSavedWeeklyPlanFromFile();
+    return Promise.resolve(FoodWebParserRawReportTestReaderAachen.getSavedWeeklyPlanFromFile());
   }
 
   public static getSavedWeeklyPlanFromFile(): CanteenNamesToHtmlFileDict {

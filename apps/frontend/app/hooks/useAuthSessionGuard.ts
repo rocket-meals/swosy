@@ -35,7 +35,7 @@ export default function useAuthSessionGuard() {
 			await ServerAPI.authenticateWithEmailAndPassword(credentials.email, credentials.password);
 			const me = (await ServerAPI.getMe()) as DatabaseTypes.DirectusUsers;
 			if (me?.id === expectedUserId) {
-				updateLoginStatus(dispatch, me);
+				void updateLoginStatus(dispatch, me);
 				return true;
 			}
 			// The stored guest credentials belong to another account - do not switch identity.
@@ -68,7 +68,7 @@ export default function useAuthSessionGuard() {
 		if (!isRegisteredUser) return;
 		let cancelled = false;
 		const unsubscribe = afterRehydration(() => {
-			ServerAPI.validateSession().then(result => {
+			void ServerAPI.validateSession().then(result => {
 				if (cancelled) return;
 				if (result.status === 'invalid') {
 					handleInvalidSession();
