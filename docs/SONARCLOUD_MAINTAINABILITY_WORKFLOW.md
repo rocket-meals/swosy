@@ -20,6 +20,11 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
    `` `Set` ``, `` `.some(…)` ``, `` `readonly` ``), bleiben erhalten — Liste
    `KEYWORD_QUOTES` im Script bei Bedarf ergänzen.
 
+   Für alle Kategorien (Bugs/Reliability, Maintainability, Security) gibt es
+   zusätzlich `node scripts/sonar-sort-and-group.js [reliability|maintainability|security|all] [--top N|all] [--details] [--json]`
+   (Default: `reliability`). Gleiche Normalisierung, zeigt pro Typ zusätzlich die
+   Anzahl betroffener Dateien, mit `--details` alle Fundstellen (`Datei:Zeile`).
+
 2. **Top 10 dem Nutzer nennen** — immer mit Anzahl pro Typ.
 
 3. **Häufigsten Typ beheben** — alle Vorkommen dieses Typs refactoren.
