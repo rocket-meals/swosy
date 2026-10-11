@@ -1225,7 +1225,7 @@ export class ParseSchedule {
       dictFoodsFound[food_id] = null;
     }
     // search for foods
-    const foodsService = await this.getFoodsService();
+    const foodsService = this.getFoodsService();
     const foodIds = Object.keys(dictFoodsFound);
     for (let foodId of foodIds) {
       let food = await foodsService.readOneWithTranslations(foodId);

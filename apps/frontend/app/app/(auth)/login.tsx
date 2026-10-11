@@ -104,7 +104,7 @@ export default function Login() {
 		}
 		dispatch({ type: UPDATE_MANAGEMENT, payload: isManagement });
 
-		void updateLoginStatus(dispatch, user as DatabaseTypes.DirectusUsers);
+		updateLoginStatus(dispatch, user as DatabaseTypes.DirectusUsers);
 		const currentDate = getCurrentDate();
 
 		dispatch({
@@ -188,7 +188,7 @@ export default function Login() {
 
 	const handleAnonymousLogin = () => {
 		// @ts-ignore
-		void updateLoginStatus(dispatch, { id: '' });
+		updateLoginStatus(dispatch, { id: '' });
 		router.replace('/(app)');
 		const currentDate = getCurrentDate();
 

@@ -103,7 +103,7 @@ function main(): void {
   const snapshotPath = resolveSnapshotPathInsideRepo(snapshotArg);
   // Sink reviewed as safe: snapshotPath was canonicalized via realpathSync and
   // confirmed to be inside the repository, see the helper above. Same
-  // suppression as scripts/count-sonar-maintainability-issues.js, where two
+  // suppression as reports/sonarCloud/sonar-sort-and-group.js, where two
   // rounds of sanitizer hardening did not clear this SonarCloud finding.
   const snapshot = JSON.parse(fs.readFileSync(snapshotPath, 'utf8')) as Snapshot; // NOSONAR
   // Printing the snippet is the entire purpose of this script: it is a

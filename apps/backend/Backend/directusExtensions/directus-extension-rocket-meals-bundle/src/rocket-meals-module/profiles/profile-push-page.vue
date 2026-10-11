@@ -153,25 +153,25 @@ watch(() => props.profileId, load);
             </li>
           </ul>
 
-          <label class="field">
+          <label class="field" for="profile-push-title">
             <span class="field-label type-label">
               {{ translate(BackendTranslationKeys.title) }}
               <span class="counter" :class="{ over: titleVisibility.tooLong }">{{ titleVisibility.length }} / {{ titleVisibility.limit }}</span>
             </span>
-            <v-input v-model="title" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_push_title_placeholder)" :disabled="sending" />
+            <v-input id="profile-push-title" v-model="title" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_push_title_placeholder)" :disabled="sending" />
           </label>
 
-          <label class="field">
+          <label class="field" for="profile-push-body">
             <span class="field-label type-label">
               {{ translate(BackendTranslationKeys.rocket_meals_module_push_body) }}
               <span class="counter" :class="{ over: bodyVisibility.tooLong }">{{ bodyVisibility.length }} / {{ bodyVisibility.limit }}</span>
             </span>
-            <v-textarea v-model="body" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_push_body_placeholder)" :disabled="sending" />
+            <v-textarea id="profile-push-body" v-model="body" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_push_body_placeholder)" :disabled="sending" />
           </label>
 
-          <label class="field badge-field">
+          <label class="field badge-field" for="profile-push-badge">
             <span class="field-label type-label">{{ translate(BackendTranslationKeys.rocket_meals_module_push_badge) }}</span>
-            <v-input v-model="badge" type="number" :min="0" :max="PushNotificationComposeHelper.MAX_BADGE" :step="1" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_push_badge_placeholder)" :disabled="sending" />
+            <v-input id="profile-push-badge" v-model="badge" type="number" :min="0" :max="PushNotificationComposeHelper.MAX_BADGE" :step="1" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_push_badge_placeholder)" :disabled="sending" />
             <span class="type-note" :class="{ invalid: parsedBadge === null }">{{ translate(parsedBadge === null ? BackendTranslationKeys.rocket_meals_module_push_badge_invalid : BackendTranslationKeys.rocket_meals_module_push_badge_hint, { max: PushNotificationComposeHelper.MAX_BADGE }) }}</span>
           </label>
 

@@ -7,6 +7,8 @@
  * the app's translation catalogue because Directus only has one language for them.
  */
 
+import { StringHelper } from 'repo-depkit-common';
+
 export type DirectusFieldChoice = {
 	value: string;
 	text?: string | null;
@@ -75,7 +77,8 @@ export class DirectusFieldChoiceHelper {
 	 * `MaterialIcons:forward-to-inbox`, or null when Material Icons has no such icon.
 	 */
 	static toIconName(icon: string | null | undefined, materialIconsGlyphMap: Record<string, unknown>): string | null {
-		const materialName = icon?.trim().toLowerCase().split('_').join('-');
+		const normalizedIcon = icon?.trim().toLowerCase();
+		const materialName = normalizedIcon && StringHelper.replaceAllLiteralWithOptions({ str: normalizedIcon, find: '_', replace: '-' });
 		return materialName && materialName in materialIconsGlyphMap ? `MaterialIcons:${materialName}` : null;
 	}
 }
