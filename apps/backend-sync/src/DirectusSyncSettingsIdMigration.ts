@@ -30,7 +30,7 @@ export async function migrateSettingsSyncIdToPlaceholder(directusUrl: string, co
 
   for (const legacyEntry of legacyEntries) {
     console.log(` -  Renaming directus-sync settings id map entry ${legacyEntry.sync_id} to ${SETTINGS_SYNC_ID_PLACEHOLDER}`);
-    const deleteResponse = await FetchIgnoreSelfSignedCertHelper.fetch(`${tableUrl}/sync_id/${encodeURIComponent(legacyEntry.sync_id)}`, { method: 'DELETE', headers });
+    const deleteResponse = await FetchIgnoreSelfSignedCertHelper.fetch(`${tableUrl}/sync_id/${encodeURIComponent(legacyEntry.sync_id)}`, { method: 'DELETE', headers }); // NOSONAR S9382 - sequential on purpose: aborts with an error on the first failed DELETE before touching further id map entries
     if (!deleteResponse.ok) {
       throw new Error(`Could not remove legacy settings id map entry: ${deleteResponse.status} ${deleteResponse.statusText}`);
     }

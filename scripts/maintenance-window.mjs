@@ -48,7 +48,8 @@ async function main() {
 		const currentStart = current.data?.maintenance_start ?? null;
 		// Compared as points in time: Directus returns e.g. "...:00.000Z" for "...:00Z".
 		if (!currentStart || new Date(currentStart).getTime() !== new Date(MAINTENANCE_START).getTime()) {
-			console.log(`Maintenance window not cleared, maintenance_start is ${currentStart} instead of ${MAINTENANCE_START}`);
+			// JSON.stringify escapes line breaks, so values read from the API or the environment cannot forge extra log lines.
+			console.log(`Maintenance window not cleared, maintenance_start is ${JSON.stringify(currentStart)} instead of ${JSON.stringify(MAINTENANCE_START)}`);
 			return;
 		}
 		await request('/items/app_settings', {
@@ -63,7 +64,9 @@ async function main() {
 	throw new Error(`Unknown MAINTENANCE_ACTION "${MAINTENANCE_ACTION}"`);
 }
 
-main().catch(error => {
+try {
+	await main();
+} catch (error) {
 	console.error(error.message);
 	process.exit(1);
-});
+}

@@ -18,7 +18,7 @@ const qualityToReportName: Record<string, string> = {
 
 function getRepoRoot(): string {
   try {
-    return execSync('git rev-parse --show-toplevel', { encoding: 'utf-8' }).trim();
+    return execSync('git rev-parse --show-toplevel', { encoding: 'utf-8' }).trim(); // NOSONAR S4036 - developer/CI CLI: git is installed in different locations (/usr/bin, /opt/homebrew/bin, ...), so it is resolved via the PATH of the trusted local or CI environment that runs this tool
   } catch {
     console.warn('Could not determine git repository root. Using current directory.');
     return process.cwd();
@@ -66,7 +66,7 @@ async function fetchAllIssues(token: string, project: string, quality: string): 
 
   do {
     const url = `https://sonarcloud.io/api/issues/search?componentKeys=${encodeURIComponent(project)}&impactSoftwareQualities=${quality}&issueStatuses=OPEN,CONFIRMED&p=${page}&ps=${pageSize}`;
-    const res = await fetch(url, {
+    const res = await fetch(url, { // NOSONAR S9382 - pagination: the loop condition depends on the total returned by the previous page, so pages are fetched one after another
       headers: {
         Authorization: `Basic ${Buffer.from(token + ':').toString('base64')}`,
       },
@@ -76,7 +76,7 @@ async function fetchAllIssues(token: string, project: string, quality: string): 
       throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
     }
 
-    const data = await res.json();
+    const data = await res.json(); // NOSONAR S9382 - pagination: the loop condition depends on the total returned by the previous page, so pages are fetched one after another
     total = data.paging.total;
 
     const batch: Issue[] = data.issues.map((i: any) => ({
@@ -120,7 +120,7 @@ async function main() {
   console.log(`Output directory: ${resolvedOutputDir}`);
 
   for (const quality of qualities) {
-    await generateReport(token, project, quality, resolvedOutputDir);
+    await generateReport(token, project, quality, resolvedOutputDir); // NOSONAR S9382 - sequential on purpose: one report per quality, keeps SonarCloud API calls and console output one after another
   }
 
   console.log('All reports generated successfully ✅');

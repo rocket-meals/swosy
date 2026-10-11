@@ -116,7 +116,7 @@ void (async () => {
   for (const screen of APP_ROUTES) {
     current++;
     console.log(`[${current}/${APP_ROUTES.length}] Analyzing ${screen} ...`);
-    const result = await analyzeScreen(browser, screen);
+    const result = await analyzeScreen(browser, screen); // NOSONAR S9382 - sequential on purpose: screens are audited one after another in one shared browser so timings stay stable and progress output stays in order
     const violationElementCount = result.violations.reduce((sum, violation) => sum + violation.nodeCount, 0);
     console.log(result.error ? `  ⚠️ error: ${result.error}` : `  ${violationElementCount} violation element(s), ${result.passCount} passed rules`);
     screens.push(result);

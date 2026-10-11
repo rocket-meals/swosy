@@ -31,7 +31,7 @@ const DEFAULT_MAX_ISSUES = 50;
 
 function getRepoRoot(): string {
   try {
-    return execSync('git rev-parse --show-toplevel', { encoding: 'utf-8' }).trim();
+    return execSync('git rev-parse --show-toplevel', { encoding: 'utf-8' }).trim(); // NOSONAR S4036 - developer/CI CLI: git is installed in different locations (/usr/bin, /opt/homebrew/bin, ...), so it is resolved via the PATH of the trusted local or CI environment that runs this tool
   } catch (error) {
     console.warn('Could not determine git repository root. Using current directory.', error);
     return process.cwd();

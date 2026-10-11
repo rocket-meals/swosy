@@ -205,10 +205,10 @@ async function main(): Promise<void> {
   for (const entry of metadata) {
     console.log(`===== ${entry.displayName} =====`);
     if (appleToken && entry.apple) {
-      await runSyncStep(`${entry.displayName} (Apple)`, failures, () => handleApple(options, appleToken, entry));
+      await runSyncStep(`${entry.displayName} (Apple)`, failures, () => handleApple(options, appleToken, entry)); // NOSONAR S9382 - sequential on purpose: CLI processes one app and store after another so the log output stays grouped per app and store APIs are not hit in parallel
     }
     if (googleToken && entry.google) {
-      await runSyncStep(`${entry.displayName} (Google)`, failures, () => handleGoogle(options, googleToken, entry));
+      await runSyncStep(`${entry.displayName} (Google)`, failures, () => handleGoogle(options, googleToken, entry)); // NOSONAR S9382 - sequential on purpose: CLI processes one app and store after another so the log output stays grouped per app and store APIs are not hit in parallel
     }
   }
 

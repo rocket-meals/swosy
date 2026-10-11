@@ -81,7 +81,8 @@ fi
 
 # maintenance_start/_end sind timestamp-Felder (mit Zeitzone), daher UTC.
 format_utc_time() {
-  date -u -d "@$1" '+%Y-%m-%dT%H:%M:%SZ'
+  local epoch_seconds="$1"
+  date -u -d "@$epoch_seconds" '+%Y-%m-%dT%H:%M:%SZ'
 }
 
 # Längste der letzten Neustart-Dauern, damit das angezeigte Ende eher zu spät
@@ -102,8 +103,9 @@ estimate_restart_seconds() {
 }
 
 record_restart_seconds() {
+  local duration_seconds="$1"
   local tmp="${RESTART_DURATIONS_FILE}.tmp"
-  { [[ -f "$RESTART_DURATIONS_FILE" ]] && cat "$RESTART_DURATIONS_FILE"; echo "$(date +%s) $1"; } | tail -n "$RESTART_DURATIONS_KEEP" > "$tmp"
+  { [[ -f "$RESTART_DURATIONS_FILE" ]] && cat "$RESTART_DURATIONS_FILE"; echo "$(date +%s) $duration_seconds"; } | tail -n "$RESTART_DURATIONS_KEEP" > "$tmp"
   mv "$tmp" "$RESTART_DURATIONS_FILE"
 }
 

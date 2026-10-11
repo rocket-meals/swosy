@@ -111,7 +111,7 @@ prompts.promptAsync = async (questions) => {
 		} else if (question.type === 'confirm' || question.type === 'toggle') {
 			answers[question.name] = true;
 		} else if (question.initial !== undefined) {
-			answers[question.name] = typeof question.initial === 'function' ? await question.initial() : question.initial;
+			answers[question.name] = typeof question.initial === 'function' ? await question.initial() : question.initial; // NOSONAR S9382 - prompts are answered one after another like the interactive eas-cli flow would, in their original order
 		} else {
 			throw new Error(`Cannot auto-answer interactive prompt: ${question.message}`);
 		}
@@ -212,9 +212,9 @@ appleUtils.BundleId.prototype.updateBundleIdCapabilityAsync = async function (op
 	console.log(`[capability-sync] syncing ${list.length} capability change(s) for ${this.attributes?.identifier ?? this.id} via per-capability ASC API requests`);
 	for (const operation of list) {
 		if (operation.option === 'OFF') {
-			await disableCapabilityAsync(this.id, operation);
+			await disableCapabilityAsync(this.id, operation); // NOSONAR S9382 - sequential on purpose: one App Store Connect request per capability change, the API is rate limited and changes on one bundle id should not race
 		} else {
-			await enableCapabilityAsync(this.id, operation);
+			await enableCapabilityAsync(this.id, operation); // NOSONAR S9382 - sequential on purpose: one App Store Connect request per capability change, the API is rate limited and changes on one bundle id should not race
 		}
 	}
 };
@@ -234,13 +234,13 @@ appleUtils.BundleId.prototype.updateBundleIdCapabilityAsync = async function (op
 async function collectAppGroupProblemsAsync(bundleIdentifiers, appGroup) {
 	const problems = [];
 	for (const bundleIdentifier of bundleIdentifiers) {
-		const bundleIdListing = await ascRequestAsync('GET', `/v1/bundleIds?filter[identifier]=${encodeURIComponent(bundleIdentifier)}&limit=200`);
+		const bundleIdListing = await ascRequestAsync('GET', `/v1/bundleIds?filter[identifier]=${encodeURIComponent(bundleIdentifier)}&limit=200`); // NOSONAR S9382 - sequential on purpose: App Store Connect API is rate limited, a few bundle ids are checked one after another
 		const bundleIdResource = bundleIdListing?.data?.find((entry) => entry.attributes?.identifier === bundleIdentifier);
 		if (!bundleIdResource) {
 			problems.push({ bundleIdentifier, message: `Bundle id ${bundleIdentifier} not found in the Apple developer portal.` });
 			continue;
 		}
-		const profileListing = await ascRequestAsync(
+		const profileListing = await ascRequestAsync( // NOSONAR S9382 - sequential on purpose: needs the bundle id resource from the request above, App Store Connect API is rate limited
 			'GET',
 			`/v1/bundleIds/${bundleIdResource.id}/profiles?fields[profiles]=name,profileState,profileType,createdDate,profileContent&limit=200`
 		);
@@ -298,7 +298,7 @@ async function verifyProfilesContainAppGroupAsync(bundleIdentifiers, appGroup, r
 		// configuration - including an assigned App Group.
 		for (const problem of staleProfiles) {
 			console.log(`[verify] deleting stale provisioning profile "${problem.staleProfile.name}" (${problem.staleProfile.id}) to force regeneration...`);
-			await ascRequestAsync('DELETE', `/v1/profiles/${problem.staleProfile.id}`);
+			await ascRequestAsync('DELETE', `/v1/profiles/${problem.staleProfile.id}`); // NOSONAR S9382 - sequential on purpose: one App Store Connect DELETE per stale profile, the API is rate limited
 		}
 		console.log('[verify] re-running credentials setup to regenerate the deleted profiles...');
 		await runCredentialsSetupAsync();

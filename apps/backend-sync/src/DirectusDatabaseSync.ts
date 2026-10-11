@@ -126,7 +126,7 @@ export class DirectusDatabaseSync {
         continue;
       }
 
-      const data = await this.getCollection(headers, collectionFilePath);
+      const data = await this.getCollection(headers, collectionFilePath); // NOSONAR S9382 - sequential on purpose: one Directus read per collection, each written to its own file, parallel requests would hammer the instance during sync
       console.log(data);
       const jsonData = JSON.stringify(data, null, 4);
       console.log(` -  Fetched ${collectionFilePath} (${data.length} items)`);
@@ -374,7 +374,7 @@ export class DirectusDatabaseSync {
     // if file ends with .DS_Store it is not a collection
     files = files.filter(file => !file.endsWith('.DS_Store'));
     for (const file of files) {
-      await this.uploadSchema(headers, `${this.configurationPathCollections}/${file}`);
+      await this.uploadSchema(headers, `${this.configurationPathCollections}/${file}`); // NOSONAR S9382 - sequential on purpose: files are imported in sorted order and one at a time, so the import order is deterministic and Directus gets one import request at a time
     }
   }
 

@@ -1,7 +1,7 @@
 name: 🔄 Fork Synchronization
 
 permissions:
-  contents: write
+  contents: read
 
 on:
   # Run daily at 18:00 German time as a safety net for syncs that could not be
@@ -53,6 +53,9 @@ jobs:
     name: 🔄 Sync Fork with Upstream
     runs-on: ubuntu-latest
     needs: schedule-gate
+    # Write access only for this job: it pushes the last-processed marker tag.
+    permissions:
+      contents: write
     # Pushes on the upstream repository itself are none of this workflow's
     # business - only forks need to react to the "Sync fork" button.
     if: needs.schedule-gate.outputs.run == 'true' && (github.event_name != 'push' || github.repository != 'rocket-meals/rocket-meals')

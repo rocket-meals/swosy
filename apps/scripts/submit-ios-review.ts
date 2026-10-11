@@ -186,7 +186,7 @@ async function updateReleaseNotes(token: string, appStoreVersionId: string, rele
 
   for (const localization of localizations) {
     try {
-      await ascRequest(token, 'PATCH', `/appStoreVersionLocalizations/${localization.id}`, {
+      await ascRequest(token, 'PATCH', `/appStoreVersionLocalizations/${localization.id}`, { // NOSONAR S9382 - sequential on purpose: one App Store Connect PATCH per localization, the API is rate limited
         data: {
           type: 'appStoreVersionLocalizations',
           id: localization.id,
@@ -398,7 +398,7 @@ async function main(): Promise<void> {
       }
 
       console.log(`   Nächster Versuch in ${POLL_INTERVAL_MINUTES} Minuten ...\n`);
-      await sleepMinutes(POLL_INTERVAL_MINUTES);
+      await sleepMinutes(POLL_INTERVAL_MINUTES); // NOSONAR S9382 - polling loop, each submission attempt must wait for the poll interval before retrying
     }
   }
 }

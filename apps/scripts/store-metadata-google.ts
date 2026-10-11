@@ -202,7 +202,7 @@ export async function applyGooglePush(accessToken: string, metadata: GooglePlayA
       const desiredListing = metadata.listings?.[language] ?? {};
       const currentListing = current.listings.find(listing => listing.language === language);
       // PUT replaces the whole listing, so keep unmanaged fields from the current state.
-      await googleRequest(accessToken, 'PUT', `/applications/${packageName}/edits/${editId}/listings/${language}`, {
+      await googleRequest(accessToken, 'PUT', `/applications/${packageName}/edits/${editId}/listings/${language}`, { // NOSONAR S9382 - sequential on purpose: writes into one shared Google Play edit, the API is rate limited and a failed PUT should stop before further listings are changed
         language,
         title: desiredListing.title ?? currentListing?.title,
         shortDescription: desiredListing.shortDescription ?? currentListing?.shortDescription,
