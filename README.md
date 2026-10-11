@@ -252,6 +252,11 @@ Das angekündigte Ende ist die längste der letzten zehn gemessenen Neustart-Dau
 5 Minuten (ohne Messwerte: 10 Minuten). Die Felder sind `timestamp`-Felder (UTC), die App zeigt sie in der Zeitzone
 des Geräts an. Ein von Hand eingetragenes Wartungsfenster wird nach dem Neustart nicht gelöscht.
 
+In `app_settings.maintenance_message` (Markdown, Bilder aus dem Ordner „Public Images“) kann ein eigener Text stehen.
+Die App zeigt ihn zusammen mit dem Zeitraum in einem Modal: beim App-Start während oder kurz vor der Wartung, und in
+einer schon laufenden App, sobald Anfragen nach einem Serverausfall aussehen (Netzwerkfehler, 502/503/504 oder der
+404 von Traefik). Das Skript leert diesen Text nicht.
+
 ### Voraussetzung
 
 Das Repository `rocket-meals-envs` muss im übergeordneten Ordner liegen (`../rocket-meals-envs`).
