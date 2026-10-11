@@ -238,7 +238,8 @@ export function getVersionPatch() {
         // 121: SonarCloud reliability: remaining bugs (labels, regex backtracking, codePointAt, sort compare)
         // 122: SonarCloud: remaining maintainability findings and security hotspots resolved
         // 123: data clumps refactored into shared types and parameter objects
-        return 123;
+        // 124: maintenance modal with app_settings.maintenance_message, shown on start and when the server looks down
+        return 124;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

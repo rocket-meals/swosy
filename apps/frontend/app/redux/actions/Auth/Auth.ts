@@ -7,6 +7,10 @@ import ServerConfiguration from '@/constants/ServerUrl';
 import { setApiBaseUrl } from '@/redux/actions/ApiService/ApiService';
 import { setBaseURL } from '@/interceptor';
 import { buildSessionDiagnostics, hasRefreshToken, isAccessTokenExpiring, isSessionRejectedError, SessionDiagnostics } from '@/helper/authSessionHelper';
+import { outageDetectingFetch } from '@/helper/serverOutageHelper';
+
+// Every Directus client reports answers that look like a server outage (see MaintenanceModal).
+const DIRECTUS_CLIENT_OPTIONS = { globals: { fetch: outageDetectingFetch } };
 
 interface ExtendedProperties {
 	project: {
@@ -78,7 +82,7 @@ export class ServerAPI {
 
 	// Creates a public Directus client
 	static getPublicClient() {
-		return createDirectus<DatabaseTypes.CustomDirectusTypes>(this.getServerUrl()).with(rest());
+		return createDirectus<DatabaseTypes.CustomDirectusTypes>(this.getServerUrl(), DIRECTUS_CLIENT_OPTIONS).with(rest());
 	}
 
 	// Initializes authentication storage
@@ -230,7 +234,7 @@ export class ServerAPI {
 				storage: this.simpleAuthentificationStorage,
 			};
 
-			const client = createDirectus(this.getServerUrl()).with(authentication('json', authConfig)).with(graphql()).with(rest());
+			const client = createDirectus(this.getServerUrl(), DIRECTUS_CLIENT_OPTIONS).with(authentication('json', authConfig)).with(graphql()).with(rest());
 			// rest() and graphql() call `this.getToken()` on the client for every request.
 			client.getToken = () => this.getValidAccessToken();
 			this.client = client;

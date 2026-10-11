@@ -1,0 +1,51 @@
+{
+  "collection": "app_settings",
+  "field": "maintenance_message",
+  "type": "text",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "maintenance_message",
+    "group": "maintenance_settings",
+    "hidden": false,
+    "interface": "input-rich-text-md",
+    "note": "Wird in der App während und kurz vor der Wartung angezeigt",
+    "options": {
+      "folder": "6baff1a8-400e-4dab-8f39-a5422df94db2"
+    },
+    "readonly": false,
+    "required": false,
+    "searchable": true,
+    "sort": 3,
+    "special": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Wartungs Nachricht"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "maintenance_message",
+    "table": "app_settings",
+    "data_type": "text",
+    "default_value": null,
+    "max_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}

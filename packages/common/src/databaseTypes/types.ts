@@ -129,6 +129,7 @@ export type AppSettings = {
   legal_requirements_settings: string;
   login_screen_translations: any[] | AppSettingsLoginScreenTranslations[];
   maintenance_end?: string | null;
+  maintenance_message?: string | null;
   maintenance_settings: string;
   maintenance_start?: string | null;
   map_enabled?: boolean | null;
