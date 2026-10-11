@@ -508,8 +508,8 @@ const Index = () => {
 	};
 
 	useEffect(() => {
-		if (foods?.length > 0) void fetchCurrentFoodCategory(foods, setMainFoodCategories, foodCategories);
-		if (optionalFoods?.length > 0) void fetchCurrentFoodCategory(optionalFoods, setOptionalFoodCategories, foodCategories);
+		if (foods?.length > 0) fetchCurrentFoodCategory(foods, setMainFoodCategories, foodCategories);
+		if (optionalFoods?.length > 0) fetchCurrentFoodCategory(optionalFoods, setOptionalFoodCategories, foodCategories);
 	}, [foods, optionalFoods, foodCategories]);
 
 	useEffect(() => {

@@ -82,7 +82,7 @@ export class DirectusDatabaseSync {
   public async push() {
     console.log('Starting Push Sync');
     const headers = await this.setupDirectusConnectionAndGetHeaders();
-    await this.copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
+    this.copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
     const moduleBar = cleanSettingsDumpFile(this.getSettingsDumpFilePath());
     await migrateSettingsSyncIdToPlaceholder(this.config.directusInstanceUrl, headers.get('cookie') ?? '');
     await this.pushDirectusSyncSchemas();
@@ -101,7 +101,7 @@ export class DirectusDatabaseSync {
     await migrateSettingsSyncIdToPlaceholder(this.config.directusInstanceUrl, headers.get('cookie') ?? '');
     await this.pullDirectusSyncSchema();
     console.log('NOW copying overwrite files');
-    await this.copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
+    this.copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
     cleanSettingsDumpFile(this.getSettingsDumpFilePath());
   }
 

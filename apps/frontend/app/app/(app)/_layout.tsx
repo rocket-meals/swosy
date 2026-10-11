@@ -151,7 +151,7 @@ export default function Layout() {
 	useEffect(() => {
 		const autoLogin = () => {
 			if (kioskMode && !loggedIn) {
-				void updateLoginStatus(dispatch, { id: '' } as any);
+				updateLoginStatus(dispatch, { id: '' } as any);
 				const currentDate = format(new Date(), 'dd.MM.yyyy HH:mm:ss');
 				dispatch({ type: UPDATE_PRIVACY_POLICY_DATE, payload: currentDate });
 				const demoProfile: DatabaseTypes.Profiles = {
@@ -168,7 +168,7 @@ export default function Layout() {
 				dispatch({ type: UPDATE_PROFILE, payload: demoProfile });
 			}
 		};
-		void autoLogin();
+		autoLogin();
 	}, [kioskMode, loggedIn]);
 
 	useEffect(() => {

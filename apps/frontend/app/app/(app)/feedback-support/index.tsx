@@ -89,7 +89,7 @@ const FeedbackScreen = () => {
 
 	useFocusEffect(
 		useCallback(() => {
-			void fetchDeviceInfo();
+			fetchDeviceInfo();
 		}, [prefilledTitle])
 	);
 
@@ -273,7 +273,7 @@ const FeedbackScreen = () => {
 				console.log('App feedback created successfully');
 				setLoading(false);
 				console.log('Set loading to false finished');
-				await fetchDeviceInfo();
+				fetchDeviceInfo();
 				console.log('Fetched device info after creating feedback');
 				toast('Feedback submitted successfully! Thank you for your input.', 'success');
 				console.log('Navigating to support ticket or FAQ');
@@ -318,7 +318,7 @@ const FeedbackScreen = () => {
 			try {
 				await appFeedback.updateAppFeedback(String(app_feedbacks_id), sanitizedInput);
 				setLoading(false);
-				void fetchDeviceInfo();
+				fetchDeviceInfo();
 				toast('Feedback updated successfully! Thank you for your input.', 'success');
 				router.navigate('/support-ticket');
 			} catch (e: any) {

@@ -96,10 +96,10 @@ function refreshSecret(config: AppleClientSecretCredentials, hostEnvFilePath: st
   }
 }
 
-export async function ensureAppleClientSecret(config: AppleClientSecretCredentials, hostEnvFilePath: string): Promise<{changed: boolean, reason?: string}> {
+export function ensureAppleClientSecret(config: AppleClientSecretCredentials, hostEnvFilePath: string): Promise<{changed: boolean, reason?: string}> {
   if (!config) {
     console.warn('['+HOOK_NAME+'] Rotator disabled due to missing configuration.');
-    return { changed: false, reason: 'missing_config' };
+    return Promise.resolve({ changed: false, reason: 'missing_config' });
   }
 
   try {
@@ -107,7 +107,7 @@ export async function ensureAppleClientSecret(config: AppleClientSecretCredentia
 
     if (!hostEnvFilePath) {
       console.warn('['+HOOK_NAME+'] HOST_ENV_FILE_PATH not set.');
-      return { changed: false, reason: 'missing_host_env' };
+      return Promise.resolve({ changed: false, reason: 'missing_host_env' });
     }
 
     let token = getEnvValue(hostEnvFilePath, 'AUTH_APPLE_CLIENT_SECRET');
@@ -118,25 +118,25 @@ export async function ensureAppleClientSecret(config: AppleClientSecretCredentia
         const secondsRemaining = expiresAt - now;
         if (secondsRemaining < REFRESH_THRESHOLD_SECONDS) {
           console.log('['+HOOK_NAME+'] Token is nearing expiry. Refreshing...');
-          await refreshSecret(config, hostEnvFilePath);
-          return { changed: true, reason: 'refreshed_near_expiry' };
+          refreshSecret(config, hostEnvFilePath);
+          return Promise.resolve({ changed: true, reason: 'refreshed_near_expiry' });
         } else {
           console.log('['+HOOK_NAME+'] Token is valid. No action.');
-          return { changed: false, reason: 'valid' };
+          return Promise.resolve({ changed: false, reason: 'valid' });
         }
       } else {
         console.log('['+HOOK_NAME+'] Token found but expiry not parseable. Refreshing...');
-        await refreshSecret(config, hostEnvFilePath);
-        return { changed: true, reason: 'no_expiry' };
+        refreshSecret(config, hostEnvFilePath);
+        return Promise.resolve({ changed: true, reason: 'no_expiry' });
       }
     }
 
     console.log('['+HOOK_NAME+'] No token found. Generating new token...');
-    await refreshSecret(config, hostEnvFilePath);
-    return { changed: true, reason: 'created_new' };
+    refreshSecret(config, hostEnvFilePath);
+    return Promise.resolve({ changed: true, reason: 'created_new' });
   } catch (error) {
     console.error('['+HOOK_NAME+'] Failed to ensure Apple client secret:', error);
-    return { changed: false, reason: 'error' };
+    return Promise.resolve({ changed: false, reason: 'error' });
   }
 }
 

@@ -124,7 +124,7 @@ export class ContentTranslationHelper {
     const { translationsFromParsing, items_primary_field_in_translation_table, itemsTablename, myDatabaseHelper } = config;
     const specificItemServiceReader = myDatabaseHelper.getItemsServiceHelper<T>(itemsTablename);
     if (itemWithTranslations) {
-      const { updateObject, updateNeeded } = await ContentTranslationHelper._getUpdateInformationForTranslations({
+      const { updateObject, updateNeeded } = ContentTranslationHelper._getUpdateInformationForTranslations({
         itemWithTranslations,
         item: itemWithTranslations,
         translationsFromParsing,

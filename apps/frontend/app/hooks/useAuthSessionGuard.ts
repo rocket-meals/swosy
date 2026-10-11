@@ -35,7 +35,7 @@ export default function useAuthSessionGuard() {
 			await ServerAPI.authenticateWithEmailAndPassword(credentials.email, credentials.password);
 			const me = (await ServerAPI.getMe()) as DatabaseTypes.DirectusUsers;
 			if (me?.id === expectedUserId) {
-				void updateLoginStatus(dispatch, me);
+				updateLoginStatus(dispatch, me);
 				return true;
 			}
 			// The stored guest credentials belong to another account - do not switch identity.

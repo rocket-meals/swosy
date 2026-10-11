@@ -39,9 +39,11 @@ export class WorkflowRunLogger {
     return new Date().toISOString() + ': ' + log + '\n';
   }
 
-  async appendLog(log: string) {
+  /** Stays promise-returning: callers await it, the database write itself is fire-and-forget (see setLog). */
+  appendLog(log: string): Promise<void> {
     this.currentLog += WorkflowRunLogger.createLogRow(log);
-    await this.setLog(this.workflowRun.id, this.currentLog);
+    this.setLog(this.workflowRun.id, this.currentLog);
+    return Promise.resolve();
   }
 
   getFinalLogWithStateAndParams(workflowrun: Partial<DatabaseTypes.WorkflowsRuns>): Partial<DatabaseTypes.WorkflowsRuns> {

@@ -111,7 +111,7 @@ export class AutoTranslator {
     await this.autoTranslatorSettings.setSettings(newSettings);
   }
 
-  async getAuthKey() {
-    return await this.autoTranslatorSettings.getAuthKey();
+  getAuthKey() {
+    return Promise.resolve(this.autoTranslatorSettings.getAuthKey());
   }
 }
