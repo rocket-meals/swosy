@@ -49,7 +49,7 @@ async function main() {
 		// Compared as points in time: Directus returns e.g. "...:00.000Z" for "...:00Z".
 		if (!currentStart || new Date(currentStart).getTime() !== new Date(MAINTENANCE_START).getTime()) {
 			// JSON.stringify escapes line breaks, so values read from the API or the environment cannot forge extra log lines.
-			console.log(`Maintenance window not cleared, maintenance_start is ${JSON.stringify(currentStart)} instead of ${JSON.stringify(MAINTENANCE_START)}`);
+			console.log(`Maintenance window not cleared, maintenance_start is ${JSON.stringify(currentStart)} instead of ${JSON.stringify(MAINTENANCE_START)}`); // NOSONAR jssecurity:S5145 - both values are JSON.stringify-escaped (no raw line breaks) and come from the admin-only app_settings and the CI job's own env, written to CI logs only
 			return;
 		}
 		await request('/items/app_settings', {
@@ -67,6 +67,6 @@ async function main() {
 try {
 	await main();
 } catch (error) {
-	console.error(error.message);
+	console.error(JSON.stringify(error.message)); // NOSONAR jssecurity:S5145 - JSON.stringify escapes line breaks, so an error text from the own Directus API cannot forge extra CI log lines
 	process.exit(1);
 }

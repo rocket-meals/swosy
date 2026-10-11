@@ -85,7 +85,7 @@ export class DockerContainerManager {
           return false;
         }
 
-        await new Promise(resolve => setTimeout(resolve, 5000)); // 5 Sekunden warten // NOSONAR S9382 - polling loop, each attempt must wait before the next status check
+        await new Promise(resolve => setTimeout(resolve, 5000)); // NOSONAR S9382 - 5 Sekunden warten, polling loop: each attempt must wait before the next status check
       }
 
       // 5. Health-Check durchführen

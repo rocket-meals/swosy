@@ -453,11 +453,12 @@ export class LivePulseHelper {
   /** Merges all ticker sources into one list, newest first. */
   static buildFeed(sources: { foodFeedbacks?: LivePulseFoodFeedback[]; canteenVisits?: LivePulseCanteenVisit[]; newProfiles?: LivePulseProfile[]; usageEvents?: LivePulseUsageEvent[]; foods?: LivePulseFood[] }): LivePulseFeedItem[] {
     const foodsById = new Map((sources.foods ?? []).map(food => [String(food.id), food]));
-    const candidates: (LivePulseFeedItem | undefined)[] = [];
-    candidates.push(...(sources.foodFeedbacks ?? []).map(feedback => LivePulseHelper.buildFoodFeedbackFeedItem(feedback)));
-    candidates.push(...(sources.canteenVisits ?? []).map(visit => LivePulseHelper.buildCanteenVisitFeedItem(visit)));
-    candidates.push(...(sources.newProfiles ?? []).map(profile => LivePulseHelper.buildNewProfileFeedItem(profile)));
-    candidates.push(...(sources.usageEvents ?? []).map(event => LivePulseHelper.buildUsageEventFeedItem(event, foodsById)));
+    const candidates: (LivePulseFeedItem | undefined)[] = [
+      ...(sources.foodFeedbacks ?? []).map(feedback => LivePulseHelper.buildFoodFeedbackFeedItem(feedback)),
+      ...(sources.canteenVisits ?? []).map(visit => LivePulseHelper.buildCanteenVisitFeedItem(visit)),
+      ...(sources.newProfiles ?? []).map(profile => LivePulseHelper.buildNewProfileFeedItem(profile)),
+      ...(sources.usageEvents ?? []).map(event => LivePulseHelper.buildUsageEventFeedItem(event, foodsById)),
+    ];
     const items = candidates.filter((item): item is LivePulseFeedItem => item !== undefined);
 
     items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

@@ -137,7 +137,7 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
   </div>
 
   <!-- A click anywhere in the box focuses the input. Only a mouse shortcut: keyboard users reach the textarea directly, so the box itself is presentational. -->
-  <div class="composer" role="presentation" :class="{ disabled: !canWrite }" @click="composerInput?.focus()"><!-- NOSONAR Web:MouseEventWithoutKeyboardEquivalentCheck - mouse-only shortcut, see comment above: keyboard users focus the textarea directly, no keyboard equivalent is needed -->
+  <div class="composer" role="presentation" :class="{ disabled: !canWrite }" @click="composerInput?.focus()"><!-- Web:MouseEventWithoutKeyboardEquivalentCheck is suppressed for this file in sonar-project.properties (NOSONAR does not work in templates/CSS): mouse-only shortcut, see comment above: keyboard users focus the textarea directly, no keyboard equivalent is needed -->
     <label class="visually-hidden" :for="composerInputId">{{ placeholder ?? translate(BackendTranslationKeys.rocket_meals_module_message_placeholder) }}</label>
     <textarea :id="composerInputId" ref="composerInput" v-model="newMessage" class="composer-input" rows="1" :placeholder="placeholder ?? translate(BackendTranslationKeys.rocket_meals_module_message_placeholder)" :disabled="!canWrite || sending" @keydown="onKeydown" />
     <div class="composer-actions">

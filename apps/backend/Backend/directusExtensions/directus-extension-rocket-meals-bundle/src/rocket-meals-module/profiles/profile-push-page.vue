@@ -625,7 +625,7 @@ watch(() => props.profileId, load);
   font-size: 0.75rem;
   line-height: 20px;
   text-align: center;
-  background: #ff3b30; /* NOSONAR css:S7924 - deliberately the iOS system badge colours (white on #ff3b30): this is a preview of how the badge looks on the home screen, a darker red would misrepresent it */
+  background: #ff3b30; /* css:S7924 is suppressed for this file in sonar-project.properties (NOSONAR does not work in templates/CSS): deliberately the iOS system badge colours (white on #ff3b30): this is a preview of how the badge looks on the home screen, a darker red would misrepresent it */
   border-radius: 10px;
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
   font-variant-numeric: tabular-nums;

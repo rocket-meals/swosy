@@ -68,6 +68,14 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
   Sync-Jobs (begrenzte Last auf Directus), externe APIs (Rate-Limits, Kontingent), Schleifen,
   deren Iterationen auf vorherigen Ergebnissen aufbauen, Polling/Retry, SQLite auf der
   gemeinsamen Verbindung, CLI-Schritte. Im Zweifel sequenziell lassen.
+- **Der Kommentar muss mit `NOSONAR` beginnen.** `foo(); //create a profile // NOSONAR ...` ist für
+  Sonar *ein* Kommentar, der nicht mit `NOSONAR` anfängt, und wird ignoriert. Richtig:
+  `foo(); // NOSONAR S9382 - create a profile, ...`. Mitten in einem `/** ... */`-Block wirkt es ebenfalls nicht.
+- **In Vue-Templates (HTML) und CSS wirkt `NOSONAR` nicht.** Für Findings der Web-/CSS-Analyzer, die bewusst
+  bleiben, gibt es einen Eintrag in `sonar.issue.ignore.multicriteria` in `sonar-project.properties`, je Regel
+  auf genau eine Datei beschränkt, mit Begründung dort und neben dem Code.
+- **TODO-Kommentare (S1135)** wandern wie bisher in Tracking-Issue #3984; im Code bleibt die Beschreibung
+  mit einem Verweis auf das Issue statt `TODO:`.
 - **Prettier verschiebt Trailing-Kommentare** nach `{` in die nächste Zeile, dann greift das
   `NOSONAR` nicht mehr. Solche Zeilen umstellen (Wert erst in eine Konstante), statt den
   Kommentar zu verschieben.
