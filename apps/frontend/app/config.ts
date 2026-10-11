@@ -245,7 +245,9 @@ export function getVersionPatch() {
         // 127: the push question has a playbook page (always show / ask with logic)
         // 128: push messages also pop up at the top while the app is open
         // 129: settings: "Support & FAQ" in its own group "Hilfe & Kontakt"
-        return 129;
+        // 130: feature wish form: the sheet lifts above the keyboard again (no autoFocus),
+        //      Enter in the title sends the wish
+        return 130;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

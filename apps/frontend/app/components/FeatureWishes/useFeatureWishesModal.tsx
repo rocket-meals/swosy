@@ -206,6 +206,9 @@ const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initial
 	const unchanged = isEdit && title.trim() === (initialTitle ?? '').trim() && description.trim() === (initialDescription ?? '').trim();
 
 	const handleSubmit = useCallback(async () => {
+		if (submitting || unchanged) {
+			return;
+		}
 		const text = FeatureWishHelper.validateText({ title, description });
 		if (!text.ok) {
 			showToast(translate(TranslationKeys.feature_wishes_title_missing), 'error');
@@ -221,7 +224,7 @@ const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initial
 		} finally {
 			setSubmitting(false);
 		}
-	}, [title, description, onSubmit, showToast, translate]);
+	}, [submitting, unchanged, title, description, onSubmit, showToast, translate]);
 
 	const inputStyle = [styles.input, { color: theme.screen.text, borderColor: theme.screen.placeholder }];
 
@@ -235,7 +238,12 @@ const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initial
 				style={inputStyle}
 				placeholderTextColor={theme.screen.placeholder}
 				accessibilityLabel={translate(TranslationKeys.feature_wishes_field_title)}
-				autoFocus={!initialTitle}
+				// Enter in the title sends the wish, the description is optional.
+				returnKeyType={isEdit ? 'done' : 'send'}
+				onSubmitEditing={() => void handleSubmit()}
+				// No autoFocus: the form replaces the content of the already open sheet, and a focus while
+				// it mounts passes the sheet's keyboard tracking, so the sheet did not lift above the
+				// keyboard and the button stayed hidden. A tap into the field lifts it as it should.
 			/>
 			<Text style={[styles.counter, { color: theme.screen.placeholder }]}>{`${title.length} / ${FeatureWishHelper.TITLE_MAX_LENGTH}`}</Text>
 			<Text style={[styles.label, { color: theme.screen.text }]}>{translate(TranslationKeys.feature_wishes_field_description)}</Text>
