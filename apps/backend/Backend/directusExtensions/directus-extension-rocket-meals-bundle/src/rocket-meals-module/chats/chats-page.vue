@@ -3,9 +3,11 @@
  * Page "Chats": the newest chats that belong to no food or app feedback (those have their own
  * pages), e.g. the ones support started from a profile. Each row shows who takes part, the status
  * and the last message. A new chat is started from a profile, so the button leads to the search.
+ * Chats can be marked as done right from the list – one by one or several selected at once.
  */
-import { useApi } from '@directus/extensions-sdk';
+import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { FoodFeedbackChatFilter } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
@@ -13,16 +15,22 @@ import { ChatQueryHelper, type ModuleChat, type ModuleChatMessage } from '../../
 import { FoodFeedbackChatHelper } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { ModuleListHelper } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
+import { SupportChatActions } from '../../helpers/rocket-meals-module/SupportChatActions';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
 import ListContent from '../module-list/list-content.vue';
 import ListPagination from '../module-list/list-pagination.vue';
+import ListRow from '../module-list/list-row.vue';
 import ListSearchActions from '../module-list/list-search-actions.vue';
+import ListSelectionBar from '../module-list/list-selection-bar.vue';
 import StatusFilterChips from '../module-list/status-filter-chips.vue';
 import FoodFeedbackStatusChip from '../food-feedbacks/food-feedback-status-chip.vue';
 import ProfileAvatar from '../profiles/profile-avatar.vue';
 
 const api = useApi();
+const router = useRouter();
+const { useNotificationsStore } = useStores();
+const notificationsStore = useNotificationsStore();
 const { translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.CHATS;
@@ -42,6 +50,13 @@ const currentPage = ref(1);
 const loading = ref(false);
 const loadError = ref(false);
 const pageCount = computed(() => ModuleListHelper.getPageCount(total.value, ChatQueryHelper.PAGE_SIZE));
+const selectedIds = ref<string[]>([]);
+/** Chats being marked as done – never sent twice, their buttons show a spinner. */
+const updatingIds = ref<string[]>([]);
+const selectableChats = computed(() => chats.value.filter(ChatQueryHelper.canMarkResolved));
+const selectedChats = computed(() => selectableChats.value.filter(chat => selectedIds.value.includes(chat.id)));
+const allSelected = computed(() => selectableChats.value.length > 0 && selectedChats.value.length === selectableChats.value.length);
+const someSelected = computed(() => selectedChats.value.length > 0 && !allSelected.value);
 const statusChips = computed(() => ChatQueryHelper.STATUS_FILTERS.map(filter => ({ value: filter, label: translate(FoodFeedbackChatHelper.getFilterLabelKey(filter)) })));
 
 async function loadLatestMessages(chatIds: string[]) {
@@ -72,6 +87,8 @@ async function load() {
     }
     chats.value = response.data?.data ?? [];
     total.value = Number(response.data?.meta?.filter_count ?? chats.value.length);
+    // Keep only selections that are still visible and can be marked.
+    selectedIds.value = selectedIds.value.filter(id => selectableChats.value.some(chat => chat.id === id));
     loadError.value = false;
     await loadLatestMessages(chats.value.map(chat => chat.id));
   } catch (error) {
@@ -94,6 +111,42 @@ function previewAuthor(message: ModuleChatMessage | undefined): string {
     return translate(BackendTranslationKeys.rocket_meals_module_support);
   }
   return FoodFeedbackChatHelper.getNickname(message.profile) ?? translate(BackendTranslationKeys.rocket_meals_module_user);
+}
+
+function isSelected(chat: ModuleChat) {
+  return selectedIds.value.includes(chat.id);
+}
+
+function toggleSelected(chat: ModuleChat, selected: boolean) {
+  const others = selectedIds.value.filter(id => id !== chat.id);
+  selectedIds.value = selected ? [...others, chat.id] : others;
+}
+
+function toggleSelectAll(selected: boolean) {
+  selectedIds.value = selected ? selectableChats.value.map(chat => chat.id) : [];
+}
+
+function isUpdating(chat: ModuleChat) {
+  return updatingIds.value.includes(chat.id);
+}
+
+/** Marks chats as done, then reloads the list. Marked chats leave the selection. */
+async function markResolved(chatsToResolve: readonly ModuleChat[]) {
+  const pendingIds = chatsToResolve.filter(chat => !isUpdating(chat)).map(chat => chat.id);
+  if (pendingIds.length === 0) {
+    return;
+  }
+  updatingIds.value = [...updatingIds.value, ...pendingIds];
+  try {
+    const result = await SupportChatActions.markChatsResolved(api, pendingIds);
+    selectedIds.value = selectedIds.value.filter(id => !result.resolvedIds.includes(id));
+    if (result.failedIds.length > 0) {
+      notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_mark_resolved_failed), type: 'error' });
+    }
+  } finally {
+    updatingIds.value = updatingIds.value.filter(id => !pendingIds.includes(id));
+    await load();
+  }
 }
 
 function reloadFromFirstPage() {
@@ -136,6 +189,13 @@ onMounted(load);
     <div class="chats">
       <status-filter-chips v-model="activeFilter" :filters="statusChips" />
 
+      <list-selection-bar v-if="selectableChats.length > 0" :selected-count="selectedChats.length" :all-selected="allSelected" :some-selected="someSelected" @toggle-all="toggleSelectAll">
+        <v-button v-if="selectedChats.length > 0" small :loading="selectedChats.some(isUpdating)" @click="markResolved(selectedChats)">
+          <v-icon name="task_alt" left small />
+          {{ translate(BackendTranslationKeys.rocket_meals_module_mark_selected_resolved) }}
+        </v-button>
+      </list-selection-bar>
+
       <list-content :loading="loading" :load-error="loadError" :empty="chats.length === 0">
         <template #empty>
           <p>{{ translate(BackendTranslationKeys.rocket_meals_module_chats_empty) }}</p>
@@ -144,7 +204,7 @@ onMounted(load);
             {{ translate(BackendTranslationKeys.rocket_meals_module_chat_new) }}
           </v-button>
         </template>
-        <router-link v-for="chat in chats" :key="chat.id" class="chat" :to="ChatQueryHelper.getRoute(chat)">
+        <list-row v-for="chat in chats" :key="chat.id" :selectable="ChatQueryHelper.canMarkResolved(chat)" :selected="isSelected(chat)" @open="router.push(ChatQueryHelper.getRoute(chat))" @update:selected="toggleSelected(chat, $event)">
           <div class="avatars">
             <profile-avatar v-for="profile in ChatQueryHelper.getProfiles(chat).slice(0, 3)" :key="profile.id" :profile="profile" :size="40" :link="false" />
             <span v-if="ChatQueryHelper.getProfiles(chat).length === 0" class="no-avatar"><v-icon :name="page.icon" /></span>
@@ -167,8 +227,14 @@ onMounted(load);
               <strong>{{ previewAuthor(latestMessages[chat.id]) }}:</strong>
               {{ latestMessages[chat.id]?.message }}
             </div>
+            <div v-if="ChatQueryHelper.canMarkResolved(chat)" class="chat-actions">
+              <v-button small secondary :loading="isUpdating(chat)" @click.stop="markResolved([chat])">
+                <v-icon name="task_alt" left small />
+                {{ translate(BackendTranslationKeys.rocket_meals_module_mark_resolved) }}
+              </v-button>
+            </div>
           </div>
-        </router-link>
+        </list-row>
       </list-content>
 
       <list-pagination v-model:page="currentPage" :page-count="pageCount" :total="total" />
@@ -184,24 +250,6 @@ onMounted(load);
   max-inline-size: 64rem;
   padding: var(--content-padding);
   padding-block-start: 0;
-}
-
-.chat {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  padding: 1rem 1.25rem;
-  color: inherit;
-  text-decoration: none;
-  background: var(--theme--background-subdued);
-  border: var(--theme--border-width) solid var(--theme--border-color-subdued);
-  border-radius: var(--theme--border-radius);
-  transition: border-color var(--fast) var(--transition);
-}
-
-.chat:hover,
-.chat:focus-visible {
-  border-color: var(--theme--primary);
 }
 
 .avatars {
@@ -253,5 +301,11 @@ onMounted(load);
 
 .spacer {
   flex: 1;
+}
+
+.chat-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-block-start: 0.25rem;
 }
 </style>

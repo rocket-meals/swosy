@@ -84,4 +84,18 @@ export class SupportChatActions {
 
     return { resolvedIds, failedIds };
   }
+
+  /** Marks chats as done in one request (page "Chats"). On failure all of them are reported in `failedIds`. */
+  static async markChatsResolved(api: SupportChatApiClient, chatIds: readonly string[]): Promise<MarkResolvedResult> {
+    if (chatIds.length === 0) {
+      return { resolvedIds: [], failedIds: [] };
+    }
+    try {
+      await api.patch(SupportChatActions.CHATS_ENDPOINT, { keys: chatIds, data: { conversation_state: ChatConversationState.RESOLVED } });
+      return { resolvedIds: [...chatIds], failedIds: [] };
+    } catch (error) {
+      console.error('[rocket-meals-module] marking chats as resolved failed', error);
+      return { resolvedIds: [], failedIds: [...chatIds] };
+    }
+  }
 }
