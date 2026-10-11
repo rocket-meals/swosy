@@ -78,8 +78,8 @@ async function handleCreateOrUpdate(tablename: string, payload: any, meta: any, 
     if (autoTranslate || DEV_MODE) {
       let modifiedPayload = payload;
       for (let translation_field of translations_fields) {
-        let currentItem = await getCurrentItemForTranslation(tablename, meta, translation_field, myDatabaseHelper);
-        modifiedPayload = await CollectionAutoTranslator.modifyPayloadForTranslation(currentItem, modifiedPayload, autoTranslator, autoTranslatorSettings, myDatabaseHelper, tablename, translation_field);
+        let currentItem = await getCurrentItemForTranslation(tablename, meta, translation_field, myDatabaseHelper); // NOSONAR S9382 - order-dependent: modifiedPayload accumulates, every iteration builds on the previous result
+        modifiedPayload = await CollectionAutoTranslator.modifyPayloadForTranslation(currentItem, modifiedPayload, autoTranslator, autoTranslatorSettings, myDatabaseHelper, tablename, translation_field); // NOSONAR S9382 - order-dependent: modifiedPayload accumulates, every iteration builds on the previous result
       }
 
       return modifiedPayload;

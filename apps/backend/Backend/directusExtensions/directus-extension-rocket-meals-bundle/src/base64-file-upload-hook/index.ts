@@ -57,7 +57,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(
     for (const collectionName of collectionNames) {
       let fields;
       try {
-        fields = await fieldsHelper.getFieldsForCollection(collectionName);
+        fields = await fieldsHelper.getFieldsForCollection(collectionName); // NOSONAR S9382 - sequential on purpose: runs once at startup, reads the fields per collection via the Directus FieldsService and registers the hooks in a stable order
       } catch (error) {
         console.warn(`${HOOK_NAME}: Failed to get fields for collection "${collectionName}"`, error);
         continue;

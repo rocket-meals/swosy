@@ -214,7 +214,7 @@ export class ParseSchedule {
         alias: externalIdentifier,
         external_identifier: externalIdentifier,
       };
-      let foodAttribute = await this.context.myDatabaseHelper.getFoodsAttributesHelper().findOrCreateItem(searchJSON, createJSON);
+      let foodAttribute = await this.context.myDatabaseHelper.getFoodsAttributesHelper().findOrCreateItem(searchJSON, createJSON); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       if (foodAttribute) {
         externalIdentifiersToFoodAttributesDict[externalIdentifier] = foodAttribute;
       }
@@ -240,7 +240,7 @@ export class ParseSchedule {
         alias: categoryExternalIdentifier,
         external_identifier: categoryExternalIdentifier,
       };
-      await this.context.myDatabaseHelper.getFoodsCategoriesHelper().findOrCreateItem(searchJSON, createJSON);
+      await this.context.myDatabaseHelper.getFoodsCategoriesHelper().findOrCreateItem(searchJSON, createJSON); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
     }
   }
 
@@ -273,7 +273,7 @@ export class ParseSchedule {
         alias: categoryExternalIdentifier,
         external_identifier: categoryExternalIdentifier,
       };
-      await this.context.myDatabaseHelper.getFoodofferCategoriesHelper().findOrCreateItem(searchJSON, createJSON);
+      await this.context.myDatabaseHelper.getFoodofferCategoriesHelper().findOrCreateItem(searchJSON, createJSON); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
     }
   }
 
@@ -314,7 +314,7 @@ export class ParseSchedule {
       // Batch deletions to avoid issues with large payloads
       for (let i = 0; i < idsToDelete.length; i += ParseSchedule.DELETE_BATCH_SIZE) {
         const batch = idsToDelete.slice(i, i + ParseSchedule.DELETE_BATCH_SIZE);
-        await itemService
+        await itemService // NOSONAR S9382 - sequential on purpose: delete batches one after another to keep payload and DB load bounded
           .deleteMany(batch)
           .then(async () => {
             await this.context.logger.appendLog(`Foodoffers deleted batch: ${batch.length} (${i + batch.length}/${idsToDelete.length}) - ${notice}`);
@@ -367,17 +367,17 @@ export class ParseSchedule {
     // Step 2: Process each canteen that IS in the report
     const canteenExternalIdentifiersInReport = new Set(Object.keys(foodoffersForParserGroupedByCanteen));
     for (const canteenExternalIdentifier of canteenExternalIdentifiersInReport) {
-      await this.context.logger.appendLog('Sync: processing canteen: ' + canteenExternalIdentifier);
-      const canteen = await this.findOrCreateCanteenByExternalIdentifier(canteenExternalIdentifier);
+      await this.context.logger.appendLog('Sync: processing canteen: ' + canteenExternalIdentifier); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
+      const canteen = await this.findOrCreateCanteenByExternalIdentifier(canteenExternalIdentifier); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       if (!canteen) continue;
 
       const canteenFoodoffers = foodoffersForParserGroupedByCanteen[canteenExternalIdentifier] || [];
       const canteenFoodofferSyncGroup: CanteenFoodofferSyncGroup = {canteen, canteenExternalIdentifier, canteenFoodoffers, helperObject};
 
       if (canteen.foodoffers_import_without_date) {
-        await this.syncFoodOffersForCanteenWithoutDate(canteenFoodofferSyncGroup);
+        await this.syncFoodOffersForCanteenWithoutDate(canteenFoodofferSyncGroup); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       } else {
-        await this.syncFoodOffersForCanteenByDate(canteenFoodofferSyncGroup);
+        await this.syncFoodOffersForCanteenByDate(canteenFoodofferSyncGroup); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       }
     }
 
@@ -545,15 +545,15 @@ export class ParseSchedule {
 
       // Compute diff per date
       const diffResult = ParseSchedule.computeFoodofferSyncDiff(reportDictByResultHash, existingDictByResultHash, existingWithoutResultHash);
-      await this.context.logger.appendLog(`Sync result for canteen ${canteenExternalIdentifier} date ${dateKey}: toDelete=${diffResult.toDeleteFoodoffers.length}, toSkip=${diffResult.toSkipResultHashes.length}, toCreate=${diffResult.toCreateResultHashes.length}`);
+      await this.context.logger.appendLog(`Sync result for canteen ${canteenExternalIdentifier} date ${dateKey}: toDelete=${diffResult.toDeleteFoodoffers.length}, toSkip=${diffResult.toSkipResultHashes.length}, toCreate=${diffResult.toCreateResultHashes.length}`); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
 
       // Delete first, then create for this date
-      await this.deleteFoodOffers(diffResult.toDeleteFoodoffers, `Delete foodoffers not in report for canteen ${canteenExternalIdentifier} date ${dateKey}`);
+      await this.deleteFoodOffers(diffResult.toDeleteFoodoffers, `Delete foodoffers not in report for canteen ${canteenExternalIdentifier} date ${dateKey}`); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
 
       const foodoffersForParserToCreate = diffResult.toCreateResultHashes
         .map(hash => reportDictByResultHash[hash])
         .filter((f): f is FoodoffersTypeForParser => !!f);
-      await this.createFoodOffers(foodoffersForParserToCreate, helperObject);
+      await this.createFoodOffers(foodoffersForParserToCreate, helperObject); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
     }
   }
 
@@ -578,15 +578,15 @@ export class ParseSchedule {
 
       // Skip import-without-date canteens: their offers are long-term and not in every report
       if (canteen.foodoffers_import_without_date) {
-        await this.context.logger.appendLog('Sync: skipping canteen not in report (import without date): ' + externalIdentifier);
+        await this.context.logger.appendLog('Sync: skipping canteen not in report (import without date): ' + externalIdentifier); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
         continue;
       }
 
-      await this.context.logger.appendLog('Sync: canteen not in report, deleting future foodoffers >= ' + globalOldestDateString + ' for canteen: ' + canteen.id + ' (' + externalIdentifier + ')');
+      await this.context.logger.appendLog('Sync: canteen not in report, deleting future foodoffers >= ' + globalOldestDateString + ' for canteen: ' + canteen.id + ' (' + externalIdentifier + ')'); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
 
       // Fetch all existing foodoffers for this canteen >= oldest report date.
       // canteen._eq excludes component foodoffers (which have canteen=null).
-      const existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
+      const existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({ // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
         filter: {
           _and: [
             {
@@ -606,9 +606,9 @@ export class ParseSchedule {
       });
 
       if (existingFoodoffersForCanteen.length > 0) {
-        await this.deleteFoodOffers(existingFoodoffersForCanteen as DatabaseTypes.Foodoffers[], `Delete future foodoffers for canteen not in report: ${externalIdentifier}`);
+        await this.deleteFoodOffers(existingFoodoffersForCanteen as DatabaseTypes.Foodoffers[], `Delete future foodoffers for canteen not in report: ${externalIdentifier}`); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       } else {
-        await this.context.logger.appendLog('Sync: no future foodoffers to delete for canteen: ' + externalIdentifier);
+        await this.context.logger.appendLog('Sync: no future foodoffers to delete for canteen: ' + externalIdentifier); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       }
     }
   }
@@ -713,11 +713,11 @@ export class ParseSchedule {
     let currentCanteen = 0;
     for (let canteen of canteenList) {
       currentCanteen++;
-      await this.context.logger.appendLog('Update Canteen ' + currentCanteen + ' / ' + amountOfCanteens);
-      let canteenFoundOrCreated = await this.findOrCreateCanteen(canteen);
+      await this.context.logger.appendLog('Update Canteen ' + currentCanteen + ' / ' + amountOfCanteens); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
+      let canteenFoundOrCreated = await this.findOrCreateCanteen(canteen); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       if (canteenFoundOrCreated) {
         let canteensHelper = this.context.myDatabaseHelper.getCanteensHelper();
-        await canteensHelper.updateOne(canteenFoundOrCreated.id, canteen);
+        await canteensHelper.updateOne(canteenFoundOrCreated.id, canteen); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       }
     }
   }
@@ -732,7 +732,7 @@ export class ParseSchedule {
       const createJSON = food_marking_json;
 
       const foodMarkingsHelper = this.context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.FoodsMarkings>(tablename);
-      await foodMarkingsHelper.findOrCreateItem(searchJSON, createJSON);
+      await foodMarkingsHelper.findOrCreateItem(searchJSON, createJSON); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
     }
   }
 
@@ -747,7 +747,7 @@ export class ParseSchedule {
         markings_id: marking.id,
       };
       const foodMarkingsHelper = this.context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.FoodoffersMarkings>(tablename);
-      await foodMarkingsHelper.createOne(foodoffer_marking_json);
+      await foodMarkingsHelper.createOne(foodoffer_marking_json); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
     }
   }
 
@@ -842,7 +842,7 @@ export class ParseSchedule {
       const searchJSON = { id: foodId };
 
       // Use findOrCreateItem to either find or create the food
-      const foodWithTranslations = await foodsHelper.findOrCreateItem(searchJSON, searchJSON, { withTranslations: true });
+      const foodWithTranslations = await foodsHelper.findOrCreateItem(searchJSON, searchJSON, { withTranslations: true }); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       if (foodWithTranslations) {
         foodsDict[foodId] = foodWithTranslations;
       }
@@ -878,13 +878,13 @@ export class ParseSchedule {
         let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
         let markings: DatabaseTypes.Markings[] = this.resolveMarkingsForFood(marking_external_identifier_list, dictMarkingExternalIdentifierToMarking);
 
-        await this.assignMarkingsToFood(markings, foundFoodWithTranslations, helperObject.dictMarkingsExclusions);
-        await this.assignFoodCategoryToFood(foundFoodWithTranslations, foodsInformationForParser, helperObject.foodCategoryExternalIdentifiersToFoodCategoriesDict);
+        await this.assignMarkingsToFood(markings, foundFoodWithTranslations, helperObject.dictMarkingsExclusions); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
+        await this.assignFoodCategoryToFood(foundFoodWithTranslations, foodsInformationForParser, helperObject.foodCategoryExternalIdentifiersToFoodCategoriesDict); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
 
-        await this.updateFoodBasicFields(basicFoodData);
-        await this.updateFoodsAttributesValues(foundFoodWithTranslations, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes);
+        await this.updateFoodBasicFields(basicFoodData); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
+        await this.updateFoodsAttributesValues(foundFoodWithTranslations, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
 
-        await this.updateFoodTranslations(foundFoodWithTranslations, foodsInformationForParser);
+        await this.updateFoodTranslations(foundFoodWithTranslations, foodsInformationForParser); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
 
         amountCompleted++;
         myTimer.printElapsedTimeAndEstimatedTimeRemaining({
@@ -911,7 +911,7 @@ export class ParseSchedule {
     let markingExternalIdentifiers = Object.keys(dictMarkingExternalIdentifierToMarking);
     for (let markingExternalIdentifier of markingExternalIdentifiers) {
       let marking: DatabaseTypes.Markings | undefined | null = null;
-      marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
+      marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
 
       if (marking) {
         dictMarkingExternalIdentifierToMarking[markingExternalIdentifier] = marking;
@@ -1133,7 +1133,7 @@ export class ParseSchedule {
 
     const foodoffersToCreate: Partial<DatabaseTypes.Foodoffers>[] = [];
     for (const [index, foodofferForParser] of foodofferListForParser.entries()) {
-      const foodOfferToCreate = await this.resolveFoodofferToCreateOrLog({
+      const foodOfferToCreate = await this.resolveFoodofferToCreateOrLog({ // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
         foodofferForParser,
         index,
         amountOfRawMealOffers,
@@ -1190,7 +1190,7 @@ export class ParseSchedule {
   async resolveCanteensForExternalIdentifiers(dictCanteenExternalIdentifierToCanteen: Record<string, DatabaseTypes.Canteens | null>): Promise<void> {
     let canteenExternalIdentifiers = Object.keys(dictCanteenExternalIdentifierToCanteen);
     for (let canteenExternalIdentifier of canteenExternalIdentifiers) {
-      let canteen = await this.findOrCreateCanteenByExternalIdentifier(canteenExternalIdentifier);
+      let canteen = await this.findOrCreateCanteenByExternalIdentifier(canteenExternalIdentifier); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       if (canteen) {
         dictCanteenExternalIdentifierToCanteen[canteenExternalIdentifier] = canteen;
       }
@@ -1205,7 +1205,7 @@ export class ParseSchedule {
     let markingExternalIdentifiers = Object.keys(dictMarkingExternalIdentifierToMarking);
     for (let markingExternalIdentifier of markingExternalIdentifiers) {
       let marking: DatabaseTypes.Markings | undefined | null = null;
-      marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
+      marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       if (marking) {
         dictMarkingExternalIdentifierToMarking[markingExternalIdentifier] = marking;
       }
@@ -1228,7 +1228,7 @@ export class ParseSchedule {
     const foodsService = this.getFoodsService();
     const foodIds = Object.keys(dictFoodsFound);
     for (let foodId of foodIds) {
-      let food = await foodsService.readOneWithTranslations(foodId);
+      let food = await foodsService.readOneWithTranslations(foodId); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       if (food) {
         dictFoodsFound[foodId] = food;
       }
@@ -1300,7 +1300,7 @@ export class ParseSchedule {
     const dictSourceNameToFoodofferId: Record<string, string> = {};
     for (let i = 0; i < sourceNameList.length; i += ParseSchedule.TRANSLATION_LOOKUP_CHUNK_SIZE) {
       const chunk = sourceNameList.slice(i, i + ParseSchedule.TRANSLATION_LOOKUP_CHUNK_SIZE);
-      const sourceTranslationRows = await foodoffersTranslationsHelper.readByQuery({
+      const sourceTranslationRows = await foodoffersTranslationsHelper.readByQuery({ // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
         filter: {
           _and: [
             { languages_code: { _eq: ContentTranslationHelper.DefaultLanguage } },
@@ -1329,7 +1329,7 @@ export class ParseSchedule {
     const dictFoodofferIdToTranslations: Record<string, DatabaseTypes.FoodoffersTranslations[]> = {};
     for (let i = 0; i < foodofferIds.length; i += ParseSchedule.TRANSLATION_LOOKUP_CHUNK_SIZE) {
       const chunk = foodofferIds.slice(i, i + ParseSchedule.TRANSLATION_LOOKUP_CHUNK_SIZE);
-      const translationRows = await foodoffersTranslationsHelper.readByQuery({
+      const translationRows = await foodoffersTranslationsHelper.readByQuery({ // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
         filter: { foodoffers_id: { _in: chunk } },
         limit: -1,
       });
@@ -1432,7 +1432,7 @@ export class ParseSchedule {
     const amountOfBatches = Math.ceil(foodoffersToCreate.length / batchSize);
     for (let i = 0; i < foodoffersToCreate.length; i += batchSize) {
       const batch = foodoffersToCreate.slice(i, i + batchSize);
-      await this.context.logger.appendLog('Create Food Offers Batch ' + batchIndex + ' / ' + amountOfBatches);
+      await this.context.logger.appendLog('Create Food Offers Batch ' + batchIndex + ' / ' + amountOfBatches); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
 
       let disableEventEmit = true;
       /**
@@ -1442,13 +1442,13 @@ export class ParseSchedule {
       */
       for(let foodofferToCreate of batch){
         try{
-          await this.context.logger.appendLog('Create Food Offer ' + JSON.stringify(foodofferToCreate, null, 2));
-          let result = await myFoodOffersService.createOne(foodofferToCreate, {
+          await this.context.logger.appendLog('Create Food Offer ' + JSON.stringify(foodofferToCreate, null, 2)); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
+          let result = await myFoodOffersService.createOne(foodofferToCreate, { // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
             disableEventEmit: disableEventEmit,
           });
-          await this.context.logger.appendLog('Created Food Offer ' + JSON.stringify(result, null, 2));
+          await this.context.logger.appendLog('Created Food Offer ' + JSON.stringify(result, null, 2)); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
         } catch (error: any){
-          await this.context.logger.appendLog('Error creating food offer: ' + JSON.stringify(error, null, 2));
+          await this.context.logger.appendLog('Error creating food offer: ' + JSON.stringify(error, null, 2)); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
         }
       }
 
@@ -1471,13 +1471,13 @@ export class ParseSchedule {
     let currentMarking = 0;
     for (let markingJSON of markingsJSONList) {
       currentMarking++;
-      await this.context.logger.appendLog('Update Marking ' + currentMarking + ' / ' + amountOfMarkings);
-      await this.context.logger.appendLog(JSON.stringify(markingJSON, null, 2));
+      await this.context.logger.appendLog('Update Marking ' + currentMarking + ' / ' + amountOfMarkings); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
+      await this.context.logger.appendLog(JSON.stringify(markingJSON, null, 2)); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
 
       let markingJSONCopy = DeepCopyHelper.deepCopy<any>(markingJSON); // untyped copy: fields are deleted/overwritten below to match Partial<Markings>
       delete markingJSONCopy.translations; // Remove meals translations, add it later
 
-      let markings = await itemService.readByQuery({
+      let markings = await itemService.readByQuery({ // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
         filter: { external_identifier: markingJSONCopy.external_identifier },
         limit: 1,
       });
@@ -1492,8 +1492,8 @@ export class ParseSchedule {
           status: DirectusItemStatus.DRAFT, // New markings start as draft; admin must publish them
         };
 
-        let marking_id = await itemService.createOne(adaptedMarkingJSON);
-        marking = await itemService.readOne(marking_id);
+        let marking_id = await itemService.createOne(adaptedMarkingJSON); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
+        marking = await itemService.readOne(marking_id); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       } else {
         // If marking exists, don't update it, as it could be changed by the user
         // We already set all fields in the createOne method
@@ -1501,7 +1501,7 @@ export class ParseSchedule {
       }
 
       if (marking?.id) {
-        await this.updateMarkingTranslations(marking, markingJSON);
+        await this.updateMarkingTranslations(marking, markingJSON); // NOSONAR S9382 - sequential on purpose: food sync job, one Directus read/write per item, parallel writes would flood Directus and race on find-or-create
       }
     }
   }

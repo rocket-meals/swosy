@@ -33,7 +33,7 @@ export class ReportSchedule {
 
       // 2. check for every recipient if a report is needed to be sent
       for (let reportSchedule of reportSchedules) {
-        await this.processReportSchedule(reportSchedule, reportGenerator);
+        await this.processReportSchedule(reportSchedule, reportGenerator); // NOSONAR S9382 - sequential on purpose: report schedules are processed one after another, each generates a report, sends mails and writes the next date
       }
     } catch (err) {
       console.log('Error in ' + SCHEDULE_NAME);
@@ -77,7 +77,7 @@ export class ReportSchedule {
       let generated_report_data: ReportType = await reportGenerator.generateReportJSON(reportContext);
       if (generated_report_data) {
         for (let toMail of recipientEmailList) {
-          await this.sendReport(generated_report_data, reportSchedule, canteenEntries, toMail);
+          await this.sendReport(generated_report_data, reportSchedule, canteenEntries, toMail); // NOSONAR S9382 - sequential on purpose: one mail per recipient, does not flood the mail server
         }
         await this.setNextReportDate(reportSchedule);
         await this.updateReportLogSuccess(referenceDateForReport, reportSchedule);

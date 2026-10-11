@@ -36,7 +36,7 @@ export class ParseSchedule {
       myTimer.start();
 
       for (let i = 0; i < totalTransactionsToCheck; i++) {
-        await this.context.logger.appendLog('Transaction parsing progress: ' + i + '/' + totalTransactionsToCheck);
+        await this.context.logger.appendLog('Transaction parsing progress: ' + i + '/' + totalTransactionsToCheck); // NOSONAR S9382 - sequential on purpose: ordered progress log, cashregister id cache filled by earlier iterations, one DB write per transaction
         let transaction = transactions[i];
         if (!transaction) {
           continue;
@@ -47,7 +47,7 @@ export class ParseSchedule {
         let cached_cashregister_id = external_cashregister_id_to_internal_cashregister_id[cashregister_external_id];
         let cashregister_id = undefined;
         if (cached_cashregister_id === undefined) {
-          let cashRegister = await this.context.myDatabaseHelper.getCashregisterHelper().findOrCreateCashregister(cashregister_external_id);
+          let cashRegister = await this.context.myDatabaseHelper.getCashregisterHelper().findOrCreateCashregister(cashregister_external_id); // NOSONAR S9382 - sequential on purpose: ordered progress log, cashregister id cache filled by earlier iterations, one DB write per transaction
           if (cashRegister) {
             cached_cashregister_id = cashRegister?.id;
             external_cashregister_id_to_internal_cashregister_id[cashregister_external_id] = cached_cashregister_id;
@@ -60,13 +60,13 @@ export class ParseSchedule {
         if (cashregister_id === undefined) {
           console.log('Houston we got a problem? Seems like somebody deleted a cashregister mid transaction');
         } else {
-          await this.findOrCreateCashregisterTransaction(transaction, cashregister_id);
+          await this.findOrCreateCashregisterTransaction(transaction, cashregister_id); // NOSONAR S9382 - sequential on purpose: ordered progress log, cashregister id cache filled by earlier iterations, one DB write per transaction
         }
 
         myTimer.setCurrentCount(i);
         let timerInformation = myTimer.calcTimeSpent();
         let totalTimeInformation = timerInformation.totalTimeInformation;
-        await this.context.logger.appendLog('Time spent: ' + totalTimeInformation);
+        await this.context.logger.appendLog('Time spent: ' + totalTimeInformation); // NOSONAR S9382 - sequential on purpose: ordered progress log, cashregister id cache filled by earlier iterations, one DB write per transaction
       }
 
       await this.context.logger.appendLog('Finished');

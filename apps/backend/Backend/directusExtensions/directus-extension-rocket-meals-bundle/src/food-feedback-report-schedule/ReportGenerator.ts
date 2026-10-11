@@ -277,7 +277,7 @@ export class ReportGenerator {
     for (const canteenKey of canteenKeys) {
       const canteen = canteenEntries[canteenKey];
       if (canteen) {
-        const countsForCanteen = await this.getCanteenFeedbackCounts(feedbackFilterParams, canteen);
+        const countsForCanteen = await this.getCanteenFeedbackCounts(feedbackFilterParams, canteen); // NOSONAR S9382 - sequential on purpose: report job runs count/read queries per canteen, label and food, sequential keeps the DB load bounded
         canteen_feedback_dict[canteen.id]?.labels.push({
           label_alias: alias,
           amount_positive_new: countsForCanteen.amount_positive_new,
@@ -354,7 +354,7 @@ export class ReportGenerator {
       };
 
       // Get the counts for all canteens
-      const countsAllCanteens = await this.getCanteenFeedbackCounts(feedbackFilterParams, null);
+      const countsAllCanteens = await this.getCanteenFeedbackCounts(feedbackFilterParams, null); // NOSONAR S9382 - sequential on purpose: report job runs count/read queries per canteen, label and food, sequential keeps the DB load bounded
 
       canteen_feedback_all.labels.push({
         label_alias: alias,
@@ -370,7 +370,7 @@ export class ReportGenerator {
 
       // If per-canteen feedbacks are to be shown
       if (reportSchedule.show_canteen_feedbacks_also_per_canteen) {
-        await this.addPerCanteenLabelCounts(canteenEntries, canteenKeys, canteen_feedback_dict, feedbackFilterParams, alias);
+        await this.addPerCanteenLabelCounts(canteenEntries, canteenKeys, canteen_feedback_dict, feedbackFilterParams, alias); // NOSONAR S9382 - sequential on purpose: report job runs count/read queries per canteen, label and food, sequential keeps the DB load bounded
       }
     }
 
@@ -438,7 +438,7 @@ export class ReportGenerator {
       if (!canteenEntry) {
         continue;
       }
-      const foodOffersWithFood = await this.getFoodOffersWithFoodAtDateInCanteen(startDate, endDate, canteenEntry.id);
+      const foodOffersWithFood = await this.getFoodOffersWithFoodAtDateInCanteen(startDate, endDate, canteenEntry.id); // NOSONAR S9382 - sequential on purpose: report job runs count/read queries per canteen, label and food, sequential keeps the DB load bounded
       for (const foodOfferWithFood of foodOffersWithFood) {
         const food = foodOfferWithFood?.food;
         if (food && typeof food !== 'string') {
@@ -540,7 +540,7 @@ export class ReportGenerator {
     const dictFeedbackLabelsWithTranslation = DictHelper.transformListToDict(feedbackLabelsWithTranslations, item => item.id);
 
     for (const food of Object.values(foodDict)) {
-      const foodEntry = await this.buildFoodEntry(food, reportContext, foodAverageRating, dictFeedbackLabelsWithTranslation);
+      const foodEntry = await this.buildFoodEntry(food, reportContext, foodAverageRating, dictFeedbackLabelsWithTranslation); // NOSONAR S9382 - sequential on purpose: report job runs count/read queries per canteen, label and food, sequential keeps the DB load bounded
       foods.push(foodEntry);
     }
     return foods;
@@ -588,24 +588,24 @@ export class ReportGenerator {
           },
         };
 
-        let amount_positive_new = await foodFeedbackLabelEntriesService.countItems({
+        let amount_positive_new = await foodFeedbackLabelEntriesService.countItems({ // NOSONAR S9382 - sequential on purpose: report job runs count/read queries per canteen, label and food, sequential keeps the DB load bounded
           filter: {
             _and: [filterFeedbackLabelEntriesFoodEquals, filterFeedbackLabelEntriesFeedbackLabelEquals, ...filterDateUpdatedFeedbackLabelEntries, filterLikes],
           },
         });
-        let amount_negative_new = await foodFeedbackLabelEntriesService.countItems({
+        let amount_negative_new = await foodFeedbackLabelEntriesService.countItems({ // NOSONAR S9382 - sequential on purpose: report job runs count/read queries per canteen, label and food, sequential keeps the DB load bounded
           filter: {
             _and: [filterFeedbackLabelEntriesFoodEquals, filterFeedbackLabelEntriesFeedbackLabelEquals, ...filterDateUpdatedFeedbackLabelEntries, filterDislikes],
           },
         });
 
-        let amount_positive = await foodFeedbackLabelEntriesService.countItems({
+        let amount_positive = await foodFeedbackLabelEntriesService.countItems({ // NOSONAR S9382 - sequential on purpose: report job runs count/read queries per canteen, label and food, sequential keeps the DB load bounded
           filter: {
             _and: [filterFeedbackLabelEntriesFoodEquals, filterFeedbackLabelEntriesFeedbackLabelEquals, filterLikes],
           },
         });
 
-        let amount_negative = await foodFeedbackLabelEntriesService.countItems({
+        let amount_negative = await foodFeedbackLabelEntriesService.countItems({ // NOSONAR S9382 - sequential on purpose: report job runs count/read queries per canteen, label and food, sequential keeps the DB load bounded
           filter: {
             _and: [filterFeedbackLabelEntriesFoodEquals, filterFeedbackLabelEntriesFeedbackLabelEquals, filterDislikes],
           },

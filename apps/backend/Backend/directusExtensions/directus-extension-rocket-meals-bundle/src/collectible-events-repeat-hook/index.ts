@@ -105,14 +105,14 @@ class CollectibleEventsRepeatWorkflow extends SingleWorkflowRun {
 
     for (const event of repeatingEvents) {
       if (!event?.date_start || !event?.date_end) {
-        await context.logger.appendLog('Skipping event without start or end date');
+        await context.logger.appendLog('Skipping event without start or end date'); // NOSONAR S9382 - order-dependent: the overlap check must see the events created in earlier iterations, log follows the events
         continue;
       }
 
       const newDateStart = sanitizeDateToYear(event.date_start, currentYear);
       const newDateEnd = sanitizeDateToYear(event.date_end, currentYear);
 
-      const overlappingEvents = await collectibleEventsHelper.readByQuery({
+      const overlappingEvents = await collectibleEventsHelper.readByQuery({ // NOSONAR S9382 - order-dependent: the overlap check must see the events created in earlier iterations, log follows the events
         filter: {
           _and: [
             { date_start: { _lte: newDateEnd } },
@@ -128,17 +128,17 @@ class CollectibleEventsRepeatWorkflow extends SingleWorkflowRun {
       if (overlappingEvents.length > 0) {
         const overlappingEvent = overlappingEvents[0];
 
-        await context.logger.appendLog(
+        await context.logger.appendLog( // NOSONAR S9382 - order-dependent: the overlap check must see the events created in earlier iterations, log follows the events
           `Skipping event ${event.id} due to overlap with current year event ${overlappingEvent?.id}`
         );
         continue;
       }
 
       const newEvent = cloneCollectibleEvent(event, newDateStart, newDateEnd);
-      await collectibleEventsHelper.createOne(newEvent);
+      await collectibleEventsHelper.createOne(newEvent); // NOSONAR S9382 - order-dependent: the overlap check must see the events created in earlier iterations, log follows the events
       createdEvents++;
 
-      await context.logger.appendLog(`Created new collectible event for year ${currentYear} based on ${event.id}`);
+      await context.logger.appendLog(`Created new collectible event for year ${currentYear} based on ${event.id}`); // NOSONAR S9382 - order-dependent: the overlap check must see the events created in earlier iterations, log follows the events
     }
 
     await context.logger.appendLog(`Finished collectible events repeat workflow. Created ${createdEvents} new events.`);

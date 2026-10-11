@@ -161,14 +161,14 @@ async function pushAnswerToProfiles(
 
   for (const profileId of profileIds) {
     try {
-      const expoPushTokens = await collectExpoPushTokensForProfiles(new Set([profileId]), myDatabaseHelper);
+      const expoPushTokens = await collectExpoPushTokensForProfiles(new Set([profileId]), myDatabaseHelper); // NOSONAR S9382 - sequential on purpose: per profile DB reads and one push notification row, bounded DB load in the hook
       if (expoPushTokens.length === 0) {
         continue;
       }
-      const profile = await profilesHelper.readOne(profileId).catch(() => undefined);
-      const language = await languageResolver.resolveForProfile(profile);
+      const profile = await profilesHelper.readOne(profileId).catch(() => undefined); // NOSONAR S9382 - sequential on purpose: per profile DB reads and one push notification row, bounded DB load in the hook
+      const language = await languageResolver.resolveForProfile(profile); // NOSONAR S9382 - sequential on purpose: per profile DB reads and one push notification row, bounded DB load in the hook
 
-      await pushNotificationsHelper.createOne({
+      await pushNotificationsHelper.createOne({ // NOSONAR S9382 - sequential on purpose: per profile DB reads and one push notification row, bounded DB load in the hook
         expo_push_tokens: expoPushTokens,
         message_title: language.translate(BackendTranslationKeys.notification_support_answer_title),
         message_body: messageBody,
@@ -239,7 +239,7 @@ async function collectExpoPushTokensForProfiles(
 
   try {
     for (const profileId of profileIdArray || []) {
-      const devices = await deviceHelper.readManyByProfileId(profileId);
+      const devices = await deviceHelper.readManyByProfileId(profileId); // NOSONAR S9382 - sequential on purpose: one device read per profile in the hook, bounded DB load
       console.log(
         `${HOOK_NAME}: Found ${devices.length} devices for profile ${profileId ?? 'unknown'}`
       );

@@ -73,29 +73,41 @@ export class FeatureWishModeration {
     }
     const handled = new Set<string>();
     for (const decision of decisions) {
-      const id = typeof decision?.id === 'string' ? decision.id : null;
-      if (!id || !candidateIds.has(id) || handled.has(id)) {
-        ignored.push(`unknown or repeated id: ${String(decision?.id)}`);
+      const result = FeatureWishModeration.checkDecision(decision, candidateIds, publishedIds, handled);
+      if ('ignored' in result) {
+        ignored.push(result.ignored);
         continue;
       }
-      const suggestion = decision.suggestion as ModerationSuggestion;
-      const status = STATUS_BY_SUGGESTION[suggestion];
-      if (!status) {
-        ignored.push(`${id}: unknown suggestion ${String(decision.suggestion)}`);
-        continue;
-      }
-      let relatedTo: string | null = null;
-      if (suggestion === ModerationSuggestion.MERGE) {
-        relatedTo = typeof decision.related_to === 'string' ? decision.related_to : null;
-        if (!relatedTo || !publishedIds.has(relatedTo) || relatedTo === id) {
-          ignored.push(`${id}: merge without a published original`);
-          continue;
-        }
-      }
-      handled.add(id);
-      updates.push({ id, status, related_to: relatedTo, moderation_note_intern: FeatureWishModeration.buildNote(decision) });
+      handled.add(result.update.id);
+      updates.push(result.update);
     }
     return { updates, ignored };
+  }
+
+  /** Turns one decision of the AI into an update, or names the reason why it is ignored. */
+  private static checkDecision(
+    decision: any,
+    candidateIds: Set<string>,
+    publishedIds: Set<string>,
+    handled: Set<string>
+  ): { update: ModerationUpdate } | { ignored: string } {
+    const id = typeof decision?.id === 'string' ? decision.id : null;
+    if (!id || !candidateIds.has(id) || handled.has(id)) {
+      return { ignored: `unknown or repeated id: ${String(decision?.id)}` };
+    }
+    const suggestion = decision.suggestion as ModerationSuggestion;
+    const status = STATUS_BY_SUGGESTION[suggestion];
+    if (!status) {
+      return { ignored: `${id}: unknown suggestion ${String(decision.suggestion)}` };
+    }
+    let relatedTo: string | null = null;
+    if (suggestion === ModerationSuggestion.MERGE) {
+      relatedTo = typeof decision.related_to === 'string' ? decision.related_to : null;
+      if (!relatedTo || !publishedIds.has(relatedTo) || relatedTo === id) {
+        return { ignored: `${id}: merge without a published original` };
+      }
+    }
+    return { update: { id, status, related_to: relatedTo, moderation_note_intern: FeatureWishModeration.buildNote(decision) } };
   }
 
   private static buildNote(decision: { reasons?: unknown; note?: unknown }): string {

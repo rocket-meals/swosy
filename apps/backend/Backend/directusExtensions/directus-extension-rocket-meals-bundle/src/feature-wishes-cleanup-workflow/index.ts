@@ -60,7 +60,7 @@ class FeatureWishesCleanupWorkflow extends SingleWorkflowRun {
         limit: -1,
       });
       for (const duplicate of orphanedDuplicates) {
-        await helper.updateOne(duplicate.id, { status: FeatureWishStatus.DRAFT });
+        await helper.updateOne(duplicate.id, { status: FeatureWishStatus.DRAFT }); // NOSONAR S9382 - sequential on purpose: one DB update per orphaned duplicate in the cleanup job, bounded DB load
       }
       await context.logger.appendLog(`Duplicates without original sent back to review: ${orphanedDuplicates.length}`);
 

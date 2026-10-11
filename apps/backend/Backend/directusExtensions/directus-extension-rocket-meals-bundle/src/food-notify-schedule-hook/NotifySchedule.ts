@@ -41,19 +41,19 @@ export class NotifySchedule {
       await this.context.logger.appendLog('Found ' + foodOffers.length + ' food offers for ' + date.toISOString());
 
       for (let foodOffer of foodOffers) {
-        await this.context.logger.appendLog('- Notify about food offer: ' + foodOffer.id);
+        await this.context.logger.appendLog('- Notify about food offer: ' + foodOffer.id); // NOSONAR S9382 - sequential on purpose: notification job with ordered log, DB reads and push rows per food offer and feedback, bounded DB load
         let food_id = foodOffer.food as string;
-        let foodWithTranslations = await this.getFoodWithTranslations(food_id);
+        let foodWithTranslations = await this.getFoodWithTranslations(food_id); // NOSONAR S9382 - sequential on purpose: notification job with ordered log, DB reads and push rows per food offer and feedback, bounded DB load
 
         let food_offer_in_canteen_id = foodOffer.canteen;
-        await this.context.logger.appendLog('- Food offer is in canteen: ' + food_offer_in_canteen_id);
+        await this.context.logger.appendLog('- Food offer is in canteen: ' + food_offer_in_canteen_id); // NOSONAR S9382 - sequential on purpose: notification job with ordered log, DB reads and push rows per food offer and feedback, bounded DB load
 
         // Step 2: Get all food_feedbacks which want to get notified about this food
-        let foodFeedbacks = await this.getFoodFeedbacksForFood(food_id);
-        await this.context.logger.appendLog('- Found ' + foodFeedbacks.length + ' food feedbacks for food ' + food_id);
+        let foodFeedbacks = await this.getFoodFeedbacksForFood(food_id); // NOSONAR S9382 - sequential on purpose: notification job with ordered log, DB reads and push rows per food offer and feedback, bounded DB load
+        await this.context.logger.appendLog('- Found ' + foodFeedbacks.length + ' food feedbacks for food ' + food_id); // NOSONAR S9382 - sequential on purpose: notification job with ordered log, DB reads and push rows per food offer and feedback, bounded DB load
 
         for (let foodFeedback of foodFeedbacks) {
-          await this.processFoodFeedbackForOffer(foodFeedback, foodOffer, foodWithTranslations, food_offer_in_canteen_id, food_id, { aboutMealsInDays, date, devicesService });
+          await this.processFoodFeedbackForOffer(foodFeedback, foodOffer, foodWithTranslations, food_offer_in_canteen_id, food_id, { aboutMealsInDays, date, devicesService }); // NOSONAR S9382 - sequential on purpose: notification job with ordered log, DB reads and push rows per food offer and feedback, bounded DB load
         }
       }
       await this.context.logger.appendLog('Finished');
@@ -103,12 +103,12 @@ export class NotifySchedule {
 
     for (let expoPushToken of expoPushTokens) {
       let devices = expoPushTokensDict[expoPushToken] as DatabaseTypes.Devices[];
-      await this.context.logger.appendLog('--- Notify devices: ' + devices.length + ' about food: ' + food_id);
-      await this.sendNotificationToExpoPushToken({ expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date, devices, devicesService });
+      await this.context.logger.appendLog('--- Notify devices: ' + devices.length + ' about food: ' + food_id); // NOSONAR S9382 - sequential on purpose: one push notification per token, ordered log, bounded DB load
+      await this.sendNotificationToExpoPushToken({ expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date, devices, devicesService }); // NOSONAR S9382 - sequential on purpose: one push notification per token, ordered log, bounded DB load
     }
 
     for (let device of profileDevices) {
-      await this.context.logger.appendLog('--- Notify device: ' + device.id + ' about food: ' + food_id);
+      await this.context.logger.appendLog('--- Notify device: ' + device.id + ' about food: ' + food_id); // NOSONAR S9382 - sequential on purpose: log lines are appended in order
       // Step 4: Send the notification to the device, where pushTokenObj is not null
       if (device.pushTokenObj === null) {
         // Device has no push token
@@ -138,8 +138,8 @@ export class NotifySchedule {
     }
     for (let device of devices) {
       if (device.id !== recentDevice?.id) {
-        await this.context.logger.appendLog('--- Remove pushTokenObj from device.id: ' + device.id + ' as it is not the recent updated device: ' + device.id);
-        await devicesService.updateOne(device.id, { pushTokenObj: null });
+        await this.context.logger.appendLog('--- Remove pushTokenObj from device.id: ' + device.id + ' as it is not the recent updated device: ' + device.id); // NOSONAR S9382 - sequential on purpose: ordered log and one DB update per device, bounded DB load
+        await devicesService.updateOne(device.id, { pushTokenObj: null }); // NOSONAR S9382 - sequential on purpose: ordered log and one DB update per device, bounded DB load
       }
     }
   }
@@ -161,7 +161,7 @@ export class NotifySchedule {
       if (message.includes('Failed to send notification')) {
         await this.context.logger.appendLog('--- Failed to send notification');
         for (let device of devices) {
-          await devicesService.updateOne(device.id, { pushTokenObj: null });
+          await devicesService.updateOne(device.id, { pushTokenObj: null }); // NOSONAR S9382 - sequential on purpose: ordered log and one DB update per device, bounded DB load
         }
       }
     }

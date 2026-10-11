@@ -107,7 +107,7 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
       let updated = 0;
 
       for (const review of allReviews) {
-        const result = await syncSingleReview(review, appFeedbacksHelper);
+        const result = await syncSingleReview(review, appFeedbacksHelper); // NOSONAR S9382 - sequential on purpose: one DB find/create/update per store review, parallel writes would flood Directus and race on the duplicate check
         if (result === 'created') {
           created++;
         } else if (result === 'updated') {
@@ -157,7 +157,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
     };
 
     for (const feedbackId of keysArray) {
-      const feedback = await appFeedbacksHelper.readOne(feedbackId);
+      const feedback = await appFeedbacksHelper.readOne(feedbackId); // NOSONAR S9382 - sequential on purpose: may throw per feedback before the update applies and calls the external store API (rate limits)
       // A feedback from the app has no store – its response is mailed by the app-feedbacks-hook.
       if (!feedback || !AppFeedbackChatStatusHelper.isStoreReview(feedback)) {
         continue;
@@ -172,7 +172,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
       payloadTyped.state = AppFeedbackState.CLOSED;
 
       const responseHelper = new AppStoreReviewsResponseHelper(filterMyDatabaseHelper, logger);
-      await responseHelper.respondToReview({ ...feedback, response: payloadTyped.response });
+      await responseHelper.respondToReview({ ...feedback, response: payloadTyped.response }); // NOSONAR S9382 - sequential on purpose: may throw per feedback before the update applies and calls the external store API (rate limits)
     }
 
     return payload;

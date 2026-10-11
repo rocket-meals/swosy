@@ -136,9 +136,9 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, ({ sc
     }
     for (const app_feedback_id of HookKeysHelper.getKeysFromMeta(meta)) {
       try {
-        const app_feedback = await appFeedbacksHelper.readOne(app_feedback_id);
+        const app_feedback = await appFeedbacksHelper.readOne(app_feedback_id); // NOSONAR S9382 - sequential on purpose: one DB read and one mail per feedback key in the action hook, bounded load on Directus and the mail server
         if (app_feedback) {
-          await mailResponseToContactEmail(myDatabaseHelper, app_feedback);
+          await mailResponseToContactEmail(myDatabaseHelper, app_feedback); // NOSONAR S9382 - sequential on purpose: one DB read and one mail per feedback key in the action hook, bounded load on Directus and the mail server
         }
       } catch (error) {
         console.error(`app-feedbacks-hook: Failed to mail the response of app feedback ${app_feedback_id}`, error);

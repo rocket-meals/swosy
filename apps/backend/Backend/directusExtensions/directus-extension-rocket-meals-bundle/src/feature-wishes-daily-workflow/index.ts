@@ -96,7 +96,7 @@ class FeatureWishesDailyWorkflow extends SingleWorkflowRun {
       resultHash = currentHash;
 
       for (const wish of likeChanges) {
-        await helper.updateOneWithoutHookTrigger({ primary_key: wish.id, update: { likes_amount_last_checked: wish.likes_amount ?? 0 } });
+        await helper.updateOneWithoutHookTrigger({ primary_key: wish.id, update: { likes_amount_last_checked: wish.likes_amount ?? 0 } }); // NOSONAR S9382 - sequential on purpose: one DB update per wish in the daily job, bounded DB load
       }
     } catch (error) {
       failed = true;
@@ -144,10 +144,10 @@ class FeatureWishesDailyWorkflow extends SingleWorkflowRun {
 
     const result = FeatureWishModeration.parseDecisions(answer, new Set(candidates.map(wish => wish.id)), new Set(published.map(wish => wish.id)));
     for (const update of result.updates) {
-      await helper.updateOne(update.id, { status: update.status, related_to: update.related_to, moderation_note_intern: update.moderation_note_intern });
+      await helper.updateOne(update.id, { status: update.status, related_to: update.related_to, moderation_note_intern: update.moderation_note_intern }); // NOSONAR S9382 - sequential on purpose: one DB update per AI suggestion, bounded DB load
     }
     for (const reason of result.ignored) {
-      await context.logger.appendLog('Ignored part of the AI answer: ' + reason);
+      await context.logger.appendLog('Ignored part of the AI answer: ' + reason); // NOSONAR S9382 - sequential on purpose: log lines are appended in order
     }
     await context.logger.appendLog(`AI suggestions saved: ${result.updates.length}, ignored: ${result.ignored.length}`);
     const unanswered = candidates.length - result.updates.length;
