@@ -50,6 +50,7 @@ import { useAppSelector } from '@/redux/hooks';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import { afterRehydration } from '@/helper/afterRehydration';
 import { useAppIconBadgeReset } from '@/hooks/useAppIconBadgeReset';
+import { NotificationHelper } from '@/helper/NotificationHelper';
 
 ServerAPI.createAuthentificationStorage(
 	async () => {
@@ -117,6 +118,11 @@ export default function Layout() {
 	});
 
 	useAppIconBadgeReset();
+	useEffect(() => {
+		NotificationHelper.showNotificationsWhileAppIsOpen().catch(error => {
+			console.log('Layout: could not set up showing notifications while the app is open', error);
+		});
+	}, []);
 
         // On iOS Safari the browser chrome (address bar / bottom toolbar) takes its
         // color from the theme-color meta tag; without it those areas stay white and
