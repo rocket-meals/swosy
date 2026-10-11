@@ -20,7 +20,7 @@ export type FriendshipNetworkProfile = {
   avatar?: unknown;
 };
 
-type RelatedProfile = FriendshipNetworkProfile | string | null | undefined;
+type RelatedProfile = FriendshipNetworkProfile | string | null;
 
 export type FriendshipNetworkFriendship = {
   id: string;
@@ -115,7 +115,7 @@ export class FriendshipNetworkHelper {
     };
   }
 
-  static getProfile(profile: RelatedProfile): FriendshipNetworkProfile | undefined {
+  static getProfile(profile: RelatedProfile | undefined): FriendshipNetworkProfile | undefined {
     if (!profile) {
       return undefined;
     }
@@ -138,7 +138,7 @@ export class FriendshipNetworkHelper {
       if (!requester || !receiver || requester.id === receiver.id) {
         continue;
       }
-      const status = friendship.friendship_status === FriendshipStatus.ACCEPTED ? FriendshipNetworkLinkStatus.ACCEPTED : friendship.friendship_status === FriendshipStatus.PENDING ? FriendshipNetworkLinkStatus.PENDING : undefined;
+      const status = FriendshipNetworkHelper.getLinkStatus(friendship.friendship_status);
       if (!status) {
         continue;
       }
@@ -157,13 +157,7 @@ export class FriendshipNetworkHelper {
     const openRequests = [...pending.values()].filter(link => !accepted.has(FriendshipNetworkHelper.getPairKey(link.sourceId, link.targetId)));
     const links = [...accepted.values(), ...openRequests];
 
-    const friendCount = new Map<string, number>();
-    const pendingCount = new Map<string, number>();
-    for (const link of links) {
-      const counts = link.status === FriendshipNetworkLinkStatus.ACCEPTED ? friendCount : pendingCount;
-      counts.set(link.sourceId, (counts.get(link.sourceId) ?? 0) + 1);
-      counts.set(link.targetId, (counts.get(link.targetId) ?? 0) + 1);
-    }
+    const { friendCount, pendingCount } = FriendshipNetworkHelper.countLinksPerProfile(links);
 
     const groups = FriendshipNetworkHelper.findGroups([...profiles.keys()], [...accepted.values()]);
     const nodes = [...profiles.values()].map(profile => {
@@ -178,6 +172,29 @@ export class FriendshipNetworkHelper {
       };
     });
     return { nodes, links };
+  }
+
+  /** Accepted and pending friendships become links, any other status (e.g. declined) none. */
+  private static getLinkStatus(friendshipStatus: string | null | undefined): FriendshipNetworkLinkStatus | undefined {
+    if (friendshipStatus === FriendshipStatus.ACCEPTED) {
+      return FriendshipNetworkLinkStatus.ACCEPTED;
+    }
+    if (friendshipStatus === FriendshipStatus.PENDING) {
+      return FriendshipNetworkLinkStatus.PENDING;
+    }
+    return undefined;
+  }
+
+  /** Per profile: how many friends and how many open requests (sent or received) it has. */
+  private static countLinksPerProfile(links: FriendshipNetworkLink[]): { friendCount: Map<string, number>; pendingCount: Map<string, number> } {
+    const friendCount = new Map<string, number>();
+    const pendingCount = new Map<string, number>();
+    for (const link of links) {
+      const counts = link.status === FriendshipNetworkLinkStatus.ACCEPTED ? friendCount : pendingCount;
+      counts.set(link.sourceId, (counts.get(link.sourceId) ?? 0) + 1);
+      counts.set(link.targetId, (counts.get(link.targetId) ?? 0) + 1);
+    }
+    return { friendCount, pendingCount };
   }
 
   /**
@@ -299,7 +316,10 @@ export class FriendshipNetworkHelper {
       if (nickname === needle) {
         return 0;
       }
-      return nickname.startsWith(needle) ? 1 : nickname.includes(needle) ? 2 : -1;
+      if (nickname.startsWith(needle)) {
+        return 1;
+      }
+      return nickname.includes(needle) ? 2 : -1;
     };
     return nodes
       .map(node => ({ node, rank: rank(node) }))
@@ -323,7 +343,7 @@ export class FriendshipNetworkHelper {
   /** Oldest first, rows without a date last, otherwise the given order. */
   private static sortByDateCreated<T extends { date_created?: string | null } | { dateCreated?: string | null }>(items: T[]): T[] {
     const time = (item: T) => {
-      const date = 'date_created' in item ? item.date_created : 'dateCreated' in item ? item.dateCreated : undefined;
+      const date = FriendshipNetworkHelper.getDateCreated(item);
       const value = date ? new Date(date).getTime() : Number.NaN;
       return Number.isNaN(value) ? Number.POSITIVE_INFINITY : value;
     };
@@ -331,5 +351,16 @@ export class FriendshipNetworkHelper {
       .map((item, order) => ({ item, order, time: time(item) }))
       .sort((a, b) => (a.time === b.time ? a.order - b.order : a.time - b.time))
       .map(entry => entry.item);
+  }
+
+  /** The creation date of a friendship row (`date_created`) or of a link (`dateCreated`). */
+  private static getDateCreated(item: { date_created?: string | null } | { dateCreated?: string | null }): string | null | undefined {
+    if ('date_created' in item) {
+      return item.date_created;
+    }
+    if ('dateCreated' in item) {
+      return item.dateCreated;
+    }
+    return undefined;
   }
 }

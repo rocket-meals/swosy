@@ -39,12 +39,7 @@ export class InactiveUsersCleanupWorkflow extends SingleWorkflowRun {
       limit: -1,
     });
 
-    const usersToDelete: DatabaseTypes.DirectusUsers[] = [];
-    for (const user of inactiveUsers) {
-      if (!(await usersHelper.isAdminUser(user.id))) {
-        usersToDelete.push(user);
-      }
-    }
+    const usersToDelete = await this.filterNonAdminUsers(context, inactiveUsers);
     await context.logger.appendLog('Users inactive since before ' + cutoffDate + ': ' + inactiveUsers.length);
     await context.logger.appendLog('- admins (never deleted): ' + (inactiveUsers.length - usersToDelete.length));
     await context.logger.appendLog('- outdated users: ' + usersToDelete.length);
@@ -54,23 +49,49 @@ export class InactiveUsersCleanupWorkflow extends SingleWorkflowRun {
       return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SUCCESS });
     }
 
-    let errors = 0;
-    for (const user of usersToDelete) {
-      try {
-        await usersHelper.deleteOneWithUsersService(user.id);
-        const profileId = typeof user.profile === 'object' ? user.profile?.id : user.profile;
-        if (profileId && (await usersHelper.countItems({ filter: { profile: { _eq: profileId } } })) === 0) {
-          await context.myDatabaseHelper.getProfilesHelper().deleteOne(profileId);
-        }
-      } catch (e) {
-        errors++;
-        await context.logger.appendLog('Error deleting user ' + user.id + ': ' + (e instanceof Error ? e.message : String(e)));
-      }
-    }
+    const errors = await this.deleteUsers(context, usersToDelete);
     await context.logger.appendLog('Users deleted: ' + (usersToDelete.length - errors) + ', errors: ' + errors);
 
     return context.logger.getFinalLogWithStateAndParams({
       state: errors > 0 ? WORKFLOW_RUN_STATE.FAILED : WORKFLOW_RUN_STATE.SUCCESS,
     });
+  }
+
+  /** Admins are never deleted. */
+  private async filterNonAdminUsers(context: WorkflowRunContext, users: DatabaseTypes.DirectusUsers[]): Promise<DatabaseTypes.DirectusUsers[]> {
+    const usersHelper = context.myDatabaseHelper.getUsersHelper();
+    const nonAdminUsers: DatabaseTypes.DirectusUsers[] = [];
+    for (const user of users) {
+      if (!(await usersHelper.isAdminUser(user.id))) { // NOSONAR S9382 - sequential on purpose: one DB read per user (possibly thousands of inactive users), parallel reads would flood Directus
+        nonAdminUsers.push(user);
+      }
+    }
+    return nonAdminUsers;
+  }
+
+  /** Deletes the users one by one and returns the number of failed deletions. */
+  private async deleteUsers(context: WorkflowRunContext, usersToDelete: DatabaseTypes.DirectusUsers[]): Promise<number> {
+    let errors = 0;
+    // Sequential on purpose: several DB deletes/reads per user (possibly thousands), parallel writes would flood Directus,
+    // and two users sharing one profile must not both decide in parallel whether that profile is orphaned.
+    for (const user of usersToDelete) {
+      try {
+        await this.deleteUserAndOrphanedProfile(context, user); // NOSONAR S9382 - sequential on purpose, see comment above
+      } catch (e) {
+        errors++;
+        await context.logger.appendLog('Error deleting user ' + user.id + ': ' + (e instanceof Error ? e.message : String(e))); // NOSONAR S9382 - sequential on purpose, see comment above
+      }
+    }
+    return errors;
+  }
+
+  /** A deleted user's profile goes too, unless another user still points to it. */
+  private async deleteUserAndOrphanedProfile(context: WorkflowRunContext, user: DatabaseTypes.DirectusUsers): Promise<void> {
+    const usersHelper = context.myDatabaseHelper.getUsersHelper();
+    await usersHelper.deleteOneWithUsersService(user.id);
+    const profileId = typeof user.profile === 'object' ? user.profile?.id : user.profile;
+    if (profileId && (await usersHelper.countItems({ filter: { profile: { _eq: profileId } } })) === 0) {
+      await context.myDatabaseHelper.getProfilesHelper().deleteOne(profileId);
+    }
   }
 }

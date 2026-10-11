@@ -8,6 +8,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import useDebugMode from '@/hooks/useDebugMode';
 import { TranslationKeys } from '@/locales/keys';
+import { resolveSettingsGroupPosition } from '@/helper/settingsListGroupPosition';
 
 type CourseTimetableOptionsParams = {
 	/** Opens the Stud.IP import; the import sheet itself says that it replaces the timetable. */
@@ -108,7 +109,7 @@ export const useMyScrollviewModalCourseTimetableOptions = (params: CourseTimetab
 			children: (
 				<View style={styles.list}>
 					{options.map((option, index) => (
-						<SettingsList key={option.key} title={option.title} leftIcon={option.icon} onPress={option.onPress} groupPosition={options.length === 1 ? 'single' : index === 0 ? 'top' : index === options.length - 1 ? 'bottom' : 'middle'} showSeparator={index !== options.length - 1} />
+						<SettingsList key={option.key} title={option.title} leftIcon={option.icon} onPress={option.onPress} groupPosition={resolveSettingsGroupPosition(index, options.length)} showSeparator={index !== options.length - 1} />
 					))}
 				</View>
 			),

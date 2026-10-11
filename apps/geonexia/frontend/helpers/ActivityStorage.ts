@@ -209,7 +209,7 @@ export async function loadActivities(): Promise<SavedActivity[]> {
 	const activities: SavedActivity[] = [];
 	for (const id of ids) {
 		try {
-			const raw = await getStorageItem(getActivityKey(id));
+			const raw = await getStorageItem(getActivityKey(id)); // NOSONAR S9382 - sequential on purpose: expo-sqlite runs all queries over one shared connection anyway, and the loop keeps the existing per-item error handling
 			if (raw === null) continue;
 			activities.push(JSON.parse(raw) as SavedActivity);
 		} catch {
@@ -248,7 +248,7 @@ export async function deleteAllActivities(): Promise<void> {
 	try {
 		const ids = await getActivityIds();
 		for (const id of ids) {
-			await removeStorageItem(getActivityKey(id));
+			await removeStorageItem(getActivityKey(id)); // NOSONAR S9382 - sequential on purpose: expo-sqlite runs all queries over one shared connection anyway, and the loop keeps the existing per-item error handling
 		}
 		await removeStorageItem(ACTIVITIES_INDEX_KEY);
 	} catch {

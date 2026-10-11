@@ -18,7 +18,7 @@ export class FoodWebParserRawReportWebReaderAachen implements FoodWebParserAache
     const canteensHtmlFilesMap: CanteenNamesToHtmlFileDict = {};
 
     for (const canteenName of Object.keys(FoodWebParserRawReportWebReaderAachen.CanteensToUrlsMap)) {
-      const rawReport = await this.getWebRawReport(canteenName);
+      const rawReport = await this.getWebRawReport(canteenName); // NOSONAR S9382 - sequential on purpose: one HTTP request per canteen to the Studierendenwerk website, avoid hammering the external server
       if (rawReport) {
         canteensHtmlFilesMap[canteenName] = rawReport;
       }

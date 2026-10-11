@@ -117,7 +117,7 @@ const ExpoUpdateTest = () => {
 
         const runAllSteps = async () => {
                 for (const step of steps) {
-                        await step.action();
+                        await step.action(); // NOSONAR S9382 - sequential on purpose: check, download and reload updates must run one after another
                 }
         };
 

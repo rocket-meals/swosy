@@ -66,12 +66,12 @@ const workspaceDeepImports = (packageName, packageFolder) => {
  * replaced by an empty module instead of being inlined into the app bundle (~400 KB).
  */
 const jsPdfOptionalDependencies = () => {
-  const optionalDependencies = ['html2canvas', 'dompurify', 'canvg'];
+  const optionalDependencies = new Set(['html2canvas', 'dompurify', 'canvg']);
   const stubId = '\0jspdf-optional-dependency-stub';
   return {
     name: 'jspdf-optional-dependencies',
     resolveId(source, importer) {
-      if (optionalDependencies.includes(source) && importer && importer.includes(`${path.sep}jspdf${path.sep}`)) {
+      if (optionalDependencies.has(source) && importer?.includes(`${path.sep}jspdf${path.sep}`)) {
         return stubId;
       }
       return null;

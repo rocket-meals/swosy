@@ -44,7 +44,7 @@ runs:
         token: ${{ inputs.EXPO_TOKEN }}
 
     - name: "📦 Install dependencies"
-      run: yarn install --immutable
+      run: yarn install --immutable # NOSONAR - lifecycle scripts are required: dependencies such as puppeteer, sharp, esbuild and sqlite3 download or build their native binaries in install scripts, and the install is pinned to the committed yarn.lock (--immutable)
       shell: bash
 
     - name: "🖼️ Generate Score Tracker app icons"

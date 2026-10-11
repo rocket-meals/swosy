@@ -30,6 +30,7 @@ import {
 	HousingReportUnit,
 	type HousingDateRange,
 	type HousingReportDefinition,
+	type HousingReportResult,
 	type HousingReportRow,
 } from '@/helper/housingAnalytics/HousingAnalyticsReports';
 
@@ -61,6 +62,54 @@ function parseCustomDate(value: string): Date | null {
 		return null;
 	}
 }
+
+function getChevronIconName(expanded: boolean): 'chevron-up' | 'chevron-down' {
+	return expanded ? 'chevron-up' : 'chevron-down';
+}
+
+function getSelectedPeriodLabelKey(period: HousingAnalyticsPeriod): string {
+	return PERIOD_OPTIONS.find((option) => option.period === period)?.labelKey ?? TranslationKeys.housing_analytics_period_last_12_months;
+}
+
+function getSelectedGroupingLabelKey(grouping: HousingGrouping): string {
+	return GROUPING_OPTIONS.find((option) => option.grouping === grouping)?.labelKey ?? TranslationKeys.housing_analytics_grouping_building;
+}
+
+type HousingReportResultSectionProps = {
+	definition: HousingReportDefinition;
+	result: HousingReportResult;
+	selectedGroupingLabel: string;
+	textColor: string;
+	translate: (key: string) => string;
+	basisLabel: (amount: number) => string;
+	renderRow: (currentDefinition: HousingReportDefinition, row: HousingReportRow, index: number, amount: number, keyPrefix: string) => React.ReactNode;
+};
+
+const HousingReportResultSection = ({ definition, result, selectedGroupingLabel, textColor, translate, basisLabel, renderRow }: HousingReportResultSectionProps) => {
+	const dataBasisText = result.skippedCount > 0 ? `${basisLabel(result.recordCount)} · ${result.skippedCount} ${translate(TranslationKeys.housing_analytics_without_answer)}` : basisLabel(result.recordCount);
+	return (
+		<>
+			<SettingsGroupTitle>{translate(TranslationKeys.housing_analytics_result)}</SettingsGroupTitle>
+			<SettingsList
+				label={translate(TranslationKeys.housing_analytics_data_basis)}
+				value={dataBasisText}
+				stackedValue
+				leftIcon={<MaterialCommunityIcons name="database-outline" size={22} />}
+				groupPosition={result.total ? 'top' : 'single'}
+			/>
+			{result.total ? renderRow(definition, { ...result.total, label: translate(TranslationKeys.housing_analytics_overall) }, 1, 2, 'total') : null}
+
+			{result.rows.length > 0 ? (
+				<>
+					<SettingsGroupTitle>{selectedGroupingLabel}</SettingsGroupTitle>
+					{result.rows.map((row, index) => renderRow(definition, row, index, result.rows.length, 'row'))}
+				</>
+			) : (
+				<Text style={{ ...styles.emptyText, color: textColor }}>{translate(TranslationKeys.no_data_found)}</Text>
+			)}
+		</>
+	);
+};
 
 const ReportScreen = () => {
 	const { report } = useLocalSearchParams<{ report?: string }>();
@@ -333,8 +382,8 @@ const ReportScreen = () => {
 		);
 	}
 
-	const selectedPeriodLabel = translate(PERIOD_OPTIONS.find((option) => option.period === period)?.labelKey ?? TranslationKeys.housing_analytics_period_last_12_months);
-	const selectedGroupingLabel = translate(GROUPING_OPTIONS.find((option) => option.grouping === grouping)?.labelKey ?? TranslationKeys.housing_analytics_grouping_building);
+	const selectedPeriodLabel = translate(getSelectedPeriodLabelKey(period));
+	const selectedGroupingLabel = translate(getSelectedGroupingLabelKey(grouping));
 
 	return (
 		<View style={{ ...styles.container, backgroundColor: theme.screen.background }}>
@@ -361,7 +410,7 @@ const ReportScreen = () => {
 						leftIcon={<MaterialCommunityIcons name="calendar-clock" size={22} />}
 						rightIcon={
 							<PrintHidden>
-								<MaterialCommunityIcons name={periodExpanded ? 'chevron-up' : 'chevron-down'} size={22} color={theme.screen.icon} />
+								<MaterialCommunityIcons name={getChevronIconName(periodExpanded)} size={22} color={theme.screen.icon} />
 							</PrintHidden>
 						}
 						onPress={() => setPeriodExpanded((expanded) => !expanded)}
@@ -408,7 +457,7 @@ const ReportScreen = () => {
 						leftIcon={<MaterialCommunityIcons name="format-list-group" size={22} />}
 						rightIcon={
 							<PrintHidden>
-								<MaterialCommunityIcons name={groupingExpanded ? 'chevron-up' : 'chevron-down'} size={22} color={theme.screen.icon} />
+								<MaterialCommunityIcons name={getChevronIconName(groupingExpanded)} size={22} color={theme.screen.icon} />
 							</PrintHidden>
 						}
 						onPress={() => setGroupingExpanded((expanded) => !expanded)}
@@ -467,26 +516,15 @@ const ReportScreen = () => {
 					{!loading && loadFailed ? <Text style={{ ...styles.emptyText, color: theme.screen.text }}>{translate(TranslationKeys.housing_analytics_load_error)}</Text> : null}
 
 					{!loading && !loadFailed && result ? (
-						<>
-							<SettingsGroupTitle>{translate(TranslationKeys.housing_analytics_result)}</SettingsGroupTitle>
-							<SettingsList
-								label={translate(TranslationKeys.housing_analytics_data_basis)}
-								value={result.skippedCount > 0 ? `${basisLabel(result.recordCount)} · ${result.skippedCount} ${translate(TranslationKeys.housing_analytics_without_answer)}` : basisLabel(result.recordCount)}
-								stackedValue
-								leftIcon={<MaterialCommunityIcons name="database-outline" size={22} />}
-								groupPosition={result.total ? 'top' : 'single'}
-							/>
-							{result.total ? renderRow(definition, { ...result.total, label: translate(TranslationKeys.housing_analytics_overall) }, 1, 2, 'total') : null}
-
-							{result.rows.length > 0 ? (
-								<>
-									<SettingsGroupTitle>{selectedGroupingLabel}</SettingsGroupTitle>
-									{result.rows.map((row, index) => renderRow(definition, row, index, result.rows.length, 'row'))}
-								</>
-							) : (
-								<Text style={{ ...styles.emptyText, color: theme.screen.text }}>{translate(TranslationKeys.no_data_found)}</Text>
-							)}
-						</>
+						<HousingReportResultSection
+							definition={definition}
+							result={result}
+							selectedGroupingLabel={selectedGroupingLabel}
+							textColor={theme.screen.text}
+							translate={translate}
+							basisLabel={basisLabel}
+							renderRow={renderRow}
+						/>
 					) : null}
 				</View>
 			</ScrollView>

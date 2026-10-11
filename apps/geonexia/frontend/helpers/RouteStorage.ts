@@ -100,7 +100,7 @@ export async function loadRoutes(): Promise<SavedRoute[]> {
 	const routes: SavedRoute[] = [];
 	for (const id of ids) {
 		try {
-			const raw = await getStorageItem(getRouteKey(id));
+			const raw = await getStorageItem(getRouteKey(id)); // NOSONAR S9382 - sequential on purpose: expo-sqlite runs all queries over one shared connection anyway, and the loop keeps the existing per-item error handling
 			if (raw === null) continue;
 			const parsed = JSON.parse(raw);
 			if (isValidRoute(parsed)) {
@@ -143,7 +143,7 @@ export async function deleteAllRoutes(): Promise<void> {
 	try {
 		const ids = await getRouteIds();
 		for (const id of ids) {
-			await removeStorageItem(getRouteKey(id));
+			await removeStorageItem(getRouteKey(id)); // NOSONAR S9382 - sequential on purpose: expo-sqlite runs all queries over one shared connection anyway, and the loop keeps the existing per-item error handling
 		}
 		await removeStorageItem(ROUTES_INDEX_KEY);
 	} catch {

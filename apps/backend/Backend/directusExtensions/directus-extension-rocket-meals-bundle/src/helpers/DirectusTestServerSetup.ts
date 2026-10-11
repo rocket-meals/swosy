@@ -1,4 +1,4 @@
-import { ChildProcess, exec, spawn } from 'node:child_process';
+import { ChildProcess, exec, spawn, SpawnOptions } from 'node:child_process';
 import { FetchHelper } from './FetchHelper';
 import * as os from 'node:os';
 import path from 'node:path';
@@ -219,7 +219,7 @@ export class DirectusTestServerSetup {
     this.log('Bootstrapping Directus database...');
 
     return new Promise((resolve, reject) => {
-      exec('npx directus bootstrap', { env }, (error: any, stdout: any, stderr: any) => {
+      const onBootstrapDone = (error: any, stdout: any, stderr: any) => {
         if (this.options.debug) {
           if (stdout) console.log(`[Bootstrap stdout]: ${stdout}`);
           if (stderr) console.error(`[Bootstrap stderr]: ${stderr}`);
@@ -233,7 +233,9 @@ export class DirectusTestServerSetup {
 
         this.log('Database bootstrap completed.');
         resolve(undefined);
-      });
+      };
+      // Test-only helper (used by the Jest setup): PATH comes unchanged from the developer's or CI's own environment, the same one that runs `yarn test`, so it is not attacker controlled.
+      exec('npx directus bootstrap', { env }, onBootstrapDone); // NOSONAR S4036 - PATH is the trusted dev/CI environment, see comment above
     });
   }
 
@@ -244,11 +246,13 @@ export class DirectusTestServerSetup {
   private startServer(env: Record<string, string>): Promise<void> {
     this.log('Starting Directus server process...');
 
-    this.directusProcess = spawn('npx', ['directus', 'start'], {
+    const spawnOptions: SpawnOptions = {
       env,
       stdio: ['ignore', 'pipe', 'pipe'],
       detached: true,
-    });
+    };
+    // Test-only helper (used by the Jest setup): PATH comes unchanged from the developer's or CI's own environment, the same one that runs `yarn test`, so it is not attacker controlled.
+    this.directusProcess = spawn('npx', ['directus', 'start'], spawnOptions); // NOSONAR S4036 - PATH is the trusted dev/CI environment, see comment above
 
     this.setupProcessHandlers();
     return Promise.resolve();
@@ -321,10 +325,11 @@ export class DirectusTestServerSetup {
     let serverReady = false;
     let attempts = 0;
 
+    // Sequential on purpose: this is a polling loop, each attempt waits for the previous health check and the delay before retrying.
     while (!serverReady && attempts < this.options.maxStartupAttempts) {
       try {
         this.log(`Checking server readiness (${attempts + 1}/${this.options.maxStartupAttempts})...`);
-        serverReady = await this.isReady();
+        serverReady = await this.isReady(); // NOSONAR S9382 - polling loop, sequential on purpose, see comment above
         if (serverReady) {
           this.log('Directus server is ready!');
         }
@@ -333,7 +338,7 @@ export class DirectusTestServerSetup {
       }
 
       if (!serverReady) {
-        await new Promise(resolve => setTimeout(resolve, this.options.startupCheckDelay));
+        await new Promise(resolve => setTimeout(resolve, this.options.startupCheckDelay)); // NOSONAR S9382 - retry delay of the polling loop, see comment above
         attempts++;
       }
     }

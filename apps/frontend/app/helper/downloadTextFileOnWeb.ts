@@ -11,7 +11,7 @@ export function downloadTextFileOnWeb(fileName: string, content: string, mimeTyp
 	link.download = fileName;
 	document.body.appendChild(link);
 	link.click();
-	document.body.removeChild(link);
+	link.remove();
 	// Safari needs the URL to outlive the click; a tick is enough and keeps the blob from leaking.
 	setTimeout(() => URL.revokeObjectURL(blobUrl), 0);
 }

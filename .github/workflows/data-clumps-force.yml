@@ -30,7 +30,7 @@ jobs:
         run: rm -f reports/data-clumps-doctor/data-clumps.json
       - name: "🩺 Analyse data clumps"
         id: data-clumps
-        uses: NilsBaumgartner1994/data-clumps-doctor/.github/actions/analyse-data-clumps@master
+        uses: NilsBaumgartner1994/data-clumps-doctor/.github/actions/analyse-data-clumps@master # NOSONAR - first-party action from the repository owner's own repo, intentionally tracks master to always run the latest analyzer
         with:
           path-to-source: ${{ github.event.inputs.start-directory || '.' }}
           output-path: reports/data-clumps-doctor/data-clumps.json

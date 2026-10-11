@@ -118,7 +118,7 @@ class FoodImageAiGenerationWorkflow extends SingleWorkflowRun {
         const foodId = batchFood.id;
         processedIds.add(foodId);
         processedCount += 1;
-        const result = await this.processSingleFood(foodId, processedCount, 0, context, params);
+        const result = await this.processSingleFood(foodId, processedCount, 0, context, params); // NOSONAR S9382 - sequential on purpose: external AI image generation per food (rate limits, cost), results are counted
         if (result === 'generated') {
           generatedImages += 1;
         } else {

@@ -57,6 +57,26 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
    - Im PR-Text: behobenen Issue-Typ, Anzahl der Fixes, bewusst ausgelassene
      Stellen mit Begründung sowie die aktuelle Top-10-Liste aufführen.
 
+## Entscheidungen für wiederkehrende Regeln (Stand 2026-10-11)
+
+- **Erst beheben, dann unterdrücken.** `NOSONAR` nur, wenn ein Fix das Verhalten ändern würde
+  oder das Risiko schon abgedeckt ist, und immer **in genau der gemeldeten Zeile** mit
+  Begründung im Klartext (`// NOSONAR S9382 - sequential on purpose: ...`).
+- **`S9382` „Unexpected `await` inside a loop"**: parallelisiert (`Promise.all`) wird nur, wenn
+  die Iterationen unabhängig, billig und begrenzt sind und die Reihenfolge der Seiteneffekte
+  egal ist. Sequenziell mit `NOSONAR` bleiben: ein DB-Read/-Write pro Item in Hooks und
+  Sync-Jobs (begrenzte Last auf Directus), externe APIs (Rate-Limits, Kontingent), Schleifen,
+  deren Iterationen auf vorherigen Ergebnissen aufbauen, Polling/Retry, SQLite auf der
+  gemeinsamen Verbindung, CLI-Schritte. Im Zweifel sequenziell lassen.
+- **Prettier verschiebt Trailing-Kommentare** nach `{` in die nächste Zeile, dann greift das
+  `NOSONAR` nicht mehr. Solche Zeilen umstellen (Wert erst in eine Konstante), statt den
+  Kommentar zu verschieben.
+- **Dockerfile `docker:S6471` (root user)** wird auf der `FROM`-Zeile gemeldet, dort sind keine
+  Trailing-Kommentare erlaubt. Begründung steht als Kommentar darüber, der Hotspot wird in der
+  SonarCloud-Oberfläche als „Safe" markiert.
+- **Security-Hotspots** stehen nicht in den CSVs. Abrufbar über
+  `https://sonarcloud.io/api/hotspots/search?projectKey=rocket-meals_rocket-meals&status=TO_REVIEW`.
+
 ## Noch offen
 
 Bereits erledigte Issue-Typen werden nicht mehr in diesem Dokument mitgeführt —

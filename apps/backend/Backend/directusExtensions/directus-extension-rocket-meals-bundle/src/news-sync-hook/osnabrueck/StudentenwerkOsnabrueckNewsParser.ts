@@ -35,7 +35,7 @@ export class StudentenwerkOsnabrueckNewsParser implements NewsParserInterface {
         let linkElement = $(article).find('a');
         let articleUrl = linkElement.length ? StudentenwerkOsnabrueckNewsParser.baseUrl + linkElement.attr('href') : '';
 
-        let articleDetails = await this.getArticleDetails(articleUrl);
+        let articleDetails = await this.getArticleDetails(articleUrl); // NOSONAR S9382 - sequential on purpose: one HTTP request per article to the external Studentenwerk website, avoid hammering it
 
         let headerElement = $(article).find('span');
         let header = headerElement.length ? headerElement.text().trim() : '';

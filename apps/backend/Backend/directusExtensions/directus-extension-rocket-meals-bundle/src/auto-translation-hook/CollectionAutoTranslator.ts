@@ -170,14 +170,14 @@ export class CollectionAutoTranslator {
       };
 
       if (existingTranslation) {
-        const updateEntry = await CollectionAutoTranslator.buildUpdateEntry(
+        const updateEntry = await CollectionAutoTranslator.buildUpdateEntry( // NOSONAR S9382 - sequential on purpose: every entry calls the DeepL API (rate limits, quota)
           entryOptions, existingTranslation, newTranslationsUpdateLanguageDict
         );
         if (updateEntry) {
           translationsToUpdate.push(updateEntry);
         }
       } else {
-        const createEntry = await CollectionAutoTranslator.buildCreateEntry(
+        const createEntry = await CollectionAutoTranslator.buildCreateEntry( // NOSONAR S9382 - sequential on purpose: every entry calls the DeepL API (rate limits, quota)
           entryOptions, newTranslationsCreateLanguageDict
         );
         if (createEntry) {
@@ -320,7 +320,7 @@ export class CollectionAutoTranslator {
       const fieldValue = sourceTranslation[field];
       if (fieldValue) {
         try {
-          const translatedValue = await autoTranslator.translate({ text: fieldValue, source_language: sourceLanguageCode, destination_language: language_code });
+          const translatedValue = await autoTranslator.translate({ text: fieldValue, source_language: sourceLanguageCode, destination_language: language_code }); // NOSONAR S9382 - sequential on purpose: one DeepL API call per field (rate limits, quota)
           if (translatedValue) {
             translatedItem[field] = translatedValue;
           }

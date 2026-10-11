@@ -100,7 +100,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 
 				if (secondsFromNow > 0) {
 					// Schedule the notification
-					await Notifications.scheduleNotificationAsync({
+					await Notifications.scheduleNotificationAsync({ // NOSONAR S9382 - sequential on purpose: notifications are scheduled one after another so a failing OS call stops the remaining ones in a defined order
 						content: {
 							title: `Washing Machine ${alias}`,
 							body: `Your washing will finish at ${format(finishDate, 'dd.MM.yyyy HH:mm')}.`,

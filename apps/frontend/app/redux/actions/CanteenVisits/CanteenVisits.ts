@@ -68,7 +68,7 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 		for (const visit of visits) {
 			const id = (visit as any).id;
 			if (id) {
-				await this.deleteItem(id);
+				await this.deleteItem(id); // NOSONAR S9382 - sequential on purpose: one Directus delete per duplicate visit, parallel writes would only burst the server for no gain
 			}
 		}
 	}

@@ -28,7 +28,7 @@ function registerHookPreventUpdateFormSubmissionIllegalState(registerFunctions: 
     let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     let form_submission_ids = meta.keys as PrimaryKey[];
     for (let form_submission_id of form_submission_ids) {
-      let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id);
+      let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id); // NOSONAR S9382 - sequential on purpose: validation filter hook, throws on the first submission in an illegal state, one DB read per key
       if (formSubmission.state === FormSubmissionState.SYNCING) {
         if (input.state) {
           if (input.state === FormSubmissionState.CLOSED || input.state === FormSubmissionState.FAILED) {
@@ -114,7 +114,7 @@ function registerHookCheckAllRequiredFieldsAreFilled(registerFunctions: Register
       let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
       let form_submission_ids = meta.keys as PrimaryKey[];
       for (let form_submission_id of form_submission_ids) {
-        await checkFormSubmissionRequiredFieldsFilled(form_submission_id, myDatabaseHelper);
+        await checkFormSubmissionRequiredFieldsFilled(form_submission_id, myDatabaseHelper); // NOSONAR S9382 - sequential on purpose: validation filter hook, throws on the first submission with missing required fields
       }
     }
 
@@ -127,11 +127,12 @@ function registerHookSetStateToSynchingAfterFormSubmission(registerFunctions: Re
     console.log('Set state to syncing after form submission');
     let myDatabaseHelper = new MyDatabaseHelper(apiContext, context);
     let form_submission_ids = meta.keys as PrimaryKey[];
+    // Sequential on purpose: one DB read and possibly one DB write per form submission inside a Directus action hook (bounded DB load).
     for (let form_submission_id of form_submission_ids) {
-      let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id);
+      let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id); // NOSONAR S9382 - sequential on purpose, see comment above
       if (formSubmission.state === FormSubmissionState.SUBMITTED) {
         console.log('Set state to syncing for form submission id: ' + form_submission_id);
-        await myDatabaseHelper.getFormsSubmissionsHelper().updateOne(form_submission_id, {
+        await myDatabaseHelper.getFormsSubmissionsHelper().updateOne(form_submission_id, { // NOSONAR S9382 - sequential on purpose, see comment above
           state: FormSubmissionState.SYNCING,
         });
       }
@@ -401,7 +402,7 @@ async function syncFormSubmissionAndSendExtractMails(formSubmission: DatabaseTyp
   });
 
   for (let form_extract of formExtracts) {
-    await processFormExtractMailForSubmission(form_extract, form_with_translations, formSubmission, form_answers, form_fields, myDatabaseHelper);
+    await processFormExtractMailForSubmission(form_extract, form_with_translations, formSubmission, form_answers, form_fields, myDatabaseHelper); // NOSONAR S9382 - sequential on purpose: each form extract generates a PDF and sends mails, parallel runs would spike Puppeteer/DB load
   }
 
   // set state to closed
@@ -441,7 +442,7 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
     let myDatabaseHelper = new MyDatabaseHelper(apiContext, context);
     let form_submissions_ids = meta.keys as PrimaryKey[];
     for (let form_submission_id of form_submissions_ids) {
-      await processFormSubmissionSyncingIfNeeded(form_submission_id, myDatabaseHelper);
+      await processFormSubmissionSyncingIfNeeded(form_submission_id, myDatabaseHelper); // NOSONAR S9382 - sequential on purpose: each submission generates PDFs, sends mails and writes its state, parallel runs would flood Directus
     }
   });
 }
@@ -473,7 +474,7 @@ async function sendFormExtractMail(form: DatabaseTypes.Forms, formExtract: Datab
   let mailAttachmentsFolderId = await myDatabaseHelper.getMailAttachmentsFolderId();
   for (let recipient_email of recipient_emails) {
     console.log('Send mail to: ' + recipient_email);
-    let newFile = await myDatabaseHelper.getFilesHelper().uploadOneFromBuffer(pdfBuffer, form_name + '_' + formSubmission.id + '.pdf', MyFileTypes.PDF, myDatabaseHelper, mailAttachmentsFolderId);
+    let newFile = await myDatabaseHelper.getFilesHelper().uploadOneFromBuffer(pdfBuffer, form_name + '_' + formSubmission.id + '.pdf', MyFileTypes.PDF, myDatabaseHelper, mailAttachmentsFolderId); // NOSONAR S9382 - sequential on purpose: one PDF upload per recipient, keeps upload and mail record of a recipient together and bounds the Directus load
     let attachments = {
       create: [
         {
@@ -498,7 +499,7 @@ async function sendFormExtractMail(form: DatabaseTypes.Forms, formExtract: Datab
       attachments: attachments,
     };
     console.log('Send mail to: ' + recipient_email);
-    let mail_id = await myDatabaseHelper.sendMail(mail);
+    let mail_id = await myDatabaseHelper.sendMail(mail); // NOSONAR S9382 - sequential on purpose: one file upload and one mail record per recipient, parallel writes would flood Directus
     console.log('Mail id: ' + mail_id);
   }
 }

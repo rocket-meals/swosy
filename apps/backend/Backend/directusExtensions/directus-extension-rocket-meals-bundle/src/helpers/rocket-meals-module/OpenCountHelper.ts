@@ -54,7 +54,7 @@ export class OpenCountHelper {
 
   /** The count out of a Directus `aggregate` response body, `undefined` when it holds none. */
   static parseCount(body: unknown): number | undefined {
-    const data = (body as { data?: { count?: { id?: unknown } | unknown }[] } | null | undefined)?.data;
+    const data = (body as { data?: { count?: unknown }[] } | null | undefined)?.data;
     const raw = data?.[0]?.count;
     const value = typeof raw === 'object' && raw !== null ? (raw as { id?: unknown }).id : raw;
     const count = Number(value);

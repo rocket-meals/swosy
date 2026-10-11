@@ -34,11 +34,11 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ act
     let tableNamesToDelete = tableNamesInLastUpdatesTable.filter(tableName => !allTableNamesWithoutExcludeCollections.includes(tableName));
 
     for (let tableNameToDelete of tableNamesToDelete) {
-      await collectionsDatesLastUpdateService.deleteOne(tableNameToDelete);
+      await collectionsDatesLastUpdateService.deleteOne(tableNameToDelete); // NOSONAR S9382 - sequential on purpose: one DB write per table in the startup sync, bounded DB load on Directus
     }
 
     for (let missingTableName of missingTableNames) {
-      await collectionsDatesLastUpdateService.createOne({
+      await collectionsDatesLastUpdateService.createOne({ // NOSONAR S9382 - sequential on purpose: one DB write per table in the startup sync, bounded DB load on Directus
         id: missingTableName,
         date_updated: new Date().toISOString(),
       });

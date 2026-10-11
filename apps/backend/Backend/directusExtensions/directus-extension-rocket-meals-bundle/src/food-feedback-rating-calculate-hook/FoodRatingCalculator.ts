@@ -18,7 +18,7 @@ export class FoodRatingCalculator {
     let food_id_dict: { [key: string]: boolean } = {};
 
     for (let food_feedback_id of food_feedback_ids) {
-      let food_feedback = await foodfeedbacksService.readOne(food_feedback_id);
+      let food_feedback = await foodfeedbacksService.readOne(food_feedback_id); // NOSONAR S9382 - sequential on purpose: one DB read per feedback key in the hook, bounded DB load
       let food_id = food_feedback?.food;
       if (!!food_id && typeof food_id === 'string') {
         food_id_dict[food_id] = true;

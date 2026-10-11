@@ -94,13 +94,13 @@ export class FreeApartmentsNotifier {
     let failedProfiles = 0;
     for (const profile of profiles) {
       try {
-        const devices = await this.myDatabaseHelper.getDevicesHelper().readManyByProfileId(profile.id);
+        const devices = await this.myDatabaseHelper.getDevicesHelper().readManyByProfileId(profile.id); // NOSONAR S9382 - sequential on purpose: per profile one device read and one push notification row, bounded DB load in the schedule job
         const expoPushTokens = PushNotificationHelper.getExpoPushTokensFromDevices(devices);
         if (expoPushTokens.length === 0) {
           continue;
         }
-        const language = await languageResolver.resolveForProfile(profile);
-        await this.myDatabaseHelper.getPushNotificationsHelper().createOne({
+        const language = await languageResolver.resolveForProfile(profile); // NOSONAR S9382 - sequential on purpose: per profile one device read and one push notification row, bounded DB load in the schedule job
+        await this.myDatabaseHelper.getPushNotificationsHelper().createOne({ // NOSONAR S9382 - sequential on purpose: per profile one device read and one push notification row, bounded DB load in the schedule job
           expo_push_tokens: expoPushTokens,
           message_title: language.translate(BackendTranslationKeys.notification_free_apartments_title),
           message_body: FreeApartmentsNotifier.buildBody(language, apartmentNames),
@@ -108,13 +108,13 @@ export class FreeApartmentsNotifier {
         notifiedProfiles++;
       } catch (error) {
         failedProfiles++;
-        await log('Could not notify profile ' + profile.id + ': ' + (error instanceof Error ? error.message : String(error)));
+        await log('Could not notify profile ' + profile.id + ': ' + (error instanceof Error ? error.message : String(error))); // NOSONAR S9382 - sequential on purpose: per profile one device read and one push notification row, bounded DB load in the schedule job
       }
     }
 
     const apartmentsHelper = this.myDatabaseHelper.getApartmentsHelper();
     for (const apartment of apartments) {
-      await apartmentsHelper.updateOne(apartment.id, { available_from_notified: apartment.available_from });
+      await apartmentsHelper.updateOne(apartment.id, { available_from_notified: apartment.available_from }); // NOSONAR S9382 - sequential on purpose: one DB update per apartment, bounded DB load in the schedule job
     }
     await log('Notified profiles: ' + notifiedProfiles + ', failed: ' + failedProfiles);
     return { apartments: apartments.length, profiles: notifiedProfiles, failedProfiles };

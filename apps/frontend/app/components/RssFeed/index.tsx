@@ -55,12 +55,15 @@ const RssFeed: React.FC<RssFeedProps> = ({ urls, switchIntervalInSeconds }) => {
 			setLoading(true);
 			try {
 				const urlList = Array.isArray(urls) ? urls : String(urls).split(',');
-				const allItems: any[] = [];
-				for (const url of urlList) {
-					const res = await fetch(url.trim());
-					const text = await res.text();
-					allItems.push(...parseFeed(text));
-				}
+				// The feeds are independent, so they load side by side; Promise.all keeps the configured order.
+				const feedItems = await Promise.all(
+					urlList.map(async (url) => {
+						const res = await fetch(url.trim());
+						const text = await res.text();
+						return parseFeed(text);
+					})
+				);
+				const allItems: any[] = feedItems.flat();
 				setItems(allItems);
 			} catch (e) {
 				console.error('Failed to load rss feed', e);

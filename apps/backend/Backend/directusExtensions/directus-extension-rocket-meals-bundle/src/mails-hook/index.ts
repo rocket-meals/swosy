@@ -101,13 +101,14 @@ async function buildAttachmentsAndDownloadLinks(
 ): Promise<{ attachments: MailAttachment[]; downloadLinks: EmailDownloadLink[] }> {
   let attachments: MailAttachment[] = [];
   let downloadLinks: EmailDownloadLink[] = [];
+  // Sequential on purpose: attachments/links keep the file order, at most one file buffer is held in memory at a time, and share-link creation writes to the DB.
   for (let directus_files_id of directus_files_ids) {
     try {
-      let direcuts_file = await filesHelper.readOne(directus_files_id);
+      let direcuts_file = await filesHelper.readOne(directus_files_id); // NOSONAR S9382 - sequential on purpose, see comment above
       // filename_disk is the name of the file on the server - its cryptic
       if (send_attachments_as_links) {
         let name = direcuts_file.filename_disk || direcuts_file.filename_download || 'file';
-        let shareLink = await filesHelper.createDirectusFilesShareLink({
+        let shareLink = await filesHelper.createDirectusFilesShareLink({ // NOSONAR S9382 - sequential on purpose, see comment above
           directus_files_id: directus_files_id,
           name: name,
         });
@@ -120,7 +121,7 @@ async function buildAttachmentsAndDownloadLinks(
       } else {
         // https://github.com/directus/directus/issues/23937
         // https://nodemailer.com/message/attachments/
-        let buffer = await filesHelper.readFileContent(directus_files_id);
+        let buffer = await filesHelper.readFileContent(directus_files_id); // NOSONAR S9382 - sequential on purpose, see comment above
         attachments.push({
           filename: direcuts_file.filename_download,
           content: buffer,

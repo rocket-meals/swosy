@@ -239,7 +239,7 @@ const migrateSettingsSyncIdToPlaceholder = async headers => {
   const hasPlaceholder = entries.length !== legacyEntries.length;
   for (const legacyEntry of legacyEntries) {
     console.log(` -  Renaming directus-sync settings id map entry ${legacyEntry.sync_id} to ${SETTINGS_SYNC_ID_PLACEHOLDER}`);
-    const deleteResponse = await fetch(`${tableUrl}/sync_id/${encodeURIComponent(legacyEntry.sync_id)}`, { method: 'DELETE', agent: httpsAgent, headers: requestHeaders });
+    const deleteResponse = await fetch(`${tableUrl}/sync_id/${encodeURIComponent(legacyEntry.sync_id)}`, { method: 'DELETE', agent: httpsAgent, headers: requestHeaders }); // NOSONAR S9382 - sequential on purpose: aborts with an error on the first failed DELETE before touching further id map entries
     if (!deleteResponse.ok) {
       throw new Error(`Could not remove legacy settings id map entry: ${deleteResponse.status} ${deleteResponse.statusText}`);
     }
@@ -424,7 +424,7 @@ const uploadSchemas = async headers => {
   // if file ends with .DS_Store it is not a collection
   files = files.filter(file => !file.endsWith('.DS_Store'));
   for (const file of files) {
-    await uploadSchema(headers, `${configurationPathCollections}/${file}`);
+    await uploadSchema(headers, `${configurationPathCollections}/${file}`); // NOSONAR S9382 - sequential on purpose: files are imported in sorted order and one at a time, so the import order is deterministic and Directus gets one import request at a time
   }
 };
 
@@ -516,7 +516,7 @@ const saveCollections = async headers => {
       continue;
     }
 
-    const data = await getCollection(headers, collection);
+    const data = await getCollection(headers, collection); // NOSONAR S9382 - sequential on purpose: one Directus read per collection, each written to its own file, parallel requests would hammer the instance during sync
     console.log(data);
     const jsonData = JSON.stringify(data, null, 4);
     console.log(` -  Fetched ${collection} (${data.length} items)`);
@@ -561,7 +561,7 @@ const waitForDirectusToBeReady = async () => {
       console.log(e);
       const TIME_TO_WAIT = 1000;
       console.log('Trying again in ' + TIME_TO_WAIT + 'ms');
-      await new Promise(resolve => setTimeout(resolve, TIME_TO_WAIT));
+      await new Promise(resolve => setTimeout(resolve, TIME_TO_WAIT)); // NOSONAR S9382 - retry loop, each attempt must wait before pinging Directus again
     }
   }
   if (!ready) {

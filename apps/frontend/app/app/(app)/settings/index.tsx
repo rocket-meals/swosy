@@ -85,6 +85,25 @@ function resolveDrawerPositionLabel(drawerPosition: string, translate: (key: str
 	return translate(TranslationKeys.drawer_config_position_system);
 }
 
+function resolveAmountColumnsLabel(amountColumns: number, translate: (key: string) => string): string {
+	return amountColumns === 0 ? translate(TranslationKeys.automatic) : String(amountColumns);
+}
+
+/** The logout row closes the group for guests, opens it above "delete account" for registered users, and stands alone otherwise. */
+function resolveLogoutGroupPosition(isGuestUser: boolean, isRegisteredUser: boolean): 'top' | 'bottom' | 'single' {
+	if (isGuestUser) {
+		return 'bottom';
+	}
+	return isRegisteredUser ? 'top' : 'single';
+}
+
+function resolveAccountDebugValue(isRegisteredUser: boolean, isGuestUser: boolean, userId: string | undefined, translate: (key: string) => string): string | undefined {
+	if (!isRegisteredUser) {
+		return translate(TranslationKeys.without_account);
+	}
+	return isGuestUser ? translate(TranslationKeys.guest_account) : userId;
+}
+
 const Settings = () => {
         useSetPageTitle(TranslationKeys.settings);
         const { theme, setThemeMode } = useTheme();
@@ -706,7 +725,7 @@ const Settings = () => {
 					<View style={groupStyle}>
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="theme-light-dark" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.color_scheme)} value={colorSchemeValue} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openColorSchemeSheet()} groupPosition="top" nativeID={ComponentIds.SETTINGS_COLOR_SCHEME} />
 						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.drawer_config_position)} value={drawerPositionValue} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openMenuPositionModal} groupPosition="middle" />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.amount_columns_for_cards)} value={amountColumnsForcard === 0 ? translate(TranslationKeys.automatic) : String(amountColumnsForcard)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openCardColumnsModal} groupPosition="middle" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.amount_columns_for_cards)} value={resolveAmountColumnsLabel(amountColumnsForcard, translate)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openCardColumnsModal} groupPosition="middle" />
 						<SettingsList iconBgColor={primaryColor} leftIcon={<Feather name="calendar" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.first_day_of_week)} value={translate(firstDayOfTheWeek?.name)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFirstDayOfWeekModal} groupPosition="bottom" />
 					</View>
 				</View>
@@ -824,7 +843,7 @@ const Settings = () => {
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="account-clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={translate(TranslationKeys.guest_account)} groupPosition="top" nativeID={ComponentIds.SETTINGS_GUEST_ACCOUNT} />
 						)}
 						{/* Guests can't log out and come back - their "log out" deletes the account (see useConfirmLogoutModal). */}
-						<SettingsList iconBgColor={primaryColor} leftIcon={isGuestUser ? <AntDesign name="user-delete" size={22} color={theme.screen.icon} /> : <Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={isGuestUser ? <Octicons name="chevron-right" size={24} color={theme.screen.icon} /> : <Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={isGuestUser ? 'bottom' : isRegisteredUser ? 'top' : 'single'} />
+						<SettingsList iconBgColor={primaryColor} leftIcon={isGuestUser ? <AntDesign name="user-delete" size={22} color={theme.screen.icon} /> : <Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={isGuestUser ? <Octicons name="chevron-right" size={24} color={theme.screen.icon} /> : <Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={resolveLogoutGroupPosition(isGuestUser, isRegisteredUser)} />
 						{isRegisteredUser && !isGuestUser && (
 							<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="bottom" />
 						)}
@@ -932,7 +951,7 @@ const Settings = () => {
 							handleFunction={showDebugRatingModal}
 							groupPosition="middle"
 						/>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? (isGuestUser ? translate(TranslationKeys.guest_account) : user?.id) : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="bottom" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={resolveAccountDebugValue(isRegisteredUser, isGuestUser, user?.id, translate)} handleFunction={() => {}} groupPosition="bottom" />
 					</View>
 					<View style={groupStyle}>
 						<SettingsList

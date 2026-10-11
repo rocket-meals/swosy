@@ -29,18 +29,18 @@ function getProfileId(profile: DatabaseTypes.FoodsFeedbacks['profile'] | undefin
   return profile?.id ?? undefined;
 }
 
-export default defineHook(({ filter }, apiContext) => {
-  async function readUnverifiedProfile(myDatabaseHelper: MyDatabaseHelper, profileIds: string[]): Promise<ProfileVerification | undefined> {
-    if (profileIds.length === 0) {
-      return undefined;
-    }
-    const profiles = (await myDatabaseHelper.getProfilesHelper().readMany(profileIds, {
-      // The language is needed to render the error message.
-      fields: ['id', 'verified', 'language'],
-    })) as ProfileVerification[];
-    return profiles.find(profile => profile.verified === false);
+async function readUnverifiedProfile(myDatabaseHelper: MyDatabaseHelper, profileIds: string[]): Promise<ProfileVerification | undefined> {
+  if (profileIds.length === 0) {
+    return undefined;
   }
+  const profiles = (await myDatabaseHelper.getProfilesHelper().readMany(profileIds, {
+    // The language is needed to render the error message.
+    fields: ['id', 'verified', 'language'],
+  })) as ProfileVerification[];
+  return profiles.find(profile => profile.verified === false);
+}
 
+export default defineHook(({ filter }, apiContext) => {
   async function readExistingFeedbacks(myDatabaseHelper: MyDatabaseHelper, keys: PrimaryKey[]): Promise<DatabaseTypes.FoodsFeedbacks[]> {
     if (keys.length === 0) {
       return [];

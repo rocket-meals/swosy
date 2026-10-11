@@ -50,9 +50,9 @@ onMounted(loadOpenCounts);
     <div class="overview">
       <module-card v-for="page in RocketMealsModulePages.PAGES" :key="page.path" :to="RocketMealsModulePages.getRoute(page)" :icon="page.icon" :title="translate(page.labelKey)" :note="translate(page.descriptionKey)">
         <template v-if="OpenCountHelper.getBadgeText(openCounts[page.path])" #badge>
-          <span class="open-count" role="status" :title="translate(BackendTranslationKeys.rocket_meals_module_open_count, { count: openCounts[page.path] })" :aria-label="translate(BackendTranslationKeys.rocket_meals_module_open_count, { count: openCounts[page.path] })">
+          <output class="open-count" :title="translate(BackendTranslationKeys.rocket_meals_module_open_count, { count: openCounts[page.path] })" :aria-label="translate(BackendTranslationKeys.rocket_meals_module_open_count, { count: openCounts[page.path] })">
             {{ OpenCountHelper.getBadgeText(openCounts[page.path]) }}
-          </span>
+          </output>
         </template>
       </module-card>
     </div>

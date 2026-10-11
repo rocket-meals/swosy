@@ -1,5 +1,6 @@
 // import child_process for execSync
 import {execSync} from 'node:child_process';
+import fs from 'node:fs';
 import {AppleClientSecretCredentials} from './types';
 
 /**
@@ -27,8 +28,9 @@ export function generateAppleJWTShell(params: AppleClientSecretCredentials) {
   const expirationTime = currentTime + (86400 * 180); // 180 days
 
   try {
-    let commandResult = execSync("ls /directus/sso", { encoding: 'utf-8' }).trim();
-    console.log(commandResult);
+    // List the directory via fs instead of spawning `ls`, so no binary is resolved through PATH
+    const directoryEntries = fs.readdirSync('/directus/sso').filter(entry => !entry.startsWith('.')).sort();
+    console.log(directoryEntries.join('\n'));
   } catch (error) {
     throw new Error(`Failed: ${error}`);
   }
@@ -37,7 +39,7 @@ export function generateAppleJWTShell(params: AppleClientSecretCredentials) {
   const target = '/directus/sso_runtime/genSSO_Apple.sh';
 
   // Stelle sicher, dass der Zielordner existiert
-  execSync('mkdir -p /directus/sso_runtime');
+  fs.mkdirSync('/directus/sso_runtime', { recursive: true });
 
   // Kopiere die Datei ins beschreibbare Verzeichnis
   execSync(`cp ${source} ${target}`);

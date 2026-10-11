@@ -51,22 +51,8 @@ const loadShared = async () => {
 
 const readBase64 = (fileName) => fs.readFileSync(path.join(engineDirectory, fileName)).toString('base64');
 
-const main = async () => {
-	const { buildPageHtml, buildRecognizeScript, splitRecognizedText, IbanRecognitionHelper } = await loadShared();
-
-	const html = buildPageHtml(fs.readFileSync(path.join(engineDirectory, 'text-recognition-page.webviewjs'), 'utf-8'), {
-		wasm: readBase64('ort-wasm-simd-threaded.wasm'),
-		detection: readBase64('PP-OCRv6_tiny_det.ort'),
-		recognition: readBase64('PP-OCRv6_tiny_rec.ort'),
-		dictionary: readBase64('ppocrv6_tiny_dict.txt'),
-	});
-	const pageDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'text-recognition-page-'));
-	const pageFile = path.join(pageDirectory, 'page.html');
-	fs.writeFileSync(pageFile, html);
-	console.log(`page: ${(html.length / 1024 / 1024).toFixed(1)} MB at ${pageFile}`);
-
-	const executablePath = process.env.TEXT_RECOGNITION_CHROMIUM ?? (fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
-	const browser = await chromium.launch({ executablePath, args: ['--no-sandbox', '--disable-gpu'] });
+/** Opens the page in Chromium with the network cut off and react-native-webview's bridge stood in for. */
+const openEnginePage = async (browser) => {
 	const page = await browser.newPage();
 
 	const networkRequests = [];
@@ -109,6 +95,56 @@ const main = async () => {
 	await page.addInitScript(() => {
 		window.ReactNativeWebView = { postMessage: (message) => window.__textRecognitionSink(message) };
 	});
+	return { page, networkRequests, waiting, ready };
+};
+
+/** Has the page read one recorded card and waits for its answer. */
+const readCard = async (page, waiting, buildRecognizeScript, card) => {
+	const imageBase64 = fs.readFileSync(path.join(fixtureDirectory, card.file)).toString('base64');
+	const id = card.file;
+	const answer = new Promise((resolve) => waiting.set(id, resolve));
+	const readingStartedAt = Date.now();
+	await page.evaluate(buildRecognizeScript({ id, imageBase64, mimeType: 'image/png' }));
+	const message = await Promise.race([answer, new Promise((_, reject) => setTimeout(() => reject(new Error(`no answer for ${id} within 60 s`)), 60_000))]);
+	const milliseconds = Date.now() - readingStartedAt;
+	if (message.type !== 'result') {
+		throw new Error(`${id}: ${message.message}`);
+	}
+	return { message, milliseconds };
+};
+
+const classifyOutcome = (found, printedIban) => {
+	if (found === printedIban) {
+		return printedIban === null ? 'nothing' : 'read';
+	}
+	return found === null ? 'nothing' : 'wrong';
+};
+
+const logCard = (outcome, milliseconds, card, lines, sameAsRecorded) => {
+	console.log(`${outcome.padEnd(7)} ${String(milliseconds).padStart(5)} ms  ${card.file}${sameAsRecorded ? '' : '  (lines differ from the Node recording)'}`);
+	if (!sameAsRecorded) {
+		console.log(`         recorded: ${JSON.stringify(card.recognizedLines)}`);
+		console.log(`         read:     ${JSON.stringify(lines)}`);
+	}
+};
+
+const main = async () => {
+	const { buildPageHtml, buildRecognizeScript, splitRecognizedText, IbanRecognitionHelper } = await loadShared();
+
+	const html = buildPageHtml(fs.readFileSync(path.join(engineDirectory, 'text-recognition-page.webviewjs'), 'utf-8'), {
+		wasm: readBase64('ort-wasm-simd-threaded.wasm'),
+		detection: readBase64('PP-OCRv6_tiny_det.ort'),
+		recognition: readBase64('PP-OCRv6_tiny_rec.ort'),
+		dictionary: readBase64('ppocrv6_tiny_dict.txt'),
+	});
+	const pageDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'text-recognition-page-'));
+	const pageFile = path.join(pageDirectory, 'page.html');
+	fs.writeFileSync(pageFile, html);
+	console.log(`page: ${(html.length / 1024 / 1024).toFixed(1)} MB at ${pageFile}`);
+
+	const executablePath = process.env.TEXT_RECOGNITION_CHROMIUM ?? (fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
+	const browser = await chromium.launch({ executablePath, args: ['--no-sandbox', '--disable-gpu'] });
+	const { page, networkRequests, waiting, ready } = await openEnginePage(browser);
 
 	const startedAt = Date.now();
 	await page.goto(pathToFileURL(pageFile).href);
@@ -119,34 +155,16 @@ const main = async () => {
 	const outcomes = { read: 0, nothing: 0, wrong: 0 };
 	let differing = 0;
 	for (const card of recorded) {
-		const imageBase64 = fs.readFileSync(path.join(fixtureDirectory, card.file)).toString('base64');
-		const id = card.file;
-		const answer = new Promise((resolve) => waiting.set(id, resolve));
-		const readingStartedAt = Date.now();
-		await page.evaluate(buildRecognizeScript({ id, imageBase64, mimeType: 'image/png' }));
-		const message = await Promise.race([answer, new Promise((_, reject) => setTimeout(() => reject(new Error(`no answer for ${id} within 60 s`)), 60_000))]);
-		const milliseconds = Date.now() - readingStartedAt;
-		if (message.type !== 'result') {
-			throw new Error(`${id}: ${message.message}`);
-		}
+		const { message, milliseconds } = await readCard(page, waiting, buildRecognizeScript, card); // NOSONAR S9382 - sequential on purpose: the single engine page reads one card at a time and the per-card timing is measured
 		const lines = splitRecognizedText(message.text);
 		const found = IbanRecognitionHelper.findIban(lines, { allowInvalidChecksum: true })?.iban ?? null;
-		let outcome;
-		if (found === card.printedIban) {
-			outcome = card.printedIban === null ? 'nothing' : 'read';
-		} else {
-			outcome = found === null ? 'nothing' : 'wrong';
-		}
+		const outcome = classifyOutcome(found, card.printedIban);
 		outcomes[outcome]++;
 		const sameAsRecorded = JSON.stringify(lines) === JSON.stringify(card.recognizedLines);
 		if (!sameAsRecorded) {
 			differing++;
 		}
-		console.log(`${outcome.padEnd(7)} ${String(milliseconds).padStart(5)} ms  ${card.file}${sameAsRecorded ? '' : '  (lines differ from the Node recording)'}`);
-		if (!sameAsRecorded) {
-			console.log(`         recorded: ${JSON.stringify(card.recognizedLines)}`);
-			console.log(`         read:     ${JSON.stringify(lines)}`);
-		}
+		logCard(outcome, milliseconds, card, lines, sameAsRecorded);
 	}
 
 	await browser.close();
@@ -164,7 +182,9 @@ const main = async () => {
 	console.log('no network request, no wrong IBAN');
 };
 
-main().catch((error) => {
+try {
+	await main();
+} catch (error) {
 	console.error(error);
 	process.exit(1);
-});
+}

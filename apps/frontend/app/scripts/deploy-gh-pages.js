@@ -17,7 +17,7 @@
  *   node ./scripts/deploy-gh-pages.js                  # deploy the site to the branch root
  *   node ./scripts/deploy-gh-pages.js --dest pr-1234   # deploy a PR preview
  */
-const path = require('path');
+const path = require('node:path');
 const ghpages = require('gh-pages');
 
 // Matches the preview directories created by the "PR Expo Preview" workflow

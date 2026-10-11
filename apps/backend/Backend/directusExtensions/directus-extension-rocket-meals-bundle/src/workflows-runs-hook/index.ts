@@ -141,7 +141,7 @@ function getDictWorkflowIdToWorkflowRuns(workflowRuns: Partial<DatabaseTypes.Wor
 async function ensureAllWorkflowsExist(workflowIds: string[], myDatabaseHelper: MyDatabaseHelper): Promise<void> {
   for (let workflowId of workflowIds) {
     try {
-      await createWorkflowIfNotExisting(workflowId, myDatabaseHelper);
+      await createWorkflowIfNotExisting(workflowId, myDatabaseHelper); // NOSONAR S9382 - sequential on purpose: findOrCreate per workflow inside a filter hook, parallel creates could race into duplicate workflows and the first failure aborts with a specific error
     } catch (err: any) {
       console.error(err);
       throw new Error('modifyInputForCreateOrUpdateWorkflowRunToRunning: Error while create/update of workflowRuns. Cannot find or create workflow with id: ' + workflowId);
@@ -154,7 +154,7 @@ async function ensureAllWorkflowsAreEnabled(workflowIds: string[], myDatabaseHel
     console.log('Checking if workflow with id: ' + workflowId + ' is enabled');
     let workflow: DatabaseTypes.Workflows | undefined = undefined;
     try {
-      workflow = await myDatabaseHelper.getWorkflowsHelper().readOne(workflowId);
+      workflow = await myDatabaseHelper.getWorkflowsHelper().readOne(workflowId); // NOSONAR S9382 - sequential on purpose: validation in a filter hook, throws on the first missing/disabled workflow, one DB read per workflow
     } catch (err: any) {
       console.error(err);
       throw new Error('modifyInputForCreateOrUpdateWorkflowRunToRunning: Error while create/update of workflowRuns. Cannot read workflow with id: ' + workflowId);
@@ -208,7 +208,7 @@ async function handleWorkflowRunsWantToRunForAllWorkflows(
   for (let workflowId of Object.keys(dictWorkflowIdToWorkflowRuns)) {
     const workflowRuns = dictWorkflowIdToWorkflowRuns[workflowId];
     if (workflowRuns) {
-      await handleWorkflowRunsWantToRunForWorkflowId(workflowId, workflowRuns, input, myDatabaseHelper);
+      await handleWorkflowRunsWantToRunForWorkflowId(workflowId, workflowRuns, input, myDatabaseHelper); // NOSONAR S9382 - sequential on purpose: throws on the first workflow whose runs are rejected, each step reads running runs from the DB
     }
   }
 }
@@ -326,7 +326,7 @@ async function runWorkflowRunsForWorkflowId(
     throw new Error('No WorkflowRunJobInterface found for workflowId: ' + workflowId);
   } else {
     for (let workflowRun of workflowRuns) {
-      await runAndFinalizeWorkflowRun(workflowRun, workflowRunJobInterface, myDatabaseHelper);
+      await runAndFinalizeWorkflowRun(workflowRun, workflowRunJobInterface, myDatabaseHelper); // NOSONAR S9382 - sequential on purpose: workflow runs of one workflow must not run concurrently (the job interface enforces one run at a time)
     }
   }
 }
@@ -343,7 +343,7 @@ async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<Data
     for (let workflowId of Object.keys(dictWorkflowIdToWorkflowRuns)) {
       const workflowRuns = dictWorkflowIdToWorkflowRuns[workflowId];
       if (workflowRuns) {
-        await runWorkflowRunsForWorkflowId(workflowId, workflowRuns, myDatabaseHelper);
+        await runWorkflowRunsForWorkflowId(workflowId, workflowRuns, myDatabaseHelper); // NOSONAR S9382 - sequential on purpose: runs whole workflow jobs (sync jobs with heavy DB/API load), they must not all start in parallel
       }
     }
   }
@@ -354,7 +354,7 @@ async function handleActionOnUpdateOrCreateIfWorkflowRunShouldBeDeleted(payload:
     let item_ids = keys as PrimaryKey[];
     let existingWorkflowRuns = await myDatabaseHelper.getWorkflowsRunsHelper().readMany(item_ids);
     for (let workflowRun of existingWorkflowRuns) {
-      await myDatabaseHelper.getWorkflowsRunsHelper().deleteOne(workflowRun.id);
+      await myDatabaseHelper.getWorkflowsRunsHelper().deleteOne(workflowRun.id); // NOSONAR S9382 - sequential on purpose: one Directus delete per run so each deletion goes through the item hooks individually, bounded DB load
     }
   }
 }
@@ -384,7 +384,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ act
         id: workflowId,
         alias: workflowId,
       };
-      await myDatabaseHelper.getWorkflowsHelper().upsertOne(searchAndUpdate);
+      await myDatabaseHelper.getWorkflowsHelper().upsertOne(searchAndUpdate); // NOSONAR S9382 - sequential on purpose: one upsert per registered workflow on app start, bounded DB load and no race on the workflows table
     }
   });
 

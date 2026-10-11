@@ -58,27 +58,43 @@ export class CronScheduleHelper {
   private static parseField(raw: string, min: number, max: number): CronField {
     const values = new Set<number>();
     for (const part of raw.split(',')) {
-      const [range, stepText] = part.split('/') as [string, string | undefined];
-      const step = stepText === undefined ? 1 : Number.parseInt(stepText, 10);
-      if (!Number.isInteger(step) || step < 1) {
-        throw new Error('Invalid cron step: ' + raw);
-      }
-      let from = min;
-      let to = max;
-      if (range !== '*') {
-        const [startText, endText] = range.split('-') as [string, string | undefined];
-        from = Number.parseInt(startText, 10);
-        // `5/10` means "from 5 every 10"
-        to = endText === undefined ? (stepText === undefined ? from : max) : Number.parseInt(endText, 10);
-      }
-      if (!Number.isInteger(from) || !Number.isInteger(to) || from < min || to > max || from > to) {
-        throw new Error('Invalid cron field: ' + raw);
-      }
+      const { from, to, step } = CronScheduleHelper.parsePart(part, raw, min, max);
       for (let value = from; value <= to; value += step) {
         values.add(value);
       }
     }
     return { raw, values: [...values].sort((a, b) => a - b), wildcard: raw === '*' };
+  }
+
+  /** One comma separated part of a field: `*`, `5`, `1-5`, `*\/5`, `0-30/10` or `5/10`. */
+  private static parsePart(part: string, raw: string, min: number, max: number): { from: number; to: number; step: number } {
+    const [range, stepText] = part.split('/') as [string, string | undefined];
+    const step = stepText === undefined ? 1 : Number.parseInt(stepText, 10);
+    if (!Number.isInteger(step) || step < 1) {
+      throw new Error('Invalid cron step: ' + raw);
+    }
+    let from = min;
+    let to = max;
+    if (range !== '*') {
+      const [startText, endText] = range.split('-') as [string, string | undefined];
+      from = Number.parseInt(startText, 10);
+      to = CronScheduleHelper.resolveRangeEnd(endText, stepText, from, max);
+    }
+    if (!Number.isInteger(from) || !Number.isInteger(to) || from < min || to > max || from > to) {
+      throw new Error('Invalid cron field: ' + raw);
+    }
+    return { from, to, step };
+  }
+
+  /** The upper end of a range: `1-5` ends at 5, `5` ends at 5, `5/10` means "from 5 every 10" and ends at `max`. */
+  private static resolveRangeEnd(endText: string | undefined, stepText: string | undefined, from: number, max: number): number {
+    if (endText !== undefined) {
+      return Number.parseInt(endText, 10);
+    }
+    if (stepText === undefined) {
+      return from;
+    }
+    return max;
   }
 
   /** Classic cron rule: are both day fields restricted, one of them has to match – otherwise both. */
@@ -98,26 +114,30 @@ export class CronScheduleHelper {
     const day = new Date(from.getFullYear(), from.getMonth(), from.getDate());
     for (let dayIndex = 0; dayIndex <= MAX_DAYS_AHEAD && result.length < count; dayIndex++) {
       const date = new Date(day.getFullYear(), day.getMonth(), day.getDate() + dayIndex);
-      if (!parsed.month.values.includes(date.getMonth() + 1) || !CronScheduleHelper.matchesDay(parsed, date)) {
-        continue;
+      if (parsed.month.values.includes(date.getMonth() + 1) && CronScheduleHelper.matchesDay(parsed, date)) {
+        CronScheduleHelper.addRunsOfDay(parsed, date, from, count, result);
       }
-      for (const hour of parsed.hours.values) {
-        for (const minute of parsed.minutes.values) {
-          for (const second of parsed.seconds.values) {
-            const candidate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minute, second);
-            // A time that does not exist (spring DST gap) is shifted by `Date` – skip it instead of firing twice.
-            if (candidate.getHours() !== hour || candidate.getTime() <= from.getTime()) {
-              continue;
-            }
-            result.push(candidate);
-            if (result.length >= count) {
-              return result;
-            }
+    }
+    return result;
+  }
+
+  /** Appends the runs on `date` strictly after `from` to `result`, until `result` holds `count` runs. */
+  private static addRunsOfDay(parsed: ParsedCron, date: Date, from: Date, count: number, result: Date[]): void {
+    for (const hour of parsed.hours.values) {
+      for (const minute of parsed.minutes.values) {
+        for (const second of parsed.seconds.values) {
+          const candidate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minute, second);
+          // A time that does not exist (spring DST gap) is shifted by `Date` – skip it instead of firing twice.
+          if (candidate.getHours() !== hour || candidate.getTime() <= from.getTime()) {
+            continue;
+          }
+          result.push(candidate);
+          if (result.length >= count) {
+            return;
           }
         }
       }
     }
-    return result;
   }
 
   /** The kind of schedule, for a readable label. Anything unusual is `custom` – show the cron string then. */
@@ -129,25 +149,14 @@ export class CronScheduleHelper {
       return { kind: 'custom' };
     }
     const { minutes, hours, dayOfMonth, month, dayOfWeek } = parsed;
-    const single = (field: CronField) => (field.values.length === 1 && !field.raw.includes('/') ? field.values[0] : undefined);
-    const minute = single(minutes);
-    const hour = single(hours);
+    const minute = CronScheduleHelper.singleValue(minutes);
+    const hour = CronScheduleHelper.singleValue(hours);
     if (!month.wildcard || parsed.seconds.values.length !== 1) {
       return { kind: 'custom' };
     }
     const everyDay = dayOfMonth.wildcard && dayOfWeek.wildcard;
     if (everyDay && hours.wildcard) {
-      if (minutes.wildcard) {
-        return { kind: 'every_minute' };
-      }
-      const step = /^\*\/(\d+)$/.exec(minutes.raw);
-      if (step?.[1]) {
-        return { kind: 'every_minutes', minutes: Number.parseInt(step[1], 10) };
-      }
-      if (minute !== undefined) {
-        return { kind: 'hourly', minute };
-      }
-      return { kind: 'custom' };
+      return CronScheduleHelper.describeEveryHour(minutes, minute);
     }
     if (minute === undefined || hour === undefined) {
       return { kind: 'custom' };
@@ -155,11 +164,36 @@ export class CronScheduleHelper {
     if (everyDay) {
       return { kind: 'daily', hour, minute };
     }
-    const weekday = single(dayOfWeek);
+    return CronScheduleHelper.describeWeeklyOrMonthly(dayOfMonth, dayOfWeek, hour, minute);
+  }
+
+  /** The only value of a field like `5` – undefined for lists, ranges and steps. */
+  private static singleValue(field: CronField): number | undefined {
+    return field.values.length === 1 && !field.raw.includes('/') ? field.values[0] : undefined;
+  }
+
+  /** Every day, every hour: every minute, every n minutes or once an hour. */
+  private static describeEveryHour(minutes: CronField, minute: number | undefined): CronScheduleDescription {
+    if (minutes.wildcard) {
+      return { kind: 'every_minute' };
+    }
+    const step = /^\*\/(\d+)$/.exec(minutes.raw);
+    if (step?.[1]) {
+      return { kind: 'every_minutes', minutes: Number.parseInt(step[1], 10) };
+    }
+    if (minute !== undefined) {
+      return { kind: 'hourly', minute };
+    }
+    return { kind: 'custom' };
+  }
+
+  /** A fixed time on one weekday or one day of the month. */
+  private static describeWeeklyOrMonthly(dayOfMonth: CronField, dayOfWeek: CronField, hour: number, minute: number): CronScheduleDescription {
+    const weekday = CronScheduleHelper.singleValue(dayOfWeek);
     if (dayOfMonth.wildcard && weekday !== undefined) {
       return { kind: 'weekly', weekday, hour, minute };
     }
-    const day = single(dayOfMonth);
+    const day = CronScheduleHelper.singleValue(dayOfMonth);
     if (dayOfWeek.wildcard && day !== undefined) {
       return { kind: 'monthly', day, hour, minute };
     }

@@ -123,7 +123,7 @@ export const AI_OPENAI_COMPATIBLE_ENV_KEYS = {
 export function buildAiOpenAiCompatibleSettingsFromEnv(env: Record<string, string | undefined>): Record<string, unknown> | null {
   const read = (key: string): string | undefined => {
     const value = env[key]?.trim();
-    return value ? value : undefined;
+    return value || undefined;
   };
   const patch: Record<string, unknown> = {};
   const name = read(AI_OPENAI_COMPATIBLE_ENV_KEYS.name);

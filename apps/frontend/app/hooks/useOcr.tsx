@@ -12,6 +12,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTextRecognition } from '@/hooks/useTextRecognition';
 import { RecognitionImage } from '@/helper/TextRecognitionShared';
 import { TranslationKeys } from '@/locales/keys';
+import { resolveSettingsGroupPosition } from '@/helper/settingsListGroupPosition';
 
 /**
  * Reads text off a picture, wherever the picture comes from.
@@ -228,18 +229,20 @@ export const useOcr = () => {
 					onPress: () => showCamera(true),
 				});
 			}
-			sources.push({
-				key: 'camera',
-				label: translate(TranslationKeys.ocr_source_camera),
-				icon: <MaterialCommunityIcons name="camera" size={24} />,
-				onPress: () => showCamera(false),
-			});
-			sources.push({
-				key: 'photo',
-				label: translate(TranslationKeys.ocr_source_photo),
-				icon: <MaterialCommunityIcons name="folder-image" size={24} />,
-				onPress: () => void pickPhoto(),
-			});
+			sources.push(
+				{
+					key: 'camera',
+					label: translate(TranslationKeys.ocr_source_camera),
+					icon: <MaterialCommunityIcons name="camera" size={24} />,
+					onPress: () => showCamera(false),
+				},
+				{
+					key: 'photo',
+					label: translate(TranslationKeys.ocr_source_photo),
+					icon: <MaterialCommunityIcons name="folder-image" size={24} />,
+					onPress: () => void pickPhoto(),
+				},
+			);
 
 			// A browser has no camera roll to open and its `getUserMedia` preview is
 			// the same device either way, so the camera rows stay — what changes is
@@ -247,7 +250,7 @@ export const useOcr = () => {
 			showLevel(
 				<View style={{ width: '100%' }}>
 					{sources.map((source, index) => (
-						<SettingsList key={source.key} label={source.label} leftIcon={source.icon} groupPosition={sources.length === 1 ? 'single' : index === 0 ? 'top' : index === sources.length - 1 ? 'bottom' : 'middle'} showSeparator={index !== sources.length - 1} handleFunction={source.onPress} />
+						<SettingsList key={source.key} label={source.label} leftIcon={source.icon} groupPosition={resolveSettingsGroupPosition(index, sources.length)} showSeparator={index !== sources.length - 1} handleFunction={source.onPress} />
 					))}
 				</View>,
 				false,

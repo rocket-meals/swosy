@@ -19,7 +19,7 @@ export type DirectusFieldChoice = {
 const HEX_COLOR = /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 
 /** Directus theme variables mapped to app colors; `primary` follows the app's primary color. */
-const THEME_VARIABLE_COLORS: Record<string, string | 'primary' | 'text'> = {
+const THEME_VARIABLE_COLORS: Record<string, string> = {
 	'--theme--primary': 'primary',
 	'--theme--foreground': 'text',
 	'--theme--warning': '#E0A800',

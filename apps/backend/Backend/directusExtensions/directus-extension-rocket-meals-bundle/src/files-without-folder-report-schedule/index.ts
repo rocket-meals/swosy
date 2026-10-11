@@ -60,9 +60,9 @@ async function collectReferencedFileIds(
     const collectionHelper = myDatabaseHelper.getItemsServiceHelper<SpecificCollection>(collectionName as CollectionNames);
 
     if (collectionObj.singleton) {
-      await collectSingletonFileReference(collectionHelper, fileIdField, candidateIdSet, referencedFileIds);
+      await collectSingletonFileReference(collectionHelper, fileIdField, candidateIdSet, referencedFileIds); // NOSONAR S9382 - order-dependent: later relations and chunks skip the ids already found in referencedFileIds
     } else {
-      await collectCollectionFileReferences(collectionHelper, fileIdField, candidateIdChunks, referencedFileIds);
+      await collectCollectionFileReferences(collectionHelper, fileIdField, candidateIdChunks, referencedFileIds); // NOSONAR S9382 - order-dependent: later relations and chunks skip the ids already found in referencedFileIds
     }
   }
 }
@@ -100,7 +100,7 @@ async function collectCollectionFileReferences(
     if (remainingIdsInChunk.length === 0) {
       continue;
     }
-    const items = await collectionHelper.readByQuery({
+    const items = await collectionHelper.readByQuery({ // NOSONAR S9382 - order-dependent: later relations and chunks skip the ids already found in referencedFileIds
       filter: { [fileIdField]: { _in: remainingIdsInChunk } },
       fields: [fileIdField],
       limit: -1,

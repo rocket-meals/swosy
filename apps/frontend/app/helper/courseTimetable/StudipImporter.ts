@@ -206,7 +206,8 @@ async function getJson(fetchFn: FetchLike, url: string, authorization: string): 
 }
 
 export function buildBasicAuthorization(username: string, password: string): string {
-	return `Basic ${MyBuffer.from(`${username}:${password}`, 'utf8').toString('base64')}`;
+	const credentials = `${username}:${password}`;
+	return `Basic ${MyBuffer.from(credentials, 'utf8').toString('base64')}`;
 }
 
 /** Loads the user's current semester schedule from Stud.IP. */

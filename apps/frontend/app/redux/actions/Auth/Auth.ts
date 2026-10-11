@@ -53,7 +53,7 @@ export class ServerAPI {
 	// refresh runs, that clear is held back, so a refresh that fails because the device is
 	// offline keeps the refresh token for the next attempt instead of losing the session.
 	private static holdBackTokenClear = false;
-	private static sessionInvalidListeners = new Set<() => void>();
+	private static readonly sessionInvalidListeners = new Set<() => void>();
 
 	static updateServerUrl(url: string) {
 		this.serverUrlCustom = url;
@@ -141,11 +141,9 @@ export class ServerAPI {
 	}
 
 	private static refreshTokensOnce(): Promise<void> {
-		if (!this.tokenRefreshInProgress) {
-			this.tokenRefreshInProgress = this.refreshTokensKeepingSessionOnNetworkError().finally(() => {
-				this.tokenRefreshInProgress = null;
-			});
-		}
+		this.tokenRefreshInProgress ??= this.refreshTokensKeepingSessionOnNetworkError().finally(() => {
+			this.tokenRefreshInProgress = null;
+		});
 		return this.tokenRefreshInProgress;
 	}
 

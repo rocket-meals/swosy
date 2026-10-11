@@ -103,7 +103,7 @@ async function queryFeaturesForHexTiles(
 	for (const hexId of hexIds) {
 		if (isCancelled()) return featureMap;
 		try {
-			const features = await queryTileFeaturesForHexCell(
+			const features = await queryTileFeaturesForHexCell( // NOSONAR S9382 - sequential on purpose: each iteration downloads vector tiles over HTTP from the public OpenFreeMap tile server, firing all hex cells in parallel would hammer it (isCancelled is also polled between requests)
 				hexId,
 				undefined,
 				{ nameNullAllowList: ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW },
@@ -1087,7 +1087,7 @@ export default function RouteDetailScreen() {
 		if (!route) return;
 		for (const activity of routeActivities) {
 			try {
-				await deleteActivity(activity.id);
+				await deleteActivity(activity.id); // NOSONAR S9382 - sequential on purpose: saveActivity/deleteActivity read-modify-write the shared activities index key, parallel calls would lose index updates
 			} catch (err) {
 				console.warn('[RouteDetailScreen] Failed to delete activity', activity.id, err);
 			}
@@ -1105,7 +1105,7 @@ export default function RouteDetailScreen() {
 			for (const activity of routeActivities) {
 				targetActivityIds.add(activity.id);
 				try {
-					await saveActivity({ ...activity, routeId: targetRouteId });
+					await saveActivity({ ...activity, routeId: targetRouteId }); // NOSONAR S9382 - sequential on purpose: saveActivity/deleteActivity read-modify-write the shared activities index key, parallel calls would lose index updates
 				} catch (err) {
 					console.warn('[RouteDetailScreen] Failed to reassign activity', activity.id, err);
 				}

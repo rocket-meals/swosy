@@ -79,7 +79,7 @@ export class FeatureWishService {
     for (const wish of wishes) {
       const expected = FeatureWishHelper.getExpectedLikesAmount(wish.id, counts);
       if (wish.likes_amount !== expected) {
-        await helper.updateOneWithoutHookTrigger({ primary_key: wish.id, update: { likes_amount: expected } });
+        await helper.updateOneWithoutHookTrigger({ primary_key: wish.id, update: { likes_amount: expected } }); // NOSONAR S9382 - sequential on purpose: one DB update per wish with a wrong count, bounded DB load
         changed++;
       }
     }
@@ -96,7 +96,7 @@ export class FeatureWishService {
     const dependentIds: string[] = [];
     let current = ids.map(String);
     while (current.length > 0) {
-      const rows = await helper.readByQuery({ filter: { related_to: { _in: current } } as any, fields: ['id'], limit: -1 });
+      const rows = await helper.readByQuery({ filter: { related_to: { _in: current } } as any, fields: ['id'], limit: -1 }); // NOSONAR S9382 - order-dependent: graph traversal, every round queries the ids found in the previous round
       const next = rows.map(row => String(row.id)).filter(id => !seen.has(id));
       next.forEach(id => seen.add(id));
       dependentIds.push(...next);
@@ -151,18 +151,18 @@ export class FeatureWishService {
       // Load the chain into the cache, then let the shared helper resolve it (it also stops on cycles).
       let current: string | null = id;
       for (let step = 0; step < 10 && current; step++) {
-        current = await getRelatedToOfMerged(current);
+        current = await getRelatedToOfMerged(current); // NOSONAR S9382 - order-dependent: walks the merge chain, every step needs the previous result
       }
       const finalTarget = FeatureWishHelper.resolveMergeTarget(id, candidate => relatedToCache[candidate] ?? null);
       if (finalTarget === id) {
         continue;
       }
       if (relatedToCache[id] !== finalTarget) {
-        await helper.updateOneWithoutHookTrigger({ primary_key: id, update: { related_to: finalTarget } });
+        await helper.updateOneWithoutHookTrigger({ primary_key: id, update: { related_to: finalTarget } }); // NOSONAR S9382 - order-dependent: later ids reuse the relatedToCache and see the rows rewritten for earlier ids, one DB write each
       }
-      const pointingToId = await helper.readByQuery({ filter: { related_to: { _eq: id } } as any, fields: ['id'], limit: -1 });
+      const pointingToId = await helper.readByQuery({ filter: { related_to: { _eq: id } } as any, fields: ['id'], limit: -1 }); // NOSONAR S9382 - order-dependent: later ids reuse the relatedToCache and see the rows rewritten for earlier ids, one DB write each
       for (const row of pointingToId) {
-        await helper.updateOneWithoutHookTrigger({ primary_key: row.id, update: { related_to: finalTarget } });
+        await helper.updateOneWithoutHookTrigger({ primary_key: row.id, update: { related_to: finalTarget } }); // NOSONAR S9382 - order-dependent: later ids reuse the relatedToCache and see the rows rewritten for earlier ids, one DB write each
       }
     }
   }
@@ -171,7 +171,7 @@ export class FeatureWishService {
   async resetAfterAuthorEdit(ids: PrimaryKey[]): Promise<void> {
     const helper = this.getHelper();
     for (const id of ids) {
-      await helper.updateOneWithoutHookTrigger({
+      await helper.updateOneWithoutHookTrigger({ // NOSONAR S9382 - sequential on purpose: one DB update per wish in the hook, bounded DB load
         primary_key: id,
         update: { related_to: null, moderation_note_intern: null, moderation_note_public: null },
       });
@@ -188,14 +188,14 @@ export class FeatureWishService {
       if (!profileId) {
         continue;
       }
-      const devices = await this.myDatabaseHelper.getDevicesHelper().readManyByProfileId(profileId);
+      const devices = await this.myDatabaseHelper.getDevicesHelper().readManyByProfileId(profileId); // NOSONAR S9382 - sequential on purpose: per author DB reads and one push notification row, bounded DB load
       const expoPushTokens = PushNotificationHelper.getExpoPushTokensFromDevices(devices);
       if (expoPushTokens.length === 0) {
         continue;
       }
-      const profile = await this.myDatabaseHelper.getProfilesHelper().readOne(profileId).catch(() => undefined);
-      const language = await languageResolver.resolveForProfile(profile);
-      await this.myDatabaseHelper.getPushNotificationsHelper().createOne({
+      const profile = await this.myDatabaseHelper.getProfilesHelper().readOne(profileId).catch(() => undefined); // NOSONAR S9382 - sequential on purpose: per author DB reads and one push notification row, bounded DB load
+      const language = await languageResolver.resolveForProfile(profile); // NOSONAR S9382 - sequential on purpose: per author DB reads and one push notification row, bounded DB load
+      await this.myDatabaseHelper.getPushNotificationsHelper().createOne({ // NOSONAR S9382 - sequential on purpose: per author DB reads and one push notification row, bounded DB load
         expo_push_tokens: expoPushTokens,
         message_title: language.translate(BackendTranslationKeys.notification_feature_wish_published_title),
         message_body: language.translate(BackendTranslationKeys.notification_feature_wish_published_body, { title: wish.title ?? '' }),

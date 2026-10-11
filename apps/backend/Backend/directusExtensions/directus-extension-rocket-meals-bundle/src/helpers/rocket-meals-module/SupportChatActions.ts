@@ -69,10 +69,12 @@ export class SupportChatActions {
       }
     }
 
+    // Sequential on purpose: each feedback first gets a chat created via the Directus API, then its state set (the second
+    // request needs the id from the first). One feedback after the other keeps the number of parallel chat creations at one.
     for (const feedback of withoutChat) {
       try {
-        const chatId = await options.ensureChat(api, feedback);
-        await SupportChatActions.setConversationState(api, chatId, ChatConversationState.RESOLVED);
+        const chatId = await options.ensureChat(api, feedback); // NOSONAR S9382 - sequential on purpose, see comment above
+        await SupportChatActions.setConversationState(api, chatId, ChatConversationState.RESOLVED); // NOSONAR S9382 - depends on the chat id above, see comment above the loop
         resolvedIds.push(feedback.id);
       } catch (error) {
         console.error('[rocket-meals-module] marking feedback as resolved failed', error);

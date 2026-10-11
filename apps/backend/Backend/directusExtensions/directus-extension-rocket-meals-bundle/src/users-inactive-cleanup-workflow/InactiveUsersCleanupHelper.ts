@@ -19,9 +19,9 @@ export class InactiveUsersCleanupHelper {
     }
     const { delete_users, days_inactive } = parsed as Partial<Record<keyof InactiveUsersCleanupInput, unknown>>;
     if (typeof delete_users !== 'boolean') {
-      throw new Error('"delete_users" must be a boolean');
+      throw new TypeError('"delete_users" must be a boolean');
     }
-    if (days_inactive !== undefined && (typeof days_inactive !== 'number' || !(days_inactive >= 1))) {
+    if (days_inactive !== undefined && (typeof days_inactive !== 'number' || Number.isNaN(days_inactive) || days_inactive < 1)) {
       throw new Error('"days_inactive" must be a number >= 1');
     }
     return {

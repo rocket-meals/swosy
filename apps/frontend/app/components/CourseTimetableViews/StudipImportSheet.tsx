@@ -12,6 +12,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useAppSelector } from '@/redux/hooks';
 import { TranslationKeys } from '@/locales/keys';
 import { mergeImportedEvents } from '@/helper/courseTimetable/CourseTimetableModel';
+import { resolveSettingsGroupPosition } from '@/helper/settingsListGroupPosition';
 import { CorsProxyStatus, STUDIP_DEBUG_CORS_PROXY, STUDIP_DEBUG_CORS_PROXY_UNLOCK_LABEL, STUDIP_DEBUG_CORS_PROXY_UNLOCK_URL, STUDIP_INSTANCES, StudipImportError, checkCorsProxy, fetchStudipSchedule } from '@/helper/courseTimetable/StudipImporter';
 import useDebugMode from '@/hooks/useDebugMode';
 import StudipSsoLoginModal from './StudipSsoLoginModal';
@@ -29,6 +30,80 @@ const PROXY_STATUS_KEYS: Record<CorsProxyStatus | 'checking', TranslationKeys> =
 	locked: TranslationKeys.course_timetable_import_proxy_locked,
 	unreachable: TranslationKeys.course_timetable_import_proxy_unreachable,
 };
+
+/** Debug-only panel on web: shows whether the public CORS proxy is unlocked for this browser. */
+const CorsProxyPanel: React.FC<{ proxyStatus: CorsProxyStatus | 'checking'; onRecheck: () => void }> = ({ proxyStatus, onRecheck }) => {
+	const { theme } = useTheme();
+	const { translate } = useLanguage();
+	const isOk = proxyStatus === 'ok';
+	const isChecking = proxyStatus === 'checking';
+
+	return (
+		<View style={[styles.hint, styles.proxyPanel, { backgroundColor: theme.screen.iconBg }]}>
+			<Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.course_timetable_import_debug_proxy_hint)}</Text>
+			<View style={styles.proxyStatusRow}>
+				{isChecking ? <ActivityIndicator size="small" color={theme.screen.text} /> : <MaterialCommunityIcons name={isOk ? 'check-circle' : 'alert-circle'} size={20} color={isOk ? '#2E7D32' : theme.sheet.inputBorderInvalid} />}
+				<Text style={[styles.proxyStatusText, { color: theme.screen.text }]}>{translate(PROXY_STATUS_KEYS[proxyStatus])}</Text>
+			</View>
+			<View style={styles.proxyActions}>
+				<TouchableOpacity onPress={() => Linking.openURL(STUDIP_DEBUG_CORS_PROXY_UNLOCK_URL)} accessibilityRole="link">
+					<Text style={[styles.link, { color: theme.screen.text }]}>{STUDIP_DEBUG_CORS_PROXY_UNLOCK_LABEL}</Text>
+				</TouchableOpacity>
+				<TouchableOpacity onPress={onRecheck} accessibilityRole="button" disabled={isChecking}>
+					<Text style={[styles.link, { color: theme.screen.text }]}>{translate(TranslationKeys.course_timetable_import_proxy_recheck)}</Text>
+				</TouchableOpacity>
+			</View>
+		</View>
+	);
+};
+
+/** Username and password login of the import, with the start button. */
+const PasswordLoginSection: React.FC<{
+	canUseSso: boolean;
+	username: string;
+	onChangeUsername: (value: string) => void;
+	password: string;
+	onChangePassword: (value: string) => void;
+	canSubmit: boolean;
+	loading: boolean;
+	accentColor: string;
+	onStartImport: () => void;
+}> = ({ canUseSso, username, onChangeUsername, password, onChangePassword, canSubmit, loading, accentColor, onStartImport }) => {
+	const { theme } = useTheme();
+	const { translate } = useLanguage();
+	return (
+		<>
+			<SettingsListGroupTitle title={translate(canUseSso ? TranslationKeys.course_timetable_import_or_password : TranslationKeys.course_timetable_import_login)} />
+			<SettingsListTextInputField placeholder={translate(TranslationKeys.course_timetable_import_username)} value={username} onChangeText={onChangeUsername} autoCapitalize="none" autoCorrect={false} textContentType="username" returnKeyType="next" />
+			<SettingsListTextInputField placeholder={translate(TranslationKeys.password)} value={password} onChangeText={onChangePassword} secureTextEntry autoCapitalize="none" autoCorrect={false} textContentType="password" returnKeyType="done" onSubmitEditing={onStartImport} />
+
+			<View style={[styles.importRow, !canSubmit && styles.importRowDisabled]} accessibilityState={{ disabled: !canSubmit, busy: loading }}>
+				<SettingsList
+					leftIcon={loading ? <ActivityIndicator /> : <MaterialCommunityIcons name="cloud-download-outline" size={20} />}
+					iconBackgroundColor={accentColor}
+					title={translate(TranslationKeys.course_timetable_import_start)}
+					rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+					onPress={canSubmit ? onStartImport : undefined}
+					groupPosition="single"
+					showSeparator={false}
+				/>
+			</View>
+		</>
+	);
+};
+
+/** Both login fields are filled (the username ignoring surrounding whitespace). */
+function hasCredentials(username: string, password: string): boolean {
+	return username.trim().length > 0 && password.length > 0;
+}
+
+/** The translated error for a failed import; developers get the technical reason too (e.g. the CORS proxy answering 403 while locked). */
+function getImportErrorText(error: unknown, debugMode: boolean, translate: (key: TranslationKeys) => string): string {
+	const code = error instanceof StudipImportError ? error.code : 'unexpected';
+	console.warn('Stud.IP import failed:', code, error instanceof Error ? error.message : '');
+	const message = translate(ERROR_KEYS[code] ?? TranslationKeys.course_timetable_import_error_unexpected);
+	return debugMode && error instanceof Error ? `${message} (${error.message})` : message;
+}
 
 /**
  * Import of the timetable from Stud.IP: choose the university, enter the Stud.IP login and
@@ -74,7 +149,7 @@ const StudipImportSheet: React.FC = () => {
 		return () => globalThis.window?.removeEventListener?.('focus', onFocus);
 	}, [useCorsProxy, recheckProxy]);
 
-	const canSubmit = !!instance && username.trim().length > 0 && password.length > 0 && !loading && (!useCorsProxy || proxyStatus === 'ok');
+	const canSubmit = !!instance && !loading && hasCredentials(username, password) && (!useCorsProxy || proxyStatus === 'ok');
 
 	const [ssoVisible, setSsoVisible] = useState(false);
 	const canUseSso = !isWeb && !!instance?.ssoLoginPath;
@@ -92,13 +167,7 @@ const StudipImportSheet: React.FC = () => {
 		closeAll();
 	};
 
-	const showImportError = (error: unknown) => {
-		const code = error instanceof StudipImportError ? error.code : 'unexpected';
-		console.warn('Stud.IP import failed:', code, error instanceof Error ? error.message : '');
-		const message = translate(ERROR_KEYS[code] ?? TranslationKeys.course_timetable_import_error_unexpected);
-		// Developers get the technical reason too (e.g. the CORS proxy answering 403 while locked).
-		setErrorText(debugMode && error instanceof Error ? `${message} (${error.message})` : message);
-	};
+	const showImportError = (error: unknown) => setErrorText(getImportErrorText(error, debugMode, translate));
 
 	const startImport = async () => {
 		if (!instance || !canSubmit) return;
@@ -133,7 +202,7 @@ const StudipImportSheet: React.FC = () => {
 
 			<SettingsListGroupTitle title={translate(TranslationKeys.course_timetable_import_university)} />
 			{STUDIP_INSTANCES.map((entry, index) => (
-				<SettingsListSelectOptionSingle key={entry.id} label={entry.name} isSelected={entry.id === instanceId} selectionColor={accentColor} onPress={() => setInstanceId(entry.id)} groupPosition={STUDIP_INSTANCES.length === 1 ? 'single' : index === 0 ? 'top' : index === STUDIP_INSTANCES.length - 1 ? 'bottom' : 'middle'} showSeparator={index !== STUDIP_INSTANCES.length - 1} />
+				<SettingsListSelectOptionSingle key={entry.id} label={entry.name} isSelected={entry.id === instanceId} selectionColor={accentColor} onPress={() => setInstanceId(entry.id)} groupPosition={resolveSettingsGroupPosition(index, STUDIP_INSTANCES.length)} showSeparator={index !== STUDIP_INSTANCES.length - 1} />
 			))}
 
 			{canUseSso && instance ? (
@@ -157,43 +226,21 @@ const StudipImportSheet: React.FC = () => {
 			) : null}
 
 			{instance?.passwordLogin ? (
-				<>
-					<SettingsListGroupTitle title={translate(canUseSso ? TranslationKeys.course_timetable_import_or_password : TranslationKeys.course_timetable_import_login)} />
-					<SettingsListTextInputField placeholder={translate(TranslationKeys.course_timetable_import_username)} value={username} onChangeText={setUsername} autoCapitalize="none" autoCorrect={false} textContentType="username" returnKeyType="next" />
-					<SettingsListTextInputField placeholder={translate(TranslationKeys.password)} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoCorrect={false} textContentType="password" returnKeyType="done" onSubmitEditing={startImport} />
-
-					<View style={[styles.importRow, !canSubmit && styles.importRowDisabled]} accessibilityState={{ disabled: !canSubmit, busy: loading }}>
-						<SettingsList
-							leftIcon={loading ? <ActivityIndicator /> : <MaterialCommunityIcons name="cloud-download-outline" size={20} />}
-							iconBackgroundColor={accentColor}
-							title={translate(TranslationKeys.course_timetable_import_start)}
-							rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
-							onPress={canSubmit ? startImport : undefined}
-							groupPosition="single"
-							showSeparator={false}
-						/>
-					</View>
-				</>
+				<PasswordLoginSection
+					canUseSso={canUseSso}
+					username={username}
+					onChangeUsername={setUsername}
+					password={password}
+					onChangePassword={setPassword}
+					canSubmit={canSubmit}
+					loading={loading}
+					accentColor={accentColor}
+					onStartImport={startImport}
+				/>
 			) : null}
 
 			<Text style={[styles.replaceHint, { color: theme.screen.placeholder }]}>{translate(TranslationKeys.course_timetable_import_replace_hint)}</Text>
-			{useCorsProxy ? (
-				<View style={[styles.hint, styles.proxyPanel, { backgroundColor: theme.screen.iconBg }]}>
-					<Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.course_timetable_import_debug_proxy_hint)}</Text>
-					<View style={styles.proxyStatusRow}>
-						{proxyStatus === 'checking' ? <ActivityIndicator size="small" color={theme.screen.text} /> : <MaterialCommunityIcons name={proxyStatus === 'ok' ? 'check-circle' : 'alert-circle'} size={20} color={proxyStatus === 'ok' ? '#2E7D32' : theme.sheet.inputBorderInvalid} />}
-						<Text style={[styles.proxyStatusText, { color: theme.screen.text }]}>{translate(PROXY_STATUS_KEYS[proxyStatus])}</Text>
-					</View>
-					<View style={styles.proxyActions}>
-						<TouchableOpacity onPress={() => Linking.openURL(STUDIP_DEBUG_CORS_PROXY_UNLOCK_URL)} accessibilityRole="link">
-							<Text style={[styles.link, { color: theme.screen.text }]}>{STUDIP_DEBUG_CORS_PROXY_UNLOCK_LABEL}</Text>
-						</TouchableOpacity>
-						<TouchableOpacity onPress={recheckProxy} accessibilityRole="button" disabled={proxyStatus === 'checking'}>
-							<Text style={[styles.link, { color: theme.screen.text }]}>{translate(TranslationKeys.course_timetable_import_proxy_recheck)}</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
-			) : null}
+			{useCorsProxy ? <CorsProxyPanel proxyStatus={proxyStatus} onRecheck={recheckProxy} /> : null}
 			{errorText ? <Text style={[styles.error, { color: theme.sheet.inputBorderInvalid }]}>{errorText}</Text> : null}
 		</View>
 	);

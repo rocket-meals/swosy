@@ -51,7 +51,7 @@ export class DockerDirectusPingHelper {
       }
 
       console.log(`⏸️  Warte ${retryIntervalSeconds} Sekunden vor dem nächsten Ping-Check...`);
-      await new Promise(resolve => setTimeout(resolve, retryIntervalSeconds * 1000));
+      await new Promise(resolve => setTimeout(resolve, retryIntervalSeconds * 1000)); // NOSONAR S9382 - retry/polling loop, each ping must wait for the retry interval before the next one
     }
     return false;
   }

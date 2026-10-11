@@ -48,7 +48,12 @@ const sending = ref(false);
 const updatingState = ref(false);
 
 const isNew = computed(() => !props.chatId && !!props.profileId);
-const profiles = computed<ModuleProfile[]>(() => (chat.value ? ChatQueryHelper.getProfiles(chat.value) : newChatProfile.value ? [newChatProfile.value] : []));
+const profiles = computed<ModuleProfile[]>(() => {
+  if (chat.value) {
+    return ChatQueryHelper.getProfiles(chat.value);
+  }
+  return newChatProfile.value ? [newChatProfile.value] : [];
+});
 const status = computed(() => (chat.value ? ChatQueryHelper.getStatus(chat.value) : FoodFeedbackChatStatus.NEW));
 const canWrite = computed(() => !!chat.value || !!newChatProfile.value);
 const title = computed(() => {

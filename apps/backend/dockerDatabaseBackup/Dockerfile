@@ -9,7 +9,7 @@ LABEL maintainer="Your Name <your.email@example.com>"
 
 # Install cron
 RUN apt-get update && \
-    apt-get install -y cron && \
+    apt-get install -y --no-install-recommends cron && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Add the backup scripts to the container

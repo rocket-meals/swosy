@@ -365,13 +365,7 @@ export class FormPdfDocumentHelper {
       }
       const groupTitle = currentLabelledRow.groupTitle;
 
-      let endIndex = index + 1;
-      if (groupTitle) {
-        while (labelledRows[endIndex]?.groupTitle === groupTitle) {
-          endIndex++;
-        }
-      }
-
+      const endIndex = this.findEndOfGroupRun(labelledRows, index, groupTitle);
       const runLength = endIndex - index;
       const isSection = groupTitle !== null && runLength > 1;
 
@@ -381,19 +375,34 @@ export class FormPdfDocumentHelper {
           rows: labelledRows.slice(index, endIndex).map(labelledRow => ({ ...labelledRow.row, label: labelledRow.labelWithoutGroup })),
         });
       } else {
-        const row = { ...currentLabelledRow.row, label: currentLabelledRow.fullLabel };
-        const lastSection = sections[sections.length - 1];
-        if (lastSection && lastSection.title === null) {
-          lastSection.rows.push(row);
-        } else {
-          sections.push({ title: null, rows: [row] });
-        }
+        this.appendUngroupedRow(sections, { ...currentLabelledRow.row, label: currentLabelledRow.fullLabel });
       }
 
       index = isSection ? endIndex : index + 1;
     }
 
     return sections;
+  }
+
+  /** Index after the last directly following row with the same group title (just `index + 1` without a group). */
+  private static findEndOfGroupRun(labelledRows: LabelledRow[], index: number, groupTitle: string | null): number {
+    let endIndex = index + 1;
+    if (groupTitle) {
+      while (labelledRows[endIndex]?.groupTitle === groupTitle) {
+        endIndex++;
+      }
+    }
+    return endIndex;
+  }
+
+  /** A row without section joins a directly preceding untitled section, otherwise it starts a new one. */
+  private static appendUngroupedRow(sections: FormDocumentSection[], row: FormDocumentRow): void {
+    const lastSection = sections[sections.length - 1];
+    if (lastSection?.title === null) {
+      lastSection.rows.push(row);
+    } else {
+      sections.push({ title: null, rows: [row] });
+    }
   }
 
   private static splitLabelIntoGroupAndLabel(row: FormDocumentRow): LabelledRow {

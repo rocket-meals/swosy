@@ -38,11 +38,12 @@ export function getVisibleHourRange(events: CourseTimetableEvent[]): { startHour
 const EventBlock: React.FC<{ event: PositionedEvent; top: number; height: number; compact: boolean; onPress: () => void }> = ({ event, top, height, compact, onPress }) => {
 	const colors = useCourseEventColors(event.color);
 	const width = 100 / event.laneCount;
+	const locationSuffix = event.location ? `, ${event.location}` : '';
 	return (
 		<TouchableOpacity
 			onPress={onPress}
 			accessibilityRole="button"
-			accessibilityLabel={`${event.title}, ${event.start}–${event.end}${event.location ? `, ${event.location}` : ''}`}
+			accessibilityLabel={`${event.title}, ${event.start}–${event.end}${locationSuffix}`}
 			style={[
 				styles.block,
 				{

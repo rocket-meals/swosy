@@ -115,8 +115,8 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
     const limit = 1000;
     let offset = 0;
     while (offset < amountItems) {
-      await context.logger.appendLog(`- Reading items progress: ${offset}/${amountItems}`);
-      const items = await collectionHelper.readByQuery({ ...query, limit, fields: [fieldForDirectusFileId], offset });
+      await context.logger.appendLog(`- Reading items progress: ${offset}/${amountItems}`); // NOSONAR S9382 - sequential on purpose: paginated read, one bounded page at a time keeps memory and DB load bounded
+      const items = await collectionHelper.readByQuery({ ...query, limit, fields: [fieldForDirectusFileId], offset }); // NOSONAR S9382 - sequential on purpose: paginated read, one bounded page at a time keeps memory and DB load bounded
       for (const item of items) {
         const fieldRaw = item[fieldForDirectusFileId];
         if (fieldRaw) {
@@ -162,9 +162,9 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
         continue;
       }
       const { collection: collectionName, field: fieldForDirectusFileId } = relationObj;
-      await context.logger.appendLog(`Checking relation progress: ${relation}/${amountRelations} - ${collectionName} - field ${fieldForDirectusFileId}`);
+      await context.logger.appendLog(`Checking relation progress: ${relation}/${amountRelations} - ${collectionName} - field ${fieldForDirectusFileId}`); // NOSONAR S9382 - sequential on purpose: relations are scanned one after another, bounded DB load and ordered progress log
       if (relationObj.related_collection === 'directus_files') {
-        await this.processCollectionRelation(scanParams, collectionName, fieldForDirectusFileId);
+        await this.processCollectionRelation(scanParams, collectionName, fieldForDirectusFileId); // NOSONAR S9382 - sequential on purpose: relations are scanned one after another, bounded DB load and ordered progress log
       }
     }
   }
@@ -193,7 +193,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
     for (const file of filesPreviouslyUnreferenced) {
       if (dict[file.id]) {
         fileIdsNoLongerUnreferenced.push(file.id);
-        await filesHelper.updateOne(file.id, { [fieldName]: false });
+        await filesHelper.updateOne(file.id, { [fieldName]: false }); // NOSONAR S9382 - sequential on purpose: one DB update per file, bounded DB load in the cleanup job
       }
     }
     if (fileIdsNoLongerUnreferenced.length > 0) {
@@ -210,7 +210,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
     const { filesHelper, dict, diskSpaceDict } = params;
     const unreferencedFiles: string[] = [];
     for (const fileId in dict) {
-      const file = await filesHelper.readOne(fileId);
+      const file = await filesHelper.readOne(fileId); // NOSONAR S9382 - sequential on purpose: one DB read per file, reading all files in parallel would flood Directus
       const fileSize = file.filesize;
       const fileSizeAsNumber = typeof fileSize === 'number' && !Number.isNaN(fileSize) ? fileSize : 0;
       this.statistics.filesTotalDiskSpace += fileSizeAsNumber;
@@ -258,9 +258,9 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
     for (const fileId of unreferencedFiles) {
       const fileSizeAsNumber = diskSpaceDict[fileId] || 0;
       this.statistics.filesUnreferencedDiskSpace += fileSizeAsNumber;
-      await filesHelper.updateOne(fileId, { [fieldName]: true });
+      await filesHelper.updateOne(fileId, { [fieldName]: true }); // NOSONAR S9382 - sequential on purpose: one DB update/delete per unreferenced file, accumulates statistics, bounded DB load
       if (this.config[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms] >= 0) {
-        await this.tryDeleteOldUnreferencedFile(context, filesHelper, fileId, fileSizeAsNumber);
+        await this.tryDeleteOldUnreferencedFile(context, filesHelper, fileId, fileSizeAsNumber); // NOSONAR S9382 - sequential on purpose: one DB update/delete per unreferenced file, accumulates statistics, bounded DB load
       }
     }
   }

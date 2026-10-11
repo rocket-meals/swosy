@@ -51,7 +51,7 @@ export type LivePulseProfile = {
   date_created?: string | null;
 };
 
-type RelatedProfile = LivePulseProfile | string | null | undefined;
+type RelatedProfile = LivePulseProfile | string | null;
 
 /** A food with what is needed for its picture in the ticker. */
 export type LivePulseFood = {
@@ -432,7 +432,7 @@ export class LivePulseHelper {
     return Number.isFinite(number) ? number : 0;
   }
 
-  static getProfile(profile: RelatedProfile): LivePulseProfile | undefined {
+  static getProfile(profile: RelatedProfile | undefined): LivePulseProfile | undefined {
     return profile && typeof profile === 'object' ? profile : undefined;
   }
 
@@ -440,7 +440,10 @@ export class LivePulseHelper {
     if (relation === null || relation === undefined || relation === '') {
       return undefined;
     }
-    return typeof relation === 'object' ? (relation.id !== null && relation.id !== undefined ? String(relation.id) : undefined) : String(relation);
+    if (typeof relation !== 'object') {
+      return String(relation);
+    }
+    return relation.id !== null && relation.id !== undefined ? String(relation.id) : undefined;
   }
 
   private static getAlias(relation: { alias?: string | null } | string | null | undefined): string | undefined {
@@ -449,67 +452,75 @@ export class LivePulseHelper {
 
   /** Merges all ticker sources into one list, newest first. */
   static buildFeed(sources: { foodFeedbacks?: LivePulseFoodFeedback[]; canteenVisits?: LivePulseCanteenVisit[]; newProfiles?: LivePulseProfile[]; usageEvents?: LivePulseUsageEvent[]; foods?: LivePulseFood[] }): LivePulseFeedItem[] {
-    const items: LivePulseFeedItem[] = [];
     const foodsById = new Map((sources.foods ?? []).map(food => [String(food.id), food]));
+    const candidates: (LivePulseFeedItem | undefined)[] = [];
+    candidates.push(...(sources.foodFeedbacks ?? []).map(feedback => LivePulseHelper.buildFoodFeedbackFeedItem(feedback)));
+    candidates.push(...(sources.canteenVisits ?? []).map(visit => LivePulseHelper.buildCanteenVisitFeedItem(visit)));
+    candidates.push(...(sources.newProfiles ?? []).map(profile => LivePulseHelper.buildNewProfileFeedItem(profile)));
+    candidates.push(...(sources.usageEvents ?? []).map(event => LivePulseHelper.buildUsageEventFeedItem(event, foodsById)));
+    const items = candidates.filter((item): item is LivePulseFeedItem => item !== undefined);
 
-    for (const feedback of sources.foodFeedbacks ?? []) {
-      const date = feedback.date_updated || feedback.date_created;
-      if (!date) continue;
-      items.push({
-        key: `feedback-${feedback.id}-${date}`,
-        sourceKey: `feedback-${feedback.id}`,
-        type: feedback.comment ? LivePulseFeedType.COMMENT : LivePulseFeedType.RATING,
-        date,
-        profile: LivePulseHelper.getProfile(feedback.profile),
-        rating: feedback.rating,
-        comment: feedback.comment,
-        foodName: LivePulseHelper.getAlias(feedback.food),
-        food: feedback.food && typeof feedback.food === 'object' ? feedback.food : undefined,
-        foodId: LivePulseHelper.getRelatedId(feedback.food),
-        foodofferId: LivePulseHelper.getRelatedId(feedback.foodoffer),
-        canteenName: LivePulseHelper.getAlias(feedback.canteen),
-      });
-    }
+    items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return items.slice(0, LivePulseHelper.FEED_LIMIT);
+  }
 
-    for (const visit of sources.canteenVisits ?? []) {
-      if (!visit.date_created) continue;
-      items.push({
-        key: `visit-${visit.id}`,
-        sourceKey: `visit-${visit.id}`,
-        type: LivePulseFeedType.CANTEEN_VISIT,
-        date: visit.date_created,
-        profile: LivePulseHelper.getProfile(visit.profile),
-        canteenName: LivePulseHelper.getAlias(visit.canteen),
-        visitDate: visit.date ? visit.date.slice(0, 10) : null,
-      });
-    }
+  /** A rating or comment – a changed rating gets a new entry (key with the date), replacing the old one. */
+  private static buildFoodFeedbackFeedItem(feedback: LivePulseFoodFeedback): LivePulseFeedItem | undefined {
+    const date = feedback.date_updated || feedback.date_created;
+    if (!date) return undefined;
+    return {
+      key: `feedback-${feedback.id}-${date}`,
+      sourceKey: `feedback-${feedback.id}`,
+      type: feedback.comment ? LivePulseFeedType.COMMENT : LivePulseFeedType.RATING,
+      date,
+      profile: LivePulseHelper.getProfile(feedback.profile),
+      rating: feedback.rating,
+      comment: feedback.comment,
+      foodName: LivePulseHelper.getAlias(feedback.food),
+      food: feedback.food && typeof feedback.food === 'object' ? feedback.food : undefined,
+      foodId: LivePulseHelper.getRelatedId(feedback.food),
+      foodofferId: LivePulseHelper.getRelatedId(feedback.foodoffer),
+      canteenName: LivePulseHelper.getAlias(feedback.canteen),
+    };
+  }
 
-    for (const profile of sources.newProfiles ?? []) {
-      if (!profile.date_created) continue;
-      items.push({ key: `profile-${profile.id}`, sourceKey: `profile-${profile.id}`, type: LivePulseFeedType.NEW_PROFILE, date: profile.date_created, profile });
-    }
+  private static buildCanteenVisitFeedItem(visit: LivePulseCanteenVisit): LivePulseFeedItem | undefined {
+    if (!visit.date_created) return undefined;
+    return {
+      key: `visit-${visit.id}`,
+      sourceKey: `visit-${visit.id}`,
+      type: LivePulseFeedType.CANTEEN_VISIT,
+      date: visit.date_created,
+      profile: LivePulseHelper.getProfile(visit.profile),
+      canteenName: LivePulseHelper.getAlias(visit.canteen),
+      visitDate: visit.date ? visit.date.slice(0, 10) : null,
+    };
+  }
 
-    for (const event of sources.usageEvents ?? []) {
-      if (!event.date_created) continue;
-      const payload = LivePulseHelper.getPayload(event);
-      const food = payload.food_id !== null && payload.food_id !== undefined ? foodsById.get(String(payload.food_id)) : undefined;
-      const isFoodOpened = event.event_name === BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED;
-      items.push({
-        key: `event-${event.id}`,
-        sourceKey: `event-${event.id}`,
-        type: isFoodOpened ? LivePulseFeedType.FOOD_OPENED : LivePulseFeedType.USAGE_EVENT,
-        date: event.date_created,
-        eventName: event.event_name,
-        screenName: event.screen_name,
-        platform: event.platform,
-        foodName: typeof payload.food_name === 'string' && payload.food_name ? payload.food_name : (food?.alias ?? undefined),
-        food,
-        foodId: LivePulseHelper.getRelatedId(payload.food_id as string | number | null | undefined) ?? food?.id,
-        foodofferId: LivePulseHelper.getRelatedId(payload.foodoffer_id as string | number | null | undefined),
-      });
-    }
+  private static buildNewProfileFeedItem(profile: LivePulseProfile): LivePulseFeedItem | undefined {
+    if (!profile.date_created) return undefined;
+    return { key: `profile-${profile.id}`, sourceKey: `profile-${profile.id}`, type: LivePulseFeedType.NEW_PROFILE, date: profile.date_created, profile };
+  }
 
-    return items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, LivePulseHelper.FEED_LIMIT);
+  private static buildUsageEventFeedItem(event: LivePulseUsageEvent, foodsById: Map<string, LivePulseFood>): LivePulseFeedItem | undefined {
+    if (!event.date_created) return undefined;
+    const payload = LivePulseHelper.getPayload(event);
+    const payloadFoodId = LivePulseHelper.getRelatedId(payload.food_id as string | number | null | undefined);
+    const food = payloadFoodId === undefined ? undefined : foodsById.get(payloadFoodId);
+    const isFoodOpened = event.event_name === BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED;
+    return {
+      key: `event-${event.id}`,
+      sourceKey: `event-${event.id}`,
+      type: isFoodOpened ? LivePulseFeedType.FOOD_OPENED : LivePulseFeedType.USAGE_EVENT,
+      date: event.date_created,
+      eventName: event.event_name,
+      screenName: event.screen_name,
+      platform: event.platform,
+      foodName: typeof payload.food_name === 'string' && payload.food_name ? payload.food_name : (food?.alias ?? undefined),
+      food,
+      foodId: payloadFoodId ?? food?.id,
+      foodofferId: LivePulseHelper.getRelatedId(payload.foodoffer_id as string | number | null | undefined),
+    };
   }
 
   /**

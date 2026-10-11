@@ -93,14 +93,17 @@ export const FEATURE_WISH_CHOICE_FIELDS = ['status', 'progress'] as const;
 export async function loadFeatureWishFieldChoices(dispatch: (action: { type: string; payload: Record<string, DirectusFieldChoice[]> }) => void): Promise<void> {
 	const client = ServerAPI.getClient() as any;
 	const payload: Record<string, DirectusFieldChoice[]> = {};
-	for (const field of FEATURE_WISH_CHOICE_FIELDS) {
-		try {
-			const definition = await client.request(readField(CollectionKeys.FEATURE_WHISHES, field));
-			payload[DirectusFieldChoiceHelper.getKey(CollectionKeys.FEATURE_WHISHES, field)] = DirectusFieldChoiceHelper.parseChoices(definition);
-		} catch (error) {
-			console.error('Could not load the choices of feature_whishes.' + field, error);
-		}
-	}
+	// Two independent field definitions: loaded side by side, each failure is handled on its own.
+	await Promise.all(
+		FEATURE_WISH_CHOICE_FIELDS.map(async field => {
+			try {
+				const definition = await client.request(readField(CollectionKeys.FEATURE_WHISHES, field));
+				payload[DirectusFieldChoiceHelper.getKey(CollectionKeys.FEATURE_WHISHES, field)] = DirectusFieldChoiceHelper.parseChoices(definition);
+			} catch (error) {
+				console.error('Could not load the choices of feature_whishes.' + field, error);
+			}
+		})
+	);
 	if (Object.keys(payload).length > 0) {
 		dispatch({ type: SET_DIRECTUS_FIELD_CHOICES, payload });
 	}

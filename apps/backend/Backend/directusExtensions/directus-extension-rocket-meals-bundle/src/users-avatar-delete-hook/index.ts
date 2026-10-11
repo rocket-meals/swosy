@@ -11,7 +11,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ fil
   filter(
     EventHelper.USERS_DELETE_EVENT,
     // @ts-ignore
-    async (payload: any, input, eventContext: MyEventContext) => {
+    async (payload: any, input, eventContext: MyEventContext) => { // NOSONAR S3516 - a Directus filter hook must return the (unchanged) payload, the avatar deletion is a side effect
         let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
 
       const usersIds = payload; //get the user ids
@@ -21,7 +21,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ fil
       }
       for (const userId of usersIds) {
         // for all users which get deleted
-        await AvatarHelper.deleteAvatarOfUser(myDatabaseHelper, userId); //delete avatar file
+        await AvatarHelper.deleteAvatarOfUser(myDatabaseHelper, userId); //delete avatar file // NOSONAR S9382 - sequential on purpose: one DB lookup and file delete per deleted user inside a filter hook, bounded DB/storage load
       }
 
       return payload;

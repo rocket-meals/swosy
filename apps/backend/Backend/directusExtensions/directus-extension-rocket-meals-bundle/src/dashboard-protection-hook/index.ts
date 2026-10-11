@@ -31,6 +31,29 @@ function isAdminEmail(email: string | null | undefined): boolean {
   return email.trim().toLowerCase() === adminEmail.trim().toLowerCase();
 }
 
+/**
+ * System dashboards belong to the ADMIN_EMAIL user, on every instance - the test system
+ * included, where they are authored. Being an administrator by role is not enough: their
+ * changes would be reset with the next deploy, and on the test system they would silently end
+ * up in the next release.
+ *
+ * Dashboards that are not marked as system dashboards stay untouched by this and are edited
+ * along the usual Directus permissions.
+ */
+function isProtectionActiveFor(actingUserInfo: ActingUserInfo): boolean {
+  return !actingUserInfo.isAdminEmailUser;
+}
+
+function buildForbiddenError(actingUserInfo: ActingUserInfo, translationKey: BackendTranslationKeys) {
+  const profile = typeof actingUserInfo.user?.profile === 'object' ? (actingUserInfo.user.profile as ProfileWithLanguage) : undefined;
+  const translate = BackendTranslator.getTranslatorForProfile(profile);
+  return createMyForbiddenError(translate(translationKey, { marker: DashboardNameHelper.SYSTEM_NAME_MARKER }));
+}
+
+function getDashboardIdOfPanelPayload(payload: Partial<DatabaseTypes.DirectusPanels>): PrimaryKey[] {
+  return typeof payload?.dashboard === 'string' ? [payload.dashboard] : [];
+}
+
 export default defineHook(({ filter }, apiContext) => {
   async function getActingUserInfo(myDatabaseHelper: MyDatabaseHelper, accountability: Accountability | null | undefined): Promise<ActingUserInfo> {
     const userId = accountability?.user;
@@ -49,25 +72,6 @@ export default defineHook(({ filter }, apiContext) => {
       apiContext.logger.warn(`${HOOK_NAME}: could not read the acting user: ${error}`);
       return { user: undefined, isAdminEmailUser: false };
     }
-  }
-
-  /**
-   * System dashboards belong to the ADMIN_EMAIL user, on every instance - the test system
-   * included, where they are authored. Being an administrator by role is not enough: their
-   * changes would be reset with the next deploy, and on the test system they would silently end
-   * up in the next release.
-   *
-   * Dashboards that are not marked as system dashboards stay untouched by this and are edited
-   * along the usual Directus permissions.
-   */
-  function isProtectionActiveFor(actingUserInfo: ActingUserInfo): boolean {
-    return !actingUserInfo.isAdminEmailUser;
-  }
-
-  function buildForbiddenError(actingUserInfo: ActingUserInfo, translationKey: BackendTranslationKeys) {
-    const profile = typeof actingUserInfo.user?.profile === 'object' ? (actingUserInfo.user.profile as ProfileWithLanguage) : undefined;
-    const translate = BackendTranslator.getTranslatorForProfile(profile);
-    return createMyForbiddenError(translate(translationKey, { marker: DashboardNameHelper.SYSTEM_NAME_MARKER }));
   }
 
   /** The names of those dashboards among the given ids that are system dashboards. */
@@ -167,10 +171,6 @@ export default defineHook(({ filter }, apiContext) => {
 
     apiContext.logger.info(`${HOOK_NAME}: blocked change on panel(s) of system dashboard(s): ${systemDashboardNames.join(', ')}`);
     throw buildForbiddenError(actingUserInfo, BackendTranslationKeys.dashboard_system_panel_edit_forbidden);
-  }
-
-  function getDashboardIdOfPanelPayload(payload: Partial<DatabaseTypes.DirectusPanels>): PrimaryKey[] {
-    return typeof payload?.dashboard === 'string' ? [payload.dashboard] : [];
   }
 
   filter(EventHelper.DASHBOARDS_CREATE_EVENT, async (input, _meta, eventContext: MyEventContext) => {

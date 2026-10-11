@@ -93,23 +93,25 @@ void (async () => {
   let currentScreenshot = 0;
   const listFailedScreenshotsUrls = [];
 
+  // Screenshots are rendered one at a time on purpose: they share one browser, the progress/ETA output counts them in order and
+  // parallel rendering would make page load and layout timing (and therefore the screenshots) less stable.
   for (const url of urls) {
     for (const device of devices) {
       currentScreenshot++;
       console.log(`Generating screenshot ${currentScreenshot} of ${totalAmountOfScreenshots}`);
       const fileName = getFileName(url, device, screenshotDirWithSlash, baseUrl);
       const darkMode = false;
-      await createDirIfNotExists(fileName);
+      await createDirIfNotExists(fileName); // NOSONAR S9382 - sequential on purpose, see comment above the loop
       if (skipExisting) {
-        const fileExists = await doesFileExist(fileName);
+        const fileExists = await doesFileExist(fileName); // NOSONAR S9382 - sequential on purpose, see comment above the loop
         if (fileExists) {
           console.log(`Skipping existing screenshot: ${fileName}`);
           continue;
         }
       }
       try {
-        await createScreenshotUncompressed(url, device, fileName, darkMode, browser);
-        await compressScreenshotAndDeleteOld(fileName);
+        await createScreenshotUncompressed(url, device, fileName, darkMode, browser); // NOSONAR S9382 - sequential on purpose, see comment above the loop
+        await compressScreenshotAndDeleteOld(fileName); // NOSONAR S9382 - sequential on purpose, see comment above the loop
       } catch (error: any) {
         console.error(`Error creating screenshot for ${url} with device ${device.name}: ${error.message}`);
         listFailedScreenshotsUrls.push(url);

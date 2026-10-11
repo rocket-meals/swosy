@@ -72,7 +72,7 @@ async function fetchAppInfos(token: string, appId: string): Promise<{ appInfos: 
       ageRatingDeclaration: declaration?.attributes ?? {},
       primaryCategoryId: relationshipId(appInfo, 'primaryCategory'),
       secondaryCategoryId: relationshipId(appInfo, 'secondaryCategory'),
-      localizations: await fetchAppInfoLocalizations(token, appInfo.id),
+      localizations: await fetchAppInfoLocalizations(token, appInfo.id), // NOSONAR S9382 - sequential on purpose: one App Store Connect API call per AppInfo (usually one or two), keeps the API rate limit safe
     });
   }
 
@@ -238,7 +238,7 @@ export async function applyApplePush(token: string, plan: ApplePushPlan, dryRun:
   for (const { localizationId, locale, changes } of localizationChanges) {
     console.log(`   📝 Apple App-Informationen (${locale}):\n${formatChanges(changes, '      ')}`);
     if (!dryRun) {
-      await ascRequest(token, 'PATCH', `/appInfoLocalizations/${localizationId}`, {
+      await ascRequest(token, 'PATCH', `/appInfoLocalizations/${localizationId}`, { // NOSONAR S9382 - sequential on purpose: App Store Connect API is rate limited and a failed PATCH should stop before further locales are changed
         data: { type: 'appInfoLocalizations', id: localizationId, attributes: changesToAttributeObject(changes) },
       });
     }

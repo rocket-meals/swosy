@@ -81,7 +81,7 @@ export class StudentenwerkHannoverNewsParser implements NewsParserInterface {
       let content = $newsIndexArticle(element).find('div.news_slider-content_teaser').text().trim();
       let articleUrl = StudentenwerkHannoverNewsParser.extractArticleUrl($newsIndexArticle, element);
 
-      let date = await StudentenwerkHannoverNewsParser.fetchArticleDate(articleUrl);
+      let date = await StudentenwerkHannoverNewsParser.fetchArticleDate(articleUrl); // NOSONAR S9382 - sequential on purpose: one HTTP request per article to the external Studentenwerk website, avoid hammering it
 
       let categories = StudentenwerkHannoverNewsParser.extractCategories($newsIndexArticle, element);
 

@@ -118,7 +118,7 @@ function buildAliasLookup(): Map<string, HousingHandoverField> {
 export function normalizeAlias(alias: string): string {
 	const collapsed = StringHelper.replaceAllWithOptions({
 		str: alias.trim(),
-		find: '\\s+',
+		find: String.raw`\s+`,
 		replace: ' ',
 		flags: 'g',
 	});

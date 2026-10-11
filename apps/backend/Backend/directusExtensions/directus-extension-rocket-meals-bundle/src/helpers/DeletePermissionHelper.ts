@@ -42,7 +42,8 @@ export class DeletePermissionHelper {
         if (itemPermissions?.delete?.access !== true) {
           return false;
         }
-      } catch (error) {
+      } catch {
+        // Fail closed: when the permissions of an item cannot be determined, the delete is treated as not allowed.
         return false;
       }
     }

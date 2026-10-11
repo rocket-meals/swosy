@@ -1,12 +1,15 @@
+# Sonar docker:S6471 (root user) reviewed: root is required because this container manages the Directus
+# container through the host Docker socket mounted at /var/run/docker.sock (see apps/backend/docker-compose.yaml).
+# Dockerfiles do not allow trailing comments, so this cannot carry an inline NOSONAR; mark it Safe in SonarCloud.
 FROM node:22-bookworm
 
 # Install basic tools, Docker CLI, openssl and xxd for Apple Token generation, then set up yarn
 RUN apt-get update \
-    && apt-get install -y curl git openssl xxd \
-    && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
+    && apt-get install -y --no-install-recommends curl git openssl xxd \
+    && curl -fsSL --proto '=https' --tlsv1.2 https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
     && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bookworm stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
     && apt-get update \
-    && apt-get install -y docker-ce-cli \
+    && apt-get install -y --no-install-recommends docker-ce-cli \
     && rm -rf /var/lib/apt/lists/* \
     && corepack enable \
     && corepack prepare yarn@stable --activate

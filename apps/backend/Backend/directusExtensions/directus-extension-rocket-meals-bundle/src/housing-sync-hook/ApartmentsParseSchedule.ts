@@ -44,10 +44,11 @@ export class ApartmentsParseSchedule {
   }
 
   async updateApartments(apartmentsForParser: ApartmentsForParser[]) {
+    // Sequential on purpose: several DB reads/writes per apartment in a sync job, parallel writes would flood Directus (and findOrCreate could race on shared buildings).
     for (let apartmentForParser of apartmentsForParser) {
-      let resource = await this.findOrCreateApartment(apartmentForParser);
+      let resource = await this.findOrCreateApartment(apartmentForParser); // NOSONAR S9382 - sequential on purpose, see comment above
       if (!!resource && resource?.id) {
-        await this.updateApartment(resource.id, apartmentForParser);
+        await this.updateApartment(resource.id, apartmentForParser); // NOSONAR S9382 - sequential on purpose, see comment above
       }
     }
   }

@@ -24,7 +24,7 @@ const useAccountRequiredModal = () => {
 	const dispatch = useDispatch();
 
 	// Also used directly as onPress handler, so the argument may be a press event.
-	const openAccountRequiredModal = useCallback((options?: AccountRequiredModalOptions | unknown) => {
+	const openAccountRequiredModal = useCallback((options?: unknown) => {
 		const verifiedAccountRequired = (options as AccountRequiredModalOptions | undefined)?.verifiedAccountRequired === true;
 		const handleLogin = () => {
 			void performLogout(dispatch, router);

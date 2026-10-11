@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { resolveSettingsGroupPosition } from '@/helper/settingsListGroupPosition';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
@@ -457,7 +458,7 @@ const McpInstruction = () => {
 							<MyMarkdownProjectColored content={translate(TranslationKeys.mcp_choose_provider)} />
 							<View style={styles.choiceGroup}>
 								{McpInstructionHelper.PROVIDERS.map((option, index) => {
-									const groupPosition = index === 0 ? 'top' : index === McpInstructionHelper.PROVIDERS.length - 1 ? 'bottom' : 'middle';
+									const groupPosition = resolveSettingsGroupPosition(index, McpInstructionHelper.PROVIDERS.length);
 									return (
 										<SettingsList
 											key={option.provider}

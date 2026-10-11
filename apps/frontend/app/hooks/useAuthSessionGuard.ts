@@ -70,10 +70,8 @@ export default function useAuthSessionGuard() {
 		const unsubscribe = afterRehydration(() => {
 			void ServerAPI.validateSession().then(result => {
 				if (cancelled) return;
-				if (result.status === 'invalid') {
-					handleInvalidSession();
-				} else if (result.status === 'valid' && result.user.id !== userId) {
-					// The session belongs to someone else than the stored user - treat as expired.
+				// Invalid, or the session belongs to someone else than the stored user - treat both as expired.
+				if (result.status === 'invalid' || (result.status === 'valid' && result.user.id !== userId)) {
 					handleInvalidSession();
 				}
 			});

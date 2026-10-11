@@ -31,6 +31,9 @@ export type ModuleProfile = {
   price_group?: string | null;
 };
 
+/** A profile relation: loaded, only its id, or not set. */
+export type ModuleProfileRelation = ModuleProfile | string | null | undefined;
+
 /** A device of a profile, with what the details page shows and the push token. */
 export type ModuleProfileDevice = {
   id: string;
@@ -98,7 +101,7 @@ export class ProfileDetailsHelper {
   }
 
   /** The profile of a relation, `undefined` when only the id is loaded or nothing is set. */
-  static getProfile(profile: ModuleProfile | string | null | undefined): ModuleProfile | undefined {
+  static getProfile(profile: ModuleProfileRelation): ModuleProfile | undefined {
     return profile && typeof profile === 'object' ? profile : undefined;
   }
 
@@ -171,16 +174,16 @@ export class ProfileDetailsHelper {
     };
   }
 
-  static getNickname(profile: ModuleProfile | string | null | undefined): string | undefined {
+  static getNickname(profile: ModuleProfileRelation): string | undefined {
     return ProfileDetailsHelper.getProfile(profile)?.nickname?.trim() || undefined;
   }
 
-  static getInitials(profile: ModuleProfile | string | null | undefined): string {
+  static getInitials(profile: ModuleProfileRelation): string {
     return LivePulseHelper.getInitials(ProfileDetailsHelper.getNickname(profile));
   }
 
   /** The avatar drawn by `profile-avatar-endpoint`, `undefined` without avatar (the page shows initials). */
-  static getAvatarUrl(profile: ModuleProfile | string | null | undefined, size: number, apiRoot: string = '/'): string | undefined {
+  static getAvatarUrl(profile: ModuleProfileRelation, size: number, apiRoot: string = '/'): string | undefined {
     return LivePulseHelper.getAvatarUrl(ProfileDetailsHelper.getProfile(profile), size, apiRoot);
   }
 

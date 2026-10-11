@@ -642,6 +642,26 @@ async function openFormPdf(pdfBytes: ArrayBuffer, fileName: string): Promise<voi
 	await Share.share({ url: fileUri, message: fileUri });
 }
 
+function getAliasExcerptLength(screenWidth: number): number {
+	if (screenWidth > 900) {
+		return 100;
+	}
+	if (screenWidth > 700) {
+		return 80;
+	}
+	return 22;
+}
+
+function getFormSubmissionHeaderTexts(formSubmission: DatabaseTypes.FormSubmissions | null | undefined, screenWidth: number) {
+	if (!formSubmission) {
+		return { headerTitle: '', formSubmissionIdText: '' };
+	}
+	return {
+		headerTitle: excerpt(formSubmission?.alias as string, getAliasExcerptLength(screenWidth)),
+		formSubmissionIdText: formSubmission?.id,
+	};
+}
+
 const Index = () => {
 	const toast = useToast();
 	const scrollViewRef = useRef(null);
@@ -1262,14 +1282,7 @@ const Index = () => {
 		void fetchFolderIds();
 	}, []);
 
-	let aliasExcerptLength = 22;
-	if (screenWidth > 900) {
-		aliasExcerptLength = 100;
-	} else if (screenWidth > 700) {
-		aliasExcerptLength = 80;
-	}
-	const headerTitle = formSubmission ? excerpt(formSubmission?.alias as string, aliasExcerptLength) : '';
-	const formSubmissionIdText = formSubmission ? formSubmission?.id : '';
+	const { headerTitle, formSubmissionIdText } = getFormSubmissionHeaderTexts(formSubmission, screenWidth);
 	// `styles/themes.ts` is missing `drawer.logoBg` / `drawer.divider` from the `Theme`
 	// type — a pre-existing repo-wide mismatch that every `myContrastColor` call site
 	// hits. The cast keeps this screen type-clean until the theme objects are fixed.

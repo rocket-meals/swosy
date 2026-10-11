@@ -32,13 +32,13 @@ const HOOK_NAME = 'feature-wishes-hook';
 const FEATURE_WISHES = CollectionNames.FEATURE_WHISHES;
 
 /** Statuses after which a suggested original in `related_to` no longer applies. */
-const STATUSES_WITHOUT_RELATION: string[] = [
+const STATUSES_WITHOUT_RELATION = new Set<string>([
   FeatureWishStatus.DRAFT,
   FeatureWishStatus.AI_SUGGESTS_PUBLISH,
   FeatureWishStatus.AI_SUGGESTS_DECLINE,
   FeatureWishStatus.PUBLISHED,
   FeatureWishStatus.ARCHIVED,
-];
+]);
 
 /** App users (also anonymous ones). Admins, backend staff and the backend itself (no accountability) are not restricted. */
 function isAppUser(accountability: Accountability | null | undefined): boolean {
@@ -132,13 +132,13 @@ export default defineHook(({ filter, action }, apiContext) => {
       }
     }
     // A suggested or confirmed original no longer applies once the wish gets another decision.
-    if (payload.status && STATUSES_WITHOUT_RELATION.includes(payload.status) && !('related_to' in payload)) {
+    if (payload.status && STATUSES_WITHOUT_RELATION.has(payload.status) && !('related_to' in payload)) {
       return { ...payload, related_to: null };
     }
     return payload;
   });
 
-  filter(FEATURE_WISHES + '.items.delete', async (input, _meta, eventContext: MyEventContext) => {
+  filter(FEATURE_WISHES + '.items.delete', async (input, _meta, eventContext: MyEventContext) => { // NOSONAR S3516 - a Directus filter must hand the payload back, this one only deletes the dependents as a side effect and never changes the payload
     const keys = getKeysFromFilterInput(input);
     if (keys.length === 0) {
       return input;
