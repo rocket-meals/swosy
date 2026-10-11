@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 5 | 5 |
-| 🐛 Reliability | 402 | 45 |
+| 🐛 Reliability | 401 | 45 |
 | 🔧 Maintainability | 756 | 0 |
 
-**Total issues:** 1163 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1162 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -34,7 +34,7 @@
   scripts/maintenance-window.mjs:51
   https://github.com/rocket-meals/rocket-meals/blob/master/scripts/maintenance-window.mjs#L51
 
-## 🐛 Reliability (45/402)
+## 🐛 Reliability (45/401)
 
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
   apps/accessibilityTester/src/index.ts:104
