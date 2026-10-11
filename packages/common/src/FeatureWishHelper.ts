@@ -211,12 +211,20 @@ export class FeatureWishHelper {
       return false;
     }
     return rows.every(row => {
-      const rowProfileId = row.profile ? (typeof row.profile === 'string' ? row.profile : row.profile.id) : null;
+      const rowProfileId = FeatureWishHelper.getRowProfileId(row.profile);
       if (profileId) {
         return rowProfileId === profileId;
       }
       return rowProfileId === null && row.status !== FeatureWishStatus.PUBLISHED;
     });
+  }
+
+  /** The profile id of a row, whether the relation is expanded or not. Null when the row has no profile. */
+  private static getRowProfileId(profile: string | { id: string } | null | undefined): string | null {
+    if (!profile) {
+      return null;
+    }
+    return typeof profile === 'string' ? profile : profile.id;
   }
 
   /** The day an archived wish is deleted, counted from its last change. Null when the wish is not archived. */
@@ -238,7 +246,7 @@ export class FeatureWishHelper {
 
   /** The latest last-change date an archived wish may have before the cleanup deletes it. */
   static getArchivedDeletionCutoff(now: Date): Date {
-    const cutoff = new Date(now.getTime());
+    const cutoff = new Date(now);
     cutoff.setDate(cutoff.getDate() - FeatureWishHelper.ARCHIVED_DELETE_AFTER_DAYS);
     return cutoff;
   }
@@ -270,7 +278,7 @@ export class FeatureWishHelper {
     if (Number.isNaN(hiddenAt.getTime())) {
       return false;
     }
-    const showAgainAt = new Date(hiddenAt.getTime());
+    const showAgainAt = new Date(hiddenAt);
     showAgainAt.setDate(showAgainAt.getDate() + FeatureWishHelper.TILE_HIDDEN_DAYS);
     return now.getTime() < showAgainAt.getTime();
   }

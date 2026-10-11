@@ -16,7 +16,6 @@
  */
 
 import {
-	DEFAULT_TRANSLATION_LANGUAGE,
 	normalizeTranslationLanguage,
 	TranslationLanguage,
 	type TranslationLanguage as TranslationLanguageType,
@@ -208,4 +207,4 @@ export function translateWithResources(options: ResolveTranslationOptions & { re
 }
 
 /** Re-exported so consumers can build a translator without a second import. */
-export const FALLBACK_TRANSLATION_LANGUAGE = DEFAULT_TRANSLATION_LANGUAGE;
+export { DEFAULT_TRANSLATION_LANGUAGE as FALLBACK_TRANSLATION_LANGUAGE } from './TranslationLanguage';

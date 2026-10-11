@@ -150,7 +150,7 @@ function stripRedundantViewboxMask(svg: string): string {
 }
 
 /** The SVG markup of an avatar. `style`, `size` and `options` of a `config` win over the separate arguments. */
-export function createAvatarSvg(params: { config?: AvatarConfig | null; style?: AvatarStyle; size?: AvatarSize | number; options?: AvatarConfig['options'] }): string {
+export function createAvatarSvg(params: { config?: AvatarConfig | null; style?: AvatarStyle; size?: AvatarSize | number; options?: NonNullable<AvatarConfig['options']> }): string {
 	const style = params.config?.style ?? params.style ?? AvatarStyle.AVATAAARS;
 	const size = params.config?.size ?? params.size ?? AvatarSize.LARGE;
 	const options = params.config?.options ?? params.options;

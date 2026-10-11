@@ -1105,7 +1105,15 @@ export default function ActivityDetailScreen() {
 
 				// Load the assigned route for display
 				if (typeof a.routeId === 'string') {
-					loadRoute(a.routeId).then(setAssignedRoute).catch(() => setAssignedRoute(null));
+					// Fire-and-forget (not awaited) so the activity renders without waiting for the route.
+					const assignedRouteId = a.routeId;
+					void (async () => {
+						try {
+							setAssignedRoute(await loadRoute(assignedRouteId));
+						} catch {
+							setAssignedRoute(null);
+						}
+					})();
 				} else {
 					setAssignedRoute(a.routeId === null ? null : undefined);
 				}

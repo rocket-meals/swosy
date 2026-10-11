@@ -34,7 +34,7 @@ export class FileNameHelper {
 
   /** Der Namensteil ohne Endung – leer, wenn nichts Brauchbares darin steht. */
   static toSafeFileNameBase(name: string | null | undefined): string {
-    const sanitizedName = StringHelper.replaceAllWithOptions({ str: String(name ?? ''), find: String.raw`[^A-Za-z0-9]+`, replace: '_' });
-    return StringHelper.replaceAllWithOptions({ str: sanitizedName, find: String.raw`^_+|_+$`, replace: '' });
+    const sanitizedName = StringHelper.replaceAllWithOptions({ str: String(name ?? ''), find: '[^A-Za-z0-9]+', replace: '_' });
+    return StringHelper.replaceAllWithOptions({ str: sanitizedName, find: '^_+|_+$', replace: '' });
   }
 }

@@ -130,7 +130,7 @@ export function findInvalidKeyDeclarations(keyDeclarations: Readonly<Record<stri
  * French elides the vowel of these before a vowel sound – `l'application`, `d'accord`,
  * `aujourd'hui`. A text that *ends* on one of them is not a short text, it is a truncated one.
  */
-const ELIDED_WORDS_BEFORE_APOSTROPHE: readonly string[] = [
+const ELIDED_WORDS_BEFORE_APOSTROPHE: ReadonlySet<string> = new Set<string>([
 	'c',
 	'd',
 	'j',
@@ -146,7 +146,7 @@ const ELIDED_WORDS_BEFORE_APOSTROPHE: readonly string[] = [
 	'presqu',
 	'puisqu',
 	'quelqu',
-];
+]);
 
 /**
  * Texts that look cut off at an apostrophe.
@@ -176,7 +176,7 @@ export function findSuspectedApostropheTruncations(options: {
 			}
 			const words = text.split(/\s+/);
 			const lastWord = words[words.length - 1] ?? '';
-			if (ELIDED_WORDS_BEFORE_APOSTROPHE.includes(lastWord.toLowerCase())) {
+			if (ELIDED_WORDS_BEFORE_APOSTROPHE.has(lastWord.toLowerCase())) {
 				truncated.push({ key, language, reason: 'language' });
 			}
 		}

@@ -282,7 +282,7 @@ async function applyForestBillboardsForUncachedTiles(records: Record<string, any
 		const newEntries: HexTileFeatureCache = {};
 		for (const hexId of tilesWithoutCache) {
 			try {
-				const features = await queryTileFeaturesForHexCell(hexId);
+				const features = await queryTileFeaturesForHexCell(hexId); // NOSONAR S9382 - sequential on purpose: each iteration downloads vector tiles over HTTP from the public OpenFreeMap tile server, firing all hex cells in parallel would hammer it
 				newEntries[hexId] = features;
 				if (hasForestFeature(features)) {
 					dispatch(setBillboardAtAnchor({
@@ -570,7 +570,7 @@ export default function SettingsScreen() {
 							}
 							const newComputed = computeActivityData(activity, enclosedTiles);
 							try {
-								await saveActivity({ ...activity, computed: newComputed });
+								await saveActivity({ ...activity, computed: newComputed }); // NOSONAR S9382 - sequential on purpose: saveActivity/deleteActivity read-modify-write the shared activities index key, parallel calls would lose index updates
 								updatedCount++;
 							} catch (err) {
 								console.warn('[Recalculate] Failed to save activity:', activity.id, err);
@@ -604,7 +604,7 @@ export default function SettingsScreen() {
 						}
 
 						for (const activity of allActivities) {
-							await migrateActivityEnclosedTiles(activity);
+							await migrateActivityEnclosedTiles(activity); // NOSONAR S9382 - sequential on purpose: saveActivity/deleteActivity read-modify-write the shared activities index key, parallel calls would lose index updates (migrateActivityEnclosedTiles calls saveActivity)
 						}
 
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);

@@ -3112,7 +3112,7 @@ async function buildTileImageOverlays(
 	const imageOverlays: TileImageOverlay[] = [];
 
 	for (const [h3Index, record] of Object.entries(records)) {
-		const overlay = await buildTileImageOverlayForTile(h3Index, record, terrainLookup, textureAnchors, currentHexTextureOpacity, loadAssetUrl);
+		const overlay = await buildTileImageOverlayForTile(h3Index, record, terrainLookup, textureAnchors, currentHexTextureOpacity, loadAssetUrl); // NOSONAR S9382 - sequential on purpose: loadAssetUrl caches resolved URLs (not promises), parallel calls would download and base64-encode the same asset many times, and overlay order must stay stable
 		if (overlay) imageOverlays.push(overlay);
 	}
 
@@ -3310,13 +3310,13 @@ async function collectTileBillboardFeatures(
 
 	const features: BillboardFeature[] = [];
 	for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboardsTexture)) {
-		const feature = await buildTextureAdaptionBillboardFeature(
+		const feature = await buildTextureAdaptionBillboardFeature( // NOSONAR S9382 - sequential on purpose: loadAssetUrl caches resolved URLs (not promises), parallel calls would download and base64-encode the same asset many times, and overlay order must stay stable
 			anchorColor, billboardKey, geometry, deps, currentHexTextureAdaptionOpacity, billboardImages,
 		);
 		if (feature) features.push(feature);
 	}
 	for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboards)) {
-		const feature = await buildHexObjectBillboardFeature(
+		const feature = await buildHexObjectBillboardFeature( // NOSONAR S9382 - sequential on purpose: loadAssetUrl caches resolved URLs (not promises), parallel calls would download and base64-encode the same asset many times, and overlay order must stay stable
 			anchorColor, billboardKey, geometry, deps, currentHexObjectOpacity, effectiveFlat, billboardImages,
 		);
 		if (feature) features.push(feature);
@@ -3337,7 +3337,7 @@ async function buildBillboardOverlays(
 	const deps: BillboardResolverDeps = { spriteAnchors, billboardScaleRef, loadAssetUrl };
 
 	for (const [h3Index, record] of Object.entries(records)) {
-		const features = await collectTileBillboardFeatures(
+		const features = await collectTileBillboardFeatures( // NOSONAR S9382 - sequential on purpose: loadAssetUrl caches resolved URLs (not promises), parallel calls would download and base64-encode the same asset many times, and overlay order must stay stable
 			h3Index, record, deps, currentHexTextureAdaptionOpacity, currentHexObjectOpacity, billboardImages,
 		);
 		billboardFeatures.push(...features);
@@ -5187,7 +5187,7 @@ export default function RecordScreen() {
 					const newEntries: HexTileFeatureCache = {};
 					for (const hexId of enclosedCells) {
 						try {
-							newEntries[hexId] = await queryTileFeaturesForHexCell(hexId);
+							newEntries[hexId] = await queryTileFeaturesForHexCell(hexId); // NOSONAR S9382 - sequential on purpose: each iteration downloads vector tiles over HTTP from the public OpenFreeMap tile server, firing all hex cells in parallel would hammer it
 						} catch {
 							// ignore per-cell errors
 						}
@@ -6005,7 +6005,7 @@ export default function RecordScreen() {
 						const newEntries: HexTileFeatureCache = {};
 						for (const hexId of enclosedCells) {
 							try {
-								const features = await queryTileFeaturesForHexCell(hexId);
+								const features = await queryTileFeaturesForHexCell(hexId); // NOSONAR S9382 - sequential on purpose: each iteration downloads vector tiles over HTTP from the public OpenFreeMap tile server, firing all hex cells in parallel would hammer it
 								newEntries[hexId] = features;
 								if (hasForestFeature(features)) {
 									dispatch(setBillboardAtAnchor({

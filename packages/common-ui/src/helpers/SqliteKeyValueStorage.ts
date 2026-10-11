@@ -89,7 +89,7 @@ export async function replaceAllStorageEntries(entries: Record<string, string>, 
 	await db.withTransactionAsync(async () => {
 		await db.execAsync('DELETE FROM kv');
 		for (const [key, value] of Object.entries(entries)) {
-			await db.runAsync('INSERT OR REPLACE INTO kv (key, value) VALUES (?, ?)', key, value);
+			await db.runAsync('INSERT OR REPLACE INTO kv (key, value) VALUES (?, ?)', key, value); // NOSONAR S9382 - sequential on purpose: statements inside one SQLite transaction on a single connection must run one after another
 		}
 	});
 }

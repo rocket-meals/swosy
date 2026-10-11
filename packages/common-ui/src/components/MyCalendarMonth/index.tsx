@@ -82,7 +82,7 @@ const MyCalendarMonth: React.FC<MyCalendarMonthProps> = ({ selectedDate, onSelec
 				))}
 			</View>
 			{rows.map((row, rowIndex) => (
-				<View key={`row-${rowIndex}`} style={styles.row}>
+				<View key={`week-${row.find(weekCell => weekCell !== null)?.dateString}`} style={styles.row}>
 					{row.map((cell, cellIndex) => {
 						if (!cell) {
 							return <View key={`empty-${rowIndex}-${cellIndex}`} style={styles.cell} />;

@@ -426,7 +426,7 @@ async function applyForestBillboardsForUncachedTiles(records: Record<string, any
 		const newEntries: HexTileFeatureCache = {};
 		for (const hexId of tilesWithoutCache) {
 			try {
-				const features = await queryTileFeaturesForHexCell(hexId);
+				const features = await queryTileFeaturesForHexCell(hexId); // NOSONAR S9382 - sequential on purpose: each iteration downloads vector tiles over HTTP from the public OpenFreeMap tile server, firing all hex cells in parallel would hammer it
 				newEntries[hexId] = features;
 				if (hasForestFeature(features)) {
 					store.dispatch(setBillboardAtAnchor({
@@ -571,7 +571,7 @@ async function applyMissingForestBillboardsOnStartup(records: Record<string, any
 		const hexTileFeatureCache = await loadHexTileFeatureCache();
 		const newEntries: HexTileFeatureCache = {};
 		for (const [hexId, rec] of Object.entries(records)) {
-			await applyForestTreesForHex(hexId, rec, hexTileFeatureCache, newEntries);
+			await applyForestTreesForHex(hexId, rec, hexTileFeatureCache, newEntries); // NOSONAR S9382 - sequential on purpose: each iteration downloads vector tiles over HTTP from the public OpenFreeMap tile server, firing all hex cells in parallel would hammer it
 		}
 		if (Object.keys(newEntries).length > 0) {
 			await mergeHexTileFeatureCache(newEntries);

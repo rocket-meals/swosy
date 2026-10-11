@@ -23,12 +23,17 @@ function DrawerContent(props: DrawerContentComponentProps) {
 	);
 }
 
+// Module-level render callback so the drawer does not get a new inline component on every Layout render.
+function renderDrawerContent(props: DrawerContentComponentProps) {
+	return <DrawerContent {...props} />;
+}
+
 export default function Layout() {
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<StatusBar style="light" />
 			<Drawer
-				drawerContent={(props) => <DrawerContent {...props} />}
+				drawerContent={renderDrawerContent}
 				screenOptions={{
 					headerStyle: { backgroundColor: CLOCK_COLORS.background },
 					headerTintColor: '#e8ebf1',

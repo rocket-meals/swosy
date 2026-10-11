@@ -3,7 +3,7 @@ import { RelationHelper, type RelationValue } from './RelationHelper';
 
 /** Just the fields of a `chat_messages` row the chat logic looks at. */
 export type ChatMessageLike = {
-  profile?: RelationValue;
+  profile?: Exclude<RelationValue, undefined>;
   date_created?: string | null;
   date_updated?: string | null;
 };
