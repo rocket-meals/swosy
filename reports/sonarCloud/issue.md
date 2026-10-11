@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 4 | 4 |
-| 🐛 Reliability | 21 | 21 |
-| 🔧 Maintainability | 421 | 25 |
+| 🐛 Reliability | 2 | 2 |
+| 🔧 Maintainability | 396 | 44 |
 
-**Total issues:** 446 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 402 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -30,117 +30,21 @@
   scripts/maintenance-window.mjs:51
   https://github.com/rocket-meals/rocket-meals/blob/master/scripts/maintenance-window.mjs#L51
 
-## 🐛 Reliability (21/21)
+## 🐛 Reliability (2/2)
 
-- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts:62
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts#L62
-
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/DirectusOpenAiCompatibleClient.ts:110
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/DirectusOpenAiCompatibleClient.ts#L110
-
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts:106
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/extended-panels/ExtendedPanelHelper.ts#L106
-
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts:565
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts#L565
-
-- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts:565
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts#L565
-
-- **A form label must be associated with a control and have accessible text.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue:397
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue#L397
-
-- **A form label must be associated with a control and have accessible text.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue:401
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue#L401
-
-- **Add a 'onKeyDown|onKeyUp' attribute to this <div> tag.**
+- **"tabindex" should only be declared on interactive elements.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/module-list/list-row.vue:11
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/module-list/list-row.vue#L11
 
 - **Add a 'onKeyDown|onKeyUp' attribute to this <div> tag.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/module-list/list-row.vue:12
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/module-list/list-row.vue#L12
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/support-chat/support-chat-conversation.vue:140
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/support-chat/support-chat-conversation.vue#L140
 
-- **A form label must be associated with a control and have accessible text.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/profiles/profile-push-page.vue:156
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/profiles/profile-push-page.vue#L156
-
-- **A form label must be associated with a control and have accessible text.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/profiles/profile-push-page.vue:164
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/profiles/profile-push-page.vue#L164
-
-- **A form label must be associated with a control and have accessible text.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/profiles/profile-push-page.vue:172
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/profiles/profile-push-page.vue#L172
-
-- **Add a 'onKeyDown|onKeyUp' attribute to this <div> tag.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/support-chat/support-chat-conversation.vue:136
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/support-chat/support-chat-conversation.vue#L136
-
-- **Add an "id" attribute to this input field and associate it with a label.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/support-chat/support-chat-conversation.vue:137
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/support-chat/support-chat-conversation.vue#L137
-
-- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/frontend/app/helper/authSessionHelper.ts:119
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/authSessionHelper.ts#L119
-
-- **Prefer `String#replaceAll()` over `String#split().join()`.**
-  apps/frontend/app/helper/DirectusFieldChoiceHelper.ts:78
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/DirectusFieldChoiceHelper.ts#L78
-
-- **Do not use an object literal as default for parameter `options`.**
-  apps/frontend/app/helper/getPushToken.ts:13
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/getPushToken.ts#L13
-
-- **Prefer `String#replaceAll()` over `String#split().join()`.**
-  apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts:50
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/housingAnalytics/HousingAnalyticsCsv.ts#L50
-
-- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  apps/frontend/app/helper/textRecognitionPage/page.ts:68
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/textRecognitionPage/page.ts#L68
-
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  packages/common/src/FoodofferPriceHelper.ts:227
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/FoodofferPriceHelper.ts#L227
-
-- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  packages/common/src/form/IbanValidationHelper.ts:124
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/form/IbanValidationHelper.ts#L124
-
-## 🔧 Maintainability (25/421)
+## 🔧 Maintainability (44/396)
 
 - **Unexpected `await` inside a loop.**
   apps/accessibilityTester/src/index.ts:119
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/index.ts#L119
-
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend-sync/src/apple-secret-rotator/index.ts:121
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L121
-
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend-sync/src/apple-secret-rotator/index.ts:129
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L129
-
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend-sync/src/apple-secret-rotator/index.ts:135
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L135
-
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:85
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L85
-
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:104
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L104
 
 - **Unexpected `await` inside a loop.**
   apps/backend-sync/src/DirectusDatabaseSync.ts:129
@@ -214,7 +118,103 @@
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts:160
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts#L160
 
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/AutoTranslator.ts:115
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/AutoTranslator.ts#L115
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/CollectionAutoTranslator.ts:173
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/CollectionAutoTranslator.ts#L173
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/CollectionAutoTranslator.ts:180
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/CollectionAutoTranslator.ts#L180
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/CollectionAutoTranslator.ts:323
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/CollectionAutoTranslator.ts#L323
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/index.ts:82
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/index.ts#L82
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/index.ts:81
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/index.ts#L81
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/base64-file-upload-hook/index.ts:60
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/base64-file-upload-hook/index.ts#L60
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/ParseSchedule.ts:63
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/ParseSchedule.ts#L63
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/ParseSchedule.ts:50
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/ParseSchedule.ts#L50
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/ParseSchedule.ts:39
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/ParseSchedule.ts#L39
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/ParseSchedule.ts:69
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/ParseSchedule.ts#L69
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts:164
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts#L164
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts:168
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts#L168
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts:169
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts#L169
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts:171
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts#L171
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts:242
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/chat-conversation-state-hook/index.ts#L242
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts:131
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts#L131
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts:108
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts#L108
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts:115
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts#L115
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts:138
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts#L138
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts:141
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collectible-events-repeat-hook/index.ts#L141
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collections-last-update-hook/index.ts:41
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collections-last-update-hook/index.ts#L41
+
+- **Unexpected `await` inside a loop.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collections-last-update-hook/index.ts:37
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/collections-last-update-hook/index.ts#L37
+
+- **Move function 'getDashboardIdOfPanelPayload' to the outer scope.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:172
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L172
+
+- **Move function 'isProtectionActiveFor' to the outer scope.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:63
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L63
+
+- **Move function 'buildForbiddenError' to the outer scope.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts:67
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/dashboard-protection-hook/index.ts#L67
 
