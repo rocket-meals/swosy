@@ -236,7 +236,9 @@ Das Skript `scripts/update-and-generate-env.sh` führt folgende Schritte aus:
 4. `docker compose build`, während die alten Container noch laufen (kein Ausfall beim Bauen)
 5. Wartung in `app_settings.maintenance_start` / `maintenance_end` eintragen und gegebenenfalls bis zum angekündigten
    Zeitpunkt warten
-6. `docker compose down` + `docker compose up -d`, warten bis `/server/health` antwortet
+6. Alle Container außer Traefik und dem Wartungsserver neu starten, warten bis `/server/health` antwortet. Solange
+   Directus fehlt, beantwortet der [Wartungsserver](apps/maintenance-server/README.md) die Anfrage nach den
+   `app_settings` mit dem Wartungsfenster.
 7. Dauer des Neustarts in `.restart-durations` speichern (nicht im Git) und das eigene Wartungsfenster wieder leeren
 
 Optionen werden als Umgebungsvariablen übergeben:

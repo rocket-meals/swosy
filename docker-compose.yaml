@@ -29,6 +29,13 @@ services:
       service: rocket-meals-directus
       file: apps/backend/docker-compose.yaml
 
+  # No env_file: the container needs none of the secrets, the variables in its
+  # compose file are interpolated from .env anyway.
+  rocket-meals-maintenance:
+    extends:
+      service: rocket-meals-maintenance
+      file: apps/maintenance-server/docker-compose.yaml
+
   rocket-meals-database:
     env_file:
       - .env
