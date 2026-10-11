@@ -224,18 +224,20 @@ export class FoodofferPriceHelper {
       }
     }
 
-    const match = /^(\d+(?:[.,]\d+)?)?\s*(.*)$/.exec(value);
-    if (!match) {
+    // An optional amount, then the unit. Split in two steps instead of one regex with
+    // `\s*(.*)`, whose overlapping parts backtrack super-linearly.
+    const rawAmount = /^\d+(?:[.,]\d+)?/.exec(value)?.[0];
+    const rest = value.slice(rawAmount?.length ?? 0).trimStart();
+    if (/[\n\r\u2028\u2029]/.test(rest)) {
       return null;
     }
 
-    const rawUnit = (match[2] ?? '').trim();
+    const rawUnit = rest.trim();
     if (!rawUnit) {
       return null;
     }
     const unit = FoodofferPriceHelper.PRICE_REFERENCE_UNIT_ALIASES[rawUnit.toLowerCase()] ?? rawUnit;
 
-    const rawAmount = match[1];
     if (rawAmount === undefined) {
       return { amount: 1, unit };
     }

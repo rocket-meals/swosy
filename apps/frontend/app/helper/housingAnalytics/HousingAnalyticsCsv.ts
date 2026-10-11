@@ -7,7 +7,7 @@
  * Pure, like the reports themselves - the column headings come in already translated.
  */
 
-import { NumberHelper } from 'repo-depkit-common';
+import { NumberHelper, StringHelper } from 'repo-depkit-common';
 import {
 	HousingReportAggregation,
 	HousingReportId,
@@ -47,7 +47,7 @@ export type HousingReportCsvOptions = {
 /** Quotes a field only when it needs it, so the file stays readable in a text editor. */
 export function escapeCsvField(value: string): string {
 	if (value.includes(SEPARATOR) || value.includes('"') || value.includes('\n') || value.includes('\r')) {
-		return `"${value.split('"').join('""')}"`;
+		return `"${StringHelper.replaceAllLiteralWithOptions({ str: value, find: '"', replace: '""' })}"`;
 	}
 	return value;
 }

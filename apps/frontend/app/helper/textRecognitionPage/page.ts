@@ -65,7 +65,7 @@ const decodeBase64 = async (base64: string, mimeType = 'application/octet-stream
 	const binary = atob(base64);
 	const bytes = new Uint8Array(binary.length);
 	for (let index = 0; index < binary.length; index++) {
-		bytes[index] = binary.charCodeAt(index);
+		bytes[index] = binary.codePointAt(index)!;
 	}
 	return bytes.buffer;
 };

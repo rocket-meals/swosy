@@ -394,13 +394,13 @@ const clipPathId = `friendship-network-avatar-${Math.random().toString(36).slice
         <v-checkbox v-model="showAccepted" :label="translate(BackendTranslationKeys.rocket_meals_module_friendship_network_show_accepted)" />
         <v-checkbox v-model="showPending" :label="translate(BackendTranslationKeys.rocket_meals_module_friendship_network_pending_requests)" />
         <v-checkbox v-model="showNames" :disabled="anonymized" :label="translate(BackendTranslationKeys.rocket_meals_module_friendship_network_show_names)" />
-        <label class="field">
+        <label class="field" for="friendship-network-group-size">
           <span class="type-label">{{ translate(BackendTranslationKeys.rocket_meals_module_friendship_network_group_size) }}</span>
-          <v-select v-model="minGroupSize" :items="groupSizeItems" inline />
+          <v-select id="friendship-network-group-size" v-model="minGroupSize" :items="groupSizeItems" inline />
         </label>
-        <label class="field">
+        <label class="field" for="friendship-network-display-mode">
           <span class="type-label">{{ translate(BackendTranslationKeys.rocket_meals_module_friendship_network_display) }}</span>
-          <v-select v-model="displayMode" :items="displayItems" inline />
+          <v-select id="friendship-network-display-mode" v-model="displayMode" :items="displayItems" inline />
         </label>
         <div class="search">
           <v-input v-model="search" small :placeholder="translate(BackendTranslationKeys.rocket_meals_module_friendship_network_search)" :disabled="anonymized" @keydown.enter="onSearch">

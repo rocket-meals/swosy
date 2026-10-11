@@ -116,7 +116,7 @@ function getCanteenId(canteen: unknown): string | null {
 function markingsSignature(markings: ProfileMarkingLike[]): string {
 	return markings
 		.map(marking => `${getMarkingId(marking)}:${marking.like ?? ''}:${marking.dislike ?? ''}`)
-		.sort()
+		.sort((a, b) => a.localeCompare(b))
 		.join('|');
 }
 

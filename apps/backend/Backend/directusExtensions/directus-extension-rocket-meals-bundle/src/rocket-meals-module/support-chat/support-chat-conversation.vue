@@ -5,7 +5,7 @@
  * and app feedbacks and the page of a chat; loading and sending stay with the page (`send`).
  * Messages of users carry the avatar of their profile, a click on it opens the profile page.
  */
-import { nextTick, ref, watch } from 'vue';
+import { nextTick, ref, useId, watch } from 'vue';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
@@ -30,6 +30,9 @@ const props = defineProps<{
 }>();
 
 const { translate, formatDateTime } = useAppExtensionTranslate();
+
+/** Links the visually hidden label to the input; unique per instance of this component. */
+const composerInputId = useId();
 
 /** "Nutzer: <Nickname>" when the message (or the request) has a nickname, otherwise "Nutzer". */
 function getUserLabel(message?: FoodFeedbackChatMessage): string {
@@ -133,8 +136,10 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
     <span>{{ hint }}</span>
   </div>
 
-  <div class="composer" :class="{ disabled: !canWrite }" @click="composerInput?.focus()">
-    <textarea ref="composerInput" v-model="newMessage" class="composer-input" rows="1" :placeholder="placeholder ?? translate(BackendTranslationKeys.rocket_meals_module_message_placeholder)" :disabled="!canWrite || sending" @keydown="onKeydown" />
+  <!-- A click anywhere in the box focuses the input. Only a mouse shortcut: keyboard users reach the textarea directly, so the box itself is presentational. -->
+  <div class="composer" role="presentation" :class="{ disabled: !canWrite }" @click="composerInput?.focus()">
+    <label class="visually-hidden" :for="composerInputId">{{ placeholder ?? translate(BackendTranslationKeys.rocket_meals_module_message_placeholder) }}</label>
+    <textarea :id="composerInputId" ref="composerInput" v-model="newMessage" class="composer-input" rows="1" :placeholder="placeholder ?? translate(BackendTranslationKeys.rocket_meals_module_message_placeholder)" :disabled="!canWrite || sending" @keydown="onKeydown" />
     <div class="composer-actions">
       <span class="composer-hint type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_send_hint) }}</span>
       <button v-tooltip.top="translate(BackendTranslationKeys.send)" class="send-button" :disabled="!canWrite || sending || newMessage.trim().length === 0" :aria-label="translate(BackendTranslationKeys.send)" @click.stop="sendMessage">
@@ -146,6 +151,18 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
 </template>
 
 <style scoped>
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .messages {
   display: flex;
   flex-direction: column;

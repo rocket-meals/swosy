@@ -59,7 +59,7 @@ const pendingOwnerDeletions = new Map<string, string[]>();
 const pendingPublished = new Map<string, string[]>();
 
 function getPendingKey(event: string, keys: PrimaryKey[]): string {
-  return event + ':' + keys.map(String).sort().join(',');
+  return event + ':' + keys.map(String).sort((a, b) => a.localeCompare(b)).join(',');
 }
 
 export default defineHook(({ filter, action }, apiContext) => {

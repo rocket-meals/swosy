@@ -10,7 +10,7 @@ import { Platform } from 'react-native';
  * iOS it must not be spent at app start but only after our own explanation (see
  * usePushNotificationOptInPrompt).
  */
-export async function registerForPushNotificationsAsync(options: { requestPermission: boolean } = { requestPermission: true }): Promise<string | null> {
+export async function registerForPushNotificationsAsync({ requestPermission = true }: { requestPermission?: boolean } = {}): Promise<string | null> {
   try {
     if (Platform.OS === 'web') {
       return null;
@@ -27,7 +27,7 @@ export async function registerForPushNotificationsAsync(options: { requestPermis
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
-    if (existingStatus !== 'granted' && options.requestPermission) {
+    if (existingStatus !== 'granted' && requestPermission) {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }

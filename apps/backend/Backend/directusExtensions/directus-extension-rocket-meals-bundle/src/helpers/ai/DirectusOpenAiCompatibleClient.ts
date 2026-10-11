@@ -104,11 +104,32 @@ export class DirectusOpenAiCompatibleClient {
     return this.settings.models[0] ?? null;
   }
 
+  /**
+   * The content of the first ``` code block (an optional `json` tag right after the opening fence is
+   * dropped), or `null` without a complete block. Done with `indexOf` because the equivalent regex
+   * backtracks super-linearly.
+   */
+  static getFencedContent(text: string): string | null {
+    const fence = '```';
+    const start = text.indexOf(fence);
+    if (start < 0) {
+      return null;
+    }
+    const end = text.indexOf(fence, start + fence.length);
+    if (end < 0) {
+      return null;
+    }
+    let content = text.slice(start + fence.length, end);
+    if (content.slice(0, 4).toLowerCase() === 'json') {
+      content = content.slice(4);
+    }
+    return content.trim();
+  }
+
   /** Extracts the JSON object from a model answer, also when it is wrapped in a code block or text. */
   static extractJson(text: string): unknown {
     const trimmed = text.trim();
-    const fenced = /```(?:json)?\s*([\s\S]*?)```/i.exec(trimmed);
-    const candidate = fenced?.[1]?.trim() ?? trimmed;
+    const candidate = DirectusOpenAiCompatibleClient.getFencedContent(trimmed) ?? trimmed;
     try {
       return JSON.parse(candidate);
     } catch {

@@ -103,7 +103,8 @@ export class ExtendedPanelHelper {
     if (!template) {
       return fields;
     }
-    const matches = template.match(/{{\s*[^{}]+?\s*}}/g) ?? [];
+    // The surrounding whitespace is trimmed below, so it does not need its own (backtracking) pattern.
+    const matches = template.match(/{{[^{}]+}}/g) ?? [];
     for (const match of matches) {
       const field = match.slice(2, -2).trim();
       if (field.length > 0 && !fields.includes(field)) {

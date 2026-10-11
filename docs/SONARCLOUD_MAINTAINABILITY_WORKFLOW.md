@@ -9,21 +9,20 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 1. **Issues zählen und sortieren**
 
    ```bash
-   node scripts/count-sonar-maintainability-issues.js
+   node reports/sonarCloud/sonar-sort-and-group.js maintainability
    ```
 
    Das Script liest `reports/sonarCloud/report_maintainability.csv`, gruppiert die
-   Issues nach Meldungstyp und gibt die Top 10 mit Anzahl aus. Zur Gruppierung
-   werden Zahlen sowie zitierte Bezeichner in den Meldungen normalisiert (z. B.
-   zählt `Remove this useless assignment to variable "setNickname"` als
-   `... to variable "X"`). Keyword-Zitate, die die Regel selbst ausmachen (z. B.
-   `` `Set` ``, `` `.some(…)` ``, `` `readonly` ``), bleiben erhalten — Liste
-   `KEYWORD_QUOTES` im Script bei Bedarf ergänzen.
+   Issues nach Meldungstyp und gibt die Top 10 mit Anzahl und Zahl der betroffenen
+   Dateien aus. Zur Gruppierung werden Zahlen sowie zitierte Bezeichner in den
+   Meldungen normalisiert (z. B. zählt `Remove this useless assignment to variable
+   "setNickname"` als `... to variable "X"`). Keyword-Zitate, die die Regel selbst
+   ausmachen (z. B. `` `Set` ``, `` `.some(…)` ``, `` `readonly` ``), bleiben
+   erhalten — Liste `KEYWORD_QUOTES` im Script bei Bedarf ergänzen.
 
-   Für alle Kategorien (Bugs/Reliability, Maintainability, Security) gibt es
-   zusätzlich `node reports/sonarCloud/sonar-sort-and-group.js [reliability|maintainability|security|all] [--top N|all] [--details] [--json]`
-   (Default: `reliability`). Gleiche Normalisierung, zeigt pro Typ zusätzlich die
-   Anzahl betroffener Dateien, mit `--details` alle Fundstellen (`Datei:Zeile`).
+   Weitere Kategorien: `reliability` (Bugs, Default ohne Argument), `security`,
+   `all`. Optionen: `--top N|all`, `--details` (alle Fundstellen `Datei:Zeile`),
+   `--json`.
 
 2. **Top 10 dem Nutzer nennen** — immer mit Anzahl pro Typ.
 
@@ -61,7 +60,7 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 ## Noch offen
 
 Bereits erledigte Issue-Typen werden nicht mehr in diesem Dokument mitgeführt —
-der aktuelle Stand ergibt sich aus `node scripts/count-sonar-maintainability-issues.js`
+der aktuelle Stand ergibt sich aus `node reports/sonarCloud/sonar-sort-and-group.js maintainability`
 bzw. dem nächsten SonarCloud-Scan. Details zu bereits gefixten Typen stehen in
 der Git-/PR-Historie.
 
@@ -1963,5 +1962,5 @@ fork"), die in der SonarCloud-UI zu bewerten sind.
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).
   Nach einem Merge zeigt der nächste Scan die verbleibenden Issues.
-- Das Zähl-Script akzeptiert optional einen Pfad und Top-N:
-  `node scripts/count-sonar-maintainability-issues.js [csv] [topN]`.
+- Das Zähl-Script akzeptiert eine Kategorie oder einen CSV-Pfad sowie Optionen:
+  `node reports/sonarCloud/sonar-sort-and-group.js [kategorie|csv] [--top N|all] [--details] [--json]`.

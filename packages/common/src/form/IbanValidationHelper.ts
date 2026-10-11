@@ -121,7 +121,7 @@ export class IbanValidationHelper {
     const rearranged = normalized.slice(4) + normalized.slice(0, 4);
     let remainder = 0;
     for (const character of rearranged) {
-      const codePoint = character.charCodeAt(0);
+      const codePoint = character.codePointAt(0)!;
       // 'A'..'Z' expand to 10..35, digits stay as they are.
       const isLetter = codePoint >= 65 && codePoint <= 90;
       const isDigit = codePoint >= 48 && codePoint <= 57;

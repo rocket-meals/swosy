@@ -8,8 +8,8 @@ defineEmits<{ open: []; 'update:selected': [selected: boolean] }>();
 </script>
 
 <template>
-  <div class="row" :class="{ selected }" @click="$emit('open')">
-    <div class="row-select" @click.stop>
+  <div class="row" :class="{ selected }" tabindex="0" @click="$emit('open')" @keydown.enter.self="$emit('open')" @keydown.space.self.prevent="$emit('open')">
+    <div class="row-select" @click.stop @keydown.stop>
       <v-checkbox v-if="selectable" :model-value="selected" @update:model-value="$emit('update:selected', $event)" />
     </div>
     <slot />
@@ -30,6 +30,7 @@ defineEmits<{ open: []; 'update:selected': [selected: boolean] }>();
 }
 
 .row:hover,
+.row:focus-visible,
 .row.selected {
   border-color: var(--theme--primary);
 }
