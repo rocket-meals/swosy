@@ -61064,6 +61064,11 @@
             "type": "string",
             "format": "timestamp"
           },
+          "maintenance_message": {
+            "nullable": true,
+            "description": "Wird in der App während und kurz vor der Wartung angezeigt",
+            "type": "string"
+          },
           "foods_ratings_type_for_unverified": {
             "nullable": true,
             "description": "Wie für unverifizierte Nutzer (Gast-Accounts)?",
