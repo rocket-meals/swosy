@@ -13,27 +13,24 @@
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
-import { ModuleListHelper } from './ModuleListHelper';
+import { ModuleListHelper, type ModuleStatusCountRequest, type ModuleStatusListRequest } from './ModuleListHelper';
 import type { ModuleChatMessage } from './ChatQueryHelper';
+import type { ModuleCanteenRelation, ModuleChatRelation, ModuleImageItem, ModuleItem, ModuleItemWithImage, ModuleProfileSummary, ModuleStatusPresentation } from './ModuleItemTypes';
 
-export type FoodFeedbackStatusPresentation = {
-  labelKey: BackendTranslationKeys;
-  icon: string;
-  /** A Directus theme colour variable, so the chip works in light and dark mode. */
-  color: string;
+export type FoodFeedbackStatusPresentation = ModuleStatusPresentation;
+
+/** A food feedback with what every page of the module shows of it: the list and the ticker of "Live-Puls". */
+export type ModuleFoodFeedback = ModuleItem & {
+  rating?: number | null;
+  comment?: string | null;
+  food?: ModuleImageItem | string | null;
+  canteen?: ModuleCanteenRelation;
 };
 
 /** The fields the list needs from a feedback, with the relations it expands. */
-export type FoodFeedbackListItem = {
-  id: string;
-  comment?: string | null;
-  rating?: number | null;
-  date_created?: string | null;
-  date_updated?: string | null;
-  food?: { id: string; alias?: string | null; image?: string | { id: string } | null; image_remote_url?: string | null } | string | null;
-  canteen?: { id: string; alias?: string | null } | string | null;
-  profile?: { id: string; nickname?: string | null; avatar?: unknown; date_updated?: string | null; language?: string | { code?: string | null } | null } | string | null;
-  chat?: { id: string; conversation_state?: string | null; date_updated?: string | null } | string | null;
+export type FoodFeedbackListItem = ModuleFoodFeedback & {
+  profile?: (ModuleProfileSummary & { date_updated?: string | null; language?: string | { code?: string | null } | null }) | string | null;
+  chat?: ModuleChatRelation;
 };
 
 /** A message of a support chat – the same shape for every chat of the module, see `ChatQueryHelper`. */
@@ -76,10 +73,7 @@ export type FoodFeedbackListOptions = {
 };
 
 /** A canteen of the canteen filter, with its picture. */
-export type FoodFeedbackCanteenOption = { id: string; alias?: string | null; image?: string | { id: string } | null; image_remote_url?: string | null };
-
-/** Something with a picture: a Directus file or else a remote URL (foods, canteens). */
-type ItemWithImage = { image?: string | { id: string } | null; image_remote_url?: string | null };
+export type FoodFeedbackCanteenOption = ModuleImageItem;
 
 type DirectusFilter = Record<string, unknown>;
 
@@ -100,9 +94,6 @@ export class FoodFeedbackChatHelper {
 
   static readonly CANTEENS_ENDPOINT = `/items/${CollectionNames.CANTEENS}`;
   static readonly FOOD_FEEDBACKS_ENDPOINT = `/items/${CollectionNames.FOODS_FEEDBACKS}`;
-  static readonly CHATS_ENDPOINT = `/items/${CollectionNames.CHATS}`;
-  static readonly CHAT_MESSAGES_ENDPOINT = `/items/${CollectionNames.CHAT_MESSAGES}`;
-  static readonly CHATS_PARTICIPANTS_ENDPOINT = `/items/${CollectionNames.CHATS_PARTICIPANTS}`;
 
   static getStatusPresentation(status: FoodFeedbackChatStatus): FoodFeedbackStatusPresentation {
     switch (status) {
@@ -214,13 +205,14 @@ export class FoodFeedbackChatHelper {
   }
 
   /** URL parameters of the list request. Newest feedbacks first unless sorted otherwise. */
-  static buildListQuery(filter: FoodFeedbackChatFilter, page: number, search?: string | null, options: FoodFeedbackListOptions = {}) {
-    return ModuleListHelper.buildListQuery({ fields: FoodFeedbackChatHelper.LIST_FIELDS, filter: FoodFeedbackChatHelper.buildFilter(filter, options), sort: FoodFeedbackChatHelper.getSortParameter(options.sort), page, pageSize: options.pageSize, search });
+  static buildListQuery(request: ModuleStatusListRequest<FoodFeedbackChatFilter, FoodFeedbackListOptions>) {
+    const options = request.options ?? {};
+    return ModuleListHelper.buildListQuery({ fields: FoodFeedbackChatHelper.LIST_FIELDS, filter: FoodFeedbackChatHelper.buildFilter(request.filter, options), sort: FoodFeedbackChatHelper.getSortParameter(options.sort), page: request.page, pageSize: options.pageSize, search: request.search });
   }
 
   /** URL parameters to count the feedbacks of one filter chip – with the same canteen, food and rating filter as the list. */
-  static buildCountQuery(filter: FoodFeedbackChatFilter, options: FoodFeedbackListOptions = {}, search?: string | null) {
-    return ModuleListHelper.buildCountQuery({ filter: FoodFeedbackChatHelper.buildFilter(filter, options), search });
+  static buildCountQuery(request: ModuleStatusCountRequest<FoodFeedbackChatFilter, FoodFeedbackListOptions>) {
+    return ModuleListHelper.buildCountQuery({ filter: FoodFeedbackChatHelper.buildFilter(request.filter, request.options), search: request.search });
   }
 
   /** URL parameters to load the canteens for the canteen filter. */
@@ -334,7 +326,7 @@ export class FoodFeedbackChatHelper {
   }
 
   /** The Directus file as square thumbnail of twice `size` px (HiDPI), else the remote URL, else `undefined`. */
-  private static getImageUrl(item: ItemWithImage, apiRoot: string, size: number): string | undefined {
+  private static getImageUrl(item: ModuleItemWithImage, apiRoot: string, size: number): string | undefined {
     const fileId = typeof item.image === 'object' && item.image !== null ? item.image.id : item.image;
     if (fileId) {
       const root = apiRoot.endsWith('/') ? apiRoot : `${apiRoot}/`;

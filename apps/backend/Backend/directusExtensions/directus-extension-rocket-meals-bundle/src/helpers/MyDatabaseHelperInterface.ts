@@ -28,11 +28,7 @@ export type DocumentOrganization = {
  * ganzen `DirectusUsers`-Datensatz durchreicht, nimmt in Kauf, dass eines Tages mehr davon im
  * PDF landet, als dort hingehört.
  */
-export type DocumentUser = {
-  first_name?: string | null;
-  last_name?: string | null;
-  email?: string | null;
-};
+export type DocumentUser = Pick<DatabaseTypes.DirectusUsers, 'first_name' | 'last_name' | 'email'>;
 
 export interface MyDatabaseTestableHelperInterface {
   getServerInfo(): Promise<ServerInfo>;

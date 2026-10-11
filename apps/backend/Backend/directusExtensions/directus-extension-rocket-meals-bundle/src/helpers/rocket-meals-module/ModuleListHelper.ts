@@ -20,6 +20,18 @@ export type ModuleListQueryOptions = {
 
 export type ModuleCountQueryOptions = Pick<ModuleListQueryOptions, 'filter' | 'search'>;
 
+/** What a list page with status chips counts: the chip, the search text and the further options of the list. */
+export type ModuleStatusCountRequest<TFilter, TOptions> = {
+  filter: TFilter;
+  search?: string | null;
+  options?: TOptions;
+};
+
+/** What a list page with status chips loads: like the count, plus the page. */
+export type ModuleStatusListRequest<TFilter, TOptions> = ModuleStatusCountRequest<TFilter, TOptions> & {
+  page: number;
+};
+
 /** The part of `window.localStorage` the list settings need – replaceable in tests. */
 export type ModuleListSettingsStorage = Pick<Storage, 'getItem' | 'setItem'>;
 

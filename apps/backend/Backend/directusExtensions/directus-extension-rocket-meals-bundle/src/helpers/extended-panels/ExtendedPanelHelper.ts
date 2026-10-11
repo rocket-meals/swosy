@@ -17,6 +17,7 @@ import { DashboardNameHelper } from 'repo-depkit-common/src/DashboardNameHelper'
 import { FileNameHelper } from 'repo-depkit-common/src/FileNameHelper';
 import { AppExtensionLanguageHelper } from '../app-extensions/AppExtensionLanguageHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
+import type { DirectusRestQuery } from '../DirectusRestQuery';
 
 export type ExtendedPanelSortDirection = 'asc' | 'desc';
 
@@ -31,12 +32,7 @@ export type ExtendedListQueryOptions = {
 };
 
 /** A REST query in the shape `GET /items/:collection` takes as URL parameters. */
-export type ExtendedListRestQuery = {
-  fields: string;
-  filter: string;
-  sort: string;
-  limit: number;
-};
+export type ExtendedListRestQuery = Required<Pick<DirectusRestQuery, 'fields' | 'filter' | 'sort' | 'limit'>>;
 
 /** A format the Directus REST API can export to via the `export` query parameter. */
 export type ExtendedPanelExportFormat = {

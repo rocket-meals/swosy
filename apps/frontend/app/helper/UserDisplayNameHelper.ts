@@ -1,11 +1,9 @@
+import { DatabaseTypes } from 'repo-depkit-common';
+
 /**
  * Minimal shape of the `directus_users` fields the app loads for display purposes.
  */
-export type UserDisplayNameSource = {
-	first_name?: string | null;
-	last_name?: string | null;
-	email?: string | null;
-};
+export type UserDisplayNameSource = Pick<DatabaseTypes.DirectusUsers, 'first_name' | 'last_name' | 'email'>;
 
 const trimOrEmpty = (value: unknown): string => (typeof value === 'string' ? value.trim() : '');
 

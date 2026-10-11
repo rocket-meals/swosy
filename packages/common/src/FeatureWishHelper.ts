@@ -28,12 +28,22 @@ export enum FeatureWishProgress {
   NOT_PLANNED = 'not_planned',
 }
 
+/** What a person writes for a wish. Empty for a like. */
+export type FeatureWishText = {
+  title: string | null;
+  description: string | null;
+};
+
+/** A wish as lists and the moderation show it: always with id and title. */
+export type FeatureWishSummary = Pick<FeatureWishText, 'description'> & {
+  id: string;
+  title: string;
+};
+
 /** The fields of a wish the helper needs. Structural on purpose, so it works with `DatabaseTypes.FeatureWhishes`. */
-export type FeatureWishLike = {
+export type FeatureWishLike = Partial<FeatureWishText> & {
   id?: string;
   status?: string | null;
-  title?: string | null;
-  description?: string | null;
   related_to?: string | { id: string } | null;
   date_updated?: string | null;
   date_created?: string | null;
@@ -52,14 +62,12 @@ export enum FeatureWishCreateError {
   DESCRIPTION_TOO_LONG = 'description_too_long',
 }
 
-export type FeatureWishCreatePayload = {
-  id?: string;
-  status: FeatureWishStatus.DRAFT | FeatureWishStatus.LIKE;
-  title: string | null;
-  description: string | null;
-  related_to: string | null;
-  profile?: string | null;
-};
+export type FeatureWishCreatePayload = FeatureWishText &
+  Pick<FeatureWishLike, 'id'> & {
+    status: FeatureWishStatus.DRAFT | FeatureWishStatus.LIKE;
+    related_to: string | null;
+    profile?: string | null;
+  };
 
 export type FeatureWishCreateResult = { ok: true; isLike: boolean; payload: FeatureWishCreatePayload } | { ok: false; error: FeatureWishCreateError };
 

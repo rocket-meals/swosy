@@ -122,9 +122,9 @@ describe('WorkflowsPageHelper', () => {
     });
 
     it('keeps points in time short', () => {
-      expect(WorkflowsPageHelper.formatPointInTime(new Date(2026, 9, 8, 14, 45), NOW, 'de')).toBe('14:45');
-      expect(WorkflowsPageHelper.formatPointInTime(new Date(2026, 9, 10, 4, 0), NOW, 'de')).toBe('Sa., 04:00');
-      expect(WorkflowsPageHelper.formatPointInTime(new Date(2026, 10, 1, 1, 0), NOW, 'de')).toBe('01.11., 01:00');
+      expect(WorkflowsPageHelper.formatPointInTime(new Date(2026, 9, 8, 14, 45), { now: NOW, language: 'de' })).toBe('14:45');
+      expect(WorkflowsPageHelper.formatPointInTime(new Date(2026, 9, 10, 4, 0), { now: NOW, language: 'de' })).toBe('Sa., 04:00');
+      expect(WorkflowsPageHelper.formatPointInTime(new Date(2026, 10, 1, 1, 0), { now: NOW, language: 'de' })).toBe('01.11., 01:00');
     });
 
     it('starts a run with state running and an optional input', () => {

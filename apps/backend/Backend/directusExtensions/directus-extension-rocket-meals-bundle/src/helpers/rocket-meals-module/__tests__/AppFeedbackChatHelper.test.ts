@@ -2,6 +2,7 @@ import { describe, expect, it } from '@jest/globals';
 import { AppFeedbackChatStatusHelper, AppFeedbackSourceFilter, FoodFeedbackChatFilter, FoodFeedbackChatStatus } from 'repo-depkit-common';
 import { AppFeedbackChatActions } from '../AppFeedbackChatActions';
 import { AppFeedbackChatHelper, AppFeedbackTypeFilter } from '../AppFeedbackChatHelper';
+import { ChatQueryHelper } from '../ChatQueryHelper';
 import { FoodFeedbackChatHelper, FoodFeedbackListSort } from '../FoodFeedbackChatHelper';
 import { ModuleListHelper } from '../ModuleListHelper';
 import { AppExtensionLanguageHelper } from '../../app-extensions/AppExtensionLanguageHelper';
@@ -12,7 +13,7 @@ import { BackendTranslationKeys } from '../../translations/BackendTranslationKey
 describe('AppFeedbackChatHelper', () => {
   describe('buildListQuery', () => {
     it('sorts newest first, pages, searches and uses the shared filter', () => {
-      const query = AppFeedbackChatHelper.buildListQuery(FoodFeedbackChatFilter.OPEN, 2, '  Absturz ');
+      const query = AppFeedbackChatHelper.buildListQuery({ filter: FoodFeedbackChatFilter.OPEN, page: 2, search: '  Absturz ' });
       expect(query.sort).toBe('-date_created');
       expect(query.limit).toBe(ModuleListHelper.PAGE_SIZE);
       expect(query.page).toBe(2);
@@ -24,7 +25,7 @@ describe('AppFeedbackChatHelper', () => {
     });
 
     it('omits an empty search, clamps the page and sorts oldest first on request', () => {
-      const query = AppFeedbackChatHelper.buildListQuery(FoodFeedbackChatFilter.ALL, 0, '  ', { sort: FoodFeedbackListSort.OLDEST, pageSize: 50 });
+      const query = AppFeedbackChatHelper.buildListQuery({ filter: FoodFeedbackChatFilter.ALL, page: 0, search: '  ', options: { sort: FoodFeedbackListSort.OLDEST, pageSize: 50 } });
       expect(query.search).toBeUndefined();
       expect(query.page).toBe(1);
       expect(query.sort).toBe('date_created');
@@ -68,7 +69,7 @@ describe('AppFeedbackChatHelper', () => {
   });
 
   it('counts with the same filter and search as the list', () => {
-    expect(AppFeedbackChatHelper.buildCountQuery(FoodFeedbackChatFilter.NEW, { sources: [AppFeedbackSourceFilter.APP] }, ' x ')).toEqual({
+    expect(AppFeedbackChatHelper.buildCountQuery({ filter: FoodFeedbackChatFilter.NEW, options: { sources: [AppFeedbackSourceFilter.APP] }, search: ' x ' })).toEqual({
       aggregate: JSON.stringify({ count: ['id'] }),
       filter: JSON.stringify(AppFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.NEW, { sources: [AppFeedbackSourceFilter.APP] })),
       search: 'x',
@@ -130,8 +131,8 @@ describe('AppFeedbackChatActions', () => {
     const chatId = await AppFeedbackChatActions.ensureChat(api, { id: 'f1', title: 'Crash', content: 'Beim Start', profile: { id: 'p1' }, chat: null });
     expect(chatId).toBe('100');
     expect(calls).toEqual([
-      { method: 'post', url: FoodFeedbackChatHelper.CHATS_ENDPOINT, data: AppFeedbackChatStatusHelper.buildChatForFeedback({ id: 'f1', title: 'Crash', content: 'Beim Start' }) },
-      { method: 'post', url: FoodFeedbackChatHelper.CHATS_PARTICIPANTS_ENDPOINT, data: { chats_id: '100', profiles_id: 'p1' } },
+      { method: 'post', url: ChatQueryHelper.CHATS_ENDPOINT, data: AppFeedbackChatStatusHelper.buildChatForFeedback({ id: 'f1', title: 'Crash', content: 'Beim Start' }) },
+      { method: 'post', url: ChatQueryHelper.CHATS_PARTICIPANTS_ENDPOINT, data: { chats_id: '100', profiles_id: 'p1' } },
       { method: 'patch', url: `${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/f1`, data: { chat: '100' } },
     ]);
   });
@@ -172,7 +173,7 @@ describe('AppFeedbackChatActions', () => {
 
   it('answers a store review via its response field', async () => {
     const { api, calls } = createApi();
-    await AppFeedbackChatActions.setStoreResponse(api, { id: 'r1' }, 'Danke!');
+    await AppFeedbackChatActions.setStoreResponse(api, { feedback: { id: 'r1' }, response: 'Danke!' });
     expect(calls).toEqual([{ method: 'patch', url: `${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/r1`, data: { response: 'Danke!', state: 'closed' } }]);
   });
 });

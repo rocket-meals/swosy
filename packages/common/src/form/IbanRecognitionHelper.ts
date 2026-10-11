@@ -102,12 +102,7 @@ export interface FindIbanOptions {
  * can be unit tested against stored OCR output and reused by any app.
  */
 export class IbanRecognitionHelper {
-  /** Shortest and longest IBAN in the registry — used to bound the scan regex. */
-  static readonly MIN_IBAN_LENGTH = IbanValidationHelper.MIN_IBAN_LENGTH;
-  static readonly MAX_IBAN_LENGTH = IbanValidationHelper.MAX_IBAN_LENGTH;
-
-  /** IBAN length per country. Kept in {@link IbanValidationHelper}, which owns validation. */
-  static readonly IBAN_LENGTH_BY_COUNTRY = IbanValidationHelper.IBAN_LENGTH_BY_COUNTRY;
+  // The IBAN lengths (shortest, longest, per country) are kept in {@link IbanValidationHelper}, which owns validation.
 
   /**
    * Glyphs an OCR engine confuses with a digit. Applied only where the IBAN
@@ -423,7 +418,7 @@ export class IbanRecognitionHelper {
     const blockEnds = new Set<number>();
     let firstBlockEnd = 0;
     const isInsideTokenWithLetter: boolean[] = [];
-    for (let index = first; index < tokens.length && glued.length < IbanRecognitionHelper.MAX_IBAN_LENGTH * 2; index++) {
+    for (let index = first; index < tokens.length && glued.length < IbanValidationHelper.MAX_IBAN_LENGTH * 2; index++) {
       const token = tokens[index] ?? '';
       const tokenHasLetter = /[A-Z]/.test(token);
       isInsideTokenWithLetter.push(...new Array<boolean>(token.length).fill(tokenHasLetter));
@@ -439,8 +434,8 @@ export class IbanRecognitionHelper {
   /** The IBAN-shaped runs that begin at `start` inside the glued tokens - none, one or two. */
   private static shapedRunsAt(gluedTokens: GluedTokens, start: number): IbanShapedRun[] {
     const { glued, blockEnds, firstBlockEnd, isInsideTokenWithLetter } = gluedTokens;
-    const run = glued.slice(start, start + IbanRecognitionHelper.MAX_IBAN_LENGTH);
-    if (run.length < IbanRecognitionHelper.MIN_IBAN_LENGTH) {
+    const run = glued.slice(start, start + IbanValidationHelper.MAX_IBAN_LENGTH);
+    if (run.length < IbanValidationHelper.MIN_IBAN_LENGTH) {
       return [];
     }
     const repairedHead = IbanRecognitionHelper.repairOcrConfusions(run.slice(0, 4));

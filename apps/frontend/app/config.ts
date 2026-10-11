@@ -237,7 +237,8 @@ export function getVersionPatch() {
         // 120: SonarCloud reliability: floating promises marked with void, async without await removed
         // 121: SonarCloud reliability: remaining bugs (labels, regex backtracking, codePointAt, sort compare)
         // 122: SonarCloud: remaining maintainability findings and security hotspots resolved
-        return 122;
+        // 123: data clumps refactored into shared types and parameter objects
+        return 123;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

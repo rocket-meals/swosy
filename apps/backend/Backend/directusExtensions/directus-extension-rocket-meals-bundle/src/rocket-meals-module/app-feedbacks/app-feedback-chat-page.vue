@@ -152,10 +152,10 @@ async function sendMessage(text: string): Promise<boolean> {
   sending.value = true;
   try {
     if (isStoreReview.value) {
-      await AppFeedbackChatActions.setStoreResponse(api, feedback.value, text);
+      await AppFeedbackChatActions.setStoreResponse(api, { feedback: feedback.value, response: text });
     } else {
       const targetChatId = await ensureChat();
-      await api.post(FoodFeedbackChatHelper.CHAT_MESSAGES_ENDPOINT, { chat: targetChatId, message: text });
+      await api.post(ChatQueryHelper.CHAT_MESSAGES_ENDPOINT, { chat: targetChatId, message: text });
     }
   } catch (error) {
     console.error('[rocket-meals-module] sending app feedback answer failed', error);
@@ -189,7 +189,7 @@ async function sendMailAnswer() {
   }
   sending.value = true;
   try {
-    await AppFeedbackChatActions.sendMailResponse(api, feedback.value, text);
+    await AppFeedbackChatActions.sendMailResponse(api, { feedback: feedback.value, response: text });
     mailAnswer.value = '';
   } catch (error) {
     console.error('[rocket-meals-module] sending app feedback mail answer failed', error);

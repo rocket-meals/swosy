@@ -15,6 +15,13 @@ type ChatMessage = Pick<DatabaseTypes.ChatMessages, 'id' | 'message' | 'profile'
 /** A user address to mail and the profile whose language the mail is written in. */
 type UserRecipient = { email: string; profileId: PrimaryKey };
 
+/** The chat the mails are about, with the feedbacks it belongs to. */
+type ChatMailContext = {
+  chatId: string;
+  relatedAppFeedbacks: DatabaseTypes.AppFeedbacks[];
+  relatedFoodFeedbacks: DatabaseTypes.FoodsFeedbacks[];
+};
+
 /**
  * Sends the delayed mails about the messages of a chat (see {@link ChatMailDigestHelper}):
  *
@@ -79,16 +86,18 @@ export class ChatMessageMailHelper {
     const relatedAppFeedbacks = await this.findRelatedItems(() => this.myDatabaseHelper.getAppFeedbacksHelper().findItems({ chat: chatId }), chatId, 'app feedbacks');
     const relatedFoodFeedbacks = await this.findRelatedItems(() => this.myDatabaseHelper.getFoodFeedbacksHelper().findItems({ chat: chatId }), chatId, 'food feedbacks');
 
-    const { supportMessages, userRecipients } = await this.collectRecipients(chatId, messages, ChatMailDigestHelper.getUnseenMessages(messages, isStaffMessage), relatedAppFeedbacks, relatedFoodFeedbacks);
+    const context: ChatMailContext = { chatId, relatedAppFeedbacks, relatedFoodFeedbacks };
+
+    const { supportMessages, userRecipients } = await this.collectRecipients(context, messages, ChatMailDigestHelper.getUnseenMessages(messages, isStaffMessage));
 
     if (supportMessages.length > 0) {
       try {
-        await this.mailSupport(chatId, supportMessages, relatedAppFeedbacks, relatedFoodFeedbacks);
+        await this.mailSupport(context, supportMessages);
       } catch (error) {
         console.error(`${HELPER_NAME}: Failed to mail support about chat ${chatId}`, error);
       }
     }
-    await this.mailUsers(chatId, Array.from(userRecipients.values()), relatedAppFeedbacks);
+    await this.mailUsers(context, Array.from(userRecipients.values()));
   }
 
   /** The ids of the messages written by support (see {@link isStaffMessage}). */
@@ -109,16 +118,16 @@ export class ChatMessageMailHelper {
    * over the support digest when support wrote nothing unseen, every user address (first one wins)
    * gets the messages its profile has not seen yet.
    */
-  private async collectRecipients(chatId: string, messages: ChatMessage[], initialSupportMessages: ChatMessage[], relatedAppFeedbacks: DatabaseTypes.AppFeedbacks[], relatedFoodFeedbacks: DatabaseTypes.FoodsFeedbacks[]): Promise<{ supportMessages: ChatMessage[]; userRecipients: Map<string, UserRecipient & { messages: ChatMessage[] }> }> {
+  private async collectRecipients(context: ChatMailContext, messages: ChatMessage[], initialSupportMessages: ChatMessage[]): Promise<{ supportMessages: ChatMessage[]; userRecipients: Map<string, UserRecipient & { messages: ChatMessage[] }> }> {
     let supportMessages = initialSupportMessages;
     const userRecipients = new Map<string, UserRecipient & { messages: ChatMessage[] }>();
-    for (const profileId of await this.collectProfiles(chatId, relatedAppFeedbacks, relatedFoodFeedbacks)) {
+    for (const profileId of await this.collectProfiles(context)) {
       const unseen = ChatMailDigestHelper.getUnseenMessages(messages, message => String(ItemsServiceHelper.getPrimaryKeyFromItemOrString(message.profile)) === String(profileId));
       if (unseen.length === 0) {
         continue;
       }
       // Sequential on purpose: the first matching address wins (support digest, per-address dedup), so the order of the profiles matters, and it keeps the user lookups at one DB query at a time.
-      const emails = await this.collectEmailsOfProfile(profileId, relatedAppFeedbacks); // NOSONAR S9382 - sequential on purpose, see comment above
+      const emails = await this.collectEmailsOfProfile(profileId, context.relatedAppFeedbacks); // NOSONAR S9382 - sequential on purpose, see comment above
       for (const email of emails) {
         const recipient = ChatMailRecipientHelper.classify(email);
         if (recipient.kind === ChatMailRecipientKind.SUPPORT && supportMessages.length === 0) {
@@ -158,7 +167,8 @@ export class ChatMessageMailHelper {
   }
 
   /** The participants of the chat and the authors of its feedbacks, in case they are not (yet) a participant. */
-  private async collectProfiles(chatId: string, relatedAppFeedbacks: DatabaseTypes.AppFeedbacks[], relatedFoodFeedbacks: DatabaseTypes.FoodsFeedbacks[]): Promise<Set<PrimaryKey>> {
+  private async collectProfiles(context: ChatMailContext): Promise<Set<PrimaryKey>> {
+    const { chatId, relatedAppFeedbacks, relatedFoodFeedbacks } = context;
     const profileIds = new Set<PrimaryKey>();
     try {
       const participantsHelper = new ItemsServiceHelper<DatabaseTypes.ChatsParticipants>(this.myDatabaseHelper, CollectionNames.CHATS_PARTICIPANTS);
@@ -205,7 +215,8 @@ export class ChatMessageMailHelper {
     return emails;
   }
 
-  private async mailSupport(chatId: string, messages: ChatMessage[], relatedAppFeedbacks: DatabaseTypes.AppFeedbacks[], relatedFoodFeedbacks: DatabaseTypes.FoodsFeedbacks[]): Promise<void> {
+  private async mailSupport(context: ChatMailContext, messages: ChatMessage[]): Promise<void> {
+    const { chatId, relatedAppFeedbacks, relatedFoodFeedbacks } = context;
     const chatsHelper = new ItemsServiceHelper<DatabaseTypes.Chats>(this.myDatabaseHelper, CollectionNames.CHATS);
     const chat = await chatsHelper.readOne(chatId);
 
@@ -246,7 +257,8 @@ export class ChatMessageMailHelper {
    * the menu item "Chats" of the app to reply there; in the chat of an app feedback it also quotes
    * the feedback.
    */
-  private async mailUsers(chatId: string, recipients: (UserRecipient & { messages: ChatMessage[] })[], relatedAppFeedbacks: DatabaseTypes.AppFeedbacks[]): Promise<void> {
+  private async mailUsers(context: ChatMailContext, recipients: (UserRecipient & { messages: ChatMessage[] })[]): Promise<void> {
+    const { chatId, relatedAppFeedbacks } = context;
     if (recipients.length === 0) {
       return;
     }

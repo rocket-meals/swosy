@@ -47,14 +47,18 @@ export type FormDocumentCheckboxOption = {
   checked: boolean;
 };
 
-export type FormDocumentRow = {
-  type: FormDocumentRowType;
+/** Beschriftung einer Zeile, wie sie über dem Wert steht. */
+export type FormDocumentRowCaption = {
   label: string;
   /**
    * Der Kleingedruckte Hinweis unter der Beschriftung, aus `form_fields.translations.description`
    * – auf dem Papiervordruck steht dort z. B. „(nur, wenn abweichend von bisheriger Nummer)".
    */
   hint: string | null;
+};
+
+export type FormDocumentRow = FormDocumentRowCaption & {
+  type: FormDocumentRowType;
   /** Der Wert als reiner Text; leer, wenn das Feld nicht ausgefüllt wurde. */
   text: string;
   /** Nur bei `boolean`: die Optionen in Anzeigereihenfolge. */
@@ -182,7 +186,7 @@ export class FormPdfDocumentHelper {
         continue;
       }
 
-      const row = this.buildRowForField(label, hint, formExtract);
+      const row = this.buildRowForField({ label, hint }, formExtract);
       if (row) {
         labelledRows.push(this.splitLabelIntoGroupAndLabel(row));
       }
@@ -452,15 +456,16 @@ export class FormPdfDocumentHelper {
     return trimmedValue.length > 0 ? trimmedValue : null;
   }
 
-  private static buildRowForField(label: string, hint: string | null, formExtract: FormExtractRelevantInformationSingle): FormDocumentRow | null {
+  private static buildRowForField(caption: FormDocumentRowCaption, formExtract: FormExtractRelevantInformationSingle): FormDocumentRow | null {
+    const { label, hint } = caption;
     const fieldType = formExtract.form_field.field_type ?? '';
     const FIELD_TYPE = FormHelperCommon.FORM_FIELD_TYPE;
 
     if (fieldType === FIELD_TYPE.BOOLEAN_CHECKBOX) {
-      return this.buildBooleanRow(label, hint, formExtract.form_answer.value_boolean);
+      return this.buildBooleanRow(caption, formExtract.form_answer.value_boolean);
     }
     if (fieldType === FIELD_TYPE.STRING_BANK_ACCOUNT || fieldType === FIELD_TYPE.STRING_BIC) {
-      return this.buildCharacterBoxesRow(label, hint, formExtract.form_answer.value_string, fieldType);
+      return this.buildCharacterBoxesRow(caption, formExtract.form_answer.value_string, fieldType);
     }
     if (fieldType === FIELD_TYPE.MULTILINE_TEXT) {
       return { type: 'multiline', label, hint, text: formExtract.form_answer.value_string ?? '' };
@@ -488,11 +493,10 @@ export class FormPdfDocumentHelper {
     };
   }
 
-  private static buildBooleanRow(label: string, hint: string | null, value: boolean | null | undefined): FormDocumentRow {
+  private static buildBooleanRow(caption: FormDocumentRowCaption, value: boolean | null | undefined): FormDocumentRow {
     return {
       type: 'boolean',
-      label,
-      hint,
+      ...caption,
       text: '',
       options: [
         { label: BackendTranslator.translate(BackendTranslationKeys.no), checked: value === false },
@@ -501,7 +505,7 @@ export class FormPdfDocumentHelper {
     };
   }
 
-  private static buildCharacterBoxesRow(label: string, hint: string | null, value: string | null | undefined, fieldType: string): FormDocumentRow {
+  private static buildCharacterBoxesRow(caption: FormDocumentRowCaption, value: string | null | undefined, fieldType: string): FormDocumentRow {
     const cleanedValue = value ? StringHelper.replaceAllWithOptions({ str: value, find: String.raw`\s`, replace: '' }).toUpperCase() : '';
     const emptyBoxCount = fieldType === FormHelperCommon.FORM_FIELD_TYPE.STRING_BIC ? this.EMPTY_BOX_COUNT_BIC : this.EMPTY_BOX_COUNT_IBAN;
     const characterCount = cleanedValue.length > 0 ? cleanedValue.length : emptyBoxCount;
@@ -516,7 +520,7 @@ export class FormPdfDocumentHelper {
       currentGroup.push(cleanedValue[index] ?? '');
     }
 
-    return { type: 'character_boxes', label, hint, text: cleanedValue, boxGroups };
+    return { type: 'character_boxes', ...caption, text: cleanedValue, boxGroups };
   }
 
   private static formatDateValue(formExtract: FormExtractRelevantInformationSingle): string {

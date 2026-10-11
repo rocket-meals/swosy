@@ -13,12 +13,10 @@
 
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { FriendshipStatus } from 'repo-depkit-common/src/FriendshipStatus';
+import type { ModuleProfileSummary } from './ModuleItemTypes';
+import type { DirectusRestQuery } from '../DirectusRestQuery';
 
-export type FriendshipNetworkProfile = {
-  id: string;
-  nickname?: string | null;
-  avatar?: unknown;
-};
+export type FriendshipNetworkProfile = ModuleProfileSummary;
 
 type RelatedProfile = FriendshipNetworkProfile | string | null;
 
@@ -87,11 +85,7 @@ export type FriendshipNetworkRequest = {
   dateCreated?: string | null;
 };
 
-export type FriendshipNetworkQuery = {
-  fields: string;
-  limit: number;
-  sort: string;
-};
+export type FriendshipNetworkQuery = Required<Pick<DirectusRestQuery, 'fields' | 'limit' | 'sort'>>;
 
 export class FriendshipNetworkHelper {
   static readonly FRIENDSHIPS_ENDPOINT = `/items/${CollectionNames.FRIENDSHIPS}`;

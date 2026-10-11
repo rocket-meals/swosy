@@ -12,7 +12,7 @@
 
 import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onBeforeUnmount, onMounted, ref, watch, type Ref, type WatchSource } from 'vue';
-import { ModuleListHelper, type ModuleListQuery } from '../../helpers/rocket-meals-module/ModuleListHelper';
+import { ModuleListHelper, type ModuleListQuery, type ModuleStatusCountRequest, type ModuleStatusListRequest } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import type { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 
@@ -26,8 +26,8 @@ export type ModuleStatusListConfig<TItem extends ModuleListItem, TFilter extends
   initialFilter: TFilter;
   /** Everything besides status, page and search that the requests depend on; a change starts again on page 1. */
   options: Readonly<Ref<TOptions>>;
-  buildListQuery: (filter: TFilter, page: number, search: string, options: TOptions) => ModuleListQuery;
-  buildCountQuery: (filter: TFilter, options: TOptions, search: string) => Record<string, string>;
+  buildListQuery: (request: ModuleStatusListRequest<TFilter, TOptions>) => ModuleListQuery;
+  buildCountQuery: (request: ModuleStatusCountRequest<TFilter, TOptions>) => Record<string, string>;
   /** Only these items can be selected; all when not given. */
   canSelect?: (item: TItem) => boolean;
 };
@@ -80,7 +80,7 @@ export function useModuleStatusList<TItem extends ModuleListItem, TFilter extend
     loading.value = true;
     try {
       const response = await api.get(config.endpoint, {
-        params: config.buildListQuery(activeFilter.value, currentPage.value, searchQuery.value, config.options.value),
+        params: config.buildListQuery({ filter: activeFilter.value, page: currentPage.value, search: searchQuery.value, options: config.options.value }),
       });
       if (request === latestRequest) {
         items.value = response.data?.data ?? [];
@@ -109,7 +109,7 @@ export function useModuleStatusList<TItem extends ModuleListItem, TFilter extend
     const entries = await Promise.all(
       config.filters.map(async filter => {
         try {
-          const response = await api.get(config.endpoint, { params: config.buildCountQuery(filter, config.options.value, searchQuery.value) });
+          const response = await api.get(config.endpoint, { params: config.buildCountQuery({ filter, search: searchQuery.value, options: config.options.value }) });
           return [filter, ModuleListHelper.readCount(response.data)] as const;
         } catch {
           return [filter, undefined] as const;
