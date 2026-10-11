@@ -241,7 +241,8 @@ export function getVersionPatch() {
         // 124: the badge on the app icon is set back to 0 whenever the app is opened
         // 125: the push question after a feedback, wish or comment is asked by count
         //      per category (first time, then after every no at twice the count)
-        return 125;
+        // 126: food comments are asked with a larger gap (1, 3, 10, 20, 40, then doubling)
+        return 126;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

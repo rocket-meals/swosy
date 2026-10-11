@@ -1,4 +1,4 @@
-import { countPushNotificationOptInSubmission, getPushNotificationOptInAction, getPushNotificationPermissionStep, readPushNotificationOptInState, recordPushNotificationOptInDecline } from './PushNotificationOptInHelper';
+import { countPushNotificationOptInSubmission, getPushNotificationOptInAction, getPushNotificationPermissionStep, PushNotificationOptInCategory, readPushNotificationOptInState, recordPushNotificationOptInDecline } from './PushNotificationOptInHelper';
 
 const undetermined = { granted: false, canAskAgain: true };
 const granted = { granted: true, canAskAgain: true };
@@ -42,18 +42,25 @@ describe('getPushNotificationOptInAction', () => {
 		expect(getPushNotificationOptInAction({ platform: 'ios', permission: blocked, state: firstTime })).toBe('none');
 	});
 
-	it('after every no asks again only at twice the count: 1, 2, 4, 8, 16', () => {
+	function askedAtWhenAlwaysDeclined(category: PushNotificationOptInCategory, times: number) {
 		let state = readPushNotificationOptInState(undefined);
 		const askedAt: number[] = [];
-		for (let time = 1; time <= 20; time++) {
+		for (let time = 1; time <= times; time++) {
 			state = countPushNotificationOptInSubmission(state);
 			if (getPushNotificationOptInAction({ platform: 'ios', permission: undetermined, state }) === 'explain') {
 				askedAt.push(state.count);
-				state = recordPushNotificationOptInDecline(state);
+				state = recordPushNotificationOptInDecline(state, category);
 			}
 		}
-		expect(askedAt).toEqual([1, 2, 4, 8, 16]);
-		expect(state.declines).toBe(5);
+		return { askedAt, declines: state.declines };
+	}
+
+	it.each([PushNotificationOptInCategory.APP_FEEDBACK, PushNotificationOptInCategory.FEATURE_WISH])('after every no asks %s again only at twice the count', category => {
+		expect(askedAtWhenAlwaysDeclined(category, 20)).toEqual({ askedAt: [1, 2, 4, 8, 16], declines: 5 });
+	});
+
+	it('asks food comments with a larger gap, then doubles', () => {
+		expect(askedAtWhenAlwaysDeclined(PushNotificationOptInCategory.FOOD_COMMENT, 200)).toEqual({ askedAt: [1, 3, 10, 20, 40, 80, 160], declines: 7 });
 	});
 });
 

@@ -31,8 +31,8 @@ const getOptInStorageKey = (category: PushNotificationOptInCategory) => `push_no
  * user agreed there:
  *
  * - {@link askForPushNotifications}: our suggestion after the user did something they may get an
- *   answer to (app feedback, feature wish, comment). Asked the first time; after a no only once
- *   the user did it twice as often in that category (1, 2, 4, 8, ...).
+ *   answer to (app feedback, feature wish, comment). Asked the first time; after a no only at the
+ *   next count of that category (app feedback 1, 2, 4, 8, ..., food comment 1, 3, 10, 20, 40, ...).
  * - {@link ensurePushNotificationPermission}: the user switched on something that needs push
  *   notifications (food reminder, free apartments). Resolves whether the permission is there.
  */
@@ -115,7 +115,7 @@ const usePushNotificationOptInPrompt = () => {
 		}
 		const granted = await explainAndRequest(translate(TranslationKeys.push_notification_opt_in_description));
 		if (!granted) {
-			await setValue(storageKey, recordPushNotificationOptInDecline(state));
+			await setValue(storageKey, recordPushNotificationOptInDecline(state, category));
 		}
 	}, [explainAndRequest, syncDevice, translate]);
 

@@ -61,16 +61,31 @@ export function countPushNotificationOptInSubmission(state: PushNotificationOptI
 	return { ...state, count: state.count + 1 };
 }
 
-/** The user said no: we ask again only when they did it twice as often as now (1, 2, 4, 8, ...). */
-export function recordPushNotificationOptInDecline(state: PushNotificationOptInState): PushNotificationOptInState {
-	return { ...state, declines: state.declines + 1, nextAskAt: Math.max(1, state.count) * 2 };
+/**
+ * At which counts we ask, at the start. After the last entry the count doubles with every no.
+ * Food comments come much more often and many just want to leave their opinion without waiting
+ * for an answer, so they get a larger gap than app feedbacks and feature wishes.
+ */
+export const PUSH_NOTIFICATION_OPT_IN_ASK_COUNTS: Record<PushNotificationOptInCategory, readonly number[]> = {
+	[PushNotificationOptInCategory.APP_FEEDBACK]: [1],
+	[PushNotificationOptInCategory.FEATURE_WISH]: [1],
+	[PushNotificationOptInCategory.FOOD_COMMENT]: [1, 3, 10, 20, 40],
+};
+
+/**
+ * The user said no: we ask again at the next count of the category, after the list only when
+ * they did it twice as often as now (app feedback 1, 2, 4, 8, ..., food comment 1, 3, 10, 20, 40, 80, ...).
+ */
+export function recordPushNotificationOptInDecline(state: PushNotificationOptInState, category: PushNotificationOptInCategory): PushNotificationOptInState {
+	const nextListed = PUSH_NOTIFICATION_OPT_IN_ASK_COUNTS[category].find(askCount => askCount > state.count);
+	return { ...state, declines: state.declines + 1, nextAskAt: nextListed ?? Math.max(1, state.count) * 2 };
 }
 
 /**
  * What to do when a user with a profile did something they may get an answer to (app feedback,
  * feature wish, comment). `state` already counts this time. Unlike an explicit switch this is our
- * suggestion: it is asked on the first time and, after every no, only once the user did it twice
- * as often (not after a time). It never sends anyone to the settings:
+ * suggestion: it is asked on the first time and, after every no, only at the next count of
+ * {@link recordPushNotificationOptInDecline} (by count, not after a time). It never sends anyone to the settings:
  * - `none`: nothing,
  * - `sync`: permission already granted, only make sure the backend knows the push token,
  * - `explain`: show our own modal first, then the system dialog.
