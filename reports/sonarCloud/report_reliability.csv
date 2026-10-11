@@ -1,3 +1,1 @@
 Key,Message,Component,Line
-"AaEqCYyiELjJiqcDzwCW","""tabindex"" should only be declared on interactive elements.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/module-list/list-row.vue",11
-"AaEqCYqOELjJiqcDzwCV","Add a 'onKeyDown|onKeyUp' attribute to this <div> tag.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/support-chat/support-chat-conversation.vue",140
