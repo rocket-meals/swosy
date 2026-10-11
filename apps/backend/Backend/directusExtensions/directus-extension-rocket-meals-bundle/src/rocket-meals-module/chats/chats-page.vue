@@ -27,7 +27,12 @@ const { translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.CHATS;
 
-const activeFilter = ref<FoodFeedbackChatFilter>(FoodFeedbackChatFilter.OPEN);
+/** The status chip is remembered per browser, so the page opens again as it was left. */
+const SETTINGS_STORAGE_KEY = ModuleListHelper.getSettingsStorageKey('chats');
+const settingsStorage = typeof window !== 'undefined' ? window.localStorage : undefined;
+const storedSettings = ModuleListHelper.readSettings<{ statusFilter: FoodFeedbackChatFilter }>(settingsStorage, SETTINGS_STORAGE_KEY);
+
+const activeFilter = ref<FoodFeedbackChatFilter>(ModuleListHelper.pickAllowed(storedSettings.statusFilter, ChatQueryHelper.STATUS_FILTERS, FoodFeedbackChatFilter.OPEN));
 const search = ref('');
 const chats = ref<ModuleChat[]>([]);
 /** The newest message per chat id – the preview of a row. */
@@ -105,6 +110,7 @@ watch(search, () => {
   searchTimer = setTimeout(reloadFromFirstPage, ModuleListHelper.SEARCH_DEBOUNCE_MS);
 });
 watch(activeFilter, reloadFromFirstPage);
+watch(activeFilter, () => ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { statusFilter: activeFilter.value }));
 watch(currentPage, load);
 onMounted(load);
 </script>

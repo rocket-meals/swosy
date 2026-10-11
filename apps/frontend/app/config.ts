@@ -238,7 +238,8 @@ export function getVersionPatch() {
         // 121: SonarCloud reliability: remaining bugs (labels, regex backtracking, codePointAt, sort compare)
         // 122: SonarCloud: remaining maintainability findings and security hotspots resolved
         // 123: data clumps refactored into shared types and parameter objects
-        return 123;
+        // 124: the badge on the app icon is set back to 0 whenever the app is opened
+        return 124;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

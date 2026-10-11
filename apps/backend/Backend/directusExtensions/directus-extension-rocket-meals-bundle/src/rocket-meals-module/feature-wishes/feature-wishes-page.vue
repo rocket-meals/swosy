@@ -44,12 +44,12 @@ const { translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.FEATURE_WISHES;
 
-/** Sort and page size are remembered per browser. */
+/** Status chip, progresses, sort and page size are remembered per browser, so the page opens again as it was left. */
 const SETTINGS_STORAGE_KEY = ModuleListHelper.getSettingsStorageKey('feature-wishes');
 const settingsStorage = typeof window !== 'undefined' ? window.localStorage : undefined;
-const storedSettings = ModuleListHelper.readSettings<FeatureWishListOptions>(settingsStorage, SETTINGS_STORAGE_KEY);
+const storedSettings = ModuleListHelper.readSettings<FeatureWishListOptions & { statusFilter?: FeatureWishListFilter }>(settingsStorage, SETTINGS_STORAGE_KEY);
 
-const progresses = ref<FeatureWishProgress[]>([]);
+const progresses = ref<FeatureWishProgress[]>(FeatureWishModuleHelper.getProgresses(storedSettings.progresses));
 const sort = ref<FeatureWishListSort>(ModuleListHelper.pickAllowed(storedSettings.sort, FeatureWishModuleHelper.SORTS, FeatureWishListSort.NEWEST));
 const pageSize = ref<number>(ModuleListHelper.getPageSize(storedSettings.pageSize));
 
@@ -83,7 +83,7 @@ const {
   name: 'feature wishes',
   endpoint: FeatureWishModuleHelper.FEATURE_WISHES_ENDPOINT,
   filters: FeatureWishModuleHelper.FILTERS,
-  initialFilter: FeatureWishListFilter.IN_REVIEW,
+  initialFilter: ModuleListHelper.pickAllowed(storedSettings.statusFilter, FeatureWishModuleHelper.FILTERS, FeatureWishListFilter.IN_REVIEW),
   options: listOptions,
   buildListQuery: FeatureWishModuleHelper.buildListQuery,
   buildCountQuery: FeatureWishModuleHelper.buildCountQuery,
@@ -192,7 +192,9 @@ async function startAiWorkflow() {
   workflowTimer = setTimeout(loadAiWorkflow, WorkflowsPageHelper.REFRESH_WHILE_RUNNING_MS);
 }
 
-watch([sort, pageSize], () => ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { sort: sort.value, pageSize: pageSize.value }));
+watch([activeFilter, progresses, sort, pageSize], () =>
+  ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { statusFilter: activeFilter.value, progresses: progresses.value, sort: sort.value, pageSize: pageSize.value })
+);
 onMounted(() => {
   loadAiWorkflow();
   clockTimer = setInterval(() => {

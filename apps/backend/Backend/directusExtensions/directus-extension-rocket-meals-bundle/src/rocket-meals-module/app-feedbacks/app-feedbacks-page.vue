@@ -37,13 +37,13 @@ const { translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.APP_FEEDBACKS;
 
-/** Sources, sort and page size are remembered per browser. `source` is the single source stored before several could be ticked. */
+/** Status chip, sources, thumbs, sort and page size are remembered per browser, so the page opens again as it was left. `source` is the single source stored before several could be ticked. */
 const SETTINGS_STORAGE_KEY = ModuleListHelper.getSettingsStorageKey('app-feedbacks');
 const settingsStorage = typeof window !== 'undefined' ? window.localStorage : undefined;
-const storedSettings = ModuleListHelper.readSettings<AppFeedbackListOptions & { source?: AppFeedbackSourceFilter }>(settingsStorage, SETTINGS_STORAGE_KEY);
+const storedSettings = ModuleListHelper.readSettings<AppFeedbackListOptions & { source?: AppFeedbackSourceFilter; statusFilter?: FoodFeedbackChatFilter }>(settingsStorage, SETTINGS_STORAGE_KEY);
 
 const sources = ref<AppFeedbackSourceFilter[]>(AppFeedbackChatHelper.getSources(storedSettings.sources ?? (storedSettings.source ? [storedSettings.source] : [])));
-const types = ref<AppFeedbackTypeFilter[]>([]);
+const types = ref<AppFeedbackTypeFilter[]>(AppFeedbackChatHelper.getTypes(storedSettings.types));
 const sort = ref<FoodFeedbackListSort>(ModuleListHelper.pickAllowed(storedSettings.sort, AppFeedbackChatHelper.SORTS, FoodFeedbackListSort.NEWEST));
 const pageSize = ref<number>(ModuleListHelper.getPageSize(storedSettings.pageSize));
 
@@ -79,7 +79,7 @@ const {
   name: 'app feedbacks',
   endpoint: AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT,
   filters: AppFeedbackChatStatusHelper.FILTERS,
-  initialFilter: FoodFeedbackChatFilter.OPEN,
+  initialFilter: ModuleListHelper.pickAllowed(storedSettings.statusFilter, AppFeedbackChatStatusHelper.FILTERS, FoodFeedbackChatFilter.OPEN),
   options: listOptions,
   buildListQuery: AppFeedbackChatHelper.buildListQuery,
   buildCountQuery: AppFeedbackChatHelper.buildCountQuery,
@@ -128,7 +128,9 @@ function getOpenLabel(feedback: AppFeedbackListItem): string {
   return AppFeedbackChatStatusHelper.isStoreReview(feedback) ? translate(BackendTranslationKeys.rocket_meals_module_to_store_response) : translate(BackendTranslationKeys.rocket_meals_module_to_chat);
 }
 
-watch([sources, sort, pageSize], () => ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { sources: sources.value, sort: sort.value, pageSize: pageSize.value }));
+watch([activeFilter, sources, types, sort, pageSize], () =>
+  ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { statusFilter: activeFilter.value, sources: sources.value, types: types.value, sort: sort.value, pageSize: pageSize.value })
+);
 </script>
 
 <template>

@@ -2,7 +2,8 @@
 /**
  * Send a push message to all devices of one profile (`profiles/<id>/push`).
  *
- * Left a preview of the notification as a phone shows it: title in one line, text in four lines.
+ * Left a preview of the notification as a phone shows it: the title where the app name stands (it
+ * starts as the app name), text in four lines.
  * What a phone probably cuts off is marked below it. Right a phone on its home screen with the app
  * icon (the project logo) and the badge number. Sending writes one published `push_notifications`
  * item with the push tokens of all devices, the `push-notification-hook` hands it to Expo.
@@ -60,6 +61,16 @@ const canSend = computed(() => PushNotificationComposeHelper.canSend(draft.value
 /** Name, logo and colour of the project – the app as it appears on the phone. */
 const projectName = computed(() => String(serverStore.info?.project?.project_name ?? RocketMealsModulePages.MODULE_NAME));
 const projectColor = computed(() => String(serverStore.info?.project?.project_color ?? 'var(--theme--primary)'));
+/** The title starts as the app name and follows it until it is edited by hand. */
+watch(
+  projectName,
+  (name, previousName) => {
+    if (!title.value || title.value === previousName) {
+      title.value = name;
+    }
+  },
+  { immediate: true }
+);
 const logoFailed = ref(false);
 const projectLogoUrl = computed(() => {
   const logo = serverStore.info?.project?.project_logo;
@@ -201,10 +212,9 @@ watch(() => props.profileId, load);
                   </div>
                   <div class="notification-content">
                     <div class="notification-header">
-                      <span class="notification-app">{{ projectName }}</span>
+                      <span class="notification-app" :class="{ placeholder: !title.trim() }">{{ title.trim() || translate(BackendTranslationKeys.rocket_meals_module_push_title_placeholder) }}</span>
                       <span class="notification-time">{{ nowLabel }}</span>
                     </div>
-                    <div class="notification-title" :class="{ placeholder: !title.trim() }">{{ title.trim() || translate(BackendTranslationKeys.rocket_meals_module_push_title_placeholder) }}</div>
                     <div class="notification-body" :class="{ placeholder: !body.trim() }" :style="{ '-webkit-line-clamp': PushNotificationComposeHelper.BODY_VISIBLE_LINES }">{{ body.trim() || translate(BackendTranslationKeys.rocket_meals_module_push_body_placeholder) }}</div>
                   </div>
                 </div>
@@ -460,20 +470,14 @@ watch(() => props.profileId, load);
 
 .notification-app {
   overflow: hidden;
+  color: #111;
+  font-weight: 600;
   white-space: nowrap;
   text-overflow: ellipsis;
-  text-transform: uppercase;
 }
 
 .notification-time {
   flex: none;
-}
-
-.notification-title {
-  overflow: hidden;
-  font-weight: 600;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 .notification-body {

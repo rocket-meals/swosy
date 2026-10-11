@@ -12,6 +12,7 @@ import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
+import { ModuleListHelper } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { WorkflowsActions } from '../../helpers/rocket-meals-module/WorkflowsActions';
 import { WorkflowHealth, WorkflowsFilter, WorkflowsPageHelper, WorkflowsSort, type WorkflowOverviewItem } from '../../helpers/rocket-meals-module/WorkflowsPageHelper';
@@ -36,9 +37,13 @@ const items = ref<WorkflowOverviewItem[]>([]);
 const order = ref<string[]>([]);
 const loading = ref(false);
 const loadError = ref(false);
-const activeFilter = ref<WorkflowsFilter>(WorkflowsFilter.ALL);
+/** Status chip and sort are remembered per browser, so the page opens again as it was left. */
+const SETTINGS_STORAGE_KEY = ModuleListHelper.getSettingsStorageKey('workflows');
+const settingsStorage = typeof window !== 'undefined' ? window.localStorage : undefined;
+const storedSettings = ModuleListHelper.readSettings<{ statusFilter: WorkflowsFilter; sort: WorkflowsSort }>(settingsStorage, SETTINGS_STORAGE_KEY);
+const activeFilter = ref<WorkflowsFilter>(ModuleListHelper.pickAllowed(storedSettings.statusFilter, Object.values(WorkflowsFilter), WorkflowsFilter.ALL));
 const search = ref('');
-const sort = ref<WorkflowsSort>(WorkflowsSort.AUTOMATIC);
+const sort = ref<WorkflowsSort>(ModuleListHelper.pickAllowed(storedSettings.sort, Object.values(WorkflowsSort), WorkflowsSort.AUTOMATIC));
 const now = ref(new Date());
 const startDialog = ref<{ open: boolean; workflowId: string; initialInput: string }>({ open: false, workflowId: '', initialInput: '' });
 
@@ -87,6 +92,7 @@ async function reload() {
 }
 
 watch(sort, computeOrder);
+watch([activeFilter, sort], () => ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { statusFilter: activeFilter.value, sort: sort.value }));
 
 const counts = computed<Record<WorkflowsFilter, number>>(() => ({
   [WorkflowsFilter.ALL]: items.value.length,
