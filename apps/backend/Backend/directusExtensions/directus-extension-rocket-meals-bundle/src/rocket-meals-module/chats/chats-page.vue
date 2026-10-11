@@ -5,7 +5,7 @@
  * and the last message. A new chat is started from a profile, so the button leads to the search.
  * Chats can be marked as done right from the list – one by one or several selected at once.
  */
-import { useApi, useStores } from '@directus/extensions-sdk';
+import { useApi } from '@directus/extensions-sdk';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
@@ -15,8 +15,8 @@ import { ChatQueryHelper, type ModuleChat, type ModuleChatMessage } from '../../
 import { FoodFeedbackChatHelper } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { ModuleListHelper } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
-import { SupportChatActions } from '../../helpers/rocket-meals-module/SupportChatActions';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
+import { useChatResolveSelection } from '../composables/useChatResolveSelection';
 import ModuleNavigation from '../module-navigation.vue';
 import ListContent from '../module-list/list-content.vue';
 import ListPagination from '../module-list/list-pagination.vue';
@@ -29,8 +29,6 @@ import ProfileAvatar from '../profiles/profile-avatar.vue';
 
 const api = useApi();
 const router = useRouter();
-const { useNotificationsStore } = useStores();
-const notificationsStore = useNotificationsStore();
 const { translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.CHATS;
@@ -50,13 +48,7 @@ const currentPage = ref(1);
 const loading = ref(false);
 const loadError = ref(false);
 const pageCount = computed(() => ModuleListHelper.getPageCount(total.value, ChatQueryHelper.PAGE_SIZE));
-const selectedIds = ref<string[]>([]);
-/** Chats being marked as done – never sent twice, their buttons show a spinner. */
-const updatingIds = ref<string[]>([]);
-const selectableChats = computed(() => chats.value.filter(ChatQueryHelper.canMarkResolved));
-const selectedChats = computed(() => selectableChats.value.filter(chat => selectedIds.value.includes(chat.id)));
-const allSelected = computed(() => selectableChats.value.length > 0 && selectedChats.value.length === selectableChats.value.length);
-const someSelected = computed(() => selectedChats.value.length > 0 && !allSelected.value);
+const { selectableChats, selectedChats, allSelected, someSelected, isSelected, toggleSelected, toggleSelectAll, isUpdating, markResolved } = useChatResolveSelection(chats, load);
 const statusChips = computed(() => ChatQueryHelper.STATUS_FILTERS.map(filter => ({ value: filter, label: translate(FoodFeedbackChatHelper.getFilterLabelKey(filter)) })));
 
 async function loadLatestMessages(chatIds: string[]) {
@@ -87,8 +79,6 @@ async function load() {
     }
     chats.value = response.data?.data ?? [];
     total.value = Number(response.data?.meta?.filter_count ?? chats.value.length);
-    // Keep only selections that are still visible and can be marked.
-    selectedIds.value = selectedIds.value.filter(id => selectableChats.value.some(chat => chat.id === id));
     loadError.value = false;
     await loadLatestMessages(chats.value.map(chat => chat.id));
   } catch (error) {
@@ -111,42 +101,6 @@ function previewAuthor(message: ModuleChatMessage | undefined): string {
     return translate(BackendTranslationKeys.rocket_meals_module_support);
   }
   return FoodFeedbackChatHelper.getNickname(message.profile) ?? translate(BackendTranslationKeys.rocket_meals_module_user);
-}
-
-function isSelected(chat: ModuleChat) {
-  return selectedIds.value.includes(chat.id);
-}
-
-function toggleSelected(chat: ModuleChat, selected: boolean) {
-  const others = selectedIds.value.filter(id => id !== chat.id);
-  selectedIds.value = selected ? [...others, chat.id] : others;
-}
-
-function toggleSelectAll(selected: boolean) {
-  selectedIds.value = selected ? selectableChats.value.map(chat => chat.id) : [];
-}
-
-function isUpdating(chat: ModuleChat) {
-  return updatingIds.value.includes(chat.id);
-}
-
-/** Marks chats as done, then reloads the list. Marked chats leave the selection. */
-async function markResolved(chatsToResolve: readonly ModuleChat[]) {
-  const pendingIds = chatsToResolve.filter(chat => !isUpdating(chat)).map(chat => chat.id);
-  if (pendingIds.length === 0) {
-    return;
-  }
-  updatingIds.value = [...updatingIds.value, ...pendingIds];
-  try {
-    const result = await SupportChatActions.markChatsResolved(api, pendingIds);
-    selectedIds.value = selectedIds.value.filter(id => !result.resolvedIds.includes(id));
-    if (result.failedIds.length > 0) {
-      notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_mark_resolved_failed), type: 'error' });
-    }
-  } finally {
-    updatingIds.value = updatingIds.value.filter(id => !pendingIds.includes(id));
-    await load();
-  }
 }
 
 function reloadFromFirstPage() {

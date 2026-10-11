@@ -3,6 +3,7 @@
  * Details of one profile (`profiles/<id>`): avatar and the basics, its devices (with or without push
  * token), its chats and its newest food and app feedbacks. From here support starts a chat or sends
  * a push message to all devices of the profile. Every profile link of the module leads here.
+ * Chats that are not done can be marked as done here, one by one or several selected at once.
  */
 import { useApi } from '@directus/extensions-sdk';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -16,7 +17,9 @@ import { LivePulseHelper } from '../../helpers/rocket-meals-module/LivePulseHelp
 import { ProfileDetailsHelper, type ModuleProfile, type ModuleProfileDevice } from '../../helpers/rocket-meals-module/ProfileDetailsHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
+import { useChatResolveSelection } from '../composables/useChatResolveSelection';
 import ModuleNavigation from '../module-navigation.vue';
+import ListSelectionBar from '../module-list/list-selection-bar.vue';
 import FoodFeedbackRating from '../food-feedbacks/food-feedback-rating.vue';
 import FoodFeedbackStatusChip from '../food-feedbacks/food-feedback-status-chip.vue';
 import ProfileAvatar from './profile-avatar.vue';
@@ -67,12 +70,23 @@ async function getList<T>(endpoint: string, params: Record<string, string | numb
   }
 }
 
+function getChats(): Promise<ModuleChat[]> {
+  return getList<ModuleChat>(ChatQueryHelper.CHATS_ENDPOINT, ChatQueryHelper.buildChatsQuery({ profileId: props.profileId, limit: ProfileDetailsHelper.FEEDBACK_LIMIT }));
+}
+
+/** After marking chats as done only the chats are loaded again, the rest of the page stays. */
+async function reloadChats() {
+  chats.value = await getChats();
+}
+
+const { selectableChats, selectedChats, allSelected, someSelected, isSelected, toggleSelected, toggleSelectAll, isUpdating, markResolved } = useChatResolveSelection(chats, reloadChats);
+
 async function load() {
   loading.value = true;
   try {
     const response = await api.get(`${ProfileDetailsHelper.PROFILES_ENDPOINT}/${encodeURIComponent(props.profileId)}`, { params: ProfileDetailsHelper.buildProfileQuery() });
     profile.value = response.data?.data ?? null;
-    const [nextDevices, nextChats, nextFoodFeedbacks, nextAppFeedbacks] = await Promise.all([getList<ModuleProfileDevice>(ProfileDetailsHelper.DEVICES_ENDPOINT, ProfileDetailsHelper.buildDevicesQuery(props.profileId)), getList<ModuleChat>(ChatQueryHelper.CHATS_ENDPOINT, ChatQueryHelper.buildChatsQuery({ profileId: props.profileId, limit: ProfileDetailsHelper.FEEDBACK_LIMIT })), getList<FoodFeedbackListItem>(FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT, ProfileDetailsHelper.buildFoodFeedbacksQuery(props.profileId)), getList<AppFeedbackListItem>(AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT, ProfileDetailsHelper.buildAppFeedbacksQuery(props.profileId))]);
+    const [nextDevices, nextChats, nextFoodFeedbacks, nextAppFeedbacks] = await Promise.all([getList<ModuleProfileDevice>(ProfileDetailsHelper.DEVICES_ENDPOINT, ProfileDetailsHelper.buildDevicesQuery(props.profileId)), getChats(), getList<FoodFeedbackListItem>(FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT, ProfileDetailsHelper.buildFoodFeedbacksQuery(props.profileId)), getList<AppFeedbackListItem>(AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT, ProfileDetailsHelper.buildAppFeedbacksQuery(props.profileId))]);
     devices.value = nextDevices;
     chats.value = nextChats;
     foodFeedbacks.value = nextFoodFeedbacks;
@@ -182,8 +196,17 @@ watch(() => props.profileId, load);
               <span class="count">{{ chats.length }}</span>
             </h3>
             <div v-if="chats.length === 0" class="empty type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_profile_no_chats) }}</div>
-            <ul v-else class="rows">
-              <li v-for="chat in chats" :key="chat.id">
+            <list-selection-bar v-if="selectableChats.length > 0" :selected-count="selectedChats.length" :all-selected="allSelected" :some-selected="someSelected" @toggle-all="toggleSelectAll">
+              <v-button v-if="selectedChats.length > 0" small :loading="selectedChats.some(isUpdating)" @click="markResolved(selectedChats)">
+                <v-icon name="task_alt" left small />
+                {{ translate(BackendTranslationKeys.rocket_meals_module_mark_selected_resolved) }}
+              </v-button>
+            </list-selection-bar>
+            <ul v-if="chats.length > 0" class="rows">
+              <li v-for="chat in chats" :key="chat.id" class="chat-row">
+                <span class="chat-select">
+                  <v-checkbox v-if="ChatQueryHelper.canMarkResolved(chat)" :model-value="isSelected(chat)" @update:model-value="toggleSelected(chat, $event)" />
+                </span>
                 <router-link class="row linked" :to="ChatQueryHelper.getRoute(chat)">
                   <v-icon :name="ChatQueryHelper.getKindIcon(ChatQueryHelper.getKind(chat))" />
                   <div class="row-text">
@@ -192,6 +215,9 @@ watch(() => props.profileId, load);
                   </div>
                   <food-feedback-status-chip :status="ChatQueryHelper.getStatus(chat)" />
                 </router-link>
+                <v-button v-if="ChatQueryHelper.canMarkResolved(chat)" v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_mark_resolved)" :aria-label="translate(BackendTranslationKeys.rocket_meals_module_mark_resolved)" icon rounded secondary x-small :loading="isUpdating(chat)" @click="markResolved([chat])">
+                  <v-icon name="task_alt" small />
+                </v-button>
               </li>
             </ul>
           </section>
@@ -384,6 +410,22 @@ watch(() => props.profileId, load);
 .row.linked:hover,
 .row.linked:focus-visible {
   background: var(--theme--background-normal);
+}
+
+.chat-row {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.chat-row > .row {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.chat-select {
+  flex: none;
+  inline-size: 1.5rem;
 }
 
 .row-text {
