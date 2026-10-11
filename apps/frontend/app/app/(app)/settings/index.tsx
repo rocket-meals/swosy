@@ -794,8 +794,20 @@ const Settings = () => {
 			});
 		}
 
-		// === App Management ===
+		// === Help & Contact ===
 		rows.push(
+			{
+			key: 'section-help',
+			element: (
+				<View style={sectionStyle}>
+					<SettingsGroupTitle>{translate(TranslationKeys.group_help_and_contact)}</SettingsGroupTitle>
+					<View style={groupStyle}>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="support-agent" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feedback_support_faq)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/support-FAQ')} groupPosition="single" nativeID={ComponentIds.SETTINGS_FEEDBACK_SUPPORT_FAQ} />
+					</View>
+				</View>
+			),
+		},
+			// === App Management ===
 			{
 			key: 'section-management',
 			element: (
@@ -824,7 +836,6 @@ const Settings = () => {
 						{appSettings?.feature_wishes_enabled === true && (
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="lightbulb-on-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feature_wishes)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFeatureWishesModal} groupPosition="middle" />
 						)}
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="support-agent" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feedback_support_faq)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/support-FAQ')} groupPosition="middle" nativeID={ComponentIds.SETTINGS_FEEDBACK_SUPPORT_FAQ} />
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="license" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.license_information)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/licenseInformation')} groupPosition="middle" />
 						{/* Terms & Conditions */}
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="file-document-check" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date)} value={termsAndPrivacyConsentAcceptedDate ?? undefined} handleFunction={() => {}} groupPosition="bottom" />

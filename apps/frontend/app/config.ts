@@ -244,7 +244,8 @@ export function getVersionPatch() {
         // 126: food comments are asked with a larger gap (1, 3, 10, 20, 40, then doubling)
         // 127: the push question has a playbook page (always show / ask with logic)
         // 128: push messages also pop up at the top while the app is open
-        return 128;
+        // 129: settings: "Support & FAQ" in its own group "Hilfe & Kontakt"
+        return 129;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

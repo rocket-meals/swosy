@@ -4919,6 +4919,16 @@
     "tr": "Uygulama yönetimi",
     "zh": "应用管理"
   },
+  "group_help_and_contact": {
+    "de": "Hilfe & Kontakt",
+    "en": "Help & Contact",
+    "ar": "المساعدة والتواصل",
+    "es": "Ayuda y contacto",
+    "fr": "Aide et contact",
+    "ru": "Помощь и контакты",
+    "tr": "Yardım ve iletişim",
+    "zh": "帮助与联系"
+  },
   "group_fun": {
     "de": "Spaß",
     "en": "Fun",
