@@ -73,34 +73,13 @@ export class ChatMessageMailHelper {
       return;
     }
 
-    const staffMessageIds = new Set<PrimaryKey>();
-    for (const message of messages) {
-      if (await this.isStaffMessage(message)) {
-        staffMessageIds.add(message.id);
-      }
-    }
+    const staffMessageIds = await this.collectStaffMessageIds(messages);
     const isStaffMessage = (message: ChatMessage) => staffMessageIds.has(message.id);
 
     const relatedAppFeedbacks = await this.findRelatedItems(() => this.myDatabaseHelper.getAppFeedbacksHelper().findItems({ chat: chatId }), chatId, 'app feedbacks');
     const relatedFoodFeedbacks = await this.findRelatedItems(() => this.myDatabaseHelper.getFoodFeedbacksHelper().findItems({ chat: chatId }), chatId, 'food feedbacks');
 
-    let supportMessages = ChatMailDigestHelper.getUnseenMessages(messages, isStaffMessage);
-
-    const userRecipients = new Map<string, UserRecipient & { messages: ChatMessage[] }>();
-    for (const profileId of await this.collectProfiles(chatId, relatedAppFeedbacks, relatedFoodFeedbacks)) {
-      const unseen = ChatMailDigestHelper.getUnseenMessages(messages, message => String(ItemsServiceHelper.getPrimaryKeyFromItemOrString(message.profile)) === String(profileId));
-      if (unseen.length === 0) {
-        continue;
-      }
-      for (const email of await this.collectEmailsOfProfile(profileId, relatedAppFeedbacks)) {
-        const recipient = ChatMailRecipientHelper.classify(email);
-        if (recipient.kind === ChatMailRecipientKind.SUPPORT && supportMessages.length === 0) {
-          supportMessages = unseen;
-        } else if (recipient.kind === ChatMailRecipientKind.USER && !userRecipients.has(recipient.email.toLowerCase())) {
-          userRecipients.set(recipient.email.toLowerCase(), { email: recipient.email, profileId, messages: unseen });
-        }
-      }
-    }
+    const { supportMessages, userRecipients } = await this.collectRecipients(chatId, messages, ChatMailDigestHelper.getUnseenMessages(messages, isStaffMessage), relatedAppFeedbacks, relatedFoodFeedbacks);
 
     if (supportMessages.length > 0) {
       try {
@@ -110,6 +89,46 @@ export class ChatMessageMailHelper {
       }
     }
     await this.mailUsers(chatId, Array.from(userRecipients.values()), relatedAppFeedbacks);
+  }
+
+  /** The ids of the messages written by support (see {@link isStaffMessage}). */
+  private async collectStaffMessageIds(messages: ChatMessage[]): Promise<Set<PrimaryKey>> {
+    const staffMessageIds = new Set<PrimaryKey>();
+    for (const message of messages) {
+      // Sequential on purpose: isStaffMessage fills adminCache, so later messages of the same author reuse the first lookup instead of each querying the users table
+      const isStaff = await this.isStaffMessage(message); // NOSONAR S9382 - sequential on purpose, see comment above
+      if (isStaff) {
+        staffMessageIds.add(message.id);
+      }
+    }
+    return staffMessageIds;
+  }
+
+  /**
+   * Classifies the addresses of every profile involved in the chat: the first support address takes
+   * over the support digest when support wrote nothing unseen, every user address (first one wins)
+   * gets the messages its profile has not seen yet.
+   */
+  private async collectRecipients(chatId: string, messages: ChatMessage[], initialSupportMessages: ChatMessage[], relatedAppFeedbacks: DatabaseTypes.AppFeedbacks[], relatedFoodFeedbacks: DatabaseTypes.FoodsFeedbacks[]): Promise<{ supportMessages: ChatMessage[]; userRecipients: Map<string, UserRecipient & { messages: ChatMessage[] }> }> {
+    let supportMessages = initialSupportMessages;
+    const userRecipients = new Map<string, UserRecipient & { messages: ChatMessage[] }>();
+    for (const profileId of await this.collectProfiles(chatId, relatedAppFeedbacks, relatedFoodFeedbacks)) {
+      const unseen = ChatMailDigestHelper.getUnseenMessages(messages, message => String(ItemsServiceHelper.getPrimaryKeyFromItemOrString(message.profile)) === String(profileId));
+      if (unseen.length === 0) {
+        continue;
+      }
+      // Sequential on purpose: the first matching address wins (support digest, per-address dedup), so the order of the profiles matters, and it keeps the user lookups at one DB query at a time.
+      const emails = await this.collectEmailsOfProfile(profileId, relatedAppFeedbacks); // NOSONAR S9382 - sequential on purpose, see comment above
+      for (const email of emails) {
+        const recipient = ChatMailRecipientHelper.classify(email);
+        if (recipient.kind === ChatMailRecipientKind.SUPPORT && supportMessages.length === 0) {
+          supportMessages = unseen;
+        } else if (recipient.kind === ChatMailRecipientKind.USER && !userRecipients.has(recipient.email.toLowerCase())) {
+          userRecipients.set(recipient.email.toLowerCase(), { email: recipient.email, profileId, messages: unseen });
+        }
+      }
+    }
+    return { supportMessages, userRecipients };
   }
 
   /** Support writes from the module "Rocket Meals" without profile; an admin in the app has one. */
@@ -237,17 +256,18 @@ export class ChatMessageMailHelper {
     const profilesHelper = this.myDatabaseHelper.getProfilesHelper();
     const appFeedback = relatedAppFeedbacks[0];
 
+    // Sequential on purpose: one mail at a time keeps the mail transport and the profile reads bounded, and the language resolver caches the languages table on its first call.
     for (const { email, profileId, messages } of recipients) {
       try {
         // Without a readable profile the mail still goes out, in the default language.
-        const profile = await profilesHelper.readOne(profileId).catch(() => undefined);
-        const language = await languageResolver.resolveForProfile(profile);
+        const profile = await profilesHelper.readOne(profileId).catch(() => undefined); // NOSONAR S9382 - sequential on purpose, see comment above
+        const language = await languageResolver.resolveForProfile(profile); // NOSONAR S9382 - sequential on purpose, see comment above
         const mailInput = { answer: ChatMailDigestHelper.joinMessages(messages), projectName, translate: language.translate, supportEmail: MailAdresses.SupportMail, recipient: email };
         const mail = appFeedback ? AppFeedbackAnswerMail.buildChatAnswer({ ...mailInput, feedback: appFeedback }) : AppFeedbackAnswerMail.buildChatAnswerWithoutFeedback(mailInput);
         if (!mail) {
           continue;
         }
-        await this.myDatabaseHelper.sendMail(mail);
+        await this.myDatabaseHelper.sendMail(mail); // NOSONAR S9382 - sequential on purpose, see comment above the loop
         console.log(`${HELPER_NAME}: Mailed ${messages.length} new message(s) in chat ${chatId} to a participant`);
       } catch (error) {
         console.error(`${HELPER_NAME}: Failed to mail the new messages in chat ${chatId} to a participant`, error);

@@ -115,6 +115,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       let totalFixed = 0;
       let processedFoods = 0;
 
+      // Sequential on purpose: every food consumes the shared DeepL quota (totalAttempted, break at MAX_TRANSLATIONS), and parallel DeepL calls would hit API rate limits.
       for (const food of allFoodsOrdered) {
         if (totalAttempted >= MAX_TRANSLATIONS) {
           await context.logger.appendLog(
@@ -124,17 +125,17 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
         }
 
         try {
-          await context.logger.appendLog(
+          await context.logger.appendLog( // NOSONAR S9382 - sequential on purpose, see comment above
             'Processing food ' + (processedFoods + 1) + '/' + allFoodsOrdered.length + ' (id=' + food.id + ')…'
           );
-          const result = await this.fixTranslationsForFood(
+          const result = await this.fixTranslationsForFood( // NOSONAR S9382 - sequential on purpose, see comment above
             food, autoTranslator, schemaContext, context, MAX_TRANSLATIONS - totalAttempted
           );
           totalFixed += result.fixed;
           totalAttempted += result.attempted;
           processedFoods++;
         } catch (err: any) {
-          await context.logger.appendLog('Error processing food ' + food.id + ': ' + err.toString());
+          await context.logger.appendLog('Error processing food ' + food.id + ': ' + err.toString()); // NOSONAR S9382 - sequential on purpose, see comment above
           processedFoods++;
         }
       }
@@ -167,31 +168,32 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       languages.length + ' language(s) ==='
     );
 
+    // Sequential on purpose: one DeepL API call per language (rate limits) and the test log must stay in language order.
     for (const language of languages) {
       const languageCode = language.code;
       if (!languageCode) {
-        await context.logger.appendLog('Test: skipped language without code.');
+        await context.logger.appendLog('Test: skipped language without code.'); // NOSONAR S9382 - sequential on purpose, see comment above
         continue;
       }
       if (languageCode === TEST_SOURCE_LANGUAGE) {
-        await context.logger.appendLog('Test [' + languageCode + ']: skipped (source language).');
+        await context.logger.appendLog('Test [' + languageCode + ']: skipped (source language).'); // NOSONAR S9382 - sequential on purpose, see comment above
         continue;
       }
       try {
-        const result = await autoTranslator.translate({
+        const result = await autoTranslator.translate({ // NOSONAR S9382 - sequential on purpose, see comment above
           text: TEST_SOURCE_TEXT,
           source_language: TEST_SOURCE_LANGUAGE,
           destination_language: languageCode,
         });
         if (result) {
-          await context.logger.appendLog('Test [' + languageCode + ']: "' + result + '"');
+          await context.logger.appendLog('Test [' + languageCode + ']: "' + result + '"'); // NOSONAR S9382 - sequential on purpose, see comment above
         } else {
-          await context.logger.appendLog(
+          await context.logger.appendLog( // NOSONAR S9382 - sequential on purpose, see comment above
             'Test [' + languageCode + ']: null/undefined – ' + getTranslationNullReason(languageCode)
           );
         }
       } catch (err: any) {
-        await context.logger.appendLog('Test [' + languageCode + ']: ERROR – ' + err.toString());
+        await context.logger.appendLog('Test [' + languageCode + ']: ERROR – ' + err.toString()); // NOSONAR S9382 - sequential on purpose, see comment above
       }
     }
 
@@ -208,7 +210,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
     const {food, sourceTranslation, fieldsToTranslate, context} = options;
     for (const field of fieldsToTranslate) {
       const value = (sourceTranslation as any)[field];
-      await context.logger.appendLog(
+      await context.logger.appendLog( // NOSONAR S9382 - sequential on purpose: keeps the workflow log lines in field order
         'Food ' + food.id + ': source field "' + field + '" = ' +
         (value ? '"' + String(value).substring(0, 80) + '"' : 'null/empty')
       );
@@ -368,7 +370,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
         break;
       }
 
-      const result = await this.processTranslationEntry(translation, attempted, entryCtx);
+      const result = await this.processTranslationEntry(translation, attempted, entryCtx); // NOSONAR S9382 - sequential on purpose: each entry consumes the shared DeepL capacity tracked in attempted
       if (!result) continue;
       attempted = result.attempted;
       if (result.fixed) fixed++;
@@ -438,6 +440,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
     let {attempted} = options;
     const translatedItem: any = {};
 
+    // Sequential on purpose: every field consumes the shared DeepL capacity (attempted, break at remainingCapacity), and the log lines must stay in field order.
     for (const field of fieldsToAttempt) {
       if (attempted >= remainingCapacity) {
         await context.logger.appendLog(
@@ -451,13 +454,13 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       attempted++;
 
       try {
-        await context.logger.appendLog(
+        await context.logger.appendLog( // NOSONAR S9382 - sequential on purpose, see comment above
           'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
           'Translating field "' + field + '" from "' + sourceLanguageCode + '" to "' + languageCode + '", ' +
           'source value="' + String(sourceValue).substring(0, 80) + '"'
         );
 
-        const translatedValue = await autoTranslator.translate({
+        const translatedValue = await autoTranslator.translate({ // NOSONAR S9382 - sequential on purpose, see comment above
           text: sourceValue,
           source_language: sourceLanguageCode,
           destination_language: languageCode,
@@ -465,18 +468,18 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
 
         if (translatedValue) {
           translatedItem[field] = translatedValue;
-          await context.logger.appendLog(
+          await context.logger.appendLog( // NOSONAR S9382 - sequential on purpose, see comment above
             'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
             'Field "' + field + '" → "' + String(translatedValue).substring(0, 80) + '"'
           );
         } else {
-          await context.logger.appendLog(
+          await context.logger.appendLog( // NOSONAR S9382 - sequential on purpose, see comment above
             'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
             'Field "' + field + '" autoTranslator returned null/undefined – ' + getTranslationNullReason(languageCode)
           );
         }
       } catch (err: any) {
-        await context.logger.appendLog(
+        await context.logger.appendLog( // NOSONAR S9382 - sequential on purpose, see comment above
           'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
           'Error translating field "' + field + '": ' + err.toString()
         );

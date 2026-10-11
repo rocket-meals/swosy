@@ -78,7 +78,7 @@ function isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry: string 
   if (!hasProtocol) {
     //console.log("No protocol found in redirect_whitelist_entry: " + redirect_whitelist_entry)
     // if no protocol is given, we assume http and https
-    let redirect_whitelist_entry_http = 'http://' + redirect_whitelist_entry;
+    let redirect_whitelist_entry_http = 'http://' + redirect_whitelist_entry; // NOSONAR S5332 - no request is made: builds a candidate pattern to match a scheme-less whitelist entry (e.g. localhost) against the redirect URL, the admin-configured whitelist decides what is allowed
     let redirect_whitelist_entry_https = 'https://' + redirect_whitelist_entry;
     // then we recursively call this function with the new URLs
     let redirect_allowed_http = isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry_http, redirectUrl);

@@ -31,7 +31,7 @@ export class ParseSchedule {
       let canteens = await this.getAllCanteens();
       // For every canteen, get all cashregisters
       for (let canteen of canteens) {
-        await this.calcForecastForCanteen(canteen);
+        await this.calcForecastForCanteen(canteen); // NOSONAR S9382 - sequential on purpose: each canteen runs many DB reads/writes (forecast for 8 days x 96 intervals), parallel canteens would flood Directus
       }
 
       await this.context.logger.appendLog('Finished');
@@ -77,8 +77,9 @@ export class ParseSchedule {
         today.setDate(today.getDate() + 1);
       }
 
+      // Sequential on purpose: one day per iteration with ~96 interval DB reads/writes each, parallel days would flood Directus.
       for (let date of dates) {
-        await this.context.logger.appendLog('- Calculating forecast for date: ' + date.toISOString());
+        await this.context.logger.appendLog('- Calculating forecast for date: ' + date.toISOString()); // NOSONAR S9382 - sequential on purpose, see comment above
 
         let utilizationContext: UtiliztationContext = {
             canteen: canteen,
@@ -86,7 +87,7 @@ export class ParseSchedule {
             utilization_group: utilization_group_for_canteen,
         }
 
-        await this.updateUtilizationEntryForCanteenAtDate(utilizationContext, date, intervalMinutes);
+        await this.updateUtilizationEntryForCanteenAtDate(utilizationContext, date, intervalMinutes); // NOSONAR S9382 - sequential on purpose, see comment above
       }
     } else {
       console.log('Houston we got a problem at calcForecastForCanteen');
@@ -165,7 +166,7 @@ export class ParseSchedule {
       //console.log("cashregister_id: "+cashregister.id);
 
       // Instead we need to use the itemServiceCreator
-      let transactions_ids_for_cashregister = await cashregisterHelper.getTransactionIdsForCashregister(
+      let transactions_ids_for_cashregister = await cashregisterHelper.getTransactionIdsForCashregister( // NOSONAR S9382 - sequential on purpose: each query may return up to 60000 transaction ids, querying all cash registers at once would multiply DB load and memory
         cashregister.id,
         interval.date_start,
         interval.date_end,
@@ -191,9 +192,10 @@ export class ParseSchedule {
 
     let interval = await this.getInterval(intervalMinutes, date);
 
+    // Sequential on purpose: findOrCreate plus update per interval in a sync job, parallel writes would flood Directus and could race into duplicate entries.
     for (let interval_entry of interval) {
-      let utilizationEntryCurrent = await this.findOrCreateUtilizationEntryForInterval(utilization_group, interval_entry);
-      await this.applyUtilizationForecastOrActual(utilizationEntryCurrent, utilizationContext, interval_entry, now);
+      let utilizationEntryCurrent = await this.findOrCreateUtilizationEntryForInterval(utilization_group, interval_entry); // NOSONAR S9382 - sequential on purpose, see comment above
+      await this.applyUtilizationForecastOrActual(utilizationEntryCurrent, utilizationContext, interval_entry, now); // NOSONAR S9382 - sequential on purpose, see comment above
     }
   }
 

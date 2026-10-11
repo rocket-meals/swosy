@@ -36,7 +36,7 @@ export class WashingmachineParseSchedule {
 
   async updateWashingmachines(washingmachinesForParser: WashingmachinesTypeForParser[]) {
     for (let washingmachine of washingmachinesForParser) {
-      await this.updateWashingmachine(washingmachine);
+      await this.updateWashingmachine(washingmachine); // NOSONAR S9382 - sequential on purpose: findOrCreate plus updates per washing machine in a sync job, parallel writes would flood Directus
     }
   }
 

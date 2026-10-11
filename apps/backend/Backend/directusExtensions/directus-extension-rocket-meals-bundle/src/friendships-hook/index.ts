@@ -19,10 +19,11 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, ({ filter
 
     const itemIds = HookKeysHelper.getKeysFromMeta(meta);
 
+    // Sequential on purpose: a delete in one iteration can remove friendships a later iteration would read (same profile pair), and it keeps DB load of this filter hook bounded.
     for (const friendshipId of itemIds) {
       let currentFriendship: DatabaseTypes.Friendships;
       try {
-        currentFriendship = await friendshipsHelper.readOne(friendshipId);
+        currentFriendship = await friendshipsHelper.readOne(friendshipId); // NOSONAR S9382 - sequential on purpose, see comment above
       } catch {
         continue;
       }
@@ -34,7 +35,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, ({ filter
         continue;
       }
 
-      const existingFriendships = await friendshipsHelper.readByQuery({
+      const existingFriendships = await friendshipsHelper.readByQuery({ // NOSONAR S9382 - sequential on purpose, see comment above
         filter: {
           _and: [
             { friendship_status: { _eq: FriendshipStatus.ACCEPTED } },
@@ -57,7 +58,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, ({ filter
       if (existingFriendships.length > 0) {
         const idsToDelete = existingFriendships.map(f => f.id);
         console.log(`${HOOK_NAME}: Deleting ${idsToDelete.length} existing friendship(s) between ${requesterId} and ${receiverId}`);
-        await friendshipsHelper.deleteMany(idsToDelete);
+        await friendshipsHelper.deleteMany(idsToDelete); // NOSONAR S9382 - sequential on purpose, see comment above
       }
     }
 

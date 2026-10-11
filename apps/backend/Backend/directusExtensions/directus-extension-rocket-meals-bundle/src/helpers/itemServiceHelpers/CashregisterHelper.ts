@@ -80,12 +80,14 @@ export class CashregisterHelper {
     console.log('deleteAllTransactions');
     let amountToDeleteInABatch = 10000;
     let times = 0;
+    const batchQuery = {
+      filter: {},
+      limit: amountToDeleteInABatch, // Adjust the limit as needed, but keep it manageable
+    };
+    // Sequential on purpose: each batch is read after the previous one was deleted, and an empty read ends the loop.
     while (hasMore) {
       // Fetch transactions in batches
-      let itemsToDelete = await this.cashregisterTransactionsServiceHelper.readByQuery({
-        filter: {},
-        limit: amountToDeleteInABatch, // Adjust the limit as needed, but keep it manageable
-      });
+      let itemsToDelete = await this.cashregisterTransactionsServiceHelper.readByQuery(batchQuery); // NOSONAR S9382 - batch loop, the next read depends on the previous delete, see comment above
 
       // Check if there are items to delete
       if (itemsToDelete.length > 0) {
@@ -93,7 +95,7 @@ export class CashregisterHelper {
         let idsToDelete = itemsToDelete.map(item => item.id);
 
         // Delete transactions by IDs
-        await this.cashregisterTransactionsServiceHelper.deleteMany(idsToDelete);
+        await this.cashregisterTransactionsServiceHelper.deleteMany(idsToDelete); // NOSONAR S9382 - batch loop, sequential on purpose, see comment above the loop
       } else {
         // No more items to delete
         hasMore = false;

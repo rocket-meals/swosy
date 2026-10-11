@@ -8,6 +8,9 @@
 
 export type FilterSelectValue = string | number;
 
+/** The model value of a filter select: one value, several values or nothing selected. */
+export type FilterSelectModelValue<T extends FilterSelectValue> = T | readonly T[] | null | undefined;
+
 export type FilterSelectOption<T extends FilterSelectValue = FilterSelectValue> = {
   value: T;
   text: string;
@@ -24,7 +27,7 @@ export class FilterSelectHelper {
   public static readonly MAX_PREVIEW_OPTIONS = 3;
 
   /** The selected values as a list – also for a single selection and nothing selected. */
-  static getSelectedValues<T extends FilterSelectValue>(modelValue: T | readonly T[] | null | undefined): T[] {
+  static getSelectedValues<T extends FilterSelectValue>(modelValue: FilterSelectModelValue<T>): T[] {
     if (modelValue === null || modelValue === undefined) {
       return [];
     }
@@ -32,7 +35,7 @@ export class FilterSelectHelper {
   }
 
   /** The options that are selected, in the order of the options. */
-  static getSelectedOptions<T extends FilterSelectValue>(options: readonly FilterSelectOption<T>[], modelValue: T | readonly T[] | null | undefined): FilterSelectOption<T>[] {
+  static getSelectedOptions<T extends FilterSelectValue>(options: readonly FilterSelectOption<T>[], modelValue: FilterSelectModelValue<T>): FilterSelectOption<T>[] {
     const selected = FilterSelectHelper.getSelectedValues(modelValue);
     return options.filter(option => selected.includes(option.value));
   }
@@ -45,7 +48,7 @@ export class FilterSelectHelper {
   }
 
   /** The text of the closed dropdown: the selected options, `undefined` for nothing selected. */
-  static getDisplayText<T extends FilterSelectValue>(options: readonly FilterSelectOption<T>[], modelValue: T | readonly T[] | null | undefined): string | undefined {
+  static getDisplayText<T extends FilterSelectValue>(options: readonly FilterSelectOption<T>[], modelValue: FilterSelectModelValue<T>): string | undefined {
     const text = FilterSelectHelper.getSelectedOptions(options, modelValue)
       .map(option => option.text)
       .join(', ');

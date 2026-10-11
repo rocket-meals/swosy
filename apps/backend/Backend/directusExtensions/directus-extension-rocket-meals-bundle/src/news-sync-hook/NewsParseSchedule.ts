@@ -85,13 +85,14 @@ export class NewsParseSchedule {
 
   async updateNews(newsJSONList: NewsTypeForParser[]) {
     await this.context.logger.appendLog('Updating news items');
+    // Sequential on purpose: several DB reads/writes (incl. translations) per news item in a sync job, parallel writes would flood Directus.
     for (let index = 0; index < newsJSONList.length; index++) {
       let newsJSON = newsJSONList[index] as NewsTypeForParser;
-      await this.context.logger.appendLog(`Processing news item ${index + 1} of ${newsJSONList.length}`);
-      let news = await this.findOrCreateSingleNews(newsJSON);
+      await this.context.logger.appendLog(`Processing news item ${index + 1} of ${newsJSONList.length}`); // NOSONAR S9382 - sequential on purpose, see comment above
+      let news = await this.findOrCreateSingleNews(newsJSON); // NOSONAR S9382 - sequential on purpose, see comment above
       if (!!news && news?.id) {
-        await this.updateOtherFields(news, newsJSON);
-        await this.updateNewsTranslations(news, newsJSON);
+        await this.updateOtherFields(news, newsJSON); // NOSONAR S9382 - sequential on purpose, see comment above
+        await this.updateNewsTranslations(news, newsJSON); // NOSONAR S9382 - sequential on purpose, see comment above
       }
     }
   }

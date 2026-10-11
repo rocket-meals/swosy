@@ -78,7 +78,7 @@ export enum HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS {
  * Die Felder, aus denen die interne Kennung eines Mietverhältnisses entsteht:
  * VO-Nummer + Mieternummer + Mietbeginn.
  *
- * TODO: Die Mieternummer (`PERSONNR`) ist **nicht eindeutig**. Institute halten mehrere Zimmer
+ * TODO: Die Mieternummer (`PERSONNR`) ist **nicht eindeutig**. Institute halten mehrere Zimmer NOSONAR S1135 - bewusst offen: die Umstellung braucht erst eine Migration der vorhandenen internal_custom_id-Werte (siehe unten)
  * gleichzeitig, und dasselbe Zimmer wird nacheinander neu vermietet – eine Mieternummer steht
  * deshalb für mehrere Mietverhältnisse, nicht für eines. Damit kann die hier gebildete Kennung
  * zwei verschiedene Mietverhältnisse zusammenfallen lassen.
@@ -203,16 +203,20 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
 
   private async buildImportHousingContracts(tl1ImportHousingContracts: Tl1ImportHousingContracts, logger?: WorkflowRunLogger): Promise<ImportHousingContracts> {
     let result: ImportHousingContracts = [];
+    const amountOfHousingContracts = tl1ImportHousingContracts.length;
 
-    for (let i = 0; i < tl1ImportHousingContracts.length; i++) {
-      if (logger) {
-        await logger.appendLog('Correcting date values for housing contract from line ' + (i + 1) + ' of ' + result.length);
-      }
-      let tl1HousingContract = tl1ImportHousingContracts[i];
-      if (tl1HousingContract) {
-        result[i] = await this.parseTl1ImportElementToImportHousingContract(tl1HousingContract);
-      }
-    }
+    // Parsing a row is a pure in-memory computation (no I/O), so all rows can be processed in parallel.
+    // appendLog appends synchronously, so the log lines keep their row order.
+    await Promise.all(
+      tl1ImportHousingContracts.map(async (tl1HousingContract, i) => {
+        if (logger) {
+          await logger.appendLog('Correcting date values for housing contract from line ' + (i + 1) + ' of ' + amountOfHousingContracts);
+        }
+        if (tl1HousingContract) {
+          result[i] = await this.parseTl1ImportElementToImportHousingContract(tl1HousingContract);
+        }
+      })
+    );
 
     return result;
   }
@@ -455,8 +459,7 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
     if (zimmernummer) {
       leafSegments.push(`${HannoverTL1HousingFileReader.ALIAS_ROOM_PREFIX} ${zimmernummer}`);
     }
-    leafSegments.push(name);
-    leafSegments.push(mietende);
+    leafSegments.push(name, mietende);
     if (mieternummer) {
       leafSegments.push(`${HannoverTL1HousingFileReader.ALIAS_TENANT_NUMBER_PREFIX} ${mieternummer}`);
     }

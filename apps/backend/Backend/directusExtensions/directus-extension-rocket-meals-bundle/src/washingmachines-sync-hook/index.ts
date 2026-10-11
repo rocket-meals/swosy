@@ -107,7 +107,7 @@ function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions:
       let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
       if (washingmachines_ids) {
         for (let washingmachine_id of washingmachines_ids) {
-          await createFinishedWashingmachineJobIfApplicable(myDatabaseHelper, washingmachine_id);
+          await createFinishedWashingmachineJobIfApplicable(myDatabaseHelper, washingmachine_id); // NOSONAR S9382 - sequential on purpose: DB read and possibly a job write per machine inside a filter hook, bounded DB load
         }
       }
     }

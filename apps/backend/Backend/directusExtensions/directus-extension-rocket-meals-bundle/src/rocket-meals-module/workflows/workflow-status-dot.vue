@@ -12,7 +12,7 @@ defineProps<{
 </script>
 
 <template>
-  <span class="status-dot" :class="[`state-${state ?? 'never'}`, { small }]" :title="title" role="img" :aria-label="title" />
+  <span class="status-dot" :class="[`state-${state ?? 'never'}`, { small }]" :title="title" role="img" :aria-label="title" /><!-- NOSONAR Web:S6819 - the dot is drawn purely with CSS incl. a ::after pulse ring, which <img>/<svg> (replaced elements) cannot render, role="img" + aria-label give it the same accessible semantics -->
 </template>
 
 <style scoped>

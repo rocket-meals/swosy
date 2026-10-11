@@ -101,7 +101,7 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
             //console.log(" Fetching date: " + fetchDate.toDateString());
             for(const canteenId in canteenMap){
 
-                const html = await this.getHtml(canteenId, fetchDate, initialHtml);
+                const html = await this.getHtml(canteenId, fetchDate, initialHtml); // NOSONAR S9382 - sequential on purpose: scrapes an external MaxManager site per canteen and day, getHtml stores the session cookie in this.urlCookies, so parallel calls would race on it and hammer the external site
                 if(!html){
                     console.error("MaxManagerConnector: createNeededData: html is null for canteen id: " + canteenId + " date: " + fetchDate.toDateString());
                     continue;

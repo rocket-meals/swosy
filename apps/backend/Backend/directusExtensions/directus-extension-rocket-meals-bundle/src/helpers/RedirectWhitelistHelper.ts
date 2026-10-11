@@ -58,7 +58,8 @@ export class RedirectWhitelistHelper {
     if (!hasProtocol) {
       //console.log("No protocol found in redirect_whitelist_entry: " + redirect_whitelist_entry)
       // if no protocol is given, we assume http and https
-      let redirect_whitelist_entry_http = 'http://' + redirect_whitelist_entry;
+      // No request is made here: the string is only a pattern to compare the redirect URL against. A whitelist entry without protocol (e.g. "localhost:8081" for local app development) must keep matching http URLs, as before.
+      let redirect_whitelist_entry_http = 'http://' + redirect_whitelist_entry; // NOSONAR S5332 - only a whitelist pattern for matching, no connection, see comment above
       let redirect_whitelist_entry_https = 'https://' + redirect_whitelist_entry;
       // then we recursively call this function with the new URLs
       let redirect_allowed_http = RedirectWhitelistHelper.isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry_http, redirectUrl);

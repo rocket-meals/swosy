@@ -26,12 +26,13 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,({ fil
     });
     if (!!users && users.length > 0) {
       console.log('Users without profiles: ' + users.length);
+      // Sequential on purpose: two DB writes per user in a schedule that runs every minute, parallel writes would flood Directus when many users lack a profile.
       for (let user of users) {
         try {
-          let profile_id = await profiles_service.createOne(getInitialProfileForUser(user)); //create a profile
+          let profile_id = await profiles_service.createOne(getInitialProfileForUser(user)); //create a profile // NOSONAR S9382 - sequential on purpose, see comment above
           if (profile_id && typeof profile_id === 'string') {
             console.log('Created profile for user: ' + user.id);
-            await users_service.updateOne(user.id, {
+            await users_service.updateOne(user.id, { // NOSONAR S9382 - sequential on purpose, see comment above
               profile: profile_id,
             });
           }

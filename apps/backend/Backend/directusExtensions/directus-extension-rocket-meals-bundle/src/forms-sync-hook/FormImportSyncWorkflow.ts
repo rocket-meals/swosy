@@ -112,7 +112,7 @@ async function syncAllFormSubmissions(
   let currentIndexOfFormSubmission = 0;
   for (let formSubmission of formSubmissions) {
     currentIndexOfFormSubmission++;
-    await syncFormSubmission(context, form, formSubmission, dictFormFieldExternalImportIdToFormFieldId, currentIndexOfFormSubmission, amountOfFormSubmissions);
+    await syncFormSubmission(context, form, formSubmission, dictFormFieldExternalImportIdToFormFieldId, currentIndexOfFormSubmission, amountOfFormSubmissions); // NOSONAR S9382 - sequential on purpose: DB reads/writes per form submission in a sync job, parallel writes would flood Directus
   }
   await context.logger.appendLog('Finished processing all form submissions.');
 }

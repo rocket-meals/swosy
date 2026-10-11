@@ -4,7 +4,6 @@ import { CollectionNames, DatabaseTypes, StringHelper } from 'repo-depkit-common
 import { PrimaryKey } from '@directus/types';
 import { Readable } from 'node:stream';
 import type { Stat } from '@directus/storage';
-import { AssetsService } from './MyServiceClassHelpers';
 import { CreateShareLinkOptionForDirectusFiles, ShareDirectusFileMethod, ShareServiceHelper } from './ShareServiceHelper';
 import { Buffer } from 'node:buffer';
 import { MyDatabaseHelperInterface } from './MyDatabaseHelperInterface';

@@ -75,16 +75,18 @@ export class FeatureWishModuleActions {
       byStatus.set(suggestion.acceptStatus, [...(byStatus.get(suggestion.acceptStatus) ?? []), wish]);
     }
 
+    // Sequential on purpose: one PATCH after the other, so a large selection does not fire dozens of
+    // parallel requests at the Directus API, and updatedIds/failedIds keep the order of the selection.
     for (const [status, group] of byStatus) {
       if (status !== FeatureWishStatus.MERGED) {
-        const groupResult = await FeatureWishModuleActions.setStatus(api, group, status);
+        const groupResult = await FeatureWishModuleActions.setStatus(api, group, status); // NOSONAR S9382 - sequential on purpose, see comment above
         result.updatedIds.push(...groupResult.updatedIds);
         result.failedIds.push(...groupResult.failedIds);
         continue;
       }
       for (const wish of group) {
         try {
-          await FeatureWishModuleActions.merge(api, wish, FeatureWishModuleHelper.getRelatedToId(wish)!);
+          await FeatureWishModuleActions.merge(api, wish, FeatureWishModuleHelper.getRelatedToId(wish)!); // NOSONAR S9382 - sequential on purpose, see comment above the loop
           result.updatedIds.push(wish.id);
         } catch (error) {
           console.error('[rocket-meals-module] merging a feature wish failed', error);

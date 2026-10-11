@@ -31,6 +31,37 @@ function parseJsonValue(value: unknown): unknown {
   }
 }
 
+/** The custom headers, stored as a list of `{ header, value }` entries; incomplete entries are skipped. */
+function parseHeaders(rawHeaders: unknown): Record<string, string> {
+  const headers: Record<string, string> = {};
+  if (!Array.isArray(rawHeaders)) {
+    return headers;
+  }
+  for (const entry of rawHeaders) {
+    const header = (entry as { header?: unknown })?.header;
+    const value = (entry as { value?: unknown })?.value;
+    if (typeof header === 'string' && header.trim() && typeof value === 'string') {
+      headers[header.trim()] = value;
+    }
+  }
+  return headers;
+}
+
+/** The model ids, stored either as plain strings or as `{ id }` entries; empty ids are skipped. */
+function parseModels(rawModels: unknown): string[] {
+  const models: string[] = [];
+  if (!Array.isArray(rawModels)) {
+    return models;
+  }
+  for (const entry of rawModels) {
+    const id = typeof entry === 'string' ? entry : (entry as { id?: unknown })?.id;
+    if (typeof id === 'string' && id.trim()) {
+      models.push(id.trim());
+    }
+  }
+  return models;
+}
+
 /**
  * Client for the OpenAI-compatible provider that is stored in the Directus settings (the same one the
  * AI assistant of the Directus app uses), so the provider is configured once per server in the UI.
@@ -63,27 +94,8 @@ export class DirectusOpenAiCompatibleClient {
     if (!baseUrl || !apiKey) {
       return null;
     }
-    const headers: Record<string, string> = {};
-    const rawHeaders = parseJsonValue(row?.ai_openai_compatible_headers);
-    if (Array.isArray(rawHeaders)) {
-      for (const entry of rawHeaders) {
-        const header = (entry as { header?: unknown })?.header;
-        const value = (entry as { value?: unknown })?.value;
-        if (typeof header === 'string' && header.trim() && typeof value === 'string') {
-          headers[header.trim()] = value;
-        }
-      }
-    }
-    const models: string[] = [];
-    const rawModels = parseJsonValue(row?.ai_openai_compatible_models);
-    if (Array.isArray(rawModels)) {
-      for (const entry of rawModels) {
-        const id = typeof entry === 'string' ? entry : (entry as { id?: unknown })?.id;
-        if (typeof id === 'string' && id.trim()) {
-          models.push(id.trim());
-        }
-      }
-    }
+    const headers = parseHeaders(parseJsonValue(row?.ai_openai_compatible_headers));
+    const models = parseModels(parseJsonValue(row?.ai_openai_compatible_models));
     return { name: row?.ai_openai_compatible_name ?? null, baseUrl, apiKey, headers, models };
   }
 

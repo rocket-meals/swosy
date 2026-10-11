@@ -11,7 +11,7 @@ import { useApi } from '@directus/extensions-sdk';
 import { forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY, type SimulationLinkDatum, type SimulationNodeDatum } from 'd3-force';
 import { select, type Selection } from 'd3-selection';
 import { zoom, zoomIdentity, type ZoomBehavior, type ZoomTransform } from 'd3-zoom';
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useId, watch } from 'vue';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FriendshipNetworkHelper, FriendshipNetworkLinkStatus, type FriendshipNetwork, type FriendshipNetworkFriendship, type FriendshipNetworkNode, type FriendshipNetworkProfile } from '../../helpers/rocket-meals-module/FriendshipNetworkHelper';
 import { LivePulseHelper } from '../../helpers/rocket-meals-module/LivePulseHelper';
@@ -361,7 +361,7 @@ onBeforeUnmount(() => {
   svgSelection?.on('.zoom', null);
 });
 
-const clipPathId = `friendship-network-avatar-${Math.random().toString(36).slice(2)}`;
+const clipPathId = `friendship-network-avatar-${useId()}`;
 </script>
 
 <template>
@@ -413,7 +413,7 @@ const clipPathId = `friendship-network-avatar-${Math.random().toString(36).slice
       <div class="columns">
         <section class="panel graph-panel">
           <div class="graph">
-            <svg ref="svgElement" class="graph-svg" role="group" :aria-label="translate(page.labelKey)">
+            <svg ref="svgElement" class="graph-svg" role="group" :aria-label="translate(page.labelKey)"><!-- NOSONAR Web:S6819 - an <svg> drawing cannot be replaced by <fieldset>/<details>, role="group" names the container of the interactive profile nodes (role="img" would hide those buttons) -->
               <defs>
                 <clipPath :id="clipPathId" clipPathUnits="objectBoundingBox">
                   <circle cx="0.5" cy="0.5" r="0.5" />

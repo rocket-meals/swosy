@@ -24,7 +24,7 @@ export type BackendUsageEvent = {
   payload: Record<string, unknown>;
 };
 
-type RelatedItem = { id?: string | number | null; alias?: string | null } | string | number | null | undefined;
+type RelatedItem = { id?: string | number | null; alias?: string | null } | string | number | null;
 
 export type FoodofferForUsageEvent = {
   id?: string | number | null;
@@ -37,7 +37,7 @@ function pad(value: number): string {
   return String(value).padStart(2, '0');
 }
 
-function getRelatedId(related: RelatedItem): string | undefined {
+function getRelatedId(related: RelatedItem | undefined): string | undefined {
   if (related === null || related === undefined) {
     return undefined;
   }
@@ -47,7 +47,7 @@ function getRelatedId(related: RelatedItem): string | undefined {
   return String(related);
 }
 
-function getRelatedAlias(related: RelatedItem): string | undefined {
+function getRelatedAlias(related: RelatedItem | undefined): string | undefined {
   return related && typeof related === 'object' ? related.alias || undefined : undefined;
 }
 
