@@ -11,6 +11,7 @@ import { AppFeedback } from '@/redux/actions/AppFeedback/AppFeedback';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import useToast from '@/hooks/useToast';
 import usePushNotificationOptInPrompt from '@/hooks/usePushNotificationOptInPrompt';
+import { PushNotificationOptInCategory } from '@/helper/PushNotificationOptInHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { AppFeedbackContentHelper, DatabaseTypes, EmailHelper, StringHelper } from 'repo-depkit-common';
@@ -280,7 +281,7 @@ const FeedbackScreen = () => {
 				if (profile?.id) {
 					router.navigate('/support-ticket');
 					// With a profile we can answer in the support chat - a good moment to offer push notifications.
-					void askForPushNotifications();
+					void askForPushNotifications(PushNotificationOptInCategory.APP_FEEDBACK);
 				} else {
 					router.navigate('/support-FAQ');
 				}

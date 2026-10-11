@@ -7,15 +7,22 @@ import ProjectButton from '@/components/ProjectButton';
 import { getValue, setValue } from '@/constants/AsyncStorageHelper';
 import { NotificationHelper } from '@/helper/NotificationHelper';
 import { syncCurrentDevicePushNotificationState } from '@/helper/PushNotificationDeviceSync';
-import { getPushNotificationOptInAction, getPushNotificationPermissionStep } from '@/helper/PushNotificationOptInHelper';
+import {
+	countPushNotificationOptInSubmission,
+	getPushNotificationOptInAction,
+	getPushNotificationPermissionStep,
+	PushNotificationOptInCategory,
+	readPushNotificationOptInState,
+	recordPushNotificationOptInDecline,
+} from '@/helper/PushNotificationOptInHelper';
 import useFoodNotificationModal from '@/hooks/useFoodNotificationModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { configureStore } from '@/redux/store';
 
-// Belongs to the device, not to the user: whether this device was already asked. Not cleared on logout.
-const LAST_ASKED_STORAGE_KEY = 'push_notification_opt_in_prompt_last_asked_at';
+// Belongs to the device, not to the user: how often it was done and said no per category. Not cleared on logout.
+const getOptInStorageKey = (category: PushNotificationOptInCategory) => `push_notification_opt_in_prompt_${category}`;
 
 /**
  * The system permission dialog for push notifications can be shown only once on iOS (twice on
@@ -24,7 +31,8 @@ const LAST_ASKED_STORAGE_KEY = 'push_notification_opt_in_prompt_last_asked_at';
  * user agreed there:
  *
  * - {@link askForPushNotifications}: our suggestion after the user did something they may get an
- *   answer to (app feedback, feature wish, comment). Not repeated within 14 days.
+ *   answer to (app feedback, feature wish, comment). Asked the first time; after a no only once
+ *   the user did it twice as often in that category (1, 2, 4, 8, ...).
  * - {@link ensurePushNotificationPermission}: the user switched on something that needs push
  *   notifications (food reminder, free apartments). Resolves whether the permission is there.
  */
@@ -85,16 +93,17 @@ const usePushNotificationOptInPrompt = () => {
 		[close, show, syncDevice, theme.screen.text, translate]
 	);
 
-	const askForPushNotifications = useCallback(async () => {
+	const askForPushNotifications = useCallback(async (category: PushNotificationOptInCategory) => {
 		if (!configureStore.getState().authReducer.profile?.id) {
 			return;
 		}
-		const now = new Date();
+		const storageKey = getOptInStorageKey(category);
+		const state = countPushNotificationOptInSubmission(readPushNotificationOptInState(await getValue(storageKey)));
+		await setValue(storageKey, state);
 		const action = getPushNotificationOptInAction({
 			platform: Platform.OS,
 			permission: await NotificationHelper.getDeviceNotificationPermission(),
-			lastAskedAt: await getValue(LAST_ASKED_STORAGE_KEY),
-			now,
+			state,
 		});
 		if (action === 'sync') {
 			// Nothing to ask, but make sure the backend knows the push token of this device.
@@ -104,8 +113,10 @@ const usePushNotificationOptInPrompt = () => {
 		if (action === 'none') {
 			return;
 		}
-		await setValue(LAST_ASKED_STORAGE_KEY, now.toISOString());
-		await explainAndRequest(translate(TranslationKeys.push_notification_opt_in_description));
+		const granted = await explainAndRequest(translate(TranslationKeys.push_notification_opt_in_description));
+		if (!granted) {
+			await setValue(storageKey, recordPushNotificationOptInDecline(state));
+		}
 	}, [explainAndRequest, syncDevice, translate]);
 
 	/**

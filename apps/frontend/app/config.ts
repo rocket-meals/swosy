@@ -239,7 +239,9 @@ export function getVersionPatch() {
         // 122: SonarCloud: remaining maintainability findings and security hotspots resolved
         // 123: data clumps refactored into shared types and parameter objects
         // 124: the badge on the app icon is set back to 0 whenever the app is opened
-        return 124;
+        // 125: the push question after a feedback, wish or comment is asked by count
+        //      per category (first time, then after every no at twice the count)
+        return 125;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
