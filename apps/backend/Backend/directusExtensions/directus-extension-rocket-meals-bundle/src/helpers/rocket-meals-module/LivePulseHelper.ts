@@ -206,17 +206,20 @@ export class LivePulseHelper {
   }
 
   /**
-   * Order of the wall: profiles with an own avatar first, among them the ones with an own nickname first,
+   * Order of the wall: profiles active right now before the ones that were active a few minutes ago (see `getPresence`).
+   * Within each of these, profiles with an own avatar first, among them the ones with an own nickname first,
    * then the ones with only an own nickname, then the rest – each group most recently active first.
    * Keeps at most `PROFILE_LIMIT`.
    */
-  static sortProfilesForWall(profiles: LivePulseProfile[]): LivePulseProfile[] {
+  static sortProfilesForWall(profiles: LivePulseProfile[], now: Date): LivePulseProfile[] {
+    const presenceOrder: LivePulsePresence[] = [LivePulsePresence.NOW, LivePulsePresence.RECENT, LivePulsePresence.TODAY];
+    const presence = (profile: LivePulseProfile) => presenceOrder.indexOf(LivePulseHelper.getPresence(profile.date_updated, now));
     const rank = (profile: LivePulseProfile) => (LivePulseHelper.hasOwnAvatar(profile) ? 2 : 0) + (LivePulseHelper.hasOwnNickname(profile) ? 1 : 0);
     const time = (profile: LivePulseProfile) => {
       const value = profile.date_updated ? new Date(profile.date_updated).getTime() : Number.NaN;
       return Number.isNaN(value) ? 0 : value;
     };
-    return [...profiles].sort((a, b) => rank(b) - rank(a) || time(b) - time(a)).slice(0, LivePulseHelper.PROFILE_LIMIT);
+    return [...profiles].sort((a, b) => presence(a) - presence(b) || rank(b) - rank(a) || time(b) - time(a)).slice(0, LivePulseHelper.PROFILE_LIMIT);
   }
 
   static buildCountQuery(filter: DirectusFilter, field: string = 'id'): LivePulseQuery {

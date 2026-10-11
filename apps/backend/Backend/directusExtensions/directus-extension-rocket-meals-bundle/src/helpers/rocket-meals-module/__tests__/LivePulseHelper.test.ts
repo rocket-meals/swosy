@@ -67,15 +67,31 @@ describe('LivePulseHelper', () => {
     const avatar = { style: 'avataaars' };
 
     it('puts avatars first, then own nicknames, each group most recently active first', () => {
-      const sorted = LivePulseHelper.sortProfilesForWall([
-        { id: 'anonymous', nickname: null, date_updated: minutesAgo(0) },
-        { id: 'guest', nickname: 'Guest_2610081001', date_updated: minutesAgo(1) },
-        { id: 'named', nickname: 'Lena', date_updated: minutesAgo(2) },
-        { id: 'avatar-guest', nickname: 'Guest_2610081002', avatar, date_updated: minutesAgo(3) },
-        { id: 'avatar-named-old', nickname: 'Tim', avatar, date_updated: minutesAgo(30) },
-        { id: 'avatar-named', nickname: 'Noah', avatar, date_updated: minutesAgo(4) },
-      ]);
+      const sorted = LivePulseHelper.sortProfilesForWall(
+        [
+          { id: 'anonymous', nickname: null, date_updated: minutesAgo(0) },
+          { id: 'guest', nickname: 'Guest_2610081001', date_updated: minutesAgo(1) },
+          { id: 'named', nickname: 'Lena', date_updated: minutesAgo(2) },
+          { id: 'avatar-guest', nickname: 'Guest_2610081002', avatar, date_updated: minutesAgo(3) },
+          { id: 'avatar-named-old', nickname: 'Tim', avatar, date_updated: minutesAgo(4) },
+          { id: 'avatar-named', nickname: 'Noah', avatar, date_updated: minutesAgo(1) },
+        ],
+        NOW
+      );
       expect(sorted.map(profile => profile.id)).toEqual(['avatar-named', 'avatar-named-old', 'avatar-guest', 'named', 'anonymous', 'guest']);
+    });
+
+    it('puts profiles active right now before the ones that were active a few minutes ago', () => {
+      const sorted = LivePulseHelper.sortProfilesForWall(
+        [
+          { id: 'recent-avatar-named', nickname: 'Kelly', avatar, date_updated: minutesAgo(7) },
+          { id: 'now-anonymous', nickname: null, date_updated: minutesAgo(0) },
+          { id: 'recent-anonymous', nickname: null, date_updated: minutesAgo(6) },
+          { id: 'now-named', nickname: 'Julia', date_updated: minutesAgo(2) },
+        ],
+        NOW
+      );
+      expect(sorted.map(profile => profile.id)).toEqual(['now-named', 'now-anonymous', 'recent-avatar-named', 'recent-anonymous']);
     });
 
     it('does not count the guest default nickname as own nickname', () => {
@@ -96,16 +112,19 @@ describe('LivePulseHelper', () => {
 
     it('puts own avatars before scientist default avatars', () => {
       const defaultProfile = DefaultProfileHelper.buildDefaultProfile();
-      const sorted = LivePulseHelper.sortProfilesForWall([
-        { id: 'default', ...defaultProfile, date_updated: minutesAgo(0) },
-        { id: 'own-avatar', nickname: defaultProfile.nickname, avatar, date_updated: minutesAgo(5) },
-      ]);
+      const sorted = LivePulseHelper.sortProfilesForWall(
+        [
+          { id: 'default', ...defaultProfile, date_updated: minutesAgo(0) },
+          { id: 'own-avatar', nickname: defaultProfile.nickname, avatar, date_updated: minutesAgo(5) },
+        ],
+        NOW
+      );
       expect(sorted.map(profile => profile.id)).toEqual(['own-avatar', 'default']);
     });
 
     it('keeps at most PROFILE_LIMIT profiles', () => {
       const profiles = Array.from({ length: LivePulseHelper.PROFILE_LIMIT + 10 }, (_, index) => ({ id: `p${index}`, date_updated: minutesAgo(index) }));
-      expect(LivePulseHelper.sortProfilesForWall(profiles)).toHaveLength(LivePulseHelper.PROFILE_LIMIT);
+      expect(LivePulseHelper.sortProfilesForWall(profiles, NOW)).toHaveLength(LivePulseHelper.PROFILE_LIMIT);
     });
   });
 
