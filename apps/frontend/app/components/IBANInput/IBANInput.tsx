@@ -13,7 +13,8 @@ import { useGiroCardIbanScannerModal } from '@/components/GiroCardIbanScanner';
 export interface IBANInputProps {
 	id: string;
 	value: string;
-	onChange: (id: string, value: string, custom_type: string) => void;
+	/** Called with the field and its new, formatted value. */
+	onChange: (change: Pick<IBANInputProps, 'id' | 'value' | 'custom_type'>) => void;
 	onError: (id: string, error: string) => void;
 	error: string;
 	isDisabled: boolean;
@@ -51,7 +52,7 @@ const IBANInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 
 	const applyIban = (text: string) => {
 		const formattedText = formatIBAN(text);
-		onChange(id, formattedText, custom_type);
+		onChange({ id, value: formattedText, custom_type });
 		// Asked of the number, not of the string with the spaces in it.
 		const problem = IbanRecognitionHelper.getIbanFieldProblem(formattedText);
 		if (problem === 'invalid-length') {

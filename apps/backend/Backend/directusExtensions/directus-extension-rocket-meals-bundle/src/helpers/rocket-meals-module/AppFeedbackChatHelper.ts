@@ -11,38 +11,30 @@
  */
 
 // Not the package index: this file is bundled into the Directus app, see BackendTranslator.ts.
-import { AppFeedbackChatStatusHelper, AppFeedbackSourceFilter } from 'repo-depkit-common/src/AppFeedbackChatStatusHelper';
+import { AppFeedbackChatStatusHelper, AppFeedbackSourceFilter, type AppFeedbackWithChat } from 'repo-depkit-common/src/AppFeedbackChatStatusHelper';
 import { AppFeedbackContentHelper } from 'repo-depkit-common/src/AppFeedbackContentHelper';
 import { AppFeedbackSourceIdentifier } from 'repo-depkit-common/src/AppFeedbackSourceIdentifier';
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { EmailHelper } from 'repo-depkit-common/src/EmailHelper';
 import { type FoodFeedbackChatFilter, FoodFeedbackChatStatus } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
-import { ModuleListHelper } from './ModuleListHelper';
+import { ModuleListHelper, type ModuleStatusCountRequest, type ModuleStatusListRequest } from './ModuleListHelper';
 import { FoodFeedbackListSort } from './FoodFeedbackChatHelper';
+import type { ModuleChatRelation, ModuleItem, ModuleProfileSummary } from './ModuleItemTypes';
 
 /** The fields the list and the chat need from an app feedback, with the relations it expands. */
-export type AppFeedbackListItem = {
-  id: string;
-  title?: string | null;
-  content?: string | null;
-  /** Some databases (SQLite) hand booleans out as `0` / `1`. */
-  positive?: boolean | number | null;
-  contact_email?: string | null;
-  source_identifier?: string | null;
-  source_rating_raw?: number | null;
-  /** The public answer to a store review; setting it publishes it in the store (`app-reviews-pull-hook`). */
-  response?: string | null;
-  /** `closed` marks a feedback without chat as done, see `AppFeedbackState`. */
-  state?: string | null;
-  device_platform?: string | null;
-  device_brand?: string | null;
-  device_system_version?: string | null;
-  date_created?: string | null;
-  date_updated?: string | null;
-  profile?: { id: string; nickname?: string | null; avatar?: unknown; date_updated?: string | null } | string | null;
-  chat?: { id: string; conversation_state?: string | null; date_updated?: string | null } | string | null;
-};
+export type AppFeedbackListItem = ModuleItem &
+  Pick<AppFeedbackWithChat, 'title' | 'content' | 'source_identifier' | 'response' | 'state'> & {
+    /** Some databases (SQLite) hand booleans out as `0` / `1`. */
+    positive?: boolean | number | null;
+    contact_email?: string | null;
+    source_rating_raw?: number | null;
+    device_platform?: string | null;
+    device_brand?: string | null;
+    device_system_version?: string | null;
+    profile?: (ModuleProfileSummary & { date_updated?: string | null }) | string | null;
+    chat?: ModuleChatRelation;
+  };
 
 /** Thumbs up or down, as the user chose it in the app (store reviews: 4–5 stars count as positive). */
 export enum AppFeedbackTypeFilter {
@@ -157,13 +149,14 @@ export class AppFeedbackChatHelper {
   }
 
   /** URL parameters of the list request. */
-  static buildListQuery(filter: FoodFeedbackChatFilter, page: number, search?: string | null, options: AppFeedbackListOptions = {}) {
-    return ModuleListHelper.buildListQuery({ fields: AppFeedbackChatHelper.LIST_FIELDS, filter: AppFeedbackChatHelper.buildFilter(filter, options), sort: AppFeedbackChatHelper.getSortParameter(options.sort), page, pageSize: options.pageSize, search });
+  static buildListQuery(request: ModuleStatusListRequest<FoodFeedbackChatFilter, AppFeedbackListOptions>) {
+    const options = request.options ?? {};
+    return ModuleListHelper.buildListQuery({ fields: AppFeedbackChatHelper.LIST_FIELDS, filter: AppFeedbackChatHelper.buildFilter(request.filter, options), sort: AppFeedbackChatHelper.getSortParameter(options.sort), page: request.page, pageSize: options.pageSize, search: request.search });
   }
 
   /** URL parameters to count the feedbacks of one filter chip – with the same source, type and search as the list. */
-  static buildCountQuery(filter: FoodFeedbackChatFilter, options: AppFeedbackListOptions = {}, search?: string | null) {
-    return ModuleListHelper.buildCountQuery({ filter: AppFeedbackChatHelper.buildFilter(filter, options), search });
+  static buildCountQuery(request: ModuleStatusCountRequest<FoodFeedbackChatFilter, AppFeedbackListOptions>) {
+    return ModuleListHelper.buildCountQuery({ filter: AppFeedbackChatHelper.buildFilter(request.filter, request.options), search: request.search });
   }
 
   static getSourceFilterLabelKey(source: AppFeedbackSourceFilter): BackendTranslationKeys {

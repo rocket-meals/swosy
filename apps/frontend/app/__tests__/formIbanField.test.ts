@@ -41,7 +41,7 @@ describe('the IBAN field in a form', () => {
 		const branch = findRenderBranch(screen, 'bank_account_number') ?? '';
 		// `IBANInput` calls this `onChange` for a scan and for a keystroke alike,
 		// so the scanned IBAN lands in `formData` without a second path.
-		expect(branch).toContain('onChange={handleChange}');
+		expect(branch).toContain('onChange={change => handleChange(change.id, change.value, change.custom_type)}');
 		expect(branch).toContain('onError={handleError}');
 		expect(branch).toContain('value={formData[fieldId]?.value');
 	});

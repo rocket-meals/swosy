@@ -45,7 +45,7 @@ class MyKvStorage {
     mylog('associateCodeChallengeWithCode: state: ' + authorization_code);
     mylog(JSON.stringify(code_challenge, null, 2));
     mylog('-----');
-    await this.kvImplementation.set(MyKvStorage.prefix_code_challenge + authorization_code, JSON.stringify(code_challenge), this.ttlMs);
+    await this.kvImplementation.set({ key: MyKvStorage.prefix_code_challenge + authorization_code, value: JSON.stringify(code_challenge), ttlMs: this.ttlMs });
   }
 
   async getCodeChallenge(authorization_code: string) {
@@ -64,7 +64,7 @@ class MyKvStorage {
     mylog('setStateInformation: state: ' + state);
     mylog(JSON.stringify(authCodeAndRedirect, null, 2));
     mylog('-----');
-    await this.kvImplementation.set(MyKvStorage.prefix_save_session + state, JSON.stringify(authCodeAndRedirect), this.ttlMs);
+    await this.kvImplementation.set({ key: MyKvStorage.prefix_save_session + state, value: JSON.stringify(authCodeAndRedirect), ttlMs: this.ttlMs });
   }
 
   async getStateInformation(state: string): Promise<AuthorizationCodeAndRedirectType | null> {

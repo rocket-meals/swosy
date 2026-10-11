@@ -47,7 +47,7 @@ describe('FeatureWishModuleHelper', () => {
 
   describe('buildListQuery', () => {
     it('sorts newest first, pages and searches', () => {
-      const query = FeatureWishModuleHelper.buildListQuery(FeatureWishListFilter.IN_REVIEW, 2, '  Dark Mode ');
+      const query = FeatureWishModuleHelper.buildListQuery({ filter: FeatureWishListFilter.IN_REVIEW, page: 2, search: '  Dark Mode ' });
       expect(query.sort).toBe('-date_created');
       expect(query.limit).toBe(ModuleListHelper.PAGE_SIZE);
       expect(query.page).toBe(2);
@@ -59,7 +59,7 @@ describe('FeatureWishModuleHelper', () => {
     });
 
     it('sorts by likes on request and omits an empty search', () => {
-      const query = FeatureWishModuleHelper.buildListQuery(FeatureWishListFilter.ALL, 0, ' ', { sort: FeatureWishListSort.MOST_LIKES, pageSize: 50 });
+      const query = FeatureWishModuleHelper.buildListQuery({ filter: FeatureWishListFilter.ALL, page: 0, search: ' ', options: { sort: FeatureWishListSort.MOST_LIKES, pageSize: 50 } });
       expect(query.sort).toBe('-likes_amount,-date_created');
       expect(query.page).toBe(1);
       expect(query.limit).toBe(50);
@@ -67,7 +67,7 @@ describe('FeatureWishModuleHelper', () => {
     });
 
     it('counts with the same filter as the list', () => {
-      const query = FeatureWishModuleHelper.buildCountQuery(FeatureWishListFilter.ARCHIVED, {}, 'x');
+      const query = FeatureWishModuleHelper.buildCountQuery({ filter: FeatureWishListFilter.ARCHIVED, options: {}, search: 'x' });
       expect(JSON.parse(query.aggregate!)).toEqual({ count: ['id'] });
       expect(JSON.parse(query.filter!)).toEqual({ status: { _eq: FeatureWishStatus.ARCHIVED } });
       expect(query.search).toBe('x');

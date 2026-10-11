@@ -1,6 +1,6 @@
-import { FeatureWishStatus } from 'repo-depkit-common';
+import { FeatureWishStatus, type FeatureWishSummary } from 'repo-depkit-common';
 
-export type ModerationCandidate = { id: string; title: string; description: string | null };
+export type ModerationCandidate = FeatureWishSummary;
 export type PublishedWish = { id: string; title: string };
 
 export enum ModerationSuggestion {

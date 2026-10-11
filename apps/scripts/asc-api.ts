@@ -1,17 +1,13 @@
 import * as crypto from 'node:crypto';
 import * as fs from 'node:fs';
+import type { JsonApiResource } from 'repo-depkit-common';
 import { base64url } from './base64url';
 
 // Shared App Store Connect API helpers used by submit-ios-review.ts.
 
 export const API_BASE = 'https://api.appstoreconnect.apple.com/v1';
 
-export type JsonApiResource = {
-  type: string;
-  id: string;
-  attributes?: Record<string, unknown>;
-  relationships?: Record<string, { data?: { type: string; id: string } | null }>;
-};
+export type { JsonApiResource };
 
 export type JsonApiDocument = {
   data?: JsonApiResource | JsonApiResource[];

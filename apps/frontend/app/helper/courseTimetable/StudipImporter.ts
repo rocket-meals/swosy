@@ -1,3 +1,4 @@
+import type { JsonApiResource } from 'repo-depkit-common';
 import { MyBuffer } from 'repo-depkit-common-ui';
 import { COURSE_COLOR_SWATCHES, COURSE_TIMETABLE_WEEKDAYS, CourseTimetableEvent, CourseTimetableWeekday, isValidTime, timeToMinutes } from './CourseTimetableModel';
 
@@ -88,12 +89,8 @@ export class StudipImportError extends Error {
 	}
 }
 
-type JsonApiResource = {
-	type?: string;
-	id?: string;
-	attributes?: Record<string, unknown>;
-	relationships?: { owner?: { data?: { id?: string } | null } };
-};
+/** Stud.IP may leave out any part of a resource, so every field is optional. */
+type StudipResource = Partial<JsonApiResource<{ owner?: { data?: { id?: string } | null } }>>;
 
 /**
  * Stud.IP weekdays: course cycle dates use 0 = Sunday … 6 = Saturday, own schedule entries
@@ -154,7 +151,7 @@ export function mapStudipSchedule(response: unknown): CourseTimetableEvent[] {
 	};
 
 	const events: CourseTimetableEvent[] = [];
-	for (const resource of data as JsonApiResource[]) {
+	for (const resource of data as StudipResource[]) {
 		if (resource?.type !== 'seminar-cycle-dates' && resource?.type !== 'schedule-entries') continue;
 		const attributes = resource.attributes ?? {};
 		const weekday = studipWeekdayToWeekday(attributes.weekday);

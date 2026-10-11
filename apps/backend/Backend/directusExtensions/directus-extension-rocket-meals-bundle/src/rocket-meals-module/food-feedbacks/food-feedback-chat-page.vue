@@ -17,6 +17,7 @@ import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExt
 import { FoodFeedbackChatActions } from '../../helpers/rocket-meals-module/FoodFeedbackChatActions';
 import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage, type FoodFeedbackListItem } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { ChatQueryHelper } from '../../helpers/rocket-meals-module/ChatQueryHelper';
+import { SupportChatActions } from '../../helpers/rocket-meals-module/SupportChatActions';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
@@ -92,7 +93,7 @@ async function setConversationState(state: ChatConversationState) {
   if (!chatId.value) {
     return;
   }
-  await FoodFeedbackChatActions.setConversationState(api, String(chatId.value), state);
+  await SupportChatActions.setConversationState(api, String(chatId.value), state);
 }
 
 /** Sends an answer; resolves `true` when it was sent, so the input is cleared. */
@@ -103,7 +104,7 @@ async function sendMessage(text: string): Promise<boolean> {
   sending.value = true;
   try {
     const targetChatId = await ensureChat();
-    await api.post(FoodFeedbackChatHelper.CHAT_MESSAGES_ENDPOINT, { chat: targetChatId, message: text });
+    await api.post(ChatQueryHelper.CHAT_MESSAGES_ENDPOINT, { chat: targetChatId, message: text });
   } catch (error) {
     console.error('[rocket-meals-module] sending chat message failed', error);
     notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_send_failed), type: 'error' });

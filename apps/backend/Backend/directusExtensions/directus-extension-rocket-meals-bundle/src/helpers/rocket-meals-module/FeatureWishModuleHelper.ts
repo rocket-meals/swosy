@@ -13,30 +13,26 @@
 
 // Not the package index: this file is bundled into the Directus app, see BackendTranslator.ts.
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
-import { FeatureWishHelper, FeatureWishProgress, FeatureWishStatus } from 'repo-depkit-common/src/FeatureWishHelper';
+import { FeatureWishHelper, type FeatureWishLike, FeatureWishProgress, FeatureWishStatus } from 'repo-depkit-common/src/FeatureWishHelper';
 import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
-import { ModuleListHelper } from './ModuleListHelper';
+import { ModuleListHelper, type ModuleStatusCountRequest, type ModuleStatusListRequest } from './ModuleListHelper';
 import { ProfileDetailsHelper, type ModuleProfile } from './ProfileDetailsHelper';
+import type { ModuleChatRelation, ModuleItem, ModuleStatusPresentation } from './ModuleItemTypes';
 
 /** The fields the list and the details page need from a wish, with the relations it expands. */
-export type FeatureWishListItem = {
-  id: string;
-  title?: string | null;
-  description?: string | null;
-  status?: string | null;
-  progress?: string | null;
-  likes_amount?: number | null;
-  /** Visible to everyone in the app, e.g. why a wish is not planned. */
-  moderation_note_public?: string | null;
-  /** Only for the backend, the AI writes its reasons here. */
-  moderation_note_intern?: string | null;
-  date_created?: string | null;
-  date_updated?: string | null;
-  related_to?: { id: string; title?: string | null; status?: string | null } | string | null;
-  profile?: ModuleProfile | string | null;
-  chat?: { id: string; conversation_state?: string | null; date_updated?: string | null } | string | null;
-};
+export type FeatureWishListItem = ModuleItem &
+  FeatureWishLike & {
+    progress?: string | null;
+    likes_amount?: number | null;
+    /** Visible to everyone in the app, e.g. why a wish is not planned. */
+    moderation_note_public?: string | null;
+    /** Only for the backend, the AI writes its reasons here. */
+    moderation_note_intern?: string | null;
+    related_to?: { id: string; title?: string | null; status?: string | null } | string | null;
+    profile?: ModuleProfile | string | null;
+    chat?: ModuleChatRelation;
+  };
 
 /** The status chips of the list. Likes are never listed. */
 export enum FeatureWishListFilter {
@@ -69,12 +65,7 @@ export type FeatureWishSuggestion = {
   acceptStatus: FeatureWishStatus.PUBLISHED | FeatureWishStatus.ARCHIVED | FeatureWishStatus.MERGED;
 };
 
-export type FeatureWishPresentation = {
-  labelKey: BackendTranslationKeys;
-  icon: string;
-  /** A Directus theme colour variable, so the chip works in light and dark mode. */
-  color: string;
-};
+export type FeatureWishPresentation = ModuleStatusPresentation;
 
 type DirectusFilter = Record<string, unknown>;
 
@@ -145,13 +136,14 @@ export class FeatureWishModuleHelper {
   }
 
   /** URL parameters of the list request. */
-  static buildListQuery(filter: FeatureWishListFilter, page: number, search?: string | null, options: FeatureWishListOptions = {}) {
-    return ModuleListHelper.buildListQuery({ fields: FeatureWishModuleHelper.LIST_FIELDS, filter: FeatureWishModuleHelper.buildFilter(filter, options), sort: FeatureWishModuleHelper.getSortParameter(options.sort), page, pageSize: options.pageSize, search });
+  static buildListQuery(request: ModuleStatusListRequest<FeatureWishListFilter, FeatureWishListOptions>) {
+    const options = request.options ?? {};
+    return ModuleListHelper.buildListQuery({ fields: FeatureWishModuleHelper.LIST_FIELDS, filter: FeatureWishModuleHelper.buildFilter(request.filter, options), sort: FeatureWishModuleHelper.getSortParameter(options.sort), page: request.page, pageSize: options.pageSize, search: request.search });
   }
 
   /** URL parameters to count the wishes of one chip – with the same progresses and search as the list. */
-  static buildCountQuery(filter: FeatureWishListFilter, options: FeatureWishListOptions = {}, search?: string | null) {
-    return ModuleListHelper.buildCountQuery({ filter: FeatureWishModuleHelper.buildFilter(filter, options), search });
+  static buildCountQuery(request: ModuleStatusCountRequest<FeatureWishListFilter, FeatureWishListOptions>) {
+    return ModuleListHelper.buildCountQuery({ filter: FeatureWishModuleHelper.buildFilter(request.filter, request.options), search: request.search });
   }
 
   /** The duplicates merged into a wish, newest first. */

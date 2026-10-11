@@ -10,10 +10,7 @@ export type SettingsContextType = {
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
-type SettingsProviderProps = {
-	primaryColor: string;
-	onAccountRequired?: () => void;
-	language?: string;
+type SettingsProviderProps = SettingsContextType & {
 	children: ReactNode;
 };
 

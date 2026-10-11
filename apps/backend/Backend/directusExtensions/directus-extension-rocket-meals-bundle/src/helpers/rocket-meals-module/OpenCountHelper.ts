@@ -31,11 +31,11 @@ export class OpenCountHelper {
   static getRequest(page: RocketMealsModulePage): OpenCountRequest | undefined {
     switch (page.path) {
       case RocketMealsModulePages.FOOD_FEEDBACKS.path:
-        return { endpoint: FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT, params: FoodFeedbackChatHelper.buildCountQuery(FoodFeedbackChatFilter.OPEN) };
+        return { endpoint: FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT, params: FoodFeedbackChatHelper.buildCountQuery({ filter: FoodFeedbackChatFilter.OPEN }) };
       case RocketMealsModulePages.APP_FEEDBACKS.path:
-        return { endpoint: AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT, params: AppFeedbackChatHelper.buildCountQuery(FoodFeedbackChatFilter.OPEN) };
+        return { endpoint: AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT, params: AppFeedbackChatHelper.buildCountQuery({ filter: FoodFeedbackChatFilter.OPEN }) };
       case RocketMealsModulePages.FEATURE_WISHES.path:
-        return { endpoint: FeatureWishModuleHelper.FEATURE_WISHES_ENDPOINT, params: FeatureWishModuleHelper.buildCountQuery(FeatureWishListFilter.IN_REVIEW) };
+        return { endpoint: FeatureWishModuleHelper.FEATURE_WISHES_ENDPOINT, params: FeatureWishModuleHelper.buildCountQuery({ filter: FeatureWishListFilter.IN_REVIEW }) };
       case RocketMealsModulePages.CHATS.path:
         return { endpoint: ChatQueryHelper.CHATS_ENDPOINT, params: OpenCountHelper.buildOpenChatsCountQuery() };
       default:

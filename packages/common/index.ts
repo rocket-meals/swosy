@@ -44,6 +44,7 @@ export * from './src/AppFeedbackContentHelper';
 export * from './src/CustomerAppStoreIds';
 export * from './src/AppleAppStoreConfig';
 export * from './src/StoreAppMetadata';
+export * from './src/JsonApiTypes';
 export * from './src/GoogleServiceAccountKey';
 export * from './src/LicenseEntry';
 export * from './src/DirectusItemStatus';

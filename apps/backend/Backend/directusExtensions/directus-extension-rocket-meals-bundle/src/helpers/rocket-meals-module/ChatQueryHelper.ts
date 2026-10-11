@@ -12,18 +12,16 @@ import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusH
 import { RocketMealsModulePages } from './RocketMealsModulePages';
 import { ProfileDetailsHelper, type ModuleProfile } from './ProfileDetailsHelper';
 import { ModuleListHelper } from './ModuleListHelper';
+import type { ModuleCreatedItem, ModuleItem } from './ModuleItemTypes';
 
 type DirectusFilter = Record<string, unknown>;
 type Relation = { id: string } | string | number | null | undefined;
 
 /** A chat as the module loads it: participants with their profiles, and the feedback it belongs to, if any. */
-export type ModuleChat = {
-  id: string;
+export type ModuleChat = ModuleItem & {
   alias?: string | null;
   conversation_state?: string | null;
   initial_message?: string | null;
-  date_created?: string | null;
-  date_updated?: string | null;
   participants?: { id?: number | string; profiles_id?: ModuleProfile | string | null }[] | null;
   food_feedbacks?: Relation[] | null;
   app_feedbacks?: Relation[] | null;
@@ -31,11 +29,9 @@ export type ModuleChat = {
 };
 
 /** A message as the module shows it, including who wrote it in the backend. */
-export type ModuleChatMessage = {
-  id: string;
+export type ModuleChatMessage = ModuleCreatedItem & {
   chat?: string | { id: string } | null;
   message?: string | null;
-  date_created?: string | null;
   profile?: ModuleProfile | string | null;
   user_created?: { id: string; first_name?: string | null; last_name?: string | null; email?: string | null } | string | null;
 };

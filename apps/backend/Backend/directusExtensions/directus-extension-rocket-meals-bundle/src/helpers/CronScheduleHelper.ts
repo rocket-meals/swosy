@@ -21,6 +21,13 @@ type CronField = {
   wildcard: boolean;
 };
 
+/** A field as written, with the range of values it may hold, e.g. 0 to 59 for minutes. */
+type CronFieldSpec = {
+  raw: string;
+  min: number;
+  max: number;
+};
+
 type ParsedCron = {
   seconds: CronField;
   minutes: CronField;
@@ -42,23 +49,24 @@ export class CronScheduleHelper {
     }
     const fields = parts.length === 5 ? ['0', ...parts] : parts;
     const [seconds, minutes, hours, dayOfMonth, month, dayOfWeek] = fields as [string, string, string, string, string, string];
-    const parsedDayOfWeek = CronScheduleHelper.parseField(dayOfWeek, 0, 7);
+    const parsedDayOfWeek = CronScheduleHelper.parseField({ raw: dayOfWeek, min: 0, max: 7 });
     // 7 is Sunday as well
     parsedDayOfWeek.values = [...new Set(parsedDayOfWeek.values.map(value => value % 7))].sort((a, b) => a - b);
     return {
-      seconds: CronScheduleHelper.parseField(seconds, 0, 59),
-      minutes: CronScheduleHelper.parseField(minutes, 0, 59),
-      hours: CronScheduleHelper.parseField(hours, 0, 23),
-      dayOfMonth: CronScheduleHelper.parseField(dayOfMonth, 1, 31),
-      month: CronScheduleHelper.parseField(month, 1, 12),
+      seconds: CronScheduleHelper.parseField({ raw: seconds, min: 0, max: 59 }),
+      minutes: CronScheduleHelper.parseField({ raw: minutes, min: 0, max: 59 }),
+      hours: CronScheduleHelper.parseField({ raw: hours, min: 0, max: 23 }),
+      dayOfMonth: CronScheduleHelper.parseField({ raw: dayOfMonth, min: 1, max: 31 }),
+      month: CronScheduleHelper.parseField({ raw: month, min: 1, max: 12 }),
       dayOfWeek: parsedDayOfWeek,
     };
   }
 
-  private static parseField(raw: string, min: number, max: number): CronField {
+  private static parseField(spec: CronFieldSpec): CronField {
+    const { raw } = spec;
     const values = new Set<number>();
     for (const part of raw.split(',')) {
-      const { from, to, step } = CronScheduleHelper.parsePart(part, raw, min, max);
+      const { from, to, step } = CronScheduleHelper.parsePart(part, spec);
       for (let value = from; value <= to; value += step) {
         values.add(value);
       }
@@ -67,7 +75,8 @@ export class CronScheduleHelper {
   }
 
   /** One comma separated part of a field: `*`, `5`, `1-5`, `*\/5`, `0-30/10` or `5/10`. */
-  private static parsePart(part: string, raw: string, min: number, max: number): { from: number; to: number; step: number } {
+  private static parsePart(part: string, spec: CronFieldSpec): { from: number; to: number; step: number } {
+    const { raw, min, max } = spec;
     const [range, stepText] = part.split('/') as [string, string | undefined];
     const step = stepText === undefined ? 1 : Number.parseInt(stepText, 10);
     if (!Number.isInteger(step) || step < 1) {

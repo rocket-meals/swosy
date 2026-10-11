@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common';
 import { FoodFeedbackChatHelper, FoodFeedbackContentFilter, FoodFeedbackListSort, FoodFeedbackRatingFilter } from '../FoodFeedbackChatHelper';
+import { ChatQueryHelper } from '../ChatQueryHelper';
 import { FoodFeedbackChatActions } from '../FoodFeedbackChatActions';
 import { ModuleListHelper } from '../ModuleListHelper';
 import { RocketMealsModulePages } from '../RocketMealsModulePages';
@@ -12,7 +13,7 @@ import { BackendTranslationKeys } from '../../translations/BackendTranslationKey
 describe('FoodFeedbackChatHelper', () => {
   describe('buildListQuery', () => {
     it('sorts newest first, pages, searches and uses the shared filter', () => {
-      const query = FoodFeedbackChatHelper.buildListQuery(FoodFeedbackChatFilter.OPEN, 3, '  Pasta ');
+      const query = FoodFeedbackChatHelper.buildListQuery({ filter: FoodFeedbackChatFilter.OPEN, page: 3, search: '  Pasta ' });
       expect(query.sort).toBe('-date_created');
       expect(query.limit).toBe(ModuleListHelper.PAGE_SIZE);
       expect(query.page).toBe(3);
@@ -24,28 +25,28 @@ describe('FoodFeedbackChatHelper', () => {
     });
 
     it('omits an empty search and clamps the page', () => {
-      const query = FoodFeedbackChatHelper.buildListQuery(FoodFeedbackChatFilter.ALL, 0, '   ');
+      const query = FoodFeedbackChatHelper.buildListQuery({ filter: FoodFeedbackChatFilter.ALL, page: 0, search: '   ' });
       expect(query.search).toBeUndefined();
       expect(query.page).toBe(1);
     });
   });
 
   it('counts with the shared filter', () => {
-    expect(FoodFeedbackChatHelper.buildCountQuery(FoodFeedbackChatFilter.NEW)).toEqual({
+    expect(FoodFeedbackChatHelper.buildCountQuery({ filter: FoodFeedbackChatFilter.NEW })).toEqual({
       aggregate: JSON.stringify({ count: ['id'] }),
       filter: JSON.stringify(FoodFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.NEW)),
     });
   });
 
   it('pages with the chosen page size', () => {
-    expect(FoodFeedbackChatHelper.buildListQuery(FoodFeedbackChatFilter.ALL, 1, null, { pageSize: 100 }).limit).toBe(100);
+    expect(FoodFeedbackChatHelper.buildListQuery({ filter: FoodFeedbackChatFilter.ALL, page: 1, search: null, options: { pageSize: 100 } }).limit).toBe(100);
   });
 
   it('sorts by date or rating, ties newest first', () => {
     expect(FoodFeedbackChatHelper.getSortParameter(undefined)).toBe('-date_created');
     expect(FoodFeedbackChatHelper.getSortParameter(FoodFeedbackListSort.OLDEST)).toBe('date_created');
     expect(FoodFeedbackChatHelper.getSortParameter(FoodFeedbackListSort.RATING_WORST)).toBe('rating,-date_created');
-    expect(FoodFeedbackChatHelper.buildListQuery(FoodFeedbackChatFilter.ALL, 1, null, { sort: FoodFeedbackListSort.RATING_BEST }).sort).toBe('-rating,-date_created');
+    expect(FoodFeedbackChatHelper.buildListQuery({ filter: FoodFeedbackChatFilter.ALL, page: 1, search: null, options: { sort: FoodFeedbackListSort.RATING_BEST } }).sort).toBe('-rating,-date_created');
   });
 
   it('combines the status filter with canteens, food and rating', () => {
@@ -98,7 +99,7 @@ describe('FoodFeedbackChatHelper', () => {
 
   it('counts with the same filters and search as the list', () => {
     const options = { canteenIds: ['a'], rating: FoodFeedbackRatingFilter.MEDIUM };
-    const query = FoodFeedbackChatHelper.buildCountQuery(FoodFeedbackChatFilter.NEW, options, ' kalt ');
+    const query = FoodFeedbackChatHelper.buildCountQuery({ filter: FoodFeedbackChatFilter.NEW, options, search: ' kalt ' });
     expect(query.filter).toBe(JSON.stringify(FoodFeedbackChatHelper.buildFilter(FoodFeedbackChatFilter.NEW, options)));
     expect(query.search).toBe('kalt');
   });
@@ -199,9 +200,9 @@ describe('FoodFeedbackChatActions.markResolved', () => {
     ]);
     expect(result.resolvedIds.sort()).toEqual(['f1', 'f2', 'f3']);
     expect(result.failedIds).toEqual(['f4']);
-    expect(calls[0]).toEqual({ method: 'patch', url: FoodFeedbackChatHelper.CHATS_ENDPOINT, data: { keys: ['c1', 'c2'], data: { conversation_state: 'resolved' } } });
+    expect(calls[0]).toEqual({ method: 'patch', url: ChatQueryHelper.CHATS_ENDPOINT, data: { keys: ['c1', 'c2'], data: { conversation_state: 'resolved' } } });
     expect(calls.some(call => call.method === 'patch' && call.url === `${FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT}/f3`)).toBe(true);
-    expect(calls[calls.length - 1]).toEqual({ method: 'patch', url: `${FoodFeedbackChatHelper.CHATS_ENDPOINT}/100`, data: { conversation_state: 'resolved' } });
+    expect(calls[calls.length - 1]).toEqual({ method: 'patch', url: `${ChatQueryHelper.CHATS_ENDPOINT}/100`, data: { conversation_state: 'resolved' } });
   });
 });
 

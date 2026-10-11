@@ -28,11 +28,11 @@ const emit = defineEmits<{
 const { translate, language } = useAppExtensionTranslate();
 
 function relative(date: Date | string | undefined): string {
-  return WorkflowsPageHelper.formatRelative(date, props.now, language.value);
+  return WorkflowsPageHelper.formatRelative(date, { now: props.now, language: language.value });
 }
 
 function pointInTime(date: Date | string | undefined): string {
-  return WorkflowsPageHelper.formatPointInTime(date, props.now, language.value);
+  return WorkflowsPageHelper.formatPointInTime(date, { now: props.now, language: language.value });
 }
 
 function nextRun(): Date | undefined {

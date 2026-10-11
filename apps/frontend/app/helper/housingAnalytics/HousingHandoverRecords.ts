@@ -12,7 +12,7 @@
  * makes the mapping stable against renames and translations without touching this file.
  */
 
-import { StringHelper } from 'repo-depkit-common';
+import { DatabaseTypes, StringHelper } from 'repo-depkit-common';
 
 /** `forms.internal_custom_id` of the Hannover handover protocol (FormHousingContractsWorkflowHannover.FORM_INTERNAL_ID). */
 export const HOUSING_HANDOVER_FORM_INTERNAL_CUSTOM_ID = 'housing-contract-sync-hannover';
@@ -62,12 +62,8 @@ const FIELD_ALIASES: Record<HousingHandoverField, string[]> = {
 };
 
 /** Shape of a form answer as loaded by {@link HousingAnalyticsLoader}; only the parts read here. */
-export type HousingHandoverAnswer = {
+export type HousingHandoverAnswer = Pick<DatabaseTypes.FormAnswers, 'value_string' | 'value_number' | 'value_boolean' | 'value_date'> & {
 	form_field?: { internal_custom_id?: string | null; alias?: string | null } | string | null;
-	value_string?: string | null;
-	value_number?: number | null;
-	value_boolean?: boolean | null;
-	value_date?: string | null;
 	value_files?: unknown[] | null;
 };
 

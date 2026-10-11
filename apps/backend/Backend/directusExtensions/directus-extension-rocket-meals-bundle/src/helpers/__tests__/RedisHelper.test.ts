@@ -11,7 +11,7 @@ describe('RedisHelper', () => {
   it('uses memory in the SharedStore without REDIS', async () => {
     const store = new SharedStore({});
     expect(store.usesRedis).toBe(false);
-    await store.set('a', '1', 1_000);
+    await store.set({ key: 'a', value: '1', ttlMs: 1_000 });
     expect(await store.get('a')).toBe('1');
   });
 });
@@ -20,7 +20,7 @@ describe('MemoryKeyValueStore', () => {
   it('expires values after their ttl', async () => {
     let now = 0;
     const store = new MemoryKeyValueStore(() => now);
-    await store.set('a', '1', 1_000);
+    await store.set({ key: 'a', value: '1', ttlMs: 1_000 });
     expect(await store.get('a')).toBe('1');
     now = 999;
     expect(await store.get('a')).toBe('1');
@@ -31,22 +31,22 @@ describe('MemoryKeyValueStore', () => {
   it('sets only absent keys with setIfAbsent', async () => {
     let now = 0;
     const store = new MemoryKeyValueStore(() => now);
-    expect(await store.setIfAbsent('a', '1', 1_000)).toBe(true);
-    expect(await store.setIfAbsent('a', '2', 1_000)).toBe(false);
+    expect(await store.setIfAbsent({ key: 'a', value: '1', ttlMs: 1_000 })).toBe(true);
+    expect(await store.setIfAbsent({ key: 'a', value: '2', ttlMs: 1_000 })).toBe(false);
     expect(await store.get('a')).toBe('1');
     now = 1_000;
-    expect(await store.setIfAbsent('a', '3', 1_000)).toBe(true);
+    expect(await store.setIfAbsent({ key: 'a', value: '3', ttlMs: 1_000 })).toBe(true);
   });
 
   it('deletes keys and forgets expired entries', async () => {
     let now = 0;
     const store = new MemoryKeyValueStore(() => now);
-    await store.set('a', '1', 1_000);
-    await store.set('b', '2', 1_000);
+    await store.set({ key: 'a', value: '1', ttlMs: 1_000 });
+    await store.set({ key: 'b', value: '2', ttlMs: 1_000 });
     await store.del('a');
     expect(await store.get('a')).toBeNull();
     now = 5_000;
-    await store.set('c', '3', 1_000);
+    await store.set({ key: 'c', value: '3', ttlMs: 1_000 });
     expect(store.size).toBe(1);
   });
 });
@@ -66,8 +66,8 @@ describe('RedisKeyValueStore', () => {
       },
     };
     const store = new RedisKeyValueStore(client as never);
-    await store.set('a', '1', 500);
-    expect(await store.setIfAbsent('a', '2', 500)).toBe(false);
+    await store.set({ key: 'a', value: '1', ttlMs: 500 });
+    expect(await store.setIfAbsent({ key: 'a', value: '2', ttlMs: 500 })).toBe(false);
     expect(await store.get('a')).toBe('1');
     await store.del('a', 'b');
     await store.del();

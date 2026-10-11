@@ -112,7 +112,7 @@ const upNext = computed(() => {
 });
 
 function relative(date: Date | string | undefined): string {
-  return WorkflowsPageHelper.formatRelative(date, now.value, language.value);
+  return WorkflowsPageHelper.formatRelative(date, { now: now.value, language: language.value });
 }
 
 function openDetail(item: WorkflowOverviewItem) {

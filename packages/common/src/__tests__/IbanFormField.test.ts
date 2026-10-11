@@ -1,5 +1,6 @@
 import { FormHelperCommon } from '../form/FormHelperCommon';
 import { IbanRecognitionHelper } from '../form/IbanRecognitionHelper';
+import { IbanValidationHelper } from '../form/IbanValidationHelper';
 
 /**
  * What an IBAN form field has to get right once the value carries the printed
@@ -56,7 +57,7 @@ describe('an IBAN in a form field', () => {
 		it('fits every IBAN in the registry once it is grouped', () => {
 			// The cap used to be the bare 34, which cut the last group off every
 			// country whose IBAN is 29 characters or longer - twelve of them.
-			const longest = Object.values(IbanRecognitionHelper.IBAN_LENGTH_BY_COUNTRY).reduce((a, b) => Math.max(a, b), 0);
+			const longest = Object.values(IbanValidationHelper.IBAN_LENGTH_BY_COUNTRY).reduce((a, b) => Math.max(a, b), 0);
 			const longestFormatted = FormHelperCommon.formatIban('X'.repeat(longest));
 			expect(longestFormatted.length).toBeGreaterThan(FormHelperCommon.IBAN_MAX_LENGTH);
 			expect(longestFormatted.length).toBeLessThanOrEqual(FormHelperCommon.IBAN_MAX_FORMATTED_LENGTH);

@@ -78,12 +78,16 @@ export function mergeTranslationResources(...resourcesList: readonly Translation
 	return merged;
 }
 
-export interface ResolveTranslationOptions {
+/** Where texts are looked up and in which languages: shared by a single lookup and a translator. */
+export interface TranslationLookupOptions {
 	readonly resources: TranslationResources;
-	readonly key: string;
 	readonly language: TranslationLanguageType;
 	/** Consulted in order when `language` has no text. Defaults to {@link DEFAULT_FALLBACK_LANGUAGES}. */
 	readonly fallbackLanguages?: readonly TranslationLanguageType[];
+}
+
+export interface ResolveTranslationOptions extends TranslationLookupOptions {
+	readonly key: string;
 }
 
 /**
@@ -111,11 +115,7 @@ export function resolveTranslation(options: ResolveTranslationOptions): string |
 	return undefined;
 }
 
-export interface CreateTranslatorOptions<TKey extends string> {
-	readonly resources: TranslationResources;
-	readonly language: TranslationLanguageType;
-	/** Consulted in order when `language` has no text. Defaults to {@link DEFAULT_FALLBACK_LANGUAGES}. */
-	readonly fallbackLanguages?: readonly TranslationLanguageType[];
+export interface CreateTranslatorOptions<TKey extends string> extends TranslationLookupOptions {
 	/**
 	 * Called for keys without any usable text. Defaults to returning the key itself, which
 	 * makes a missing translation obvious on screen and keeps it greppable in a screenshot.

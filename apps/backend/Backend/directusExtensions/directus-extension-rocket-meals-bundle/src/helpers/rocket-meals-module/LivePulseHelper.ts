@@ -14,9 +14,11 @@
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { DefaultProfileHelper } from 'repo-depkit-common/src/DefaultProfileHelper';
 import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED } from '../BackendUsageEventNames';
-import { FoodFeedbackChatHelper } from './FoodFeedbackChatHelper';
+import { FoodFeedbackChatHelper, type ModuleFoodFeedback } from './FoodFeedbackChatHelper';
+import type { ModuleCanteenRelation, ModuleCreatedItem, ModuleImageItem, ModuleItem, ModuleProfileSummary } from './ModuleItemTypes';
 import { RocketMealsModulePages } from './RocketMealsModulePages';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
+import type { DirectusRestQuery } from '../DirectusRestQuery';
 
 type DirectusFilter = Record<string, unknown>;
 
@@ -43,53 +45,31 @@ export enum LivePulseFeedType {
   USAGE_EVENT = 'usage_event',
 }
 
-export type LivePulseProfile = {
-  id: string;
-  nickname?: string | null;
-  avatar?: unknown;
-  date_updated?: string | null;
-  date_created?: string | null;
-};
+export type LivePulseProfile = ModuleItem & ModuleProfileSummary;
 
 type RelatedProfile = LivePulseProfile | string | null;
 
 /** A food with what is needed for its picture in the ticker. */
-export type LivePulseFood = {
-  id: string;
-  alias?: string | null;
-  image?: string | { id: string } | null;
-  image_remote_url?: string | null;
-};
+export type LivePulseFood = ModuleImageItem;
 
-export type LivePulseFoodFeedback = {
-  id: string;
-  rating?: number | null;
-  comment?: string | null;
-  date_created?: string | null;
-  date_updated?: string | null;
-  food?: LivePulseFood | string | null;
+export type LivePulseFoodFeedback = ModuleFoodFeedback & {
   foodoffer?: { id: string } | string | null;
-  canteen?: { id: string; alias?: string | null } | string | null;
   profile?: RelatedProfile;
 };
 
-export type LivePulseCanteenVisit = {
-  id: string;
+export type LivePulseCanteenVisit = ModuleCreatedItem & {
   date?: string | null;
-  date_created?: string | null;
-  canteen?: { id: string; alias?: string | null } | string | null;
+  canteen?: ModuleCanteenRelation;
   profile?: RelatedProfile;
 };
 
-export type LivePulseUsageEvent = {
-  id: string;
+export type LivePulseUsageEvent = ModuleCreatedItem & {
   event_type?: string | null;
   event_name?: string | null;
   screen_name?: string | null;
   platform?: string | null;
   session_id?: string | null;
   payload?: unknown;
-  date_created?: string | null;
 };
 
 export type LivePulseFeedItem = {
@@ -117,13 +97,7 @@ export type LivePulseFeedItem = {
   platform?: string | null;
 };
 
-export type LivePulseQuery = {
-  fields?: string;
-  filter?: string;
-  sort?: string;
-  limit?: number;
-  aggregate?: string;
-};
+export type LivePulseQuery = Pick<DirectusRestQuery, 'fields' | 'filter' | 'sort' | 'limit' | 'aggregate'>;
 
 export class LivePulseHelper {
   /** How often the page reloads its data. */

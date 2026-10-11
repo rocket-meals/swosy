@@ -136,6 +136,6 @@ export class BackendUsageEventDeduplicator {
 
   /** `true` when the read should be counted – and from then on the same pair is skipped for the window. */
   async shouldCount(requesterKey: string, itemKey: string): Promise<boolean> {
-    return this.store.setIfAbsent(`${BackendUsageEventDeduplicator.KEY_PREFIX}${requesterKey}|${itemKey}`, '1', this.windowMs);
+    return this.store.setIfAbsent({ key: `${BackendUsageEventDeduplicator.KEY_PREFIX}${requesterKey}|${itemKey}`, value: '1', ttlMs: this.windowMs });
   }
 }

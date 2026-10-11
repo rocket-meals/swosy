@@ -80,7 +80,8 @@ export function getVersionPatch() {
 	// 50: SonarCloud reliability: floating promises marked with void, async without await removed
 	// 51: SonarCloud reliability: remaining bugs (labels, regex backtracking, codePointAt, sort compare)
 	// 52: SonarCloud: remaining maintainability findings and security hotspots resolved
-	return 52;
+	// 53: data clumps refactored into shared types and parameter objects
+	return 53;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

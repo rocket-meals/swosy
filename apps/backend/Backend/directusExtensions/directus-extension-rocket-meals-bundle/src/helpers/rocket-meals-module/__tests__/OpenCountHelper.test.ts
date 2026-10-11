@@ -12,14 +12,14 @@ describe('OpenCountHelper', () => {
     it('counts open food feedbacks like the chip "Offen" of their page', () => {
       expect(OpenCountHelper.getRequest(RocketMealsModulePages.FOOD_FEEDBACKS)).toEqual({
         endpoint: FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT,
-        params: FoodFeedbackChatHelper.buildCountQuery(FoodFeedbackChatFilter.OPEN),
+        params: FoodFeedbackChatHelper.buildCountQuery({ filter: FoodFeedbackChatFilter.OPEN }),
       });
     });
 
     it('counts open app feedbacks like the chip "Offen" of their page', () => {
       expect(OpenCountHelper.getRequest(RocketMealsModulePages.APP_FEEDBACKS)).toEqual({
         endpoint: AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT,
-        params: AppFeedbackChatHelper.buildCountQuery(FoodFeedbackChatFilter.OPEN),
+        params: AppFeedbackChatHelper.buildCountQuery({ filter: FoodFeedbackChatFilter.OPEN }),
       });
     });
 

@@ -27,11 +27,7 @@ type FileValueContext = {
   myDatabaseHelperInterface: MyDatabaseTestableHelperInterface;
 };
 
-type FormFieldExampleData = {
-  value_string?: string | null;
-  value_number?: number | null;
-  value_boolean?: boolean | null;
-  value_date?: string | null;
+type FormFieldExampleData = Pick<DatabaseTypes.FormAnswers, 'value_string' | 'value_number' | 'value_boolean' | 'value_date'> & {
   value_image?: DatabaseTypes.DirectusFiles | string | null;
   value_files?: FormExtractFormAnswerValueFileSingleOrString[] | null;
   value_custom?: string | null;

@@ -9,14 +9,21 @@
 
 import Redis from 'ioredis';
 
+/** A value to store under a key for `ttlMs` milliseconds. */
+export type KeyValueEntry = {
+  key: string;
+  value: string;
+  ttlMs: number;
+};
+
 export interface KeyValueStore {
-  /** Stores `value` under `key` for `ttlMs` milliseconds, replacing an existing value. */
-  set(key: string, value: string, ttlMs: number): Promise<void>;
+  /** Stores the entry, replacing an existing value of its key. */
+  set(entry: KeyValueEntry): Promise<void>;
   /**
-   * Stores `value` only when `key` is free and returns `true` then. Atomic in Redis (`SET … NX`),
+   * Stores the entry only when its key is free and returns `true` then. Atomic in Redis (`SET … NX`),
    * so of several replicas asking at the same time exactly one gets `true`.
    */
-  setIfAbsent(key: string, value: string, ttlMs: number): Promise<boolean>;
+  setIfAbsent(entry: KeyValueEntry): Promise<boolean>;
   get(key: string): Promise<string | null>;
   del(...keys: string[]): Promise<void>;
 }
@@ -27,12 +34,12 @@ export type RedisClientLike = Pick<Redis, 'set' | 'get' | 'del'>;
 export class RedisKeyValueStore implements KeyValueStore {
   constructor(private readonly client: RedisClientLike) {}
 
-  async set(key: string, value: string, ttlMs: number): Promise<void> {
-    await this.client.set(key, value, 'PX', ttlMs);
+  async set(entry: KeyValueEntry): Promise<void> {
+    await this.client.set(entry.key, entry.value, 'PX', entry.ttlMs);
   }
 
-  async setIfAbsent(key: string, value: string, ttlMs: number): Promise<boolean> {
-    return (await this.client.set(key, value, 'PX', ttlMs, 'NX')) === 'OK';
+  async setIfAbsent(entry: KeyValueEntry): Promise<boolean> {
+    return (await this.client.set(entry.key, entry.value, 'PX', entry.ttlMs, 'NX')) === 'OK';
   }
 
   get(key: string): Promise<string | null> {
@@ -51,17 +58,17 @@ export class MemoryKeyValueStore implements KeyValueStore {
 
   constructor(private readonly now: () => number = Date.now) {}
 
-  set(key: string, value: string, ttlMs: number): Promise<void> {
+  set(entry: KeyValueEntry): Promise<void> {
     this.removeExpired();
-    this.entries.set(key, { value, expiresAt: this.now() + ttlMs });
+    this.entries.set(entry.key, { value: entry.value, expiresAt: this.now() + entry.ttlMs });
     return Promise.resolve();
   }
 
-  async setIfAbsent(key: string, value: string, ttlMs: number): Promise<boolean> {
-    if ((await this.get(key)) !== null) {
+  async setIfAbsent(entry: KeyValueEntry): Promise<boolean> {
+    if ((await this.get(entry.key)) !== null) {
       return false;
     }
-    await this.set(key, value, ttlMs);
+    await this.set(entry);
     return true;
   }
 
@@ -134,12 +141,12 @@ export class SharedStore implements KeyValueStore {
     return this.store instanceof RedisKeyValueStore;
   }
 
-  set(key: string, value: string, ttlMs: number): Promise<void> {
-    return this.store.set(key, value, ttlMs);
+  set(entry: KeyValueEntry): Promise<void> {
+    return this.store.set(entry);
   }
 
-  setIfAbsent(key: string, value: string, ttlMs: number): Promise<boolean> {
-    return this.store.setIfAbsent(key, value, ttlMs);
+  setIfAbsent(entry: KeyValueEntry): Promise<boolean> {
+    return this.store.setIfAbsent(entry);
   }
 
   get(key: string): Promise<string | null> {

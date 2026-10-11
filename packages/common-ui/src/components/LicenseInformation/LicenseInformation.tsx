@@ -12,6 +12,9 @@ import type { LicenseEntry } from 'repo-depkit-common';
  */
 export type LicensePackageInfo = LicenseEntry;
 
+/** The fields of a package shown as rows when it is expanded, each with its own label. */
+export type LicenseDetailField = keyof Pick<LicenseEntry, 'license' | 'repository' | 'licenseUrl'>;
+
 /**
  * Row labels of the expanded package details.
  *
@@ -19,11 +22,7 @@ export type LicensePackageInfo = LicenseEntry;
  * passes the finished strings in. {@link LICENSE_INFORMATION_FALLBACK_TEXTS} keeps the
  * component usable without them.
  */
-export type LicenseInformationTexts = {
-	license: string;
-	repository: string;
-	licenseUrl: string;
-};
+export type LicenseInformationTexts = Record<LicenseDetailField, string>;
 
 /** English fallback used when an app passes no `texts`. */
 export const LICENSE_INFORMATION_FALLBACK_TEXTS: LicenseInformationTexts = {

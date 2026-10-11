@@ -18,21 +18,15 @@
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import type { TranslationParams } from 'repo-depkit-common/src/translations';
 import { CronScheduleHelper } from '../CronScheduleHelper';
+import type { DirectusRestQuery } from '../DirectusRestQuery';
+import type { DatabaseTypes } from 'repo-depkit-common';
+import type { ModuleCreatedItem } from './ModuleItemTypes';
 import { WORKFLOW_RUN_STATE } from '../itemServiceHelpers/WorkflowsRunEnum';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 
 type DirectusFilter = Record<string, unknown>;
 
-export type WorkflowsQuery = {
-  fields?: string;
-  filter?: string;
-  sort?: string;
-  limit?: number;
-  page?: number;
-  aggregate?: string;
-  groupBy?: string;
-  meta?: string;
-};
+export type WorkflowsQuery = DirectusRestQuery;
 
 /** Why a workflow cannot run on this server although it is set up. */
 export enum WorkflowBlockedReason {
@@ -63,13 +57,11 @@ export type WorkflowRow = {
   enabled?: boolean | null;
 };
 
-export type WorkflowRunUser = { id?: string; first_name?: string | null; last_name?: string | null; email?: string | null };
+export type WorkflowRunUser = Pick<DatabaseTypes.DirectusUsers, 'first_name' | 'last_name' | 'email'> & { id?: string };
 
-export type WorkflowRunRow = {
-  id: string;
+export type WorkflowRunRow = ModuleCreatedItem & {
   workflow?: string | { id: string } | null;
   state?: string | null;
-  date_created?: string | null;
   date_started?: string | null;
   date_finished?: string | null;
   runtime_in_seconds?: number | null;
@@ -135,6 +127,12 @@ export type WorkflowRunStats = {
 };
 
 type Translate = (key: BackendTranslationKeys, params?: TranslationParams) => string;
+
+/** When and for whom a date is shown: relative to `now`, in the language of the person looking at the page. */
+export type WorkflowsTimeContext = {
+  now: Date;
+  language: string | undefined;
+};
 
 export class WorkflowsPageHelper {
   public static readonly SCHEDULES_ENDPOINT = '/rocket-meals-workflows/schedules';
@@ -590,14 +588,14 @@ export class WorkflowsPageHelper {
   }
 
   /** "in 4 Minuten", "vor 2 Stunden" – rounded to the largest sensible unit. */
-  static formatRelative(date: Date | string | null | undefined, now: Date, language: string | undefined): string {
+  static formatRelative(date: Date | string | null | undefined, context: WorkflowsTimeContext): string {
     const time = date ? new Date(date).getTime() : Number.NaN;
     if (Number.isNaN(time)) {
       return '';
     }
-    const seconds = Math.round((time - now.getTime()) / 1000);
+    const seconds = Math.round((time - context.now.getTime()) / 1000);
     const absolute = Math.abs(seconds);
-    const formatter = new Intl.RelativeTimeFormat(language, { numeric: 'auto' });
+    const formatter = new Intl.RelativeTimeFormat(context.language, { numeric: 'auto' });
     if (absolute < 60) {
       return formatter.format(seconds, 'second');
     }
@@ -611,7 +609,8 @@ export class WorkflowsPageHelper {
   }
 
   /** "14:00" today, "Sa., 04:00" within a week, otherwise "01.11., 01:00" – short enough for a tile. */
-  static formatPointInTime(date: Date | string | null | undefined, now: Date, language: string | undefined): string {
+  static formatPointInTime(date: Date | string | null | undefined, context: WorkflowsTimeContext): string {
+    const { now, language } = context;
     if (!date) {
       return '';
     }

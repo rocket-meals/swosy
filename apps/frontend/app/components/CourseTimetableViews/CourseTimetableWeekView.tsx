@@ -7,18 +7,15 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useAppSelector } from '@/redux/hooks';
 import { TranslationKeys } from '@/locales/keys';
 import { darkTheme } from '@/styles/themes';
-import { CourseTimetableEvent, CourseTimetableWeekday, PositionedEvent, layoutDayEvents, timeToMinutes } from '@/helper/courseTimetable/CourseTimetableModel';
-import type { LunchSuggestion } from '@/hooks/useCourseTimetableLunchSuggestions';
+import { CourseTimetableEvent, PositionedEvent, layoutDayEvents, timeToMinutes } from '@/helper/courseTimetable/CourseTimetableModel';
+import type { LunchSuggestion, LunchSuggestionDay } from '@/hooks/useCourseTimetableLunchSuggestions';
 import { useCourseEventColors } from './CourseEventDetailsSheet';
 import { NOW_COLOR } from './CourseTimetableDayView';
 
-export type WeekViewDay = {
-	dateString: string;
-	weekday: CourseTimetableWeekday;
+export type WeekViewDay = LunchSuggestionDay & {
 	shortLabel: string;
 	dayNumber: number;
 	isToday: boolean;
-	events: CourseTimetableEvent[];
 };
 
 const DEFAULT_START_HOUR = 8;

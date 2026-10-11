@@ -6,12 +6,12 @@
  * Takes the Directus app's API client (`useApi()`) as parameter, so it has no Vue imports.
  */
 
-import { ChatConversationState } from 'repo-depkit-common/src/ChatConversationState';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
 import { AppExtensionLanguageHelper } from '../app-extensions/AppExtensionLanguageHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
+import { ChatQueryHelper } from './ChatQueryHelper';
 import { FoodFeedbackChatHelper, type FoodFeedbackListItem } from './FoodFeedbackChatHelper';
 import { SupportChatActions, type MarkResolvedResult, type SupportChatApiClient } from './SupportChatActions';
 
@@ -39,15 +39,11 @@ export class FoodFeedbackChatActions {
     const food = FoodFeedbackChatHelper.getFoodName(feedback) || AppExtensionLanguageHelper.translate(BackendTranslationKeys.rocket_meals_module_unknown_food, authorLanguage);
     const alias = AppExtensionLanguageHelper.translate(BackendTranslationKeys.rocket_meals_module_food_feedback_chat_alias, authorLanguage, { food });
 
-    const chatResponse = await api.post(FoodFeedbackChatHelper.CHATS_ENDPOINT, FoodFeedbackChatStatusHelper.buildChatForFeedback(feedback, alias));
+    const chatResponse = await api.post(ChatQueryHelper.CHATS_ENDPOINT, FoodFeedbackChatStatusHelper.buildChatForFeedback(feedback, alias));
     const createdChatId = String(chatResponse.data?.data?.id);
-    await api.post(FoodFeedbackChatHelper.CHATS_PARTICIPANTS_ENDPOINT, ChatHelper.buildParticipant(createdChatId, profileId));
+    await api.post(ChatQueryHelper.CHATS_PARTICIPANTS_ENDPOINT, ChatHelper.buildParticipant(createdChatId, profileId));
     await api.patch(`${FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT}/${feedback.id}`, { chat: createdChatId });
     return createdChatId;
-  }
-
-  static async setConversationState(api: FoodFeedbackApiClient, chatId: string, state: ChatConversationState): Promise<void> {
-    await SupportChatActions.setConversationState(api, chatId, state);
   }
 
   /** Marks feedbacks as done, see {@link SupportChatActions.markResolved}. */

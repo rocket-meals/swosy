@@ -73,7 +73,7 @@ const GiroCardIbanScreen = () => {
 				</View>
 
 				<View style={styles.section}>
-					<IBANInput id="experimental-iban" value={iban} onChange={(_id, nextValue) => setIban(nextValue)} onError={(_id, nextError) => setError(nextError)} error={error} isDisabled={false} custom_type="bank_account_number" prefix={null} suffix={null} allowInvalidScannedChecksum={allowInvalidChecksum} />
+					<IBANInput id="experimental-iban" value={iban} onChange={change => setIban(change.value)} onError={(_id, nextError) => setError(nextError)} error={error} isDisabled={false} custom_type="bank_account_number" prefix={null} suffix={null} allowInvalidScannedChecksum={allowInvalidChecksum} />
 				</View>
 
 				<View style={styles.section}>

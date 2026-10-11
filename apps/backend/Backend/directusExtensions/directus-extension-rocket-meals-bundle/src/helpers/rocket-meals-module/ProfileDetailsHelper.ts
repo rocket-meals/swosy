@@ -15,28 +15,24 @@ import { FoodFeedbackChatHelper } from './FoodFeedbackChatHelper';
 import { LivePulseHelper } from './LivePulseHelper';
 import { RocketMealsModulePages } from './RocketMealsModulePages';
 import { ModuleListHelper } from './ModuleListHelper';
+import type { ModuleCanteenRelation, ModuleItem, ModuleProfileSummary } from './ModuleItemTypes';
 
 type DirectusFilter = Record<string, unknown>;
 
 /** A profile as the module pages load it. */
-export type ModuleProfile = {
-  id: string;
-  nickname?: string | null;
-  avatar?: unknown;
-  date_created?: string | null;
-  date_updated?: string | null;
-  language?: string | { code?: string | null } | null;
-  canteen?: { id: string; alias?: string | null } | string | null;
-  verified?: boolean | null;
-  price_group?: string | null;
-};
+export type ModuleProfile = ModuleItem &
+  ModuleProfileSummary & {
+    language?: string | { code?: string | null } | null;
+    canteen?: ModuleCanteenRelation;
+    verified?: boolean | null;
+    price_group?: string | null;
+  };
 
 /** A profile relation: loaded, only its id, or not set. */
 export type ModuleProfileRelation = ModuleProfile | string | null | undefined;
 
 /** A device of a profile, with what the details page shows and the push token. */
-export type ModuleProfileDevice = {
-  id: string;
+export type ModuleProfileDevice = ModuleItem & {
   alias?: string | null;
   platform?: string | null;
   brand?: string | null;
@@ -48,8 +44,6 @@ export type ModuleProfileDevice = {
   is_simulator?: boolean | null;
   is_tablet?: boolean | null;
   pushTokenObj?: unknown;
-  date_created?: string | null;
-  date_updated?: string | null;
 };
 
 export type ModuleProfileQuery = Record<string, string | number>;

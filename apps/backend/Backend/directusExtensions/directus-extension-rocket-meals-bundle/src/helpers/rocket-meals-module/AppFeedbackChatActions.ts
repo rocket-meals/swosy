@@ -12,8 +12,14 @@ import type { FoodFeedbackChatStatus } from 'repo-depkit-common/src/FoodFeedback
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
 import { AppFeedbackChatHelper, type AppFeedbackListItem } from './AppFeedbackChatHelper';
-import { FoodFeedbackChatHelper } from './FoodFeedbackChatHelper';
+import { ChatQueryHelper } from './ChatQueryHelper';
 import type { MarkResolvedResult, SupportChatApiClient } from './SupportChatActions';
+
+/** An answer of support to a feedback, written to `app_feedbacks.response`. */
+export type AppFeedbackResponse = {
+  feedback: Pick<AppFeedbackListItem, 'id'>;
+  response: string;
+};
 
 export class AppFeedbackChatActions {
   /**
@@ -30,9 +36,9 @@ export class AppFeedbackChatActions {
     if (!profileId) {
       throw new Error('app feedback has no profile');
     }
-    const chatResponse = await api.post(FoodFeedbackChatHelper.CHATS_ENDPOINT, AppFeedbackChatStatusHelper.buildChatForFeedback(feedback));
+    const chatResponse = await api.post(ChatQueryHelper.CHATS_ENDPOINT, AppFeedbackChatStatusHelper.buildChatForFeedback(feedback));
     const createdChatId = String(chatResponse.data?.data?.id);
-    await api.post(FoodFeedbackChatHelper.CHATS_PARTICIPANTS_ENDPOINT, ChatHelper.buildParticipant(createdChatId, profileId));
+    await api.post(ChatQueryHelper.CHATS_PARTICIPANTS_ENDPOINT, ChatHelper.buildParticipant(createdChatId, profileId));
     await api.patch(`${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/${feedback.id}`, { chat: createdChatId });
     return createdChatId;
   }
@@ -70,8 +76,8 @@ export class AppFeedbackChatActions {
    * `app-feedbacks-hook` mails it to the contact email. There is nothing left to do afterwards, so
    * the feedback is marked as done in the same request.
    */
-  static async sendMailResponse(api: SupportChatApiClient, feedback: Pick<AppFeedbackListItem, 'id'>, response: string): Promise<void> {
-    await api.patch(`${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/${feedback.id}`, { response, state: AppFeedbackState.CLOSED });
+  static async sendMailResponse(api: SupportChatApiClient, answer: AppFeedbackResponse): Promise<void> {
+    await AppFeedbackChatActions.writeResponseAndClose(api, answer);
   }
 
   /**
@@ -79,7 +85,11 @@ export class AppFeedbackChatActions {
    * `app-reviews-pull-hook` publishes it in the App Store or on Google Play (it rejects the write
    * when that store is not configured). The review is done with that – the hook closes it as well.
    */
-  static async setStoreResponse(api: SupportChatApiClient, feedback: Pick<AppFeedbackListItem, 'id'>, response: string): Promise<void> {
-    await api.patch(`${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/${feedback.id}`, { response, state: AppFeedbackState.CLOSED });
+  static async setStoreResponse(api: SupportChatApiClient, answer: AppFeedbackResponse): Promise<void> {
+    await AppFeedbackChatActions.writeResponseAndClose(api, answer);
+  }
+
+  private static async writeResponseAndClose(api: SupportChatApiClient, answer: AppFeedbackResponse): Promise<void> {
+    await api.patch(`${AppFeedbackChatHelper.APP_FEEDBACKS_ENDPOINT}/${answer.feedback.id}`, { response: answer.response, state: AppFeedbackState.CLOSED });
   }
 }
