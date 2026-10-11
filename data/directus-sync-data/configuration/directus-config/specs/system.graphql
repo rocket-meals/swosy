@@ -580,7 +580,7 @@ type app_settings {
 
   """Zeigt den Bereich Wohnen in der App an"""
   housing_enabled: Boolean
-  feature_wishes_enabled: Boolean
+  feature_wishes_mode: String
   guest_profiles_enabled: Boolean
 
   """Zeige den Lageplan in der App an"""
@@ -4830,7 +4830,7 @@ input app_settings_filter {
   foods_ratings_amount_display: boolean_filter_operators
   foods_ratings_average_display: boolean_filter_operators
   housing_enabled: boolean_filter_operators
-  feature_wishes_enabled: boolean_filter_operators
+  feature_wishes_mode: string_filter_operators
   guest_profiles_enabled: boolean_filter_operators
   map_enabled: boolean_filter_operators
   news_enabled: boolean_filter_operators

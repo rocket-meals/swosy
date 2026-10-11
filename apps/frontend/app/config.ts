@@ -247,7 +247,9 @@ export function getVersionPatch() {
         // 129: settings: "Support & FAQ" in its own group "Hilfe & Kontakt"
         // 130: feature wish form: the sheet lifts above the keyboard again (no autoFocus),
         //      Enter in the title sends the wish
-        return 130;
+        // 131: feature wishes: app_settings.feature_wishes_mode (off, vote only, vote and
+        //      submit, submit only) replaces the on/off switch
+        return 131;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

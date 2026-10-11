@@ -12,7 +12,7 @@ import { TranslationKeys } from '@/locales/keys';
 
 /**
  * "Which feature are you missing?" between the first and the second day of the food offers. Hidden
- * when feature wishes are switched off in the app settings, and for 30 days after "Hide".
+ * when the app settings do not allow submitting wishes, and for 30 days after "Hide".
  */
 const FeatureWishesTile: React.FC = () => {
 	const { theme } = useTheme();
@@ -26,7 +26,7 @@ const FeatureWishesTile: React.FC = () => {
 		dispatch({ type: SET_FEATURE_WISHES_LOCAL_DATA, payload: { tileHiddenAt: new Date().toISOString() } });
 	}, [dispatch]);
 
-	if (appSettings?.feature_wishes_enabled !== true || FeatureWishHelper.isTileHidden(tileHiddenAt, new Date())) {
+	if (!FeatureWishHelper.maySubmit(FeatureWishHelper.getMode(appSettings)) || FeatureWishHelper.isTileHidden(tileHiddenAt, new Date())) {
 		return null;
 	}
 

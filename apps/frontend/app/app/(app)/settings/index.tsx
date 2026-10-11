@@ -27,7 +27,7 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { ServerAPI } from '@/redux/actions';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { CollectibleAt, DatabaseTypes, CampusSortOption, GuestAccountHelper } from 'repo-depkit-common';
+import { CollectibleAt, DatabaseTypes, CampusSortOption, FeatureWishHelper, GuestAccountHelper } from 'repo-depkit-common';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
@@ -833,7 +833,7 @@ const Settings = () => {
 							handleFunction={openCollectibleSettingsModal}
 							groupPosition="middle"
 						/>
-						{appSettings?.feature_wishes_enabled === true && (
+						{FeatureWishHelper.isEnabled(FeatureWishHelper.getMode(appSettings)) && (
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="lightbulb-on-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feature_wishes)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFeatureWishesModal} groupPosition="middle" />
 						)}
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="license" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.license_information)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/licenseInformation')} groupPosition="middle" />
@@ -1055,7 +1055,7 @@ const Settings = () => {
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 		settingsAvatarConfig, openAvatarEditor,
 		appSettings?.foods_ratings_average_display,
-		appSettings?.feature_wishes_enabled, openFeatureWishesModal,
+		appSettings?.feature_wishes_mode, openFeatureWishesModal,
 		sqliteStorageRefreshSignal, handleSqliteStorageCleared, handleSqliteStorageClearError,
 		asyncStorageUsageTotalBytes, refreshAsyncStorageUsage, openAsyncStorageKeysSheet,
 		isMigratingStorage, handleMigrateStorage,

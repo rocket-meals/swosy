@@ -1,0 +1,69 @@
+{
+  "collection": "app_settings",
+  "field": "feature_wishes_mode",
+  "type": "string",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "feature_wishes_mode",
+    "group": null,
+    "hidden": false,
+    "interface": "select-dropdown",
+    "note": "Was die App bei Feature-Wünschen anbietet: Abstimmen über veröffentlichte Wünsche und/oder Einreichen neuer Wünsche.",
+    "options": {
+      "choices": [
+        {
+          "text": "Ausgeschaltet",
+          "value": "disabled"
+        },
+        {
+          "text": "Nur abstimmen",
+          "value": "vote_only"
+        },
+        {
+          "text": "Abstimmen und einreichen",
+          "value": "vote_and_submit"
+        },
+        {
+          "text": "Nur einreichen",
+          "value": "submit_only"
+        }
+      ],
+      "icon": "lightbulb"
+    },
+    "readonly": false,
+    "required": false,
+    "searchable": true,
+    "sort": 26,
+    "special": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Feature-Wünsche"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "feature_wishes_mode",
+    "table": "app_settings",
+    "data_type": "character varying",
+    "default_value": "disabled",
+    "max_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}
