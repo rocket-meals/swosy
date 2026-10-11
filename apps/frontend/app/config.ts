@@ -236,7 +236,8 @@ export function getVersionPatch() {
         // 119: maintenance window read as UTC timestamps
         // 120: SonarCloud reliability: floating promises marked with void, async without await removed
         // 121: SonarCloud reliability: remaining bugs (labels, regex backtracking, codePointAt, sort compare)
-        return 121;
+        // 122: SonarCloud: remaining maintainability findings and security hotspots resolved
+        return 122;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

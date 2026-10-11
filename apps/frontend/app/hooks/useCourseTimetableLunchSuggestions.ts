@@ -104,7 +104,16 @@ export default function useCourseTimetableLunchSuggestions(days: LunchSuggestion
 	}, [canteen, businessHours, buildingsDict]);
 
 	// A stable key so the effect only reruns when the days or their events really change.
-	const daysKey = useMemo(() => days.map(day => `${day.dateString}:${day.events.map(e => `${e.start}-${e.end}`).join(',')}`).join('|'), [days]);
+	const daysKey = useMemo(
+		() =>
+			days
+				.map(day => {
+					const eventsKey = day.events.map(e => `${e.start}-${e.end}`).join(',');
+					return `${day.dateString}:${eventsKey}`;
+				})
+				.join('|'),
+		[days]
+	);
 
 	useEffect(() => {
 		const canteenId = canteen?.id;

@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useSyncExternalStore } from 'react';
+import { resolveSettingsGroupPosition } from '@/helper/settingsListGroupPosition';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MyColorSelection, SettingsListGroupTitle, SettingsListSelectOptionSingle, SettingsListTimeInput, mixColors } from 'repo-depkit-common-ui';
@@ -160,7 +161,7 @@ const CourseEventDetailsSheet: React.FC<CourseEventDetailsSheetProps> = ({ event
 							label={translate(WEEKDAY_TRANSLATION_KEYS[weekday])}
 							isSelected={event.weekday === weekday}
 							selectionColor={accentColor}
-							groupPosition={index === 0 ? 'top' : index === COURSE_TIMETABLE_WEEKDAYS.length - 1 ? 'bottom' : 'middle'}
+							groupPosition={resolveSettingsGroupPosition(index, COURSE_TIMETABLE_WEEKDAYS.length)}
 							showSeparator={index !== COURSE_TIMETABLE_WEEKDAYS.length - 1}
 							onPress={() => {
 								update({ weekday });

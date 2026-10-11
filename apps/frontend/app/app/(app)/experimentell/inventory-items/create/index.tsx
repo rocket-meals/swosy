@@ -109,7 +109,7 @@ const CreateInventoryItemScreen = () => {
 			const trimmedNote = note.trim();
 			const createdItem = await inventoryItemsHelper.createInventoryItem({
 				alias: trimmedAlias,
-				note: trimmedNote ? trimmedNote : null,
+				note: trimmedNote || null,
 				image: imageId,
 				status: INVENTORY_ITEM_DEFAULT_STATUS,
 			});

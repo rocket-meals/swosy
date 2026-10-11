@@ -21,7 +21,7 @@ export async function authorizedFetch(pathOrUrl: string, init: RequestInit = {})
 	const token = await ServerAPI.getClient().getToken();
 
 	const url = pathOrUrl.startsWith('http') ? pathOrUrl : `${Server.ServerUrl}${pathOrUrl}`;
-	const headers: Record<string, string> = { ...((init.headers as Record<string, string> | undefined) ?? {}) };
+	const headers: Record<string, string> = { ...(init.headers as Record<string, string> | undefined) };
 	if (token) {
 		headers.Authorization = `Bearer ${token}`;
 	}

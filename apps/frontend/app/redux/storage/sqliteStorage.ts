@@ -49,7 +49,7 @@ async function copyAsyncStorageIntoSqlite(db: KvDatabase): Promise<string[]> {
 	await db.withExclusiveTransactionAsync(async (txn: any) => {
 		for (const [key, value] of legacyEntries) {
 			if (value !== null) {
-				await txn.runAsync('INSERT OR REPLACE INTO kv (key, value) VALUES (?, ?)', key, value);
+				await txn.runAsync('INSERT OR REPLACE INTO kv (key, value) VALUES (?, ?)', key, value); // NOSONAR S9382 - sequential on purpose: statements inside one SQLite transaction run one after another on a single connection
 				migratedKeys.push(key);
 			}
 		}
@@ -167,7 +167,7 @@ export const sqliteKeyValueStorage = {
 		// second connection, and on logout redux-persist writes "persist:root" on the main one at
 		// the same time - SQLite then fails with "database is locked" (finalizeAsync failed).
 		for (const key of keys) {
-			await db.runAsync('DELETE FROM kv WHERE key = ?', key);
+			await db.runAsync('DELETE FROM kv WHERE key = ?', key); // NOSONAR S9382 - sequential on purpose: one SQLite statement at a time on the shared connection (see comment above)
 		}
 	},
 

@@ -81,9 +81,7 @@ export const getAppUsageSessionId = () => {
 };
 
 const getCollectionHelper = () => {
-	if (!collectionHelper) {
-		collectionHelper = new AppUsageEvents();
-	}
+	collectionHelper ??= new AppUsageEvents();
 	return collectionHelper;
 };
 
@@ -110,7 +108,7 @@ export const trackAppUsageEvent = async (event: AppUsageEventInput): Promise<boo
 				version_internal: getVersionInternalForAppsettingsScreen(),
 				// Minutes the local time is behind UTC, as `Date.getTimezoneOffset` reports it.
 				timezone_offset_minutes: now.getTimezoneOffset(),
-				...(event.payload ?? {}),
+				...event.payload,
 			},
 			payload_boolean: event.payload_boolean ?? null,
 			payload_number: event.payload_number ?? null,

@@ -98,7 +98,7 @@ const DebugLogout = () => {
 			if (exclude.has(step.label)) continue;
 			const result = step.action() as any;
 			if (result && typeof result === 'object' && typeof result.then === 'function') {
-				await result;
+				await result; // NOSONAR S9382 - sequential on purpose: logout steps run in order, each step depends on the previous one having finished
 			}
 		}
 	};

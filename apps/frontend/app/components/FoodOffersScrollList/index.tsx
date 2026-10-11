@@ -84,7 +84,7 @@ async function refreshFoodOffersInBackground({
 		const serverDays: DayData[] = [];
 		let anyChanged = false;
 		for (const date of datesToLoad) {
-			const day = await loadDay(date);
+			const day = await loadDay(date); // NOSONAR S9382 - sequential on purpose: one server request per day, keeps the background refresh light and stops at the first network error
 			serverDays.push(day);
 			const serverHash = computeFoodOffersHash(day.offers);
 			const cachedHash = dayHashesRef.current[date] || '';
@@ -129,7 +129,7 @@ async function loadFoodOffersFullyFresh(
 	try {
 		const loaded: DayData[] = [];
 		for (const date of datesToLoad) {
-			loaded.push(await loadDay(date));
+			loaded.push(await loadDay(date)); // NOSONAR S9382 - sequential on purpose: one server request per day, stops at the first network error so the offline state shows right away
 		}
 		setDays(loaded);
 		updateCache(loaded);
@@ -149,7 +149,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const { canteenFeedbackLabels, canteens } = useAppSelector((state) => state.canteenReducer);
 	const { language, amountColumnsForcard, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { foodOffersInfoItems } = useAppSelector((state) => state.food);
-	const { profile, user } = useAppSelector((state) => state.authReducer);
+	const { user } = useAppSelector((state) => state.authReducer);
 	const { appElements } = useAppSelector((state) => state.appElements);
 	
 	const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;

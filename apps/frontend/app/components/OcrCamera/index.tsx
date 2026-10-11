@@ -70,6 +70,49 @@ export interface OcrCameraProps {
  * of the picture itself. None of them carries a caption — a shutter that has to
  * explain itself is in the wrong place.
  */
+type OcrStatusInput = {
+	hasEngineAnswered: boolean;
+	hasCapturedImage: boolean;
+	isCapturedImageRead: boolean;
+	isCameraActive: boolean;
+	isAutomatic: boolean;
+	isTooBlurry: boolean;
+	lastReadingLineCount: number;
+};
+
+/** What the status pill says after a still was read. */
+function resolveCapturedImageStatusKey(isTooBlurry: boolean, lastReadingLineCount: number): TranslationKeys {
+	// Three different outcomes, and telling them apart is the whole point: the
+	// picture was too soft to read, or the engine read nothing at all, or it
+	// read plenty and none of it was what the caller is after. Saying "no text"
+	// to someone looking at their own recognized text is how this looked broken.
+	if (lastReadingLineCount > 0) {
+		return TranslationKeys.ocr_no_match_in_photo;
+	}
+	if (isTooBlurry) {
+		// A frame too soft to read is the common case on a front camera, which
+		// cannot focus at the distance something is held at.
+		return TranslationKeys.ocr_too_blurry;
+	}
+	return TranslationKeys.ocr_nothing_in_photo;
+}
+
+/** The text key of the status pill on top of the preview. */
+function resolveOcrStatusKey({ hasEngineAnswered, hasCapturedImage, isCapturedImageRead, isCameraActive, isAutomatic, isTooBlurry, lastReadingLineCount }: OcrStatusInput): TranslationKeys {
+	if (hasCapturedImage && isCapturedImageRead) {
+		return resolveCapturedImageStatusKey(isTooBlurry, lastReadingLineCount);
+	}
+	if (isCameraActive && !isAutomatic) {
+		// Nothing is being read until the shutter says so.
+		return TranslationKeys.ocr_ready_for_photo;
+	}
+	if (isCameraActive && isTooBlurry && lastReadingLineCount === 0) {
+		return TranslationKeys.ocr_too_blurry;
+	}
+	/** Loading the engine is the slow part of the first pass; say so instead of leaving the user in front of a silent preview. */
+	return hasEngineAnswered ? TranslationKeys.ocr_searching : TranslationKeys.ocr_preparing;
+}
+
 export const OcrCamera: React.FC<OcrCameraProps> = ({ recognizeImage, isAutomatic, onRecognized, hint, showFrame = false }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -241,29 +284,17 @@ export const OcrCamera: React.FC<OcrCameraProps> = ({ recognizeImage, isAutomati
 	const isReadingCapturedImage = capturedImage !== null && !isCapturedImageRead;
 	const isBusy = isReadingCapturedImage || (isCameraActive && isAutomatic);
 
-	/** Loading the engine is the slow part of the first pass; say so instead of leaving the user in front of a silent preview. */
-	const busyText = hasEngineAnswered ? translate(TranslationKeys.ocr_searching) : translate(TranslationKeys.ocr_preparing);
-	let statusText = busyText;
-	if (capturedImage !== null && isCapturedImageRead) {
-		// Three different outcomes, and telling them apart is the whole point: the
-		// picture was too soft to read, or the engine read nothing at all, or it
-		// read plenty and none of it was what the caller is after. Saying "no text"
-		// to someone looking at their own recognized text is how this looked broken.
-		if (lastReadingLineCount > 0) {
-			statusText = translate(TranslationKeys.ocr_no_match_in_photo);
-		} else if (isTooBlurry) {
-			// A frame too soft to read is the common case on a front camera, which
-			// cannot focus at the distance something is held at.
-			statusText = translate(TranslationKeys.ocr_too_blurry);
-		} else {
-			statusText = translate(TranslationKeys.ocr_nothing_in_photo);
-		}
-	} else if (isCameraActive && !isAutomatic) {
-		// Nothing is being read until the shutter says so.
-		statusText = translate(TranslationKeys.ocr_ready_for_photo);
-	} else if (isCameraActive && isTooBlurry && lastReadingLineCount === 0) {
-		statusText = translate(TranslationKeys.ocr_too_blurry);
-	}
+	const statusText = translate(
+		resolveOcrStatusKey({
+			hasEngineAnswered,
+			hasCapturedImage: capturedImage !== null,
+			isCapturedImageRead,
+			isCameraActive,
+			isAutomatic,
+			isTooBlurry,
+			lastReadingLineCount,
+		}),
+	);
 
 	// The height follows from the width through the aspect ratio, and is capped
 	// against the window: the modal is as wide as the window on a desktop browser,

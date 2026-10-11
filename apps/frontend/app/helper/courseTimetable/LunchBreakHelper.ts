@@ -33,7 +33,7 @@ export function mergeRanges(ranges: MinuteRange[]): MinuteRange[] {
 	const sorted = ranges.filter(range => range.end > range.start).sort((a, b) => a.start - b.start);
 	const merged: MinuteRange[] = [];
 	for (const range of sorted) {
-		const last = merged[merged.length - 1];
+		const last = merged.at(-1);
 		if (last && range.start <= last.end) {
 			last.end = Math.max(last.end, range.end);
 		} else {
@@ -51,18 +51,30 @@ export function mergeRanges(ranges: MinuteRange[]): MinuteRange[] {
 export function getOpeningRangesForDate(businessHours: BusinessHoursLike[], dateString: string, weekday: CourseTimetableWeekday): MinuteRange[] {
 	const ranges: MinuteRange[] = [];
 	for (const hours of businessHours) {
-		if (!hours) continue;
-		if (hours.status && hours.status !== 'published') continue;
-		if (hours[weekday] !== true) continue;
-		if (hours.date_valid_from && dateString < hours.date_valid_from.slice(0, 10)) continue;
-		if (hours.date_valid_till && dateString > hours.date_valid_till.slice(0, 10)) continue;
-		if (!hours.time_start || !hours.time_end) continue;
-		const start = timeToMinutes(hours.time_start);
-		const end = timeToMinutes(hours.time_end);
-		if (Number.isNaN(start) || Number.isNaN(end) || end <= start) continue;
-		ranges.push({ start, end });
+		const range = getOpeningRangeOfBusinessHours(hours, dateString, weekday);
+		if (range) ranges.push(range);
 	}
 	return mergeRanges(ranges);
+}
+
+/** Whether a business hours entry is published, open on the weekday and valid on the date. */
+function isBusinessHoursActiveOnDate(hours: BusinessHoursLike, dateString: string, weekday: CourseTimetableWeekday): boolean {
+	if (hours.status && hours.status !== 'published') return false;
+	if (hours[weekday] !== true) return false;
+	if (hours.date_valid_from && dateString < hours.date_valid_from.slice(0, 10)) return false;
+	if (hours.date_valid_till && dateString > hours.date_valid_till.slice(0, 10)) return false;
+	return true;
+}
+
+/** The opening range of one business hours entry on one date, or null when it does not apply or has no valid times. */
+function getOpeningRangeOfBusinessHours(hours: BusinessHoursLike | null | undefined, dateString: string, weekday: CourseTimetableWeekday): MinuteRange | null {
+	if (!hours) return null;
+	if (!isBusinessHoursActiveOnDate(hours, dateString, weekday)) return null;
+	if (!hours.time_start || !hours.time_end) return null;
+	const start = timeToMinutes(hours.time_start);
+	const end = timeToMinutes(hours.time_end);
+	if (Number.isNaN(start) || Number.isNaN(end) || end <= start) return null;
+	return { start, end };
 }
 
 /** Free sub-ranges of `opening` once all `busy` ranges are cut out. */

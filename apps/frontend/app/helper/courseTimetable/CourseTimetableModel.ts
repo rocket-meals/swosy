@@ -7,6 +7,8 @@
  * accepts a bare weekday string.
  */
 
+import { MathHelper } from 'repo-depkit-common';
+
 export const COURSE_TIMETABLE_WEEKDAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
 export type CourseTimetableWeekday = (typeof COURSE_TIMETABLE_WEEKDAYS)[number];
 
@@ -99,32 +101,57 @@ export function weekdayOfDate(date: Date): CourseTimetableWeekday {
 	return COURSE_TIMETABLE_WEEKDAYS[index] ?? 'monday';
 }
 
+function stringOrNull(value: unknown): string | null {
+	return typeof value === 'string' ? value : null;
+}
+
+/** Stored ids are strings (older records: numbers); anything else is not a usable id. */
+function toEventId(value: unknown): string {
+	if (typeof value === 'string') return value;
+	if (typeof value === 'number' || typeof value === 'bigint' || typeof value === 'boolean') return String(value);
+	return '';
+}
+
+/** The stored value is either a list of events or a record keyed by event id. */
+function toCourseTimetableEntries(raw: object): unknown[] {
+	if (Array.isArray(raw)) return raw;
+	return Object.entries(raw as Record<string, unknown>).map(([key, value]) => ({ ...(value as object), id: (value as { id?: unknown })?.id ?? key }));
+}
+
+/** One stored entry as a clean event, or null when it is broken (no weekday, invalid or empty time span). */
+function parseCourseTimetableEntry(entry: unknown): CourseTimetableEvent | null {
+	if (!entry || typeof entry !== 'object') return null;
+	const item = entry as Record<string, unknown>;
+	const weekday = parseWeekday(item.weekday);
+	const start = item.start;
+	const end = item.end;
+	if (!weekday || !isValidTime(start) || !isValidTime(end)) return null;
+	if (timeToMinutes(start) >= timeToMinutes(end)) return null;
+	const hasSourceData = item.source_data !== undefined && item.source_data !== null;
+	return {
+		id: toEventId(item.id),
+		title: stringOrNull(item.title) ?? '',
+		location: stringOrNull(item.location),
+		color: typeof item.color === 'string' && item.color.length > 0 ? item.color : DEFAULT_COURSE_COLOR,
+		start: normalizeTime(start),
+		end: normalizeTime(end),
+		weekday,
+		kind: stringOrNull(item.kind),
+		source: item.source === 'import' ? 'import' : 'manual',
+		building_id: stringOrNull(item.building_id),
+		...(hasSourceData ? { source_data: item.source_data } : {}),
+	};
+}
+
 /** Reads `profiles.course_timetable` into a clean, sorted event list; drops broken entries. */
 export function normalizeCourseTimetable(raw: unknown): CourseTimetableEvent[] {
 	if (!raw || typeof raw !== 'object') return [];
-	const entries = Array.isArray(raw) ? raw : Object.entries(raw as Record<string, unknown>).map(([key, value]) => ({ ...(value as object), id: (value as { id?: unknown })?.id ?? key }));
 	const events: CourseTimetableEvent[] = [];
-	for (const entry of entries) {
-		if (!entry || typeof entry !== 'object') continue;
-		const item = entry as Record<string, unknown>;
-		const weekday = parseWeekday(item.weekday);
-		const start = item.start;
-		const end = item.end;
-		if (!weekday || !isValidTime(start) || !isValidTime(end)) continue;
-		if (timeToMinutes(start) >= timeToMinutes(end)) continue;
-		events.push({
-			id: String(item.id ?? ''),
-			title: typeof item.title === 'string' ? item.title : '',
-			location: typeof item.location === 'string' ? item.location : null,
-			color: typeof item.color === 'string' && item.color.length > 0 ? item.color : DEFAULT_COURSE_COLOR,
-			start: normalizeTime(start),
-			end: normalizeTime(end),
-			weekday,
-			kind: typeof item.kind === 'string' ? item.kind : null,
-			source: item.source === 'import' ? 'import' : 'manual',
-			building_id: typeof item.building_id === 'string' ? item.building_id : null,
-			...(item.source_data !== undefined && item.source_data !== null ? { source_data: item.source_data } : {}),
-		});
+	for (const entry of toCourseTimetableEntries(raw)) {
+		const event = parseCourseTimetableEntry(entry);
+		if (event) {
+			events.push(event);
+		}
 	}
 	return sortEvents(events);
 }
@@ -161,7 +188,7 @@ export function serializeCourseTimetable(events: CourseTimetableEvent[]): Record
 /** A new id that does not collide with existing ones (ids used to be "count + 1", which collided after a delete). */
 export function createEventId(existing: CourseTimetableEvent[]): string {
 	const used = new Set(existing.map(event => event.id));
-	let id = `${Date.now().toString(36)}${Math.floor(Math.random() * 1e6).toString(36)}`;
+	let id = `${Date.now().toString(36)}${Math.floor(MathHelper.random() * 1e6).toString(36)}`;
 	while (used.has(id)) {
 		id = `${id}x`;
 	}

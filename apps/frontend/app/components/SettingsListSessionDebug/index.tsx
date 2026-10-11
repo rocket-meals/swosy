@@ -60,7 +60,12 @@ export default function SettingsListSessionDebug({ iconBgColor, iconColor }: Rea
 
 	// Non-verbal status: refresh token present, access token valid until.
 	const expiresAt = session?.accessTokenExpiresAt ? new Date(session.accessTokenExpiresAt).toLocaleTimeString() : '–';
-	const sessionValue = session ? `${session.hasRefreshToken ? '✓' : '✗'} · ${expiresAt}${session.accessTokenExpired ? ' ✗' : ''}` : '–';
+	let sessionValue = '–';
+	if (session) {
+		const refreshTokenMark = session.hasRefreshToken ? '✓' : '✗';
+		const accessTokenExpiredMark = session.accessTokenExpired ? ' ✗' : '';
+		sessionValue = `${refreshTokenMark} · ${expiresAt}${accessTokenExpiredMark}`;
+	}
 
 	return (
 		<>

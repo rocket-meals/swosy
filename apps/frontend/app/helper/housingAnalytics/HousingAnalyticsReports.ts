@@ -449,6 +449,26 @@ function collectRecordEntries(
  * than a vacancy.
  */
 function collectVacancyEntries(records: HousingHandoverRecord[], grouping: HousingGrouping): ReportEntry[] {
+	const entries: ReportEntry[] = [];
+	for (const roomRecords of groupRecordsByRoom(records).values()) {
+		const sorted = [...roomRecords].sort((left, right) => (left.rentStart?.getTime() ?? 0) - (right.rentStart?.getTime() ?? 0));
+		for (let index = 0; index < sorted.length - 1; index++) {
+			const previous = sorted[index];
+			const next = sorted[index + 1];
+			if (!previous || !next) {
+				continue;
+			}
+			const entry = buildVacancyEntry(previous, next, grouping);
+			if (entry) {
+				entries.push(entry);
+			}
+		}
+	}
+	return entries;
+}
+
+/** The records of each room; records without a room are left out. */
+function groupRecordsByRoom(records: HousingHandoverRecord[]): Map<string, HousingHandoverRecord[]> {
 	const byRoom = new Map<string, HousingHandoverRecord[]>();
 	for (const record of records) {
 		const roomKey = getRoomKey(record);
@@ -462,38 +482,30 @@ function collectVacancyEntries(records: HousingHandoverRecord[], grouping: Housi
 			byRoom.set(roomKey, [record]);
 		}
 	}
+	return byRoom;
+}
 
-	const entries: ReportEntry[] = [];
-	for (const roomRecords of byRoom.values()) {
-		const sorted = [...roomRecords].sort((left, right) => (left.rentStart?.getTime() ?? 0) - (right.rentStart?.getTime() ?? 0));
-		for (let index = 0; index < sorted.length - 1; index++) {
-			const previous = sorted[index];
-			const next = sorted[index + 1];
-			if (!previous || !next) {
-				continue;
-			}
-			const availableFrom = previous.availableFrom ?? previous.moveOutDate;
-			if (!availableFrom || !next.rentStart) {
-				continue;
-			}
-			const vacancyDays = getDayDifference(next.rentStart, availableFrom);
-			if (vacancyDays <= 0) {
-				continue;
-			}
-			const groupKey = groupKeyOf(previous, grouping);
-			if (!groupKey) {
-				continue;
-			}
-			entries.push({
-				groupKey,
-				groupLabel: groupLabelOf(previous, grouping) ?? groupKey,
-				sample: vacancyDays,
-				matches: true,
-				secondaryMatches: false,
-			});
-		}
+/** The vacancy between two consecutive tenancies of a room, or null when it is unknown or not positive. */
+function buildVacancyEntry(previous: HousingHandoverRecord, next: HousingHandoverRecord, grouping: HousingGrouping): ReportEntry | null {
+	const availableFrom = previous.availableFrom ?? previous.moveOutDate;
+	if (!availableFrom || !next.rentStart) {
+		return null;
 	}
-	return entries;
+	const vacancyDays = getDayDifference(next.rentStart, availableFrom);
+	if (vacancyDays <= 0) {
+		return null;
+	}
+	const groupKey = groupKeyOf(previous, grouping);
+	if (!groupKey) {
+		return null;
+	}
+	return {
+		groupKey,
+		groupLabel: groupLabelOf(previous, grouping) ?? groupKey,
+		sample: vacancyDays,
+		matches: true,
+		secondaryMatches: false,
+	};
 }
 
 function collectEntries(definition: HousingReportDefinition, records: HousingHandoverRecord[], grouping: HousingGrouping): ReportEntry[] {

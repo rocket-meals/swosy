@@ -58,6 +58,7 @@ const EventCard: React.FC<{ event: CourseTimetableEvent & { overlaps: boolean };
 	const { translate } = useLanguage();
 	const colors = useCourseEventColors(event.color);
 	const sourceLabel = translate(event.source === 'import' ? TranslationKeys.course_timetable_source_import : TranslationKeys.course_timetable_source_manual);
+	const locationSuffix = event.location ? `, ${event.location}` : '';
 
 	return (
 		<View style={styles.eventRow}>
@@ -65,7 +66,7 @@ const EventCard: React.FC<{ event: CourseTimetableEvent & { overlaps: boolean };
 				<Text style={[styles.timeStart, { color: theme.screen.text }]}>{event.start}</Text>
 				<Text style={[styles.timeEnd, { color: theme.screen.placeholder }]}>{event.end}</Text>
 			</View>
-			<TouchableOpacity style={[styles.card, { backgroundColor: colors.background }]} onPress={onPress} accessibilityRole="button" accessibilityLabel={`${event.title}, ${event.start}–${event.end}${event.location ? `, ${event.location}` : ''}`}>
+			<TouchableOpacity style={[styles.card, { backgroundColor: colors.background }]} onPress={onPress} accessibilityRole="button" accessibilityLabel={`${event.title}, ${event.start}–${event.end}${locationSuffix}`}>
 				<View style={styles.cardTop}>
 					<Text style={[styles.cardTitle, { color: colors.text }]} numberOfLines={2}>
 						{event.title}
@@ -115,13 +116,13 @@ const CourseTimetableDayView: React.FC<CourseTimetableDayViewProps> = ({ events,
 					<Text style={[styles.emptyText, { color: theme.screen.text }]}>{translate(TranslationKeys.course_timetable_no_events_day)}</Text>
 				</View>
 			) : null}
-			{items.map((item, index) => {
+			{items.map((item) => {
 				switch (item.type) {
 					case 'event':
 						return <EventCard key={item.event.id} event={item.event} onPress={() => onOpenEvent(item.event.id)} />;
 					case 'gap':
 						return (
-							<View key={`gap-${index}`} style={styles.gap}>
+							<View key={`gap-${item.start}-${item.end}`} style={styles.gap}>
 								<View style={[styles.gapLine, { backgroundColor: theme.screen.iconBg }]} />
 								<Text style={[styles.gapText, { color: theme.screen.placeholder }]}>{`${translate(TranslationKeys.course_timetable_break)} · ${minutesToTime(item.start)}–${minutesToTime(item.end)}`}</Text>
 								<View style={[styles.gapLine, { backgroundColor: theme.screen.iconBg }]} />

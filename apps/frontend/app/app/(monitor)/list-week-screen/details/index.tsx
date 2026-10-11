@@ -157,7 +157,7 @@ const Index = () => {
 				const dayName = weekDayNames[i];
 				const date = weekDays[i];
 
-				const foodData = await fetchFoodsByCanteen(String(canteens_id), date, language);
+				const foodData = await fetchFoodsByCanteen(String(canteens_id), date, language); // NOSONAR S9382 - sequential on purpose: one Directus request per weekday, kept serial so unattended monitor screens do not burst the server
 				newFoods[dayName] = foodData?.data || [];
 			}
 
@@ -192,7 +192,7 @@ const Index = () => {
 
 					// Fetch category only if it's new (not in newCategories)
 					if (!newCategories[categoryId]) {
-						const result = (await foodCategoriesHelper.fetchFoodCategoriesById(categoryId)) as DatabaseTypes.FoodsCategories;
+						const result = (await foodCategoriesHelper.fetchFoodCategoriesById(categoryId)) as DatabaseTypes.FoodsCategories; // NOSONAR S9382 - sequential on purpose: the newCategories check above relies on earlier iterations to skip already fetched categories
 						if (result) {
 							newCategories[categoryId] = {
 								alias: result?.alias,

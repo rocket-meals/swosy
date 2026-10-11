@@ -212,7 +212,8 @@ export class TextRecognitionBridge {
 
 	private failEverything(error: Error): void {
 		this.queued = [];
-		for (const id of [...this.pending.keys()]) {
+		// Deleting the visited key while iterating a Map is safe, so no copy of the keys is needed.
+		for (const id of this.pending.keys()) {
 			this.settle(id, error);
 		}
 	}

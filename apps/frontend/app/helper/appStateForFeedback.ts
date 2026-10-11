@@ -115,12 +115,13 @@ function sanitizeValue(value: unknown, options: Required<AppStateSanitizeOptions
 	}
 
 	// Functions are not serializable - JSON.stringify drops them, so we do the same.
-	if (typeof value === 'function' || typeof value === 'symbol' || typeof value === 'undefined') {
+	if (typeof value === 'function' || typeof value === 'symbol' || value === undefined) {
 		return { value: undefined, size: 0 };
 	}
 
 	if (isPrimitive(value)) {
-		return { value, size: String(value).length };
+		// Strings, functions, symbols and undefined are handled above, so only these primitives are left.
+		return { value, size: String(value as number | boolean | bigint | null).length };
 	}
 
 	// Redux state should be a tree, but a cyclic reference would otherwise hang the app while

@@ -474,7 +474,7 @@ async function sendFormExtractMail(form: DatabaseTypes.Forms, formExtract: Datab
   let mailAttachmentsFolderId = await myDatabaseHelper.getMailAttachmentsFolderId();
   for (let recipient_email of recipient_emails) {
     console.log('Send mail to: ' + recipient_email);
-    let newFile = await myDatabaseHelper.getFilesHelper().uploadOneFromBuffer(pdfBuffer, form_name + '_' + formSubmission.id + '.pdf', MyFileTypes.PDF, myDatabaseHelper, mailAttachmentsFolderId);
+    let newFile = await myDatabaseHelper.getFilesHelper().uploadOneFromBuffer(pdfBuffer, form_name + '_' + formSubmission.id + '.pdf', MyFileTypes.PDF, myDatabaseHelper, mailAttachmentsFolderId); // NOSONAR S9382 - sequential on purpose: one PDF upload per recipient, keeps upload and mail record of a recipient together and bounds the Directus load
     let attachments = {
       create: [
         {

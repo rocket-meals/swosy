@@ -50,7 +50,7 @@ const moveDirectories = async () => {
 			const oldDirPath = path.join(root, dir);
 			const newDirPath = path.join(root, newDir, dir);
 			if (fs.existsSync(oldDirPath)) {
-				await fs.promises.rename(oldDirPath, newDirPath);
+				await fs.promises.rename(oldDirPath, newDirPath); // NOSONAR S9382 - sequential on purpose: CLI script moves the directories one by one and logs each step in order
 				console.log(`➡️ /${dir} moved to /${newDir}/${dir}.`);
 			} else {
 				console.log(`➡️ /${dir} does not exist, skipping.`);

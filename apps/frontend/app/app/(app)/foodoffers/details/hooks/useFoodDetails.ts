@@ -87,6 +87,14 @@ const applyFoodDetailsResponse = (
     }
 };
 
+const getFirstRouteParam = (value: string | string[] | undefined) => {
+    return Array.isArray(value) ? value[0] : value;
+};
+
+const shouldFallBackToFood = (showFoodWhenOfferMissing: boolean | undefined, foodId: string | undefined, offerError: unknown) => {
+    return Boolean(showFoodWhenOfferMissing && foodId && isFoodOfferNotFoundError(offerError));
+};
+
 export const useFoodDetails = ({ offerId, initialFoodId, onOfferNoLongerAvailable, showFoodWhenOfferMissing }: UseFoodDetailsProps) => {
     const { language: languageCode, translate, translateDynamic } = useLanguage();
     const toast = useToast();
@@ -95,8 +103,8 @@ export const useFoodDetails = ({ offerId, initialFoodId, onOfferNoLongerAvailabl
     const [loading, setLoading] = useState(false);
 
     const getFoodDetails = useCallback(async () => {
-        const id = Array.isArray(offerId) ? offerId[0] : offerId;
-        const foodId = Array.isArray(initialFoodId) ? initialFoodId[0] : initialFoodId;
+        const id = getFirstRouteParam(offerId);
+        const foodId = getFirstRouteParam(initialFoodId);
 
         if (!id && !foodId) return;
 
@@ -112,7 +120,7 @@ export const useFoodDetails = ({ offerId, initialFoodId, onOfferNoLongerAvailabl
                     const foodData = await fetchFoodOffersDetailsById(id.toString(), languageCode);
                     applyFoodOfferDetailsResponse(foodData, languageCode, translateDynamic, setFoodDetails, setFoodAttributes);
                 } catch (offerError) {
-                    if (!(showFoodWhenOfferMissing && foodId && isFoodOfferNotFoundError(offerError))) {
+                    if (!foodId || !shouldFallBackToFood(showFoodWhenOfferMissing, foodId, offerError)) {
                         throw offerError;
                     }
                     await loadFood(foodId.toString());

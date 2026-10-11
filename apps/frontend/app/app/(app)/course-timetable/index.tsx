@@ -147,7 +147,7 @@ const CourseTimetableScreen = () => {
 
 	const weekLabel = useMemo(() => {
 		const first = weekDays[0];
-		const last = weekDays[weekDays.length - 1];
+		const last = weekDays.at(-1);
 		if (!first || !last) return '';
 		const firstDate = parseDate(first.dateString);
 		const lastDate = parseDate(last.dateString);
