@@ -5,81 +5,92 @@
  * from the list – one by one or several selected at once. Every row leads to the chat with the
  * author (`food-feedback-chat-page.vue`).
  */
-import { useApi, useStores } from '@directus/extensions-sdk';
+import { useApi } from '@directus/extensions-sdk';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { FoodFeedbackChatActions } from '../../helpers/rocket-meals-module/FoodFeedbackChatActions';
 import { FoodFeedbackChatHelper, FoodFeedbackContentFilter, FoodFeedbackListSort, FoodFeedbackRatingFilter, type FoodFeedbackCanteenOption, type FoodFeedbackListItem, type FoodFeedbackListOptions } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import { ModuleListHelper } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
+import { useDebouncedRef, useModuleStatusList } from '../composables/useModuleStatusList';
 import FilterSelect from '../filter-select.vue';
 import ModuleNavigation from '../module-navigation.vue';
+import ListContent from '../module-list/list-content.vue';
+import ListPagination from '../module-list/list-pagination.vue';
+import ListRow from '../module-list/list-row.vue';
+import ListSearchActions from '../module-list/list-search-actions.vue';
+import ListSelectionBar from '../module-list/list-selection-bar.vue';
+import StatusFilterChips from '../module-list/status-filter-chips.vue';
 import FoodFeedbackRating from './food-feedback-rating.vue';
 import FoodFeedbackStatusChip from './food-feedback-status-chip.vue';
 
 const api = useApi();
 const router = useRouter();
-const { useNotificationsStore } = useStores();
-const notificationsStore = useNotificationsStore();
 const { translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.FOOD_FEEDBACKS;
 
 /** Canteens, sort and page size are remembered per browser – the same person usually looks after the same canteens. */
-const SETTINGS_STORAGE_KEY = 'rocket-meals-module.food-feedbacks.list-settings';
-type StoredListSettings = Pick<FoodFeedbackListOptions, 'canteenIds' | 'sort' | 'pageSize'>;
+const SETTINGS_STORAGE_KEY = ModuleListHelper.getSettingsStorageKey('food-feedbacks');
+const settingsStorage = typeof window !== 'undefined' ? window.localStorage : undefined;
+const storedSettings = ModuleListHelper.readSettings<FoodFeedbackListOptions>(settingsStorage, SETTINGS_STORAGE_KEY);
 
-function readStoredSettings(): StoredListSettings {
-  try {
-    const raw = window.localStorage.getItem(SETTINGS_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as StoredListSettings) : {};
-  } catch {
-    return {};
-  }
-}
-
-function storeSettings(settings: StoredListSettings) {
-  try {
-    window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
-  } catch {
-    // Storage unavailable (private mode, blocked) – the settings just are not remembered.
-  }
-}
-
-const storedSettings = readStoredSettings();
-
-const activeFilter = ref<FoodFeedbackChatFilter>(FoodFeedbackChatFilter.OPEN);
-const search = ref('');
 const contents = ref<FoodFeedbackContentFilter[]>([...FoodFeedbackChatHelper.DEFAULT_CONTENT_FILTERS]);
 const foodSearch = ref('');
+const foodSearchQuery = useDebouncedRef(foodSearch, '');
 const canteenIds = ref<string[]>(Array.isArray(storedSettings.canteenIds) ? storedSettings.canteenIds.map(String) : []);
 const ratingFilter = ref<FoodFeedbackRatingFilter>(FoodFeedbackRatingFilter.ALL);
-const sort = ref<FoodFeedbackListSort>(storedSettings.sort && FoodFeedbackChatHelper.SORTS.includes(storedSettings.sort) ? storedSettings.sort : FoodFeedbackListSort.NEWEST);
-const pageSize = ref<number>(FoodFeedbackChatHelper.getPageSize(storedSettings.pageSize));
-const currentPage = ref(1);
-const feedbacks = ref<FoodFeedbackListItem[]>([]);
-const total = ref(0);
-const counts = ref<Partial<Record<FoodFeedbackChatFilter, number>>>({});
+const sort = ref<FoodFeedbackListSort>(ModuleListHelper.pickAllowed(storedSettings.sort, FoodFeedbackChatHelper.SORTS, FoodFeedbackListSort.NEWEST));
+const pageSize = ref<number>(ModuleListHelper.getPageSize(storedSettings.pageSize));
 const canteens = ref<FoodFeedbackCanteenOption[]>([]);
-const loading = ref(false);
-const loadError = ref(false);
-const selectedIds = ref<string[]>([]);
-const resolvingIds = ref<string[]>([]);
-
-const apiRoot = String(api.defaults?.baseURL ?? '/');
 
 const listOptions = computed<FoodFeedbackListOptions>(() => ({
   contents: contents.value,
   canteenIds: canteenIds.value,
-  foodSearch: foodSearch.value,
+  foodSearch: foodSearchQuery.value,
   rating: ratingFilter.value,
   sort: sort.value,
   pageSize: pageSize.value,
 }));
 
-const pageCount = computed(() => FoodFeedbackChatHelper.getPageCount(total.value, pageSize.value));
+const {
+  activeFilter,
+  search,
+  currentPage,
+  items: feedbacks,
+  total,
+  counts,
+  loading,
+  loadError,
+  pageCount,
+  reload,
+  selectFilter,
+  selectableItems: selectableFeedbacks,
+  selectedItems: selectedFeedbacks,
+  allSelected,
+  someSelected,
+  isSelected,
+  toggleSelected,
+  toggleSelectAll,
+  isUpdating,
+  runUpdate,
+} = useModuleStatusList<FoodFeedbackListItem, FoodFeedbackChatFilter, FoodFeedbackListOptions>({
+  name: 'food feedbacks',
+  endpoint: FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT,
+  filters: FoodFeedbackChatStatusHelper.FILTERS,
+  initialFilter: FoodFeedbackChatFilter.OPEN,
+  options: listOptions,
+  buildListQuery: FoodFeedbackChatHelper.buildListQuery,
+  buildCountQuery: FoodFeedbackChatHelper.buildCountQuery,
+  canSelect: FoodFeedbackChatHelper.canMarkResolved,
+});
+
+const apiRoot = String(api.defaults?.baseURL ?? '/');
+
+const statusChips = computed(() => FoodFeedbackChatStatusHelper.FILTERS.map(filter => ({ value: filter, label: translate(FoodFeedbackChatHelper.getFilterLabelKey(filter)), count: counts.value[filter] })));
 /** Canteens show their picture; one without picture shows the canteen icon. */
 const canteenItems = computed(() => canteens.value.map(canteen => ({ text: canteen.alias || canteen.id, value: canteen.id, imageUrl: FoodFeedbackChatHelper.getCanteenImageUrl(canteen, apiRoot), icon: 'storefront' })));
 const contentItems = FoodFeedbackChatHelper.CONTENT_FILTERS.map(content => ({ text: translate(FoodFeedbackChatHelper.getContentFilterLabelKey(content)), value: content, icon: FoodFeedbackChatHelper.getContentFilterIcon(content) }));
@@ -87,63 +98,6 @@ const contentItems = FoodFeedbackChatHelper.CONTENT_FILTERS.map(content => ({ te
 const ratingFilterAvailable = computed(() => FoodFeedbackChatHelper.isRatingFilterAvailable(contents.value));
 const ratingItems = computed(() => FoodFeedbackChatHelper.getRatingFilters(contents.value).map(rating => ({ text: translate(FoodFeedbackChatHelper.getRatingFilterLabelKey(rating)), value: rating, icon: FoodFeedbackChatHelper.getRatingFilterIcon(rating), iconColor: FoodFeedbackChatHelper.getRatingFilterColor(rating) })));
 const sortItems = computed(() => FoodFeedbackChatHelper.SORTS.map(option => ({ text: translate(FoodFeedbackChatHelper.getSortLabelKey(option)), value: option, icon: FoodFeedbackChatHelper.getSortIcon(option) })));
-const pageSizeItems = FoodFeedbackChatHelper.PAGE_SIZE_OPTIONS.map(size => ({ text: String(size), value: size }));
-
-/** Feedbacks of this page that can be marked as done – only those can be selected. */
-const selectableFeedbacks = computed(() => feedbacks.value.filter(FoodFeedbackChatHelper.canMarkResolved));
-const selectedFeedbacks = computed(() => selectableFeedbacks.value.filter(feedback => selectedIds.value.includes(feedback.id)));
-const allSelected = computed(() => selectableFeedbacks.value.length > 0 && selectedFeedbacks.value.length === selectableFeedbacks.value.length);
-const someSelected = computed(() => selectedFeedbacks.value.length > 0 && !allSelected.value);
-
-let latestRequest = 0;
-
-async function loadFeedbacks() {
-  const request = ++latestRequest;
-  loading.value = true;
-  try {
-    const response = await api.get(FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT, {
-      params: FoodFeedbackChatHelper.buildListQuery(activeFilter.value, currentPage.value, search.value, listOptions.value),
-    });
-    if (request === latestRequest) {
-      feedbacks.value = response.data?.data ?? [];
-      total.value = response.data?.meta?.filter_count ?? feedbacks.value.length;
-      loadError.value = false;
-      // Keep only selections that are still visible and selectable.
-      selectedIds.value = selectedIds.value.filter(id => selectableFeedbacks.value.some(feedback => feedback.id === id));
-    }
-  } catch (error) {
-    console.error('[rocket-meals-module] loading food feedbacks failed', error);
-    if (request === latestRequest) {
-      feedbacks.value = [];
-      loadError.value = true;
-    }
-  } finally {
-    if (request === latestRequest) {
-      loading.value = false;
-    }
-  }
-}
-
-let latestCountRequest = 0;
-
-async function loadCounts() {
-  const request = ++latestCountRequest;
-  const entries = await Promise.all(
-    FoodFeedbackChatStatusHelper.FILTERS.map(async filter => {
-      try {
-        const response = await api.get(FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT, {
-          params: FoodFeedbackChatHelper.buildCountQuery(filter, listOptions.value, search.value),
-        });
-        return [filter, Number(response.data?.data?.[0]?.count?.id ?? 0)] as const;
-      } catch {
-        return [filter, undefined] as const;
-      }
-    })
-  );
-  if (request === latestCountRequest) {
-    counts.value = Object.fromEntries(entries.filter(([, count]) => count !== undefined));
-  }
-}
 
 async function loadCanteens() {
   try {
@@ -155,88 +109,26 @@ async function loadCanteens() {
   }
 }
 
-function reload() {
-  loadFeedbacks();
-  loadCounts();
-}
-
-function selectFilter(filter: FoodFeedbackChatFilter) {
-  activeFilter.value = filter;
-  currentPage.value = 1;
-}
-
 function openChat(feedback: FoodFeedbackListItem) {
   router.push(RocketMealsModulePages.getRoute(page, feedback.id));
 }
 
-function isSelected(feedback: FoodFeedbackListItem) {
-  return selectedIds.value.includes(feedback.id);
+function markResolved(feedbacksToResolve: readonly FoodFeedbackListItem[]) {
+  return runUpdate(feedbacksToResolve, pending => FoodFeedbackChatActions.markResolved(api, pending), BackendTranslationKeys.rocket_meals_module_mark_resolved_failed);
 }
 
-function toggleSelected(feedback: FoodFeedbackListItem, selected: boolean) {
-  const others = selectedIds.value.filter(id => id !== feedback.id);
-  selectedIds.value = selected ? [...others, feedback.id] : others;
-}
-
-function toggleSelectAll(selected: boolean) {
-  selectedIds.value = selected ? selectableFeedbacks.value.map(feedback => feedback.id) : [];
-}
-
-function isResolving(feedback: FoodFeedbackListItem) {
-  return resolvingIds.value.includes(feedback.id);
-}
-
-async function markResolved(feedbacksToResolve: readonly FoodFeedbackListItem[]) {
-  const pending = feedbacksToResolve.filter(feedback => !isResolving(feedback));
-  if (pending.length === 0) {
-    return;
-  }
-  const pendingIds = pending.map(feedback => feedback.id);
-  resolvingIds.value = [...resolvingIds.value, ...pendingIds];
-  try {
-    const result = await FoodFeedbackChatActions.markResolved(api, pending);
-    selectedIds.value = selectedIds.value.filter(id => !result.resolvedIds.includes(id));
-    if (result.failedIds.length > 0) {
-      notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_mark_resolved_failed), type: 'error' });
+// A rating group that is no longer offered falls back to all ratings – synchronously, so the list loads once with the new contents.
+watch(
+  contents,
+  () => {
+    if (!ratingItems.value.some(item => item.value === ratingFilter.value)) {
+      ratingFilter.value = FoodFeedbackRatingFilter.ALL;
     }
-  } finally {
-    resolvingIds.value = resolvingIds.value.filter(id => !pendingIds.includes(id));
-    reload();
-  }
-}
-
-let searchTimeout: ReturnType<typeof setTimeout> | undefined;
-watch([search, foodSearch], () => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    if (currentPage.value === 1) {
-      reload();
-    } else {
-      currentPage.value = 1;
-      loadCounts();
-    }
-  }, 300);
-});
-// A rating group that is no longer offered falls back to all ratings.
-watch(contents, () => {
-  if (!ratingItems.value.some(item => item.value === ratingFilter.value)) {
-    ratingFilter.value = FoodFeedbackRatingFilter.ALL;
-  }
-});
-watch([contents, canteenIds, ratingFilter, sort, pageSize], () => {
-  storeSettings({ canteenIds: canteenIds.value, sort: sort.value, pageSize: pageSize.value });
-  if (currentPage.value === 1) {
-    reload();
-  } else {
-    currentPage.value = 1;
-    loadCounts();
-  }
-});
-watch([activeFilter, currentPage], loadFeedbacks);
-onMounted(() => {
-  reload();
-  loadCanteens();
-});
+  },
+  { flush: 'sync' }
+);
+watch([canteenIds, sort, pageSize], () => ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { canteenIds: canteenIds.value, sort: sort.value, pageSize: pageSize.value }));
+onMounted(loadCanteens);
 </script>
 
 <template>
@@ -250,23 +142,11 @@ onMounted(() => {
     </template>
 
     <template #actions>
-      <div class="search">
-        <v-input v-model="search" type="search" small :placeholder="translate(BackendTranslationKeys.search)">
-          <template #prepend><v-icon name="search" small /></template>
-        </v-input>
-      </div>
-      <v-button v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_refresh)" rounded icon secondary :loading="loading" @click="reload">
-        <v-icon name="refresh" />
-      </v-button>
+      <list-search-actions v-model="search" :loading="loading" @refresh="reload" />
     </template>
 
     <div class="food-feedbacks">
-      <div class="filters">
-        <button v-for="filter in FoodFeedbackChatStatusHelper.FILTERS" :key="filter" class="filter" :class="{ active: filter === activeFilter }" @click="selectFilter(filter)">
-          {{ translate(FoodFeedbackChatHelper.getFilterLabelKey(filter)) }}
-          <span v-if="counts[filter] !== undefined" class="count">{{ counts[filter] }}</span>
-        </button>
-      </div>
+      <status-filter-chips :model-value="activeFilter" :filters="statusChips" @update:model-value="selectFilter" />
 
       <div class="toolbar">
         <div class="toolbar-item toolbar-wide">
@@ -288,26 +168,15 @@ onMounted(() => {
         </div>
       </div>
 
-      <div v-if="selectableFeedbacks.length > 0" class="selection-bar">
-        <v-checkbox :model-value="allSelected" :indeterminate="someSelected" :label="selectedFeedbacks.length > 0 ? translate(BackendTranslationKeys.rocket_meals_module_selected_count, { count: selectedFeedbacks.length }) : translate(BackendTranslationKeys.rocket_meals_module_select_all_on_page)" @update:model-value="toggleSelectAll" />
-        <span class="spacer" />
-        <v-button v-if="selectedFeedbacks.length > 0" small :loading="selectedFeedbacks.some(isResolving)" @click="markResolved(selectedFeedbacks)">
+      <list-selection-bar v-if="selectableFeedbacks.length > 0" :selected-count="selectedFeedbacks.length" :all-selected="allSelected" :some-selected="someSelected" @toggle-all="toggleSelectAll">
+        <v-button v-if="selectedFeedbacks.length > 0" small :loading="selectedFeedbacks.some(isUpdating)" @click="markResolved(selectedFeedbacks)">
           <v-icon name="task_alt" left small />
           {{ translate(BackendTranslationKeys.rocket_meals_module_mark_selected_resolved) }}
         </v-button>
-      </div>
+      </list-selection-bar>
 
-      <v-notice v-if="loadError" type="danger">{{ translate(BackendTranslationKeys.rocket_meals_module_load_failed) }}</v-notice>
-
-      <div v-else-if="!loading && feedbacks.length === 0" class="empty type-note">
-        {{ translate(BackendTranslationKeys.no_data_found) }}
-      </div>
-
-      <div v-else class="list" :class="{ loading }">
-        <div v-for="feedback in feedbacks" :key="feedback.id" class="feedback" :class="{ selected: isSelected(feedback) }" @click="openChat(feedback)">
-          <div class="feedback-select" @click.stop>
-            <v-checkbox v-if="FoodFeedbackChatHelper.canMarkResolved(feedback)" :model-value="isSelected(feedback)" @update:model-value="toggleSelected(feedback, $event)" />
-          </div>
+      <list-content :loading="loading" :load-error="loadError" :empty="feedbacks.length === 0">
+        <list-row v-for="feedback in feedbacks" :key="feedback.id" :selectable="FoodFeedbackChatHelper.canMarkResolved(feedback)" :selected="isSelected(feedback)" @open="openChat(feedback)" @update:selected="toggleSelected(feedback, $event)">
           <div class="food-image">
             <img v-if="FoodFeedbackChatHelper.getFoodImageUrl(feedback, apiRoot)" :src="FoodFeedbackChatHelper.getFoodImageUrl(feedback, apiRoot)" :alt="FoodFeedbackChatHelper.getFoodName(feedback) ?? ''" loading="lazy" />
             <v-icon v-else name="restaurant" />
@@ -325,7 +194,7 @@ onMounted(() => {
             </div>
             <q v-if="FoodFeedbackChatStatusHelper.hasComment(feedback)" class="comment">{{ feedback.comment }}</q>
             <div class="feedback-actions">
-              <v-button v-if="FoodFeedbackChatHelper.canMarkResolved(feedback)" small secondary :loading="isResolving(feedback)" @click.stop="markResolved([feedback])">
+              <v-button v-if="FoodFeedbackChatHelper.canMarkResolved(feedback)" small secondary :loading="isUpdating(feedback)" @click.stop="markResolved([feedback])">
                 <v-icon name="task_alt" left small />
                 {{ translate(BackendTranslationKeys.rocket_meals_module_mark_resolved) }}
               </v-button>
@@ -335,17 +204,10 @@ onMounted(() => {
               </v-button>
             </div>
           </div>
-        </div>
-      </div>
+        </list-row>
+      </list-content>
 
-      <div v-if="total > 0" class="pagination">
-        <v-pagination v-if="pageCount > 1" v-model="currentPage" :length="pageCount" :total-visible="7" show-first-last />
-        <span class="spacer" />
-        <div class="page-size">
-          <span class="type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_items_per_page) }}</span>
-          <v-select v-model="pageSize" class="page-size-select" :items="pageSizeItems" inline />
-        </div>
-      </div>
+      <list-pagination v-model:page="currentPage" v-model:page-size="pageSize" :page-count="pageCount" :total="total" />
     </div>
   </private-view>
 </template>
@@ -358,10 +220,6 @@ onMounted(() => {
   max-inline-size: 64rem;
   padding: var(--content-padding);
   padding-block-start: 0;
-}
-
-.search {
-  inline-size: 16rem;
 }
 
 .toolbar {
@@ -377,83 +235,6 @@ onMounted(() => {
 
 .toolbar-wide {
   flex-basis: 13rem;
-}
-
-.selection-bar {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  min-block-size: 2.5rem;
-  padding: 0 1.25rem;
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.filter {
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.375rem 0.875rem;
-  color: var(--theme--foreground);
-  background: var(--theme--background-subdued);
-  border: var(--theme--border-width) solid var(--theme--border-color-subdued);
-  border-radius: 2rem;
-  cursor: pointer;
-}
-
-.filter.active {
-  color: var(--foreground-inverted, #fff);
-  background: var(--theme--primary);
-  border-color: var(--theme--primary);
-}
-
-.count {
-  min-inline-size: 1.5rem;
-  padding: 0 0.375rem;
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-align: center;
-  background: rgb(0 0 0 / 0.12);
-  border-radius: 1rem;
-}
-
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  transition: opacity var(--fast) var(--transition);
-}
-
-.list.loading {
-  opacity: 0.6;
-}
-
-.feedback {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  padding: 1rem 1.25rem;
-  background: var(--theme--background-subdued);
-  border: var(--theme--border-width) solid var(--theme--border-color-subdued);
-  border-radius: var(--theme--border-radius);
-  cursor: pointer;
-  transition: border-color var(--fast) var(--transition);
-}
-
-.feedback:hover,
-.feedback.selected {
-  border-color: var(--theme--primary);
-}
-
-.feedback-select {
-  flex: none;
-  inline-size: 1.5rem;
-  padding-block-start: 0.25rem;
-  cursor: default;
 }
 
 .food-image {
@@ -506,23 +287,5 @@ onMounted(() => {
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: flex-end;
-}
-
-.empty {
-  padding: 3rem 0;
-  text-align: center;
-}
-
-.pagination {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
-}
-
-.page-size {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
 }
 </style>

@@ -11,6 +11,7 @@ import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/Collection
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { RocketMealsModulePages } from './RocketMealsModulePages';
 import { ProfileDetailsHelper, type ModuleProfile } from './ProfileDetailsHelper';
+import { ModuleListHelper } from './ModuleListHelper';
 
 type DirectusFilter = Record<string, unknown>;
 type Relation = { id: string } | string | number | null | undefined;
@@ -64,7 +65,7 @@ export type ChatListOptions = {
 export type ChatQuery = Record<string, string | number>;
 
 export class ChatQueryHelper {
-  public static readonly PAGE_SIZE = 25;
+  public static readonly PAGE_SIZE = ModuleListHelper.PAGE_SIZE;
 
   /** The status filters of the page "Chats" – a chat always exists there, so there is no "new". */
   public static readonly STATUS_FILTERS: readonly FoodFeedbackChatFilter[] = [FoodFeedbackChatFilter.OPEN, FoodFeedbackChatFilter.WAITING_FOR_SUPPORT, FoodFeedbackChatFilter.WAITING_FOR_USER, FoodFeedbackChatFilter.RESOLVED, FoodFeedbackChatFilter.ALL];
@@ -158,10 +159,6 @@ export class ChatQueryHelper {
       query.filter = JSON.stringify(filter);
     }
     return query;
-  }
-
-  static getPageCount(total: number, pageSize: number = ChatQueryHelper.PAGE_SIZE): number {
-    return Math.max(1, Math.ceil(total / pageSize));
   }
 
   private static getRelationId(relation: Relation): string | undefined {

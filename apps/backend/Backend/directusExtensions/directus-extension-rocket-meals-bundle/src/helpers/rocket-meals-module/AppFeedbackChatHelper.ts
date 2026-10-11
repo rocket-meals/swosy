@@ -18,7 +18,8 @@ import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/Collection
 import { EmailHelper } from 'repo-depkit-common/src/EmailHelper';
 import { type FoodFeedbackChatFilter, FoodFeedbackChatStatus } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
-import { FoodFeedbackChatHelper, FoodFeedbackListSort } from './FoodFeedbackChatHelper';
+import { ModuleListHelper } from './ModuleListHelper';
+import { FoodFeedbackListSort } from './FoodFeedbackChatHelper';
 
 /** The fields the list and the chat need from an app feedback, with the relations it expands. */
 export type AppFeedbackListItem = {
@@ -157,32 +158,12 @@ export class AppFeedbackChatHelper {
 
   /** URL parameters of the list request. */
   static buildListQuery(filter: FoodFeedbackChatFilter, page: number, search?: string | null, options: AppFeedbackListOptions = {}) {
-    const query: Record<string, string | number> = {
-      fields: AppFeedbackChatHelper.LIST_FIELDS.join(','),
-      filter: JSON.stringify(AppFeedbackChatHelper.buildFilter(filter, options)),
-      sort: AppFeedbackChatHelper.getSortParameter(options.sort),
-      limit: FoodFeedbackChatHelper.getPageSize(options.pageSize),
-      page: Math.max(1, page),
-      meta: 'filter_count',
-    };
-    const trimmedSearch = search?.trim();
-    if (trimmedSearch) {
-      query.search = trimmedSearch;
-    }
-    return query;
+    return ModuleListHelper.buildListQuery({ fields: AppFeedbackChatHelper.LIST_FIELDS, filter: AppFeedbackChatHelper.buildFilter(filter, options), sort: AppFeedbackChatHelper.getSortParameter(options.sort), page, pageSize: options.pageSize, search });
   }
 
   /** URL parameters to count the feedbacks of one filter chip – with the same source, type and search as the list. */
   static buildCountQuery(filter: FoodFeedbackChatFilter, options: AppFeedbackListOptions = {}, search?: string | null) {
-    const query: Record<string, string> = {
-      aggregate: JSON.stringify({ count: ['id'] }),
-      filter: JSON.stringify(AppFeedbackChatHelper.buildFilter(filter, options)),
-    };
-    const trimmedSearch = search?.trim();
-    if (trimmedSearch) {
-      query.search = trimmedSearch;
-    }
-    return query;
+    return ModuleListHelper.buildCountQuery({ filter: AppFeedbackChatHelper.buildFilter(filter, options), search });
   }
 
   static getSourceFilterLabelKey(source: AppFeedbackSourceFilter): BackendTranslationKeys {

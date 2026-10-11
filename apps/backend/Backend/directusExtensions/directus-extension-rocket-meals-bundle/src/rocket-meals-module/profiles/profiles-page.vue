@@ -12,7 +12,9 @@ import { LivePulseHelper } from '../../helpers/rocket-meals-module/LivePulseHelp
 import { ProfileDetailsHelper, type ModuleProfile } from '../../helpers/rocket-meals-module/ProfileDetailsHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
+import { ModuleListHelper } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import ModuleNavigation from '../module-navigation.vue';
+import ListPagination from '../module-list/list-pagination.vue';
 import ProfileAvatar from './profile-avatar.vue';
 
 const api = useApi();
@@ -29,7 +31,7 @@ const total = ref(0);
 const currentPage = ref(1);
 const loading = ref(false);
 const loadError = ref(false);
-const pageCount = computed(() => ProfileDetailsHelper.getPageCount(total.value));
+const pageCount = computed(() => ModuleListHelper.getPageCount(total.value, ProfileDetailsHelper.SEARCH_PAGE_SIZE));
 const now = ref(new Date());
 
 /** Answers of an older search that arrive late must not replace the newer results. */
@@ -73,7 +75,7 @@ watch(search, () => {
     } else {
       currentPage.value = 1;
     }
-  }, 300);
+  }, ModuleListHelper.SEARCH_DEBOUNCE_MS);
 });
 watch(currentPage, load);
 onMounted(load);
@@ -120,9 +122,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
         </router-link>
       </div>
 
-      <div v-if="pageCount > 1" class="pagination">
-        <v-pagination v-model="currentPage" :length="pageCount" :total-visible="7" show-first-last />
-      </div>
+      <list-pagination v-model:page="currentPage" :page-count="pageCount" :total="total" />
     </div>
   </private-view>
 </template>
@@ -188,10 +188,5 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
 .empty {
   padding: 2rem 0;
   text-align: center;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
 }
 </style>

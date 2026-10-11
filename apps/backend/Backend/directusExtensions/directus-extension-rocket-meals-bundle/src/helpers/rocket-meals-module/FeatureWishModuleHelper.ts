@@ -16,7 +16,7 @@ import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/Collection
 import { FeatureWishHelper, FeatureWishProgress, FeatureWishStatus } from 'repo-depkit-common/src/FeatureWishHelper';
 import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
-import { FoodFeedbackChatHelper } from './FoodFeedbackChatHelper';
+import { ModuleListHelper } from './ModuleListHelper';
 import { ProfileDetailsHelper, type ModuleProfile } from './ProfileDetailsHelper';
 
 /** The fields the list and the details page need from a wish, with the relations it expands. */
@@ -146,32 +146,12 @@ export class FeatureWishModuleHelper {
 
   /** URL parameters of the list request. */
   static buildListQuery(filter: FeatureWishListFilter, page: number, search?: string | null, options: FeatureWishListOptions = {}) {
-    const query: Record<string, string | number> = {
-      fields: FeatureWishModuleHelper.LIST_FIELDS.join(','),
-      filter: JSON.stringify(FeatureWishModuleHelper.buildFilter(filter, options)),
-      sort: FeatureWishModuleHelper.getSortParameter(options.sort),
-      limit: FoodFeedbackChatHelper.getPageSize(options.pageSize),
-      page: Math.max(1, page),
-      meta: 'filter_count',
-    };
-    const trimmedSearch = search?.trim();
-    if (trimmedSearch) {
-      query.search = trimmedSearch;
-    }
-    return query;
+    return ModuleListHelper.buildListQuery({ fields: FeatureWishModuleHelper.LIST_FIELDS, filter: FeatureWishModuleHelper.buildFilter(filter, options), sort: FeatureWishModuleHelper.getSortParameter(options.sort), page, pageSize: options.pageSize, search });
   }
 
   /** URL parameters to count the wishes of one chip – with the same progresses and search as the list. */
   static buildCountQuery(filter: FeatureWishListFilter, options: FeatureWishListOptions = {}, search?: string | null) {
-    const query: Record<string, string> = {
-      aggregate: JSON.stringify({ count: ['id'] }),
-      filter: JSON.stringify(FeatureWishModuleHelper.buildFilter(filter, options)),
-    };
-    const trimmedSearch = search?.trim();
-    if (trimmedSearch) {
-      query.search = trimmedSearch;
-    }
-    return query;
+    return ModuleListHelper.buildCountQuery({ filter: FeatureWishModuleHelper.buildFilter(filter, options), search });
   }
 
   /** The duplicates merged into a wish, newest first. */

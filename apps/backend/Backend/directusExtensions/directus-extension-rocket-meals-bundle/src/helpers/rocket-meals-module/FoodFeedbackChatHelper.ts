@@ -13,6 +13,7 @@
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
+import { ModuleListHelper } from './ModuleListHelper';
 import type { ModuleChatMessage } from './ChatQueryHelper';
 
 export type FoodFeedbackStatusPresentation = {
@@ -83,9 +84,6 @@ type ItemWithImage = { image?: string | { id: string } | null; image_remote_url?
 type DirectusFilter = Record<string, unknown>;
 
 export class FoodFeedbackChatHelper {
-  public static readonly PAGE_SIZE = 25;
-  public static readonly PAGE_SIZE_OPTIONS: readonly number[] = [10, 25, 50, 100];
-
   public static readonly SORTS: readonly FoodFeedbackListSort[] = [FoodFeedbackListSort.NEWEST, FoodFeedbackListSort.OLDEST, FoodFeedbackListSort.RATING_WORST, FoodFeedbackListSort.RATING_BEST];
   public static readonly RATING_FILTERS: readonly FoodFeedbackRatingFilter[] = [FoodFeedbackRatingFilter.ALL, FoodFeedbackRatingFilter.BAD, FoodFeedbackRatingFilter.MEDIUM, FoodFeedbackRatingFilter.GOOD, FoodFeedbackRatingFilter.NONE];
   public static readonly CONTENT_FILTERS: readonly FoodFeedbackContentFilter[] = [FoodFeedbackContentFilter.WITH_COMMENT, FoodFeedbackContentFilter.WITH_RATING];
@@ -215,48 +213,19 @@ export class FoodFeedbackChatHelper {
     return parts.length === 1 ? parts[0]! : { _and: parts };
   }
 
-  /** A page size from the offered options, else the default. */
-  static getPageSize(pageSize?: number | null): number {
-    return pageSize && FoodFeedbackChatHelper.PAGE_SIZE_OPTIONS.includes(pageSize) ? pageSize : FoodFeedbackChatHelper.PAGE_SIZE;
-  }
-
   /** URL parameters of the list request. Newest feedbacks first unless sorted otherwise. */
   static buildListQuery(filter: FoodFeedbackChatFilter, page: number, search?: string | null, options: FoodFeedbackListOptions = {}) {
-    const query: Record<string, string | number> = {
-      fields: FoodFeedbackChatHelper.LIST_FIELDS.join(','),
-      filter: JSON.stringify(FoodFeedbackChatHelper.buildFilter(filter, options)),
-      sort: FoodFeedbackChatHelper.getSortParameter(options.sort),
-      limit: FoodFeedbackChatHelper.getPageSize(options.pageSize),
-      page: Math.max(1, page),
-      meta: 'filter_count',
-    };
-    const trimmedSearch = search?.trim();
-    if (trimmedSearch) {
-      query.search = trimmedSearch;
-    }
-    return query;
+    return ModuleListHelper.buildListQuery({ fields: FoodFeedbackChatHelper.LIST_FIELDS, filter: FoodFeedbackChatHelper.buildFilter(filter, options), sort: FoodFeedbackChatHelper.getSortParameter(options.sort), page, pageSize: options.pageSize, search });
   }
 
   /** URL parameters to count the feedbacks of one filter chip – with the same canteen, food and rating filter as the list. */
   static buildCountQuery(filter: FoodFeedbackChatFilter, options: FoodFeedbackListOptions = {}, search?: string | null) {
-    const query: Record<string, string> = {
-      aggregate: JSON.stringify({ count: ['id'] }),
-      filter: JSON.stringify(FoodFeedbackChatHelper.buildFilter(filter, options)),
-    };
-    const trimmedSearch = search?.trim();
-    if (trimmedSearch) {
-      query.search = trimmedSearch;
-    }
-    return query;
+    return ModuleListHelper.buildCountQuery({ filter: FoodFeedbackChatHelper.buildFilter(filter, options), search });
   }
 
   /** URL parameters to load the canteens for the canteen filter. */
   static buildCanteensQuery() {
     return { fields: 'id,alias,image,image_remote_url', sort: 'sort,alias', limit: -1 };
-  }
-
-  static getPageCount(total: number, pageSize?: number | null): number {
-    return Math.max(1, Math.ceil(total / FoodFeedbackChatHelper.getPageSize(pageSize)));
   }
 
   static getSortLabelKey(sort: FoodFeedbackListSort): BackendTranslationKeys {

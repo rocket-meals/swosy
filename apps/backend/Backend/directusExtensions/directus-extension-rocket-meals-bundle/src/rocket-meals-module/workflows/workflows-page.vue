@@ -17,6 +17,8 @@ import { WorkflowsActions } from '../../helpers/rocket-meals-module/WorkflowsAct
 import { WorkflowHealth, WorkflowsFilter, WorkflowsPageHelper, WorkflowsSort, type WorkflowOverviewItem } from '../../helpers/rocket-meals-module/WorkflowsPageHelper';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
+import ListSearchActions from '../module-list/list-search-actions.vue';
+import StatusFilterChips from '../module-list/status-filter-chips.vue';
 import WorkflowStatusDot from './workflow-status-dot.vue';
 import WorkflowStartDialog from './workflow-start-dialog.vue';
 import WorkflowCard from './workflow-card.vue';
@@ -92,6 +94,7 @@ const counts = computed<Record<WorkflowsFilter, number>>(() => ({
   [WorkflowsFilter.RUNNING]: items.value.filter(item => WorkflowsPageHelper.matchesFilter(item, WorkflowsFilter.RUNNING)).length,
   [WorkflowsFilter.DISABLED]: items.value.filter(item => WorkflowsPageHelper.matchesFilter(item, WorkflowsFilter.DISABLED)).length,
 }));
+const statusChips = computed(() => FILTERS.map(filter => ({ value: filter.value, label: translate(filter.labelKey), count: counts.value[filter.value] })));
 
 const successCount = computed(() => items.value.filter(item => !WorkflowsPageHelper.isInactive(item) && item.health === WorkflowHealth.SUCCESS).length);
 
@@ -178,14 +181,7 @@ onBeforeUnmount(() => {
     </template>
 
     <template #actions>
-      <div class="search">
-        <v-input v-model="search" type="search" small :placeholder="translate(BackendTranslationKeys.rocket_meals_module_workflows_search)">
-          <template #prepend><v-icon name="search" small /></template>
-        </v-input>
-      </div>
-      <v-button v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_refresh)" rounded icon secondary :loading="loading" @click="reload">
-        <v-icon name="refresh" />
-      </v-button>
+      <list-search-actions v-model="search" :loading="loading" :placeholder="translate(BackendTranslationKeys.rocket_meals_module_workflows_search)" @refresh="reload" />
     </template>
 
     <div class="workflows">
@@ -209,12 +205,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="toolbar">
-        <div class="filters">
-          <button v-for="filter in FILTERS" :key="filter.value" class="filter" :class="{ active: filter.value === activeFilter }" @click="activeFilter = filter.value">
-            {{ translate(filter.labelKey) }}
-            <span class="count">{{ counts[filter.value] }}</span>
-          </button>
-        </div>
+        <status-filter-chips v-model="activeFilter" :filters="statusChips" />
         <div class="sort">
           <span class="type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_workflows_sort) }}</span>
           <v-select v-model="sort" :items="sortItems" inline />
@@ -240,10 +231,6 @@ onBeforeUnmount(() => {
   gap: 1.25rem;
   padding: var(--content-padding);
   padding-block-start: 0;
-}
-
-.search {
-  inline-size: 16rem;
 }
 
 .summary {
@@ -278,40 +265,6 @@ onBeforeUnmount(() => {
   justify-content: space-between;
 }
 
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.filter {
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.375rem 0.875rem;
-  color: var(--theme--foreground);
-  background: var(--theme--background-subdued);
-  border: var(--theme--border-width) solid var(--theme--border-color-subdued);
-  border-radius: 2rem;
-  cursor: pointer;
-}
-
-.filter.active {
-  color: var(--foreground-inverted, #fff);
-  background: var(--theme--primary);
-  border-color: var(--theme--primary);
-}
-
-.count {
-  min-inline-size: 1.5rem;
-  padding: 0 0.375rem;
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-align: center;
-  background: rgb(0 0 0 / 0.12);
-  border-radius: 1rem;
-}
-
 .sort {
   display: flex;
   gap: 0.5rem;
@@ -332,10 +285,6 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 40rem) {
-  .search {
-    inline-size: 10rem;
-  }
-
   .up-next {
     margin-inline-start: 0;
     inline-size: 100%;
