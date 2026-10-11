@@ -238,7 +238,12 @@ export function getVersionPatch() {
         // 121: SonarCloud reliability: remaining bugs (labels, regex backtracking, codePointAt, sort compare)
         // 122: SonarCloud: remaining maintainability findings and security hotspots resolved
         // 123: data clumps refactored into shared types and parameter objects
-        return 123;
+        // 124: the badge on the app icon is set back to 0 whenever the app is opened
+        // 125: the push question after a feedback, wish or comment is asked by count
+        //      per category (first time, then after every no at twice the count)
+        // 126: food comments are asked with a larger gap (1, 3, 10, 20, 40, then doubling)
+        // 127: the push question has a playbook page (always show / ask with logic)
+        return 127;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

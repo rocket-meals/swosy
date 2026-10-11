@@ -11,6 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
 import usePushNotificationOptInPrompt from '@/hooks/usePushNotificationOptInPrompt';
+import { PushNotificationOptInCategory } from '@/helper/PushNotificationOptInHelper';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { SET_FEATURE_WISHES_LOCAL_DATA } from '@/redux/Types/types';
 import { FeatureWish, FeatureWishesHelper, loadFeatureWishFieldChoices } from '@/redux/actions/FeatureWishes/FeatureWishes';
@@ -626,7 +627,7 @@ export const useFeatureWishesModal = () => {
 							});
 							showToast(translate(TranslationKeys.feature_wishes_submitted), 'success');
 							close();
-							void askForPushNotifications();
+							void askForPushNotifications(PushNotificationOptInCategory.FEATURE_WISH);
 						}}
 					/>
 				),

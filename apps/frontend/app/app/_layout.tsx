@@ -49,6 +49,7 @@ import { SettingsProvider } from 'repo-depkit-common-ui';
 import { useAppSelector } from '@/redux/hooks';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import { afterRehydration } from '@/helper/afterRehydration';
+import { useAppIconBadgeReset } from '@/hooks/useAppIconBadgeReset';
 
 ServerAPI.createAuthentificationStorage(
 	async () => {
@@ -114,6 +115,8 @@ export default function Layout() {
 		Poppins_900Black,
 		Poppins_900Black_Italic,
 	});
+
+	useAppIconBadgeReset();
 
         // On iOS Safari the browser chrome (address bar / bottom toolbar) takes its
         // color from the theme-color meta tag; without it those areas stay white and

@@ -113,6 +113,14 @@ export class ModuleListHelper {
     return allowed.includes(value as T) ? (value as T) : fallback;
   }
 
+  /** The allowed values of a remembered list, in the order of `allowed`; the fallback when nothing was remembered. */
+  static pickAllowedList<T>(value: unknown, allowed: readonly T[], fallback: readonly T[]): T[] {
+    if (!Array.isArray(value)) {
+      return [...fallback];
+    }
+    return allowed.filter(option => value.includes(option));
+  }
+
   private static withSearch<T extends Record<string, string | number>>(query: T, search?: string | null): T {
     const trimmedSearch = search?.trim();
     if (trimmedSearch) {

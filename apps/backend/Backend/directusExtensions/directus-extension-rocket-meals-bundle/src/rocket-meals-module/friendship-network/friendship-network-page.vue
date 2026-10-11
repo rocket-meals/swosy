@@ -15,6 +15,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useId,
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FriendshipNetworkHelper, FriendshipNetworkLinkStatus, type FriendshipNetwork, type FriendshipNetworkFriendship, type FriendshipNetworkNode, type FriendshipNetworkProfile } from '../../helpers/rocket-meals-module/FriendshipNetworkHelper';
 import { LivePulseHelper } from '../../helpers/rocket-meals-module/LivePulseHelper';
+import { ModuleListHelper } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
@@ -47,11 +48,20 @@ const network = shallowRef<FriendshipNetwork>({ nodes: [], links: [] });
 /** Positions from d3-force, keyed by profile id. Replaced as a whole after every layout. */
 const positions = shallowRef<Map<string, Position>>(new Map());
 
-const showAccepted = ref(true);
-const showPending = ref(true);
-const minGroupSize = ref(FriendshipNetworkHelper.DEFAULT_MIN_GROUP_SIZE);
-const displayMode = ref<DisplayMode>(DisplayMode.AVATARS);
-const showNames = ref(false);
+/** The view settings are remembered per browser, so the page opens again as it was left. */
+type ViewSettings = { showAccepted: boolean; showPending: boolean; minGroupSize: number; displayMode: DisplayMode; showNames: boolean };
+const SETTINGS_STORAGE_KEY = ModuleListHelper.getSettingsStorageKey('friendship-network');
+const settingsStorage = typeof window !== 'undefined' ? window.localStorage : undefined;
+const storedSettings = ModuleListHelper.readSettings<ViewSettings>(settingsStorage, SETTINGS_STORAGE_KEY);
+
+const showAccepted = ref(ModuleListHelper.pickAllowed(storedSettings.showAccepted, [true, false], true));
+const showPending = ref(ModuleListHelper.pickAllowed(storedSettings.showPending, [true, false], true));
+const minGroupSize = ref(ModuleListHelper.pickAllowed(storedSettings.minGroupSize, FriendshipNetworkHelper.GROUP_SIZE_OPTIONS, FriendshipNetworkHelper.DEFAULT_MIN_GROUP_SIZE));
+const displayMode = ref<DisplayMode>(ModuleListHelper.pickAllowed(storedSettings.displayMode, Object.values(DisplayMode), DisplayMode.AVATARS));
+const showNames = ref(ModuleListHelper.pickAllowed(storedSettings.showNames, [true, false], false));
+watch([showAccepted, showPending, minGroupSize, displayMode, showNames], () =>
+  ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { showAccepted: showAccepted.value, showPending: showPending.value, minGroupSize: minGroupSize.value, displayMode: displayMode.value, showNames: showNames.value } satisfies ViewSettings)
+);
 const search = ref('');
 const searchMissed = ref(false);
 const selectedId = ref<string | undefined>();

@@ -33,16 +33,16 @@ const { translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.FOOD_FEEDBACKS;
 
-/** Canteens, sort and page size are remembered per browser – the same person usually looks after the same canteens. */
+/** Status chip, contents, canteens, rating, sort and page size are remembered per browser, so the page opens again as it was left. Searches are not. */
 const SETTINGS_STORAGE_KEY = ModuleListHelper.getSettingsStorageKey('food-feedbacks');
 const settingsStorage = typeof window !== 'undefined' ? window.localStorage : undefined;
-const storedSettings = ModuleListHelper.readSettings<FoodFeedbackListOptions>(settingsStorage, SETTINGS_STORAGE_KEY);
+const storedSettings = ModuleListHelper.readSettings<FoodFeedbackListOptions & { statusFilter?: FoodFeedbackChatFilter }>(settingsStorage, SETTINGS_STORAGE_KEY);
 
-const contents = ref<FoodFeedbackContentFilter[]>([...FoodFeedbackChatHelper.DEFAULT_CONTENT_FILTERS]);
+const contents = ref<FoodFeedbackContentFilter[]>(ModuleListHelper.pickAllowedList(storedSettings.contents, FoodFeedbackChatHelper.CONTENT_FILTERS, FoodFeedbackChatHelper.DEFAULT_CONTENT_FILTERS));
 const foodSearch = ref('');
 const foodSearchQuery = useDebouncedRef(foodSearch, '');
 const canteenIds = ref<string[]>(Array.isArray(storedSettings.canteenIds) ? storedSettings.canteenIds.map(String) : []);
-const ratingFilter = ref<FoodFeedbackRatingFilter>(FoodFeedbackRatingFilter.ALL);
+const ratingFilter = ref<FoodFeedbackRatingFilter>(ModuleListHelper.pickAllowed(storedSettings.rating, FoodFeedbackChatHelper.getRatingFilters(contents.value), FoodFeedbackRatingFilter.ALL));
 const sort = ref<FoodFeedbackListSort>(ModuleListHelper.pickAllowed(storedSettings.sort, FoodFeedbackChatHelper.SORTS, FoodFeedbackListSort.NEWEST));
 const pageSize = ref<number>(ModuleListHelper.getPageSize(storedSettings.pageSize));
 const canteens = ref<FoodFeedbackCanteenOption[]>([]);
@@ -81,7 +81,7 @@ const {
   name: 'food feedbacks',
   endpoint: FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT,
   filters: FoodFeedbackChatStatusHelper.FILTERS,
-  initialFilter: FoodFeedbackChatFilter.OPEN,
+  initialFilter: ModuleListHelper.pickAllowed(storedSettings.statusFilter, FoodFeedbackChatStatusHelper.FILTERS, FoodFeedbackChatFilter.OPEN),
   options: listOptions,
   buildListQuery: FoodFeedbackChatHelper.buildListQuery,
   buildCountQuery: FoodFeedbackChatHelper.buildCountQuery,
@@ -127,7 +127,9 @@ watch(
   },
   { flush: 'sync' }
 );
-watch([canteenIds, sort, pageSize], () => ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { canteenIds: canteenIds.value, sort: sort.value, pageSize: pageSize.value }));
+watch([activeFilter, contents, canteenIds, ratingFilter, sort, pageSize], () =>
+  ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { statusFilter: activeFilter.value, contents: contents.value, canteenIds: canteenIds.value, rating: ratingFilter.value, sort: sort.value, pageSize: pageSize.value })
+);
 onMounted(loadCanteens);
 </script>
 
