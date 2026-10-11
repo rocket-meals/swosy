@@ -7,11 +7,20 @@ import { useAppSelector } from '@/redux/hooks';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import useKioskMode from '@/hooks/useKioskMode';
 import SettingsList from '@/components/SettingsList';
-import { CommonUiComponentIds, playbookRegistryData } from 'repo-depkit-common-ui';
+import { CommonUiComponentIds, playbookRegistryData, SettingsListGroupTitle } from 'repo-depkit-common-ui';
+import { appPlaybookEntries } from '@/components/AppPlaybook/appPlaybookEntries';
+
+function getGroupPosition(index: number, total: number): 'single' | 'top' | 'bottom' | 'middle' {
+	if (total === 1) return 'single';
+	if (index === 0) return 'top';
+	if (index === total - 1) return 'bottom';
+	return 'middle';
+}
 
 /**
  * Playbook overview – lists every common-ui component registered in the
- * playbook registry (packages/common-ui/src/playbook). Tapping an entry opens
+ * playbook registry (packages/common-ui/src/playbook), then the app's own pages
+ * (components/AppPlaybook). Tapping an entry opens
  * the generic detail screen where the component's props ("knobs") can be
  * tweaked live and via URL query parameters.
  */
@@ -35,17 +44,7 @@ const PlaybookIndex = () => {
 				<Text style={{ ...styles.body, color: theme.screen.text }}>Interactive gallery of all registered common-ui components. Props can also be set via URL query parameters, e.g. ?isEnabled=false</Text>
 				<View style={styles.list}>
 					{playbookRegistryData.map((entry, index) => {
-						const totalItems = playbookRegistryData.length;
-						let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
-						if (totalItems === 1) {
-							groupPosition = 'single';
-						} else if (index === 0) {
-							groupPosition = 'top';
-						} else if (index === totalItems - 1) {
-							groupPosition = 'bottom';
-						} else {
-							groupPosition = 'middle';
-						}
+						const groupPosition = getGroupPosition(index, playbookRegistryData.length);
 
 						return (
 							<SettingsList
@@ -53,6 +52,25 @@ const PlaybookIndex = () => {
 								nativeID={CommonUiComponentIds.PLAYBOOK_ITEM_PREFIX + entry.name}
 								iconBgColor={primaryColor}
 								leftIcon={<MaterialCommunityIcons name="puzzle-outline" size={24} color={theme.screen.icon} />}
+								title={entry.name}
+								rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+								handleFunction={() => openEntry(entry.name)}
+								groupPosition={groupPosition}
+							/>
+						);
+					})}
+				</View>
+				<SettingsListGroupTitle title="App" />
+				<View style={styles.list}>
+					{appPlaybookEntries.map((entry, index) => {
+						const groupPosition = getGroupPosition(index, appPlaybookEntries.length);
+
+						return (
+							<SettingsList
+								key={entry.name}
+								nativeID={CommonUiComponentIds.PLAYBOOK_ITEM_PREFIX + entry.name}
+								iconBgColor={primaryColor}
+								leftIcon={<MaterialCommunityIcons name="cellphone-message" size={24} color={theme.screen.icon} />}
 								title={entry.name}
 								rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
 								handleFunction={() => openEntry(entry.name)}

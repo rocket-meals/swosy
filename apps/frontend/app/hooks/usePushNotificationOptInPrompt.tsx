@@ -24,6 +24,11 @@ import { configureStore } from '@/redux/store';
 // Belongs to the device, not to the user: how often it was done and said no per category. Not cleared on logout.
 const getOptInStorageKey = (category: PushNotificationOptInCategory) => `push_notification_opt_in_prompt_${category}`;
 
+/** How often this device did it and said no in a category, e.g. for the playbook. */
+export async function readStoredPushNotificationOptInState(category: PushNotificationOptInCategory) {
+	return readPushNotificationOptInState(await getValue(getOptInStorageKey(category)));
+}
+
 /**
  * The system permission dialog for push notifications can be shown only once on iOS (twice on
  * Android 13+). A "no" there can only be undone in the system settings. So on both platforms the
@@ -33,6 +38,8 @@ const getOptInStorageKey = (category: PushNotificationOptInCategory) => `push_no
  * - {@link askForPushNotifications}: our suggestion after the user did something they may get an
  *   answer to (app feedback, feature wish, comment). Asked the first time; after a no only at the
  *   next count of that category (app feedback 1, 2, 4, 8, ..., food comment 1, 3, 10, 20, 40, ...).
+ * - {@link showPushNotificationOptInQuestion}: the same question as {@link askForPushNotifications},
+ *   always, without looking at profile, permission or counts (playbook).
  * - {@link ensurePushNotificationPermission}: the user switched on something that needs push
  *   notifications (food reminder, free apartments). Resolves whether the permission is there.
  */
@@ -142,7 +149,9 @@ const usePushNotificationOptInPrompt = () => {
 		return explainAndRequest(translate(TranslationKeys.push_notification_permission_explanation));
 	}, [explainAndRequest, openNotificationPermissionModal, syncDevice, translate]);
 
-	return { askForPushNotifications, ensurePushNotificationPermission };
+	const showPushNotificationOptInQuestion = useCallback(() => explainAndRequest(translate(TranslationKeys.push_notification_opt_in_description)), [explainAndRequest, translate]);
+
+	return { askForPushNotifications, showPushNotificationOptInQuestion, ensurePushNotificationPermission };
 };
 
 export default usePushNotificationOptInPrompt;
