@@ -117,6 +117,7 @@ export const TranslationKeys = {
 	maintenance_estimated_end: 'maintenance_estimated_end',
 	maintenance_upcoming_notice: 'maintenance_upcoming_notice',
 	maintenance_active_notice: 'maintenance_active_notice',
+	maintenance_window_notice: 'maintenance_window_notice',
 	use_cached_version: 'use_cached_version',
 	foods: 'foods',
 	apartments: 'apartments',

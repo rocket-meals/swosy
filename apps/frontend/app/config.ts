@@ -257,7 +257,8 @@ export function getVersionPatch() {
         // 136: common-ui: silhouette avatar config (SilhouetteAvatar), used by the Live-Puls page
         // 137: maintenance modal with app_settings.maintenance_message, shown on start and when the server looks down
         // 138: maintenance modal: project color side bar, offline hint when no own message is set
-        return 138;
+        // 139: maintenance modal: one line "from ... to ... some features unavailable", below only the own markdown text
+        return 139;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -28,7 +28,8 @@ const MaintenanceModalContent: React.FC<MaintenanceModalContentProps> = ({ notic
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const primaryColor = useAppSelector(state => state.settings.primaryColor);
-	const noticeText = notice.phase === 'upcoming' ? interpolateTranslation(translate(TranslationKeys.maintenance_upcoming_notice), { start: format(notice.start, 'HH:mm'), end: format(notice.end, 'HH:mm') }) : interpolateTranslation(translate(TranslationKeys.maintenance_active_notice), { end: format(notice.end, 'HH:mm') });
+	// One line for both phases: the time span, the details come from app_settings.maintenance_message.
+	const noticeText = interpolateTranslation(translate(TranslationKeys.maintenance_window_notice), { start: format(notice.start, 'HH:mm'), end: format(notice.end, 'HH:mm') });
 
 	return (
 		<View style={styles.content}>
@@ -37,8 +38,7 @@ const MaintenanceModalContent: React.FC<MaintenanceModalContentProps> = ({ notic
 				<MaterialCommunityIcons name="wrench-clock" size={28} color={primaryColor} />
 				<Text style={[styles.noticeText, { color: theme.screen.text }]}>{noticeText}</Text>
 			</View>
-			{/* Without an own text from app_settings.maintenance_message, a general hint on what still works. */}
-			{message ? <MyMarkdownProjectColored content={message} /> : <Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.maintenance_message)}</Text>}
+			{message ? <MyMarkdownProjectColored content={message} /> : null}
 		</View>
 	);
 };
@@ -137,10 +137,6 @@ const styles = StyleSheet.create({
 		gap: 12,
 		borderLeftWidth: 4,
 		paddingLeft: 12,
-	},
-	hintText: {
-		fontSize: 14,
-		fontFamily: 'Poppins_400Regular',
 	},
 	noticeText: {
 		flex: 1,
