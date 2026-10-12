@@ -16,7 +16,7 @@ import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 /** Everything that can be recommended. The value is stored in `action_recommendations.action`. */
 export enum ActionRecommendationAction {
   REPLY = 'reply',
-  IGNORE = 'ignore',
+  MARK_RESOLVED = 'mark_resolved',
   FORWARD_TO_KITCHEN = 'forward_to_kitchen',
   FORWARD_TO_DEVELOPMENT = 'forward_to_development',
 }
@@ -41,9 +41,9 @@ export const ACTION_RECOMMENDATION_ACTIONS: Record<ActionRecommendationAction, A
     labelKey: BackendTranslationKeys.rocket_meals_module_action_recommendation_action_reply,
     icon: 'reply',
   },
-  [ActionRecommendationAction.IGNORE]: {
-    promptDescription: 'Ohne Antwort erledigen: kein konkreter Inhalt, reines Lob, Unsinn, Spam oder Beleidigung, eine Antwort bringt niemandem etwas.',
-    labelKey: BackendTranslationKeys.rocket_meals_module_action_recommendation_action_ignore,
+  [ActionRecommendationAction.MARK_RESOLVED]: {
+    promptDescription: 'Als erledigt markieren, ohne zu antworten: kein konkreter Inhalt, reines Lob, Unsinn, Spam oder Beleidigung, eine Antwort bringt niemandem etwas.',
+    labelKey: BackendTranslationKeys.rocket_meals_module_mark_resolved,
     icon: 'task_alt',
   },
   [ActionRecommendationAction.FORWARD_TO_KITCHEN]: {
@@ -79,7 +79,7 @@ export class ActionRecommendationDefinitions {
       promptContext: 'Rückmeldungen von Gästen einer Mensa zu einer Speise: ein Kommentar und eine Bewertung von 1 (schlecht) bis 5 (gut).',
       fields: ['comment', 'rating'],
       textFields: ['comment'],
-      actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.IGNORE, ActionRecommendationAction.FORWARD_TO_KITCHEN],
+      actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.MARK_RESOLVED, ActionRecommendationAction.FORWARD_TO_KITCHEN],
       summaryGroupField: 'food',
     },
     {
@@ -87,7 +87,7 @@ export class ActionRecommendationDefinitions {
       promptContext: 'Rückmeldungen zur Mensa- und Campus-App, aus dem Feedback-Formular der App oder als Bewertung im App Store bzw. Google Play. "positive" sagt, ob die Rückmeldung positiv gemeint ist.',
       fields: ['title', 'content', 'positive'],
       textFields: ['title', 'content'],
-      actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.IGNORE, ActionRecommendationAction.FORWARD_TO_DEVELOPMENT],
+      actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.MARK_RESOLVED, ActionRecommendationAction.FORWARD_TO_DEVELOPMENT],
     },
   ];
 

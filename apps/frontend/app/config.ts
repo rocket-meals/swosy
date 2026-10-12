@@ -263,7 +263,7 @@ export function getVersionPatch() {
         //      project logo and color kept when the server info cannot be loaded
         // 142: experimental screen "Store-Versionen" compares the installed version with the
         //      App Store and Google Play versions (major and build number only)
-        return 143;
+        return 144;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

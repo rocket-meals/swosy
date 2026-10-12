@@ -4288,17 +4288,6 @@ export const backendTranslations: TranslationResources = {
     tr: 'Yanıtla',
     zh: '回复',
   },
-  /** Handlungsempfehlung: Ohne Antwort erledigen. */
-  rocket_meals_module_action_recommendation_action_ignore: {
-    de: 'Ohne Antwort erledigen',
-    en: 'Close without reply',
-    ar: 'إغلاق دون رد',
-    es: 'Cerrar sin responder',
-    fr: 'Clore sans répondre',
-    ru: 'Закрыть без ответа',
-    tr: 'Yanıtlamadan kapat',
-    zh: '不回复直接关闭',
-  },
   /** Handlungsempfehlung: An die Küche weitergeben. */
   rocket_meals_module_action_recommendation_action_forward_to_kitchen: {
     de: 'An die Küche weitergeben',
