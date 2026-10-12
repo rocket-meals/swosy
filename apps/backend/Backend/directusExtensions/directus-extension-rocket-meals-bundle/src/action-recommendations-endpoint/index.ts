@@ -2,10 +2,13 @@
  * action-recommendations-endpoint – AI action recommendations and summaries on request, for every
  * collection in `ActionRecommendationDefinitions` (food feedbacks, app feedbacks, …).
  *
- * `POST /action-recommendations/recommend` with `{ collection, ids, language }`: asks the AI what to
- * do with each item and stores the answers in `action_recommendations` (`status = draft`,
- * `recommended_by_ai` = provider and model, `user_created` = who asked). Answers
- * `{ data: ActionRecommendations[], ignored: string[] }`.
+ * `POST /action-recommendations/recommend` with `{ collection, ids, language, background? }`: asks the
+ * AI what to do with each item (up to `MAX_ITEMS_PER_REQUEST`, e.g. the selection of a list page; an
+ * item with a chat is asked about together with its messages) and stores the answers in
+ * `action_recommendations` (`processing`, then `draft` or `failed` with `logs`;
+ * `recommended_by_ai` = provider and model, `user_created` = who asked). With `background: true` it
+ * answers as soon as the rows exist and asks the AI afterwards, the page reloads until they are done.
+ * Answers `{ data: ActionRecommendations[], ignored: string[] }`.
  *
  * `POST /action-recommendations/summarize` with `{ collection, group_value?, language }`: summarizes
  * the newest items with text, e.g. all comments on one food (`group_value` = the food id). Not
@@ -15,21 +18,17 @@
  * configured under Settings → AI and whether the automatic recommendations are switched on. Reveals
  * nothing about the provider.
  *
- * `POST /action-recommendations/chat-reply` with `{ collection, item }`: suggests the next message of
- * the support in the chat of the item (e.g. a food feedback), from the opening text and the messages
- * with their role (guest or support, never names). Works without the app setting, only the provider
- * is needed. Not stored. Answers `{ data: { draft_reply, recommended_by_ai } | null }`.
- *
  * Only for logged-in users. The items are read with their permissions, so only what they may read
  * is sent to the AI, and only the allowlisted fields. Nothing in the source collection is changed.
- * Needs `app_settings.ai_action_recommendations_enabled` and a provider under Settings → AI.
+ * Needs a provider under Settings → AI. `app_settings.ai_action_recommendations_enabled` only switches
+ * the automatic recommendations of the hook, asking by hand works without it.
  */
 
 import { defineEndpoint } from '@directus/extensions-sdk';
 import { Accountability } from '@directus/types';
 import { ApiContext } from '../helpers/ApiContext';
 import { ActionRecommendationDefinitions, type ActionRecommendationDefinition } from '../helpers/action-recommendations/ActionRecommendationDefinitions';
-import { ActionRecommendationService, ActionRecommendationUnavailableReason } from '../helpers/action-recommendations/ActionRecommendationService';
+import { ActionRecommendationService } from '../helpers/action-recommendations/ActionRecommendationService';
 import { ActionRecommendationErrorCode, ActionRecommendationModuleHelper } from '../helpers/rocket-meals-module/ActionRecommendationModuleHelper';
 
 const ENDPOINT_ID = ActionRecommendationModuleHelper.ENDPOINT_ID;
@@ -40,7 +39,7 @@ function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-/** Checks login, collection, app setting and AI provider. Sends the error response itself and returns null then. */
+/** Checks login, collection and AI provider. Sends the error response itself and returns null then. */
 async function getRequestContext(apiContext: ApiContext, req: any, res: any): Promise<RequestContext | null> {
   const accountability = req?.accountability as Accountability | undefined;
   if (!accountability?.user) {
@@ -52,12 +51,8 @@ async function getRequestContext(apiContext: ApiContext, req: any, res: any): Pr
     res.status(400).json({ error: 'This collection has no action recommendations.', code: ActionRecommendationErrorCode.UNKNOWN_COLLECTION });
     return null;
   }
-  const service = await ActionRecommendationService.create(apiContext);
-  if (service === ActionRecommendationUnavailableReason.DISABLED) {
-    res.status(409).json({ error: 'Action recommendations are switched off in the app settings.', code: ActionRecommendationErrorCode.DISABLED });
-    return null;
-  }
-  if (service === ActionRecommendationUnavailableReason.AI_NOT_CONFIGURED) {
+  const service = await ActionRecommendationService.create(apiContext, { requireEnabled: false });
+  if (!(service instanceof ActionRecommendationService)) {
     res.status(409).json({ error: 'No OpenAI-compatible provider is configured under Settings → AI.', code: ActionRecommendationErrorCode.AI_NOT_CONFIGURED });
     return null;
   }
@@ -79,28 +74,6 @@ export default defineEndpoint({
       }
     });
 
-    router.post(ActionRecommendationModuleHelper.CHAT_REPLY_ROUTE, async (req: any, res: any) => {
-      const accountability = req?.accountability as Accountability | undefined;
-      if (!accountability?.user) {
-        return res.status(401).json({ error: 'Authentication required.' });
-      }
-      const definition = ActionRecommendationDefinitions.getDefinition(req.body?.collection);
-      const item = req.body?.item;
-      if (!definition?.chat || (typeof item !== 'string' && typeof item !== 'number')) {
-        return res.status(400).json({ error: 'This collection has no chat replies.', code: ActionRecommendationErrorCode.UNKNOWN_COLLECTION });
-      }
-      try {
-        const service = await ActionRecommendationService.create(apiContext, { requireEnabled: false });
-        if (!(service instanceof ActionRecommendationService)) {
-          return res.status(409).json({ error: 'No OpenAI-compatible provider is configured under Settings → AI.', code: ActionRecommendationErrorCode.AI_NOT_CONFIGURED });
-        }
-        return res.json({ data: await service.suggestChatReply(definition, String(item), accountability) });
-      } catch (error) {
-        apiContext.logger.error(`${ENDPOINT_ID}: chat reply failed: ${getErrorMessage(error)}`);
-        return res.status(502).json({ error: 'The AI reply failed.', code: ActionRecommendationErrorCode.AI_FAILED });
-      }
-    });
-
     router.post(ActionRecommendationModuleHelper.RECOMMEND_ROUTE, async (req: any, res: any) => {
       try {
         const context = await getRequestContext(apiContext, req, res);
@@ -108,7 +81,7 @@ export default defineEndpoint({
           return;
         }
         const ids = ActionRecommendationDefinitions.parseItemIds(req.body?.ids);
-        return res.json(await context.service.recommend(context.definition, ids, context.language, context.accountability));
+        return res.json(await context.service.recommend(context.definition, ids, context.language, context.accountability, { background: req.body?.background === true }));
       } catch (error) {
         apiContext.logger.error(`${ENDPOINT_ID}: recommendation failed: ${getErrorMessage(error)}`);
         return res.status(502).json({ error: 'The AI recommendation failed.', code: ActionRecommendationErrorCode.AI_FAILED });

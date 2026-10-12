@@ -4365,28 +4365,6 @@ export const backendTranslations: TranslationResources = {
     tr: 'Yapay zekâ önerisi güncellenemedi.',
     zh: '无法更新 AI 建议。',
   },
-  /** Rocket-Meals-Modul, Chat: lässt die KI eine neue Antwort vorschlagen. */
-  rocket_meals_module_action_recommendation_generate_reply: {
-    de: 'KI-Vorschlag erstellen',
-    en: 'Create AI suggestion',
-    ar: 'إنشاء اقتراح بالذكاء الاصطناعي',
-    es: 'Crear sugerencia de la IA',
-    fr: 'Créer une suggestion de l’IA',
-    ru: 'Создать предложение ИИ',
-    tr: 'Yapay zekâ önerisi oluştur',
-    zh: '生成 AI 建议',
-  },
-  /** Rocket-Meals-Modul, KI-Antwortvorschlag im Chat: Der KI-Antwortvorschlag ist fehlgeschlagen. */
-  rocket_meals_module_action_recommendation_generate_reply_failed: {
-    de: 'Der KI-Antwortvorschlag ist fehlgeschlagen.',
-    en: 'The AI reply suggestion failed.',
-    ar: 'فشل اقتراح الرد بالذكاء الاصطناعي.',
-    es: 'La sugerencia de respuesta de la IA ha fallado.',
-    fr: 'La suggestion de réponse par l’IA a échoué.',
-    ru: 'Не удалось получить ответ, предложенный ИИ.',
-    tr: 'Yapay zekâ yanıt önerisi başarısız oldu.',
-    zh: 'AI 回复建议失败。',
-  },
   /** Rocket-Meals-Modul, KI-Antwortvorschlag im Chat: Kein KI-Anbieter eingerichtet. Unter Einstellungen > KI einen OpenAI-kompatiblen Anbieter hinterlegen. */
   rocket_meals_module_action_recommendation_ai_not_configured: {
     de: 'Kein KI-Anbieter eingerichtet. Unter Einstellungen > KI einen OpenAI-kompatiblen Anbieter hinterlegen.',
@@ -4430,5 +4408,93 @@ export const backendTranslations: TranslationResources = {
     ru: 'Предложение ИИ',
     tr: 'Yapay zekâ önerisi',
     zh: 'AI 建议',
+  },
+  /** Rocket-Meals-Modul: lässt die KI empfehlen, ob geantwortet oder als erledigt markiert werden soll. */
+  rocket_meals_module_action_recommendation_generate: {
+    de: 'Vorschlag generieren',
+    en: 'Generate suggestion',
+    ar: 'إنشاء اقتراح',
+    es: 'Generar sugerencia',
+    fr: 'Générer une suggestion',
+    ru: 'Создать предложение',
+    tr: 'Öneri oluştur',
+    zh: '生成建议',
+  },
+  /** Rocket-Meals-Modul: KI-Empfehlungen für alle ausgewählten Einträge in einem Batch. */
+  rocket_meals_module_action_recommendation_generate_selected: {
+    de: 'Vorschlag für Ausgewählte generieren',
+    en: 'Generate suggestion for selected',
+    ar: 'إنشاء اقتراح للعناصر المحددة',
+    es: 'Generar sugerencia para los seleccionados',
+    fr: 'Générer une suggestion pour la sélection',
+    ru: 'Создать предложение для выбранных',
+    tr: 'Seçilenler için öneri oluştur',
+    zh: '为所选生成建议',
+  },
+  /** Rocket-Meals-Modul: Fehler beim Anfordern einer KI-Empfehlung. */
+  rocket_meals_module_action_recommendation_generate_failed: {
+    de: 'Der Vorschlag konnte nicht angefordert werden.',
+    en: 'The suggestion could not be requested.',
+    ar: 'تعذر طلب الاقتراح.',
+    es: 'No se pudo solicitar la sugerencia.',
+    fr: 'La suggestion n’a pas pu être demandée.',
+    ru: 'Не удалось запросить предложение.',
+    tr: 'Öneri istenemedi.',
+    zh: '无法请求建议。',
+  },
+  /** Rocket-Meals-Modul: ein erledigtes Feedback wieder auf „Wartet auf Antwort“ setzen. */
+  rocket_meals_module_reopen: {
+    de: 'Wieder öffnen',
+    en: 'Reopen',
+    ar: 'إعادة الفتح',
+    es: 'Reabrir',
+    fr: 'Rouvrir',
+    ru: 'Открыть снова',
+    tr: 'Yeniden aç',
+    zh: '重新打开',
+  },
+  /** Rocket-Meals-Modul: mehrere erledigte Feedbacks wieder öffnen. */
+  rocket_meals_module_reopen_selected: {
+    de: 'Ausgewählte wieder öffnen',
+    en: 'Reopen selected',
+    ar: 'إعادة فتح المحدد',
+    es: 'Reabrir seleccionados',
+    fr: 'Rouvrir la sélection',
+    ru: 'Открыть выбранные снова',
+    tr: 'Seçilenleri yeniden aç',
+    zh: '重新打开所选',
+  },
+  /** Rocket-Meals-Modul: Fehler beim Wieder-Öffnen. */
+  rocket_meals_module_reopen_failed: {
+    de: 'Nicht alle konnten wieder geöffnet werden.',
+    en: 'Not all could be reopened.',
+    ar: 'تعذر إعادة فتح الكل.',
+    es: 'No se pudieron reabrir todos.',
+    fr: 'Tous n’ont pas pu être rouverts.',
+    ru: 'Не все удалось открыть снова.',
+    tr: 'Hepsi yeniden açılamadı.',
+    zh: '未能全部重新打开。',
+  },
+  /** Rocket-Meals-Modul: klappt die Begründung einer KI-Empfehlung auf. */
+  rocket_meals_module_action_recommendation_show_reason: {
+    de: 'Erklärung anzeigen',
+    en: 'Show explanation',
+    ar: 'عرض التوضيح',
+    es: 'Mostrar explicación',
+    fr: 'Afficher l’explication',
+    ru: 'Показать объяснение',
+    tr: 'Açıklamayı göster',
+    zh: '显示说明',
+  },
+  /** Rocket-Meals-Modul: klappt die Begründung einer KI-Empfehlung zu. */
+  rocket_meals_module_action_recommendation_hide_reason: {
+    de: 'Erklärung ausblenden',
+    en: 'Hide explanation',
+    ar: 'إخفاء التوضيح',
+    es: 'Ocultar explicación',
+    fr: 'Masquer l’explication',
+    ru: 'Скрыть объяснение',
+    tr: 'Açıklamayı gizle',
+    zh: '隐藏说明',
   },
 };

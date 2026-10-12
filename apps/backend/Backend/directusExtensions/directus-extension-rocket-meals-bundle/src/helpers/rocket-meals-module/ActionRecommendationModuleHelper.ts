@@ -12,7 +12,6 @@ import { ActionRecommendationAction, ActionRecommendationDefinitions, ActionReco
 /** Why a request to the endpoint failed, sent as `code` next to `error`. */
 export enum ActionRecommendationErrorCode {
   UNKNOWN_COLLECTION = 'unknown_collection',
-  DISABLED = 'disabled',
   AI_NOT_CONFIGURED = 'ai_not_configured',
   AI_FAILED = 'ai_failed',
 }
@@ -40,9 +39,6 @@ export type ActionRecommendationApiClient = {
 /** `GET /action-recommendations/status`: what the AI can do on this server. */
 export type ActionRecommendationAiStatus = { ai_configured: boolean; enabled: boolean };
 
-/** `POST /action-recommendations/chat-reply`: a suggested next message of the support. */
-export type ActionRecommendationChatReply = { draft_reply: string; recommended_by_ai: string };
-
 export type ActionRecommendationPostClient = {
   get: (url: string, config?: { params?: Record<string, unknown> }) => Promise<{ data?: any }>;
   post: (url: string, data?: unknown) => Promise<{ data?: any }>;
@@ -53,7 +49,6 @@ export class ActionRecommendationModuleHelper {
   static readonly RECOMMEND_ROUTE = '/recommend';
   static readonly SUMMARIZE_ROUTE = '/summarize';
   static readonly STATUS_ROUTE = '/status';
-  static readonly CHAT_REPLY_ROUTE = '/chat-reply';
 
   static getEndpointUrl(route: string): string {
     return `/${ActionRecommendationModuleHelper.ENDPOINT_ID}${route}`;
@@ -70,14 +65,20 @@ export class ActionRecommendationModuleHelper {
     }
   }
 
-  /** Asks the AI for the next message of the support in the chat of the item; throws when it fails. */
-  static async suggestChatReply(api: ActionRecommendationPostClient, collection: string, item: string): Promise<ActionRecommendationChatReply> {
-    const response = await api.post(ActionRecommendationModuleHelper.getEndpointUrl(ActionRecommendationModuleHelper.CHAT_REPLY_ROUTE), { collection, item });
-    const reply = response.data?.data as ActionRecommendationChatReply | null | undefined;
-    if (!reply?.draft_reply) {
-      throw new Error('The AI suggested no reply.');
+  /**
+   * Asks the AI for recommendations for the items, in the background: resolves as soon as the rows
+   * exist (`processing`), the page reloads them until they are done. Several requests for more items
+   * than one request takes. Throws when a request fails.
+   */
+  static async requestRecommendations(api: ActionRecommendationPostClient, collection: string, itemIds: readonly string[], language: string | undefined): Promise<void> {
+    for (let start = 0; start < itemIds.length; start += ActionRecommendationDefinitions.MAX_ITEMS_PER_REQUEST) {
+      await api.post(ActionRecommendationModuleHelper.getEndpointUrl(ActionRecommendationModuleHelper.RECOMMEND_ROUTE), { // NOSONAR S9382 - sequential on purpose: one batch after the other
+        collection,
+        ids: itemIds.slice(start, start + ActionRecommendationDefinitions.MAX_ITEMS_PER_REQUEST),
+        language,
+        background: true,
+      });
     }
-    return reply;
   }
 
   static readonly ITEMS_ENDPOINT = '/items/action_recommendations';

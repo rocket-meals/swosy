@@ -60,13 +60,22 @@ export class ActionRecommendationService {
 
   /**
    * Recommends an action for each of the items. Every item gets its row right away (`processing`, with
-   * a log line), so the module shows that the AI is being asked; the answer turns it into a `draft`
-   * with the recommendation, or into `failed` with the reason in `logs`. Earlier open AI
-   * recommendations of these items are replaced. `accountability` is the person asking (items are
-   * read with their permissions and they become `user_created`), `null` for the system. Throws when
-   * the AI fails, after the rows were marked as failed.
+   * a log line), so the module shows that the AI is being asked; then the AI is asked in calls of at
+   * most `MAX_ITEMS_PER_RECOMMENDATION` items, and each row becomes a `draft` with the recommendation
+   * or `failed` with the reason in `logs`. Earlier open AI recommendations of these items are replaced.
+   *
+   * `accountability` is the person asking (items are read with their permissions and they become
+   * `user_created`), `null` for the system. With `background`, the answer only waits for the rows
+   * (`processing`) and the AI is asked afterwards; otherwise it waits for the AI and throws when a
+   * call failed (after its rows were marked as failed).
    */
-  async recommend(definition: ActionRecommendationDefinition, ids: readonly string[], language: string, accountability: Accountability | null): Promise<ActionRecommendationResult> {
+  async recommend(
+    definition: ActionRecommendationDefinition,
+    ids: readonly string[],
+    language: string,
+    accountability: Accountability | null,
+    options: { background?: boolean } = {}
+  ): Promise<ActionRecommendationResult> {
     if (ids.length === 0) {
       return { data: [], ignored: [] };
     }
@@ -90,7 +99,7 @@ export class ActionRecommendationService {
       },
     });
     const recommendedByAi = this.client.getRecommenderLabel();
-    const startLog = ActionRecommendationDefinitions.formatLogLine(new Date(), `Asking the AI (${recommendedByAi}) about ${items.length} item(s)`);
+    const startLog = ActionRecommendationDefinitions.formatLogLine(new Date(), `Asking the AI (${recommendedByAi})`);
     const keys = await service.createMany(
       itemIds.map(item => ({
         collection: definition.collection,
@@ -100,11 +109,52 @@ export class ActionRecommendationService {
         logs: startLog,
       }))
     );
+    const keyByItem = new Map(itemIds.map((item, index) => [item, keys[index]]));
 
+    const askAll = async (): Promise<string[]> => {
+      const ignored: string[] = [];
+      let firstError: unknown = null;
+      for (let start = 0; start < items.length; start += ActionRecommendationDefinitions.MAX_ITEMS_PER_RECOMMENDATION) {
+        const chunk = items.slice(start, start + ActionRecommendationDefinitions.MAX_ITEMS_PER_RECOMMENDATION);
+        try {
+          ignored.push(...(await this.askChunk(definition, chunk, language, accountability, service, keyByItem, startLog))); // NOSONAR S9382 - sequential on purpose: one AI call after the other, bounded provider load
+        } catch (error) {
+          firstError ??= error;
+        }
+      }
+      if (firstError) {
+        throw firstError;
+      }
+      return ignored;
+    };
+
+    if (options.background) {
+      askAll().catch(error => {
+        this.apiContext.logger.error(`action recommendations: asking the AI failed: ${error instanceof Error ? error.message : String(error)}`);
+      });
+      return { data: await service.readMany(keys, { fields: ActionRecommendationModuleHelper.FIELDS }), ignored: [] };
+    }
+    const ignored = await askAll();
+    return { data: await service.readMany(keys, { fields: ActionRecommendationModuleHelper.FIELDS }), ignored };
+  }
+
+  /** One AI call for some items; turns their rows into `draft` or `failed`. Returns the ignored parts of the answer. */
+  private async askChunk(
+    definition: ActionRecommendationDefinition,
+    items: readonly ActionRecommendationSourceItem[],
+    language: string,
+    accountability: Accountability | null,
+    service: any,
+    keyByItem: ReadonlyMap<string, unknown>,
+    startLog: string
+  ): Promise<string[]> {
+    const itemIds = items.map(item => String(item.id));
+    const keys = itemIds.map(item => keyByItem.get(item));
     let parsed: ReturnType<typeof ActionRecommendationPrompt.parseRecommendations>;
     try {
       const replyLanguages = await this.getReplyLanguages(definition, items);
-      const answer = await this.client.chatJson(ActionRecommendationPrompt.buildRecommendationPrompt(definition, items, language, replyLanguages));
+      const chatMessages = await this.readChatMessages(definition, items, accountability);
+      const answer = await this.client.chatJson(ActionRecommendationPrompt.buildRecommendationPrompt(definition, items, language, replyLanguages, chatMessages));
       parsed = ActionRecommendationPrompt.parseRecommendations(answer, definition, new Set(itemIds));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -114,82 +164,57 @@ export class ActionRecommendationService {
     for (const reason of parsed.ignored) {
       this.apiContext.logger.warn(`action recommendations: ignored part of the AI answer: ${reason}`);
     }
-
-    for (const [index, item] of itemIds.entries()) {
-      const key = keys[index];
+    for (const item of itemIds) {
       const recommendation = parsed.recommendations.find(candidate => candidate.item === item);
       const doneLog = recommendation
         ? ActionRecommendationDefinitions.formatLogLine(new Date(), `The AI recommends "${recommendation.action}"`)
         : ActionRecommendationDefinitions.formatLogLine(new Date(), `No valid recommendation in the answer${parsed.ignored.length > 0 ? ': ' + parsed.ignored.join('; ') : ''}`);
-      await service.updateOne(key, { // NOSONAR S9382 - sequential on purpose: one row per item, at most MAX_ITEMS_PER_RECOMMENDATION
+      await service.updateOne(keyByItem.get(item), { // NOSONAR S9382 - sequential on purpose: one row per item, at most MAX_ITEMS_PER_RECOMMENDATION
         ...(recommendation
           ? { action: recommendation.action, reason: recommendation.reason, draft_reply: recommendation.draft_reply, status: ActionRecommendationStatus.DRAFT }
           : { status: ActionRecommendationStatus.FAILED }),
         logs: `${startLog}\n${doneLog}`,
       });
     }
-    const data = await service.readMany(keys, { fields: ActionRecommendationModuleHelper.FIELDS });
-    return { data, ignored: parsed.ignored };
+    return parsed.ignored;
   }
 
   /**
-   * Suggests the next message of the support in the chat of an item: the item's text opens the
-   * conversation, then the messages, each only with its role (guest or support), never a name. Read
-   * with the permissions of the person asking. Null when the item cannot be read. Not stored.
+   * Per item the messages of its support chat so far, oldest first, each only with its role (guest or
+   * support), never a name. Read with the permissions of the person asking; items without chat get none.
    */
-  async suggestChatReply(definition: ActionRecommendationDefinition, itemId: string, accountability: Accountability): Promise<{ draft_reply: string; recommended_by_ai: string } | null> {
-    const chat = definition.chat;
-    if (!chat) {
-      return null;
+  private async readChatMessages(definition: ActionRecommendationDefinition, items: readonly ActionRecommendationSourceItem[], accountability: Accountability | null): Promise<Record<string, ChatReplyMessage[]>> {
+    const messagesByItem: Record<string, ChatReplyMessage[]> = {};
+    if (!definition.chat) {
+      return messagesByItem;
     }
-    const schema = await this.apiContext.getSchema();
-    const itemsService = new this.apiContext.services.ItemsService(definition.collection, { schema, accountability });
-    const rows = (await itemsService.readByQuery({
-      filter: { id: { _eq: itemId } },
-      fields: ['id', chat.field, ...definition.textFields, ...chat.contextFields],
-      limit: 1,
-    })) as ActionRecommendationSourceItem[];
-    const item = rows[0];
-    if (!item) {
-      return null;
-    }
-
-    const messages: ChatReplyMessage[] = [];
-    const opening = definition.textFields
-      .map(field => item[field])
-      .filter((text): text is string => typeof text === 'string' && text.trim().length > 0)
-      .join('\n\n');
-    if (opening) {
-      messages.push({ role: ChatReplyRole.GUEST, text: opening });
-    }
-    const chatId = ActionRecommendationDefinitions.getPathValue(item, chat.field);
-    const chatKey = typeof chatId === 'object' && chatId !== null ? (chatId as { id?: unknown }).id : chatId;
-    if (typeof chatKey === 'string' || typeof chatKey === 'number') {
-      const messagesService = new this.apiContext.services.ItemsService(CollectionNames.CHAT_MESSAGES, { schema, accountability });
-      const chatMessages = (await messagesService.readByQuery({
-        filter: { chat: { _eq: chatKey } },
-        fields: ['message', 'profile'],
-        sort: ['-date_created'],
-        limit: ActionRecommendationService.MAX_CHAT_MESSAGES,
-      })) as { message?: string | null; profile?: unknown }[];
-      for (const message of chatMessages.reverse()) {
-        if (message.message?.trim()) {
-          messages.push({ role: ChatHelper.isSupportMessage({ profile: message.profile as any }) ? ChatReplyRole.SUPPORT : ChatReplyRole.GUEST, text: message.message });
-        }
+    const itemByChat = new Map<string, string>();
+    for (const item of items) {
+      const chat = ActionRecommendationDefinitions.getPathValue(item, definition.chat.field);
+      const chatId = chat && typeof chat === 'object' ? (chat as { id?: unknown }).id : chat;
+      if (typeof chatId === 'string' || typeof chatId === 'number') {
+        itemByChat.set(String(chatId), String(item.id));
       }
     }
-
-    const context: Record<string, unknown> = {};
-    for (const field of chat.contextFields) {
-      context[field] = ActionRecommendationDefinitions.getPathValue(item, field);
+    if (itemByChat.size === 0) {
+      return messagesByItem;
     }
-    const replyLanguage = (await this.getReplyLanguages(definition, [item]))[String(item.id)] ?? ActionRecommendationDefinitions.FALLBACK_REPLY_LANGUAGE;
-    const answer = await this.client.chatJson(ActionRecommendationPrompt.buildChatReplyPrompt(chat, context, messages, replyLanguage));
-    return { draft_reply: ActionRecommendationPrompt.parseChatReply(answer), recommended_by_ai: this.client.getRecommenderLabel() };
+    const messagesService = new this.apiContext.services.ItemsService(CollectionNames.CHAT_MESSAGES, { schema: await this.apiContext.getSchema(), accountability });
+    const messages = (await messagesService.readByQuery({
+      filter: { chat: { _in: [...itemByChat.keys()] } },
+      fields: ['chat', 'message', 'profile'],
+      sort: ['-date_created'],
+      limit: itemByChat.size * ActionRecommendationDefinitions.MAX_CHAT_MESSAGES_PER_ITEM,
+    })) as { chat?: unknown; message?: string | null; profile?: unknown }[];
+    for (const message of messages.reverse()) {
+      const item = itemByChat.get(String(message.chat));
+      if (!item || !message.message?.trim()) {
+        continue;
+      }
+      (messagesByItem[item] ??= []).push({ role: ChatHelper.isSupportMessage({ profile: message.profile as any }) ? ChatReplyRole.SUPPORT : ChatReplyRole.GUEST, text: message.message });
+    }
+    return messagesByItem;
   }
-
-  /** At most this many messages, the newest, are read for a chat reply. */
-  static readonly MAX_CHAT_MESSAGES = 50;
 
   /** Summarizes the newest items with text, optionally only those of one group (e.g. one food). Not stored. */
   async summarize(definition: ActionRecommendationDefinition, groupValue: unknown, language: string, accountability: Accountability | null): Promise<ActionRecommendationSummaryResult | null> {

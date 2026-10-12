@@ -173,17 +173,24 @@ desselben Eintrags.
   schreibt die KI in der Standardsprache des Servers (`directus_settings.default_language`, Einstellungen >
   Projekt), sonst auf Englisch. Das Profil selbst geht nicht an die KI, nur der Sprachcode.
 - **In der Liste** markiert ✨ (`auto_awesome`) den empfohlenen Button. Unter dem Kommentar stehen
-  Begründung und Antwortvorschlag, mit „Chat mit Vorschlag starten“ (öffnet den Chat mit dem
+  Begründung (eingeklappt, „Erklärung anzeigen“) und Antwortvorschlag, mit „Chat mit Vorschlag starten“ (öffnet den Chat mit dem
   Vorschlag in der Eingabe) und „Vorschlag verwerfen“.
 - **Im Chat** steht der Vorschlag vollständig in einer Karte „Vorschlag der KI“ über der Eingabe,
   „In Eingabe übernehmen“ übernimmt ihn. Die Karte verschwindet, solange die Eingabe genau diesen Text enthält.
-- **„KI-Vorschlag erstellen“ im Chat** (unabhängig vom Schalter in den App-Settings, nur ein Anbieter unter
-  Einstellungen > KI ist nötig, sonst ausgegraut): schickt den Kommentar und den ganzen Verlauf an die KI,
-  jede Nachricht nur mit ihrer Rolle (`guest` oder `support`, keine Nicknames), dazu Name der Speise und
-  Bewertung. Die KI antwortet in der Rolle des Supports eines Anbieters von Speisen für Studierende,
-  in der Sprache des Autors (Regel wie oben). Der neue Vorschlag ersetzt den in der Karte. Ist die Eingabe leer, landet er
-  direkt darin, sonst wartet er in der Karte, damit nichts Getipptes überschrieben wird. Gespeichert
-  wird nichts (`POST /action-recommendations/chat-reply`).
+- **„Vorschlag generieren“ von Hand**, z. B. für ältere Feedbacks ohne Empfehlung (nur ein Anbieter unter
+  Einstellungen > KI ist nötig, der Schalter in den App-Settings gilt nur für die automatischen
+  Empfehlungen; ohne Anbieter ausgegraut):
+  - auf der Detailseite für das eine Feedback, mit Karte „KI-Empfehlung: …“ samt Begründung über dem Chat
+    (der Antwortvorschlag steht in der Karte „Vorschlag der KI“ an der Eingabe),
+  - in der Liste für alle ausgewählten mit Kommentar in einem Batch: höchstens 100 pro Anfrage
+    (mehr werden auf mehrere Anfragen verteilt), an die KI in Aufrufen zu je 25.
+  Die Zeilen entstehen sofort als `processing`, die KI wird danach im Hintergrund gefragt
+  (`background: true`), die Seiten laden nach, bis sie fertig sind. Hat ein Feedback schon einen Chat,
+  bekommt die KI dessen letzte 20 Nachrichten mit (nur Rolle `guest` oder `support`, keine Namen), der
+  Antwortvorschlag ist dann die nächste Nachricht des Supports.
+- **Erledigt und wieder öffnen:** Auf der Detailseite „Als erledigt markieren“ bzw. bei einem erledigten
+  Feedback „Wieder öffnen“ (Chat zurück auf „Wartet auf Antwort“). In der Liste „Wieder öffnen“ pro
+  Zeile und „Ausgewählte wieder öffnen“ für mehrere (ein Request, `SupportChatActions.reopen`).
 - **Erledigt:** Antworten, „Als erledigt markieren“ oder Verwerfen setzt die Empfehlung auf
   `archived`.
 - **Gelöschte Einträge:** Der Hook löscht für jede Collection die Empfehlungen gelöschter Einträge mit,

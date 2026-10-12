@@ -188,17 +188,16 @@ describe('reply language', () => {
 
   it('tells the AI the reply language per item, never the profile', () => {
     const prompt = ActionRecommendationPrompt.buildRecommendationPrompt(foodFeedbacks, [{ id: 'f1', comment: 'Too cold', rating: 2, profile: { language: 'en' } }], 'de', { f1: 'en' });
-    expect(JSON.parse(prompt.user).items).toEqual([{ id: 'f1', reply_language: 'en', comment: 'Too cold', rating: 2 }]);
+    expect(JSON.parse(prompt.user).items).toEqual([{ id: 'f1', reply_language: 'en', comment: 'Too cold', rating: 2, 'food.alias': null }]);
     expect(prompt.system).toContain('reply_language');
   });
 });
 
-describe('chat reply', () => {
-  const chat = foodFeedbacks.chat!;
-
-  it('food feedbacks have a chat with the food as context', () => {
-    expect(chat.field).toBe('chat');
-    expect(chat.contextFields).toEqual(['food.alias', 'rating']);
+describe('chat history and batches', () => {
+  it('food feedbacks send the name of the food and read their chat', () => {
+    expect(foodFeedbacks.fields).toContain('food.alias');
+    expect(foodFeedbacks.chat?.field).toBe('chat');
+    expect(ActionRecommendationDefinitions.getReadFields(foodFeedbacks)).toEqual(['id', 'comment', 'rating', 'food.alias', 'chat']);
   });
 
   it('reads dotted paths and stops at missing relations', () => {
@@ -207,21 +206,20 @@ describe('chat reply', () => {
     expect(ActionRecommendationDefinitions.getPathValue({ food: null }, 'food.alias')).toBeNull();
   });
 
-  it('sends the conversation with roles only, the newest 50 messages and the reply language', () => {
-    const messages = Array.from({ length: 60 }, (_, index) => ({ role: index % 2 === 0 ? ChatReplyRole.GUEST : ChatReplyRole.SUPPORT, text: `Nachricht ${index}` }));
-    const prompt = ActionRecommendationPrompt.buildChatReplyPrompt(chat, { 'food.alias': 'Linsensuppe', rating: 2 }, messages, 'en');
-    const user = JSON.parse(prompt.user);
-    expect(user.context).toEqual({ 'food.alias': 'Linsensuppe', rating: 2 });
-    expect(user.messages).toHaveLength(50);
-    expect(user.messages[0]).toEqual({ role: 'guest', text: 'Nachricht 10' });
-    expect(Object.keys(user.messages[0])).toEqual(['role', 'text']);
-    expect(prompt.system).toContain('Studierende');
-    expect(prompt.system).toContain('"en"');
+  it('sends the chat of an item with roles only and the newest messages, never the chat id', () => {
+    const messages = Array.from({ length: 30 }, (_, index) => ({ role: index % 2 === 0 ? ChatReplyRole.GUEST : ChatReplyRole.SUPPORT, text: `Nachricht ${index}` }));
+    const prompt = ActionRecommendationPrompt.buildRecommendationPrompt(foodFeedbacks, [{ id: 'f1', comment: 'Kalt', rating: 2, food: { alias: 'Linsensuppe' }, chat: 'c1' }], 'de', { f1: 'de-DE' }, { f1: messages });
+    const [item] = JSON.parse(prompt.user).items;
+    expect(item['food.alias']).toBe('Linsensuppe');
+    expect(item.chat).toBeUndefined();
+    expect(item.messages).toHaveLength(ActionRecommendationDefinitions.MAX_CHAT_MESSAGES_PER_ITEM);
+    expect(item.messages[0]).toEqual({ role: 'guest', text: 'Nachricht 10' });
+    expect(prompt.system).toContain('"messages"');
   });
 
-  it('needs a draft reply in the answer', () => {
-    expect(ActionRecommendationPrompt.parseChatReply({ draft_reply: ' Danke! ' })).toBe('Danke!');
-    expect(() => ActionRecommendationPrompt.parseChatReply({ reply: 'Danke!' })).toThrow();
+  it('accepts up to 100 ids per request', () => {
+    const ids = Array.from({ length: 120 }, (_, index) => `f${index}`);
+    expect(ActionRecommendationDefinitions.parseItemIds(ids)).toHaveLength(ActionRecommendationDefinitions.MAX_ITEMS_PER_REQUEST);
   });
 
   it('module: reads the AI status, a failing request counts as not configured', async () => {
@@ -239,13 +237,14 @@ describe('chat reply', () => {
     consoleError.mockRestore();
   });
 
-  it('module: asks for a chat reply and fails without one', async () => {
-    const post = jest.fn(async () => ({ data: { data: { draft_reply: 'Hallo', recommended_by_ai: 'X · y' } } }));
+  it('module: requests recommendations in the background, in batches of at most 100', async () => {
+    const post = jest.fn(async () => ({ data: { data: [] } }));
     const api = { get: jest.fn(async () => ({})), post };
-    expect(await ActionRecommendationModuleHelper.suggestChatReply(api, 'foods_feedbacks', 'f1')).toEqual({ draft_reply: 'Hallo', recommended_by_ai: 'X · y' });
-    expect(post).toHaveBeenCalledWith('/action-recommendations/chat-reply', { collection: 'foods_feedbacks', item: 'f1' });
-    const empty = { get: jest.fn(async () => ({})), post: jest.fn(async () => ({ data: { data: null } })) };
-    await expect(ActionRecommendationModuleHelper.suggestChatReply(empty, 'foods_feedbacks', 'f1')).rejects.toThrow();
+    const ids = Array.from({ length: 150 }, (_, index) => `f${index}`);
+    await ActionRecommendationModuleHelper.requestRecommendations(api, 'foods_feedbacks', ids, 'de');
+    expect(post).toHaveBeenCalledTimes(2);
+    expect(post).toHaveBeenNthCalledWith(1, '/action-recommendations/recommend', { collection: 'foods_feedbacks', ids: ids.slice(0, 100), language: 'de', background: true });
+    expect(post).toHaveBeenNthCalledWith(2, '/action-recommendations/recommend', { collection: 'foods_feedbacks', ids: ids.slice(100), language: 'de', background: true });
   });
 });
 
@@ -268,11 +267,8 @@ describe('progress and logs', () => {
 });
 
 describe('reply length', () => {
-  it('asks for short replies in both prompts', () => {
-    const recommendation = ActionRecommendationPrompt.buildRecommendationPrompt(foodFeedbacks, [{ id: 'f1', comment: 'Nicht lecker', rating: 2 }], 'de', { f1: 'de-DE' });
-    const chatReply = ActionRecommendationPrompt.buildChatReplyPrompt(foodFeedbacks.chat!, {}, [{ role: ChatReplyRole.GUEST, text: 'Nicht lecker' }], 'de-DE');
-    for (const prompt of [recommendation, chatReply]) {
-      expect(prompt.system).toContain('höchstens zwei kurze Sätze');
-    }
+  it('asks for short replies', () => {
+    const prompt = ActionRecommendationPrompt.buildRecommendationPrompt(foodFeedbacks, [{ id: 'f1', comment: 'Nicht lecker', rating: 2 }], 'de', { f1: 'de-DE' });
+    expect(prompt.system).toContain('höchstens zwei kurze Sätze');
   });
 });

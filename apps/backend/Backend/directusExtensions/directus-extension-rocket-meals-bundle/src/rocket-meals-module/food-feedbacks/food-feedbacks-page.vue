@@ -40,7 +40,7 @@ const api = useApi();
 const router = useRouter();
 const { useNotificationsStore } = useStores();
 const notificationsStore = useNotificationsStore();
-const { translate, formatDateTime } = useAppExtensionTranslate();
+const { language, translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.FOOD_FEEDBACKS;
 
@@ -168,6 +168,12 @@ async function archiveRecommendations(feedbacksDone: readonly FoodFeedbackListIt
 
 const dismissingIds = ref<string[]>([]);
 
+/** Feedbacks whose recommendation shows its reason; folded away by default. */
+const expandedReasonIds = ref<string[]>([]);
+function toggleReason(feedback: FoodFeedbackListItem) {
+  expandedReasonIds.value = expandedReasonIds.value.includes(feedback.id) ? expandedReasonIds.value.filter(id => id !== feedback.id) : [...expandedReasonIds.value, feedback.id];
+}
+
 async function dismissRecommendation(feedback: FoodFeedbackListItem) {
   dismissingIds.value = [...dismissingIds.value, feedback.id];
   try {
@@ -193,6 +199,38 @@ function markResolved(feedbacksToResolve: readonly FoodFeedbackListItem[]) {
 
 /** Every item can be selected (to delete it), marking as done only applies to those not done yet. */
 const selectedToResolve = computed(() => selectedFeedbacks.value.filter(FoodFeedbackChatHelper.canMarkResolved));
+/** Opening again only applies to the done ones. */
+const selectedToReopen = computed(() => selectedFeedbacks.value.filter(FoodFeedbackChatHelper.canReopen));
+/** A recommendation needs a comment to look at. */
+const selectedToRecommend = computed(() => selectedFeedbacks.value.filter(FoodFeedbackChatStatusHelper.hasComment));
+
+function reopen(feedbacksToReopen: readonly FoodFeedbackListItem[]) {
+  return runUpdate(feedbacksToReopen, pending => FoodFeedbackChatActions.reopen(api, pending), BackendTranslationKeys.rocket_meals_module_reopen_failed);
+}
+
+/** Whether a provider is configured under Settings → AI: "Vorschlag generieren" is greyed out otherwise. */
+const aiConfigured = ref(false);
+const requestingRecommendations = ref(false);
+
+/**
+ * Asks the AI about the selected feedbacks in one batch (several requests above 100). The rows appear
+ * right away as "Die KI wird gefragt", the list reloads them until the AI answered.
+ */
+async function requestRecommendations(feedbacksToRecommend: readonly FoodFeedbackListItem[]) {
+  if (!aiConfigured.value || requestingRecommendations.value || feedbacksToRecommend.length === 0) {
+    return;
+  }
+  requestingRecommendations.value = true;
+  try {
+    await ActionRecommendationModuleHelper.requestRecommendations(api, CollectionNames.FOODS_FEEDBACKS, feedbacksToRecommend.map(feedback => feedback.id), language.value);
+    await loadRecommendations();
+  } catch (error) {
+    console.error('[rocket-meals-module] requesting action recommendations failed', error);
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_generate_failed), type: 'error' });
+  } finally {
+    requestingRecommendations.value = false;
+  }
+}
 
 const deleteDialogOpen = ref(false);
 
@@ -216,6 +254,11 @@ watch([activeFilter, contents, canteenIds, ratingFilter, sort, pageSize], () =>
   ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { statusFilter: activeFilter.value, contents: contents.value, canteenIds: canteenIds.value, rating: ratingFilter.value, sort: sort.value, pageSize: pageSize.value })
 );
 onMounted(loadCanteens);
+onMounted(() => {
+  ActionRecommendationModuleHelper.loadAiStatus(api).then(status => {
+    aiConfigured.value = status.ai_configured;
+  });
+});
 watch(feedbacks, loadRecommendations);
 </script>
 
@@ -261,6 +304,17 @@ watch(feedbacks, loadRecommendations);
           <v-icon name="task_alt" left small />
           {{ translate(BackendTranslationKeys.rocket_meals_module_mark_selected_resolved) }}
         </v-button>
+        <v-button v-if="selectedToReopen.length > 0" small secondary :loading="selectedToReopen.some(isUpdating)" @click="reopen(selectedToReopen)">
+          <v-icon name="undo" left small />
+          {{ translate(BackendTranslationKeys.rocket_meals_module_reopen_selected) }}
+        </v-button>
+        <!-- The wrapper carries the tooltip: a disabled button gets no mouse events. -->
+        <span v-if="selectedToRecommend.length > 0" v-tooltip.bottom="aiConfigured ? undefined : translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_ai_not_configured)">
+          <v-button small secondary :disabled="!aiConfigured" :loading="requestingRecommendations" @click="requestRecommendations(selectedToRecommend)">
+            <v-icon :name="ActionRecommendationModuleHelper.ICON" left small />
+            {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_generate_selected) }}
+          </v-button>
+        </span>
         <v-button v-if="selectedFeedbacks.length > 0" small secondary kind="danger" :loading="selectedFeedbacks.some(isUpdating)" @click="deleteDialogOpen = true">
           <v-icon name="delete" left small />
           {{ translate(BackendTranslationKeys.rocket_meals_module_delete_selected) }}
@@ -313,7 +367,14 @@ watch(feedbacks, loadRecommendations);
                   · {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_recommended_by, { by: ActionRecommendationModuleHelper.getRecommendedBy(getRecommendation(feedback)) ?? '' }) }}
                 </span>
               </div>
-              <div v-if="getRecommendation(feedback)?.reason" class="recommendation-reason">{{ getRecommendation(feedback)?.reason }}</div>
+              <!-- The reason stays folded away, the recommended action and the draft are what matter at a glance. -->
+              <div v-if="getRecommendation(feedback)?.reason" class="recommendation-reason-toggle">
+                <v-button x-small secondary :aria-expanded="expandedReasonIds.includes(feedback.id)" @click.stop="toggleReason(feedback)">
+                <v-icon :name="expandedReasonIds.includes(feedback.id) ? 'expand_less' : 'expand_more'" left x-small />
+                {{ expandedReasonIds.includes(feedback.id) ? translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_hide_reason) : translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_show_reason) }}
+              </v-button>
+              </div>
+              <div v-if="getRecommendation(feedback)?.reason && expandedReasonIds.includes(feedback.id)" class="recommendation-reason">{{ getRecommendation(feedback)?.reason }}</div>
               <div v-if="ActionRecommendationModuleHelper.getDraftReply(getRecommendation(feedback))" class="recommendation-draft">{{ ActionRecommendationModuleHelper.getDraftReply(getRecommendation(feedback)) }}</div>
               <div class="recommendation-actions">
                 <v-button small secondary :loading="dismissingIds.includes(feedback.id)" @click.stop="dismissRecommendation(feedback)">
@@ -327,6 +388,10 @@ watch(feedbacks, loadRecommendations);
               </div>
             </div>
             <div class="feedback-actions">
+              <v-button v-if="FoodFeedbackChatHelper.canReopen(feedback)" small secondary :loading="isUpdating(feedback)" @click.stop="reopen([feedback])">
+                <v-icon name="undo" left small />
+                {{ translate(BackendTranslationKeys.rocket_meals_module_reopen) }}
+              </v-button>
               <v-button v-if="FoodFeedbackChatHelper.canMarkResolved(feedback)" small secondary :loading="isUpdating(feedback)" @click.stop="markResolved([feedback])">
                 <v-icon name="task_alt" left small />
                 {{ translate(BackendTranslationKeys.rocket_meals_module_mark_resolved) }}
@@ -457,6 +522,10 @@ watch(feedbacks, loadRecommendations);
 
 .recommendation-by {
   color: var(--theme--foreground-subdued);
+}
+
+.recommendation-reason-toggle {
+  display: flex;
 }
 
 .recommendation-reason {
