@@ -17,8 +17,8 @@
  * der Load Balancer verteilt die Abrufe eines Öffnens auf verschiedene Instanzen. Ohne Redis gilt sie
  * nur pro Prozess.
  *
- * Ist `food_details_opened` in `app_settings.app_usage_events_enabled` abgewählt (oder „Alle ausschalten“
- * gewählt), schreibt der Hook nichts (siehe `isAppUsageEventEnabled`).
+ * Ist `food_details_opened` in `app_settings.app_usage_events_enabled` nicht angehakt, schreibt der Hook
+ * nichts (siehe `isAppUsageEventEnabled`).
  */
 
 import { defineHook } from '@directus/extensions-sdk';

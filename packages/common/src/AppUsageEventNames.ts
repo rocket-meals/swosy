@@ -49,18 +49,61 @@ export const ALL_APP_USAGE_EVENT_NAMES: readonly AppUsageEventName[] = Object.va
 /** The events sent when a screen is opened (`event_type` `screen_view`). */
 export const APP_USAGE_SCREEN_OPENED_EVENT_NAMES: readonly AppUsageEventName[] = [AppUsageEventNames.MAP_SCREEN_OPENED, AppUsageEventNames.COURSE_TIMETABLE_SCREEN_OPENED, AppUsageEventNames.NEWS_SCREEN_OPENED, AppUsageEventNames.HOUSING_SCREEN_OPENED, AppUsageEventNames.ACCOUNT_BALANCE_SCREEN_OPENED, AppUsageEventNames.FOODOFFERS_SCREEN_OPENED, AppUsageEventNames.CAMPUS_SCREEN_OPENED, AppUsageEventNames.SETTINGS_SCREEN_OPENED, AppUsageEventNames.DATA_ACCESS_SCREEN_OPENED, AppUsageEventNames.EATING_HABITS_SCREEN_OPENED];
 
-/** Choice of `app_settings.app_usage_events_enabled` that switches every event off, whatever else is selected. */
-export const APP_USAGE_EVENTS_DISABLE_ALL = 'disable_all';
+/** One entry of the checkbox tree `app_settings.app_usage_events_enabled`: a group (with children) or an event. */
+export type AppUsageEventChoice = {
+  text: string;
+  value: string;
+  children?: AppUsageEventChoice[];
+};
+
+/**
+ * The checkbox tree of `app_settings.app_usage_events_enabled` (Directus "Kontrollkästchen (Baum)"):
+ * "Alle" on top, below it the events grouped by kind. Only the events (the leaves) are stored, the
+ * groups are just there to tick or untick many at once (`valueCombining: leaf`). Keep
+ * `data/directus-sync-data/.../app_settings/app_usage_events_enabled.json` in sync, the test checks it.
+ */
+export const APP_USAGE_EVENT_CHOICES: AppUsageEventChoice[] = [
+  {
+    text: 'Alle',
+    value: 'group_all',
+    children: [
+      {
+        text: 'Bildschirme',
+        value: 'group_screens',
+        children: [
+          { text: 'Lageplan', value: AppUsageEventNames.MAP_SCREEN_OPENED },
+          { text: 'Stundenplan', value: AppUsageEventNames.COURSE_TIMETABLE_SCREEN_OPENED },
+          { text: 'News', value: AppUsageEventNames.NEWS_SCREEN_OPENED },
+          { text: 'Wohnen', value: AppUsageEventNames.HOUSING_SCREEN_OPENED },
+          { text: 'Guthaben', value: AppUsageEventNames.ACCOUNT_BALANCE_SCREEN_OPENED },
+          { text: 'Speiseangebote', value: AppUsageEventNames.FOODOFFERS_SCREEN_OPENED },
+          { text: 'Campus', value: AppUsageEventNames.CAMPUS_SCREEN_OPENED },
+          { text: 'Einstellungen', value: AppUsageEventNames.SETTINGS_SCREEN_OPENED },
+          { text: 'Datenauskunft', value: AppUsageEventNames.DATA_ACCESS_SCREEN_OPENED },
+          { text: 'Essgewohnheiten', value: AppUsageEventNames.EATING_HABITS_SCREEN_OPENED },
+        ],
+      },
+      {
+        text: 'Details geöffnet',
+        value: 'group_details',
+        children: [
+          { text: 'Speise', value: AppUsageEventNames.FOOD_DETAILS_OPENED },
+          { text: 'Gebäude', value: AppUsageEventNames.BUILDING_DETAILS_OPENED },
+          { text: 'Kennzeichnung', value: AppUsageEventNames.MARKING_DETAILS_OPENED },
+        ],
+      },
+      { text: 'App-Bewertung: Store-Bewertungsdialog angefragt', value: AppUsageEventNames.NATIVE_REVIEW_PROMPT_REQUESTED },
+    ],
+  },
+];
 
 /**
  * Whether `eventName` may be sent, given the value of `app_settings.app_usage_events_enabled`.
  *
- * - A list with `disable_all`: nothing is collected, whatever else is selected.
- * - A list with event names: only these events.
- * - `null`, `undefined` or an empty list (nothing selected, or a server that does not know the field yet):
- *   every event is collected, as before the setting existed. New events are therefore collected right
- *   away on installations that never touched the setting.
- * - A JSON string is parsed first, anything unreadable counts as nothing selected.
+ * - A list: only the events in it. All ticked collects everything, nothing ticked (`[]`) collects nothing.
+ * - `null`/`undefined` (a server that does not know the field yet, or a row from before it existed):
+ *   every event is collected, as before the setting existed.
+ * - A JSON string is parsed first, anything unreadable counts as not set.
  */
 export function isAppUsageEventEnabled(setting: unknown, eventName: string): boolean {
   let value = setting;
@@ -71,11 +114,8 @@ export function isAppUsageEventEnabled(setting: unknown, eventName: string): boo
       return true;
     }
   }
-  if (!Array.isArray(value) || value.length === 0) {
+  if (!Array.isArray(value)) {
     return true;
-  }
-  if (value.includes(APP_USAGE_EVENTS_DISABLE_ALL)) {
-    return false;
   }
   return value.includes(eventName);
 }

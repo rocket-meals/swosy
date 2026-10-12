@@ -5,78 +5,91 @@
   "meta": {
     "collection": "app_settings",
     "conditions": null,
-    "display": "labels",
+    "display": null,
     "display_options": null,
     "field": "app_usage_events_enabled",
     "group": "app_usage_events_settings",
     "hidden": false,
-    "interface": "select-multiple-dropdown",
-    "note": "Welche anonymen Nutzungsereignisse (app_usage_events) gesammelt werden. Nichts ausgewählt = alle. \"Alle ausschalten\" sammelt keine, egal was sonst ausgewählt ist.",
+    "interface": "select-multiple-checkbox-tree",
+    "note": "Welche anonymen Nutzungsereignisse (app_usage_events) gesammelt werden. Alles angehakt = alle, nichts angehakt = keine.",
     "options": {
-      "allowNone": false,
-      "allowOther": false,
       "choices": [
         {
-          "text": "Alle ausschalten (keine Nutzungsereignisse sammeln)",
-          "value": "disable_all"
-        },
-        {
-          "text": "App-Bewertung: Store-Bewertungsdialog angefragt",
-          "value": "native_review_prompt_requested"
-        },
-        {
-          "text": "Speise: Details geöffnet",
-          "value": "food_details_opened"
-        },
-        {
-          "text": "Gebäude: Details geöffnet",
-          "value": "building_details_opened"
-        },
-        {
-          "text": "Kennzeichnung: Details geöffnet",
-          "value": "marking_details_opened"
-        },
-        {
-          "text": "Bildschirm: Lageplan",
-          "value": "map_screen_opened"
-        },
-        {
-          "text": "Bildschirm: Stundenplan",
-          "value": "course_timetable_screen_opened"
-        },
-        {
-          "text": "Bildschirm: News",
-          "value": "news_screen_opened"
-        },
-        {
-          "text": "Bildschirm: Wohnen",
-          "value": "housing_screen_opened"
-        },
-        {
-          "text": "Bildschirm: Guthaben",
-          "value": "account_balance_screen_opened"
-        },
-        {
-          "text": "Bildschirm: Speiseangebote",
-          "value": "foodoffers_screen_opened"
-        },
-        {
-          "text": "Bildschirm: Campus",
-          "value": "campus_screen_opened"
-        },
-        {
-          "text": "Bildschirm: Einstellungen",
-          "value": "settings_screen_opened"
-        },
-        {
-          "text": "Bildschirm: Datenauskunft",
-          "value": "data_access_screen_opened"
-        },
-        {
-          "text": "Bildschirm: Essgewohnheiten",
-          "value": "eating_habits_screen_opened"
+          "text": "Alle",
+          "value": "group_all",
+          "children": [
+            {
+              "text": "Bildschirme",
+              "value": "group_screens",
+              "children": [
+                {
+                  "text": "Lageplan",
+                  "value": "map_screen_opened"
+                },
+                {
+                  "text": "Stundenplan",
+                  "value": "course_timetable_screen_opened"
+                },
+                {
+                  "text": "News",
+                  "value": "news_screen_opened"
+                },
+                {
+                  "text": "Wohnen",
+                  "value": "housing_screen_opened"
+                },
+                {
+                  "text": "Guthaben",
+                  "value": "account_balance_screen_opened"
+                },
+                {
+                  "text": "Speiseangebote",
+                  "value": "foodoffers_screen_opened"
+                },
+                {
+                  "text": "Campus",
+                  "value": "campus_screen_opened"
+                },
+                {
+                  "text": "Einstellungen",
+                  "value": "settings_screen_opened"
+                },
+                {
+                  "text": "Datenauskunft",
+                  "value": "data_access_screen_opened"
+                },
+                {
+                  "text": "Essgewohnheiten",
+                  "value": "eating_habits_screen_opened"
+                }
+              ]
+            },
+            {
+              "text": "Details geöffnet",
+              "value": "group_details",
+              "children": [
+                {
+                  "text": "Speise",
+                  "value": "food_details_opened"
+                },
+                {
+                  "text": "Gebäude",
+                  "value": "building_details_opened"
+                },
+                {
+                  "text": "Kennzeichnung",
+                  "value": "marking_details_opened"
+                }
+              ]
+            },
+            {
+              "text": "App-Bewertung: Store-Bewertungsdialog angefragt",
+              "value": "native_review_prompt_requested"
+            }
+          ]
         }
-      ]
+      ],
+      "valueCombining": "leaf"
     },
     "readonly": false,
     "required": false,
@@ -99,7 +112,22 @@
     "name": "app_usage_events_enabled",
     "table": "app_settings",
     "data_type": "json",
-    "default_value": null,
+    "default_value": [
+      "map_screen_opened",
+      "course_timetable_screen_opened",
+      "news_screen_opened",
+      "housing_screen_opened",
+      "account_balance_screen_opened",
+      "foodoffers_screen_opened",
+      "campus_screen_opened",
+      "settings_screen_opened",
+      "data_access_screen_opened",
+      "eating_habits_screen_opened",
+      "food_details_opened",
+      "building_details_opened",
+      "marking_details_opened",
+      "native_review_prompt_requested"
+    ],
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
