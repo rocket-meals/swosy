@@ -17,15 +17,16 @@ import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 export enum ActionRecommendationAction {
   REPLY = 'reply',
   MARK_RESOLVED = 'mark_resolved',
-  FORWARD_TO_KITCHEN = 'forward_to_kitchen',
-  FORWARD_TO_DEVELOPMENT = 'forward_to_development',
 }
 
-/** The state of a recommendation, stored in `action_recommendations.state`. */
-export enum ActionRecommendationState {
-  OPEN = 'open',
-  ACCEPTED = 'accepted',
-  DISMISSED = 'dismissed',
+/**
+ * The status of a recommendation, stored in `action_recommendations.status` (the archive field of the
+ * collection): a new one is a `draft`, once someone took it over or turned it down it is `archived`.
+ */
+export enum ActionRecommendationStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+  ARCHIVED = 'archived',
 }
 
 export type ActionRecommendationActionInfo = {
@@ -37,7 +38,7 @@ export type ActionRecommendationActionInfo = {
 
 export const ACTION_RECOMMENDATION_ACTIONS: Record<ActionRecommendationAction, ActionRecommendationActionInfo> = {
   [ActionRecommendationAction.REPLY]: {
-    promptDescription: 'Antworten: der Eintrag enthält eine Frage, ein konkretes Problem oder Kritik, auf die eine Antwort hilft. Schreibe dann einen kurzen, freundlichen Antwortvorschlag.',
+    promptDescription: 'Antworten: der Eintrag enthält eine Frage, ein konkretes Problem oder Kritik, auf die eine Antwort hilft. Schreibe dann einen kurzen, freundlichen Antwortvorschlag, den der Support so als erste Chat-Nachricht an die Person schicken würde.',
     labelKey: BackendTranslationKeys.rocket_meals_module_action_recommendation_action_reply,
     icon: 'reply',
   },
@@ -45,16 +46,6 @@ export const ACTION_RECOMMENDATION_ACTIONS: Record<ActionRecommendationAction, A
     promptDescription: 'Als erledigt markieren, ohne zu antworten: kein konkreter Inhalt, reines Lob, Unsinn, Spam oder Beleidigung, eine Antwort bringt niemandem etwas.',
     labelKey: BackendTranslationKeys.rocket_meals_module_mark_resolved,
     icon: 'task_alt',
-  },
-  [ActionRecommendationAction.FORWARD_TO_KITCHEN]: {
-    promptDescription: 'An die Küche weitergeben: konkreter Hinweis zur Speise selbst (Geschmack, Temperatur, Menge, Allergene, falsche Kennzeichnung), den die Küche kennen sollte.',
-    labelKey: BackendTranslationKeys.rocket_meals_module_action_recommendation_action_forward_to_kitchen,
-    icon: 'soup_kitchen',
-  },
-  [ActionRecommendationAction.FORWARD_TO_DEVELOPMENT]: {
-    promptDescription: 'An die Entwicklung weitergeben: Fehler in der App oder ein konkreter Funktionswunsch.',
-    labelKey: BackendTranslationKeys.rocket_meals_module_action_recommendation_action_forward_to_development,
-    icon: 'bug_report',
   },
 };
 
@@ -79,7 +70,7 @@ export class ActionRecommendationDefinitions {
       promptContext: 'Rückmeldungen von Gästen einer Mensa zu einer Speise: ein Kommentar und eine Bewertung von 1 (schlecht) bis 5 (gut).',
       fields: ['comment', 'rating'],
       textFields: ['comment'],
-      actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.MARK_RESOLVED, ActionRecommendationAction.FORWARD_TO_KITCHEN],
+      actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.MARK_RESOLVED],
       summaryGroupField: 'food',
     },
     {
@@ -87,7 +78,7 @@ export class ActionRecommendationDefinitions {
       promptContext: 'Rückmeldungen zur Mensa- und Campus-App, aus dem Feedback-Formular der App oder als Bewertung im App Store bzw. Google Play. "positive" sagt, ob die Rückmeldung positiv gemeint ist.',
       fields: ['title', 'content', 'positive'],
       textFields: ['title', 'content'],
-      actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.MARK_RESOLVED, ActionRecommendationAction.FORWARD_TO_DEVELOPMENT],
+      actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.MARK_RESOLVED],
     },
   ];
 

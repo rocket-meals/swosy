@@ -4,8 +4,12 @@
  * by content (comment and/or rating), chat status, canteen, food and rating, sortable by date or rating. Feedbacks can be marked as done right
  * from the list – one by one or several selected at once. Every row leads to the chat with the
  * author (`food-feedback-chat-page.vue`).
+ *
+ * An open AI recommendation of a feedback (`action_recommendations`, see `action-recommendations-hook`)
+ * marks the recommended button with ✨ and shows its reason and draft reply below the comment; the
+ * draft can be taken straight into the chat. Answering, marking as done or dismissing archives it.
  */
-import { useApi } from '@directus/extensions-sdk';
+import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
@@ -13,6 +17,9 @@ import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusH
 import { FoodFeedbackChatActions } from '../../helpers/rocket-meals-module/FoodFeedbackChatActions';
 import { FoodFeedbackChatHelper, FoodFeedbackContentFilter, FoodFeedbackListSort, FoodFeedbackRatingFilter, type FoodFeedbackCanteenOption, type FoodFeedbackListItem, type FoodFeedbackListOptions } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { ModuleDeleteActions } from '../../helpers/rocket-meals-module/ModuleDeleteActions';
+import { ActionRecommendationModuleHelper, type ModuleActionRecommendation } from '../../helpers/rocket-meals-module/ActionRecommendationModuleHelper';
+import { ActionRecommendationAction } from '../../helpers/action-recommendations/ActionRecommendationDefinitions';
+import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { ModuleListHelper } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
@@ -31,6 +38,8 @@ import FoodFeedbackStatusChip from './food-feedback-status-chip.vue';
 
 const api = useApi();
 const router = useRouter();
+const { useNotificationsStore } = useStores();
+const notificationsStore = useNotificationsStore();
 const { translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.FOOD_FEEDBACKS;
@@ -110,12 +119,64 @@ async function loadCanteens() {
   }
 }
 
-function openChat(feedback: FoodFeedbackListItem) {
-  router.push(RocketMealsModulePages.getRoute(page, feedback.id));
+/** With `useDraft` the draft reply of the recommendation is already in the input of the chat. */
+function openChat(feedback: FoodFeedbackListItem, useDraft = false) {
+  const route = RocketMealsModulePages.getRoute(page, feedback.id);
+  router.push(useDraft ? { path: route, query: { [ActionRecommendationModuleHelper.USE_DRAFT_QUERY]: '1' } } : route);
 }
 
+/** The open AI recommendation per listed feedback id. */
+const recommendations = ref<Record<string, ModuleActionRecommendation>>({});
+
+function getRecommendation(feedback: FoodFeedbackListItem): ModuleActionRecommendation | null {
+  return recommendations.value[feedback.id] ?? null;
+}
+
+function isRecommended(feedback: FoodFeedbackListItem, action: ActionRecommendationAction): boolean {
+  return ActionRecommendationModuleHelper.isAction(getRecommendation(feedback), action);
+}
+
+async function loadRecommendations() {
+  recommendations.value = await ActionRecommendationModuleHelper.loadOpen(
+    api,
+    CollectionNames.FOODS_FEEDBACKS,
+    feedbacks.value.map(feedback => feedback.id)
+  );
+}
+
+/** Archives the recommendations of the feedbacks; a failure only costs a stale hint, so it is a warning. */
+async function archiveRecommendations(feedbacksDone: readonly FoodFeedbackListItem[]) {
+  try {
+    await ActionRecommendationModuleHelper.archive(api, feedbacksDone.map(getRecommendation));
+  } catch (error) {
+    console.error('[rocket-meals-module] archiving action recommendations failed', error);
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_update_failed), type: 'warning' });
+  }
+}
+
+const dismissingIds = ref<string[]>([]);
+
+async function dismissRecommendation(feedback: FoodFeedbackListItem) {
+  dismissingIds.value = [...dismissingIds.value, feedback.id];
+  try {
+    await archiveRecommendations([feedback]);
+    await loadRecommendations();
+  } finally {
+    dismissingIds.value = dismissingIds.value.filter(id => id !== feedback.id);
+  }
+}
+
+/** Marks as done; the recommendations of the feedbacks that were marked are used up. */
 function markResolved(feedbacksToResolve: readonly FoodFeedbackListItem[]) {
-  return runUpdate(feedbacksToResolve, pending => FoodFeedbackChatActions.markResolved(api, pending), BackendTranslationKeys.rocket_meals_module_mark_resolved_failed);
+  return runUpdate(
+    feedbacksToResolve,
+    async pending => {
+      const result = await FoodFeedbackChatActions.markResolved(api, pending);
+      await archiveRecommendations(pending.filter(feedback => !result.failedIds.includes(feedback.id)));
+      return result;
+    },
+    BackendTranslationKeys.rocket_meals_module_mark_resolved_failed
+  );
 }
 
 /** Every item can be selected (to delete it), marking as done only applies to those not done yet. */
@@ -143,6 +204,7 @@ watch([activeFilter, contents, canteenIds, ratingFilter, sort, pageSize], () =>
   ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { statusFilter: activeFilter.value, contents: contents.value, canteenIds: canteenIds.value, rating: ratingFilter.value, sort: sort.value, pageSize: pageSize.value })
 );
 onMounted(loadCanteens);
+watch(feedbacks, loadRecommendations);
 </script>
 
 <template>
@@ -212,14 +274,39 @@ onMounted(loadCanteens);
               </span>
             </div>
             <q v-if="FoodFeedbackChatStatusHelper.hasComment(feedback)" class="comment">{{ feedback.comment }}</q>
+            <div v-if="getRecommendation(feedback)" class="recommendation">
+              <div class="recommendation-header type-note">
+                <v-icon :name="ActionRecommendationModuleHelper.ICON" x-small />
+                <span>
+                  {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_title) }}<template v-if="ActionRecommendationModuleHelper.getActionLabelKey(getRecommendation(feedback))">: {{ translate(ActionRecommendationModuleHelper.getActionLabelKey(getRecommendation(feedback))!) }}</template>
+                </span>
+                <span v-if="ActionRecommendationModuleHelper.getRecommendedBy(getRecommendation(feedback))" class="recommendation-by">
+                  · {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_recommended_by, { by: ActionRecommendationModuleHelper.getRecommendedBy(getRecommendation(feedback)) ?? '' }) }}
+                </span>
+              </div>
+              <div v-if="getRecommendation(feedback)?.reason" class="recommendation-reason">{{ getRecommendation(feedback)?.reason }}</div>
+              <div v-if="ActionRecommendationModuleHelper.getDraftReply(getRecommendation(feedback))" class="recommendation-draft">{{ ActionRecommendationModuleHelper.getDraftReply(getRecommendation(feedback)) }}</div>
+              <div class="recommendation-actions">
+                <v-button small secondary :loading="dismissingIds.includes(feedback.id)" @click.stop="dismissRecommendation(feedback)">
+                  <v-icon name="close" left small />
+                  {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_dismiss) }}
+                </v-button>
+                <v-button v-if="ActionRecommendationModuleHelper.getDraftReply(getRecommendation(feedback))" small :disabled="!FoodFeedbackChatStatusHelper.canStartChat(feedback)" @click.stop="openChat(feedback, true)">
+                  <v-icon :name="ActionRecommendationModuleHelper.ICON" left small />
+                  {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_start_chat_with_draft) }}
+                </v-button>
+              </div>
+            </div>
             <div class="feedback-actions">
               <v-button v-if="FoodFeedbackChatHelper.canMarkResolved(feedback)" small secondary :loading="isUpdating(feedback)" @click.stop="markResolved([feedback])">
                 <v-icon name="task_alt" left small />
                 {{ translate(BackendTranslationKeys.rocket_meals_module_mark_resolved) }}
+                <v-icon v-if="isRecommended(feedback, ActionRecommendationAction.MARK_RESOLVED)" v-tooltip="translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_recommended)" class="recommended-badge" :name="ActionRecommendationModuleHelper.ICON" right small />
               </v-button>
               <v-button small :secondary="FoodFeedbackChatStatusHelper.getStatus(feedback) !== FoodFeedbackChatStatus.NEW" :disabled="!FoodFeedbackChatStatusHelper.canStartChat(feedback)" @click.stop="openChat(feedback)">
                 <v-icon name="forum" left small />
                 {{ FoodFeedbackChatStatusHelper.getStatus(feedback) === FoodFeedbackChatStatus.NEW ? translate(BackendTranslationKeys.rocket_meals_module_reply) : translate(BackendTranslationKeys.rocket_meals_module_to_chat) }}
+                <v-icon v-if="isRecommended(feedback, ActionRecommendationAction.REPLY)" v-tooltip="translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_recommended)" class="recommended-badge" :name="ActionRecommendationModuleHelper.ICON" right small />
               </v-button>
             </div>
           </div>
@@ -299,6 +386,53 @@ onMounted(loadCanteens);
   font-style: italic;
   white-space: pre-line;
   overflow-wrap: anywhere;
+}
+
+.recommendation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--theme--primary-background);
+  border-inline-start: 3px solid var(--theme--primary);
+  border-radius: var(--theme--border-radius);
+}
+
+.recommendation-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  align-items: center;
+  color: var(--theme--primary);
+}
+
+.recommendation-by {
+  color: var(--theme--foreground-subdued);
+}
+
+.recommendation-reason {
+  overflow-wrap: anywhere;
+}
+
+/* The draft like a chat bubble of support: what would be sent. */
+.recommendation-draft {
+  padding: 0.5rem 0.75rem;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  background: var(--theme--background);
+  border: var(--theme--border-width) solid var(--theme--border-color-subdued);
+  border-radius: var(--theme--border-radius);
+}
+
+.recommendation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.recommended-badge {
+  --v-icon-color: currentColor;
 }
 
 .feedback-actions {

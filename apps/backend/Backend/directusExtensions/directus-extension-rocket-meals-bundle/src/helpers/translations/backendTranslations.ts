@@ -4288,26 +4288,81 @@ export const backendTranslations: TranslationResources = {
     tr: 'Yanıtla',
     zh: '回复',
   },
-  /** Handlungsempfehlung: An die Küche weitergeben. */
-  rocket_meals_module_action_recommendation_action_forward_to_kitchen: {
-    de: 'An die Küche weitergeben',
-    en: 'Forward to the kitchen',
-    ar: 'إحالة إلى المطبخ',
-    es: 'Enviar a la cocina',
-    fr: 'Transmettre à la cuisine',
-    ru: 'Передать на кухню',
-    tr: 'Mutfağa ilet',
-    zh: '转交厨房',
+  /** Rocket-Meals-Modul, KI-Handlungsempfehlungen: KI-Empfehlung */
+  rocket_meals_module_action_recommendation_title: {
+    de: 'KI-Empfehlung',
+    en: 'AI recommendation',
+    ar: 'توصية الذكاء الاصطناعي',
+    es: 'Recomendación de la IA',
+    fr: 'Recommandation de l’IA',
+    ru: 'Рекомендация ИИ',
+    tr: 'Yapay zekâ önerisi',
+    zh: 'AI 建议',
   },
-  /** Handlungsempfehlung: An die Entwicklung weitergeben. */
-  rocket_meals_module_action_recommendation_action_forward_to_development: {
-    de: 'An die Entwicklung weitergeben',
-    en: 'Forward to development',
-    ar: 'إحالة إلى فريق التطوير',
-    es: 'Enviar al equipo de desarrollo',
-    fr: 'Transmettre au développement',
-    ru: 'Передать разработчикам',
-    tr: 'Geliştirme ekibine ilet',
-    zh: '转交开发团队',
+  /** Rocket-Meals-Modul, KI-Handlungsempfehlungen: Vorgeschlagen von {{by}} */
+  rocket_meals_module_action_recommendation_recommended_by: {
+    de: 'Vorgeschlagen von {{by}}',
+    en: 'Suggested by {{by}}',
+    ar: 'اقترحه {{by}}',
+    es: 'Sugerido por {{by}}',
+    fr: 'Proposé par {{by}}',
+    ru: 'Предложено: {{by}}',
+    tr: 'Öneren: {{by}}',
+    zh: '建议来自 {{by}}',
+  },
+  /** Rocket-Meals-Modul, KI-Handlungsempfehlungen: Von der KI empfohlen */
+  rocket_meals_module_action_recommendation_recommended: {
+    de: 'Von der KI empfohlen',
+    en: 'Recommended by the AI',
+    ar: 'موصى به من الذكاء الاصطناعي',
+    es: 'Recomendado por la IA',
+    fr: 'Recommandé par l’IA',
+    ru: 'Рекомендовано ИИ',
+    tr: 'Yapay zekâ tarafından önerildi',
+    zh: 'AI 推荐',
+  },
+  /** Rocket-Meals-Modul, KI-Handlungsempfehlungen: Chat mit Vorschlag starten */
+  rocket_meals_module_action_recommendation_start_chat_with_draft: {
+    de: 'Chat mit Vorschlag starten',
+    en: 'Start chat with suggestion',
+    ar: 'بدء المحادثة بالاقتراح',
+    es: 'Iniciar chat con la sugerencia',
+    fr: 'Démarrer le chat avec la suggestion',
+    ru: 'Начать чат с предложением',
+    tr: 'Öneriyle sohbet başlat',
+    zh: '用建议开始聊天',
+  },
+  /** Rocket-Meals-Modul, KI-Handlungsempfehlungen: Vorschlag einfügen */
+  rocket_meals_module_action_recommendation_insert_draft: {
+    de: 'Vorschlag einfügen',
+    en: 'Insert suggestion',
+    ar: 'إدراج الاقتراح',
+    es: 'Insertar sugerencia',
+    fr: 'Insérer la suggestion',
+    ru: 'Вставить предложение',
+    tr: 'Öneriyi ekle',
+    zh: '插入建议',
+  },
+  /** Rocket-Meals-Modul, KI-Handlungsempfehlungen: Vorschlag verwerfen */
+  rocket_meals_module_action_recommendation_dismiss: {
+    de: 'Vorschlag verwerfen',
+    en: 'Dismiss suggestion',
+    ar: 'تجاهل الاقتراح',
+    es: 'Descartar sugerencia',
+    fr: 'Ignorer la suggestion',
+    ru: 'Отклонить предложение',
+    tr: 'Öneriyi reddet',
+    zh: '忽略建议',
+  },
+  /** Rocket-Meals-Modul, KI-Handlungsempfehlungen: Die KI-Empfehlung konnte nicht aktualisiert werden. */
+  rocket_meals_module_action_recommendation_update_failed: {
+    de: 'Die KI-Empfehlung konnte nicht aktualisiert werden.',
+    en: 'The AI recommendation could not be updated.',
+    ar: 'تعذر تحديث توصية الذكاء الاصطناعي.',
+    es: 'No se pudo actualizar la recomendación de la IA.',
+    fr: 'La recommandation de l’IA n’a pas pu être mise à jour.',
+    ru: 'Не удалось обновить рекомендацию ИИ.',
+    tr: 'Yapay zekâ önerisi güncellenemedi.',
+    zh: '无法更新 AI 建议。',
   },
 };

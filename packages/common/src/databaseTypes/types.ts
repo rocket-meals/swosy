@@ -95,6 +95,7 @@ export type AppFeedbacks = {
 };
 
 export type AppSettings = {
+  ai_action_recommendations_enabled?: boolean | null;
   animations_auto_start?: boolean | null;
   app_stores: string;
   app_stores_url_to_apple?: string | null;
