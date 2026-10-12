@@ -8988,5 +8988,105 @@
     "ru": "Мы пришлём тебе push-уведомление, как только освободится квартира.",
     "tr": "Bir daire boşaldığında sana anlık bildirim göndereceğiz.",
     "zh": "有房间空出时，我们会给你发送推送通知。"
+  },
+  "store_versions": {
+    "de": "Store-Versionen",
+    "en": "Store versions",
+    "ar": "إصدارات المتجر",
+    "es": "Versiones en las tiendas",
+    "fr": "Versions dans les stores",
+    "ru": "Версии в магазинах",
+    "tr": "Mağaza sürümleri",
+    "zh": "应用商店版本"
+  },
+  "store_versions_installed": {
+    "de": "Installierte Version",
+    "en": "Installed version",
+    "ar": "الإصدار المثبت",
+    "es": "Versión instalada",
+    "fr": "Version installée",
+    "ru": "Установленная версия",
+    "tr": "Yüklü sürüm",
+    "zh": "已安装版本"
+  },
+  "store_versions_store_version": {
+    "de": "Version im Store",
+    "en": "Version in the store",
+    "ar": "الإصدار في المتجر",
+    "es": "Versión en la tienda",
+    "fr": "Version dans le store",
+    "ru": "Версия в магазине",
+    "tr": "Mağazadaki sürüm",
+    "zh": "商店中的版本"
+  },
+  "store_versions_status": {
+    "de": "Vergleich",
+    "en": "Comparison",
+    "ar": "المقارنة",
+    "es": "Comparación",
+    "fr": "Comparaison",
+    "ru": "Сравнение",
+    "tr": "Karşılaştırma",
+    "zh": "比较"
+  },
+  "store_versions_newer_in_store": {
+    "de": "Neuere Version im Store",
+    "en": "Newer version in the store",
+    "ar": "يوجد إصدار أحدث في المتجر",
+    "es": "Versión más reciente en la tienda",
+    "fr": "Version plus récente dans le store",
+    "ru": "В магазине есть более новая версия",
+    "tr": "Mağazada daha yeni sürüm var",
+    "zh": "商店中有更新的版本"
+  },
+  "store_versions_up_to_date": {
+    "de": "Aktuell",
+    "en": "Up to date",
+    "ar": "محدث",
+    "es": "Actualizada",
+    "fr": "À jour",
+    "ru": "Актуальна",
+    "tr": "Güncel",
+    "zh": "已是最新"
+  },
+  "store_versions_older_in_store": {
+    "de": "Installierte Version ist neuer",
+    "en": "Installed version is newer",
+    "ar": "الإصدار المثبت أحدث",
+    "es": "La versión instalada es más reciente",
+    "fr": "La version installée est plus récente",
+    "ru": "Установленная версия новее",
+    "tr": "Yüklü sürüm daha yeni",
+    "zh": "已安装的版本更新"
+  },
+  "store_versions_open_store": {
+    "de": "Im Store öffnen",
+    "en": "Open in the store",
+    "ar": "افتح في المتجر",
+    "es": "Abrir en la tienda",
+    "fr": "Ouvrir dans le store",
+    "ru": "Открыть в магазине",
+    "tr": "Mağazada aç",
+    "zh": "在商店中打开"
+  },
+  "store_versions_reload": {
+    "de": "Erneut laden",
+    "en": "Load again",
+    "ar": "إعادة التحميل",
+    "es": "Volver a cargar",
+    "fr": "Recharger",
+    "ru": "Загрузить снова",
+    "tr": "Yeniden yükle",
+    "zh": "重新加载"
+  },
+  "store_versions_hint": {
+    "de": "Verglichen werden nur Hauptversion und Build-Nummer. Die Patch-Nummer kommt per OTA-Update und steht nie im Store.",
+    "en": "Only the major version and the build number are compared. The patch number arrives as an OTA update and is never in the store.",
+    "ar": "تتم مقارنة الإصدار الرئيسي ورقم البناء فقط. رقم التصحيح يصل عبر تحديث OTA ولا يظهر في المتجر أبدًا.",
+    "es": "Solo se comparan la versión principal y el número de compilación. El número de parche llega como actualización OTA y nunca está en la tienda.",
+    "fr": "Seuls la version majeure et le numéro de build sont comparés. Le numéro de patch arrive par mise à jour OTA et ne figure jamais dans le store.",
+    "ru": "Сравниваются только основная версия и номер сборки. Номер патча приходит через OTA-обновление и никогда не попадает в магазин.",
+    "tr": "Yalnızca ana sürüm ve derleme numarası karşılaştırılır. Yama numarası OTA güncellemesiyle gelir ve hiçbir zaman mağazada yer almaz.",
+    "zh": "只比较主版本号和构建号。补丁号通过 OTA 更新提供，从不出现在商店中。"
   }
 }

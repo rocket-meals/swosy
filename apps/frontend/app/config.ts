@@ -261,7 +261,9 @@ export function getVersionPatch() {
         // 140: maintenance modal: "Server-Update: Wir spielen neue Funktionen ein." above the own text
         // 141: maintenance: no automatic modal (banner only), no error toasts while it runs,
         //      project logo and color kept when the server info cannot be loaded
-        return 141;
+        // 142: experimental screen "Store-Versionen" compares the installed version with the
+        //      App Store and Google Play versions (major and build number only)
+        return 142;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
