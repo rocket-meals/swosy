@@ -236,7 +236,9 @@ Das Skript `scripts/update-and-generate-env.sh` führt folgende Schritte aus:
 4. `docker compose build`, während die alten Container noch laufen (kein Ausfall beim Bauen)
 5. Wartung in `app_settings.maintenance_start` / `maintenance_end` eintragen und gegebenenfalls bis zum angekündigten
    Zeitpunkt warten
-6. `docker compose down` + `docker compose up -d`, warten bis `/server/health` antwortet
+6. Alle Container außer Traefik und dem Wartungsserver neu starten, warten bis `/server/health` antwortet. Solange
+   Directus fehlt, beantwortet der [Wartungsserver](apps/maintenance-server/README.md) die Anfrage nach den
+   `app_settings` mit dem Wartungsfenster.
 7. Dauer des Neustarts in `.restart-durations` speichern (nicht im Git) und das eigene Wartungsfenster wieder leeren
 
 Optionen werden als Umgebungsvariablen übergeben:
@@ -249,6 +251,11 @@ Optionen werden als Umgebungsvariablen übergeben:
 Das angekündigte Ende ist die längste der letzten zehn gemessenen Neustart-Dauern plus 20 %, aufgerundet auf volle
 5 Minuten (ohne Messwerte: 10 Minuten). Die Felder sind `timestamp`-Felder (UTC), die App zeigt sie in der Zeitzone
 des Geräts an. Ein von Hand eingetragenes Wartungsfenster wird nach dem Neustart nicht gelöscht.
+
+In `app_settings.maintenance_message` (Markdown, Bilder aus dem Ordner „Public Images“) kann ein eigener Text stehen.
+Die App zeigt ihn zusammen mit dem Zeitraum in einem Modal: beim App-Start während oder kurz vor der Wartung, und in
+einer schon laufenden App, sobald Anfragen nach einem Serverausfall aussehen (Netzwerkfehler, 502/503/504 oder der
+404 von Traefik). Das Skript leert diesen Text nicht.
 
 ### Voraussetzung
 

@@ -939,6 +939,36 @@
     "tr": "Sunucu şu anda yeniden başlatılıyor. Bazı özellikler yaklaşık {{end}} saatine kadar kullanılamayabilir.",
     "zh": "服务器正在重启。部分功能在 {{end}} 左右之前可能无法使用。"
   },
+  "maintenance_window_notice": {
+    "de": "Von {{start}} bis {{end}} Uhr sind einige Funktionen nicht verfügbar.",
+    "en": "Some features are unavailable from {{start}} to {{end}}.",
+    "ar": "بعض الميزات غير متاحة من {{start}} إلى {{end}}.",
+    "es": "Algunas funciones no están disponibles de {{start}} a {{end}}.",
+    "fr": "Certaines fonctionnalités sont indisponibles de {{start}} à {{end}}.",
+    "ru": "С {{start}} до {{end}} некоторые функции недоступны.",
+    "tr": "{{start}} ile {{end}} arasında bazı özellikler kullanılamıyor.",
+    "zh": "{{start}} 至 {{end}} 期间部分功能无法使用。"
+  },
+  "maintenance_server_update_title": {
+    "de": "Server-Update",
+    "en": "Server update",
+    "ar": "تحديث الخادم",
+    "es": "Actualización del servidor",
+    "fr": "Mise à jour du serveur",
+    "ru": "Обновление сервера",
+    "tr": "Sunucu güncellemesi",
+    "zh": "服务器更新"
+  },
+  "maintenance_server_update_text": {
+    "de": "Wir spielen neue Funktionen ein.",
+    "en": "We are rolling out new features.",
+    "ar": "نقوم بإضافة ميزات جديدة.",
+    "es": "Estamos incorporando nuevas funciones.",
+    "fr": "Nous déployons de nouvelles fonctionnalités.",
+    "ru": "Мы добавляем новые функции.",
+    "tr": "Yeni özellikleri yüklüyoruz.",
+    "zh": "我们正在上线新功能。"
+  },
   "use_cached_version": {
     "de": "Gespeicherte Version verwenden",
     "en": "Use Cached Version",

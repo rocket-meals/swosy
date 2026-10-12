@@ -255,7 +255,11 @@ export function getVersionPatch() {
         //      screens, buildings and markings, filtered by app_settings.app_usage_events_enabled
         // 135: app_settings.app_usage_events_enabled is a checkbox tree ("Alle" on top), nothing ticked collects nothing
         // 136: common-ui: silhouette avatar config (SilhouetteAvatar), used by the Live-Puls page
-        return 136;
+        // 137: maintenance modal with app_settings.maintenance_message, shown on start and when the server looks down
+        // 138: maintenance modal: project color side bar, offline hint when no own message is set
+        // 139: maintenance modal: one line "from ... to ... some features unavailable", below only the own markdown text
+        // 140: maintenance modal: "Server-Update: Wir spielen neue Funktionen ein." above the own text
+        return 140;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

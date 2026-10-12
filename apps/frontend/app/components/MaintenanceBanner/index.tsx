@@ -12,6 +12,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import useKioskMode from '@/hooks/useKioskMode';
 import { TranslationKeys } from '@/locales/keys';
 import { getMaintenanceNotice, getMillisecondsUntilNextMaintenanceChange } from '@/helper/maintenanceWindowHelper';
+import { useShowMaintenanceModal } from '@/components/MaintenanceModal';
 
 /**
  * Warns about a server maintenance (e.g. the daily backend restart) from 30
@@ -29,6 +30,7 @@ const MaintenanceBanner: React.FC = () => {
 	const maintenanceEnd = appSettings?.maintenance_end;
 	const [now, setNow] = useState(() => new Date());
 	const [dismissedKey, setDismissedKey] = useState<string | null>(null);
+	const showMaintenanceModal = useShowMaintenanceModal();
 
 	// Re-render exactly when the notice appears, changes its phase or disappears.
 	useEffect(() => {
@@ -41,7 +43,7 @@ const MaintenanceBanner: React.FC = () => {
 	}, [maintenanceStart, maintenanceEnd, now]);
 
 	// The app settings are loaded on app start only. Apps resumed from the
-	// background would miss an announcement, so refresh the two fields then.
+	// background would miss an announcement, so refresh the maintenance fields then.
 	const appSettingsRef = useRef(appSettings);
 	appSettingsRef.current = appSettings;
 	useEffect(() => {
@@ -57,11 +59,9 @@ const MaintenanceBanner: React.FC = () => {
 			}
 			setNow(new Date());
 			new AppSettingsHelper()
-				.fetchAppSettings({ fields: ['maintenance_start', 'maintenance_end'] })
-				.then(result => {
-					if (result) {
-						dispatch({ type: SET_APP_SETTINGS, payload: { ...appSettingsRef.current, maintenance_start: result.maintenance_start, maintenance_end: result.maintenance_end } });
-					}
+				.fetchMaintenanceWindow()
+				.then(maintenanceWindow => {
+					dispatch({ type: SET_APP_SETTINGS, payload: { ...appSettingsRef.current, ...maintenanceWindow } });
 				})
 				.catch(error => {
 					console.log('MaintenanceBanner: could not refresh the maintenance window', error);
@@ -87,10 +87,11 @@ const MaintenanceBanner: React.FC = () => {
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background, borderLeftColor: primaryColor }]} accessibilityRole="alert">
 			<MaterialCommunityIcons name="wrench-clock" size={22} color={theme.screen.icon} />
-			<View style={styles.textContainer}>
+			{/* Opens the maintenance modal, which also shows app_settings.maintenance_message. */}
+			<TouchableOpacity style={styles.textContainer} onPress={() => showMaintenanceModal(notice, appSettings?.maintenance_message)} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.maintenance)}>
 				<Text style={[styles.title, { color: theme.screen.text }]}>{translate(TranslationKeys.maintenance)}</Text>
 				<Text style={[styles.message, { color: theme.screen.text }]}>{message}</Text>
-			</View>
+			</TouchableOpacity>
 			<TouchableOpacity onPress={() => setDismissedKey(noticeKey)} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.hide)} hitSlop={8}>
 				<MaterialCommunityIcons name="close" size={20} color={theme.screen.icon} />
 			</TouchableOpacity>

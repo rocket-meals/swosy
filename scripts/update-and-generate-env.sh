@@ -131,6 +131,41 @@ is_directus_running() {
   [[ -n "$(docker compose ps --status running -q rocket-meals-directus 2>/dev/null)" ]]
 }
 
+# Traefik und der Wartungsserver (apps/maintenance-server) laufen beim Neustart
+# weiter: Solange Directus fehlt, beantwortet der Wartungsserver die Anfragen
+# nach den app_settings mit dem Wartungsfenster, statt dass die App ins Leere läuft.
+KEEP_RUNNING_SERVICES=("traefik" "rocket-meals-maintenance")
+
+restart_services() {
+  local service keep keep_service
+  for service in $(docker compose config --services); do
+    keep=false
+    for keep_service in "${KEEP_RUNNING_SERVICES[@]}"; do
+      if [[ "$service" == "$keep_service" ]]; then
+        keep=true
+      fi
+    done
+    if [[ "$keep" == "false" ]]; then
+      echo "$service"
+    fi
+  done
+}
+
+stop_restart_services() {
+  # shellcheck disable=SC2046 # Dienstnamen enthalten keine Leerzeichen
+  docker compose rm --stop --force $(restart_services)
+}
+
+# Lässt den Wartungsserver die app_settings sofort neu laden, damit er das eben
+# angekündigte Wartungsfenster kennt, bevor Directus gestoppt wird.
+refresh_maintenance_server() {
+  if docker compose kill -s SIGHUP rocket-meals-maintenance >/dev/null 2>&1; then
+    sleep 5
+  else
+    log "Warnung: Wartungsserver läuft nicht, die App bekommt während des Neustarts keine Antwort"
+  fi
+}
+
 log "Starte Update und Env-Generierung in $REPO_DIR (Umgebung: $ENV_NAME)"
 cd "$REPO_DIR"
 
@@ -217,14 +252,18 @@ fi
 # --- Neustart ---
 RESTART_START_EPOCH="$(date +%s)"
 
-log "Container werden gestoppt (docker compose down)"
-docker compose down --remove-orphans
+refresh_maintenance_server
 
+log "Container außer ${KEEP_RUNNING_SERVICES[*]} werden gestoppt"
+stop_restart_services
+
+# "up" startet auch Traefik und den Wartungsserver, falls sie noch nicht laufen
+# oder sich ihre Konfiguration geändert hat.
 log "Starte Container im Hintergrund (docker compose up -d) – erster Start"
-docker compose up -d
+docker compose up -d --remove-orphans
 
-log "Stoppe Container (docker compose down) – Neustart damit Apple Client Secret korrekt geladen wird"
-docker compose down
+log "Stoppe Container außer ${KEEP_RUNNING_SERVICES[*]} – Neustart damit Apple Client Secret korrekt geladen wird"
+stop_restart_services
 
 log "Starte Container im Hintergrund (docker compose up -d) – zweiter Start"
 docker compose up -d

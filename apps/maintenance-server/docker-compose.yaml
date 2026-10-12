@@ -1,0 +1,38 @@
+services:
+  # Answers in place of Directus while it is down (see server.mjs and README.md).
+  # Has to keep running while Directus restarts, so scripts/update-and-generate-env.sh
+  # never stops it together with the other services.
+  rocket-meals-maintenance:
+    image: node:22-alpine
+    restart: ${RESTART}
+    command: ["node", "/app/server.mjs"]
+    volumes:
+      - ./server.mjs:/app/server.mjs:ro
+    environment:
+      PORT: "8080"
+      DIRECTUS_URL: "http://rocket-meals-directus:${DIRECTUS_PORT}"
+      POLL_INTERVAL_SECONDS: "60"
+    networks:
+      - traefik
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: traefik
+
+      # Same rule as the Directus router, but with the lowest priority: Traefik only
+      # uses it while no healthy Directus container exists (Directus has a healthcheck,
+      # Traefik ignores containers that are starting or unhealthy).
+      traefik.http.routers.rocket-meals-maintenance-secure.entrypoints: websecure
+      traefik.http.routers.rocket-meals-maintenance-secure.rule: Host(`${MYHOST}`) && PathPrefix(`/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}`)
+      traefik.http.routers.rocket-meals-maintenance-secure.priority: "1"
+      traefik.http.routers.rocket-meals-maintenance-secure.middlewares: rocket-meals-maintenance-stripprefix
+      traefik.http.routers.rocket-meals-maintenance-secure.tls: "true"
+      traefik.http.routers.rocket-meals-maintenance-secure.tls.certresolver: "${RESOLVER}"
+      traefik.http.routers.rocket-meals-maintenance-secure.service: rocket-meals-maintenance
+      # Own middleware: the one of Directus disappears together with its container.
+      traefik.http.middlewares.rocket-meals-maintenance-stripprefix.stripprefix.prefixes: /${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}
+      traefik.http.services.rocket-meals-maintenance.loadbalancer.server.port: "8080"
+
+networks:
+  traefik:
+    external: true
+    name: traefik
