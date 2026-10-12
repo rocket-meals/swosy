@@ -5,23 +5,46 @@
  * active users per hour. Reloads every 30 seconds; the data rules live in `LivePulseHelper`.
  *
  * The ticker does not jump: what arrives with a refresh is queued and slides in entry by entry,
- * spread over the time until the next refresh, the older entries move down.
+ * spread over the time until the next refresh. A new entry is rendered above the visible part of the
+ * ticker and the whole list glides down to reveal it. What the ticker shows can be filtered (checkbox
+ * tree in the panel header), the choice is remembered per browser.
  */
-import { useApi } from '@directus/extensions-sdk';
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { useApi, useStores } from '@directus/extensions-sdk';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { LivePulseFeedType, LivePulseHelper, LivePulsePresence, type LivePulseCanteenVisit, type LivePulseFeedItem, type LivePulseFood, type LivePulseFoodFeedback, type LivePulseProfile, type LivePulseQuery, type LivePulseUsageEvent } from '../../helpers/rocket-meals-module/LivePulseHelper';
+import { ModuleListHelper } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
 import FoodFeedbackRating from '../food-feedbacks/food-feedback-rating.vue';
 
 const api = useApi();
+const { useServerStore } = useStores();
+const serverStore = useServerStore();
 const { translate, language } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.LIVE_PULSE;
 
 type Kpi = { key: string; value: number | undefined; label: string };
+
+/**
+ * Developer switch: mixes a few made-up app usage events into the ticker on every refresh, to try
+ * the animation and the filter without real traffic. Nothing is written anywhere. Keep it `false`.
+ */
+const MOCK_USAGE_EVENTS = false;
+const MOCK_EVENTS_PER_REFRESH = 4;
+let mockUsageEvents: LivePulseUsageEvent[] = [];
+let mockRefreshCount = 0;
+
+/** How long the ticker glides down to reveal a new entry. Shorter than the smallest pause between two entries. */
+const FEED_SLIDE_MS = 650;
+const FEED_SLIDE_EASING = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+/** The ticker filter is remembered per browser, so the page opens again as it was left. */
+const SETTINGS_STORAGE_KEY = ModuleListHelper.getSettingsStorageKey('live-pulse');
+const settingsStorage = typeof window !== 'undefined' ? window.localStorage : undefined;
+const storedSettings = ModuleListHelper.readSettings<{ hiddenFeedFilterKeys: string[] }>(settingsStorage, SETTINGS_STORAGE_KEY);
 
 const now = ref(new Date());
 const loading = ref(false);
@@ -44,6 +67,35 @@ const existingFoodofferIds = ref<Set<string>>(new Set());
 /** New ticker entries waiting to slide in, oldest first. */
 let pendingFeed: LivePulseFeedItem[] = [];
 let revealTimer: ReturnType<typeof setTimeout> | undefined;
+/** Set when the filter changed: the next load replaces the ticker at once instead of sliding entries in. */
+let replaceFeedOnNextLoad = false;
+/** A reload was asked for while one was running – it runs right after. */
+let reloadRequested = false;
+const feedScroll = ref<HTMLElement>();
+const feedList = ref<HTMLElement>();
+
+/** Kinds of entries the ticker filter hides (the hidden ones are stored, so new kinds show up). */
+const hiddenFeedFilterKeys = ref<Set<string>>(LivePulseHelper.readHiddenFeedFilterKeys(storedSettings.hiddenFeedFilterKeys));
+const feedFilterChoices = computed(() => LivePulseHelper.getFeedFilterChoices(translate));
+const shownFeedFilterKeys = computed<string[]>({
+  get: () => LivePulseHelper.getShownFeedFilterKeys(hiddenFeedFilterKeys.value),
+  set: shown => {
+    hiddenFeedFilterKeys.value = new Set(LivePulseHelper.getHiddenFeedFilterKeys(shown));
+  },
+});
+const feedFilterActive = computed(() => hiddenFeedFilterKeys.value.size > 0);
+const feedFilterHidesAll = computed(() => LivePulseHelper.getShownFeedFilterKeys(hiddenFeedFilterKeys.value).length === 0);
+
+watch(hiddenFeedFilterKeys, hidden => {
+  ModuleListHelper.storeSettings(settingsStorage, SETTINGS_STORAGE_KEY, { hiddenFeedFilterKeys: [...hidden] });
+  // What is hidden now goes at once, what is shown again comes with the reload – without sliding in one by one.
+  feed.value = feed.value.filter(item => LivePulseHelper.isFeedItemShown(item, hidden));
+  pendingFeed = [];
+  clearTimeout(revealTimer);
+  revealTimer = undefined;
+  replaceFeedOnNextLoad = true;
+  void reload();
+});
 
 async function getItems<T>(endpoint: string, params: LivePulseQuery): Promise<T[]> {
   const response = await api.get(endpoint, { params });
@@ -78,14 +130,32 @@ async function loadKpis(time: Date) {
   foodViewsToday.value = foodViews;
 }
 
+/** A ticker source, skipped when the filter hides every kind of entry it delivers. */
+function loadFeedSource<T>(filterKeys: readonly string[], endpoint: string, params: LivePulseQuery): Promise<T[]> {
+  return LivePulseHelper.isAnyFeedFilterKeyShown(filterKeys, hiddenFeedFilterKeys.value) ? getItemsOrEmpty<T>(endpoint, params) : Promise.resolve([]);
+}
+
+/** The made-up events of `MOCK_USAGE_EVENTS`: a few new ones per refresh, the older ones stay. */
+function getMockUsageEvents(time: Date): LivePulseUsageEvent[] {
+  if (!MOCK_USAGE_EVENTS) {
+    return [];
+  }
+  mockRefreshCount += 1;
+  mockUsageEvents = [...LivePulseHelper.buildMockUsageEvents(time, MOCK_EVENTS_PER_REFRESH, mockRefreshCount), ...mockUsageEvents].slice(0, LivePulseHelper.FEED_LIMIT);
+  return mockUsageEvents;
+}
+
 async function loadFeed(time: Date) {
-  const [foodFeedbacks, canteenVisits, newProfiles, usageEvents] = await Promise.all([getItemsOrEmpty<LivePulseFoodFeedback>(LivePulseHelper.FOOD_FEEDBACKS_ENDPOINT, LivePulseHelper.buildFoodFeedbacksQuery(time)), getItemsOrEmpty<LivePulseCanteenVisit>(LivePulseHelper.CANTEEN_VISITS_ENDPOINT, LivePulseHelper.buildCanteenVisitsQuery(time)), getItemsOrEmpty<LivePulseProfile>(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildNewProfilesQuery(time)), getItemsOrEmpty<LivePulseUsageEvent>(LivePulseHelper.APP_USAGE_EVENTS_ENDPOINT, LivePulseHelper.buildUsageEventsQuery(time))]);
+  const hidden = hiddenFeedFilterKeys.value;
+  const [foodFeedbacks, canteenVisits, newProfiles, loadedUsageEvents] = await Promise.all([loadFeedSource<LivePulseFoodFeedback>([LivePulseFeedType.RATING, LivePulseFeedType.COMMENT], LivePulseHelper.FOOD_FEEDBACKS_ENDPOINT, LivePulseHelper.buildFoodFeedbacksQuery(time)), loadFeedSource<LivePulseCanteenVisit>([LivePulseFeedType.CANTEEN_VISIT], LivePulseHelper.CANTEEN_VISITS_ENDPOINT, LivePulseHelper.buildCanteenVisitsQuery(time)), loadFeedSource<LivePulseProfile>([LivePulseFeedType.NEW_PROFILE], LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildNewProfilesQuery(time)), loadFeedSource<LivePulseUsageEvent>(LivePulseHelper.getUsageEventFeedFilterKeys(), LivePulseHelper.APP_USAGE_EVENTS_ENDPOINT, LivePulseHelper.buildUsageEventsQuery(time, hidden))]);
+  const usageEvents = [...getMockUsageEvents(time), ...loadedUsageEvents];
   const foodsQuery = LivePulseHelper.buildFoodsQuery(LivePulseHelper.getUsageEventFoodIds(usageEvents));
   const foods = foodsQuery ? await getItemsOrEmpty<LivePulseFood>(LivePulseHelper.FOODS_ENDPOINT, foodsQuery) : [];
-  const next = LivePulseHelper.buildFeed({ foodFeedbacks, canteenVisits, newProfiles, usageEvents, foods });
+  const next = LivePulseHelper.buildFeed({ foodFeedbacks, canteenVisits, newProfiles, usageEvents, foods }, hidden);
   await loadExistingFoodoffers([...next, ...feed.value, ...pendingFeed]);
-  // On the first load everything is there at once – only what arrives while the page is open slides in.
-  if (feed.value.length === 0 && pendingFeed.length === 0) {
+  // On the first load (and after a filter change) everything is there at once – only what arrives while the page is open slides in.
+  if (replaceFeedOnNextLoad || (feed.value.length === 0 && pendingFeed.length === 0)) {
+    replaceFeedOnNextLoad = false;
     feed.value = next;
     return;
   }
@@ -104,18 +174,48 @@ async function loadExistingFoodoffers(items: LivePulseFeedItem[]) {
 }
 
 /** Slides the oldest queued entry in on top and plans the next one. */
-function revealNext() {
+async function revealNext() {
   revealTimer = undefined;
   const item = pendingFeed.shift();
   if (!item) {
     return;
   }
+  // Someone scrolled down to read: the entries they look at must not move under them.
+  const readerAtTop = (feedScroll.value?.scrollTop ?? 0) <= 2;
   // A changed rating replaces its old entry instead of standing in the ticker twice.
   feed.value = [item, ...feed.value.filter(entry => entry.sourceKey !== item.sourceKey)].slice(0, LivePulseHelper.FEED_LIMIT);
   freshKeys.value = new Set([...freshKeys.value, item.key].filter(key => feed.value.some(entry => entry.key === key)));
   if (pendingFeed.length > 0) {
     revealTimer = setTimeout(revealNext, LivePulseHelper.getRevealDelayMs(pendingFeed.length));
   }
+  await nextTick();
+  slideNewEntryIn(readerAtTop);
+}
+
+/**
+ * The new entry is already at the top of the list. The whole list is shifted up by its height, so
+ * the entry sits above the visible part of the ticker, and glides back down – one movement of the
+ * list instead of entries popping up. While the reader is scrolled down the scroll position grows by
+ * the same height instead, nothing they read moves.
+ */
+function slideNewEntryIn(readerAtTop: boolean) {
+  const list = feedList.value;
+  const first = list?.firstElementChild as HTMLElement | null | undefined;
+  if (!list || !first) {
+    return;
+  }
+  const gap = Number.parseFloat(getComputedStyle(list).rowGap) || 0;
+  const shift = first.offsetHeight + gap;
+  if (!readerAtTop) {
+    if (feedScroll.value) {
+      feedScroll.value.scrollTop += shift;
+    }
+    return;
+  }
+  if (typeof list.animate !== 'function' || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+  list.animate([{ transform: `translateY(${-shift}px)` }, { transform: 'translateY(0)' }], { duration: FEED_SLIDE_MS, easing: FEED_SLIDE_EASING });
 }
 
 async function loadHourly(time: Date) {
@@ -135,6 +235,7 @@ async function loadHourly(time: Date) {
 
 async function reload() {
   if (loading.value) {
+    reloadRequested = true;
     return;
   }
   loading.value = true;
@@ -150,10 +251,19 @@ async function reload() {
     loadError.value = true;
   } finally {
     loading.value = false;
+    if (reloadRequested) {
+      reloadRequested = false;
+      void reload();
+    }
   }
 }
 
 const apiRoot = String(api.defaults?.baseURL ?? '/');
+
+/** Default avatar (`LivePulseHelper.showsSilhouette`) in the project color, drawn by `profile-avatar-endpoint`. */
+function silhouetteUrl(size: number): string {
+  return LivePulseHelper.getSilhouetteAvatarUrl(size, serverStore.info?.project?.project_color, apiRoot);
+}
 
 /** Profiles whose avatar the endpoint could not draw (e.g. an unknown style) – they get initials instead. */
 const failedAvatars = ref<Set<string>>(new Set());
@@ -387,7 +497,8 @@ onBeforeUnmount(() => {
             <div v-else class="people">
               <router-link v-for="profile in profiles" :key="profile.id" class="person" :to="LivePulseHelper.getProfileRoute(profile)" :title="translate(LivePulseHelper.getPresenceLabelKey(presenceOf(profile)))">
                 <div class="avatar" :class="`presence-${presenceOf(profile)}`">
-                  <img v-if="avatarUrl(profile, LivePulseHelper.AVATAR_SIZE)" class="avatar-image" :src="avatarUrl(profile, LivePulseHelper.AVATAR_SIZE)" alt="" loading="lazy" @error="onAvatarError(profile)" />
+                  <img v-if="LivePulseHelper.showsSilhouette(profile)" class="avatar-image silhouette" :src="silhouetteUrl(LivePulseHelper.AVATAR_SIZE)" alt="" loading="lazy" />
+                  <img v-else-if="avatarUrl(profile, LivePulseHelper.AVATAR_SIZE)" class="avatar-image" :src="avatarUrl(profile, LivePulseHelper.AVATAR_SIZE)" alt="" loading="lazy" @error="onAvatarError(profile)" />
                   <div v-else class="avatar-image initials">{{ LivePulseHelper.getInitials(profile.nickname) }}</div>
                 </div>
                 <span class="person-name">{{ getNickname(profile) }}</span>
@@ -418,12 +529,28 @@ onBeforeUnmount(() => {
         </div>
 
         <section class="panel">
-          <h2 class="panel-title type-label">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed) }}</h2>
-          <div class="feed-scroll">
-            <div v-if="feed.length === 0 && !loading" class="empty type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_nothing_happened) }}</div>
-            <transition-group v-else tag="ul" name="feed" class="feed">
+          <div class="panel-header">
+            <h2 class="panel-title type-label">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed) }}</h2>
+            <v-menu show-arrow placement="bottom-end" :close-on-content-click="false">
+              <template #activator="{ toggle }">
+                <v-button v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter)" class="feed-filter-button" :class="{ active: feedFilterActive }" x-small icon :secondary="!feedFilterActive" @click="toggle">
+                  <v-icon name="filter_list" small />
+                </v-button>
+              </template>
+              <div class="feed-filter">
+                <v-checkbox-tree v-model="shownFeedFilterKeys" :choices="feedFilterChoices" value-combining="leaf" />
+              </div>
+            </v-menu>
+          </div>
+          <div ref="feedScroll" class="feed-scroll">
+            <div v-if="feedFilterHidesAll" class="empty type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filtered_out) }}</div>
+            <div v-else-if="feed.length === 0 && !loading" class="empty type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_nothing_happened) }}</div>
+            <ul v-else ref="feedList" class="feed">
               <li v-for="item in feed" :key="item.key" class="feed-item" :class="{ fresh: freshKeys.has(item.key) }">
-                <router-link v-if="avatarUrl(item.profile, LivePulseHelper.FEED_AVATAR_SIZE)" class="feed-avatar" :to="LivePulseHelper.getProfileRoute(item.profile)">
+                <router-link v-if="LivePulseHelper.showsSilhouette(item.profile)" class="feed-avatar" :to="LivePulseHelper.getProfileRoute(item.profile)">
+                  <img class="avatar-image silhouette" :src="silhouetteUrl(LivePulseHelper.FEED_AVATAR_SIZE)" alt="" loading="lazy" />
+                </router-link>
+                <router-link v-else-if="avatarUrl(item.profile, LivePulseHelper.FEED_AVATAR_SIZE)" class="feed-avatar" :to="LivePulseHelper.getProfileRoute(item.profile)">
                   <img class="avatar-image" :src="avatarUrl(item.profile, LivePulseHelper.FEED_AVATAR_SIZE)" alt="" loading="lazy" @error="onAvatarError(item.profile)" />
                 </router-link>
                 <component :is="foodRoute(item) ? 'router-link' : 'div'" v-else-if="foodImageUrl(item)" class="feed-avatar" :to="foodRoute(item)">
@@ -434,10 +561,17 @@ onBeforeUnmount(() => {
                   <div class="feed-line">
                     <strong v-if="item.type === LivePulseFeedType.USAGE_EVENT">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_anonymous_session) }}</strong>
                     <strong v-else-if="ANONYMOUS_FEED_TYPES.has(item.type)">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_someone) }}</strong>
-                    <router-link v-else-if="LivePulseHelper.getProfileRoute(item.profile)" class="feed-link" :to="LivePulseHelper.getProfileRoute(item.profile)"><strong>{{ getNickname(item.profile) }}</strong></router-link>
+                    <router-link v-else-if="LivePulseHelper.getProfileRoute(item.profile)" class="feed-link" :to="LivePulseHelper.getProfileRoute(item.profile)"
+                      ><strong>{{ getNickname(item.profile) }}</strong></router-link
+                    >
                     <strong v-else>{{ getNickname(item.profile) }}</strong>
                     <!-- The line break after the name is dropped by the template compiler, so the space is explicit. -->
-                    {{ ' ' }}<template v-if="feedTextParts(item).found">{{ feedTextParts(item).before }}<router-link v-if="linkRoute(item)" class="feed-link food-link" :to="linkRoute(item)">{{ linkName(item) }}</router-link><template v-else>{{ linkName(item) }}</template>{{ feedTextParts(item).after }}</template><template v-else>{{ feedTextParts(item).before }}</template>
+                    {{ ' '
+                    }}<template v-if="feedTextParts(item).found"
+                      >{{ feedTextParts(item).before }}<router-link v-if="linkRoute(item)" class="feed-link food-link" :to="linkRoute(item)">{{ linkName(item) }}</router-link
+                      ><template v-else>{{ linkName(item) }}</template
+                      >{{ feedTextParts(item).after }}</template
+                    ><template v-else>{{ feedTextParts(item).before }}</template>
                     <food-feedback-rating v-if="item.type === LivePulseFeedType.RATING || item.type === LivePulseFeedType.COMMENT" :rating="item.rating" />
                   </div>
                   <q v-if="item.comment" class="feed-comment">{{ item.comment }}</q>
@@ -449,7 +583,7 @@ onBeforeUnmount(() => {
                   </div>
                 </div>
               </li>
-            </transition-group>
+            </ul>
           </div>
         </section>
       </div>
@@ -557,6 +691,25 @@ onBeforeUnmount(() => {
   margin: 0;
 }
 
+.panel-header {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.feed-filter-button.active {
+  --v-button-background-color: var(--theme--primary);
+  --v-button-color: var(--foreground-inverted, #fff);
+}
+
+.feed-filter {
+  min-inline-size: 18rem;
+  max-block-size: 60vh;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
 .people {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
@@ -604,6 +757,10 @@ onBeforeUnmount(() => {
   border-radius: 50%;
 }
 
+.avatar-image.silhouette {
+  background: color-mix(in srgb, var(--theme--primary) 14%, var(--theme--background, #fff));
+}
+
 .initials {
   color: var(--theme--foreground-subdued);
   font-weight: 600;
@@ -642,7 +799,7 @@ onBeforeUnmount(() => {
   background: var(--live-pulse-recent);
 }
 
-/* Fixed height, the ticker scrolls inside – the page below does not move when entries arrive. */
+/* Fixed height, the ticker scrolls inside – the page below does not move when entries arrive. It also clips the new entry while it waits above the visible part. */
 .feed-scroll {
   block-size: 32rem;
   max-block-size: 70vh;
@@ -670,11 +827,7 @@ onBeforeUnmount(() => {
   border-radius: var(--theme--border-radius);
 }
 
-/*
- * The highlight runs on a pseudo element, not on the entry: Vue's transition-group decides from
- * the first entry whether moves are animated, and an animation longer than the move transition
- * on it makes Vue skip the move – the older entries then jump down instead of gliding.
- */
+/* The highlight runs on a pseudo element, so it stays behind the text of the entry. */
 .feed-item.fresh::before {
   position: absolute;
   inset: 0;
@@ -692,29 +845,6 @@ onBeforeUnmount(() => {
   100% {
     background: transparent;
   }
-}
-
-/* A new entry slides in from above, the others glide down to make room, the last one fades out. */
-.feed-move,
-.feed-enter-active {
-  transition:
-    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.6s ease-out;
-}
-
-.feed-leave-active {
-  position: absolute;
-  inset-inline: 0;
-  transition: opacity 0.4s ease-in;
-}
-
-.feed-enter-from {
-  transform: translateY(-100%);
-  opacity: 0;
-}
-
-.feed-leave-to {
-  opacity: 0;
 }
 
 .feed-avatar {
@@ -826,12 +956,6 @@ onBeforeUnmount(() => {
   .pulse,
   .feed-item.fresh::before {
     animation: none;
-  }
-
-  .feed-move,
-  .feed-enter-active,
-  .feed-leave-active {
-    transition: none;
   }
 }
 </style>

@@ -110,6 +110,19 @@ export type LivePulseFeedItem = {
   markingName?: string;
 };
 
+/** One entry of the ticker filter (Directus `v-checkbox-tree` choices): a group with children, or a kind of entry. */
+export type LivePulseFeedFilterChoice = {
+  text: string;
+  value: string;
+  children?: LivePulseFeedFilterChoice[];
+};
+
+type LivePulseFeedFilterNode = {
+  labelKey: BackendTranslationKeys;
+  value: string;
+  children?: LivePulseFeedFilterNode[];
+};
+
 export type LivePulseQuery = Pick<DirectusRestQuery, 'fields' | 'filter' | 'sort' | 'limit' | 'aggregate'>;
 
 export class LivePulseHelper {
@@ -161,6 +174,52 @@ export class LivePulseHelper {
     [AppUsageEventNames.DATA_ACCESS_SCREEN_OPENED]: BackendTranslationKeys.rocket_meals_module_live_pulse_screen_data_access,
     [AppUsageEventNames.EATING_HABITS_SCREEN_OPENED]: BackendTranslationKeys.rocket_meals_module_live_pulse_screen_eating_habits,
   };
+
+  /** Usage events the ticker filter can switch off one by one, by the kind of entry they become. */
+  private static readonly USAGE_EVENT_FILTER_KEYS: Readonly<Record<string, string>> = {
+    [LivePulseFeedType.FOOD_OPENED]: BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED,
+    [LivePulseFeedType.BUILDING_OPENED]: AppUsageEventNames.BUILDING_DETAILS_OPENED,
+    [LivePulseFeedType.MARKING_OPENED]: AppUsageEventNames.MARKING_DETAILS_OPENED,
+  };
+
+  /**
+   * The ticker filter: "Alle" on top, below it every kind of entry. Screens are filtered one by one
+   * (their event name is the key), every other entry by its `LivePulseFeedType`. Groups only tick
+   * or untick their children, they are never stored.
+   */
+  private static readonly FEED_FILTER_TREE: LivePulseFeedFilterNode[] = [
+    {
+      labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_all,
+      value: 'group_all',
+      children: [
+        {
+          labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_feedback,
+          value: 'group_feedback',
+          children: [
+            { labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_ratings, value: LivePulseFeedType.RATING },
+            { labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_comments, value: LivePulseFeedType.COMMENT },
+          ],
+        },
+        { labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_canteen_visits, value: LivePulseFeedType.CANTEEN_VISIT },
+        { labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_new_profiles, value: LivePulseFeedType.NEW_PROFILE },
+        {
+          labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_app_usage,
+          value: 'group_app_usage',
+          children: [
+            { labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_foods_opened, value: LivePulseFeedType.FOOD_OPENED },
+            { labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_buildings_opened, value: LivePulseFeedType.BUILDING_OPENED },
+            { labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_markings_opened, value: LivePulseFeedType.MARKING_OPENED },
+            {
+              labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_screens,
+              value: 'group_screens',
+              children: Object.entries(LivePulseHelper.SCREEN_LABEL_KEYS).map(([eventName, labelKey]) => ({ labelKey, value: eventName })),
+            },
+            { labelKey: BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_other_events, value: LivePulseFeedType.USAGE_EVENT },
+          ],
+        },
+      ],
+    },
+  ];
 
   private static readonly PROFILE_FIELDS = ['id', 'nickname', 'avatar', 'date_updated', 'date_created'];
 
@@ -233,6 +292,14 @@ export class LivePulseHelper {
   }
 
   /**
+   * Whether the profile is shown as a silhouette (in the project color) instead of its avatar or
+   * initials: it has neither an avatar nor a nickname of its own, so there is nothing personal to show.
+   */
+  static showsSilhouette(profile: LivePulseProfile | undefined): boolean {
+    return !!profile && !LivePulseHelper.hasOwnAvatar(profile) && !LivePulseHelper.hasOwnNickname(profile);
+  }
+
+  /**
    * Order of the wall: profiles active right now before the ones that were active a few minutes ago (see `getPresence`).
    * Within each of these, profiles with an own avatar first, among them the ones with an own nickname first,
    * then the ones with only an own nickname, then the rest – each group most recently active first.
@@ -302,13 +369,94 @@ export class LivePulseHelper {
     };
   }
 
-  static buildUsageEventsQuery(now: Date): LivePulseQuery {
+  /**
+   * Usage events of today. Kinds the ticker filter hides are left out already in the query, so the
+   * `FEED_SOURCE_LIMIT` entries are all ones that are shown.
+   */
+  static buildUsageEventsQuery(now: Date, hiddenFilterKeys: ReadonlySet<string> = new Set()): LivePulseQuery {
+    const conditions: DirectusFilter[] = [LivePulseHelper.buildCreatedSinceFilter(LivePulseHelper.getStartOfDay(now))];
+    const eventNameFilter = LivePulseHelper.buildUsageEventNameFilter(hiddenFilterKeys);
+    if (eventNameFilter) {
+      conditions.push({ event_name: eventNameFilter });
+    }
     return {
       fields: ['id', 'event_type', 'event_name', 'screen_name', 'platform', 'payload', 'date_created'].join(','),
-      filter: JSON.stringify(LivePulseHelper.buildCreatedSinceFilter(LivePulseHelper.getStartOfDay(now))),
+      filter: JSON.stringify(conditions.length === 1 ? conditions[0] : { _and: conditions }),
       sort: '-date_created',
       limit: LivePulseHelper.FEED_SOURCE_LIMIT,
     };
+  }
+
+  /**
+   * The event names the ticker filter lets through: with "other events" shown everything except the
+   * hidden known events (`_nin`), else only the shown known events (`_in`). `undefined` when nothing is hidden.
+   */
+  private static buildUsageEventNameFilter(hiddenFilterKeys: ReadonlySet<string>): DirectusFilter | undefined {
+    const known = LivePulseHelper.getKnownUsageEventNames();
+    const hidden = known.filter(({ filterKey }) => hiddenFilterKeys.has(filterKey)).map(({ eventName }) => eventName);
+    if (!hiddenFilterKeys.has(LivePulseFeedType.USAGE_EVENT)) {
+      return hidden.length > 0 ? { _nin: hidden } : undefined;
+    }
+    return { _in: known.filter(({ filterKey }) => !hiddenFilterKeys.has(filterKey)).map(({ eventName }) => eventName) };
+  }
+
+  /** Every usage event the ticker knows by name, with the filter key it is shown under. */
+  private static getKnownUsageEventNames(): { eventName: string; filterKey: string }[] {
+    return [...Object.entries(LivePulseHelper.USAGE_EVENT_FILTER_KEYS).map(([filterKey, eventName]) => ({ eventName, filterKey })), ...Object.keys(LivePulseHelper.SCREEN_LABEL_KEYS).map(eventName => ({ eventName, filterKey: eventName }))];
+  }
+
+  /** The ticker filter as choices for `v-checkbox-tree`, translated. */
+  static getFeedFilterChoices(translate: (key: BackendTranslationKeys) => string): LivePulseFeedFilterChoice[] {
+    const toChoice = (node: LivePulseFeedFilterNode): LivePulseFeedFilterChoice => ({ text: translate(node.labelKey), value: node.value, ...(node.children ? { children: node.children.map(toChoice) } : {}) });
+    return LivePulseHelper.FEED_FILTER_TREE.map(toChoice);
+  }
+
+  /** Every kind of entry the filter knows (the leaves of the tree). */
+  static getFeedFilterKeys(): string[] {
+    const leaves = (nodes: LivePulseFeedFilterNode[]): string[] => nodes.flatMap(node => (node.children ? leaves(node.children) : [node.value]));
+    return leaves(LivePulseHelper.FEED_FILTER_TREE);
+  }
+
+  /** The filter key of an entry: the event name for an opened screen, else its type. */
+  static getFeedFilterKey(item: LivePulseFeedItem): string {
+    return item.type === LivePulseFeedType.SCREEN_OPENED && item.eventName ? item.eventName : item.type;
+  }
+
+  static isFeedItemShown(item: LivePulseFeedItem, hiddenFilterKeys: ReadonlySet<string>): boolean {
+    return !hiddenFilterKeys.has(LivePulseHelper.getFeedFilterKey(item));
+  }
+
+  /** Whether any of `filterKeys` is shown – a source whose kinds are all hidden is not loaded at all. */
+  static isAnyFeedFilterKeyShown(filterKeys: readonly string[], hiddenFilterKeys: ReadonlySet<string>): boolean {
+    return filterKeys.some(key => !hiddenFilterKeys.has(key));
+  }
+
+  /** The filter keys of the usage events: everything below "App-Nutzung". */
+  static getUsageEventFeedFilterKeys(): string[] {
+    return [...LivePulseHelper.getKnownUsageEventNames().map(({ filterKey }) => filterKey), LivePulseFeedType.USAGE_EVENT];
+  }
+
+  /**
+   * The ticked kinds for the tree, from the stored hidden ones. The hidden ones are stored (not the
+   * shown ones), so a kind added later is shown right away.
+   */
+  static getShownFeedFilterKeys(hiddenFilterKeys: ReadonlySet<string>): string[] {
+    return LivePulseHelper.getFeedFilterKeys().filter(key => !hiddenFilterKeys.has(key));
+  }
+
+  /** The hidden kinds from what the tree has ticked. Group values in the selection are ignored. */
+  static getHiddenFeedFilterKeys(shownFilterKeys: readonly unknown[] | null | undefined): string[] {
+    const shown = new Set(shownFilterKeys ?? []);
+    return LivePulseHelper.getFeedFilterKeys().filter(key => !shown.has(key));
+  }
+
+  /** Stored hidden kinds, reduced to the ones that still exist. Anything unreadable hides nothing. */
+  static readHiddenFeedFilterKeys(value: unknown): Set<string> {
+    if (!Array.isArray(value)) {
+      return new Set();
+    }
+    const known = new Set(LivePulseHelper.getFeedFilterKeys());
+    return new Set(value.filter((key): key is string => typeof key === 'string' && known.has(key)));
   }
 
   /** The food ids that the usage events carry in their payload (`food_details_opened`). */
@@ -487,11 +635,11 @@ export class LivePulseHelper {
     return relation && typeof relation === 'object' ? relation.alias || undefined : undefined;
   }
 
-  /** Merges all ticker sources into one list, newest first. */
-  static buildFeed(sources: { foodFeedbacks?: LivePulseFoodFeedback[]; canteenVisits?: LivePulseCanteenVisit[]; newProfiles?: LivePulseProfile[]; usageEvents?: LivePulseUsageEvent[]; foods?: LivePulseFood[] }): LivePulseFeedItem[] {
+  /** Merges all ticker sources into one list, newest first, without the kinds the filter hides. */
+  static buildFeed(sources: { foodFeedbacks?: LivePulseFoodFeedback[]; canteenVisits?: LivePulseCanteenVisit[]; newProfiles?: LivePulseProfile[]; usageEvents?: LivePulseUsageEvent[]; foods?: LivePulseFood[] }, hiddenFilterKeys: ReadonlySet<string> = new Set()): LivePulseFeedItem[] {
     const foodsById = new Map((sources.foods ?? []).map(food => [String(food.id), food]));
     const candidates: (LivePulseFeedItem | undefined)[] = [...(sources.foodFeedbacks ?? []).map(feedback => LivePulseHelper.buildFoodFeedbackFeedItem(feedback)), ...(sources.canteenVisits ?? []).map(visit => LivePulseHelper.buildCanteenVisitFeedItem(visit)), ...(sources.newProfiles ?? []).map(profile => LivePulseHelper.buildNewProfileFeedItem(profile)), ...(sources.usageEvents ?? []).map(event => LivePulseHelper.buildUsageEventFeedItem(event, foodsById))];
-    const items = candidates.filter((item): item is LivePulseFeedItem => item !== undefined);
+    const items = candidates.filter((item): item is LivePulseFeedItem => item !== undefined && LivePulseHelper.isFeedItemShown(item, hiddenFilterKeys));
 
     items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return items.slice(0, LivePulseHelper.FEED_LIMIT);
@@ -623,6 +771,44 @@ export class LivePulseHelper {
     const root = apiRoot.endsWith('/') ? apiRoot : `${apiRoot}/`;
     const version = LivePulseHelper.hashString(typeof profile.avatar === 'string' ? profile.avatar : JSON.stringify(profile.avatar));
     return `${root}${LivePulseHelper.AVATAR_ENDPOINT}/${encodeURIComponent(profile.id)}?size=${size}&v=${version}`;
+  }
+
+  /** Screens, buildings and markings the mock events of `buildMockUsageEvents` pick from. */
+  private static readonly MOCK_BUILDINGS = ['Mensa am Campus', 'Bibliothek', 'Hörsaalgebäude 2', 'Wohnheim Nord'];
+  private static readonly MOCK_MARKINGS = ['Vegan', 'Vegetarisch', 'Glutenfrei', 'Laktosefrei'];
+
+  /**
+   * Made-up usage events for trying the ticker without real traffic (switch `MOCK_USAGE_EVENTS` on the
+   * page). Never written anywhere. `seed` makes ids unique across calls.
+   */
+  static buildMockUsageEvents(now: Date, count: number, seed: number): LivePulseUsageEvent[] {
+    const screens = Object.keys(LivePulseHelper.SCREEN_LABEL_KEYS);
+    const pick = <T>(values: readonly T[], index: number): T => values[index % values.length]!;
+    return Array.from({ length: count }, (_, index) => {
+      const number = seed * count + index;
+      const id = `mock-${seed}-${index}`;
+      const date_created = new Date(now.getTime() - (count - index) * 1000).toISOString();
+      const platform = pick(['ios', 'android', 'web'], number);
+      switch (number % 3) {
+        case 0:
+          return { id, date_created, platform, event_name: AppUsageEventNames.BUILDING_DETAILS_OPENED, payload: { building_id: `mock-building-${number % 4}`, building_name: pick(LivePulseHelper.MOCK_BUILDINGS, number) } };
+        case 1:
+          return { id, date_created, platform, event_name: AppUsageEventNames.MARKING_DETAILS_OPENED, payload: { marking_id: `mock-marking-${number % 4}`, marking_name: pick(LivePulseHelper.MOCK_MARKINGS, number) } };
+        default:
+          return { id, date_created, platform, event_name: pick(screens, number), screen_name: 'mock' };
+      }
+    });
+  }
+
+  /**
+   * URL of the silhouette drawn by `profile-avatar-endpoint` for profiles without own avatar and
+   * nickname (see `showsSilhouette`), in `color` (the project color, hex with or without `#`).
+   */
+  static getSilhouetteAvatarUrl(size: number, color: string | null | undefined, apiRoot: string = '/'): string {
+    const root = apiRoot.endsWith('/') ? apiRoot : `${apiRoot}/`;
+    const hex = (color ?? '').trim();
+    const colorParam = hex ? `&color=${encodeURIComponent(hex.startsWith('#') ? hex.slice(1) : hex)}` : '';
+    return `${root}${LivePulseHelper.AVATAR_ENDPOINT}/silhouette?size=${size}${colorParam}`;
   }
 
   /** Short, stable hash (djb2) – only used to version URLs. */

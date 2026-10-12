@@ -145,12 +145,7 @@ describe('LivePulseHelper', () => {
 
   describe('food images', () => {
     it('collects the food ids of the usage events and loads them with their image', () => {
-      const ids = LivePulseHelper.getUsageEventFoodIds([
-        { id: 'e1', payload: { food_id: 'food-1' } },
-        { id: 'e2', payload: { food_id: 'food-1' } },
-        { id: 'e3', payload: { food_id: null } },
-        { id: 'e4' },
-      ]);
+      const ids = LivePulseHelper.getUsageEventFoodIds([{ id: 'e1', payload: { food_id: 'food-1' } }, { id: 'e2', payload: { food_id: 'food-1' } }, { id: 'e3', payload: { food_id: null } }, { id: 'e4' }]);
       expect(ids).toEqual(['food-1']);
       const query = LivePulseHelper.buildFoodsQuery(ids)!;
       expect(JSON.parse(query.filter!)).toEqual({ id: { _in: ['food-1'] } });
@@ -337,6 +332,87 @@ describe('LivePulseHelper', () => {
     it('splits a translated text around the food name', () => {
       expect(LivePulseHelper.splitAtMarker('hat \uE000 bewertet', '\uE000')).toEqual({ before: 'hat ', after: ' bewertet', found: true });
       expect(LivePulseHelper.splitAtMarker('plant einen Mensabesuch', '\uE000')).toEqual({ before: 'plant einen Mensabesuch', after: '', found: false });
+    });
+  });
+
+  describe('feed filter', () => {
+    const feed = () =>
+      LivePulseHelper.buildFeed({
+        foodFeedbacks: [{ id: 'f1', rating: 4, date_updated: minutesAgo(1) }],
+        newProfiles: [{ id: 'p1', date_created: minutesAgo(2) }],
+        usageEvents: [
+          { id: 'e1', event_name: 'map_screen_opened', date_created: minutesAgo(3) },
+          { id: 'e2', event_name: 'news_screen_opened', date_created: minutesAgo(4) },
+          { id: 'e3', event_name: 'building_details_opened', date_created: minutesAgo(5), payload: { building_id: 'b1' } },
+        ],
+      });
+
+    it('offers every kind of entry once below "Alle", screens one by one', () => {
+      const keys = LivePulseHelper.getFeedFilterKeys();
+      expect(new Set(keys).size).toBe(keys.length);
+      expect(keys).toEqual(expect.arrayContaining([LivePulseFeedType.RATING, LivePulseFeedType.COMMENT, LivePulseFeedType.CANTEEN_VISIT, LivePulseFeedType.NEW_PROFILE, LivePulseFeedType.FOOD_OPENED, LivePulseFeedType.BUILDING_OPENED, LivePulseFeedType.MARKING_OPENED, LivePulseFeedType.USAGE_EVENT, 'map_screen_opened', 'eating_habits_screen_opened']));
+      expect(keys).not.toContain(LivePulseFeedType.SCREEN_OPENED);
+      const choices = LivePulseHelper.getFeedFilterChoices(key => `t:${key}`);
+      expect(choices).toHaveLength(1);
+      expect(choices[0]!.text).toBe(`t:${BackendTranslationKeys.rocket_meals_module_live_pulse_feed_filter_all}`);
+    });
+
+    it('leaves out the hidden kinds, a single screen included', () => {
+      expect(feed().map(item => item.key)).toEqual(['feedback-f1-' + minutesAgo(1), 'profile-p1', 'event-e1', 'event-e2', 'event-e3']);
+      const hidden = new Set<string>([LivePulseFeedType.NEW_PROFILE, 'news_screen_opened']);
+      const filtered = LivePulseHelper.buildFeed(
+        {
+          newProfiles: [{ id: 'p1', date_created: minutesAgo(2) }],
+          usageEvents: [
+            { id: 'e1', event_name: 'map_screen_opened', date_created: minutesAgo(3) },
+            { id: 'e2', event_name: 'news_screen_opened', date_created: minutesAgo(4) },
+          ],
+        },
+        hidden
+      );
+      expect(filtered.map(item => item.key)).toEqual(['event-e1']);
+    });
+
+    it('turns the ticked tree into stored hidden kinds and back, ignoring groups and unknown keys', () => {
+      const all = LivePulseHelper.getFeedFilterKeys();
+      const shown = all.filter(key => key !== LivePulseFeedType.RATING);
+      const hidden = LivePulseHelper.getHiddenFeedFilterKeys([...shown, 'group_all']);
+      expect(hidden).toEqual([LivePulseFeedType.RATING]);
+      expect(LivePulseHelper.getShownFeedFilterKeys(new Set(hidden))).toEqual(shown);
+      expect([...LivePulseHelper.readHiddenFeedFilterKeys([LivePulseFeedType.RATING, 'gone', 3])]).toEqual([LivePulseFeedType.RATING]);
+      expect(LivePulseHelper.readHiddenFeedFilterKeys(undefined).size).toBe(0);
+    });
+
+    it('filters the usage events already in the query', () => {
+      const filterOf = (hidden: string[]) => JSON.parse(LivePulseHelper.buildUsageEventsQuery(NOW, new Set(hidden)).filter!);
+      expect(filterOf([])).toEqual({ date_created: { _gte: LivePulseHelper.getStartOfDay(NOW).toISOString() } });
+      expect(filterOf(['map_screen_opened', LivePulseFeedType.BUILDING_OPENED])._and[1]).toEqual({ event_name: { _nin: ['building_details_opened', 'map_screen_opened'] } });
+      const onlyKnown = filterOf([LivePulseFeedType.USAGE_EVENT, LivePulseFeedType.FOOD_OPENED])._and[1].event_name._in as string[];
+      expect(onlyKnown).toContain('map_screen_opened');
+      expect(onlyKnown).not.toContain('food_details_opened');
+      expect(LivePulseHelper.isAnyFeedFilterKeyShown([LivePulseFeedType.RATING, LivePulseFeedType.COMMENT], new Set([LivePulseFeedType.RATING]))).toBe(true);
+      expect(LivePulseHelper.isAnyFeedFilterKeyShown([LivePulseFeedType.RATING], new Set([LivePulseFeedType.RATING]))).toBe(false);
+    });
+  });
+
+  describe('silhouette and mock events', () => {
+    it('shows a silhouette only without own avatar and own nickname', () => {
+      expect(LivePulseHelper.showsSilhouette({ id: 'p', nickname: null, avatar: null })).toBe(true);
+      expect(LivePulseHelper.showsSilhouette({ id: 'p', nickname: 'Ada', avatar: null })).toBe(false);
+      expect(LivePulseHelper.showsSilhouette({ id: 'p', nickname: null, avatar: { style: 'adventurer', seed: 'x' } })).toBe(false);
+      expect(LivePulseHelper.showsSilhouette(undefined)).toBe(false);
+    });
+
+    it('links the silhouette of the avatar endpoint in the project color', () => {
+      expect(LivePulseHelper.getSilhouetteAvatarUrl(64, '#6644FF', '/api')).toBe('/api/profile-avatar/silhouette?size=64&color=6644FF');
+      expect(LivePulseHelper.getSilhouetteAvatarUrl(36, null)).toBe('/profile-avatar/silhouette?size=36');
+    });
+
+    it('builds unique mock events that become ticker entries', () => {
+      const events = [...LivePulseHelper.buildMockUsageEvents(NOW, 4, 1), ...LivePulseHelper.buildMockUsageEvents(NOW, 4, 2)];
+      expect(new Set(events.map(event => event.id)).size).toBe(8);
+      const types = new Set(LivePulseHelper.buildFeed({ usageEvents: events }).map(item => item.type));
+      expect(types).toEqual(new Set([LivePulseFeedType.BUILDING_OPENED, LivePulseFeedType.MARKING_OPENED, LivePulseFeedType.SCREEN_OPENED]));
     });
   });
 });

@@ -10,12 +10,17 @@
  * not only with the page "Live-Puls" that shows the avatars. As `<img>` the browser also caches them.
  *
  * Read with the permissions of the requester: whoever may not read `profiles.avatar` gets an error.
+ *
+ * `GET /profile-avatar/silhouette?size=64&color=6644ff` draws the default avatar for profiles without
+ * an avatar and nickname of their own (`getSilhouetteAvatarConfig`): the same avatar style, all in one
+ * color. It reads nothing from the database, any invalid color gives black.
  */
 
 import { defineEndpoint } from '@directus/extensions-sdk';
 import { Accountability } from '@directus/types';
 import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
 import { createAvatarSvg, parseAvatarConfig } from 'repo-depkit-common-ui/src/components/MyAvatar/AvatarSvg';
+import { getSilhouetteAvatarConfig } from 'repo-depkit-common-ui/src/components/MyAvatar/SilhouetteAvatar';
 import { ApiContext } from '../helpers/ApiContext';
 
 const ENDPOINT_ID = 'profile-avatar';
@@ -26,6 +31,8 @@ const MAX_SIZE = 256;
 
 /** Avatars change rarely and the URL of the module page carries a version – a few minutes are fine. */
 const CACHE_CONTROL = 'private, max-age=600';
+/** The silhouette only depends on its URL. */
+const SILHOUETTE_CACHE_CONTROL = 'public, max-age=86400';
 
 /**
  * DiceBear escapes option values, so no stored text ends up as markup. Opened directly in the
@@ -41,9 +48,25 @@ function parseSize(value: unknown): number {
   return Math.min(MAX_SIZE, Math.max(MIN_SIZE, size));
 }
 
+function sendSvg(res: any, svg: string, cacheControl: string) {
+  res.set('Content-Type', 'image/svg+xml; charset=utf-8');
+  res.set('Cache-Control', cacheControl);
+  res.set('Content-Security-Policy', CONTENT_SECURITY_POLICY);
+  res.set('X-Content-Type-Options', 'nosniff');
+  return res.send(svg);
+}
+
 export default defineEndpoint({
   id: ENDPOINT_ID,
   handler: (router, apiContext: ApiContext) => {
+    // Before `/:profileId`, else "silhouette" would be read as a profile id.
+    router.get('/silhouette', (req: any, res: any) => {
+      const size = parseSize(req.query?.size);
+      const color = typeof req.query?.color === 'string' ? req.query.color : undefined;
+      const svg = createAvatarSvg({ config: { ...getSilhouetteAvatarConfig(color), size }, size });
+      return sendSvg(res, svg, SILHOUETTE_CACHE_CONTROL);
+    });
+
     router.get('/:profileId', async (req: any, res: any) => {
       const profileId = typeof req.params?.profileId === 'string' ? req.params.profileId.trim() : '';
       if (!profileId) {
@@ -64,12 +87,7 @@ export default defineEndpoint({
         }
         const size = parseSize(req.query?.size);
         const svg = createAvatarSvg({ config: { ...config, size }, size });
-
-        res.set('Content-Type', 'image/svg+xml; charset=utf-8');
-        res.set('Cache-Control', CACHE_CONTROL);
-        res.set('Content-Security-Policy', CONTENT_SECURITY_POLICY);
-        res.set('X-Content-Type-Options', 'nosniff');
-        return res.send(svg);
+        return sendSvg(res, svg, CACHE_CONTROL);
       } catch (error: any) {
         // Forbidden or not existing look the same in Directus – both end up here.
         const status = Number(error?.status) || 403;
