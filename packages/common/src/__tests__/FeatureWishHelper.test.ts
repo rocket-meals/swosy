@@ -1,4 +1,4 @@
-import { FeatureWishCreateError, FeatureWishHelper, FeatureWishStatus } from '../FeatureWishHelper';
+import { FeatureWishCreateError, FeatureWishesMode, FeatureWishHelper, FeatureWishStatus } from '../FeatureWishHelper';
 
 describe('FeatureWishHelper.buildCreatePayload', () => {
   it('turns a request with related_to into a like without text', () => {
@@ -154,5 +154,27 @@ describe('FeatureWishHelper.mayAppUserDelete', () => {
 
   it('allows nothing for an empty selection', () => {
     expect(FeatureWishHelper.mayAppUserDelete([], 'p1')).toBe(false);
+  });
+});
+
+describe('FeatureWishHelper modes', () => {
+  it('reads the mode of the app settings, anything unknown is switched off', () => {
+    expect(FeatureWishHelper.getMode({ feature_wishes_mode: 'vote_only' })).toBe(FeatureWishesMode.VOTE_ONLY);
+    expect(FeatureWishHelper.getMode({ feature_wishes_mode: 'vote_and_submit' })).toBe(FeatureWishesMode.VOTE_AND_SUBMIT);
+    expect(FeatureWishHelper.getMode({ feature_wishes_mode: 'submit_only' })).toBe(FeatureWishesMode.SUBMIT_ONLY);
+    expect(FeatureWishHelper.getMode({ feature_wishes_mode: 'foo' })).toBe(FeatureWishesMode.DISABLED);
+    expect(FeatureWishHelper.getMode({ feature_wishes_mode: null })).toBe(FeatureWishesMode.DISABLED);
+    expect(FeatureWishHelper.getMode(undefined)).toBe(FeatureWishesMode.DISABLED);
+  });
+
+  it.each([
+    [FeatureWishesMode.DISABLED, false, false, false],
+    [FeatureWishesMode.VOTE_ONLY, true, false, true],
+    [FeatureWishesMode.VOTE_AND_SUBMIT, true, true, true],
+    [FeatureWishesMode.SUBMIT_ONLY, true, true, false],
+  ])('%s: enabled %s, submit %s, vote %s', (mode, enabled, submit, vote) => {
+    expect(FeatureWishHelper.isEnabled(mode)).toBe(enabled);
+    expect(FeatureWishHelper.maySubmit(mode)).toBe(submit);
+    expect(FeatureWishHelper.mayVote(mode)).toBe(vote);
   });
 });

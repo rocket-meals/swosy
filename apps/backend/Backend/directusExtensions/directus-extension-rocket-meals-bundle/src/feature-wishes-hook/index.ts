@@ -79,7 +79,8 @@ export default defineHook(({ filter, action }, apiContext) => {
     }
     const myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     const appSettings = await myDatabaseHelper.getAppSettingsHelper().getAppSettings();
-    if (appSettings?.feature_wishes_enabled !== true) {
+    const mode = FeatureWishHelper.getMode(appSettings);
+    if (!FeatureWishHelper.isEnabled(mode)) {
       throw createMyForbiddenError('Feature wishes are disabled.');
     }
 
@@ -88,6 +89,13 @@ export default defineHook(({ filter, action }, apiContext) => {
     const result = FeatureWishHelper.buildCreatePayload((input ?? {}) as Record<string, unknown>, profileId);
     if (!result.ok) {
       throw createMyForbiddenError('Invalid feature wish: ' + result.error);
+    }
+    // The mode of the app settings decides what app users may create: likes need voting, wishes need submitting.
+    if (result.isLike && !FeatureWishHelper.mayVote(mode)) {
+      throw createMyForbiddenError('Voting on feature wishes is switched off.');
+    }
+    if (!result.isLike && !FeatureWishHelper.maySubmit(mode)) {
+      throw createMyForbiddenError('Submitting feature wishes is switched off.');
     }
 
     if (result.isLike) {

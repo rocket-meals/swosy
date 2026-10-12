@@ -9,6 +9,7 @@
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { ChatConversationState } from 'repo-depkit-common/src/ChatConversationState';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
@@ -18,9 +19,11 @@ import { FoodFeedbackChatActions } from '../../helpers/rocket-meals-module/FoodF
 import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage, type FoodFeedbackListItem } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { ChatQueryHelper } from '../../helpers/rocket-meals-module/ChatQueryHelper';
 import { SupportChatActions } from '../../helpers/rocket-meals-module/SupportChatActions';
+import { ModuleDeleteActions } from '../../helpers/rocket-meals-module/ModuleDeleteActions';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
+import DeleteConfirmDialog from '../module-list/delete-confirm-dialog.vue';
 import ProfileAvatar from '../profiles/profile-avatar.vue';
 import SupportChatConversation from '../support-chat/support-chat-conversation.vue';
 import SupportChatStatusMenu from '../support-chat/support-chat-status-menu.vue';
@@ -31,6 +34,30 @@ const props = defineProps<{ feedbackId: string }>();
 const api = useApi();
 const { useNotificationsStore } = useStores();
 const notificationsStore = useNotificationsStore();
+const router = useRouter();
+
+const deleteDialogOpen = ref(false);
+const deleting = ref(false);
+
+/** Deletes the feedback with its chat and messages after the question in the dialog, then goes back to the list. */
+async function deleteCurrent() {
+  if (!feedback.value) {
+    return;
+  }
+  deleting.value = true;
+  try {
+    const result = await ModuleDeleteActions.deleteItems(api, FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT, [feedback.value]);
+    if (result.failedIds.length > 0) {
+      notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_delete_failed), type: 'error' });
+      return;
+    }
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_deleted, { count: 1 }), type: 'success' });
+    deleteDialogOpen.value = false;
+    await router.push(RocketMealsModulePages.getRoute(page));
+  } finally {
+    deleting.value = false;
+  }
+}
 const { translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.FOOD_FEEDBACKS;
@@ -181,6 +208,9 @@ watch(() => props.feedbackId, load);
     </template>
 
     <template #actions>
+      <v-button v-if="feedback" v-tooltip.bottom="translate(BackendTranslationKeys.delete)" rounded icon secondary kind="danger" :loading="deleting" :aria-label="translate(BackendTranslationKeys.delete)" @click="deleteDialogOpen = true">
+        <v-icon name="delete" />
+      </v-button>
       <v-button v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_open_feedback_item)" rounded icon secondary :to="`/content/foods_feedbacks/${feedbackId}`">
         <v-icon name="open_in_new" />
       </v-button>
@@ -217,6 +247,7 @@ watch(() => props.feedbackId, load);
 
       <v-progress-circular v-else-if="loading" indeterminate />
     </div>
+    <delete-confirm-dialog v-model="deleteDialogOpen" :count="1" :loading="deleting" @confirm="deleteCurrent" />
   </private-view>
 </template>
 

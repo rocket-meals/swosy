@@ -69,6 +69,17 @@ export type FeatureWishCreatePayload = FeatureWishText &
     profile?: string | null;
   };
 
+/**
+ * What the app offers, set in `app_settings.feature_wishes_mode` (a dropdown in Directus).
+ * Unknown or empty values count as switched off.
+ */
+export enum FeatureWishesMode {
+  DISABLED = 'disabled',
+  VOTE_ONLY = 'vote_only',
+  VOTE_AND_SUBMIT = 'vote_and_submit',
+  SUBMIT_ONLY = 'submit_only',
+}
+
 export type FeatureWishCreateResult = { ok: true; isLike: boolean; payload: FeatureWishCreatePayload } | { ok: false; error: FeatureWishCreateError };
 
 export class FeatureWishHelper {
@@ -105,6 +116,27 @@ export class FeatureWishHelper {
     FeatureWishStatus.AI_SUGGESTS_DECLINE,
     FeatureWishStatus.AI_SUGGESTS_MERGE,
   ];
+
+  /** The mode of the app settings; anything unknown or missing is {@link FeatureWishesMode.DISABLED}. */
+  static getMode(appSettings: { feature_wishes_mode?: string | null } | null | undefined): FeatureWishesMode {
+    const value = appSettings?.feature_wishes_mode;
+    return Object.values(FeatureWishesMode).includes(value as FeatureWishesMode) ? (value as FeatureWishesMode) : FeatureWishesMode.DISABLED;
+  }
+
+  /** Whether feature wishes show up in the app at all. */
+  static isEnabled(mode: FeatureWishesMode): boolean {
+    return mode !== FeatureWishesMode.DISABLED;
+  }
+
+  /** Whether new wishes may be submitted. Editing or deleting an own wish stays possible. */
+  static maySubmit(mode: FeatureWishesMode): boolean {
+    return mode === FeatureWishesMode.VOTE_AND_SUBMIT || mode === FeatureWishesMode.SUBMIT_ONLY;
+  }
+
+  /** Whether the published wishes of others are listed and may be liked. */
+  static mayVote(mode: FeatureWishesMode): boolean {
+    return mode === FeatureWishesMode.VOTE_AND_SUBMIT || mode === FeatureWishesMode.VOTE_ONLY;
+  }
 
   static getRelatedToId(wish: Pick<FeatureWishLike, 'related_to'> | null | undefined): string | null {
     const relatedTo = wish?.related_to;

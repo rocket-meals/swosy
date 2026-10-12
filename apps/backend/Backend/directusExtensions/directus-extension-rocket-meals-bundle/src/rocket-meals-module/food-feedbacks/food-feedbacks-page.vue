@@ -12,6 +12,7 @@ import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExt
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
 import { FoodFeedbackChatActions } from '../../helpers/rocket-meals-module/FoodFeedbackChatActions';
 import { FoodFeedbackChatHelper, FoodFeedbackContentFilter, FoodFeedbackListSort, FoodFeedbackRatingFilter, type FoodFeedbackCanteenOption, type FoodFeedbackListItem, type FoodFeedbackListOptions } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import { ModuleDeleteActions } from '../../helpers/rocket-meals-module/ModuleDeleteActions';
 import { ModuleListHelper } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
@@ -23,6 +24,7 @@ import ListPagination from '../module-list/list-pagination.vue';
 import ListRow from '../module-list/list-row.vue';
 import ListSearchActions from '../module-list/list-search-actions.vue';
 import ListSelectionBar from '../module-list/list-selection-bar.vue';
+import DeleteConfirmDialog from '../module-list/delete-confirm-dialog.vue';
 import StatusFilterChips from '../module-list/status-filter-chips.vue';
 import FoodFeedbackRating from './food-feedback-rating.vue';
 import FoodFeedbackStatusChip from './food-feedback-status-chip.vue';
@@ -85,7 +87,6 @@ const {
   options: listOptions,
   buildListQuery: FoodFeedbackChatHelper.buildListQuery,
   buildCountQuery: FoodFeedbackChatHelper.buildCountQuery,
-  canSelect: FoodFeedbackChatHelper.canMarkResolved,
 });
 
 const apiRoot = String(api.defaults?.baseURL ?? '/');
@@ -115,6 +116,17 @@ function openChat(feedback: FoodFeedbackListItem) {
 
 function markResolved(feedbacksToResolve: readonly FoodFeedbackListItem[]) {
   return runUpdate(feedbacksToResolve, pending => FoodFeedbackChatActions.markResolved(api, pending), BackendTranslationKeys.rocket_meals_module_mark_resolved_failed);
+}
+
+/** Every item can be selected (to delete it), marking as done only applies to those not done yet. */
+const selectedToResolve = computed(() => selectedFeedbacks.value.filter(FoodFeedbackChatHelper.canMarkResolved));
+
+const deleteDialogOpen = ref(false);
+
+/** Deletes the selected items with their chats, after the question in the dialog. */
+async function deleteSelected() {
+  await runUpdate(selectedFeedbacks.value, pending => ModuleDeleteActions.deleteItems(api, FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT, pending), BackendTranslationKeys.rocket_meals_module_delete_failed);
+  deleteDialogOpen.value = false;
 }
 
 // A rating group that is no longer offered falls back to all ratings – synchronously, so the list loads once with the new contents.
@@ -171,14 +183,19 @@ onMounted(loadCanteens);
       </div>
 
       <list-selection-bar v-if="selectableFeedbacks.length > 0" :selected-count="selectedFeedbacks.length" :all-selected="allSelected" :some-selected="someSelected" @toggle-all="toggleSelectAll">
-        <v-button v-if="selectedFeedbacks.length > 0" small :loading="selectedFeedbacks.some(isUpdating)" @click="markResolved(selectedFeedbacks)">
+        <v-button v-if="selectedToResolve.length > 0" small :loading="selectedToResolve.some(isUpdating)" @click="markResolved(selectedToResolve)">
           <v-icon name="task_alt" left small />
           {{ translate(BackendTranslationKeys.rocket_meals_module_mark_selected_resolved) }}
         </v-button>
+        <v-button v-if="selectedFeedbacks.length > 0" small secondary kind="danger" :loading="selectedFeedbacks.some(isUpdating)" @click="deleteDialogOpen = true">
+          <v-icon name="delete" left small />
+          {{ translate(BackendTranslationKeys.rocket_meals_module_delete_selected) }}
+        </v-button>
       </list-selection-bar>
+      <delete-confirm-dialog v-model="deleteDialogOpen" :count="selectedFeedbacks.length" :loading="selectedFeedbacks.some(isUpdating)" @confirm="deleteSelected" />
 
       <list-content :loading="loading" :load-error="loadError" :empty="feedbacks.length === 0">
-        <list-row v-for="feedback in feedbacks" :key="feedback.id" :selectable="FoodFeedbackChatHelper.canMarkResolved(feedback)" :selected="isSelected(feedback)" @open="openChat(feedback)" @update:selected="toggleSelected(feedback, $event)">
+        <list-row v-for="feedback in feedbacks" :key="feedback.id" selectable :selected="isSelected(feedback)" @open="openChat(feedback)" @update:selected="toggleSelected(feedback, $event)">
           <div class="food-image">
             <img v-if="FoodFeedbackChatHelper.getFoodImageUrl(feedback, apiRoot)" :src="FoodFeedbackChatHelper.getFoodImageUrl(feedback, apiRoot)" :alt="FoodFeedbackChatHelper.getFoodName(feedback) ?? ''" loading="lazy" />
             <v-icon v-else name="restaurant" />

@@ -179,6 +179,16 @@
     "tr": "Hata ayıklama modu",
     "zh": "调试模式"
   },
+  "simulate_feature_wishes_enabled": {
+    "de": "Feature-Wünsche simulieren",
+    "en": "Simulate feature wishes",
+    "ar": "محاكاة اقتراحات الميزات",
+    "es": "Simular deseos de funciones",
+    "fr": "Simuler les souhaits de fonctionnalités",
+    "ru": "Имитировать пожелания функций",
+    "tr": "Özellik isteklerini simüle et",
+    "zh": "模拟功能建议"
+  },
   "simulate_expo_update_available": {
     "de": "Expo-Update verfügbar simulieren",
     "en": "Simulate Expo update available",
@@ -4918,6 +4928,16 @@
     "ru": "Управление приложением",
     "tr": "Uygulama yönetimi",
     "zh": "应用管理"
+  },
+  "group_help_and_contact": {
+    "de": "Hilfe & Kontakt",
+    "en": "Help & Contact",
+    "ar": "المساعدة والتواصل",
+    "es": "Ayuda y contacto",
+    "fr": "Aide et contact",
+    "ru": "Помощь и контакты",
+    "tr": "Yardım ve iletişim",
+    "zh": "帮助与联系"
   },
   "group_fun": {
     "de": "Spaß",

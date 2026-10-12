@@ -90,8 +90,9 @@ export function getVersionPatch() {
 	// 63: SonarCloud reliability: remaining bugs (labels, regex backtracking, codePointAt, sort compare)
 	// 64: SonarCloud: remaining maintainability findings and security hotspots resolved
 	// 65: data clumps refactored into shared types and parameter objects
-	// 66: common: app_settings.maintenance_message type
-	return 66;
+	// 66: common: feature wishes mode (disabled / vote only / vote and submit / submit only)
+	// 67: common: app_settings.maintenance_message type
+	return 67;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

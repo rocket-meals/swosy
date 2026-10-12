@@ -60928,9 +60928,9 @@
             "description": "Zeigt den Bereich Wohnen in der App an",
             "type": "boolean"
           },
-          "feature_wishes_enabled": {
+          "feature_wishes_mode": {
             "nullable": true,
-            "type": "boolean"
+            "type": "string"
           },
           "guest_profiles_enabled": {
             "nullable": true,
