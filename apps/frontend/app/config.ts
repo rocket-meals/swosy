@@ -254,7 +254,8 @@ export function getVersionPatch() {
         // 134: settings search, "further settings" in the housing options, usage events for
         //      screens, buildings and markings, filtered by app_settings.app_usage_events_enabled
         // 135: app_settings.app_usage_events_enabled is a checkbox tree ("Alle" on top), nothing ticked collects nothing
-        return 135;
+        // 136: common-ui: silhouette avatar config (SilhouetteAvatar), used by the Live-Puls page
+        return 136;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
