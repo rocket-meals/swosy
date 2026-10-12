@@ -253,7 +253,8 @@ export function getVersionPatch() {
         // 133: own feature wishes that are not public yet show their review state and an edit icon on the right instead of likes
         // 134: settings search, "further settings" in the housing options, usage events for
         //      screens, buildings and markings, filtered by app_settings.app_usage_events_enabled
-        return 134;
+        // 135: app_settings.app_usage_events_enabled is a checkbox tree ("Alle" on top), nothing ticked collects nothing
+        return 135;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
