@@ -8,9 +8,10 @@
 // environment, so no extra credentials are needed on the host.
 //
 // MAINTENANCE_ACTION=set    writes MAINTENANCE_START and MAINTENANCE_END
-// MAINTENANCE_ACTION=clear  empties both fields, but only if maintenance_start
-//                           still equals MAINTENANCE_START, so a maintenance
-//                           window entered by hand in the meantime is kept
+// MAINTENANCE_ACTION=clear  empties both fields if the window has already
+//                           started (running or over), so the app shows no
+//                           maintenance after the restart. A window planned
+//                           for later is kept.
 
 const { PORT, ADMIN_EMAIL, ADMIN_PASSWORD, MAINTENANCE_ACTION, MAINTENANCE_START, MAINTENANCE_END } = process.env;
 const baseUrl = `http://localhost:${PORT}`;
@@ -46,10 +47,10 @@ async function main() {
 	if (MAINTENANCE_ACTION === 'clear') {
 		const current = await request('/items/app_settings?fields=maintenance_start', { headers });
 		const currentStart = current.data?.maintenance_start ?? null;
-		// Compared as points in time: Directus returns e.g. "...:00.000Z" for "...:00Z".
-		if (!currentStart || new Date(currentStart).getTime() !== new Date(MAINTENANCE_START).getTime()) {
-			// JSON.stringify escapes line breaks, so values read from the API or the environment cannot forge extra log lines.
-			console.log(`Maintenance window not cleared, maintenance_start is ${JSON.stringify(currentStart)} instead of ${JSON.stringify(MAINTENANCE_START)}`); // NOSONAR jssecurity:S5145 - both values are JSON.stringify-escaped (no raw line breaks) and come from the admin-only app_settings and the CI job's own env, written to CI logs only
+		const startTime = currentStart ? new Date(currentStart).getTime() : Number.NaN;
+		if (Number.isNaN(startTime) || startTime > Date.now()) {
+			// JSON.stringify escapes line breaks, so a value read from the API cannot forge extra log lines.
+			console.log(`Maintenance window not cleared, maintenance_start is ${JSON.stringify(currentStart)} (empty or planned for later)`); // NOSONAR jssecurity:S5145 - the value is JSON.stringify-escaped (no raw line breaks) and comes from the admin-only app_settings, written to CI logs only
 			return;
 		}
 		await request('/items/app_settings', {

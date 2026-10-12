@@ -42,7 +42,6 @@ import ExpoUpdateChecker from '@/components/ExpoUpdateChecker/ExpoUpdateChecker'
 import {ModalContextProvider, ModalRenderer} from '@/components/GlobalModal/ModalProvider';
 import AppDownloadBanner from '@/components/AppDownloadBanner';
 import MaintenanceBanner from '@/components/MaintenanceBanner';
-import MaintenanceModal from '@/components/MaintenanceModal';
 import TextRecognitionWebViewHost from '@/components/TextRecognitionWebView';
 import { ConfigCustomerEnum, getCompanyLogoLocalSaved, getCustomerConfig, getCustomerConfigsDict, getCustomerEnumForConfig } from '@/config';
 import { SET_SELECTED_CUSTOMER } from '@/redux/Types/types';
@@ -215,7 +214,6 @@ export default function Layout() {
 															<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }} edges={pathname?.includes('image-full-screen') ? ['bottom'] : ['top', 'bottom']}>
 																<AppDownloadBanner />
 																<MaintenanceBanner />
-																<MaintenanceModal />
 																<Slot />
 																{/* The WebView the text recognition runs in on a device; renders nothing until a scan asks for it. */}
 																<TextRecognitionWebViewHost />

@@ -1,8 +1,15 @@
 import { useCallback } from 'react';
 import Toast from 'react-native-root-toast';
+import { configureStore } from '@/redux/store';
+import { isMaintenanceRunning } from '@/helper/maintenanceWindowHelper';
 
 const useToast = () => {
 	const showToast = useCallback((message: string, type = 'success') => {
+		// During a maintenance most requests fail on purpose, the banner already explains why.
+		const appSettings = configureStore.getState().settings.appSettings;
+		if (type === 'error' && isMaintenanceRunning(appSettings?.maintenance_start, appSettings?.maintenance_end, new Date())) {
+			return;
+		}
 		let backgroundColor;
 
 		switch (type) {

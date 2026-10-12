@@ -259,7 +259,9 @@ export function getVersionPatch() {
         // 138: maintenance modal: project color side bar, offline hint when no own message is set
         // 139: maintenance modal: one line "from ... to ... some features unavailable", below only the own markdown text
         // 140: maintenance modal: "Server-Update: Wir spielen neue Funktionen ein." above the own text
-        return 140;
+        // 141: maintenance: no automatic modal (banner only), no error toasts while it runs,
+        //      project logo and color kept when the server info cannot be loaded
+        return 141;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

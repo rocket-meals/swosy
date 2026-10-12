@@ -64,3 +64,8 @@ export function getMillisecondsUntilNextMaintenanceChange(maintenanceStart: stri
 	const next = changes.find(change => change > nowTime);
 	return next === undefined ? null : next - nowTime;
 }
+
+/** True while a maintenance window is running (not before it), e.g. to hide error messages that are expected then. */
+export function isMaintenanceRunning(maintenanceStart: string | null | undefined, maintenanceEnd: string | null | undefined, now: Date): boolean {
+	return getMaintenanceNotice(maintenanceStart, maintenanceEnd, now)?.phase === 'active';
+}

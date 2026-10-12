@@ -234,28 +234,31 @@ Das Skript `scripts/update-and-generate-env.sh` führt folgende Schritte aus:
 2. `git reset --hard` + `git pull` im `rocket-meals-envs`-Repository
 3. `.env` aus dem `rocket-meals-envs`-Repository generieren
 4. `docker compose build`, während die alten Container noch laufen (kein Ausfall beim Bauen)
-5. Wartung in `app_settings.maintenance_start` / `maintenance_end` eintragen und gegebenenfalls bis zum angekündigten
-   Zeitpunkt warten
-6. Alle Container außer Traefik und dem Wartungsserver neu starten, warten bis `/server/health` antwortet. Solange
-   Directus fehlt, beantwortet der [Wartungsserver](apps/maintenance-server/README.md) die Anfrage nach den
-   `app_settings` mit dem Wartungsfenster.
-7. Dauer des Neustarts in `.restart-durations` speichern (nicht im Git) und das eigene Wartungsfenster wieder leeren
+5. Nur mit `ROCKET_MEALS_ANNOUNCE_MINUTES` > 0: Wartung vorab in `app_settings.maintenance_start` / `maintenance_end`
+   eintragen und bis zum angekündigten Zeitpunkt warten
+6. Dem [Wartungsserver](apps/maintenance-server/README.md) den Neustart ankündigen: Er holt sich `app_settings`,
+   Server-Info und Logo ein letztes Mal und setzt das Wartungsfenster selbst (jetzt bis zum geschätzten Ende). Ein in
+   Directus eingetragenes, gerade laufendes Fenster hat Vorrang.
+7. Alle Container außer Traefik und dem Wartungsserver neu starten, warten bis `/server/health` antwortet. Solange
+   Directus fehlt, beantwortet der Wartungsserver `app_settings` (mit Wartungsfenster), `/server/info` und das Logo.
+8. Dauer des Neustarts in `.restart-durations` speichern (nicht im Git) und ein laufendes oder abgelaufenes
+   Wartungsfenster in `app_settings` leeren. Ein für später geplantes Fenster bleibt.
 
 Optionen werden als Umgebungsvariablen übergeben:
 
 | Variable | Standard | Bedeutung |
 | --- | --- | --- |
 | `ROCKET_MEALS_FORCE_RESTART` | `false` | `true` startet auch ohne neue Commits neu |
-| `ROCKET_MEALS_ANNOUNCE_MINUTES` | `0` | So viele Minuten nach der Ankündigung wird neu gestartet |
+| `ROCKET_MEALS_ANNOUNCE_MINUTES` | `0` | So viele Minuten vorher wird die Wartung in `app_settings` angekündigt |
 
-Das angekündigte Ende ist die längste der letzten zehn gemessenen Neustart-Dauern plus 20 %, aufgerundet auf volle
+Das geschätzte Ende ist die längste der letzten zehn gemessenen Neustart-Dauern plus 20 %, aufgerundet auf volle
 5 Minuten (ohne Messwerte: 10 Minuten). Die Felder sind `timestamp`-Felder (UTC), die App zeigt sie in der Zeitzone
-des Geräts an. Ein von Hand eingetragenes Wartungsfenster wird nach dem Neustart nicht gelöscht.
+des Geräts an.
 
-In `app_settings.maintenance_message` (Markdown, Bilder aus dem Ordner „Public Images“) kann ein eigener Text stehen.
-Die App zeigt ihn zusammen mit dem Zeitraum in einem Modal: beim App-Start während oder kurz vor der Wartung, und in
-einer schon laufenden App, sobald Anfragen nach einem Serverausfall aussehen (Netzwerkfehler, 502/503/504 oder der
-404 von Traefik). Das Skript leert diesen Text nicht.
+Die App zeigt eine Wartung als Banner oben an, auch in einer schon laufenden App, sobald Anfragen nach einem
+Serverausfall aussehen (Netzwerkfehler, 502/503/504 oder der 404 von Traefik). Während einer laufenden Wartung
+erscheinen keine Fehlermeldungen. Antippen des Banners öffnet die Details mit dem Text aus
+`app_settings.maintenance_message` (Markdown, Bilder aus dem Ordner „Public Images“). Das Skript leert diesen Text nicht.
 
 ### Voraussetzung
 

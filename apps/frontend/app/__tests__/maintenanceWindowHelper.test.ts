@@ -1,4 +1,4 @@
-import { getMaintenanceNotice, getMillisecondsUntilNextMaintenanceChange } from '@/helper/maintenanceWindowHelper';
+import { getMaintenanceNotice, getMillisecondsUntilNextMaintenanceChange, isMaintenanceRunning } from '@/helper/maintenanceWindowHelper';
 
 const START = '2026-10-10T17:30:00Z';
 const END = '2026-10-10T17:40:00.000Z';
@@ -44,5 +44,15 @@ describe('getMillisecondsUntilNextMaintenanceChange', () => {
 	it('returns null once the maintenance is over or none is set', () => {
 		expect(getMillisecondsUntilNextMaintenanceChange(START, END, at('17:40:00'))).toBeNull();
 		expect(getMillisecondsUntilNextMaintenanceChange(null, null, at('17:40:00'))).toBeNull();
+	});
+});
+
+describe('isMaintenanceRunning', () => {
+	it('is only true while the window runs', () => {
+		expect(isMaintenanceRunning(START, END, at('17:20:00'))).toBe(false);
+		expect(isMaintenanceRunning(START, END, at('17:30:00'))).toBe(true);
+		expect(isMaintenanceRunning(START, END, at('17:39:59'))).toBe(true);
+		expect(isMaintenanceRunning(START, END, at('17:40:00'))).toBe(false);
+		expect(isMaintenanceRunning(null, null, at('17:35:00'))).toBe(false);
 	});
 });

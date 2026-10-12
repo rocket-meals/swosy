@@ -33,7 +33,9 @@ export const ServerStatusLoader: React.FC<ServerStatusFlowLoaderProps> = ({ chil
 
 		try {
 			const response = await Promise.race([serverLoadPromise, timeoutPromise]);
-			if (response) {
+			// Without an answer (server down, maintenance) the last loaded info stays,
+			// otherwise the app loses its project logo and falls back to the default color.
+			if (response?.info) {
 				const serverInfo = response as ServerInfo;
 				darkTheme.primary = serverInfo?.info?.project?.project_color || darkTheme.primary;
 				darkTheme.activeBackground = serverInfo?.info?.project?.project_color || darkTheme.activeBackground;

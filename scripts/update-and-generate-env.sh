@@ -6,8 +6,11 @@
 # Optionen (als Umgebungsvariablen, damit auch eine ältere Version dieses
 # Skripts auf dem Server sie beim ersten Lauf gefahrlos ignoriert):
 #   ROCKET_MEALS_FORCE_RESTART=true     Neustart auch ohne neue Commits
-#   ROCKET_MEALS_ANNOUNCE_MINUTES=30    Wartung in app_settings ankündigen und
-#                                       erst nach so vielen Minuten neu starten
+#   ROCKET_MEALS_ANNOUNCE_MINUTES=30    Wartung vorab in app_settings ankündigen
+#                                       und erst nach so vielen Minuten neu
+#                                       starten (Standard 0: ohne Vorankündigung,
+#                                       der Wartungsserver zeigt das Fenster ab
+#                                       dem Herunterfahren)
 
 set -euo pipefail
 
@@ -113,7 +116,7 @@ record_restart_seconds() {
 # laufenden Container. Fehler werden nur geloggt: Die Ankündigung darf den
 # Neustart nie verhindern.
 maintenance_window() {
-  local action="$1" start="$2" end="${3:-}"
+  local action="$1" start="${2:-}" end="${3:-}"
   if ! docker compose exec -T \
     -e MAINTENANCE_ACTION="$action" \
     -e MAINTENANCE_START="$start" \
@@ -156,14 +159,27 @@ stop_restart_services() {
   docker compose rm --stop --force $(restart_services)
 }
 
-# Lässt den Wartungsserver die app_settings sofort neu laden, damit er das eben
-# angekündigte Wartungsfenster kennt, bevor Directus gestoppt wird.
-refresh_maintenance_server() {
-  if docker compose kill -s SIGHUP rocket-meals-maintenance >/dev/null 2>&1; then
-    sleep 5
-  else
-    log "Warnung: Wartungsserver läuft nicht, die App bekommt während des Neustarts keine Antwort"
-  fi
+# Kündigt dem Wartungsserver (apps/maintenance-server) den Neustart an: Er holt
+# sich app_settings, Server-Info und Logo ein letztes Mal und setzt das
+# Wartungsfenster selbst, von jetzt bis zum geschätzten Ende. Ein in Directus
+# eingetragenes, gerade laufendes Fenster hat Vorrang. Der Steuer-Port ist nur
+# im Container selbst erreichbar (127.0.0.1).
+prepare_maintenance_server() {
+  local end="$1" window
+  # Neu erstellen, solange Directus noch läuft: So läuft der Wartungsserver mit
+  # dem eben geholten Code (server.mjs ist nur eingebunden, ein laufender
+  # Container würde die alte Version behalten) und holt sich sofort alle Daten.
+  docker compose up -d --force-recreate --no-deps rocket-meals-maintenance >/dev/null 2>&1 || true
+  for _ in $(seq 1 20); do
+    if window="$(docker compose exec -T rocket-meals-maintenance \
+      wget -qO- --header 'Content-Type: application/json' --post-data "{\"maintenance_end\":\"$end\"}" \
+      "http://127.0.0.1:8081/prepare" 2>/dev/null)"; then
+      log "Wartungsserver vorbereitet: $window"
+      return 0
+    fi
+    sleep 1
+  done
+  log "Warnung: Wartungsserver nicht erreichbar, die App bekommt während des Neustarts keine Wartungsanzeige"
 }
 
 log "Starte Update und Env-Generierung in $REPO_DIR (Umgebung: $ENV_NAME)"
@@ -237,14 +253,15 @@ ESTIMATED_SECONDS=$(( (ESTIMATED_SECONDS * 12 / 10 + 299) / 300 * 300 ))
 MAINTENANCE_START="$(format_utc_time "$MAINTENANCE_START_EPOCH")"
 MAINTENANCE_END="$(format_utc_time $(( MAINTENANCE_START_EPOCH + ESTIMATED_SECONDS )))"
 
-if is_directus_running; then
-  log "Kündige Wartung an: $MAINTENANCE_START bis voraussichtlich $MAINTENANCE_END"
-  maintenance_window set "$MAINTENANCE_START" "$MAINTENANCE_END"
-else
-  log "Directus läuft nicht, Wartung wird nicht angekündigt"
-fi
-
+# Nur mit Vorankündigung wird das Fenster in app_settings geschrieben, damit
+# die App schon vorher warnt. Sonst setzt es der Wartungsserver beim Herunterfahren.
 if (( ANNOUNCE_MINUTES > 0 )); then
+  if is_directus_running; then
+    log "Kündige Wartung an: $MAINTENANCE_START bis voraussichtlich $MAINTENANCE_END"
+    maintenance_window set "$MAINTENANCE_START" "$MAINTENANCE_END"
+  else
+    log "Directus läuft nicht, Wartung wird nicht angekündigt"
+  fi
   log "Warte $ANNOUNCE_MINUTES Minuten bis zum Neustart ($MAINTENANCE_START)"
   sleep $(( MAINTENANCE_START_EPOCH - $(date +%s) > 0 ? MAINTENANCE_START_EPOCH - $(date +%s) : 0 ))
 fi
@@ -252,7 +269,7 @@ fi
 # --- Neustart ---
 RESTART_START_EPOCH="$(date +%s)"
 
-refresh_maintenance_server
+prepare_maintenance_server "$MAINTENANCE_END"
 
 log "Container außer ${KEEP_RUNNING_SERVICES[*]} werden gestoppt"
 stop_restart_services
@@ -281,7 +298,8 @@ RESTART_SECONDS=$(( $(date +%s) - RESTART_START_EPOCH ))
 record_restart_seconds "$RESTART_SECONDS"
 log "Directus ist nach ${RESTART_SECONDS}s wieder erreichbar"
 
-# Nur das eigene Wartungsfenster leeren, nicht ein von Hand eingetragenes.
-maintenance_window clear "$MAINTENANCE_START"
+# Ein laufendes oder abgelaufenes Wartungsfenster leeren, damit die App nach
+# dem Neustart keine Wartung mehr anzeigt. Ein für später geplantes bleibt.
+maintenance_window clear
 
 log "Update und Env-Generierung erfolgreich abgeschlossen"
