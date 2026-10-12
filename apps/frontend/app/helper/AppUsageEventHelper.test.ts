@@ -24,7 +24,7 @@ jest.mock('@/config', () => ({
 	getVersionInternalForAppsettingsScreen: () => '21.206.19',
 }));
 
-import { APP_USAGE_EVENTS_DISABLE_ALL, AppUsageEventNames } from 'repo-depkit-common/src/AppUsageEventNames';
+import { AppUsageEventNames } from 'repo-depkit-common/src/AppUsageEventNames';
 import {
 	APP_USAGE_EVENT_NAME_NATIVE_REVIEW_PROMPT_REQUESTED,
 	APP_USAGE_EVENT_TYPE_APP_RATING,
@@ -122,8 +122,8 @@ describe('app_settings.app_usage_events_enabled', () => {
 		expect(event.sequence_number).toBe(1);
 	});
 
-	it('sends nothing when "disable all" is selected', async () => {
-		mockAppSettings.app_usage_events_enabled = [APP_USAGE_EVENTS_DISABLE_ALL, AppUsageEventNames.MAP_SCREEN_OPENED];
+	it('sends nothing when nothing is ticked', async () => {
+		mockAppSettings.app_usage_events_enabled = [];
 
 		await trackScreenOpened({ eventName: AppUsageEventNames.MAP_SCREEN_OPENED, screenName: 'map' });
 		await trackNativeReviewPromptRequested({ source: AppRatingPromptSources.SCORE_THRESHOLD });

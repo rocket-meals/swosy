@@ -89,8 +89,9 @@ export function getVersionPatch() {
 	// 59: data clumps refactored into shared types and parameter objects
 	// 60: common: feature wishes mode (disabled / vote only / vote and submit / submit only)
 	// 61: common: app usage event names and the app_usage_events_enabled switch
-	// 62: common: app_settings.maintenance_message type
-	return 62;
+	// 62: common: app_settings.app_usage_events_enabled is a checkbox tree ("Alle" on top), nothing ticked collects nothing
+	// 63: common: app_settings.maintenance_message type
+	return 63;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
