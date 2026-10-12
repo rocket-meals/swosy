@@ -13,6 +13,7 @@
 
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { DefaultProfileHelper } from 'repo-depkit-common/src/DefaultProfileHelper';
+import { AppUsageEventNames } from 'repo-depkit-common/src/AppUsageEventNames';
 import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED } from '../BackendUsageEventNames';
 import { FoodFeedbackChatHelper, type ModuleFoodFeedback } from './FoodFeedbackChatHelper';
 import type { ModuleCanteenRelation, ModuleCreatedItem, ModuleImageItem, ModuleItem, ModuleProfileSummary } from './ModuleItemTypes';
@@ -42,6 +43,12 @@ export enum LivePulseFeedType {
   NEW_PROFILE = 'new_profile',
   /** Someone loaded the details of a food offer (`food-details-usage-event-hook`), anonymous. */
   FOOD_OPENED = 'food_opened',
+  /** Someone opened one of the tracked screens (`*_screen_opened`), anonymous. */
+  SCREEN_OPENED = 'screen_opened',
+  /** Someone opened the details of a building (`building_details_opened`), anonymous. */
+  BUILDING_OPENED = 'building_opened',
+  /** Someone opened the details of a marking (`marking_details_opened`), anonymous. */
+  MARKING_OPENED = 'marking_opened',
   USAGE_EVENT = 'usage_event',
 }
 
@@ -95,6 +102,12 @@ export type LivePulseFeedItem = {
   eventName?: string | null;
   screenName?: string | null;
   platform?: string | null;
+  /** For an opened building: its id (link target) and name, as the app sent them. */
+  buildingId?: string;
+  buildingName?: string;
+  /** For an opened marking: its id (link target) and name, as the app sent them. */
+  markingId?: string;
+  markingName?: string;
 };
 
 export type LivePulseQuery = Pick<DirectusRestQuery, 'fields' | 'filter' | 'sort' | 'limit' | 'aggregate'>;
@@ -134,6 +147,20 @@ export class LivePulseHelper {
   static readonly ACTIVITY_ENDPOINT = '/activity';
   /** Path of `profile-avatar-endpoint`, relative to the API root. */
   static readonly AVATAR_ENDPOINT = 'profile-avatar';
+
+  /** The label of each tracked screen in the ticker. */
+  private static readonly SCREEN_LABEL_KEYS: Readonly<Record<string, BackendTranslationKeys>> = {
+    [AppUsageEventNames.MAP_SCREEN_OPENED]: BackendTranslationKeys.rocket_meals_module_live_pulse_screen_map,
+    [AppUsageEventNames.COURSE_TIMETABLE_SCREEN_OPENED]: BackendTranslationKeys.rocket_meals_module_live_pulse_screen_course_timetable,
+    [AppUsageEventNames.NEWS_SCREEN_OPENED]: BackendTranslationKeys.rocket_meals_module_live_pulse_screen_news,
+    [AppUsageEventNames.HOUSING_SCREEN_OPENED]: BackendTranslationKeys.rocket_meals_module_live_pulse_screen_housing,
+    [AppUsageEventNames.ACCOUNT_BALANCE_SCREEN_OPENED]: BackendTranslationKeys.rocket_meals_module_live_pulse_screen_account_balance,
+    [AppUsageEventNames.FOODOFFERS_SCREEN_OPENED]: BackendTranslationKeys.rocket_meals_module_live_pulse_screen_foodoffers,
+    [AppUsageEventNames.CAMPUS_SCREEN_OPENED]: BackendTranslationKeys.rocket_meals_module_live_pulse_screen_campus,
+    [AppUsageEventNames.SETTINGS_SCREEN_OPENED]: BackendTranslationKeys.rocket_meals_module_live_pulse_screen_settings,
+    [AppUsageEventNames.DATA_ACCESS_SCREEN_OPENED]: BackendTranslationKeys.rocket_meals_module_live_pulse_screen_data_access,
+    [AppUsageEventNames.EATING_HABITS_SCREEN_OPENED]: BackendTranslationKeys.rocket_meals_module_live_pulse_screen_eating_habits,
+  };
 
   private static readonly PROFILE_FIELDS = ['id', 'nickname', 'avatar', 'date_updated', 'date_created'];
 
@@ -347,6 +374,39 @@ export class LivePulseHelper {
     return undefined;
   }
 
+  /** The building of an entry in the content module, `undefined` without a building id. */
+  static getBuildingRoute(item: LivePulseFeedItem): string | undefined {
+    return item.buildingId ? `/content/${CollectionNames.BUILDINGS}/${encodeURIComponent(item.buildingId)}` : undefined;
+  }
+
+  /** The marking of an entry in the content module, `undefined` without a marking id. */
+  static getMarkingRoute(item: LivePulseFeedItem): string | undefined {
+    return item.markingId ? `/content/${CollectionNames.MARKINGS}/${encodeURIComponent(item.markingId)}` : undefined;
+  }
+
+  /**
+   * Where the linked part of an entry leads: the building or marking it is about, else its food
+   * (see `getFoodRoute`). `undefined` when there is nothing to link.
+   */
+  static getLinkRoute(item: LivePulseFeedItem, existingFoodofferIds: ReadonlySet<string>): string | undefined {
+    switch (item.type) {
+      case LivePulseFeedType.BUILDING_OPENED:
+        return LivePulseHelper.getBuildingRoute(item);
+      case LivePulseFeedType.MARKING_OPENED:
+        return LivePulseHelper.getMarkingRoute(item);
+      case LivePulseFeedType.SCREEN_OPENED:
+      case LivePulseFeedType.USAGE_EVENT:
+        return undefined;
+      default:
+        return LivePulseHelper.getFoodRoute(item, existingFoodofferIds);
+    }
+  }
+
+  /** Label of a tracked screen, `undefined` for any other event. */
+  static getScreenLabelKey(eventName: string | null | undefined): BackendTranslationKeys | undefined {
+    return eventName ? LivePulseHelper.SCREEN_LABEL_KEYS[eventName] : undefined;
+  }
+
   /**
    * Splits a translated text at the spot where `marker` was interpolated, so the part in between
    * can be rendered as a link. Without the marker, everything is `before`.
@@ -430,12 +490,7 @@ export class LivePulseHelper {
   /** Merges all ticker sources into one list, newest first. */
   static buildFeed(sources: { foodFeedbacks?: LivePulseFoodFeedback[]; canteenVisits?: LivePulseCanteenVisit[]; newProfiles?: LivePulseProfile[]; usageEvents?: LivePulseUsageEvent[]; foods?: LivePulseFood[] }): LivePulseFeedItem[] {
     const foodsById = new Map((sources.foods ?? []).map(food => [String(food.id), food]));
-    const candidates: (LivePulseFeedItem | undefined)[] = [
-      ...(sources.foodFeedbacks ?? []).map(feedback => LivePulseHelper.buildFoodFeedbackFeedItem(feedback)),
-      ...(sources.canteenVisits ?? []).map(visit => LivePulseHelper.buildCanteenVisitFeedItem(visit)),
-      ...(sources.newProfiles ?? []).map(profile => LivePulseHelper.buildNewProfileFeedItem(profile)),
-      ...(sources.usageEvents ?? []).map(event => LivePulseHelper.buildUsageEventFeedItem(event, foodsById)),
-    ];
+    const candidates: (LivePulseFeedItem | undefined)[] = [...(sources.foodFeedbacks ?? []).map(feedback => LivePulseHelper.buildFoodFeedbackFeedItem(feedback)), ...(sources.canteenVisits ?? []).map(visit => LivePulseHelper.buildCanteenVisitFeedItem(visit)), ...(sources.newProfiles ?? []).map(profile => LivePulseHelper.buildNewProfileFeedItem(profile)), ...(sources.usageEvents ?? []).map(event => LivePulseHelper.buildUsageEventFeedItem(event, foodsById))];
     const items = candidates.filter((item): item is LivePulseFeedItem => item !== undefined);
 
     items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -485,11 +540,10 @@ export class LivePulseHelper {
     const payload = LivePulseHelper.getPayload(event);
     const payloadFoodId = LivePulseHelper.getRelatedId(payload.food_id as string | number | null | undefined);
     const food = payloadFoodId === undefined ? undefined : foodsById.get(payloadFoodId);
-    const isFoodOpened = event.event_name === BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED;
     return {
       key: `event-${event.id}`,
       sourceKey: `event-${event.id}`,
-      type: isFoodOpened ? LivePulseFeedType.FOOD_OPENED : LivePulseFeedType.USAGE_EVENT,
+      type: LivePulseHelper.getUsageEventFeedType(event.event_name),
       date: event.date_created,
       eventName: event.event_name,
       screenName: event.screen_name,
@@ -498,7 +552,31 @@ export class LivePulseHelper {
       food,
       foodId: payloadFoodId ?? food?.id,
       foodofferId: LivePulseHelper.getRelatedId(payload.foodoffer_id as string | number | null | undefined),
+      buildingId: LivePulseHelper.getRelatedId(payload.building_id as string | number | null | undefined),
+      buildingName: LivePulseHelper.getPayloadText(payload.building_name),
+      markingId: LivePulseHelper.getRelatedId(payload.marking_id as string | number | null | undefined),
+      markingName: LivePulseHelper.getPayloadText(payload.marking_name),
     };
+  }
+
+  private static getUsageEventFeedType(eventName: string | null | undefined): LivePulseFeedType {
+    if (eventName === BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED) {
+      return LivePulseFeedType.FOOD_OPENED;
+    }
+    if (eventName === AppUsageEventNames.BUILDING_DETAILS_OPENED) {
+      return LivePulseFeedType.BUILDING_OPENED;
+    }
+    if (eventName === AppUsageEventNames.MARKING_DETAILS_OPENED) {
+      return LivePulseFeedType.MARKING_OPENED;
+    }
+    if (LivePulseHelper.getScreenLabelKey(eventName)) {
+      return LivePulseFeedType.SCREEN_OPENED;
+    }
+    return LivePulseFeedType.USAGE_EVENT;
+  }
+
+  private static getPayloadText(value: unknown): string | undefined {
+    return typeof value === 'string' && value ? value : undefined;
   }
 
   /**

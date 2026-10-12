@@ -16,12 +16,16 @@
  * Die Sperre liegt im `SharedStore` (Redis bei `REDIS`), damit sie über alle Directus-Replicas gilt:
  * der Load Balancer verteilt die Abrufe eines Öffnens auf verschiedene Instanzen. Ohne Redis gilt sie
  * nur pro Prozess.
+ *
+ * Ist `food_details_opened` in `app_settings.app_usage_events_enabled` abgewählt (oder „Alle ausschalten“
+ * gewählt), schreibt der Hook nichts (siehe `isAppUsageEventEnabled`).
  */
 
 import { defineHook } from '@directus/extensions-sdk';
-import { CollectionNames } from 'repo-depkit-common';
-import { BackendUsageEventDeduplicator, BackendUsageEventHelper, FoodofferForUsageEvent } from '../helpers/BackendUsageEventHelper';
+import { CollectionNames, isAppUsageEventEnabled } from 'repo-depkit-common';
+import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED, BackendUsageEventDeduplicator, BackendUsageEventHelper, FoodofferForUsageEvent } from '../helpers/BackendUsageEventHelper';
 import { ItemsServiceCreator } from '../helpers/ItemsServiceCreator';
+import { AppSettingsHelper } from '../helpers/itemServiceHelpers/AppSettingsHelper';
 
 const HOOK_NAME = 'food-details-usage-event-hook';
 
@@ -41,6 +45,10 @@ export default defineHook(({ action }, apiContext) => {
         return;
       }
       if (!(await deduplicator.shouldCount(BackendUsageEventHelper.getRequesterKey(eventContext?.accountability), foodofferId))) {
+        return;
+      }
+      const appSettings = await new AppSettingsHelper(apiContext).getAppSettings();
+      if (!isAppUsageEventEnabled(appSettings?.app_usage_events_enabled, BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED)) {
         return;
       }
       const records = Array.isArray(meta?.payload) ? (meta.payload as FoodofferForUsageEvent[]) : [];

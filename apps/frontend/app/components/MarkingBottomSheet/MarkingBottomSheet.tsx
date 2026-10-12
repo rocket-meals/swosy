@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Image, Text, View } from 'react-native';
@@ -13,6 +13,7 @@ import { getDescriptionFromTranslation, getTextFromTranslation } from '@/helper/
 import { useTheme } from '@/hooks/useTheme';
 import { RootState } from '@/redux/reducer';
 import { useAppSelector } from '@/redux/hooks';
+import { trackMarkingDetailsOpened } from '@/helper/AppUsageEventHelper';
 
 export interface MarkingBottomSheetProps {
         onClose: () => void;
@@ -23,6 +24,16 @@ export const MarkingContent: React.FC = () => {
 	const { markingDetails } = useAppSelector((state: RootState) => state.food);
 	const { language } = useAppSelector((state: RootState) => state.settings);
 	const description = getDescriptionFromTranslation(markingDetails?.translations, language);
+	const markingId = markingDetails?.id;
+
+	// Anonymous usage event, once per opened marking.
+	useEffect(() => {
+		if (markingId) {
+			void trackMarkingDetailsOpened({ markingId: String(markingId), markingName: markingDetails?.alias ?? markingDetails?.external_identifier ?? null });
+		}
+		// Only when another marking is opened, not when its data is refreshed.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [markingId]);
 
 	let markingImageBorderRadius = 0;
 	if (markingDetails?.background_color) {

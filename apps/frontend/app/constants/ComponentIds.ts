@@ -56,6 +56,7 @@ export enum AppComponentIds {
 	// Settings items
 	SETTINGS_COLOR_SCHEME = 'settings-color-scheme',
 	SETTINGS_LANGUAGE = 'settings-language',
+	SETTINGS_SEARCH = 'settings-search',
 	SETTINGS_EATING_HABITS = 'settings-eating-habits',
 	SETTINGS_GUEST_ACCOUNT = 'settings-guest-account',
 	SETTINGS_CANTEEN = 'settings-canteen',

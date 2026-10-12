@@ -24,11 +24,12 @@ import moneySad from '@/assets/animations/accountBalance/moneySad.json';
 import moneyConfident from '@/assets/animations/accountBalance/moneyConfident.json';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import useTrackScreenOpened from '@/hooks/useTrackScreenOpened';
 import MyMarkdownProjectColored from '@/components/MyMarkdownProjectColored';
 import Server from '@/constants/ServerUrl';
 import { ServerAPI } from '@/redux/actions';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import { CollectibleAt } from 'repo-depkit-common';
+import { AppUsageEventNames, CollectibleAt } from 'repo-depkit-common';
 import DebugView from '@/components/DebugView';
 import ProjectButton from '@/components/ProjectButton';
 import { myContrastColor } from '@/helper/ColorHelper';
@@ -54,6 +55,7 @@ export interface AccountBalanceScreenProps {
 
 const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNfc = false }) => {
 	useSetPageTitle(TranslationKeys.accountbalance);
+	useTrackScreenOpened(AppUsageEventNames.ACCOUNT_BALANCE_SCREEN_OPENED, 'account-balance');
 	const toast = useToast();
 	const { theme } = useTheme();
 	const { translate } = useLanguage();

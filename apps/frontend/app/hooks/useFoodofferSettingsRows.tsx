@@ -77,6 +77,7 @@ const useFoodofferSettingsRows = ({ onCanteen, onPriceGroup, onEatingHabits, onS
 		return {
 			canteen: {
 				key: 'foodoffer-canteen',
+				searchText: translate(TranslationKeys.canteen),
 				render: (groupPosition, showSeparator) => (
 					<SettingsList
 						iconBgColor={foodsAreaColor}
@@ -93,6 +94,7 @@ const useFoodofferSettingsRows = ({ onCanteen, onPriceGroup, onEatingHabits, onS
 			},
 			priceGroup: {
 				key: 'foodoffer-price-group',
+				searchText: translate(TranslationKeys.price_group),
 				render: (groupPosition, showSeparator) => (
 					<SettingsList
 						iconBgColor={foodsAreaColor}
@@ -108,6 +110,7 @@ const useFoodofferSettingsRows = ({ onCanteen, onPriceGroup, onEatingHabits, onS
 			},
 			eatingHabits: {
 				key: 'foodoffer-eating-habits',
+				searchText: translate(TranslationKeys.eating_habits),
 				render: (groupPosition, showSeparator) => (
 					<SettingsList
 						iconBgColor={foodsAreaColor}
@@ -123,6 +126,7 @@ const useFoodofferSettingsRows = ({ onCanteen, onPriceGroup, onEatingHabits, onS
 			},
 			sort: {
 				key: 'foodoffer-sort',
+				searchText: translate(TranslationKeys.sort),
 				render: (groupPosition, showSeparator) => (
 					<SettingsList
 						iconBgColor={foodsAreaColor}
@@ -139,6 +143,7 @@ const useFoodofferSettingsRows = ({ onCanteen, onPriceGroup, onEatingHabits, onS
 			averageRating: showAverageRating
 				? {
 						key: 'foodoffer-average-rating',
+						searchText: translate(TranslationKeys.show_average_rating_on_card),
 						render: groupPosition => <FoodoffersAverageRatingToggle groupPosition={groupPosition} iconBgColor={foodsAreaColor} iconSize={iconSize} />,
 					}
 				: null,

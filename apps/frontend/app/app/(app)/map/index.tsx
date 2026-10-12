@@ -3,10 +3,11 @@ import { Alert, Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch
 import { useTheme } from '@/hooks/useTheme';
 import ModalTextInput from '@/components/ModalTextInput';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import useTrackScreenOpened from '@/hooks/useTrackScreenOpened';
 import { TranslationKeys } from '@/locales/keys';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useAppSelector } from '@/redux/hooks';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { AppUsageEventNames, DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CAR_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_CONSENT, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_COUNT, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import SettingsGroupMyMapGeneralMarkers from '@/components/SettingsGroupMyMapGeneralMarkers';
@@ -813,6 +814,7 @@ function resolveMapOverlayStyle(
 
 const OsmVectorMapScreen: React.FC = () => {
 	useSetPageTitle(TranslationKeys.map);
+	useTrackScreenOpened(AppUsageEventNames.MAP_SCREEN_OPENED, 'map');
 	const { theme } = useTheme();
 	const myMapRef = useRef<MyMapHandle>(null);
 
