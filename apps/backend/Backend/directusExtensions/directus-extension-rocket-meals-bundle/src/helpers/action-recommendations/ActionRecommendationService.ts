@@ -59,7 +59,8 @@ export class ActionRecommendationService {
       return { data: [], ignored: [] };
     }
 
-    const answer = await this.client.chatJson(ActionRecommendationPrompt.buildRecommendationPrompt(definition, items, language));
+    const replyLanguages = await this.getReplyLanguages(definition, items);
+    const answer = await this.client.chatJson(ActionRecommendationPrompt.buildRecommendationPrompt(definition, items, language, replyLanguages));
     const parsed = ActionRecommendationPrompt.parseRecommendations(answer, definition, new Set(items.map(item => String(item.id))));
     for (const reason of parsed.ignored) {
       this.apiContext.logger.warn(`action recommendations: ignored part of the AI answer: ${reason}`);
@@ -135,6 +136,47 @@ export class ActionRecommendationService {
       sort: ['-date_created'],
       limit,
     })) as ActionRecommendationSourceItem[];
+  }
+
+  /**
+   * Per item the language of its draft reply, from the language in the author's profile and the
+   * default language of the server. Read without the permissions of the person asking: they may not
+   * read profiles, and the language never reaches the AI as more than a language code.
+   */
+  private async getReplyLanguages(definition: ActionRecommendationDefinition, items: readonly ActionRecommendationSourceItem[]): Promise<Record<string, string>> {
+    const defaultLanguage = await this.getDefaultLanguage();
+    const authorLanguages: Record<string, string | null> = {};
+    if (definition.authorProfileField) {
+      try {
+        const service = new this.apiContext.services.ItemsService(definition.collection, { schema: await this.apiContext.getSchema(), accountability: null });
+        const rows = (await service.readMany(
+          items.map(item => item.id),
+          { fields: ['id', `${definition.authorProfileField}.language`] }
+        )) as Record<string, unknown>[];
+        for (const row of rows) {
+          authorLanguages[String(row.id)] = ActionRecommendationDefinitions.getAuthorLanguage(definition, row);
+        }
+      } catch (error) {
+        this.apiContext.logger.warn(`action recommendations: reading the languages of the authors failed: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
+    const replyLanguages: Record<string, string> = {};
+    for (const item of items) {
+      replyLanguages[String(item.id)] = ActionRecommendationDefinitions.getReplyLanguage(authorLanguages[String(item.id)], defaultLanguage);
+    }
+    return replyLanguages;
+  }
+
+  /** `directus_settings.default_language` (Settings → Project), e.g. `de-DE`; null when it cannot be read. */
+  private async getDefaultLanguage(): Promise<string | null> {
+    try {
+      const settingsService = new this.apiContext.services.SettingsService({ schema: await this.apiContext.getSchema(), accountability: null });
+      const settings = (await settingsService.readSingleton({ fields: ['default_language'] })) as { default_language?: unknown } | undefined;
+      return typeof settings?.default_language === 'string' ? settings.default_language : null;
+    } catch (error) {
+      this.apiContext.logger.warn(`action recommendations: reading the default language failed: ${error instanceof Error ? error.message : String(error)}`);
+      return null;
+    }
   }
 
   private async getRecommendationsService(accountability: Accountability | null) {

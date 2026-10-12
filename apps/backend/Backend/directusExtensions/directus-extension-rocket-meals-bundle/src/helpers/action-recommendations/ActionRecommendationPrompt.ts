@@ -41,8 +41,11 @@ function trimText(value: unknown, maxLength: number): string {
 
 export class ActionRecommendationPrompt {
   /** Only the allowlisted fields, long texts are cut. */
-  static toPromptItem(definition: ActionRecommendationDefinition, item: ActionRecommendationSourceItem): Record<string, unknown> {
+  static toPromptItem(definition: ActionRecommendationDefinition, item: ActionRecommendationSourceItem, replyLanguage?: string): Record<string, unknown> {
     const promptItem: Record<string, unknown> = { id: String(item.id) };
+    if (replyLanguage) {
+      promptItem.reply_language = replyLanguage;
+    }
     for (const field of definition.fields) {
       const value = item[field];
       promptItem[field] = typeof value === 'string' ? value.slice(0, ITEM_TEXT_MAX_LENGTH) : (value ?? null);
@@ -50,7 +53,8 @@ export class ActionRecommendationPrompt {
     return promptItem;
   }
 
-  static buildRecommendationPrompt(definition: ActionRecommendationDefinition, items: readonly ActionRecommendationSourceItem[], language: string): ChatPrompt {
+  /** `replyLanguages`: per item id the language of its draft reply (see `ActionRecommendationDefinitions.getReplyLanguage`). */
+  static buildRecommendationPrompt(definition: ActionRecommendationDefinition, items: readonly ActionRecommendationSourceItem[], language: string, replyLanguages: Readonly<Record<string, string>> = {}): ChatPrompt {
     const actionLines = definition.actions.map(action => `- "${action}": ${ACTION_RECOMMENDATION_ACTIONS[action].promptDescription}`).join('\n');
     const system = `Du hilfst dem Support einer Mensa- und Campus-App, Einträge abzuarbeiten. Die Einträge sind: ${definition.promptContext}
 Empfiehl für jeden Eintrag genau eine dieser Handlungen:
@@ -58,12 +62,12 @@ ${actionLines}
 
 Ein Mensch entscheidet am Ende, du gibst nur eine Empfehlung.
 Schreibe die Begründung ("reason") kurz in der Sprache mit dem Code "${language}".
-Einen Antwortvorschlag ("draft_reply") gibt es nur bei "${ActionRecommendationAction.REPLY}". Schreibe ihn in der Sprache des Eintrags, sonst ist er null.
+Einen Antwortvorschlag ("draft_reply") gibt es nur bei "${ActionRecommendationAction.REPLY}". Schreibe ihn in der Sprache mit dem Code aus "reply_language" des Eintrags (ohne Angabe: "${ActionRecommendationDefinitions.FALLBACK_REPLY_LANGUAGE}"), auch wenn der Eintrag selbst in einer anderen Sprache geschrieben ist. Sonst ist er null.
 ${WRITING_RULE}
 
 Antworte ausschließlich mit einem JSON-Objekt in genau dieser Form, ohne weiteren Text:
 {"recommendations":[{"id":"<id>","action":"${definition.actions.join('|')}","reason":"<kurze Begründung>","draft_reply":"<Antwortvorschlag oder null>"}]}`;
-    const user = JSON.stringify({ items: items.map(item => ActionRecommendationPrompt.toPromptItem(definition, item)) }, null, 2);
+    const user = JSON.stringify({ items: items.map(item => ActionRecommendationPrompt.toPromptItem(definition, item, replyLanguages[String(item.id)])) }, null, 2);
     return { system, user };
   }
 

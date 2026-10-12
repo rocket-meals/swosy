@@ -155,6 +155,9 @@ Feedback selbst ändert sich nichts.
   Profil) und die erlaubten Handlungen. Die Antwort wird streng geprüft
   (`ActionRecommendationPrompt.parseRecommendations`): unbekannte Einträge, nicht erlaubte Handlungen
   und Antworten ohne Begründung werden verworfen. Einen Antwortvorschlag gibt es nur bei `reply`.
+- **Sprache des Antwortvorschlags:** aus `profiles.language` des Autors. Ohne Sprache oder bei Deutsch
+  schreibt die KI in der Standardsprache des Servers (`directus_settings.default_language`, Einstellungen >
+  Projekt), sonst auf Englisch. Das Profil selbst geht nicht an die KI, nur der Sprachcode.
 - **In der Liste** markiert ✨ (`auto_awesome`) den empfohlenen Button. Unter dem Kommentar stehen
   Begründung und Antwortvorschlag, mit „Chat mit Vorschlag starten“ (öffnet den Chat mit dem
   Vorschlag in der Eingabe) und „Vorschlag verwerfen“.

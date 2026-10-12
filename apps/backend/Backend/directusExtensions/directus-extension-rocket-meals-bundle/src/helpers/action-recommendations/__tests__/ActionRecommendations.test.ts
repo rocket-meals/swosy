@@ -168,3 +168,27 @@ describe('ActionRecommendationModuleHelper', () => {
     consoleError.mockRestore();
   });
 });
+
+describe('reply language', () => {
+  it('uses the default language for authors without language or with German, English for everybody else', () => {
+    expect(ActionRecommendationDefinitions.getReplyLanguage(null, 'de-DE')).toBe('de-DE');
+    expect(ActionRecommendationDefinitions.getReplyLanguage('  ', 'de-DE')).toBe('de-DE');
+    expect(ActionRecommendationDefinitions.getReplyLanguage('DE-at', 'de-DE')).toBe('de-DE');
+    expect(ActionRecommendationDefinitions.getReplyLanguage('de', null)).toBe('de');
+    expect(ActionRecommendationDefinitions.getReplyLanguage('tr-TR', 'de-DE')).toBe('en');
+    expect(ActionRecommendationDefinitions.getReplyLanguage('en-US', 'de-DE')).toBe('en');
+  });
+
+  it('reads the language of the author as code or as languages row', () => {
+    expect(ActionRecommendationDefinitions.getAuthorLanguage(foodFeedbacks, { id: 'f1', profile: { language: 'fr-FR' } })).toBe('fr-FR');
+    expect(ActionRecommendationDefinitions.getAuthorLanguage(foodFeedbacks, { id: 'f1', profile: { language: { code: 'ar' } } })).toBe('ar');
+    expect(ActionRecommendationDefinitions.getAuthorLanguage(foodFeedbacks, { id: 'f1', profile: 'p1' })).toBeNull();
+    expect(ActionRecommendationDefinitions.getAuthorLanguage(foodFeedbacks, { id: 'f1', profile: null })).toBeNull();
+  });
+
+  it('tells the AI the reply language per item, never the profile', () => {
+    const prompt = ActionRecommendationPrompt.buildRecommendationPrompt(foodFeedbacks, [{ id: 'f1', comment: 'Too cold', rating: 2, profile: { language: 'en' } }], 'de', { f1: 'en' });
+    expect(JSON.parse(prompt.user).items).toEqual([{ id: 'f1', reply_language: 'en', comment: 'Too cold', rating: 2 }]);
+    expect(prompt.system).toContain('reply_language');
+  });
+});

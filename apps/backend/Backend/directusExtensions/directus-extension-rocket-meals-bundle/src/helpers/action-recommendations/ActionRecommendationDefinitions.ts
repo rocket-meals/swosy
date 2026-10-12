@@ -11,6 +11,7 @@
  */
 
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
+import { isSameBaseLanguage } from 'repo-depkit-common/src/translations/TranslationLanguage';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 
 /** Everything that can be recommended. The value is stored in `action_recommendations.action`. */
@@ -61,6 +62,8 @@ export type ActionRecommendationDefinition = {
   textFields: readonly string[];
   /** A field the items of a summary can be grouped by, e.g. all feedbacks of one food. */
   summaryGroupField?: string;
+  /** The relation to the author's profile: its `language` decides the language of a draft reply. Never sent to the AI. */
+  authorProfileField?: string;
 };
 
 export class ActionRecommendationDefinitions {
@@ -72,6 +75,7 @@ export class ActionRecommendationDefinitions {
       textFields: ['comment'],
       actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.MARK_RESOLVED],
       summaryGroupField: 'food',
+      authorProfileField: 'profile',
     },
     {
       collection: CollectionNames.APP_FEEDBACKS,
@@ -79,8 +83,14 @@ export class ActionRecommendationDefinitions {
       fields: ['title', 'content', 'positive'],
       textFields: ['title', 'content'],
       actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.MARK_RESOLVED],
+      authorProfileField: 'profile',
     },
   ];
+
+  /** The language of a draft reply when the server has no default language. */
+  static readonly FALLBACK_REPLY_LANGUAGE = 'de';
+  /** The language of a draft reply to an author with another language than German. */
+  static readonly FOREIGN_REPLY_LANGUAGE = 'en';
 
   /** At most this many items are sent for recommendations in one request. */
   static readonly MAX_ITEMS_PER_RECOMMENDATION = 25;
@@ -102,6 +112,31 @@ export class ActionRecommendationDefinitions {
   /** The fields to read for an item: the id and the allowlist. */
   static getReadFields(definition: ActionRecommendationDefinition): string[] {
     return ['id', ...definition.fields];
+  }
+
+  /**
+   * The language a draft reply is written in: authors without a language or with German get the
+   * default language of the server (`directus_settings.default_language`), everybody else English.
+   */
+  static getReplyLanguage(authorLanguage: string | null | undefined, defaultLanguage: string | null | undefined): string {
+    if (!authorLanguage?.trim() || isSameBaseLanguage(authorLanguage, 'de')) {
+      return defaultLanguage?.trim() || ActionRecommendationDefinitions.FALLBACK_REPLY_LANGUAGE;
+    }
+    return ActionRecommendationDefinitions.FOREIGN_REPLY_LANGUAGE;
+  }
+
+  /** The language code of the author, read as `<authorProfileField>.language` (a code or a `languages` row). */
+  static getAuthorLanguage(definition: ActionRecommendationDefinition, row: Record<string, unknown> | null | undefined): string | null {
+    const profile = definition.authorProfileField ? row?.[definition.authorProfileField] : null;
+    if (!profile || typeof profile !== 'object') {
+      return null;
+    }
+    const language = (profile as { language?: unknown }).language;
+    if (typeof language === 'string') {
+      return language;
+    }
+    const code = (language as { code?: unknown } | null | undefined)?.code;
+    return typeof code === 'string' ? code : null;
   }
 
   /** The item ids of a request: strings or numbers, without duplicates and empty ones, at most `max`. */
