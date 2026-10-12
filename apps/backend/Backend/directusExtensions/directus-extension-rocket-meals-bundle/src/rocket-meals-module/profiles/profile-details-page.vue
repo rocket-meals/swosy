@@ -3,7 +3,7 @@
  * Details of one profile (`profiles/<id>`): avatar and the basics, its devices (with or without push
  * token), its chats and its newest food and app feedbacks. From here support starts a chat or sends
  * a push message to all devices of the profile. Every profile link of the module leads here.
- * Chats that are not done can be marked as done here, one by one or several selected at once.
+ * Chats can be marked as done or deleted here, one by one or several selected at once.
  */
 import { useApi } from '@directus/extensions-sdk';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -17,9 +17,10 @@ import { LivePulseHelper } from '../../helpers/rocket-meals-module/LivePulseHelp
 import { ProfileDetailsHelper, type ModuleProfile, type ModuleProfileDevice } from '../../helpers/rocket-meals-module/ProfileDetailsHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
-import { useChatResolveSelection } from '../composables/useChatResolveSelection';
+import { useChatSelection } from '../composables/useChatSelection';
 import ModuleNavigation from '../module-navigation.vue';
 import ListSelectionBar from '../module-list/list-selection-bar.vue';
+import DeleteConfirmDialog from '../module-list/delete-confirm-dialog.vue';
 import FoodFeedbackRating from '../food-feedbacks/food-feedback-rating.vue';
 import FoodFeedbackStatusChip from '../food-feedbacks/food-feedback-status-chip.vue';
 import ProfileAvatar from './profile-avatar.vue';
@@ -79,7 +80,15 @@ async function reloadChats() {
   chats.value = await getChats();
 }
 
-const { selectableChats, selectedChats, allSelected, someSelected, isSelected, toggleSelected, toggleSelectAll, isUpdating, markResolved } = useChatResolveSelection(chats, reloadChats);
+const { selectableChats, selectedChats, selectedToResolve, allSelected, someSelected, isSelected, toggleSelected, toggleSelectAll, isUpdating, markResolved, deleteChats } = useChatSelection(chats, reloadChats);
+
+const deleteDialogOpen = ref(false);
+
+/** Deletes the selected chats with their messages, after the question in the dialog. */
+async function deleteSelected() {
+  await deleteChats(selectedChats.value);
+  deleteDialogOpen.value = false;
+}
 
 async function load() {
   loading.value = true;
@@ -197,15 +206,20 @@ watch(() => props.profileId, load);
             </h3>
             <div v-if="chats.length === 0" class="empty type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_profile_no_chats) }}</div>
             <list-selection-bar v-if="selectableChats.length > 0" :selected-count="selectedChats.length" :all-selected="allSelected" :some-selected="someSelected" @toggle-all="toggleSelectAll">
-              <v-button v-if="selectedChats.length > 0" small :loading="selectedChats.some(isUpdating)" @click="markResolved(selectedChats)">
+              <v-button v-if="selectedToResolve.length > 0" small :loading="selectedToResolve.some(isUpdating)" @click="markResolved(selectedToResolve)">
                 <v-icon name="task_alt" left small />
                 {{ translate(BackendTranslationKeys.rocket_meals_module_mark_selected_resolved) }}
               </v-button>
+              <v-button v-if="selectedChats.length > 0" small secondary kind="danger" :loading="selectedChats.some(isUpdating)" @click="deleteDialogOpen = true">
+                <v-icon name="delete" left small />
+                {{ translate(BackendTranslationKeys.rocket_meals_module_delete_selected) }}
+              </v-button>
             </list-selection-bar>
+            <delete-confirm-dialog v-model="deleteDialogOpen" :count="selectedChats.length" :loading="selectedChats.some(isUpdating)" @confirm="deleteSelected" />
             <ul v-if="chats.length > 0" class="rows">
               <li v-for="chat in chats" :key="chat.id" class="chat-row">
                 <span class="chat-select">
-                  <v-checkbox v-if="ChatQueryHelper.canMarkResolved(chat)" :model-value="isSelected(chat)" @update:model-value="toggleSelected(chat, $event)" />
+                  <v-checkbox :model-value="isSelected(chat)" @update:model-value="toggleSelected(chat, $event)" />
                 </span>
                 <router-link class="row linked" :to="ChatQueryHelper.getRoute(chat)">
                   <v-icon :name="ChatQueryHelper.getKindIcon(ChatQueryHelper.getKind(chat))" />

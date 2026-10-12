@@ -14,6 +14,7 @@
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { FeatureWishStatus } from 'repo-depkit-common/src/FeatureWishHelper';
@@ -23,9 +24,11 @@ import { ChatQueryHelper } from '../../helpers/rocket-meals-module/ChatQueryHelp
 import { FeatureWishModuleActions } from '../../helpers/rocket-meals-module/FeatureWishModuleActions';
 import { FeatureWishModuleHelper, type FeatureWishListItem } from '../../helpers/rocket-meals-module/FeatureWishModuleHelper';
 import type { FoodFeedbackChatMessage } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import { ModuleDeleteActions } from '../../helpers/rocket-meals-module/ModuleDeleteActions';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 import ModuleNavigation from '../module-navigation.vue';
+import DeleteConfirmDialog from '../module-list/delete-confirm-dialog.vue';
 import ProfileAvatar from '../profiles/profile-avatar.vue';
 import SupportChatConversation from '../support-chat/support-chat-conversation.vue';
 import FeatureWishChip from './feature-wish-chip.vue';
@@ -35,6 +38,30 @@ const props = defineProps<{ wishId: string }>();
 const api = useApi();
 const { useNotificationsStore } = useStores();
 const notificationsStore = useNotificationsStore();
+const router = useRouter();
+
+const deleteDialogOpen = ref(false);
+const deleting = ref(false);
+
+/** Deletes the wish with its chat and messages (likes and duplicates go with it, see feature-wishes-hook) after the question in the dialog, then goes back to the list. */
+async function deleteCurrent() {
+  if (!wish.value) {
+    return;
+  }
+  deleting.value = true;
+  try {
+    const result = await ModuleDeleteActions.deleteItems(api, FeatureWishModuleHelper.FEATURE_WISHES_ENDPOINT, [wish.value]);
+    if (result.failedIds.length > 0) {
+      notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_delete_failed), type: 'error' });
+      return;
+    }
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_deleted, { count: 1 }), type: 'success' });
+    deleteDialogOpen.value = false;
+    await router.push(RocketMealsModulePages.getRoute(page));
+  } finally {
+    deleting.value = false;
+  }
+}
 const { translate, formatDateTime } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.FEATURE_WISHES;
@@ -244,6 +271,9 @@ watch(() => props.wishId, load);
     </template>
 
     <template #actions>
+      <v-button v-if="wish" v-tooltip.bottom="translate(BackendTranslationKeys.delete)" rounded icon secondary kind="danger" :loading="deleting" :aria-label="translate(BackendTranslationKeys.delete)" @click="deleteDialogOpen = true">
+        <v-icon name="delete" />
+      </v-button>
       <v-button v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_feature_wish_open_item)" rounded icon secondary :to="`/content/${CollectionNames.FEATURE_WHISHES}/${wishId}`">
         <v-icon name="open_in_new" />
       </v-button>
@@ -369,6 +399,7 @@ watch(() => props.wishId, load);
 
       <v-progress-circular v-else-if="loading" indeterminate />
     </div>
+    <delete-confirm-dialog v-model="deleteDialogOpen" :count="1" :loading="deleting" @confirm="deleteCurrent" />
   </private-view>
 </template>
 

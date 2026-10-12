@@ -3,7 +3,7 @@
  * Page "Chats": the newest chats that belong to no food or app feedback (those have their own
  * pages), e.g. the ones support started from a profile. Each row shows who takes part, the status
  * and the last message. A new chat is started from a profile, so the button leads to the search.
- * Chats can be marked as done right from the list – one by one or several selected at once.
+ * Chats can be marked as done or deleted right from the list, one by one or several selected at once.
  */
 import { useApi } from '@directus/extensions-sdk';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -16,13 +16,14 @@ import { FoodFeedbackChatHelper } from '../../helpers/rocket-meals-module/FoodFe
 import { ModuleListHelper } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
-import { useChatResolveSelection } from '../composables/useChatResolveSelection';
+import { useChatSelection } from '../composables/useChatSelection';
 import ModuleNavigation from '../module-navigation.vue';
 import ListContent from '../module-list/list-content.vue';
 import ListPagination from '../module-list/list-pagination.vue';
 import ListRow from '../module-list/list-row.vue';
 import ListSearchActions from '../module-list/list-search-actions.vue';
 import ListSelectionBar from '../module-list/list-selection-bar.vue';
+import DeleteConfirmDialog from '../module-list/delete-confirm-dialog.vue';
 import StatusFilterChips from '../module-list/status-filter-chips.vue';
 import FoodFeedbackStatusChip from '../food-feedbacks/food-feedback-status-chip.vue';
 import ProfileAvatar from '../profiles/profile-avatar.vue';
@@ -48,7 +49,15 @@ const currentPage = ref(1);
 const loading = ref(false);
 const loadError = ref(false);
 const pageCount = computed(() => ModuleListHelper.getPageCount(total.value, ChatQueryHelper.PAGE_SIZE));
-const { selectableChats, selectedChats, allSelected, someSelected, isSelected, toggleSelected, toggleSelectAll, isUpdating, markResolved } = useChatResolveSelection(chats, load);
+const { selectableChats, selectedChats, selectedToResolve, allSelected, someSelected, isSelected, toggleSelected, toggleSelectAll, isUpdating, markResolved, deleteChats } = useChatSelection(chats, load);
+
+const deleteDialogOpen = ref(false);
+
+/** Deletes the selected chats with their messages, after the question in the dialog. */
+async function deleteSelected() {
+  await deleteChats(selectedChats.value);
+  deleteDialogOpen.value = false;
+}
 const statusChips = computed(() => ChatQueryHelper.STATUS_FILTERS.map(filter => ({ value: filter, label: translate(FoodFeedbackChatHelper.getFilterLabelKey(filter)) })));
 
 async function loadLatestMessages(chatIds: string[]) {
@@ -144,11 +153,16 @@ onMounted(load);
       <status-filter-chips v-model="activeFilter" :filters="statusChips" />
 
       <list-selection-bar v-if="selectableChats.length > 0" :selected-count="selectedChats.length" :all-selected="allSelected" :some-selected="someSelected" @toggle-all="toggleSelectAll">
-        <v-button v-if="selectedChats.length > 0" small :loading="selectedChats.some(isUpdating)" @click="markResolved(selectedChats)">
+        <v-button v-if="selectedToResolve.length > 0" small :loading="selectedToResolve.some(isUpdating)" @click="markResolved(selectedToResolve)">
           <v-icon name="task_alt" left small />
           {{ translate(BackendTranslationKeys.rocket_meals_module_mark_selected_resolved) }}
         </v-button>
+        <v-button v-if="selectedChats.length > 0" small secondary kind="danger" :loading="selectedChats.some(isUpdating)" @click="deleteDialogOpen = true">
+          <v-icon name="delete" left small />
+          {{ translate(BackendTranslationKeys.rocket_meals_module_delete_selected) }}
+        </v-button>
       </list-selection-bar>
+      <delete-confirm-dialog v-model="deleteDialogOpen" :count="selectedChats.length" :loading="selectedChats.some(isUpdating)" @confirm="deleteSelected" />
 
       <list-content :loading="loading" :load-error="loadError" :empty="chats.length === 0">
         <template #empty>
@@ -158,7 +172,7 @@ onMounted(load);
             {{ translate(BackendTranslationKeys.rocket_meals_module_chat_new) }}
           </v-button>
         </template>
-        <list-row v-for="chat in chats" :key="chat.id" :selectable="ChatQueryHelper.canMarkResolved(chat)" :selected="isSelected(chat)" @open="router.push(ChatQueryHelper.getRoute(chat))" @update:selected="toggleSelected(chat, $event)">
+        <list-row v-for="chat in chats" :key="chat.id" selectable :selected="isSelected(chat)" @open="router.push(ChatQueryHelper.getRoute(chat))" @update:selected="toggleSelected(chat, $event)">
           <div class="avatars">
             <profile-avatar v-for="profile in ChatQueryHelper.getProfiles(chat).slice(0, 3)" :key="profile.id" :profile="profile" :size="40" :link="false" />
             <span v-if="ChatQueryHelper.getProfiles(chat).length === 0" class="no-avatar"><v-icon :name="page.icon" /></span>
