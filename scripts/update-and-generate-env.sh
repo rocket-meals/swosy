@@ -166,13 +166,20 @@ stop_restart_services() {
 # im Container selbst erreichbar (127.0.0.1).
 prepare_maintenance_server() {
   local end="$1" window
-  if window="$(docker compose exec -T rocket-meals-maintenance \
-    wget -qO- --header 'Content-Type: application/json' --post-data "{\"maintenance_end\":\"$end\"}" \
-    "http://127.0.0.1:8081/prepare" 2>/dev/null)"; then
-    log "Wartungsserver vorbereitet: $window"
-  else
-    log "Warnung: Wartungsserver nicht erreichbar, die App bekommt während des Neustarts keine Wartungsanzeige"
-  fi
+  # Neu erstellen, solange Directus noch läuft: So läuft der Wartungsserver mit
+  # dem eben geholten Code (server.mjs ist nur eingebunden, ein laufender
+  # Container würde die alte Version behalten) und holt sich sofort alle Daten.
+  docker compose up -d --force-recreate --no-deps rocket-meals-maintenance >/dev/null 2>&1 || true
+  for _ in $(seq 1 20); do
+    if window="$(docker compose exec -T rocket-meals-maintenance \
+      wget -qO- --header 'Content-Type: application/json' --post-data "{\"maintenance_end\":\"$end\"}" \
+      "http://127.0.0.1:8081/prepare" 2>/dev/null)"; then
+      log "Wartungsserver vorbereitet: $window"
+      return 0
+    fi
+    sleep 1
+  done
+  log "Warnung: Wartungsserver nicht erreichbar, die App bekommt während des Neustarts keine Wartungsanzeige"
 }
 
 log "Starte Update und Env-Generierung in $REPO_DIR (Umgebung: $ENV_NAME)"
