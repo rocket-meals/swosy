@@ -11,6 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
 import usePushNotificationOptInPrompt from '@/hooks/usePushNotificationOptInPrompt';
+import { useFeatureWishesMode } from '@/hooks/useFeatureWishesMode';
 import { PushNotificationOptInCategory } from '@/helper/PushNotificationOptInHelper';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { SET_FEATURE_WISHES_LOCAL_DATA } from '@/redux/Types/types';
@@ -193,9 +194,6 @@ type FeatureWishFormProps = {
 	showReviewAgainHint: boolean;
 	onSubmit: (title: string, description: string | null) => Promise<void>;
 };
-
-/** What the app settings allow: voting on the wishes of others and/or submitting new ones. */
-const useFeatureWishesMode = () => FeatureWishHelper.getMode(useAppSelector(state => state.settings.appSettings));
 
 /** The sub modal to submit a wish or to update an own one. */
 const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initialDescription, isEdit, showReviewAgainHint, onSubmit }) => {

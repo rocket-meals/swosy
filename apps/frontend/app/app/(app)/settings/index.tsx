@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_CONSENT } from '@/redux/Types/types';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_SIMULATE_FEATURE_WISHES_ENABLED, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_CONSENT } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import { sqliteKeyValueStorage, migrateAsyncStorageToSqlite } from '@/redux/storage/sqliteStorage';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
@@ -26,6 +26,7 @@ import { formatPrice, getImageUrl, showFormatedPrice } from '@/constants/HelperF
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { ServerAPI } from '@/redux/actions';
 import { TranslationKeys } from '@/locales/keys';
+import { useFeatureWishesMode } from '@/hooks/useFeatureWishesMode';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { CollectibleAt, DatabaseTypes, CampusSortOption, FeatureWishHelper, GuestAccountHelper } from 'repo-depkit-common';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
@@ -153,7 +154,8 @@ const Settings = () => {
                 });
         }, [showScrollViewModal, translate]);
 
-        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, campusesSortBy } = useAppSelector((state) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, simulateFeatureWishesEnabled, collectibleItemSize, collectibleRandomPosition, selectedCustomer, campusesSortBy } = useAppSelector((state) => state.settings);
+        const featureWishesMode = useFeatureWishesMode();
         const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
         const osmConsent = useAppSelector((state) => ((state.settings as any).osmVectorMapConsent ?? false) as boolean);
         const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'off';
@@ -477,6 +479,13 @@ const Settings = () => {
                 dispatch({
                         type: SET_SIMULATE_EXPO_UPDATE_AVAILABLE,
                         payload: !simulateExpoUpdateAvailable,
+                });
+        };
+
+        const toggleSimulateFeatureWishes = () => {
+                dispatch({
+                        type: SET_SIMULATE_FEATURE_WISHES_ENABLED,
+                        payload: !simulateFeatureWishesEnabled,
                 });
         };
 
@@ -833,7 +842,7 @@ const Settings = () => {
 							handleFunction={openCollectibleSettingsModal}
 							groupPosition="middle"
 						/>
-						{FeatureWishHelper.isEnabled(FeatureWishHelper.getMode(appSettings)) && (
+						{FeatureWishHelper.isEnabled(featureWishesMode) && (
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="lightbulb-on-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feature_wishes)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFeatureWishesModal} groupPosition="middle" />
 						)}
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="license" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.license_information)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/licenseInformation')} groupPosition="middle" />
@@ -922,6 +931,14 @@ const Settings = () => {
 							label={translate(TranslationKeys.simulate_expo_update_available)}
 							isEnabled={simulateExpoUpdateAvailable}
 							onToggle={toggleSimulateExpoUpdate}
+							groupPosition="middle"
+						/>
+						<SettingsListBoolean
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="lightbulb-on-outline" size={24} color={theme.screen.icon} />}
+							label={translate(TranslationKeys.simulate_feature_wishes_enabled)}
+							isEnabled={simulateFeatureWishesEnabled}
+							onToggle={toggleSimulateFeatureWishes}
 							groupPosition="middle"
 						/>
 						<SettingsListEditable
@@ -1049,13 +1066,13 @@ const Settings = () => {
 		campus_area_color, campusSortingLabel, openCampusSortingModal, handleCheckForUpdates,
 		openCollectibleSettingsModal, termsAndPrivacyConsentAcceptedDate, isManagement, dispatch,
 		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,
-		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
-		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey, osmConsent,
+		debugMode, simulateExpoUpdateAvailable, simulateFeatureWishesEnabled, openServerSheet, openFoodOffersTimeSheet,
+		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, toggleSimulateFeatureWishes, osmVectorMapStyleKey, osmConsent,
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal, openAccountRequiredModal,
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 		settingsAvatarConfig, openAvatarEditor,
 		appSettings?.foods_ratings_average_display,
-		appSettings?.feature_wishes_mode, openFeatureWishesModal,
+		featureWishesMode, openFeatureWishesModal,
 		sqliteStorageRefreshSignal, handleSqliteStorageCleared, handleSqliteStorageClearError,
 		asyncStorageUsageTotalBytes, refreshAsyncStorageUsage, openAsyncStorageKeysSheet,
 		isMigratingStorage, handleMigrateStorage,

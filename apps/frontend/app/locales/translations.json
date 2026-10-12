@@ -179,6 +179,16 @@
     "tr": "Hata ayıklama modu",
     "zh": "调试模式"
   },
+  "simulate_feature_wishes_enabled": {
+    "de": "Feature-Wünsche simulieren",
+    "en": "Simulate feature wishes",
+    "ar": "محاكاة اقتراحات الميزات",
+    "es": "Simular deseos de funciones",
+    "fr": "Simuler les souhaits de fonctionnalités",
+    "ru": "Имитировать пожелания функций",
+    "tr": "Özellik isteklerini simüle et",
+    "zh": "模拟功能建议"
+  },
   "simulate_expo_update_available": {
     "de": "Expo-Update verfügbar simulieren",
     "en": "Simulate Expo update available",

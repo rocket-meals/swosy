@@ -4,6 +4,7 @@ import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { FeatureWishHelper } from 'repo-depkit-common';
 import SettingsList from '@/components/SettingsList';
 import { useFeatureWishesModal } from '@/components/FeatureWishes/useFeatureWishesModal';
+import { useFeatureWishesMode } from '@/hooks/useFeatureWishesMode';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
@@ -18,7 +19,8 @@ const FeatureWishesTile: React.FC = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useAppDispatch();
-	const { primaryColor, appSettings } = useAppSelector(state => state.settings);
+	const { primaryColor } = useAppSelector(state => state.settings);
+	const mode = useFeatureWishesMode();
 	const tileHiddenAt = useAppSelector(state => state.settings.featureWishesLocal?.tileHiddenAt ?? null);
 	const { openFeatureWishesModal } = useFeatureWishesModal();
 
@@ -26,7 +28,7 @@ const FeatureWishesTile: React.FC = () => {
 		dispatch({ type: SET_FEATURE_WISHES_LOCAL_DATA, payload: { tileHiddenAt: new Date().toISOString() } });
 	}, [dispatch]);
 
-	if (!FeatureWishHelper.maySubmit(FeatureWishHelper.getMode(appSettings)) || FeatureWishHelper.isTileHidden(tileHiddenAt, new Date())) {
+	if (!FeatureWishHelper.maySubmit(mode) || FeatureWishHelper.isTileHidden(tileHiddenAt, new Date())) {
 		return null;
 	}
 

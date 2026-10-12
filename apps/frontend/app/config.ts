@@ -249,7 +249,8 @@ export function getVersionPatch() {
         //      Enter in the title sends the wish
         // 131: feature wishes: app_settings.feature_wishes_mode (off, vote only, vote and
         //      submit, submit only) replaces the on/off switch
-        return 131;
+        // 132: debug switch "simulate feature wishes" in the settings
+        return 132;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
