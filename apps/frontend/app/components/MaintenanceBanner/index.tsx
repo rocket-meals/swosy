@@ -13,6 +13,10 @@ import useKioskMode from '@/hooks/useKioskMode';
 import { TranslationKeys } from '@/locales/keys';
 import { getMaintenanceNotice, getMillisecondsUntilNextMaintenanceChange } from '@/helper/maintenanceWindowHelper';
 import { useShowMaintenanceModal } from '@/components/MaintenanceModal';
+import { onServerOutageSuspected } from '@/helper/serverOutageHelper';
+
+/** At most one maintenance refresh per this many milliseconds, failing requests come in bursts. */
+const OUTAGE_REFRESH_THROTTLE_MS = 30 * 1000;
 
 /**
  * Warns about a server maintenance (e.g. the daily backend restart) from 30
@@ -68,6 +72,33 @@ const MaintenanceBanner: React.FC = () => {
 				});
 		});
 		return () => subscription.remove();
+	}, [kioskMode]);
+
+	// An app that is already running when the server goes down: answers that look
+	// like an outage (see helper/serverOutageHelper.ts) reload the maintenance
+	// fields, which the maintenance server answers while Directus restarts.
+	useEffect(() => {
+		if (kioskMode) {
+			return;
+		}
+		let lastRefresh = 0;
+		return onServerOutageSuspected(() => {
+			const nowTime = Date.now();
+			if (nowTime - lastRefresh < OUTAGE_REFRESH_THROTTLE_MS) {
+				return;
+			}
+			lastRefresh = nowTime;
+			new AppSettingsHelper()
+				.fetchMaintenanceWindow()
+				.then(maintenanceWindow => {
+					dispatch({ type: SET_APP_SETTINGS, payload: { ...appSettingsRef.current, ...maintenanceWindow } });
+				})
+				.catch(error => {
+					// Without an answer the cached window may still apply.
+					console.log('MaintenanceBanner: could not refresh the maintenance window', error);
+				})
+				.finally(() => setNow(new Date()));
+		});
 	}, [kioskMode]);
 
 	const notice = getMaintenanceNotice(maintenanceStart, maintenanceEnd, now);
