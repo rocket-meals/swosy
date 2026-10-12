@@ -19,6 +19,7 @@ import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExt
 import { FeatureWishModuleActions, type FeatureWishUpdateResult } from '../../helpers/rocket-meals-module/FeatureWishModuleActions';
 import { FeatureWishListFilter, FeatureWishListSort, FeatureWishModuleHelper, type FeatureWishListItem, type FeatureWishListOptions } from '../../helpers/rocket-meals-module/FeatureWishModuleHelper';
 import { FoodFeedbackChatHelper } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
+import { ModuleDeleteActions } from '../../helpers/rocket-meals-module/ModuleDeleteActions';
 import { ModuleListHelper } from '../../helpers/rocket-meals-module/ModuleListHelper';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
 import { WorkflowsActions } from '../../helpers/rocket-meals-module/WorkflowsActions';
@@ -32,6 +33,7 @@ import ListPagination from '../module-list/list-pagination.vue';
 import ListRow from '../module-list/list-row.vue';
 import ListSearchActions from '../module-list/list-search-actions.vue';
 import ListSelectionBar from '../module-list/list-selection-bar.vue';
+import DeleteConfirmDialog from '../module-list/delete-confirm-dialog.vue';
 import StatusFilterChips from '../module-list/status-filter-chips.vue';
 import FeatureWishChip from './feature-wish-chip.vue';
 import WorkflowCard from '../workflows/workflow-card.vue';
@@ -109,6 +111,14 @@ function openWish(wish: FeatureWishListItem) {
 /** Runs a decision on the wishes that are not being updated already, then reloads the list. */
 function decide(wishesToUpdate: readonly FeatureWishListItem[], update: (pending: FeatureWishListItem[]) => Promise<FeatureWishUpdateResult>) {
   return runUpdate(wishesToUpdate, update, BackendTranslationKeys.rocket_meals_module_feature_wish_update_failed);
+}
+
+const deleteDialogOpen = ref(false);
+
+/** Deletes the selected items with their chats, after the question in the dialog. */
+async function deleteSelected() {
+  await runUpdate(selectedWishes.value, pending => ModuleDeleteActions.deleteItems(api, FeatureWishModuleHelper.FEATURE_WISHES_ENDPOINT, pending), BackendTranslationKeys.rocket_meals_module_delete_failed);
+  deleteDialogOpen.value = false;
 }
 
 function acceptSuggestions(wishesToUpdate: readonly FeatureWishListItem[]) {
@@ -248,7 +258,12 @@ onBeforeUnmount(() => {
           <v-icon name="public" left small />
           {{ translate(BackendTranslationKeys.rocket_meals_module_feature_wish_publish_selected) }}
         </v-button>
+        <v-button v-if="selectedWishes.length > 0" small secondary kind="danger" :loading="selectedWishes.some(isUpdating)" @click="deleteDialogOpen = true">
+          <v-icon name="delete" left small />
+          {{ translate(BackendTranslationKeys.rocket_meals_module_delete_selected) }}
+        </v-button>
       </list-selection-bar>
+      <delete-confirm-dialog v-model="deleteDialogOpen" :count="selectedWishes.length" :loading="selectedWishes.some(isUpdating)" @confirm="deleteSelected" />
 
       <list-content :loading="loading" :load-error="loadError" :empty="wishes.length === 0">
         <list-row v-for="wish in wishes" :key="wish.id" selectable :selected="isSelected(wish)" @open="openWish(wish)" @update:selected="toggleSelected(wish, $event)">

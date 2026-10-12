@@ -11,6 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
 import usePushNotificationOptInPrompt from '@/hooks/usePushNotificationOptInPrompt';
+import { useFeatureWishesMode } from '@/hooks/useFeatureWishesMode';
 import { PushNotificationOptInCategory } from '@/helper/PushNotificationOptInHelper';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { SET_FEATURE_WISHES_LOCAL_DATA } from '@/redux/Types/types';
@@ -206,6 +207,9 @@ const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initial
 	const unchanged = isEdit && title.trim() === (initialTitle ?? '').trim() && description.trim() === (initialDescription ?? '').trim();
 
 	const handleSubmit = useCallback(async () => {
+		if (submitting || unchanged) {
+			return;
+		}
 		const text = FeatureWishHelper.validateText({ title, description });
 		if (!text.ok) {
 			showToast(translate(TranslationKeys.feature_wishes_title_missing), 'error');
@@ -221,7 +225,7 @@ const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initial
 		} finally {
 			setSubmitting(false);
 		}
-	}, [title, description, onSubmit, showToast, translate]);
+	}, [submitting, unchanged, title, description, onSubmit, showToast, translate]);
 
 	const inputStyle = [styles.input, { color: theme.screen.text, borderColor: theme.screen.placeholder }];
 
@@ -235,7 +239,12 @@ const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initial
 				style={inputStyle}
 				placeholderTextColor={theme.screen.placeholder}
 				accessibilityLabel={translate(TranslationKeys.feature_wishes_field_title)}
-				autoFocus={!initialTitle}
+				// Enter in the title sends the wish, the description is optional.
+				returnKeyType={isEdit ? 'done' : 'send'}
+				onSubmitEditing={() => void handleSubmit()}
+				// No autoFocus: the form replaces the content of the already open sheet, and a focus while
+				// it mounts passes the sheet's keyboard tracking, so the sheet did not lift above the
+				// keyboard and the button stayed hidden. A tap into the field lifts it as it should.
 			/>
 			<Text style={[styles.counter, { color: theme.screen.placeholder }]}>{`${title.length} / ${FeatureWishHelper.TITLE_MAX_LENGTH}`}</Text>
 			<Text style={[styles.label, { color: theme.screen.text }]}>{translate(TranslationKeys.feature_wishes_field_description)}</Text>
@@ -276,6 +285,7 @@ const FeatureWishDetails: React.FC<FeatureWishDetailsProps> = ({ view, likeId: i
 	const { translate } = useLanguage();
 	const showToast = useToast();
 	const { primaryColor } = useAppSelector(state => state.settings);
+	const mode = useFeatureWishesMode();
 	const { update } = useFeatureWishesLocal();
 	const helper = useMemo(() => new FeatureWishesHelper(), []);
 	const { getStateLabel, getExtraLines } = useWishTexts();
@@ -286,7 +296,7 @@ const FeatureWishDetails: React.FC<FeatureWishDetailsProps> = ({ view, likeId: i
 
 	const shown = view.original ?? null;
 	const description = shown ? shown.description : view.description;
-	const canLike = !view.isOwn && view.status === FeatureWishStatus.PUBLISHED;
+	const canLike = FeatureWishHelper.mayVote(mode) && !view.isOwn && view.status === FeatureWishStatus.PUBLISHED;
 
 	const toggleLike = useCallback(async () => {
 		if (busy) {
@@ -406,6 +416,8 @@ const FeatureWishesList: React.FC<FeatureWishesListProps> = ({ openForm, openDet
 	const choicesByField = useAppSelector(state => state.settings.directusFieldChoices);
 	const { profile } = useAppSelector(state => state.authReducer);
 	const profileId: string | null = profile?.id ?? null;
+	const mode = useFeatureWishesMode();
+	const mayVote = FeatureWishHelper.mayVote(mode);
 	const { local, update } = useFeatureWishesLocal();
 	const helper = useMemo(() => new FeatureWishesHelper(), []);
 	const { getStateLabel, getExtraLines } = useWishTexts();
@@ -419,7 +431,8 @@ const FeatureWishesList: React.FC<FeatureWishesListProps> = ({ openForm, openDet
 	const load = useCallback(async () => {
 		setLoading(true);
 		try {
-			const popularWishes = await helper.fetchPopular(POPULAR_LIMIT);
+			// Without voting the wishes of others are not listed, so they are not loaded either.
+			const popularWishes = mayVote ? await helper.fetchPopular(POPULAR_LIMIT) : [];
 			let views: WishView[] = [];
 			let likes: Record<string, string> = { ...local.likeIdsByWishId };
 
@@ -469,7 +482,7 @@ const FeatureWishesList: React.FC<FeatureWishesListProps> = ({ openForm, openDet
 		} finally {
 			setLoading(false);
 		}
-	}, [helper, profileId, local.ownWishes, local.likeIdsByWishId, update, showToast, translate]);
+	}, [mayVote, helper, profileId, local.ownWishes, local.likeIdsByWishId, update, showToast, translate]);
 
 	useEffect(() => {
 		load();
@@ -521,7 +534,7 @@ const FeatureWishesList: React.FC<FeatureWishesListProps> = ({ openForm, openDet
 
 	return (
 		<View style={styles.list}>
-			<MyButton text={translate(TranslationKeys.feature_wishes_submit)} onPress={() => openForm({})} icon="lightbulb-on-outline" />
+			{FeatureWishHelper.maySubmit(mode) ? <MyButton text={translate(TranslationKeys.feature_wishes_submit)} onPress={() => openForm({})} icon="lightbulb-on-outline" /> : null}
 			{loading ? <ActivityIndicator style={styles.loading} color={theme.screen.text} /> : null}
 			{!loading && ownViews.length > 0 ? (
 				<View>
@@ -531,7 +544,7 @@ const FeatureWishesList: React.FC<FeatureWishesListProps> = ({ openForm, openDet
 					))}
 				</View>
 			) : null}
-			{!loading ? (
+			{!loading && mayVote ? (
 				<View>
 					<SettingsGroupTitle>{translate(TranslationKeys.feature_wishes_popular)}</SettingsGroupTitle>
 					{popularOthers.length === 0 ? <Text style={[styles.empty, { color: theme.screen.placeholder }]}>{translate(TranslationKeys.feature_wishes_empty)}</Text> : null}

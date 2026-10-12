@@ -96,7 +96,7 @@ export type AppSettings = {
   date_created?: string | null;
   date_privacy_policy_updated?: string | null;
   date_updated?: string | null;
-  feature_wishes_enabled?: boolean | null;
+  feature_wishes_mode?: string | null;
   food_responsible_organization_link?: string | null;
   food_responsible_organization_name?: string | null;
   food_responsible_settings: string;

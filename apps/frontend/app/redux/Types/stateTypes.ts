@@ -70,6 +70,8 @@ export type SettingsState = {
         foodOffersNextDayThreshold: string | null;
         debugMode: boolean;
         simulateExpoUpdateAvailable: boolean;
+        /** Debug: feature wishes show as if the server allowed voting and submitting. Only the look, the server still decides. */
+        simulateFeatureWishesEnabled: boolean;
         collectibleItemSize: 'small' | 'medium' | 'large';
         collectibleRandomPosition: boolean;
         mapTileVariantKey: string;

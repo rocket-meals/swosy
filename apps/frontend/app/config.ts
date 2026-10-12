@@ -244,7 +244,13 @@ export function getVersionPatch() {
         // 126: food comments are asked with a larger gap (1, 3, 10, 20, 40, then doubling)
         // 127: the push question has a playbook page (always show / ask with logic)
         // 128: push messages also pop up at the top while the app is open
-        return 128;
+        // 129: settings: "Support & FAQ" in its own group "Hilfe & Kontakt"
+        // 130: feature wish form: the sheet lifts above the keyboard again (no autoFocus),
+        //      Enter in the title sends the wish
+        // 131: feature wishes: app_settings.feature_wishes_mode (off, vote only, vote and
+        //      submit, submit only) replaces the on/off switch
+        // 132: debug switch "simulate feature wishes" in the settings
+        return 132;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
