@@ -266,3 +266,13 @@ describe('progress and logs', () => {
     expect(ActionRecommendationModuleHelper.getLastLogLine({ id: '1', logs: null })).toBeNull();
   });
 });
+
+describe('reply length', () => {
+  it('asks for short replies in both prompts', () => {
+    const recommendation = ActionRecommendationPrompt.buildRecommendationPrompt(foodFeedbacks, [{ id: 'f1', comment: 'Nicht lecker', rating: 2 }], 'de', { f1: 'de-DE' });
+    const chatReply = ActionRecommendationPrompt.buildChatReplyPrompt(foodFeedbacks.chat!, {}, [{ role: ChatReplyRole.GUEST, text: 'Nicht lecker' }], 'de-DE');
+    for (const prompt of [recommendation, chatReply]) {
+      expect(prompt.system).toContain('höchstens zwei kurze Sätze');
+    }
+  });
+});

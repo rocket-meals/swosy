@@ -175,13 +175,15 @@ desselben Eintrags.
 - **In der Liste** markiert ✨ (`auto_awesome`) den empfohlenen Button. Unter dem Kommentar stehen
   Begründung und Antwortvorschlag, mit „Chat mit Vorschlag starten“ (öffnet den Chat mit dem
   Vorschlag in der Eingabe) und „Vorschlag verwerfen“.
-- **Im Chat** steht der Vorschlag als Platzhalter in der Eingabe, „Vorschlag einfügen“ übernimmt ihn.
-- **„KI-Antwortvorschlag“ im Chat** (unabhängig vom Schalter in den App-Settings, nur ein Anbieter unter
+- **Im Chat** steht der Vorschlag vollständig in einer Karte „Vorschlag der KI“ über der Eingabe,
+  „In Eingabe übernehmen“ übernimmt ihn. Die Karte verschwindet, solange die Eingabe genau diesen Text enthält.
+- **„KI-Vorschlag erstellen“ im Chat** (unabhängig vom Schalter in den App-Settings, nur ein Anbieter unter
   Einstellungen > KI ist nötig, sonst ausgegraut): schickt den Kommentar und den ganzen Verlauf an die KI,
   jede Nachricht nur mit ihrer Rolle (`guest` oder `support`, keine Nicknames), dazu Name der Speise und
   Bewertung. Die KI antwortet in der Rolle des Supports eines Anbieters von Speisen für Studierende,
-  in der Sprache des Autors (Regel wie oben). Der Text landet in der Eingabe und ersetzt, was dort
-  stand. Gespeichert wird nichts (`POST /action-recommendations/chat-reply`).
+  in der Sprache des Autors (Regel wie oben). Der neue Vorschlag ersetzt den in der Karte. Ist die Eingabe leer, landet er
+  direkt darin, sonst wartet er in der Karte, damit nichts Getipptes überschrieben wird. Gespeichert
+  wird nichts (`POST /action-recommendations/chat-reply`).
 - **Erledigt:** Antworten, „Als erledigt markieren“ oder Verwerfen setzt die Empfehlung auf
   `archived`.
 - **Gelöschte Einträge:** Der Hook löscht für jede Collection die Empfehlungen gelöschter Einträge mit,

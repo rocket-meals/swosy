@@ -43,6 +43,9 @@ const ITEM_TEXT_MAX_LENGTH = 2000;
 /** At most this many messages of a chat, the newest, go to the AI. */
 const CHAT_MESSAGES_MAX = 50;
 
+/** Replies read like a short chat message, not like a letter. */
+const REPLY_LENGTH_RULE = 'Halte die Antwort kurz wie eine Chat-Nachricht: höchstens zwei kurze Sätze und höchstens 250 Zeichen, ohne Anrede-Floskeln, ohne Aufzählungen oder Beispiele, höchstens eine Rückfrage.';
+
 const WRITING_RULE = 'Verwende keine Gedankenstriche und keine Semikolons, sondern Kommas, Doppelpunkte oder neue Sätze.';
 
 function trimText(value: unknown, maxLength: number): string {
@@ -72,7 +75,8 @@ ${actionLines}
 
 Ein Mensch entscheidet am Ende, du gibst nur eine Empfehlung.
 Schreibe die Begründung ("reason") kurz in der Sprache mit dem Code "${language}".
-Einen Antwortvorschlag ("draft_reply") gibt es nur bei "${ActionRecommendationAction.REPLY}". Schreibe ihn in der Sprache mit dem Code aus "reply_language" des Eintrags (ohne Angabe: "${ActionRecommendationDefinitions.FALLBACK_REPLY_LANGUAGE}"), auch wenn der Eintrag selbst in einer anderen Sprache geschrieben ist. Sonst ist er null.
+Einen Antwortvorschlag ("draft_reply") gibt es nur bei "${ActionRecommendationAction.REPLY}". ${REPLY_LENGTH_RULE}
+Schreibe ihn in der Sprache mit dem Code aus "reply_language" des Eintrags (ohne Angabe: "${ActionRecommendationDefinitions.FALLBACK_REPLY_LANGUAGE}"), auch wenn der Eintrag selbst in einer anderen Sprache geschrieben ist. Sonst ist er null.
 ${WRITING_RULE}
 
 Antworte ausschließlich mit einem JSON-Objekt in genau dieser Form, ohne weiteren Text:
@@ -136,6 +140,7 @@ Antworte ausschließlich mit einem JSON-Objekt in genau dieser Form, ohne weiter
     const system = `Du bist der Support eines Anbieters von Speisen für Studierende (ein Studierendenwerk mit Mensen und Cafeterien) und betreust die Chats seiner Mensa- und Campus-App. ${chat.promptContext}
 Unten steht der bisherige Verlauf: jede Nachricht hat die Rolle "${ChatReplyRole.GUEST}" (der Gast, der geschrieben hat) oder "${ChatReplyRole.SUPPORT}" (ihr).
 Schreibe die nächste Nachricht des Supports: freundlich, kurz und sachlich, geh auf das zuletzt Gesagte ein, versprich nichts, was ihr nicht sicher halten könnt, und nenne keine Namen.
+${REPLY_LENGTH_RULE}
 Schreibe in der Sprache mit dem Code "${replyLanguage}".
 ${WRITING_RULE}
 
