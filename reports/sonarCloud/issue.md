@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
-| 🐛 Reliability | 3 | 3 |
+| 🐛 Reliability | 5 | 5 |
 | 🔧 Maintainability | 6 | 6 |
 
-**Total issues:** 11
+**Total issues:** 13
 
 ---
 
@@ -22,7 +22,15 @@
   apps/maintenance-server/server.mjs:197
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L197
 
-## 🐛 Reliability (3/3)
+## 🐛 Reliability (5/5)
+
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/frontend/app/app/(app)/experimentell/store-versions/index.tsx:92
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/store-versions/index.tsx#L92
+
+- **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
+  apps/frontend/app/app/(app)/experimentell/store-versions/index.tsx:93
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/store-versions/index.tsx#L93
 
 - **Async method 'handleNotification' has no 'await' expression.**
   apps/frontend/app/helper/NotificationHelper.ts:87
