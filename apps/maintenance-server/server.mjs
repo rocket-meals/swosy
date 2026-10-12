@@ -4,16 +4,22 @@
 // Traefik routes the backend path here only while no healthy Directus
 // container exists (same rule, lowest priority, see docker-compose.yaml).
 //
-// While Directus is up, this server polls the public app_settings every
-// POLL_INTERVAL_SECONDS and keeps the last answer in memory. While Directus is
-// down, it answers GET /items/app_settings with that copy, so the app keeps its
-// full settings and the MaintenanceBanner shows the maintenance window. Every
-// other request gets a Directus-style 503, so the app keeps its cached data.
+// While Directus is up, this server polls every POLL_INTERVAL_SECONDS and
+// keeps in memory what the app needs to look and work as before:
+// - the public app_settings (the MaintenanceBanner reads the window from them),
+// - /server/info (project name, color and logo id),
+// - the project logo image.
+// While Directus is down, it answers these from the copy. Every other request
+// gets a Directus-style 503, so the app keeps its cached data.
 //
-// SIGHUP polls immediately. The restart script sends it right before it stops
-// Directus, so the copy already contains the freshly announced window.
+// Right before a planned restart the restart script calls the control port
+// (PREPARE, only reachable inside the container): the server polls once more
+// and sets the maintenance window itself, from now until the estimated end.
+// A window entered in Directus (app_settings.maintenance_start/_end) that is
+// running at that time is used instead.
 //
-// No dependencies, plain Node.js, so the container needs no build step.
+// SIGHUP polls immediately. No dependencies, plain Node.js, so the container
+// needs no build step.
 
 import http from 'node:http';
 import { pathToFileURL } from 'node:url';
@@ -22,6 +28,9 @@ const MILLISECONDS_PER_MINUTE = 60 * 1000;
 
 /** How far an unannounced or overrunning maintenance is extended into the future. */
 export const MAINTENANCE_EXTENSION_MINUTES = 10;
+
+/** A prepared window is forgotten this long after its end, so a later crash does not reuse it. */
+export const PREPARED_WINDOW_VALID_AFTER_END_MINUTES = 60;
 
 /**
  * Same query as AppSettingsHelper.fetchAppSettings in
@@ -43,39 +52,69 @@ function roundUpToFiveMinutes(time) {
 	return Math.ceil(time / step) * step;
 }
 
-/**
- * Maintenance window to send while Directus is down.
- *
- * An announced window that is currently active is kept as it is. Otherwise
- * (outage without announcement, outage before the announced start, restart
- * takes longer than announced) the window starts when the outage was first
- * noticed and ends MAINTENANCE_EXTENSION_MINUTES from now. The start stays
- * stable during one outage, because the app remembers a dismissed banner per
- * maintenance_start.
- */
-export function resolveMaintenanceWindow(maintenanceStart, maintenanceEnd, outageStart, now) {
+function extendedEnd(nowTime) {
+	return new Date(roundUpToFiveMinutes(nowTime + MAINTENANCE_EXTENSION_MINUTES * MILLISECONDS_PER_MINUTE)).toISOString();
+}
+
+/** True if the window from app_settings is running at nowTime. */
+function isRunning(maintenanceStart, maintenanceEnd, nowTime) {
 	const start = parseTime(maintenanceStart);
 	const end = parseTime(maintenanceEnd);
+	return start !== null && end !== null && start <= nowTime && nowTime < end;
+}
+
+/**
+ * Maintenance window to send while Directus is down, in this order:
+ * 1. a window entered in Directus that is running now,
+ * 2. the window the restart script prepared (extended if the restart takes longer),
+ * 3. otherwise (crash, no preparation) from the first noticed request until
+ *    MAINTENANCE_EXTENSION_MINUTES from now.
+ * The start stays stable during one outage, because the app remembers a
+ * dismissed banner per maintenance_start.
+ */
+export function resolveMaintenanceWindow(maintenanceStart, maintenanceEnd, preparedWindow, outageStart, now) {
 	const nowTime = now.getTime();
-	if (start !== null && end !== null && start <= nowTime && nowTime < end) {
+	if (isRunning(maintenanceStart, maintenanceEnd, nowTime)) {
 		return { maintenance_start: maintenanceStart, maintenance_end: maintenanceEnd };
 	}
-	const extendedEnd = roundUpToFiveMinutes(nowTime + MAINTENANCE_EXTENSION_MINUTES * MILLISECONDS_PER_MINUTE);
+	if (preparedWindow) {
+		const preparedEnd = parseTime(preparedWindow.maintenance_end);
+		return {
+			maintenance_start: preparedWindow.maintenance_start,
+			maintenance_end: preparedEnd !== null && nowTime < preparedEnd ? preparedWindow.maintenance_end : extendedEnd(nowTime),
+		};
+	}
 	return {
 		maintenance_start: new Date(Math.min(outageStart.getTime(), nowTime)).toISOString(),
-		maintenance_end: new Date(extendedEnd).toISOString(),
+		maintenance_end: extendedEnd(nowTime),
+	};
+}
+
+/**
+ * The window to prepare before a planned restart: a window entered in
+ * Directus that is running now, otherwise from now until estimatedEnd.
+ */
+export function prepareMaintenanceWindow(appSettings, estimatedEnd, now) {
+	const nowTime = now.getTime();
+	if (isRunning(appSettings?.maintenance_start, appSettings?.maintenance_end, nowTime)) {
+		return { maintenance_start: appSettings.maintenance_start, maintenance_end: appSettings.maintenance_end };
+	}
+	const end = parseTime(estimatedEnd);
+	return {
+		maintenance_start: new Date(nowTime).toISOString(),
+		maintenance_end: end !== null && end > nowTime ? new Date(end).toISOString() : extendedEnd(nowTime),
 	};
 }
 
 /** The app_settings answer while Directus is down, or null if no copy was polled yet. */
-export function buildAppSettingsResponse(appSettings, outageStart, now) {
+export function buildAppSettingsResponse(appSettings, preparedWindow, outageStart, now) {
 	if (!appSettings) {
 		return null;
 	}
 	return {
 		data: {
 			...appSettings,
-			...resolveMaintenanceWindow(appSettings.maintenance_start, appSettings.maintenance_end, outageStart, now),
+			...resolveMaintenanceWindow(appSettings.maintenance_start, appSettings.maintenance_end, preparedWindow, outageStart, now),
 		},
 	};
 }
@@ -90,31 +129,65 @@ const SERVICE_UNAVAILABLE_BODY = {
 	errors: [{ message: 'Server is under maintenance.', extensions: { code: 'SERVICE_UNAVAILABLE' } }],
 };
 
+async function fetchJsonData(url) {
+	const response = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+	if (!response.ok) {
+		throw new Error(`HTTP ${response.status}`);
+	}
+	const body = await response.json();
+	if (!body?.data || typeof body.data !== 'object') {
+		throw new Error('response has no data object');
+	}
+	return body.data;
+}
+
 export function createMaintenanceServer({ directusUrl, pollIntervalSeconds, log = console.log }) {
 	let appSettings = null;
+	let serverInfo = null;
+	// { id, contentType, body } of the project logo
+	let logo = null;
+	let preparedWindow = null;
 	let outageStart = null;
+
+	async function pollLogo(logoId) {
+		if (!logoId || logo?.id === logoId) {
+			return;
+		}
+		const response = await fetch(`${directusUrl}/assets/${encodeURIComponent(logoId)}`, { signal: AbortSignal.timeout(10_000) });
+		if (!response.ok) {
+			throw new Error(`logo HTTP ${response.status}`);
+		}
+		logo = { id: logoId, contentType: response.headers.get('content-type') ?? 'application/octet-stream', body: Buffer.from(await response.arrayBuffer()) };
+	}
 
 	async function poll() {
 		try {
-			const response = await fetch(`${directusUrl}/items/app_settings?${APP_SETTINGS_QUERY}`, { signal: AbortSignal.timeout(10_000) });
-			if (!response.ok) {
-				throw new Error(`HTTP ${response.status}`);
-			}
-			const body = await response.json();
-			if (!body?.data || typeof body.data !== 'object') {
-				throw new Error('response has no data object');
-			}
+			const [nextAppSettings, nextServerInfo] = await Promise.all([fetchJsonData(`${directusUrl}/items/app_settings?${APP_SETTINGS_QUERY}`), fetchJsonData(`${directusUrl}/server/info`)]);
 			if (!appSettings || outageStart) {
-				log('Directus reachable, app_settings copy updated');
+				log('Directus reachable, copy of app_settings and server info updated');
 			}
-			appSettings = body.data;
+			appSettings = nextAppSettings;
+			serverInfo = nextServerInfo;
 			outageStart = null;
+			await pollLogo(serverInfo?.project?.project_logo).catch(error => log(`Project logo not loaded (${JSON.stringify(error.message)})`));
 		} catch (error) {
 			// Expected while Directus restarts, the last copy is kept.
 			if (!outageStart) {
-				log(`Directus not reachable (${JSON.stringify(error.message)}), keeping the last app_settings copy`);
+				log(`Directus not reachable (${JSON.stringify(error.message)}), keeping the last copy`);
 			}
 		}
+		const preparedEnd = parseTime(preparedWindow?.maintenance_end);
+		if (preparedEnd !== null && Date.now() > preparedEnd + PREPARED_WINDOW_VALID_AFTER_END_MINUTES * MILLISECONDS_PER_MINUTE) {
+			preparedWindow = null;
+		}
+	}
+
+	/** Called by the restart script right before Directus is stopped. */
+	async function prepare(estimatedEnd) {
+		await poll();
+		preparedWindow = prepareMaintenanceWindow(appSettings, estimatedEnd, new Date());
+		log(`Prepared for a restart, maintenance window ${preparedWindow.maintenance_start} - ${preparedWindow.maintenance_end}`);
+		return preparedWindow;
 	}
 
 	function setCorsHeaders(request, response) {
@@ -144,38 +217,78 @@ export function createMaintenanceServer({ directusUrl, pollIntervalSeconds, log 
 		const now = new Date();
 		// Traefik only sends requests here while Directus is down.
 		outageStart ??= now;
-		if (request.method === 'GET' && normalizePath(request.url) === '/items/app_settings') {
-			const body = buildAppSettingsResponse(appSettings, outageStart, now);
+		const path = normalizePath(request.url);
+		if (request.method === 'GET' && path === '/items/app_settings') {
+			const body = buildAppSettingsResponse(appSettings, preparedWindow, outageStart, now);
 			if (body) {
 				sendJson(response, 200, body);
 				return;
 			}
 			// Without a copy a partial answer would replace the settings the app has cached.
 		}
+		if (request.method === 'GET' && path === '/server/info' && serverInfo) {
+			sendJson(response, 200, { data: serverInfo });
+			return;
+		}
+		if (request.method === 'GET' && logo && path === `/assets/${logo.id}`) {
+			// The app asks for resized variants via query parameters, the original fits all of them.
+			response.writeHead(200, { 'Content-Type': logo.contentType, 'Cache-Control': 'no-store' });
+			response.end(logo.body);
+			return;
+		}
 		response.setHeader('Retry-After', String(MAINTENANCE_EXTENSION_MINUTES * 60));
 		sendJson(response, 503, SERVICE_UNAVAILABLE_BODY);
 	}
 
+	/** Control port, bound to 127.0.0.1: only reachable with "docker compose exec" into this container. */
+	function handleControl(request, response) {
+		if (request.method !== 'POST' || normalizePath(request.url) !== '/prepare') {
+			sendJson(response, 404, { error: 'unknown control request' });
+			return;
+		}
+		let raw = '';
+		request.on('data', chunk => {
+			raw += chunk;
+		});
+		request.on('end', () => {
+			let estimatedEnd = null;
+			try {
+				estimatedEnd = JSON.parse(raw || '{}').maintenance_end ?? null;
+			} catch {
+				// No or invalid body: the window gets the default length.
+			}
+			prepare(estimatedEnd).then(
+				window => sendJson(response, 200, window),
+				error => sendJson(response, 500, { error: error.message })
+			);
+		});
+	}
+
 	const server = http.createServer(handle);
+	const controlServer = http.createServer(handleControl);
 	let pollTimer = null;
 
 	return {
 		server,
+		controlServer,
 		poll,
-		start(port) {
+		prepare,
+		start(port, controlPort) {
 			server.listen(port, () => log(`Maintenance server listening on port ${port}, polling ${directusUrl} every ${pollIntervalSeconds}s`));
+			controlServer.listen(controlPort, '127.0.0.1', () => log(`Control port ${controlPort} on 127.0.0.1`));
 			poll();
 			pollTimer = setInterval(poll, pollIntervalSeconds * 1000);
 		},
 		stop() {
 			clearInterval(pollTimer);
 			server.close();
+			controlServer.close();
 		},
 	};
 }
 
 function main() {
-	const { DIRECTUS_URL, PORT = '8080', POLL_INTERVAL_SECONDS = '60' } = process.env;
+	const { DIRECTUS_URL, PORT = '8080', CONTROL_PORT = '8081', POLL_INTERVAL_SECONDS = '60' } = process.env;
 	if (!DIRECTUS_URL) {
 		console.error('DIRECTUS_URL is not set');
 		process.exit(1);
@@ -184,7 +297,7 @@ function main() {
 		directusUrl: DIRECTUS_URL,
 		pollIntervalSeconds: Number.parseInt(POLL_INTERVAL_SECONDS, 10),
 	});
-	maintenanceServer.start(Number.parseInt(PORT, 10));
+	maintenanceServer.start(Number.parseInt(PORT, 10), Number.parseInt(CONTROL_PORT, 10));
 	process.on('SIGHUP', () => {
 		console.log('SIGHUP received, polling Directus now');
 		maintenanceServer.poll();
