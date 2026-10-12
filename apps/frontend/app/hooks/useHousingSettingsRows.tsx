@@ -26,6 +26,7 @@ const useHousingSettingsRows = ({ onSort, iconSize = 20 }: { onSort: () => void;
 		() => [
 			{
 				key: 'housing-sort',
+				searchText: translate(TranslationKeys.sort),
 				render: (groupPosition, showSeparator) => (
 					<SettingsList
 						iconBgColor={housingAreaColor}
@@ -41,6 +42,7 @@ const useHousingSettingsRows = ({ onSort, iconSize = 20 }: { onSort: () => void;
 			},
 			{
 				key: 'housing-free-apartments-notification',
+				searchText: translate(TranslationKeys.housing_free_apartments_notification),
 				render: groupPosition => <FreeApartmentsNotificationToggle groupPosition={groupPosition} iconSize={iconSize} />,
 			},
 		],

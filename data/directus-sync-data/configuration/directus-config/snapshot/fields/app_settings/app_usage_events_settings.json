@@ -1,0 +1,38 @@
+{
+  "collection": "app_settings",
+  "field": "app_usage_events_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "app_usage_events_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-detail",
+    "note": null,
+    "options": {
+      "headerIcon": "query_stats",
+      "start": "closed"
+    },
+    "readonly": false,
+    "required": false,
+    "searchable": true,
+    "sort": 27,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Nutzungsereignisse"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

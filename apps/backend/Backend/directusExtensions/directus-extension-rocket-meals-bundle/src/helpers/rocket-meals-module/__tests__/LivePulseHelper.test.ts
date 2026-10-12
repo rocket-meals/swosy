@@ -301,6 +301,39 @@ describe('LivePulseHelper', () => {
       expect(LivePulseHelper.getFoodRoute({ ...item, foodId: undefined }, new Set())).toBeUndefined();
     });
 
+    it('links an opened building and an opened marking to their items', () => {
+      const feed = LivePulseHelper.buildFeed({
+        usageEvents: [
+          { id: 'e1', event_name: 'building_details_opened', date_created: minutesAgo(1), payload: { building_id: 'b 1', building_name: 'Mensa am Campus' } },
+          { id: 'e2', event_name: 'marking_details_opened', date_created: minutesAgo(2), payload: { marking_id: 7, marking_name: 'Vegan' } },
+        ],
+      });
+      expect(feed.map(item => [item.type, item.buildingId ?? item.markingId, item.buildingName ?? item.markingName])).toEqual([
+        [LivePulseFeedType.BUILDING_OPENED, 'b 1', 'Mensa am Campus'],
+        [LivePulseFeedType.MARKING_OPENED, '7', 'Vegan'],
+      ]);
+      expect(feed.map(item => LivePulseHelper.getLinkRoute(item, new Set()))).toEqual(['/content/buildings/b%201', '/content/markings/7']);
+    });
+
+    it('shows an opened screen with its label and without a link', () => {
+      const feed = LivePulseHelper.buildFeed({ usageEvents: [{ id: 'e1', event_name: 'map_screen_opened', screen_name: 'map', date_created: minutesAgo(1) }] });
+      expect(feed[0]).toMatchObject({ type: LivePulseFeedType.SCREEN_OPENED, eventName: 'map_screen_opened' });
+      expect(LivePulseHelper.getScreenLabelKey(feed[0]!.eventName)).toBe(BackendTranslationKeys.rocket_meals_module_live_pulse_screen_map);
+      expect(LivePulseHelper.getLinkRoute(feed[0]!, new Set())).toBeUndefined();
+    });
+
+    it('keeps unknown events as plain usage events and food events linked to the food', () => {
+      const feed = LivePulseHelper.buildFeed({
+        usageEvents: [
+          { id: 'e1', event_name: 'native_review_prompt_requested', date_created: minutesAgo(1) },
+          { id: 'e2', event_name: 'food_details_opened', date_created: minutesAgo(2), payload: { food_id: 'food-2' } },
+        ],
+      });
+      expect(feed.map(item => item.type)).toEqual([LivePulseFeedType.USAGE_EVENT, LivePulseFeedType.FOOD_OPENED]);
+      expect(LivePulseHelper.getScreenLabelKey('native_review_prompt_requested')).toBeUndefined();
+      expect(LivePulseHelper.getLinkRoute(feed[1]!, new Set())).toBe('/content/foods/food-2');
+    });
+
     it('splits a translated text around the food name', () => {
       expect(LivePulseHelper.splitAtMarker('hat \uE000 bewertet', '\uE000')).toEqual({ before: 'hat ', after: ' bewertet', found: true });
       expect(LivePulseHelper.splitAtMarker('plant einen Mensabesuch', '\uE000')).toEqual({ before: 'plant einen Mensabesuch', after: '', found: false });

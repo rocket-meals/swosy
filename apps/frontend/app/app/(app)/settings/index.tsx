@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Dimensions, FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, FlatList, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MyImage from '@/components/MyImage';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
@@ -28,7 +28,8 @@ import { ServerAPI } from '@/redux/actions';
 import { TranslationKeys } from '@/locales/keys';
 import { useFeatureWishesMode } from '@/hooks/useFeatureWishesMode';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { CollectibleAt, DatabaseTypes, CampusSortOption, FeatureWishHelper, GuestAccountHelper } from 'repo-depkit-common';
+import useTrackScreenOpened from '@/hooks/useTrackScreenOpened';
+import { AppUsageEventNames, CollectibleAt, DatabaseTypes, CampusSortOption, FeatureWishHelper, GuestAccountHelper } from 'repo-depkit-common';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
@@ -51,7 +52,8 @@ import useFirstDayOfWeekModal from '@/hooks/useFirstDayOfWeekModal';
 import useHousingSortingModal from '@/hooks/useHousingSortingModal';
 import useHousingSettingsRows from '@/hooks/useHousingSettingsRows';
 import useFoodofferSettingsRows from '@/hooks/useFoodofferSettingsRows';
-import SettingsGroupRows from '@/components/SettingsGroupRows';
+import SettingsGroupRows, { SettingsGroupRow } from '@/components/SettingsGroupRows';
+import { matchesSearch, normalizeSearchText } from '@/helper/SettingsSearchHelper';
 import useCampusSortingModal from '@/hooks/useCampusSortingModal';
 import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
 import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityModal';
@@ -67,6 +69,23 @@ import { useFeatureWishesModal } from '@/components/FeatureWishes/useFeatureWish
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
 const ListItemSeparator = () => <View style={{ height: 10 }} />;
+
+type SettingsListItem = { key: string; element: React.ReactElement };
+
+/** One group of the settings screen. While searching, only its rows that match are shown, all of them when its title matches. */
+type SettingsSection = {
+	key: string;
+	title: string;
+	titleNativeID?: string;
+	/** Additional words the group title is found by. */
+	searchText?: string;
+	rows: (SettingsGroupRow | null | undefined | false)[];
+};
+
+const SECTION_STYLE = { gap: 10 } as const;
+const GROUP_STYLE = { gap: 0 } as const;
+
+const settingsRow = (key: string, searchText: string, render: SettingsGroupRow['render']): SettingsGroupRow => ({ key, searchText, render });
 
 function resolveColorSchemeLabel(selectedTheme: string, translate: (key: string) => string): string {
 	if (selectedTheme === 'systematic') {
@@ -107,10 +126,12 @@ function resolveAccountDebugValue(isRegisteredUser: boolean, isGuestUser: boolea
 
 const Settings = () => {
         useSetPageTitle(TranslationKeys.settings);
+        useTrackScreenOpened(AppUsageEventNames.SETTINGS_SCREEN_OPENED, 'settings');
         const { theme, setThemeMode } = useTheme();
         const dispatch = useDispatch();
         const toast = useToast();
         const { translate, language } = useLanguage();
+        const [searchQuery, setSearchQuery] = useState('');
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
@@ -611,266 +632,258 @@ const Settings = () => {
 
 	const showFriendsInSettings = !!(appSettings?.friends_enabled || isDevMode);
 
-	const listData = useMemo(() => {
-		const rows: Array<{ key: string; element: React.ReactElement }> = [];
-		const sectionStyle = { gap: 10 } as const;
-		const groupStyle = { gap: 0 } as const;
+	const { sections, trailingItems } = useMemo(() => {
+		const chevron = <Octicons name="chevron-right" size={24} color={theme.screen.icon} />;
 
 		// === Personalization ===
-		rows.push(
-			{
+		const personalizationSection: SettingsSection = {
 			key: 'section-account',
-			element: (
-				<View style={sectionStyle}>
-					<SettingsGroupTitle>{translate(TranslationKeys.group_personalization)}</SettingsGroupTitle>
-					<View style={groupStyle}>
+			title: translate(TranslationKeys.group_personalization),
+			rows: [
+				settingsRow('avatar', translate(TranslationKeys.avatar_appearance), groupPosition => (
+					<SettingsList
+						leftIconComponent={
+							settingsAvatarConfig ? (
+								<MyAvatar
+									config={settingsAvatarConfig}
+									size={AVATAR_SETTINGS_ROW_SIZE / 2}
+									rounded={true}
+									backgroundColor={AVATAR_BACKGROUND}
+								/>
+							) : (
+								<View style={{ width: AVATAR_SETTINGS_ROW_SIZE / 2, height: AVATAR_SETTINGS_ROW_SIZE / 2, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 4, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+									<MaterialCommunityIcons name="account-outline" size={20} color={theme.screen.icon} />
+								</View>
+							)
+						}
+						value={translate(TranslationKeys.avatar_appearance)}
+						rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
+						handleFunction={() => openAvatarEditor(false)}
+						isAccountRequired={!isRegisteredUser}
+						onAccountRequired={openAccountRequiredModal}
+						groupPosition={groupPosition}
+					/>
+				)),
+				settingsRow('nickname', translate(TranslationKeys.nickname), groupPosition => (
+					<SettingsListEditable
+						iconBgColor={primaryColor}
+						leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
+						label={translate(TranslationKeys.nickname)}
+						value={profile?.id ? profile?.nickname ?? undefined : nickNameLocal}
+						handleFunction={openNicknameSheet}
+						groupPosition={groupPosition}
+					/>
+				)),
+				showFriendsInSettings &&
+					settingsRow('friendships', translate(TranslationKeys.friendships), groupPosition => (
 						<SettingsList
-							leftIconComponent={
-								settingsAvatarConfig ? (
-									<MyAvatar
-										config={settingsAvatarConfig}
-										size={AVATAR_SETTINGS_ROW_SIZE / 2}
-										rounded={true}
-										backgroundColor={AVATAR_BACKGROUND}
-									/>
-								) : (
-									<View style={{ width: AVATAR_SETTINGS_ROW_SIZE / 2, height: AVATAR_SETTINGS_ROW_SIZE / 2, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 4, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
-										<MaterialCommunityIcons name="account-outline" size={20} color={theme.screen.icon} />
-									</View>
-								)
-							}
-							value={translate(TranslationKeys.avatar_appearance)}
-							rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
-							handleFunction={() => openAvatarEditor(false)}
-							isAccountRequired={!isRegisteredUser}
-							onAccountRequired={openAccountRequiredModal}
-							groupPosition="top"
-						/>
-						<SettingsListEditable
 							iconBgColor={primaryColor}
-							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
-							label={translate(TranslationKeys.nickname)}
-							value={profile?.id ? profile?.nickname ?? undefined : nickNameLocal}
-							handleFunction={openNicknameSheet}
-							groupPosition="middle"
+							leftIcon={<MaterialCommunityIcons name="account-multiple-plus" size={24} color={theme.screen.icon} />}
+							label={translate(TranslationKeys.friendships)}
+							value={String(acceptedFriendsCount)}
+							rightIcon={chevron}
+							handleFunction={openFriendsModal}
+							isAccountRequired={!isRegisteredUser}
+							accountRequiredGroupPosition="single"
+							onAccountRequired={openAccountRequiredModal}
+							groupPosition={groupPosition}
 						/>
-						{showFriendsInSettings && (
-							<SettingsList
-								iconBgColor={primaryColor}
-								leftIcon={<MaterialCommunityIcons name="account-multiple-plus" size={24} color={theme.screen.icon} />}
-								label={translate(TranslationKeys.friendships)}
-								value={String(acceptedFriendsCount)}
-								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-								handleFunction={openFriendsModal}
-								isAccountRequired={!isRegisteredUser}
-								accountRequiredGroupPosition="single"
-								onAccountRequired={openAccountRequiredModal}
-								groupPosition="middle"
-							/>
-						)}
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition="bottom" nativeID={ComponentIds.SETTINGS_LANGUAGE} />
-					</View>
-				</View>
-			),
-		},
-			// === Canteen Usage ===
-			{
+					)),
+				settingsRow('language', translate(TranslationKeys.language), groupPosition => (
+					<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition={groupPosition} nativeID={ComponentIds.SETTINGS_LANGUAGE} />
+				)),
+			],
+		};
+
+		// === Canteen Usage ===
+		const canteenSection: SettingsSection = {
 			key: 'section-canteen',
-			element: (
-				<View style={sectionStyle}>
-					<SettingsGroupTitle nativeID={ComponentIds.SETTINGS_GROUP_CANTEEN_USAGE}>{translate(TranslationKeys.group_canteen_usage)}</SettingsGroupTitle>
-					<View style={groupStyle}>
-						<SettingsGroupRows
-							rows={[
-								foodofferSettingsRows.canteen,
-								foodofferSettingsRows.priceGroup,
-								{
-									key: 'account-balance',
-									render: (groupPosition, showSeparator) => (
-										<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition={groupPosition} showSeparator={showSeparator} />
-									),
-								},
-								foodofferSettingsRows.eatingHabits,
-								foodofferSettingsRows.sort,
-								foodofferSettingsRows.averageRating,
-								showFriendsInSettings && {
-									key: 'canteen-visits-visibility',
-									render: (groupPosition, showSeparator) => (
-										<SettingsList
-											iconBgColor={foods_area_color}
-											leftIcon={<MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />}
-											label={translate(TranslationKeys.canteen_visits_visibility)}
-											value={canteenVisitsVisibilityLabel}
-											rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-											handleFunction={openCanteenVisitsVisibilityModal}
-											groupPosition={groupPosition}
-											showSeparator={showSeparator}
-										/>
-									),
-								},
-								{
-									key: 'notification',
-									render: (groupPosition, showSeparator) => (
-										<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition={groupPosition} showSeparator={showSeparator} />
-									),
-								},
-							]}
+			title: translate(TranslationKeys.group_canteen_usage),
+			titleNativeID: ComponentIds.SETTINGS_GROUP_CANTEEN_USAGE,
+			rows: [
+				foodofferSettingsRows.canteen,
+				foodofferSettingsRows.priceGroup,
+				settingsRow('account-balance', translate(TranslationKeys.accountbalance), (groupPosition, showSeparator) => (
+					<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={chevron} handleFunction={() => router.navigate('/account-balance')} groupPosition={groupPosition} showSeparator={showSeparator} />
+				)),
+				foodofferSettingsRows.eatingHabits,
+				foodofferSettingsRows.sort,
+				foodofferSettingsRows.averageRating,
+				showFriendsInSettings &&
+					settingsRow('canteen-visits-visibility', translate(TranslationKeys.canteen_visits_visibility), (groupPosition, showSeparator) => (
+						<SettingsList
+							iconBgColor={foods_area_color}
+							leftIcon={<MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />}
+							label={translate(TranslationKeys.canteen_visits_visibility)}
+							value={canteenVisitsVisibilityLabel}
+							rightIcon={chevron}
+							handleFunction={openCanteenVisitsVisibilityModal}
+							groupPosition={groupPosition}
+							showSeparator={showSeparator}
 						/>
-					</View>
-				</View>
-			),
-		},
-		);
+					)),
+				settingsRow('notification', translate(TranslationKeys.notification), (groupPosition, showSeparator) => (
+					<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={chevron} handleFunction={() => router.navigate('/notification')} groupPosition={groupPosition} showSeparator={showSeparator} />
+				)),
+			],
+		};
 
 		// === App Settings ===
 		const colorSchemeValue = resolveColorSchemeLabel(selectedTheme, translate);
 		const drawerPositionValue = resolveDrawerPositionLabel(drawerPosition, translate);
-		rows.push(
-			{
+		const appSettingsSection: SettingsSection = {
 			key: 'section-app-settings',
-			element: (
-				<View style={sectionStyle}>
-					<SettingsGroupTitle nativeID={ComponentIds.SETTINGS_GROUP_APP_SETTINGS}>{translate(TranslationKeys.group_app_settings)}</SettingsGroupTitle>
-					<View style={groupStyle}>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="theme-light-dark" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.color_scheme)} value={colorSchemeValue} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openColorSchemeSheet()} groupPosition="top" nativeID={ComponentIds.SETTINGS_COLOR_SCHEME} />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.drawer_config_position)} value={drawerPositionValue} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openMenuPositionModal} groupPosition="middle" />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.amount_columns_for_cards)} value={resolveAmountColumnsLabel(amountColumnsForcard, translate)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openCardColumnsModal} groupPosition="middle" />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Feather name="calendar" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.first_day_of_week)} value={translate(firstDayOfTheWeek?.name)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFirstDayOfWeekModal} groupPosition="bottom" />
-					</View>
-				</View>
-			),
-		},
-			// === Map settings ===
-			{
+			title: translate(TranslationKeys.group_app_settings),
+			titleNativeID: ComponentIds.SETTINGS_GROUP_APP_SETTINGS,
+			rows: [
+				settingsRow('color-scheme', translate(TranslationKeys.color_scheme), groupPosition => (
+					<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="theme-light-dark" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.color_scheme)} value={colorSchemeValue} rightIcon={chevron} handleFunction={() => openColorSchemeSheet()} groupPosition={groupPosition} nativeID={ComponentIds.SETTINGS_COLOR_SCHEME} />
+				)),
+				settingsRow('drawer-position', translate(TranslationKeys.drawer_config_position), groupPosition => (
+					<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.drawer_config_position)} value={drawerPositionValue} rightIcon={chevron} handleFunction={openMenuPositionModal} groupPosition={groupPosition} />
+				)),
+				settingsRow('amount-columns', translate(TranslationKeys.amount_columns_for_cards), groupPosition => (
+					<SettingsList iconBgColor={primaryColor} leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.amount_columns_for_cards)} value={resolveAmountColumnsLabel(amountColumnsForcard, translate)} rightIcon={chevron} handleFunction={openCardColumnsModal} groupPosition={groupPosition} />
+				)),
+				settingsRow('first-day-of-week', translate(TranslationKeys.first_day_of_week), groupPosition => (
+					<SettingsList iconBgColor={primaryColor} leftIcon={<Feather name="calendar" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.first_day_of_week)} value={translate(firstDayOfTheWeek?.name)} rightIcon={chevron} handleFunction={openFirstDayOfWeekModal} groupPosition={groupPosition} />
+				)),
+			],
+		};
+
+		// === Map settings ===
+		const mapSection: SettingsSection = {
 			key: 'section-map-settings',
-			element: (
-				<View style={sectionStyle}>
-					<SettingsGroupTitle>Karte</SettingsGroupTitle>
-					<View style={groupStyle}>
-						<SettingsListMyMapThemeSelection
-							selectedMapStyleKey={osmVectorMapStyleKey}
-							onMapStyleKeyChange={(key) => dispatch({ type: SET_OSM_VECTOR_MAP_STYLE_KEY, payload: key })}
-							osmConsent={osmConsent}
-							onOsmConsentChange={(value) => dispatch({ type: SET_OSM_VECTOR_MAP_CONSENT, payload: value })}
-							iconBgColor={primaryColor}
-							leftIcon={<MaterialCommunityIcons name="map-outline" size={24} color={theme.screen.icon} />}
-							label="Kartenmaterial"
-							modalTitle="🗺️ Kartenmaterial"
-							groupPosition="single"
-							nativeID={ComponentIds.SETTINGS_MAP_VARIANTS}
-						/>
-					</View>
-				</View>
-			),
-		},
-		);
+			title: 'Karte',
+			searchText: translate(TranslationKeys.map),
+			rows: [
+				settingsRow('map-variants', `Kartenmaterial ${translate(TranslationKeys.map)}`, groupPosition => (
+					<SettingsListMyMapThemeSelection
+						selectedMapStyleKey={osmVectorMapStyleKey}
+						onMapStyleKeyChange={(key) => dispatch({ type: SET_OSM_VECTOR_MAP_STYLE_KEY, payload: key })}
+						osmConsent={osmConsent}
+						onOsmConsentChange={(value) => dispatch({ type: SET_OSM_VECTOR_MAP_CONSENT, payload: value })}
+						iconBgColor={primaryColor}
+						leftIcon={<MaterialCommunityIcons name="map-outline" size={24} color={theme.screen.icon} />}
+						label="Kartenmaterial"
+						modalTitle="🗺️ Kartenmaterial"
+						groupPosition={groupPosition}
+						nativeID={ComponentIds.SETTINGS_MAP_VARIANTS}
+					/>
+				)),
+			],
+		};
 
 		// === Housing (conditional) ===
-		if (appSettings?.housing_enabled) {
-			rows.push({
-				key: 'section-housing',
-				element: (
-					<View style={sectionStyle}>
-						<SettingsGroupTitle>{translate(TranslationKeys.housing)}</SettingsGroupTitle>
-						<View style={groupStyle}>
-							<SettingsGroupRows rows={housingSettingsRows} />
-						</View>
-					</View>
-				),
-			});
-		}
+		const housingSection: SettingsSection | null = appSettings?.housing_enabled
+			? { key: 'section-housing', title: translate(TranslationKeys.housing), rows: housingSettingsRows }
+			: null;
 
 		// === Campus (conditional) ===
-		if (appSettings?.campus_enabled) {
-			rows.push({
-				key: 'section-campus',
-				element: (
-					<View style={sectionStyle}>
-						<SettingsGroupTitle>{translate(TranslationKeys.campus)}</SettingsGroupTitle>
-						<View style={groupStyle}>
+		const campusSection: SettingsSection | null = appSettings?.campus_enabled
+			? {
+					key: 'section-campus',
+					title: translate(TranslationKeys.campus),
+					rows: [
+						settingsRow('campus-sort', translate(TranslationKeys.sort), groupPosition => (
 							<SettingsList
 								iconBgColor={campus_area_color}
 								leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />}
 								label={translate(TranslationKeys.sort)}
 								value={campusSortingLabel}
-								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+								rightIcon={chevron}
 								handleFunction={openCampusSortingModal}
-								groupPosition="single"
+								groupPosition={groupPosition}
 							/>
-						</View>
-					</View>
-				),
-			});
-		}
+						)),
+					],
+				}
+			: null;
 
 		// === Help & Contact ===
-		rows.push(
-			{
+		const helpSection: SettingsSection = {
 			key: 'section-help',
-			element: (
-				<View style={sectionStyle}>
-					<SettingsGroupTitle>{translate(TranslationKeys.group_help_and_contact)}</SettingsGroupTitle>
-					<View style={groupStyle}>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="support-agent" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feedback_support_faq)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/support-FAQ')} groupPosition="single" nativeID={ComponentIds.SETTINGS_FEEDBACK_SUPPORT_FAQ} />
-					</View>
-				</View>
-			),
-		},
-			// === App Management ===
-			{
+			title: translate(TranslationKeys.group_help_and_contact),
+			rows: [
+				settingsRow('feedback-support-faq', translate(TranslationKeys.feedback_support_faq), groupPosition => (
+					<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="support-agent" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feedback_support_faq)} rightIcon={chevron} handleFunction={() => router.navigate('/support-FAQ')} groupPosition={groupPosition} nativeID={ComponentIds.SETTINGS_FEEDBACK_SUPPORT_FAQ} />
+				)),
+			],
+		};
+
+		// === App Management ===
+		const managementSection: SettingsSection = {
 			key: 'section-management',
-			element: (
-				<View style={sectionStyle}>
-					<SettingsGroupTitle>{translate(TranslationKeys.group_app_management)}</SettingsGroupTitle>
-					<View style={groupStyle}>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="cloud-download-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.CHECK_FOR_APP_UPDATES)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleCheckForUpdates} groupPosition="top" />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.dataAccess)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/data-access')} groupPosition="middle" />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="event" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.events)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/events')} groupPosition="middle" />
-						<SettingsList
-							iconBgColor={primaryColor}
-							leftIcon={<MaterialCommunityIcons name="trophy-outline" size={24} color={theme.screen.icon} />}
-							label={translate(TranslationKeys.collectible_events)}
-							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-							handleFunction={() => router.navigate('/collectible-events')}
-							groupPosition="middle"
-						/>
-						<SettingsList
-							iconBgColor={primaryColor}
-							leftIcon={<MaterialCommunityIcons name="trophy-outline" size={24} color={theme.screen.icon} />}
-							label={translate(TranslationKeys.collectible_event_settings)}
-							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-							handleFunction={openCollectibleSettingsModal}
-							groupPosition="middle"
-						/>
-						{FeatureWishHelper.isEnabled(featureWishesMode) && (
-							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="lightbulb-on-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feature_wishes)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFeatureWishesModal} groupPosition="middle" />
-						)}
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="license" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.license_information)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/licenseInformation')} groupPosition="middle" />
-						{/* Terms & Conditions */}
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="file-document-check" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date)} value={termsAndPrivacyConsentAcceptedDate ?? undefined} handleFunction={() => {}} groupPosition="bottom" />
-					</View>
-				</View>
-			),
-		},
-			// === Account (Login/Logout, Delete) ===
-			{
+			title: translate(TranslationKeys.group_app_management),
+			rows: [
+				settingsRow('check-for-updates', translate(TranslationKeys.CHECK_FOR_APP_UPDATES), groupPosition => (
+					<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="cloud-download-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.CHECK_FOR_APP_UPDATES)} rightIcon={chevron} handleFunction={handleCheckForUpdates} groupPosition={groupPosition} />
+				)),
+				settingsRow('data-access', translate(TranslationKeys.dataAccess), groupPosition => (
+					<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.dataAccess)} rightIcon={chevron} handleFunction={() => router.navigate('/data-access')} groupPosition={groupPosition} />
+				)),
+				settingsRow('events', translate(TranslationKeys.events), groupPosition => (
+					<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="event" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.events)} rightIcon={chevron} handleFunction={() => router.navigate('/events')} groupPosition={groupPosition} />
+				)),
+				settingsRow('collectible-events', translate(TranslationKeys.collectible_events), groupPosition => (
+					<SettingsList
+						iconBgColor={primaryColor}
+						leftIcon={<MaterialCommunityIcons name="trophy-outline" size={24} color={theme.screen.icon} />}
+						label={translate(TranslationKeys.collectible_events)}
+						rightIcon={chevron}
+						handleFunction={() => router.navigate('/collectible-events')}
+						groupPosition={groupPosition}
+					/>
+				)),
+				settingsRow('collectible-event-settings', translate(TranslationKeys.collectible_event_settings), groupPosition => (
+					<SettingsList
+						iconBgColor={primaryColor}
+						leftIcon={<MaterialCommunityIcons name="trophy-outline" size={24} color={theme.screen.icon} />}
+						label={translate(TranslationKeys.collectible_event_settings)}
+						rightIcon={chevron}
+						handleFunction={openCollectibleSettingsModal}
+						groupPosition={groupPosition}
+					/>
+				)),
+				FeatureWishHelper.isEnabled(featureWishesMode) &&
+					settingsRow('feature-wishes', translate(TranslationKeys.feature_wishes), groupPosition => (
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="lightbulb-on-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feature_wishes)} rightIcon={chevron} handleFunction={openFeatureWishesModal} groupPosition={groupPosition} />
+					)),
+				settingsRow('license-information', translate(TranslationKeys.license_information), groupPosition => (
+					<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="license" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.license_information)} rightIcon={chevron} handleFunction={() => router.navigate('/licenseInformation')} groupPosition={groupPosition} />
+				)),
+				// Terms & Conditions
+				settingsRow('terms-and-privacy', translate(TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date), groupPosition => (
+					<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="file-document-check" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date)} value={termsAndPrivacyConsentAcceptedDate ?? undefined} handleFunction={() => {}} groupPosition={groupPosition} />
+				)),
+			],
+		};
+
+		// === Account (Login/Logout, Delete) ===
+		const accountSection: SettingsSection = {
 			key: 'section-account-actions',
-			element: (
-				<View style={sectionStyle}>
-					<SettingsGroupTitle>{translate(TranslationKeys.group_account)}</SettingsGroupTitle>
-					<View style={groupStyle}>
-						{isGuestUser && (
-							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="account-clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={translate(TranslationKeys.guest_account)} groupPosition="top" nativeID={ComponentIds.SETTINGS_GUEST_ACCOUNT} />
-						)}
-						{/* Guests can't log out and come back - their "log out" deletes the account (see useConfirmLogoutModal). */}
-						<SettingsList iconBgColor={primaryColor} leftIcon={isGuestUser ? <AntDesign name="user-delete" size={22} color={theme.screen.icon} /> : <Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={isGuestUser ? <Octicons name="chevron-right" size={24} color={theme.screen.icon} /> : <Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={resolveLogoutGroupPosition(isGuestUser, isRegisteredUser)} />
-						{isRegisteredUser && !isGuestUser && (
-							<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="bottom" />
-						)}
-					</View>
-				</View>
-			),
-		},
+			title: translate(TranslationKeys.group_account),
+			rows: [
+				isGuestUser &&
+					settingsRow('guest-account', `${translate(TranslationKeys.account)} ${translate(TranslationKeys.guest_account)}`, groupPosition => (
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="account-clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={translate(TranslationKeys.guest_account)} groupPosition={groupPosition} nativeID={ComponentIds.SETTINGS_GUEST_ACCOUNT} />
+					)),
+				// Guests can't log out and come back - their "log out" deletes the account (see useConfirmLogoutModal).
+				settingsRow('logout', logoutButtonLabel, groupPosition => (
+					<SettingsList iconBgColor={primaryColor} leftIcon={isGuestUser ? <AntDesign name="user-delete" size={22} color={theme.screen.icon} /> : <Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={isGuestUser ? chevron : <Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={groupPosition} />
+				)),
+				isRegisteredUser &&
+					!isGuestUser &&
+					settingsRow('account-delete', translate(TranslationKeys.account_delete), groupPosition => (
+						<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={chevron} handleFunction={handleDeleteAccount} groupPosition={groupPosition} />
+					)),
+			],
+		};
+
+		const groupStyle = { gap: 0 } as const;
+
+		// Not searchable: only shown while the search field is empty.
+		const trailing: SettingsListItem[] = [
 			// === Footer ===
 			{
 			key: 'footer',
@@ -1052,9 +1065,12 @@ const Settings = () => {
 			key: 'collectible-spot',
 			element: <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings} />,
 		},
-		);
+		];
 
-		return rows;
+		return {
+			sections: [personalizationSection, canteenSection, appSettingsSection, mapSection, housingSection, campusSection, helpSection, managementSection, accountSection].filter((section): section is SettingsSection => !!section),
+			trailingItems: trailing,
+		};
 	}, [
 		translate, primaryColor, theme, isRegisteredUser, user?.id, profile, nickNameLocal,
 		logoutButtonLabel, logoutButtonHandler, openNicknameSheet, openLanguageModal, languageName,
@@ -1077,7 +1093,40 @@ const Settings = () => {
 		asyncStorageUsageTotalBytes, refreshAsyncStorageUsage, openAsyncStorageKeysSheet,
 		isMigratingStorage, handleMigrateStorage,
 		isClearingAsyncStorage, handleClearAsyncStorage,
+		isGuestUser, logoutButtonHandler, handleDeleteAccount,
 	]);
+
+	const listData = useMemo(() => {
+		const query = normalizeSearchText(searchQuery);
+		const items: SettingsListItem[] = [];
+		for (const section of sections) {
+			const rows = section.rows.filter((row): row is SettingsGroupRow => !!row);
+			const sectionMatches = !query || matchesSearch(`${section.title} ${section.searchText ?? ''}`, query);
+			const visibleRows = sectionMatches ? rows : rows.filter(row => matchesSearch(row.searchText, query));
+			if (visibleRows.length > 0) {
+				items.push({
+					key: section.key,
+					element: (
+						<View style={SECTION_STYLE}>
+							<SettingsGroupTitle nativeID={section.titleNativeID}>{section.title}</SettingsGroupTitle>
+							<View style={GROUP_STYLE}>
+								<SettingsGroupRows rows={visibleRows} />
+							</View>
+						</View>
+					),
+				});
+			}
+		}
+		if (!query) {
+			items.push(...trailingItems);
+		} else if (items.length === 0) {
+			items.push({
+				key: 'nothing-found',
+				element: <Text style={[searchStyles.nothingFound, { color: theme.screen.text }]}>{translate(TranslationKeys.nothing_found)}</Text>,
+			});
+		}
+		return items;
+	}, [sections, trailingItems, searchQuery, theme.screen.text, translate]);
 
 	let listWidth: '100%' | '80%' = '100%';
 	if (windowWidth >= 500 && isWeb) {
@@ -1086,6 +1135,30 @@ const Settings = () => {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
+			<View style={[searchStyles.searchBarContainer, { width: listWidth, paddingHorizontal: horizontalScreenPadding }]}>
+				<View style={[searchStyles.searchBar, { borderColor: theme.screen.placeholder, backgroundColor: theme.screen.background }]}>
+					<MaterialIcons name="search" size={22} color={theme.screen.icon} />
+					<TextInput
+						style={[searchStyles.searchInput, { color: theme.screen.text }]}
+						cursorColor={theme.screen.text}
+						placeholderTextColor={theme.screen.placeholder}
+						onChangeText={setSearchQuery}
+						value={searchQuery}
+						placeholder={translate(TranslationKeys.search_settings_here)}
+						accessibilityLabel={translate(TranslationKeys.search)}
+						autoCorrect={false}
+						autoCapitalize="none"
+						returnKeyType="search"
+						clearButtonMode="never"
+						nativeID={ComponentIds.SETTINGS_SEARCH}
+					/>
+					{searchQuery.length > 0 && (
+						<TouchableOpacity onPress={() => setSearchQuery('')} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.reset)} hitSlop={10}>
+							<MaterialIcons name="close" size={22} color={theme.screen.icon} />
+						</TouchableOpacity>
+					)}
+				</View>
+			</View>
 			<FlatList
 				data={listData}
 				keyExtractor={(item) => item.key}
@@ -1099,12 +1172,42 @@ const Settings = () => {
 				]}
 				contentContainerStyle={{
 					paddingHorizontal: horizontalScreenPadding,
-					paddingVertical: 40,
+					paddingTop: 20,
+					paddingBottom: 40,
 					backgroundColor: theme.screen.background,
 				}}
 				ItemSeparatorComponent={ListItemSeparator}
+				keyboardShouldPersistTaps="handled"
 			/>
 		</SafeAreaView>
 	);
 };
 export default Settings;
+
+const searchStyles = StyleSheet.create({
+	searchBarContainer: {
+		alignSelf: 'center',
+		paddingTop: 16,
+	},
+	searchBar: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		height: 46,
+		borderRadius: 23,
+		borderWidth: 1,
+		paddingHorizontal: 16,
+	},
+	searchInput: {
+		flex: 1,
+		height: '100%',
+		fontFamily: 'Poppins_400Regular',
+		fontSize: 16,
+	},
+	nothingFound: {
+		textAlign: 'center',
+		fontFamily: 'Poppins_400Regular',
+		fontSize: 16,
+		paddingVertical: 20,
+	},
+});

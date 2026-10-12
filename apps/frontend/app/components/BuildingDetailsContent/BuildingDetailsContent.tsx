@@ -1,5 +1,5 @@
 import { ScrollView, Text, View, useWindowDimensions } from 'react-native';
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import LocationInformation from '@/components/LocationInformation/LocationInformation';
 import BuildingDescription from '@/components/BuildingDescription';
@@ -21,6 +21,7 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle/SettingsGroupTit
 import DebugView from '@/components/DebugView';
 import { TranslationKeys } from '@/locales/keys';
 import { CampusDetailTab } from '@/constants/TabEnums';
+import { trackBuildingDetailsOpened } from '@/helper/AppUsageEventHelper';
 
 export interface BuildingDetailsContentProps {
     id?: string;
@@ -42,6 +43,15 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
         if (!id) return null;
         return state.campus.campusesDict[String(id)] || null;
     }, shallowEqual);
+
+    // Anonymous usage event, once per opened building (sheet on the map and campus details screen).
+    const buildingNameRef = useRef(campusDetails?.alias);
+    buildingNameRef.current = campusDetails?.alias;
+    useEffect(() => {
+        if (id) {
+            void trackBuildingDetailsOpened({ buildingId: String(id), buildingName: buildingNameRef.current });
+        }
+    }, [id]);
 
     const { buildingsOrganizations, organisations } = useAppSelector((state) => ({
         buildingsOrganizations: state.canteenReducer.buildingsOrganizations as DatabaseTypes.BuildingsOrganizations[],

@@ -55,4 +55,5 @@ export * from './src/BoxplotHelper';
 export * from './src/CompressionHelper';
 export * from './src/WeatherHelper';
 export * from './src/FeatureWishHelper';
+export * from './src/AppUsageEventNames';
 export * from './src/translations';

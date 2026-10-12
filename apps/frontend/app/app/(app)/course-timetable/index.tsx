@@ -3,7 +3,7 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, useWindow
 import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { addDays, format, isValid, parse } from 'date-fns';
-import { CollectibleAt } from 'repo-depkit-common';
+import { AppUsageEventNames, CollectibleAt } from 'repo-depkit-common';
 import { myContrastColor } from '@/helper/ColorHelper';
 import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import IconButton from '@/components/UI/IconButton';
@@ -19,6 +19,7 @@ import SettingsList from '@/components/SettingsList';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import useTrackScreenOpened from '@/hooks/useTrackScreenOpened';
 import { useSmartReadableDateMethod } from '@/helper/DateHelper';
 import useCourseTimetable from '@/hooks/useCourseTimetable';
 import useCourseTimetableLunchSuggestions, { LunchSuggestionDay } from '@/hooks/useCourseTimetableLunchSuggestions';
@@ -65,6 +66,7 @@ function startOfWeekFor(date: Date, firstWeekday: string): Date {
 
 const CourseTimetableScreen = () => {
 	useSetPageTitle(TranslationKeys.course_timetable);
+	useTrackScreenOpened(AppUsageEventNames.COURSE_TIMETABLE_SCREEN_OPENED, 'course-timetable');
 	const { theme } = useTheme();
 	const isDark = theme === darkTheme;
 	const { translate } = useLanguage();

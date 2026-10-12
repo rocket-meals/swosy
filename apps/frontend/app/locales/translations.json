@@ -329,6 +329,16 @@
     "tr": "Yerleşkeyi burada ara...",
     "zh": "在这里搜索校园..."
   },
+  "search_settings_here": {
+    "de": "Einstellungen durchsuchen...",
+    "en": "Search settings...",
+    "ar": "ابحث في الإعدادات...",
+    "es": "Buscar ajustes...",
+    "fr": "Rechercher dans les paramètres...",
+    "ru": "Поиск по настройкам...",
+    "tr": "Ayarlarda ara...",
+    "zh": "搜索设置..."
+  },
   "search_apartment_here": {
     "de": "Apartment suchen...",
     "en": "Search apartment here...",

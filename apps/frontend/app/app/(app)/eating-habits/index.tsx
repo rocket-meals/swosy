@@ -12,10 +12,11 @@ import { useFocusEffect } from 'expo-router';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import useTrackScreenOpened from '@/hooks/useTrackScreenOpened';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
+import { AppUsageEventNames, CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsList from '@/components/SettingsList';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
@@ -34,6 +35,7 @@ import useAppRatingScore from '@/hooks/useAppRatingScore';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
+	useTrackScreenOpened(AppUsageEventNames.EATING_HABITS_SCREEN_OPENED, 'eating-habits');
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();

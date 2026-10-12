@@ -250,7 +250,9 @@ export function getVersionPatch() {
         // 131: feature wishes: app_settings.feature_wishes_mode (off, vote only, vote and
         //      submit, submit only) replaces the on/off switch
         // 132: debug switch "simulate feature wishes" in the settings
-        return 132;
+        // 133: settings search, "further settings" in the housing options, usage events for
+        //      screens, buildings and markings, filtered by app_settings.app_usage_events_enabled
+        return 133;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
