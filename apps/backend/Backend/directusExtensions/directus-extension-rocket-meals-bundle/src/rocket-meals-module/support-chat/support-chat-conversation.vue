@@ -57,21 +57,31 @@ const sending = ref(false);
 const messagesContainer = ref<HTMLElement>();
 const composerInput = ref<HTMLTextAreaElement>();
 
-/** The placeholder of the input: the suggestion when there is one, the usual text otherwise. */
-const composerPlaceholder = computed(() => props.suggestion || props.placeholder || translate(BackendTranslationKeys.rocket_meals_module_message_placeholder));
-const canInsertSuggestion = computed(() => !!props.suggestion && props.canWrite && newMessage.value !== props.suggestion);
+/**
+ * The AI's suggestion shown in full above the input: the draft of the recommendation, or the reply the
+ * button "KI-Vorschlag erstellen" just generated. It is only taken over with "In Eingabe übernehmen",
+ * so nothing typed is ever overwritten. Hidden while the input already holds exactly this text.
+ */
+const currentSuggestion = ref<string | null>(props.suggestion ?? null);
+watch(
+  () => props.suggestion,
+  suggestion => {
+    currentSuggestion.value = suggestion ?? null;
+  }
+);
+const showSuggestion = computed(() => !!currentSuggestion.value && props.canWrite && newMessage.value.trim() !== currentSuggestion.value.trim());
 
 function insertSuggestion() {
-  if (props.suggestion) {
-    newMessage.value = props.suggestion;
+  if (currentSuggestion.value) {
+    newMessage.value = currentSuggestion.value;
     nextTick(() => composerInput.value?.focus());
   }
 }
 
 const generatingReply = ref(false);
 
-/** Puts the AI's reply into the input, replacing what is there: the button was pressed for exactly that. */
-async function generateReplyIntoInput() {
+/** Asks the AI for a new suggestion. An empty input gets it right away, otherwise it waits in the box above. */
+async function generateSuggestion() {
   if (!props.generateReply || !props.generateReplyAvailable || generatingReply.value) {
     return;
   }
@@ -79,8 +89,10 @@ async function generateReplyIntoInput() {
   try {
     const reply = await props.generateReply();
     if (reply) {
-      newMessage.value = reply;
-      nextTick(() => composerInput.value?.focus());
+      currentSuggestion.value = reply;
+      if (!newMessage.value.trim()) {
+        insertSuggestion();
+      }
     }
   } finally {
     generatingReply.value = false;
@@ -183,6 +195,20 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
     <div v-if="messages.length === 0" class="empty type-note">{{ emptyText }}</div>
   </div>
 
+  <div v-if="showSuggestion" class="suggestion">
+    <div class="suggestion-header type-note">
+      <v-icon :name="ActionRecommendationModuleHelper.ICON" x-small />
+      <span>{{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_suggestion_title) }}</span>
+    </div>
+    <div class="suggestion-text">{{ currentSuggestion }}</div>
+    <div class="suggestion-actions">
+      <v-button small :disabled="sending" @click="insertSuggestion">
+        <v-icon name="south" left small />
+        {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_insert_draft) }}
+      </v-button>
+    </div>
+  </div>
+
   <div v-if="hint" class="composer-note type-note">
     <v-icon name="info" x-small />
     <span>{{ hint }}</span>
@@ -191,20 +217,16 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
   <!-- A click anywhere in the box focuses the input. Only a mouse shortcut: keyboard users reach the textarea directly, so the box itself is presentational. -->
   <div class="composer" role="presentation" :class="{ disabled: !canWrite }" @click="composerInput?.focus()"><!-- Web:MouseEventWithoutKeyboardEquivalentCheck is suppressed for this file in sonar-project.properties (NOSONAR does not work in templates/CSS): mouse-only shortcut, see comment above: keyboard users focus the textarea directly, no keyboard equivalent is needed -->
     <label class="visually-hidden" :for="composerInputId">{{ placeholder ?? translate(BackendTranslationKeys.rocket_meals_module_message_placeholder) }}</label>
-    <textarea :id="composerInputId" ref="composerInput" v-model="newMessage" class="composer-input" rows="1" :placeholder="composerPlaceholder" :disabled="!canWrite || sending" @keydown="onKeydown" />
+    <textarea :id="composerInputId" ref="composerInput" v-model="newMessage" class="composer-input" rows="1" :placeholder="placeholder ?? translate(BackendTranslationKeys.rocket_meals_module_message_placeholder)" :disabled="!canWrite || sending" @keydown="onKeydown" />
     <div class="composer-actions">
       <span class="composer-hint type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_send_hint) }}</span>
       <!-- The wrapper carries the tooltip: a disabled button gets no mouse events. -->
       <span v-if="generateReply && canWrite" v-tooltip.top="generateReplyAvailable ? undefined : translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_ai_not_configured)">
-        <v-button small secondary :disabled="!generateReplyAvailable || sending" :loading="generatingReply" @click.stop="generateReplyIntoInput">
+        <v-button small secondary :disabled="!generateReplyAvailable || sending" :loading="generatingReply" @click.stop="generateSuggestion">
           <v-icon :name="ActionRecommendationModuleHelper.ICON" left small />
           {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_generate_reply) }}
         </v-button>
       </span>
-      <v-button v-if="canInsertSuggestion" small secondary :disabled="sending" @click.stop="insertSuggestion">
-        <v-icon :name="ActionRecommendationModuleHelper.ICON" left small />
-        {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_insert_draft) }}
-      </v-button>
       <button v-tooltip.top="translate(BackendTranslationKeys.send)" class="send-button" :disabled="!canWrite || sending || newMessage.trim().length === 0" :aria-label="translate(BackendTranslationKeys.send)" @click.stop="sendMessage">
         <v-progress-circular v-if="sending" indeterminate x-small />
         <v-icon v-else name="arrow_upward" small />
@@ -288,6 +310,34 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
   max-inline-size: 30rem;
   margin-block: auto;
   text-align: center;
+}
+
+/* The AI's suggestion: in full, set apart from the input, taken over only on request. */
+.suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--theme--primary-background);
+  border-inline-start: 3px solid var(--theme--primary);
+  border-radius: var(--theme--border-radius);
+}
+
+.suggestion-header {
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+  color: var(--theme--primary);
+}
+
+.suggestion-text {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.suggestion-actions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .composer-note {

@@ -4332,16 +4332,16 @@ export const backendTranslations: TranslationResources = {
     tr: 'Öneriyle sohbet başlat',
     zh: '用建议开始聊天',
   },
-  /** Rocket-Meals-Modul, KI-Handlungsempfehlungen: Vorschlag einfügen */
+  /** Rocket-Meals-Modul, Chat: übernimmt den KI-Vorschlag in die Eingabe. */
   rocket_meals_module_action_recommendation_insert_draft: {
-    de: 'Vorschlag einfügen',
-    en: 'Insert suggestion',
-    ar: 'إدراج الاقتراح',
-    es: 'Insertar sugerencia',
-    fr: 'Insérer la suggestion',
-    ru: 'Вставить предложение',
-    tr: 'Öneriyi ekle',
-    zh: '插入建议',
+    de: 'In Eingabe übernehmen',
+    en: 'Use in message',
+    ar: 'استخدامه في الرسالة',
+    es: 'Usar en el mensaje',
+    fr: 'Utiliser dans le message',
+    ru: 'Вставить в сообщение',
+    tr: 'Mesaja aktar',
+    zh: '用于消息',
   },
   /** Rocket-Meals-Modul, KI-Handlungsempfehlungen: Vorschlag verwerfen */
   rocket_meals_module_action_recommendation_dismiss: {
@@ -4365,16 +4365,16 @@ export const backendTranslations: TranslationResources = {
     tr: 'Yapay zekâ önerisi güncellenemedi.',
     zh: '无法更新 AI 建议。',
   },
-  /** Rocket-Meals-Modul, KI-Antwortvorschlag im Chat: KI-Antwortvorschlag */
+  /** Rocket-Meals-Modul, Chat: lässt die KI eine neue Antwort vorschlagen. */
   rocket_meals_module_action_recommendation_generate_reply: {
-    de: 'KI-Antwortvorschlag',
-    en: 'AI reply suggestion',
-    ar: 'اقتراح رد بالذكاء الاصطناعي',
-    es: 'Sugerencia de respuesta de la IA',
-    fr: 'Suggestion de réponse par l’IA',
-    ru: 'Ответ, предложенный ИИ',
-    tr: 'Yapay zekâ yanıt önerisi',
-    zh: 'AI 回复建议',
+    de: 'KI-Vorschlag erstellen',
+    en: 'Create AI suggestion',
+    ar: 'إنشاء اقتراح بالذكاء الاصطناعي',
+    es: 'Crear sugerencia de la IA',
+    fr: 'Créer une suggestion de l’IA',
+    ru: 'Создать предложение ИИ',
+    tr: 'Yapay zekâ önerisi oluştur',
+    zh: '生成 AI 建议',
   },
   /** Rocket-Meals-Modul, KI-Antwortvorschlag im Chat: Der KI-Antwortvorschlag ist fehlgeschlagen. */
   rocket_meals_module_action_recommendation_generate_reply_failed: {
@@ -4419,5 +4419,16 @@ export const backendTranslations: TranslationResources = {
     ru: 'Не удалось получить рекомендацию ИИ',
     tr: 'Yapay zekâ önerisi başarısız oldu',
     zh: 'AI 建议失败',
+  },
+  /** Rocket-Meals-Modul, Chat: Überschrift über dem vollständigen KI-Vorschlag. */
+  rocket_meals_module_action_recommendation_suggestion_title: {
+    de: 'Vorschlag der KI',
+    en: 'AI suggestion',
+    ar: 'اقتراح الذكاء الاصطناعي',
+    es: 'Sugerencia de la IA',
+    fr: 'Suggestion de l’IA',
+    ru: 'Предложение ИИ',
+    tr: 'Yapay zekâ önerisi',
+    zh: 'AI 建议',
   },
 };
