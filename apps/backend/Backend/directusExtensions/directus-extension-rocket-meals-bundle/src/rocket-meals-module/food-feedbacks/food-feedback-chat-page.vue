@@ -86,6 +86,21 @@ async function loadRecommendation() {
   recommendation.value = byItem[props.feedbackId] ?? null;
 }
 
+/** Whether a provider is configured under Settings → AI: the button "KI-Antwortvorschlag" is greyed out otherwise. */
+const aiConfigured = ref(false);
+
+/** Asks the AI for the next message of the support, from the comment and the whole chat. */
+async function generateReply(): Promise<string | null> {
+  try {
+    const reply = await ActionRecommendationModuleHelper.suggestChatReply(api, CollectionNames.FOODS_FEEDBACKS, props.feedbackId);
+    return reply.draft_reply;
+  } catch (error) {
+    console.error('[rocket-meals-module] the AI reply failed', error);
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_generate_reply_failed), type: 'error' });
+    return null;
+  }
+}
+
 /** Once support answered or closed the feedback, the recommendation is used up. */
 async function archiveRecommendation() {
   if (!recommendation.value) {
@@ -215,6 +230,9 @@ async function changeStatus(nextStatus: FoodFeedbackChatStatus) {
 let refreshInterval: ReturnType<typeof setInterval> | undefined;
 onMounted(() => {
   load();
+  ActionRecommendationModuleHelper.loadAiStatus(api).then(status => {
+    aiConfigured.value = status.ai_configured;
+  });
   refreshInterval = setInterval(() => {
     if (!sending.value) {
       loadMessages().catch(() => undefined);
@@ -277,6 +295,8 @@ watch(() => props.feedbackId, load);
           :send="sendMessage"
           :suggestion="draftReply"
           :use-suggestion="useDraft"
+          :generate-reply="generateReply"
+          :generate-reply-available="aiConfigured"
         />
       </template>
 

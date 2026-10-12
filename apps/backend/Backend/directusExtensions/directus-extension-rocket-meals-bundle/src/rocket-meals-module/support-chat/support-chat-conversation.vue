@@ -32,6 +32,10 @@ const props = defineProps<{
   suggestion?: string | null;
   /** Puts the suggestion into the input as soon as it is there, e.g. after "Chat mit Vorschlag starten". */
   useSuggestion?: boolean;
+  /** Asks the AI for a reply to the conversation so far; resolves the text, or null when it failed (the page tells why). Without it there is no button. */
+  generateReply?: () => Promise<string | null>;
+  /** Whether an AI provider is configured; the button stays greyed out otherwise. */
+  generateReplyAvailable?: boolean;
 }>();
 
 const { translate, formatDateTime } = useAppExtensionTranslate();
@@ -61,6 +65,25 @@ function insertSuggestion() {
   if (props.suggestion) {
     newMessage.value = props.suggestion;
     nextTick(() => composerInput.value?.focus());
+  }
+}
+
+const generatingReply = ref(false);
+
+/** Puts the AI's reply into the input, replacing what is there: the button was pressed for exactly that. */
+async function generateReplyIntoInput() {
+  if (!props.generateReply || !props.generateReplyAvailable || generatingReply.value) {
+    return;
+  }
+  generatingReply.value = true;
+  try {
+    const reply = await props.generateReply();
+    if (reply) {
+      newMessage.value = reply;
+      nextTick(() => composerInput.value?.focus());
+    }
+  } finally {
+    generatingReply.value = false;
   }
 }
 
@@ -171,6 +194,13 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
     <textarea :id="composerInputId" ref="composerInput" v-model="newMessage" class="composer-input" rows="1" :placeholder="composerPlaceholder" :disabled="!canWrite || sending" @keydown="onKeydown" />
     <div class="composer-actions">
       <span class="composer-hint type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_send_hint) }}</span>
+      <!-- The wrapper carries the tooltip: a disabled button gets no mouse events. -->
+      <span v-if="generateReply && canWrite" v-tooltip.top="generateReplyAvailable ? undefined : translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_ai_not_configured)">
+        <v-button small secondary :disabled="!generateReplyAvailable || sending" :loading="generatingReply" @click.stop="generateReplyIntoInput">
+          <v-icon :name="ActionRecommendationModuleHelper.ICON" left small />
+          {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_generate_reply) }}
+        </v-button>
+      </span>
       <v-button v-if="canInsertSuggestion" small secondary :disabled="sending" @click.stop="insertSuggestion">
         <v-icon :name="ActionRecommendationModuleHelper.ICON" left small />
         {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_insert_draft) }}
@@ -314,6 +344,7 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
 
 .composer-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
   align-items: center;
   justify-content: flex-end;

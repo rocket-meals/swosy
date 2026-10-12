@@ -162,6 +162,12 @@ Feedback selbst ändert sich nichts.
   Begründung und Antwortvorschlag, mit „Chat mit Vorschlag starten“ (öffnet den Chat mit dem
   Vorschlag in der Eingabe) und „Vorschlag verwerfen“.
 - **Im Chat** steht der Vorschlag als Platzhalter in der Eingabe, „Vorschlag einfügen“ übernimmt ihn.
+- **„KI-Antwortvorschlag“ im Chat** (unabhängig vom Schalter in den App-Settings, nur ein Anbieter unter
+  Einstellungen > KI ist nötig, sonst ausgegraut): schickt den Kommentar und den ganzen Verlauf an die KI,
+  jede Nachricht nur mit ihrer Rolle (`guest` oder `support`, keine Nicknames), dazu Name der Speise und
+  Bewertung. Die KI antwortet in der Rolle des Supports eines Anbieters von Speisen für Studierende,
+  in der Sprache des Autors (Regel wie oben). Der Text landet in der Eingabe und ersetzt, was dort
+  stand. Gespeichert wird nichts (`POST /action-recommendations/chat-reply`).
 - **Erledigt:** Antworten, „Als erledigt markieren“ oder Verwerfen setzt die Empfehlung auf
   `archived`.
 - **Gelöschte Einträge:** Der Hook löscht für jede Collection die Empfehlungen gelöschter Einträge mit,

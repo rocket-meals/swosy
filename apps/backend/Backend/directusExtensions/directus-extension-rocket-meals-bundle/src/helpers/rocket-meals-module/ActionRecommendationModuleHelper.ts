@@ -36,10 +36,48 @@ export type ActionRecommendationApiClient = {
   patch: (url: string, data?: unknown) => Promise<{ data?: any }>;
 };
 
+/** `GET /action-recommendations/status`: what the AI can do on this server. */
+export type ActionRecommendationAiStatus = { ai_configured: boolean; enabled: boolean };
+
+/** `POST /action-recommendations/chat-reply`: a suggested next message of the support. */
+export type ActionRecommendationChatReply = { draft_reply: string; recommended_by_ai: string };
+
+export type ActionRecommendationPostClient = {
+  get: (url: string, config?: { params?: Record<string, unknown> }) => Promise<{ data?: any }>;
+  post: (url: string, data?: unknown) => Promise<{ data?: any }>;
+};
+
 export class ActionRecommendationModuleHelper {
   static readonly ENDPOINT_ID = 'action-recommendations';
   static readonly RECOMMEND_ROUTE = '/recommend';
   static readonly SUMMARIZE_ROUTE = '/summarize';
+  static readonly STATUS_ROUTE = '/status';
+  static readonly CHAT_REPLY_ROUTE = '/chat-reply';
+
+  static getEndpointUrl(route: string): string {
+    return `/${ActionRecommendationModuleHelper.ENDPOINT_ID}${route}`;
+  }
+
+  /** Whether an AI provider is configured; a failing request counts as not configured. */
+  static async loadAiStatus(api: ActionRecommendationPostClient): Promise<ActionRecommendationAiStatus> {
+    try {
+      const response = await api.get(ActionRecommendationModuleHelper.getEndpointUrl(ActionRecommendationModuleHelper.STATUS_ROUTE));
+      return { ai_configured: response.data?.data?.ai_configured === true, enabled: response.data?.data?.enabled === true };
+    } catch (error) {
+      console.error('[rocket-meals-module] loading the AI status failed', error);
+      return { ai_configured: false, enabled: false };
+    }
+  }
+
+  /** Asks the AI for the next message of the support in the chat of the item; throws when it fails. */
+  static async suggestChatReply(api: ActionRecommendationPostClient, collection: string, item: string): Promise<ActionRecommendationChatReply> {
+    const response = await api.post(ActionRecommendationModuleHelper.getEndpointUrl(ActionRecommendationModuleHelper.CHAT_REPLY_ROUTE), { collection, item });
+    const reply = response.data?.data as ActionRecommendationChatReply | null | undefined;
+    if (!reply?.draft_reply) {
+      throw new Error('The AI suggested no reply.');
+    }
+    return reply;
+  }
 
   static readonly ITEMS_ENDPOINT = '/items/action_recommendations';
 

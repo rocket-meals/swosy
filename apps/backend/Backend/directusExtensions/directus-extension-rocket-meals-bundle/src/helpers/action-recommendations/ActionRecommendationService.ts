@@ -14,7 +14,8 @@ import { MyDatabaseHelper } from '../MyDatabaseHelper';
 import { DirectusOpenAiCompatibleClient } from '../ai/DirectusOpenAiCompatibleClient';
 import { ActionRecommendationModuleHelper } from '../rocket-meals-module/ActionRecommendationModuleHelper';
 import { ActionRecommendationDefinitions, ActionRecommendationStatus, type ActionRecommendationDefinition } from './ActionRecommendationDefinitions';
-import { ActionRecommendationPrompt, type ActionRecommendationSourceItem, type ActionRecommendationSummary } from './ActionRecommendationPrompt';
+import { ActionRecommendationPrompt, ChatReplyRole, type ActionRecommendationSourceItem, type ActionRecommendationSummary, type ChatReplyMessage } from './ActionRecommendationPrompt';
+import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 
 export type ActionRecommendationResult = { data: Partial<DatabaseTypes.ActionRecommendations>[]; ignored: string[] };
 
@@ -35,11 +36,23 @@ export class ActionRecommendationService {
     this.client = client;
   }
 
-  /** The service, or why it cannot be used: switched off in the app settings or no AI provider. */
-  static async create(apiContext: ApiContext): Promise<ActionRecommendationService | ActionRecommendationUnavailableReason> {
+  /** Whether a provider is configured under Settings → AI and the automatic recommendations are switched on. */
+  static async getStatus(apiContext: ApiContext): Promise<{ ai_configured: boolean; enabled: boolean }> {
     const appSettings = await new MyDatabaseHelper(apiContext).getAppSettingsHelper().getAppSettings();
-    if (!appSettings?.ai_action_recommendations_enabled) {
-      return ActionRecommendationUnavailableReason.DISABLED;
+    const aiConfigured = (await DirectusOpenAiCompatibleClient.fromDirectusSettings(apiContext)) !== null;
+    return { ai_configured: aiConfigured, enabled: aiConfigured && appSettings?.ai_action_recommendations_enabled === true };
+  }
+
+  /**
+   * The service, or why it cannot be used: switched off in the app settings or no AI provider.
+   * `requireEnabled: false` skips the app setting, for what someone asks for by hand (a chat reply).
+   */
+  static async create(apiContext: ApiContext, options: { requireEnabled?: boolean } = {}): Promise<ActionRecommendationService | ActionRecommendationUnavailableReason> {
+    if (options.requireEnabled !== false) {
+      const appSettings = await new MyDatabaseHelper(apiContext).getAppSettingsHelper().getAppSettings();
+      if (!appSettings?.ai_action_recommendations_enabled) {
+        return ActionRecommendationUnavailableReason.DISABLED;
+      }
     }
     const client = await DirectusOpenAiCompatibleClient.fromDirectusSettings(apiContext);
     return client ? new ActionRecommendationService(apiContext, client) : ActionRecommendationUnavailableReason.AI_NOT_CONFIGURED;
@@ -97,6 +110,65 @@ export class ActionRecommendationService {
     const data = await service.readMany(keys, { fields: ActionRecommendationModuleHelper.FIELDS });
     return { data, ignored: parsed.ignored };
   }
+
+  /**
+   * Suggests the next message of the support in the chat of an item: the item's text opens the
+   * conversation, then the messages, each only with its role (guest or support), never a name. Read
+   * with the permissions of the person asking. Null when the item cannot be read. Not stored.
+   */
+  async suggestChatReply(definition: ActionRecommendationDefinition, itemId: string, accountability: Accountability): Promise<{ draft_reply: string; recommended_by_ai: string } | null> {
+    const chat = definition.chat;
+    if (!chat) {
+      return null;
+    }
+    const schema = await this.apiContext.getSchema();
+    const itemsService = new this.apiContext.services.ItemsService(definition.collection, { schema, accountability });
+    const rows = (await itemsService.readByQuery({
+      filter: { id: { _eq: itemId } },
+      fields: ['id', chat.field, ...definition.textFields, ...chat.contextFields],
+      limit: 1,
+    })) as ActionRecommendationSourceItem[];
+    const item = rows[0];
+    if (!item) {
+      return null;
+    }
+
+    const messages: ChatReplyMessage[] = [];
+    const opening = definition.textFields
+      .map(field => item[field])
+      .filter((text): text is string => typeof text === 'string' && text.trim().length > 0)
+      .join('\n\n');
+    if (opening) {
+      messages.push({ role: ChatReplyRole.GUEST, text: opening });
+    }
+    const chatId = ActionRecommendationDefinitions.getPathValue(item, chat.field);
+    const chatKey = typeof chatId === 'object' && chatId !== null ? (chatId as { id?: unknown }).id : chatId;
+    if (typeof chatKey === 'string' || typeof chatKey === 'number') {
+      const messagesService = new this.apiContext.services.ItemsService(CollectionNames.CHAT_MESSAGES, { schema, accountability });
+      const chatMessages = (await messagesService.readByQuery({
+        filter: { chat: { _eq: chatKey } },
+        fields: ['message', 'profile'],
+        sort: ['-date_created'],
+        limit: ActionRecommendationService.MAX_CHAT_MESSAGES,
+      })) as { message?: string | null; profile?: unknown }[];
+      for (const message of chatMessages.reverse()) {
+        if (message.message?.trim()) {
+          messages.push({ role: ChatHelper.isSupportMessage({ profile: message.profile as any }) ? ChatReplyRole.SUPPORT : ChatReplyRole.GUEST, text: message.message });
+        }
+      }
+    }
+
+    const context: Record<string, unknown> = {};
+    for (const field of chat.contextFields) {
+      context[field] = ActionRecommendationDefinitions.getPathValue(item, field);
+    }
+    const replyLanguage = (await this.getReplyLanguages(definition, [item]))[String(item.id)] ?? ActionRecommendationDefinitions.FALLBACK_REPLY_LANGUAGE;
+    const answer = await this.client.chatJson(ActionRecommendationPrompt.buildChatReplyPrompt(chat, context, messages, replyLanguage));
+    return { draft_reply: ActionRecommendationPrompt.parseChatReply(answer), recommended_by_ai: this.client.getRecommenderLabel() };
+  }
+
+  /** At most this many messages, the newest, are read for a chat reply. */
+  static readonly MAX_CHAT_MESSAGES = 50;
 
   /** Summarizes the newest items with text, optionally only those of one group (e.g. one food). Not stored. */
   async summarize(definition: ActionRecommendationDefinition, groupValue: unknown, language: string, accountability: Accountability | null): Promise<ActionRecommendationSummaryResult | null> {

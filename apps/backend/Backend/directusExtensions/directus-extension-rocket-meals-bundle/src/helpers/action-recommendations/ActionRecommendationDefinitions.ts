@@ -64,6 +64,17 @@ export type ActionRecommendationDefinition = {
   summaryGroupField?: string;
   /** The relation to the author's profile: its `language` decides the language of a draft reply. Never sent to the AI. */
   authorProfileField?: string;
+  /** For items with a support chat: how a reply in that chat can be suggested. */
+  chat?: ActionRecommendationChatDefinition;
+};
+
+export type ActionRecommendationChatDefinition = {
+  /** The relation to `chats`. */
+  field: string;
+  /** What the chat is about, for the AI (prompt text). */
+  promptContext: string;
+  /** Fields that tell the AI what the chat is about, also of relations (`food.alias`). Never personal data. */
+  contextFields: readonly string[];
 };
 
 export class ActionRecommendationDefinitions {
@@ -76,6 +87,11 @@ export class ActionRecommendationDefinitions {
       actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.MARK_RESOLVED],
       summaryGroupField: 'food',
       authorProfileField: 'profile',
+      chat: {
+        field: 'chat',
+        promptContext: 'Der Chat ist zu einer Rückmeldung zu einer Speise entstanden: die erste Nachricht ist der Kommentar des Gastes. "food.alias" ist der Name der Speise, "rating" die Bewertung von 1 (schlecht) bis 5 (gut).',
+        contextFields: ['food.alias', 'rating'],
+      },
     },
     {
       collection: CollectionNames.APP_FEEDBACKS,
@@ -137,6 +153,18 @@ export class ActionRecommendationDefinitions {
     }
     const code = (language as { code?: unknown } | null | undefined)?.code;
     return typeof code === 'string' ? code : null;
+  }
+
+  /** The value at a dotted path such as `food.alias`, or null when a relation on the way is missing. */
+  static getPathValue(row: Record<string, unknown> | null | undefined, path: string): unknown {
+    let value: unknown = row;
+    for (const part of path.split('.')) {
+      if (!value || typeof value !== 'object') {
+        return null;
+      }
+      value = (value as Record<string, unknown>)[part];
+    }
+    return value ?? null;
   }
 
   /** The item ids of a request: strings or numbers, without duplicates and empty ones, at most `max`. */

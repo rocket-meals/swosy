@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { ActionRecommendationAction, ActionRecommendationDefinitions, ActionRecommendationStatus } from '../ActionRecommendationDefinitions';
-import { ActionRecommendationPrompt } from '../ActionRecommendationPrompt';
+import { ActionRecommendationPrompt, ChatReplyRole } from '../ActionRecommendationPrompt';
 import { ActionRecommendationModuleHelper } from '../../rocket-meals-module/ActionRecommendationModuleHelper';
 
 const SNAPSHOT_FIELDS_DIR = path.resolve(__dirname, '../../../../../../../../../data/directus-sync-data/configuration/directus-config/snapshot/fields');
@@ -190,5 +190,61 @@ describe('reply language', () => {
     const prompt = ActionRecommendationPrompt.buildRecommendationPrompt(foodFeedbacks, [{ id: 'f1', comment: 'Too cold', rating: 2, profile: { language: 'en' } }], 'de', { f1: 'en' });
     expect(JSON.parse(prompt.user).items).toEqual([{ id: 'f1', reply_language: 'en', comment: 'Too cold', rating: 2 }]);
     expect(prompt.system).toContain('reply_language');
+  });
+});
+
+describe('chat reply', () => {
+  const chat = foodFeedbacks.chat!;
+
+  it('food feedbacks have a chat with the food as context', () => {
+    expect(chat.field).toBe('chat');
+    expect(chat.contextFields).toEqual(['food.alias', 'rating']);
+  });
+
+  it('reads dotted paths and stops at missing relations', () => {
+    expect(ActionRecommendationDefinitions.getPathValue({ food: { alias: 'Linsensuppe' } }, 'food.alias')).toBe('Linsensuppe');
+    expect(ActionRecommendationDefinitions.getPathValue({ food: 'f1' }, 'food.alias')).toBeNull();
+    expect(ActionRecommendationDefinitions.getPathValue({ food: null }, 'food.alias')).toBeNull();
+  });
+
+  it('sends the conversation with roles only, the newest 50 messages and the reply language', () => {
+    const messages = Array.from({ length: 60 }, (_, index) => ({ role: index % 2 === 0 ? ChatReplyRole.GUEST : ChatReplyRole.SUPPORT, text: `Nachricht ${index}` }));
+    const prompt = ActionRecommendationPrompt.buildChatReplyPrompt(chat, { 'food.alias': 'Linsensuppe', rating: 2 }, messages, 'en');
+    const user = JSON.parse(prompt.user);
+    expect(user.context).toEqual({ 'food.alias': 'Linsensuppe', rating: 2 });
+    expect(user.messages).toHaveLength(50);
+    expect(user.messages[0]).toEqual({ role: 'guest', text: 'Nachricht 10' });
+    expect(Object.keys(user.messages[0])).toEqual(['role', 'text']);
+    expect(prompt.system).toContain('Studierende');
+    expect(prompt.system).toContain('"en"');
+  });
+
+  it('needs a draft reply in the answer', () => {
+    expect(ActionRecommendationPrompt.parseChatReply({ draft_reply: ' Danke! ' })).toBe('Danke!');
+    expect(() => ActionRecommendationPrompt.parseChatReply({ reply: 'Danke!' })).toThrow();
+  });
+
+  it('module: reads the AI status, a failing request counts as not configured', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    const ok = { get: jest.fn(async () => ({ data: { data: { ai_configured: true, enabled: false } } })), post: jest.fn(async () => ({})) };
+    expect(await ActionRecommendationModuleHelper.loadAiStatus(ok)).toEqual({ ai_configured: true, enabled: false });
+    expect(ok.get).toHaveBeenCalledWith('/action-recommendations/status');
+    const failing = {
+      get: jest.fn(async () => {
+        throw new Error('401');
+      }),
+      post: jest.fn(async () => ({})),
+    };
+    expect(await ActionRecommendationModuleHelper.loadAiStatus(failing)).toEqual({ ai_configured: false, enabled: false });
+    consoleError.mockRestore();
+  });
+
+  it('module: asks for a chat reply and fails without one', async () => {
+    const post = jest.fn(async () => ({ data: { data: { draft_reply: 'Hallo', recommended_by_ai: 'X · y' } } }));
+    const api = { get: jest.fn(async () => ({})), post };
+    expect(await ActionRecommendationModuleHelper.suggestChatReply(api, 'foods_feedbacks', 'f1')).toEqual({ draft_reply: 'Hallo', recommended_by_ai: 'X · y' });
+    expect(post).toHaveBeenCalledWith('/action-recommendations/chat-reply', { collection: 'foods_feedbacks', item: 'f1' });
+    const empty = { get: jest.fn(async () => ({})), post: jest.fn(async () => ({ data: { data: null } })) };
+    await expect(ActionRecommendationModuleHelper.suggestChatReply(empty, 'foods_feedbacks', 'f1')).rejects.toThrow();
   });
 });

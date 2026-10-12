@@ -455,6 +455,9 @@ export const BackendTranslationKeys = {
   rocket_meals_module_action_recommendation_insert_draft: 'rocket_meals_module_action_recommendation_insert_draft',
   rocket_meals_module_action_recommendation_dismiss: 'rocket_meals_module_action_recommendation_dismiss',
   rocket_meals_module_action_recommendation_update_failed: 'rocket_meals_module_action_recommendation_update_failed',
+  rocket_meals_module_action_recommendation_generate_reply: 'rocket_meals_module_action_recommendation_generate_reply',
+  rocket_meals_module_action_recommendation_generate_reply_failed: 'rocket_meals_module_action_recommendation_generate_reply_failed',
+  rocket_meals_module_action_recommendation_ai_not_configured: 'rocket_meals_module_action_recommendation_ai_not_configured',
 } as const;
 
 export type BackendTranslationKeys = (typeof BackendTranslationKeys)[keyof typeof BackendTranslationKeys];
