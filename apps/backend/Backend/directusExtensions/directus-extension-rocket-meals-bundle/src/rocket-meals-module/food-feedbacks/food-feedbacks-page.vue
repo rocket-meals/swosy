@@ -10,7 +10,7 @@
  * draft can be taken straight into the chat. Answering, marking as done or dismissing archives it.
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
@@ -144,6 +144,18 @@ async function loadRecommendations() {
   );
 }
 
+/** While the AI is still being asked for a listed feedback, the recommendations are reloaded until it answered. */
+let processingRefresh: ReturnType<typeof setTimeout> | undefined;
+watch(recommendations, current => {
+  clearTimeout(processingRefresh);
+  if (Object.values(current).some(ActionRecommendationModuleHelper.isProcessing)) {
+    processingRefresh = setTimeout(() => {
+      loadRecommendations().catch(() => undefined);
+    }, ActionRecommendationModuleHelper.PROCESSING_REFRESH_INTERVAL_MS);
+  }
+});
+onBeforeUnmount(() => clearTimeout(processingRefresh));
+
 /** Archives the recommendations of the feedbacks; a failure only costs a stale hint, so it is a warning. */
 async function archiveRecommendations(feedbacksDone: readonly FoodFeedbackListItem[]) {
   try {
@@ -274,7 +286,24 @@ watch(feedbacks, loadRecommendations);
               </span>
             </div>
             <q v-if="FoodFeedbackChatStatusHelper.hasComment(feedback)" class="comment">{{ feedback.comment }}</q>
-            <div v-if="getRecommendation(feedback)" class="recommendation">
+            <div v-if="ActionRecommendationModuleHelper.isProcessing(getRecommendation(feedback))" class="recommendation recommendation-state type-note">
+              <v-progress-circular indeterminate x-small />
+              <span>{{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_processing) }}</span>
+            </div>
+            <div v-else-if="ActionRecommendationModuleHelper.isFailed(getRecommendation(feedback))" class="recommendation recommendation-failed">
+              <div class="recommendation-header type-note">
+                <v-icon name="error" x-small />
+                <span>{{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_failed) }}</span>
+              </div>
+              <div v-if="ActionRecommendationModuleHelper.getLastLogLine(getRecommendation(feedback))" class="recommendation-log type-note">{{ ActionRecommendationModuleHelper.getLastLogLine(getRecommendation(feedback)) }}</div>
+              <div class="recommendation-actions">
+                <v-button small secondary :loading="dismissingIds.includes(feedback.id)" @click.stop="dismissRecommendation(feedback)">
+                  <v-icon name="close" left small />
+                  {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_dismiss) }}
+                </v-button>
+              </div>
+            </div>
+            <div v-else-if="getRecommendation(feedback)" class="recommendation">
               <div class="recommendation-header type-note">
                 <v-icon :name="ActionRecommendationModuleHelper.ICON" x-small />
                 <span>
@@ -396,6 +425,26 @@ watch(feedbacks, loadRecommendations);
   background: var(--theme--primary-background);
   border-inline-start: 3px solid var(--theme--primary);
   border-radius: var(--theme--border-radius);
+}
+
+.recommendation-state {
+  flex-direction: row;
+  align-items: center;
+  color: var(--theme--primary);
+}
+
+.recommendation-failed {
+  background: var(--theme--danger-background);
+  border-inline-start-color: var(--theme--danger);
+}
+
+.recommendation-failed .recommendation-header {
+  color: var(--theme--danger);
+}
+
+.recommendation-log {
+  font-family: var(--theme--fonts--monospace--font-family, monospace);
+  overflow-wrap: anywhere;
 }
 
 .recommendation-header {

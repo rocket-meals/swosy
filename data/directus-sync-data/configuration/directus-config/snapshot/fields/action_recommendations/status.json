@@ -28,6 +28,20 @@
           "foreground": "var(--theme--warning)",
           "text": "$t:archived",
           "value": "archived"
+        },
+        {
+          "background": "var(--theme--primary-background)",
+          "color": "var(--theme--primary)",
+          "foreground": "var(--theme--primary)",
+          "text": "KI wird gefragt",
+          "value": "processing"
+        },
+        {
+          "background": "var(--theme--danger-background)",
+          "color": "var(--theme--danger)",
+          "foreground": "var(--theme--danger)",
+          "text": "KI fehlgeschlagen",
+          "value": "failed"
         }
       ],
       "showAsDot": true
@@ -53,6 +67,18 @@
           "color": "var(--theme--warning)",
           "text": "$t:archived",
           "value": "archived"
+        },
+        {
+          "color": "var(--theme--primary)",
+          "icon": "hourglass_top",
+          "text": "KI wird gefragt",
+          "value": "processing"
+        },
+        {
+          "color": "var(--theme--danger)",
+          "icon": "error",
+          "text": "KI fehlgeschlagen",
+          "value": "failed"
         }
       ]
     },

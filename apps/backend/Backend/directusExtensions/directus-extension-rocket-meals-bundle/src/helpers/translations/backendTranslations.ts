@@ -4365,4 +4365,59 @@ export const backendTranslations: TranslationResources = {
     tr: 'Yapay zekâ önerisi güncellenemedi.',
     zh: '无法更新 AI 建议。',
   },
+  /** Rocket-Meals-Modul, KI-Antwortvorschlag im Chat: KI-Antwortvorschlag */
+  rocket_meals_module_action_recommendation_generate_reply: {
+    de: 'KI-Antwortvorschlag',
+    en: 'AI reply suggestion',
+    ar: 'اقتراح رد بالذكاء الاصطناعي',
+    es: 'Sugerencia de respuesta de la IA',
+    fr: 'Suggestion de réponse par l’IA',
+    ru: 'Ответ, предложенный ИИ',
+    tr: 'Yapay zekâ yanıt önerisi',
+    zh: 'AI 回复建议',
+  },
+  /** Rocket-Meals-Modul, KI-Antwortvorschlag im Chat: Der KI-Antwortvorschlag ist fehlgeschlagen. */
+  rocket_meals_module_action_recommendation_generate_reply_failed: {
+    de: 'Der KI-Antwortvorschlag ist fehlgeschlagen.',
+    en: 'The AI reply suggestion failed.',
+    ar: 'فشل اقتراح الرد بالذكاء الاصطناعي.',
+    es: 'La sugerencia de respuesta de la IA ha fallado.',
+    fr: 'La suggestion de réponse par l’IA a échoué.',
+    ru: 'Не удалось получить ответ, предложенный ИИ.',
+    tr: 'Yapay zekâ yanıt önerisi başarısız oldu.',
+    zh: 'AI 回复建议失败。',
+  },
+  /** Rocket-Meals-Modul, KI-Antwortvorschlag im Chat: Kein KI-Anbieter eingerichtet. Unter Einstellungen > KI einen OpenAI-kompatiblen Anbieter hinterlegen. */
+  rocket_meals_module_action_recommendation_ai_not_configured: {
+    de: 'Kein KI-Anbieter eingerichtet. Unter Einstellungen > KI einen OpenAI-kompatiblen Anbieter hinterlegen.',
+    en: 'No AI provider set up. Add an OpenAI-compatible provider under Settings > AI.',
+    ar: 'لم يتم إعداد مزود ذكاء اصطناعي. أضف مزودًا متوافقًا مع OpenAI من الإعدادات > الذكاء الاصطناعي.',
+    es: 'No hay ningún proveedor de IA configurado. Añade un proveedor compatible con OpenAI en Ajustes > IA.',
+    fr: 'Aucun fournisseur d’IA configuré. Ajoutez un fournisseur compatible OpenAI dans Paramètres > IA.',
+    ru: 'Поставщик ИИ не настроен. Добавьте поставщика, совместимого с OpenAI, в разделе Настройки > ИИ.',
+    tr: 'Yapay zekâ sağlayıcısı ayarlanmadı. Ayarlar > Yapay Zekâ altında OpenAI uyumlu bir sağlayıcı ekleyin.',
+    zh: '尚未设置 AI 提供商。请在“设置 > AI”中添加兼容 OpenAI 的提供商。',
+  },
+  /** Rocket-Meals-Modul, Stand einer KI-Handlungsempfehlung: Die KI wird gefragt */
+  rocket_meals_module_action_recommendation_processing: {
+    de: 'Die KI wird gefragt',
+    en: 'Asking the AI',
+    ar: 'جارٍ سؤال الذكاء الاصطناعي',
+    es: 'Consultando a la IA',
+    fr: 'L’IA est consultée',
+    ru: 'Запрос к ИИ',
+    tr: 'Yapay zekâya soruluyor',
+    zh: '正在询问 AI',
+  },
+  /** Rocket-Meals-Modul, Stand einer KI-Handlungsempfehlung: KI-Empfehlung fehlgeschlagen */
+  rocket_meals_module_action_recommendation_failed: {
+    de: 'KI-Empfehlung fehlgeschlagen',
+    en: 'AI recommendation failed',
+    ar: 'فشلت توصية الذكاء الاصطناعي',
+    es: 'La recomendación de la IA ha fallado',
+    fr: 'La recommandation de l’IA a échoué',
+    ru: 'Не удалось получить рекомендацию ИИ',
+    tr: 'Yapay zekâ önerisi başarısız oldu',
+    zh: 'AI 建议失败',
+  },
 };

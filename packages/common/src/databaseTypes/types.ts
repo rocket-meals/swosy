@@ -7,6 +7,7 @@ export type ActionRecommendations = {
   draft_reply?: string | null;
   id: string;
   item?: string | null;
+  logs?: string | null;
   reason?: string | null;
   recommended_by_ai?: string | null;
   recommended_by_profile?: string | Profiles | null;

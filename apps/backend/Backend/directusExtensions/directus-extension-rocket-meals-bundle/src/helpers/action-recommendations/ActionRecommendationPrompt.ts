@@ -7,7 +7,7 @@
  * dropped and reported in `ignored`.
  */
 
-import { ACTION_RECOMMENDATION_ACTIONS, ActionRecommendationAction, ActionRecommendationDefinitions, type ActionRecommendationDefinition } from './ActionRecommendationDefinitions';
+import { ACTION_RECOMMENDATION_ACTIONS, ActionRecommendationAction, ActionRecommendationDefinitions, type ActionRecommendationChatDefinition, type ActionRecommendationDefinition } from './ActionRecommendationDefinitions';
 
 /** An item as read from the database: `id` plus the allowlisted fields. */
 export type ActionRecommendationSourceItem = { id: string | number } & Record<string, unknown>;
@@ -26,12 +26,22 @@ export type ActionRecommendationSummary = { summary: string; key_points: string[
 
 export type ChatPrompt = { system: string; user: string };
 
+/** Who wrote a message of a support chat, as the AI is told: the guest or the support (never a name). */
+export enum ChatReplyRole {
+  GUEST = 'guest',
+  SUPPORT = 'support',
+}
+
+export type ChatReplyMessage = { role: ChatReplyRole; text: string };
+
 const REASON_MAX_LENGTH = 1000;
 const DRAFT_REPLY_MAX_LENGTH = 2000;
 const SUMMARY_MAX_LENGTH = 4000;
 const KEY_POINTS_MAX = 10;
 const KEY_POINT_MAX_LENGTH = 300;
 const ITEM_TEXT_MAX_LENGTH = 2000;
+/** At most this many messages of a chat, the newest, go to the AI. */
+const CHAT_MESSAGES_MAX = 50;
 
 const WRITING_RULE = 'Verwende keine Gedankenstriche und keine Semikolons, sondern Kommas, Doppelpunkte oder neue Sätze.';
 
@@ -116,6 +126,38 @@ Antworte ausschließlich mit einem JSON-Objekt in genau dieser Form, ohne weiter
 {"summary":"<Zusammenfassung in wenigen Sätzen>","key_points":["<Kernpunkt>"]}`;
     const user = JSON.stringify({ items: items.map(item => ActionRecommendationPrompt.toPromptItem(definition, item)) }, null, 2);
     return { system, user };
+  }
+
+  /**
+   * The prompt for the next message of the support in a chat: the item's text opens the chat, then
+   * the messages with their role. `context` holds the `chat.contextFields` (e.g. the food).
+   */
+  static buildChatReplyPrompt(chat: ActionRecommendationChatDefinition, context: Record<string, unknown>, messages: readonly ChatReplyMessage[], replyLanguage: string): ChatPrompt {
+    const system = `Du bist der Support eines Anbieters von Speisen für Studierende (ein Studierendenwerk mit Mensen und Cafeterien) und betreust die Chats seiner Mensa- und Campus-App. ${chat.promptContext}
+Unten steht der bisherige Verlauf: jede Nachricht hat die Rolle "${ChatReplyRole.GUEST}" (der Gast, der geschrieben hat) oder "${ChatReplyRole.SUPPORT}" (ihr).
+Schreibe die nächste Nachricht des Supports: freundlich, kurz und sachlich, geh auf das zuletzt Gesagte ein, versprich nichts, was ihr nicht sicher halten könnt, und nenne keine Namen.
+Schreibe in der Sprache mit dem Code "${replyLanguage}".
+${WRITING_RULE}
+
+Antworte ausschließlich mit einem JSON-Objekt in genau dieser Form, ohne weiteren Text:
+{"draft_reply":"<die nächste Nachricht des Supports>"}`;
+    const user = JSON.stringify(
+      {
+        context,
+        messages: messages.slice(-CHAT_MESSAGES_MAX).map(message => ({ role: message.role, text: message.text.slice(0, ITEM_TEXT_MAX_LENGTH) })),
+      },
+      null,
+      2
+    );
+    return { system, user };
+  }
+
+  static parseChatReply(answer: unknown): string {
+    const draftReply = trimText((answer as { draft_reply?: unknown })?.draft_reply, DRAFT_REPLY_MAX_LENGTH);
+    if (!draftReply) {
+      throw new Error('The answer of the AI has no draft reply.');
+    }
+    return draftReply;
   }
 
   static parseSummary(answer: unknown): ActionRecommendationSummary {
