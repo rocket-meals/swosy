@@ -4277,4 +4277,48 @@ export const backendTranslations: TranslationResources = {
     tr: 'Yapay zekâyı yapılandır',
     zh: '配置 AI',
   },
+  /** Handlungsempfehlung: Antworten. */
+  rocket_meals_module_action_recommendation_action_reply: {
+    de: 'Antworten',
+    en: 'Reply',
+    ar: 'الرد',
+    es: 'Responder',
+    fr: 'Répondre',
+    ru: 'Ответить',
+    tr: 'Yanıtla',
+    zh: '回复',
+  },
+  /** Handlungsempfehlung: Ohne Antwort erledigen. */
+  rocket_meals_module_action_recommendation_action_ignore: {
+    de: 'Ohne Antwort erledigen',
+    en: 'Close without reply',
+    ar: 'إغلاق دون رد',
+    es: 'Cerrar sin responder',
+    fr: 'Clore sans répondre',
+    ru: 'Закрыть без ответа',
+    tr: 'Yanıtlamadan kapat',
+    zh: '不回复直接关闭',
+  },
+  /** Handlungsempfehlung: An die Küche weitergeben. */
+  rocket_meals_module_action_recommendation_action_forward_to_kitchen: {
+    de: 'An die Küche weitergeben',
+    en: 'Forward to the kitchen',
+    ar: 'إحالة إلى المطبخ',
+    es: 'Enviar a la cocina',
+    fr: 'Transmettre à la cuisine',
+    ru: 'Передать на кухню',
+    tr: 'Mutfağa ilet',
+    zh: '转交厨房',
+  },
+  /** Handlungsempfehlung: An die Entwicklung weitergeben. */
+  rocket_meals_module_action_recommendation_action_forward_to_development: {
+    de: 'An die Entwicklung weitergeben',
+    en: 'Forward to development',
+    ar: 'إحالة إلى فريق التطوير',
+    es: 'Enviar al equipo de desarrollo',
+    fr: 'Transmettre au développement',
+    ru: 'Передать разработчикам',
+    tr: 'Geliştirme ekibine ilet',
+    zh: '转交开发团队',
+  },
 };

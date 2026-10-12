@@ -447,6 +447,10 @@ export const BackendTranslationKeys = {
   rocket_meals_module_feature_wish_open_item: 'rocket_meals_module_feature_wish_open_item',
   rocket_meals_module_workflows_ai_not_configured: 'rocket_meals_module_workflows_ai_not_configured',
   rocket_meals_module_workflows_configure_ai: 'rocket_meals_module_workflows_configure_ai',
+  rocket_meals_module_action_recommendation_action_reply: 'rocket_meals_module_action_recommendation_action_reply',
+  rocket_meals_module_action_recommendation_action_ignore: 'rocket_meals_module_action_recommendation_action_ignore',
+  rocket_meals_module_action_recommendation_action_forward_to_kitchen: 'rocket_meals_module_action_recommendation_action_forward_to_kitchen',
+  rocket_meals_module_action_recommendation_action_forward_to_development: 'rocket_meals_module_action_recommendation_action_forward_to_development',
 } as const;
 
 export type BackendTranslationKeys = (typeof BackendTranslationKeys)[keyof typeof BackendTranslationKeys];
