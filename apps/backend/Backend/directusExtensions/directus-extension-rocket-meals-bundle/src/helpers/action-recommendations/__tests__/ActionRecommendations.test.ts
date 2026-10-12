@@ -125,7 +125,7 @@ describe('ActionRecommendationPrompt', () => {
 describe('ActionRecommendationModuleHelper', () => {
   it('queries only open recommendations of the given items', () => {
     const query = ActionRecommendationModuleHelper.buildOpenQuery(CollectionNames.FOODS_FEEDBACKS, ['f1', 2]);
-    expect(JSON.parse(query.filter as string)).toEqual({ _and: [{ collection: { _eq: 'foods_feedbacks' } }, { item: { _in: ['f1', '2'] } }, { status: { _eq: 'draft' } }] });
+    expect(JSON.parse(query.filter as string)).toEqual({ _and: [{ collection: { _eq: 'foods_feedbacks' } }, { item: { _in: ['f1', '2'] } }, { status: { _in: ['processing', 'draft', 'failed'] } }] });
   });
 
   it('keeps the newest recommendation per item', () => {
@@ -246,5 +246,23 @@ describe('chat reply', () => {
     expect(post).toHaveBeenCalledWith('/action-recommendations/chat-reply', { collection: 'foods_feedbacks', item: 'f1' });
     const empty = { get: jest.fn(async () => ({})), post: jest.fn(async () => ({ data: { data: null } })) };
     await expect(ActionRecommendationModuleHelper.suggestChatReply(empty, 'foods_feedbacks', 'f1')).rejects.toThrow();
+  });
+});
+
+describe('progress and logs', () => {
+  it('formats log lines with the time', () => {
+    expect(ActionRecommendationDefinitions.formatLogLine(new Date('2026-10-12T15:00:00.000Z'), 'Asking the AI')).toBe('[2026-10-12T15:00:00.000Z] Asking the AI');
+  });
+
+  it('the schema has the logs field', () => {
+    expect(readSnapshotField(CollectionNames.ACTION_RECOMMENDATIONS, 'logs').type).toBe('text');
+  });
+
+  it('module: tells processing and failed recommendations apart and shows the last log line', () => {
+    expect(ActionRecommendationModuleHelper.isProcessing({ id: '1', status: 'processing' })).toBe(true);
+    expect(ActionRecommendationModuleHelper.isFailed({ id: '1', status: 'failed' })).toBe(true);
+    expect(ActionRecommendationModuleHelper.isFailed({ id: '1', status: 'draft' })).toBe(false);
+    expect(ActionRecommendationModuleHelper.getLastLogLine({ id: '1', logs: '[t1] Asking the AI\n[t2] The AI failed: 401\n' })).toBe('[t2] The AI failed: 401');
+    expect(ActionRecommendationModuleHelper.getLastLogLine({ id: '1', logs: null })).toBeNull();
   });
 });

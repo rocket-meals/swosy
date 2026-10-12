@@ -4398,4 +4398,26 @@ export const backendTranslations: TranslationResources = {
     tr: 'Yapay zekâ sağlayıcısı ayarlanmadı. Ayarlar > Yapay Zekâ altında OpenAI uyumlu bir sağlayıcı ekleyin.',
     zh: '尚未设置 AI 提供商。请在“设置 > AI”中添加兼容 OpenAI 的提供商。',
   },
+  /** Rocket-Meals-Modul, Stand einer KI-Handlungsempfehlung: Die KI wird gefragt */
+  rocket_meals_module_action_recommendation_processing: {
+    de: 'Die KI wird gefragt',
+    en: 'Asking the AI',
+    ar: 'جارٍ سؤال الذكاء الاصطناعي',
+    es: 'Consultando a la IA',
+    fr: 'L’IA est consultée',
+    ru: 'Запрос к ИИ',
+    tr: 'Yapay zekâya soruluyor',
+    zh: '正在询问 AI',
+  },
+  /** Rocket-Meals-Modul, Stand einer KI-Handlungsempfehlung: KI-Empfehlung fehlgeschlagen */
+  rocket_meals_module_action_recommendation_failed: {
+    de: 'KI-Empfehlung fehlgeschlagen',
+    en: 'AI recommendation failed',
+    ar: 'فشلت توصية الذكاء الاصطناعي',
+    es: 'La recomendación de la IA ha fallado',
+    fr: 'La recommandation de l’IA a échoué',
+    ru: 'Не удалось получить рекомендацию ИИ',
+    tr: 'Yapay zekâ önerisi başarısız oldu',
+    zh: 'AI 建议失败',
+  },
 };

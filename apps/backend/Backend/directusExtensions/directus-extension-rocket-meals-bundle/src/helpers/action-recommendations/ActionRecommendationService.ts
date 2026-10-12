@@ -13,7 +13,7 @@ import { ApiContext } from '../ApiContext';
 import { MyDatabaseHelper } from '../MyDatabaseHelper';
 import { DirectusOpenAiCompatibleClient } from '../ai/DirectusOpenAiCompatibleClient';
 import { ActionRecommendationModuleHelper } from '../rocket-meals-module/ActionRecommendationModuleHelper';
-import { ActionRecommendationDefinitions, ActionRecommendationStatus, type ActionRecommendationDefinition } from './ActionRecommendationDefinitions';
+import { ActionRecommendationDefinitions, ActionRecommendationStatus, OPEN_ACTION_RECOMMENDATION_STATUSES, type ActionRecommendationDefinition } from './ActionRecommendationDefinitions';
 import { ActionRecommendationPrompt, ChatReplyRole, type ActionRecommendationSourceItem, type ActionRecommendationSummary, type ChatReplyMessage } from './ActionRecommendationPrompt';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 
@@ -59,9 +59,12 @@ export class ActionRecommendationService {
   }
 
   /**
-   * Recommends an action for each of the items and stores it as `draft`. Earlier drafts of the AI for
-   * these items are replaced. `accountability` is the person asking (items are read with their
-   * permissions and they become `user_created`), `null` for the system.
+   * Recommends an action for each of the items. Every item gets its row right away (`processing`, with
+   * a log line), so the module shows that the AI is being asked; the answer turns it into a `draft`
+   * with the recommendation, or into `failed` with the reason in `logs`. Earlier open AI
+   * recommendations of these items are replaced. `accountability` is the person asking (items are
+   * read with their permissions and they become `user_created`), `null` for the system. Throws when
+   * the AI fails, after the rows were marked as failed.
    */
   async recommend(definition: ActionRecommendationDefinition, ids: readonly string[], language: string, accountability: Accountability | null): Promise<ActionRecommendationResult> {
     if (ids.length === 0) {
@@ -71,16 +74,7 @@ export class ActionRecommendationService {
     if (items.length === 0) {
       return { data: [], ignored: [] };
     }
-
-    const replyLanguages = await this.getReplyLanguages(definition, items);
-    const answer = await this.client.chatJson(ActionRecommendationPrompt.buildRecommendationPrompt(definition, items, language, replyLanguages));
-    const parsed = ActionRecommendationPrompt.parseRecommendations(answer, definition, new Set(items.map(item => String(item.id))));
-    for (const reason of parsed.ignored) {
-      this.apiContext.logger.warn(`action recommendations: ignored part of the AI answer: ${reason}`);
-    }
-    if (parsed.recommendations.length === 0) {
-      return { data: [], ignored: parsed.ignored };
-    }
+    const itemIds = items.map(item => String(item.id));
 
     // The admin flag lets every role of the module store a recommendation without an extra permission
     // on the table, `user_created` still says who asked.
@@ -89,24 +83,51 @@ export class ActionRecommendationService {
       filter: {
         _and: [
           { collection: { _eq: definition.collection } },
-          { item: { _in: parsed.recommendations.map(recommendation => recommendation.item) } },
-          { status: { _eq: ActionRecommendationStatus.DRAFT } },
+          { item: { _in: itemIds } },
+          { status: { _in: [...OPEN_ACTION_RECOMMENDATION_STATUSES] } },
           { recommended_by_ai: { _nnull: true } },
         ],
       },
     });
     const recommendedByAi = this.client.getRecommenderLabel();
+    const startLog = ActionRecommendationDefinitions.formatLogLine(new Date(), `Asking the AI (${recommendedByAi}) about ${items.length} item(s)`);
     const keys = await service.createMany(
-      parsed.recommendations.map(recommendation => ({
+      itemIds.map(item => ({
         collection: definition.collection,
-        item: recommendation.item,
-        action: recommendation.action,
-        reason: recommendation.reason,
-        draft_reply: recommendation.draft_reply,
-        status: ActionRecommendationStatus.DRAFT,
+        item,
+        status: ActionRecommendationStatus.PROCESSING,
         recommended_by_ai: recommendedByAi,
+        logs: startLog,
       }))
     );
+
+    let parsed: ReturnType<typeof ActionRecommendationPrompt.parseRecommendations>;
+    try {
+      const replyLanguages = await this.getReplyLanguages(definition, items);
+      const answer = await this.client.chatJson(ActionRecommendationPrompt.buildRecommendationPrompt(definition, items, language, replyLanguages));
+      parsed = ActionRecommendationPrompt.parseRecommendations(answer, definition, new Set(itemIds));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      await service.updateMany(keys, { status: ActionRecommendationStatus.FAILED, logs: `${startLog}\n${ActionRecommendationDefinitions.formatLogLine(new Date(), `The AI failed: ${message}`)}` });
+      throw error;
+    }
+    for (const reason of parsed.ignored) {
+      this.apiContext.logger.warn(`action recommendations: ignored part of the AI answer: ${reason}`);
+    }
+
+    for (const [index, item] of itemIds.entries()) {
+      const key = keys[index];
+      const recommendation = parsed.recommendations.find(candidate => candidate.item === item);
+      const doneLog = recommendation
+        ? ActionRecommendationDefinitions.formatLogLine(new Date(), `The AI recommends "${recommendation.action}"`)
+        : ActionRecommendationDefinitions.formatLogLine(new Date(), `No valid recommendation in the answer${parsed.ignored.length > 0 ? ': ' + parsed.ignored.join('; ') : ''}`);
+      await service.updateOne(key, { // NOSONAR S9382 - sequential on purpose: one row per item, at most MAX_ITEMS_PER_RECOMMENDATION
+        ...(recommendation
+          ? { action: recommendation.action, reason: recommendation.reason, draft_reply: recommendation.draft_reply, status: ActionRecommendationStatus.DRAFT }
+          : { status: ActionRecommendationStatus.FAILED }),
+        logs: `${startLog}\n${doneLog}`,
+      });
+    }
     const data = await service.readMany(keys, { fields: ActionRecommendationModuleHelper.FIELDS });
     return { data, ignored: parsed.ignored };
   }

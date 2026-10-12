@@ -7,7 +7,7 @@
  * the Node tests.
  */
 
-import { ActionRecommendationAction, ActionRecommendationDefinitions, ActionRecommendationStatus } from '../action-recommendations/ActionRecommendationDefinitions';
+import { ActionRecommendationAction, ActionRecommendationDefinitions, ActionRecommendationStatus, OPEN_ACTION_RECOMMENDATION_STATUSES } from '../action-recommendations/ActionRecommendationDefinitions';
 
 /** Why a request to the endpoint failed, sent as `code` next to `error`. */
 export enum ActionRecommendationErrorCode {
@@ -26,6 +26,7 @@ export type ModuleActionRecommendation = {
   reason?: string | null;
   draft_reply?: string | null;
   status?: string | null;
+  logs?: string | null;
   recommended_by_ai?: string | null;
   recommended_by_profile?: string | { id?: string; nickname?: string | null } | null;
   date_created?: string | null;
@@ -82,7 +83,7 @@ export class ActionRecommendationModuleHelper {
   static readonly ITEMS_ENDPOINT = '/items/action_recommendations';
 
   /** The fields of `action_recommendations` the module shows. */
-  static readonly FIELDS = ['id', 'collection', 'item', 'action', 'reason', 'draft_reply', 'status', 'recommended_by_ai', 'recommended_by_profile', 'user_created', 'date_created'];
+  static readonly FIELDS = ['id', 'collection', 'item', 'action', 'reason', 'draft_reply', 'status', 'logs', 'recommended_by_ai', 'recommended_by_profile', 'user_created', 'date_created'];
 
   /** The icon of recommendations everywhere in the module. */
   static readonly ICON = 'auto_awesome';
@@ -90,11 +91,14 @@ export class ActionRecommendationModuleHelper {
   /** Query parameter of a chat page: put the draft reply into the input right away. */
   static readonly USE_DRAFT_QUERY = 'use_draft';
 
-  /** Open (`draft`) recommendations of the given items, newest first. */
+  /** How often a page reloads the recommendations while the AI is still being asked. */
+  static readonly PROCESSING_REFRESH_INTERVAL_MS = 5000;
+
+  /** Open (asked, answered or failed, not yet dealt with) recommendations of the given items, newest first. */
   static buildOpenQuery(collection: string, itemIds: readonly (string | number)[]): Record<string, unknown> {
     return {
       fields: ActionRecommendationModuleHelper.FIELDS.join(','),
-      filter: JSON.stringify({ _and: [{ collection: { _eq: collection } }, { item: { _in: itemIds.map(String) } }, { status: { _eq: ActionRecommendationStatus.DRAFT } }] }),
+      filter: JSON.stringify({ _and: [{ collection: { _eq: collection } }, { item: { _in: itemIds.map(String) } }, { status: { _in: [...OPEN_ACTION_RECOMMENDATION_STATUSES] } }] }),
       sort: '-date_created',
       limit: -1,
     };
@@ -134,6 +138,22 @@ export class ActionRecommendationModuleHelper {
       return;
     }
     await api.patch(ActionRecommendationModuleHelper.ITEMS_ENDPOINT, { keys, data: { status: ActionRecommendationStatus.ARCHIVED } });
+  }
+
+  /** The AI is still being asked. */
+  static isProcessing(recommendation: ModuleActionRecommendation | null | undefined): boolean {
+    return recommendation?.status === ActionRecommendationStatus.PROCESSING;
+  }
+
+  /** The AI failed or gave no valid answer; `logs` says why. */
+  static isFailed(recommendation: ModuleActionRecommendation | null | undefined): boolean {
+    return recommendation?.status === ActionRecommendationStatus.FAILED;
+  }
+
+  /** The last line of `logs`, what happened most recently. */
+  static getLastLogLine(recommendation: ModuleActionRecommendation | null | undefined): string | null {
+    const lines = (recommendation?.logs ?? '').split('\n').filter(line => line.trim().length > 0);
+    return lines[lines.length - 1] ?? null;
   }
 
   static isAction(recommendation: ModuleActionRecommendation | null | undefined, action: ActionRecommendationAction): boolean {

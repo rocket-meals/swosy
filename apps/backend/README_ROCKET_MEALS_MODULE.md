@@ -142,11 +142,25 @@ Die gemeinsamen Teile beider Feedback-Seiten liegen in `src/rocket-meals-module/
 
 ### KI-Handlungsempfehlungen
 
-Für neue Speise-Feedbacks mit Kommentar fragt der `action-recommendations-hook` die KI, was zu tun ist:
-antworten (mit Antwortvorschlag für den Chat) oder als erledigt markieren. Die Antwort landet in
-`action_recommendations` (`collection`, `item`, `action`, `reason`, `draft_reply`, `status = draft`,
+Sobald ein Speise-Feedback einen neuen oder geänderten Kommentar hat, fragt der
+`action-recommendations-hook` die KI, was zu tun ist: antworten (mit Antwortvorschlag für den Chat) oder
+als erledigt markieren. Die App legt ein Feedback ohne Kommentar an und schreibt den Kommentar per
+Update, und sie schickt bei jeder Änderung (auch einer neuen Bewertung) das ganze Feedback. Deshalb
+vergleicht der Hook den Kommentar vor und nach dem Update, statt nur auf das Anlegen zu hören.
+Die Antwort landet in `action_recommendations` (`collection`, `item`, `action`, `reason`, `draft_reply`,
 `recommended_by_ai` = Anbieter und Modell, z. B. `OpenRouter · gpt-4o`). Die KI schlägt nur vor, am
 Feedback selbst ändert sich nichts.
+
+| `status`     | Bedeutung                                                    | Liste im Modul                         |
+| ------------ | ------------------------------------------------------------ | -------------------------------------- |
+| `processing` | Die Zeile entsteht sofort, die KI wird gerade gefragt        | „Die KI wird gefragt“, lädt alle 5 s neu |
+| `draft`      | Empfehlung da                                                | ✨ am Button, Begründung, Vorschlag     |
+| `failed`     | KI-Fehler oder keine gültige Antwort, Grund in `logs`        | „KI-Empfehlung fehlgeschlagen“ + letzte Log-Zeile |
+| `archived`   | Übernommen oder verworfen                                    | nicht mehr angezeigt                   |
+
+`logs` hält mit Zeitstempel fest, wann die KI gefragt wurde und was sie geantwortet hat (oder der
+Fehler). Eine neue Anfrage ersetzt die offenen (`processing`, `draft`, `failed`) KI-Empfehlungen
+desselben Eintrags.
 
 - **Einschalten:** `app_settings.ai_action_recommendations_enabled` (Standard aus) und ein
   OpenAI-kompatibler Anbieter unter Einstellungen > KI. Fehlt eins davon, passiert nichts.
