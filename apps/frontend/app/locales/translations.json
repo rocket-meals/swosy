@@ -900,14 +900,14 @@
     "zh": "维护"
   },
   "maintenance_message": {
-    "de": "Du kannst eine gespeicherte Version der App verwenden, aber einige Funktionen sind möglicherweise nicht verfügbar.",
-    "en": "You can use a cached version of the app, but some features may not be available.",
-    "ar": "يمكنك استخدام نسخة مخبأة من التطبيق ، ولكن قد لا تتوفر بعض الميزات.",
-    "es": "Puedes usar una versión almacenada en caché de la aplicación, pero algunas funciones pueden no estar disponibles.",
-    "fr": "Vous pouvez utiliser une version mise en cache de l'application, mais certaines fonctionnalités peuvent ne pas être disponibles.",
-    "ru": "Вы можете использовать кэшированную версию приложения, но некоторые функции могут быть недоступны.",
-    "tr": "Uygulamanın önbelleğe alınmış bir sürümünü kullanabilirsiniz, ancak bazı özellikler mevcut olmayabilir.",
-    "zh": "您可以使用缓存版本的应用程序，但某些功能可能无法使用。"
+    "de": "Einige Funktionen und Daten wurden auf deinem Gerät offline gespeichert und bleiben nutzbar.",
+    "en": "Some features and data have been saved offline on your device and remain usable.",
+    "ar": "تم حفظ بعض الميزات والبيانات على جهازك دون اتصال بالإنترنت وتبقى قابلة للاستخدام.",
+    "es": "Algunas funciones y datos se han guardado sin conexión en tu dispositivo y siguen disponibles.",
+    "fr": "Certaines fonctionnalités et données ont été enregistrées hors ligne sur votre appareil et restent utilisables.",
+    "ru": "Некоторые функции и данные сохранены на вашем устройстве для работы офлайн и остаются доступными.",
+    "tr": "Bazı özellikler ve veriler cihazınıza çevrimdışı olarak kaydedildi ve kullanılmaya devam edebilir.",
+    "zh": "部分功能和数据已离线保存在您的设备上，仍可继续使用。"
   },
   "maintenance_estimated_end": {
     "de": "Voraussichtliches Ende der Wartung",

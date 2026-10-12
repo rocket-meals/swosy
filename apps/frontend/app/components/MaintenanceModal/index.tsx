@@ -27,15 +27,18 @@ type MaintenanceModalContentProps = {
 const MaintenanceModalContent: React.FC<MaintenanceModalContentProps> = ({ notice, message }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
+	const primaryColor = useAppSelector(state => state.settings.primaryColor);
 	const noticeText = notice.phase === 'upcoming' ? interpolateTranslation(translate(TranslationKeys.maintenance_upcoming_notice), { start: format(notice.start, 'HH:mm'), end: format(notice.end, 'HH:mm') }) : interpolateTranslation(translate(TranslationKeys.maintenance_active_notice), { end: format(notice.end, 'HH:mm') });
 
 	return (
 		<View style={styles.content}>
-			<View style={styles.noticeRow}>
-				<MaterialCommunityIcons name="wrench-clock" size={28} color={theme.screen.icon} />
+			{/* Side bar in the project color, like the MaintenanceBanner. */}
+			<View style={[styles.noticeRow, { borderLeftColor: primaryColor }]}>
+				<MaterialCommunityIcons name="wrench-clock" size={28} color={primaryColor} />
 				<Text style={[styles.noticeText, { color: theme.screen.text }]}>{noticeText}</Text>
 			</View>
-			{message ? <MyMarkdownProjectColored content={message} /> : null}
+			{/* Without an own text from app_settings.maintenance_message, a general hint on what still works. */}
+			{message ? <MyMarkdownProjectColored content={message} /> : <Text style={[styles.hintText, { color: theme.screen.text }]}>{translate(TranslationKeys.maintenance_message)}</Text>}
 		</View>
 	);
 };
@@ -132,6 +135,12 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 12,
+		borderLeftWidth: 4,
+		paddingLeft: 12,
+	},
+	hintText: {
+		fontSize: 14,
+		fontFamily: 'Poppins_400Regular',
 	},
 	noticeText: {
 		flex: 1,
