@@ -32,10 +32,6 @@ const props = defineProps<{
   suggestion?: string | null;
   /** Puts the suggestion into the input as soon as it is there, e.g. after "Chat mit Vorschlag starten". */
   useSuggestion?: boolean;
-  /** Asks the AI for a reply to the conversation so far; resolves the text, or null when it failed (the page tells why). Without it there is no button. */
-  generateReply?: () => Promise<string | null>;
-  /** Whether an AI provider is configured; the button stays greyed out otherwise. */
-  generateReplyAvailable?: boolean;
 }>();
 
 const { translate, formatDateTime } = useAppExtensionTranslate();
@@ -58,44 +54,17 @@ const messagesContainer = ref<HTMLElement>();
 const composerInput = ref<HTMLTextAreaElement>();
 
 /**
- * The AI's suggestion shown in full above the input: the draft of the recommendation, or the reply the
- * button "KI-Vorschlag erstellen" just generated. It is only taken over with "In Eingabe übernehmen",
- * so nothing typed is ever overwritten. Hidden while the input already holds exactly this text.
+ * The AI's suggestion shown in full above the input (the draft reply of the recommendation). It is
+ * only taken over with "In Eingabe übernehmen", so nothing typed is ever overwritten. Hidden while the
+ * input already holds exactly this text.
  */
-const currentSuggestion = ref<string | null>(props.suggestion ?? null);
-watch(
-  () => props.suggestion,
-  suggestion => {
-    currentSuggestion.value = suggestion ?? null;
-  }
-);
+const currentSuggestion = computed(() => props.suggestion ?? null);
 const showSuggestion = computed(() => !!currentSuggestion.value && props.canWrite && newMessage.value.trim() !== currentSuggestion.value.trim());
 
 function insertSuggestion() {
   if (currentSuggestion.value) {
     newMessage.value = currentSuggestion.value;
     nextTick(() => composerInput.value?.focus());
-  }
-}
-
-const generatingReply = ref(false);
-
-/** Asks the AI for a new suggestion. An empty input gets it right away, otherwise it waits in the box above. */
-async function generateSuggestion() {
-  if (!props.generateReply || !props.generateReplyAvailable || generatingReply.value) {
-    return;
-  }
-  generatingReply.value = true;
-  try {
-    const reply = await props.generateReply();
-    if (reply) {
-      currentSuggestion.value = reply;
-      if (!newMessage.value.trim()) {
-        insertSuggestion();
-      }
-    }
-  } finally {
-    generatingReply.value = false;
   }
 }
 
@@ -220,13 +189,6 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
     <textarea :id="composerInputId" ref="composerInput" v-model="newMessage" class="composer-input" rows="1" :placeholder="placeholder ?? translate(BackendTranslationKeys.rocket_meals_module_message_placeholder)" :disabled="!canWrite || sending" @keydown="onKeydown" />
     <div class="composer-actions">
       <span class="composer-hint type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_send_hint) }}</span>
-      <!-- The wrapper carries the tooltip: a disabled button gets no mouse events. -->
-      <span v-if="generateReply && canWrite" v-tooltip.top="generateReplyAvailable ? undefined : translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_ai_not_configured)">
-        <v-button small secondary :disabled="!generateReplyAvailable || sending" :loading="generatingReply" @click.stop="generateSuggestion">
-          <v-icon :name="ActionRecommendationModuleHelper.ICON" left small />
-          {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_generate_reply) }}
-        </v-button>
-      </span>
       <button v-tooltip.top="translate(BackendTranslationKeys.send)" class="send-button" :disabled="!canWrite || sending || newMessage.trim().length === 0" :aria-label="translate(BackendTranslationKeys.send)" @click.stop="sendMessage">
         <v-progress-circular v-if="sending" indeterminate x-small />
         <v-icon v-else name="arrow_upward" small />

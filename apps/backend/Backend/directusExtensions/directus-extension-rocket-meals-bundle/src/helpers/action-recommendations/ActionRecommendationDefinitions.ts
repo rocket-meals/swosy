@@ -60,7 +60,7 @@ export type ActionRecommendationDefinition = {
   collection: CollectionNames;
   /** What an item of the collection is, for the AI (prompt text). */
   promptContext: string;
-  /** The only fields of an item that are sent to the AI, besides `id`. */
+  /** The only fields of an item that are sent to the AI, besides `id`; also of relations (`food.alias`). */
   fields: readonly string[];
   /** The actions the AI may recommend for an item of this collection. */
   actions: readonly ActionRecommendationAction[];
@@ -70,34 +70,26 @@ export type ActionRecommendationDefinition = {
   summaryGroupField?: string;
   /** The relation to the author's profile: its `language` decides the language of a draft reply. Never sent to the AI. */
   authorProfileField?: string;
-  /** For items with a support chat: how a reply in that chat can be suggested. */
+  /** For items with a support chat: its messages go into the prompt, so the recommendation knows the conversation. */
   chat?: ActionRecommendationChatDefinition;
 };
 
 export type ActionRecommendationChatDefinition = {
   /** The relation to `chats`. */
   field: string;
-  /** What the chat is about, for the AI (prompt text). */
-  promptContext: string;
-  /** Fields that tell the AI what the chat is about, also of relations (`food.alias`). Never personal data. */
-  contextFields: readonly string[];
 };
 
 export class ActionRecommendationDefinitions {
   static readonly DEFINITIONS: readonly ActionRecommendationDefinition[] = [
     {
       collection: CollectionNames.FOODS_FEEDBACKS,
-      promptContext: 'Rückmeldungen von Gästen einer Mensa zu einer Speise: ein Kommentar und eine Bewertung von 1 (schlecht) bis 5 (gut).',
-      fields: ['comment', 'rating'],
+      promptContext: 'Rückmeldungen von Gästen einer Mensa zu einer Speise: ein Kommentar, eine Bewertung von 1 (schlecht) bis 5 (gut) und der Name der Speise ("food.alias").',
+      fields: ['comment', 'rating', 'food.alias'],
       textFields: ['comment'],
       actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.MARK_RESOLVED],
       summaryGroupField: 'food',
       authorProfileField: 'profile',
-      chat: {
-        field: 'chat',
-        promptContext: 'Der Chat ist zu einer Rückmeldung zu einer Speise entstanden: die erste Nachricht ist der Kommentar des Gastes. "food.alias" ist der Name der Speise, "rating" die Bewertung von 1 (schlecht) bis 5 (gut).',
-        contextFields: ['food.alias', 'rating'],
-      },
+      chat: { field: 'chat' },
     },
     {
       collection: CollectionNames.APP_FEEDBACKS,
@@ -114,8 +106,12 @@ export class ActionRecommendationDefinitions {
   /** The language of a draft reply to an author with another language than German. */
   static readonly FOREIGN_REPLY_LANGUAGE = 'en';
 
-  /** At most this many items are sent for recommendations in one request. */
+  /** At most this many items go to the AI in one call; a larger request is split into several calls. */
   static readonly MAX_ITEMS_PER_RECOMMENDATION = 25;
+  /** At most this many items can be asked for in one request (e.g. the selection of a list page). */
+  static readonly MAX_ITEMS_PER_REQUEST = 100;
+  /** At most this many messages of a chat, the newest, go into a recommendation. */
+  static readonly MAX_CHAT_MESSAGES_PER_ITEM = 20;
   /** At most this many items, the newest first, go into one summary. */
   static readonly MAX_ITEMS_PER_SUMMARY = 200;
 
@@ -131,9 +127,9 @@ export class ActionRecommendationDefinitions {
     return ActionRecommendationDefinitions.isAction(action) ? ACTION_RECOMMENDATION_ACTIONS[action] : null;
   }
 
-  /** The fields to read for an item: the id and the allowlist. */
+  /** The fields to read for an item: the id, the allowlist and the chat (only to find its messages). */
   static getReadFields(definition: ActionRecommendationDefinition): string[] {
-    return ['id', ...definition.fields];
+    return ['id', ...definition.fields, ...(definition.chat ? [definition.chat.field] : [])];
   }
 
   /**
@@ -179,7 +175,7 @@ export class ActionRecommendationDefinitions {
   }
 
   /** The item ids of a request: strings or numbers, without duplicates and empty ones, at most `max`. */
-  static parseItemIds(value: unknown, max: number = ActionRecommendationDefinitions.MAX_ITEMS_PER_RECOMMENDATION): string[] {
+  static parseItemIds(value: unknown, max: number = ActionRecommendationDefinitions.MAX_ITEMS_PER_REQUEST): string[] {
     if (!Array.isArray(value)) {
       return [];
     }
