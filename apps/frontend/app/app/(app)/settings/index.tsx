@@ -1200,7 +1200,10 @@ const searchStyles = StyleSheet.create({
 	},
 	searchInput: {
 		flex: 1,
+		minWidth: 0,
 		height: '100%',
+		// The rounded search bar is the focus frame, no extra browser outline on web.
+		outlineWidth: 0,
 		fontFamily: 'Poppins_400Regular',
 		fontSize: 16,
 	},
