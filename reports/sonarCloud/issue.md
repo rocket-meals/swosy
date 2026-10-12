@@ -4,19 +4,23 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 1 | 1 |
+| 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 3 | 3 |
 | 🔧 Maintainability | 6 | 6 |
 
-**Total issues:** 10
+**Total issues:** 11
 
 ---
 
-## 🔒 Security (1/1)
+## 🔒 Security (2/2)
+
+- **Client-Side Request Forgery via unsanitized user input**
+  apps/maintenance-server/server.mjs:156
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L156
 
 - **CORS Injection via unsanitized user input**
-  apps/maintenance-server/server.mjs:124
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L124
+  apps/maintenance-server/server.mjs:197
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L197
 
 ## 🐛 Reliability (3/3)
 
@@ -25,12 +29,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/NotificationHelper.ts#L87
 
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
-  apps/maintenance-server/server.mjs:167
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L167
+  apps/maintenance-server/server.mjs:279
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L279
 
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
-  apps/maintenance-server/server.mjs:190
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L190
+  apps/maintenance-server/server.mjs:303
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L303
 
 ## 🔧 Maintainability (6/6)
 
@@ -51,10 +55,10 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/NotificationHelper.ts#L87
 
 - **Move function 'setCorsHeaders' to the outer scope.**
-  apps/maintenance-server/server.mjs:120
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L120
+  apps/maintenance-server/server.mjs:193
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L193
 
 - **Move function 'sendJson' to the outer scope.**
-  apps/maintenance-server/server.mjs:132
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L132
+  apps/maintenance-server/server.mjs:205
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L205
 
