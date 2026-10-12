@@ -87,4 +87,11 @@ describe('ModuleListHelper', () => {
     expect(ModuleListHelper.pickAllowed('c', ['a', 'b'], 'a')).toBe('a');
     expect(ModuleListHelper.pickAllowed(undefined, ['a', 'b'], 'a')).toBe('a');
   });
+
+  it('picks the allowed values of a remembered list in their order, else the fallback', () => {
+    expect(ModuleListHelper.pickAllowedList(['c', 'b', 'a'], ['a', 'b'], ['a'])).toEqual(['a', 'b']);
+    expect(ModuleListHelper.pickAllowedList([], ['a', 'b'], ['a'])).toEqual([]);
+    expect(ModuleListHelper.pickAllowedList(undefined, ['a', 'b'], ['a'])).toEqual(['a']);
+    expect(ModuleListHelper.pickAllowedList('a', ['a', 'b'], ['b'])).toEqual(['b']);
+  });
 });

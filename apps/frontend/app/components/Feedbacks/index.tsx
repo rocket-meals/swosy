@@ -20,6 +20,7 @@ import { FeedbacksProps } from './types';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import useFoodFeedbackPermissions from '@/hooks/useFoodFeedbackPermissions';
 import usePushNotificationOptInPrompt from '@/hooks/usePushNotificationOptInPrompt';
+import { PushNotificationOptInCategory } from '@/helper/PushNotificationOptInHelper';
 
 const loadingState = {
 	submitLoading: false,
@@ -123,7 +124,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 			setComment('');
 			setLoading(loadingState);
 			if (string !== null) {
-				void askForPushNotifications();
+				void askForPushNotifications(PushNotificationOptInCategory.FOOD_COMMENT);
 			}
 		} catch (error) {
 			console.error('Error submitting comment feedback:', error);

@@ -76,6 +76,24 @@ export class NotificationHelper {
 		return getNotificationsModule().then(m => (m ? m.setBadgeCountAsync(count) : undefined));
 	}
 
+	/**
+	 * Push messages that arrive while the app is open pop up at the top like outside the app (banner,
+	 * notification list and sound). Without a handler the system shows nothing then. The badge is
+	 * left alone: the app is open, so it stays at 0 (see useAppIconBadgeReset). No effect on web.
+	 */
+	static showNotificationsWhileAppIsOpen() {
+		return getNotificationsModule().then(m =>
+			m?.setNotificationHandler({
+				handleNotification: async () => ({
+					shouldShowBanner: true,
+					shouldShowList: true,
+					shouldPlaySound: true,
+					shouldSetBadge: false,
+				}),
+			})
+		);
+	}
+
 	static isDeviceNotificationPermissionDenied(notificationObj: NotificationObjType) {
 		return notificationObj?.permission?.granted === false;
 	}

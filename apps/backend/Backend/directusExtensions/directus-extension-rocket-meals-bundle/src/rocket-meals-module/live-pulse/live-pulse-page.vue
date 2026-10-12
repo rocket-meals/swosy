@@ -141,7 +141,7 @@ async function reload() {
   const time = new Date();
   now.value = time;
   try {
-    profiles.value = LivePulseHelper.sortProfilesForWall(await getItems<LivePulseProfile>(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildActiveProfilesQuery(time)));
+    profiles.value = LivePulseHelper.sortProfilesForWall(await getItems<LivePulseProfile>(LivePulseHelper.PROFILES_ENDPOINT, LivePulseHelper.buildActiveProfilesQuery(time)), time);
     await Promise.all([loadKpis(time), loadFeed(time), loadHourly(time)]);
     loadError.value = false;
     lastLoaded.value = time;
@@ -405,7 +405,8 @@ onBeforeUnmount(() => {
                     <strong v-else-if="item.type === LivePulseFeedType.FOOD_OPENED">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_someone) }}</strong>
                     <router-link v-else-if="LivePulseHelper.getProfileRoute(item.profile)" class="feed-link" :to="LivePulseHelper.getProfileRoute(item.profile)"><strong>{{ getNickname(item.profile) }}</strong></router-link>
                     <strong v-else>{{ getNickname(item.profile) }}</strong>
-                    <template v-if="feedTextParts(item).found">{{ feedTextParts(item).before }}<router-link v-if="foodRoute(item)" class="feed-link food-link" :to="foodRoute(item)">{{ foodName(item) }}</router-link><template v-else>{{ foodName(item) }}</template>{{ feedTextParts(item).after }}</template><template v-else>{{ feedTextParts(item).before }}</template>
+                    <!-- The line break after the name is dropped by the template compiler, so the space is explicit. -->
+                    {{ ' ' }}<template v-if="feedTextParts(item).found">{{ feedTextParts(item).before }}<router-link v-if="foodRoute(item)" class="feed-link food-link" :to="foodRoute(item)">{{ foodName(item) }}</router-link><template v-else>{{ foodName(item) }}</template>{{ feedTextParts(item).after }}</template><template v-else>{{ feedTextParts(item).before }}</template>
                     <food-feedback-rating v-if="item.type === LivePulseFeedType.RATING || item.type === LivePulseFeedType.COMMENT" :rating="item.rating" />
                   </div>
                   <q v-if="item.comment" class="feed-comment">{{ item.comment }}</q>

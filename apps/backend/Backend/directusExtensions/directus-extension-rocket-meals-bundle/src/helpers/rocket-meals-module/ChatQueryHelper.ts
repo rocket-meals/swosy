@@ -220,6 +220,11 @@ export class ChatQueryHelper {
     return chat ? FoodFeedbackChatStatusHelper.getStatus({ chat: { id: chat.id, conversation_state: chat.conversation_state } }) : FoodFeedbackChatStatus.NEW;
   }
 
+  /** Whether a chat can still be marked as done – every chat that is not done yet. */
+  static canMarkResolved(chat: ModuleChat): boolean {
+    return ChatQueryHelper.getStatus(chat) !== FoodFeedbackChatStatus.RESOLVED;
+  }
+
   static getChatId(message: ModuleChatMessage): string | undefined {
     const chat = message.chat;
     if (!chat) {

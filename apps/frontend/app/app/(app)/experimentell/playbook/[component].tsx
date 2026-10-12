@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { getAppPlaybookEntry } from '@/components/AppPlaybook/appPlaybookEntries';
 import {
 	CommonUiComponentIds,
 	KnobDefinition,
@@ -40,8 +41,25 @@ const PlaybookComponentScreen = () => {
 	const params = useLocalSearchParams<Record<string, string | string[]>>();
 	const componentParam = Array.isArray(params.component) ? params.component[0] : params.component;
 	const entry = componentParam ? getPlaybookEntry(componentParam) : undefined;
+	const appEntry = componentParam ? getAppPlaybookEntry(componentParam) : undefined;
+	const entryName = entry?.name ?? appEntry?.name;
 
-	useSetPageTitle(entry ? `Playbook: ${entry.name}` : 'Playbook');
+	useSetPageTitle(entryName ? `Playbook: ${entryName}` : 'Playbook');
+
+	if (!entry && appEntry) {
+		const AppComponent = appEntry.component;
+		return (
+			<ScrollView style={{ ...styles.container, backgroundColor: theme.screen.background }} contentContainerStyle={{ backgroundColor: theme.screen.background }}>
+				<View style={styles.content}>
+					<Text style={{ ...styles.heading, color: theme.screen.text }}>{appEntry.name}</Text>
+					<Text style={{ ...styles.body, color: theme.screen.text }}>{appEntry.description}</Text>
+					<View nativeID={CommonUiComponentIds.PLAYBOOK_TARGET} style={styles.target}>
+						<AppComponent />
+					</View>
+				</View>
+			</ScrollView>
+		);
+	}
 
 	if (!entry) {
 		return (
