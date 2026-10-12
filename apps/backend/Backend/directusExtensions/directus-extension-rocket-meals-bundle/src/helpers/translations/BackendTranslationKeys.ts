@@ -447,6 +447,14 @@ export const BackendTranslationKeys = {
   rocket_meals_module_feature_wish_open_item: 'rocket_meals_module_feature_wish_open_item',
   rocket_meals_module_workflows_ai_not_configured: 'rocket_meals_module_workflows_ai_not_configured',
   rocket_meals_module_workflows_configure_ai: 'rocket_meals_module_workflows_configure_ai',
+  rocket_meals_module_action_recommendation_action_reply: 'rocket_meals_module_action_recommendation_action_reply',
+  rocket_meals_module_action_recommendation_title: 'rocket_meals_module_action_recommendation_title',
+  rocket_meals_module_action_recommendation_recommended_by: 'rocket_meals_module_action_recommendation_recommended_by',
+  rocket_meals_module_action_recommendation_recommended: 'rocket_meals_module_action_recommendation_recommended',
+  rocket_meals_module_action_recommendation_start_chat_with_draft: 'rocket_meals_module_action_recommendation_start_chat_with_draft',
+  rocket_meals_module_action_recommendation_insert_draft: 'rocket_meals_module_action_recommendation_insert_draft',
+  rocket_meals_module_action_recommendation_dismiss: 'rocket_meals_module_action_recommendation_dismiss',
+  rocket_meals_module_action_recommendation_update_failed: 'rocket_meals_module_action_recommendation_update_failed',
 } as const;
 
 export type BackendTranslationKeys = (typeof BackendTranslationKeys)[keyof typeof BackendTranslationKeys];

@@ -9,7 +9,7 @@
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ChatConversationState } from 'repo-depkit-common/src/ChatConversationState';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
@@ -18,6 +18,8 @@ import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExt
 import { FoodFeedbackChatActions } from '../../helpers/rocket-meals-module/FoodFeedbackChatActions';
 import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage, type FoodFeedbackListItem } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { ChatQueryHelper } from '../../helpers/rocket-meals-module/ChatQueryHelper';
+import { ActionRecommendationModuleHelper, type ModuleActionRecommendation } from '../../helpers/rocket-meals-module/ActionRecommendationModuleHelper';
+import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { SupportChatActions } from '../../helpers/rocket-meals-module/SupportChatActions';
 import { ModuleDeleteActions } from '../../helpers/rocket-meals-module/ModuleDeleteActions';
 import { RocketMealsModulePages } from '../../helpers/rocket-meals-module/RocketMealsModulePages';
@@ -35,6 +37,7 @@ const api = useApi();
 const { useNotificationsStore } = useStores();
 const notificationsStore = useNotificationsStore();
 const router = useRouter();
+const route = useRoute();
 
 const deleteDialogOpen = ref(false);
 const deleting = ref(false);
@@ -72,6 +75,31 @@ const loadError = ref(false);
 const sending = ref(false);
 const updatingState = ref(false);
 
+/** The open AI recommendation of this feedback: its draft reply is offered in the input. */
+const recommendation = ref<ModuleActionRecommendation | null>(null);
+const draftReply = computed(() => ActionRecommendationModuleHelper.getDraftReply(recommendation.value));
+/** Set by "Chat mit Vorschlag starten" in the list. */
+const useDraft = computed(() => route.query[ActionRecommendationModuleHelper.USE_DRAFT_QUERY] !== undefined);
+
+async function loadRecommendation() {
+  const byItem = await ActionRecommendationModuleHelper.loadOpen(api, CollectionNames.FOODS_FEEDBACKS, [props.feedbackId]);
+  recommendation.value = byItem[props.feedbackId] ?? null;
+}
+
+/** Once support answered or closed the feedback, the recommendation is used up. */
+async function archiveRecommendation() {
+  if (!recommendation.value) {
+    return;
+  }
+  try {
+    await ActionRecommendationModuleHelper.archive(api, [recommendation.value]);
+    recommendation.value = null;
+  } catch (error) {
+    console.error('[rocket-meals-module] archiving the action recommendation failed', error);
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_update_failed), type: 'warning' });
+  }
+}
+
 const chatId = computed(() => RelationHelper.getId(feedback.value?.chat));
 const status = computed(() => (feedback.value ? FoodFeedbackChatStatusHelper.getStatus(feedback.value) : FoodFeedbackChatStatus.NEW));
 const canWrite = computed(() => !!feedback.value && FoodFeedbackChatStatusHelper.canStartChat(feedback.value));
@@ -99,6 +127,7 @@ async function load() {
   try {
     await loadFeedback();
     await loadMessages();
+    await loadRecommendation();
     loadError.value = false;
   } catch (error) {
     console.error('[rocket-meals-module] loading food feedback chat failed', error);
@@ -132,6 +161,7 @@ async function sendMessage(text: string): Promise<boolean> {
   try {
     const targetChatId = await ensureChat();
     await api.post(ChatQueryHelper.CHAT_MESSAGES_ENDPOINT, { chat: targetChatId, message: text });
+    await archiveRecommendation();
   } catch (error) {
     console.error('[rocket-meals-module] sending chat message failed', error);
     notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_send_failed), type: 'error' });
@@ -171,6 +201,9 @@ async function changeStatus(nextStatus: FoodFeedbackChatStatus) {
     }
     await setConversationState(nextState);
     await loadFeedback();
+    if (nextStatus === FoodFeedbackChatStatus.RESOLVED) {
+      await archiveRecommendation();
+    }
   } catch (error) {
     console.error('[rocket-meals-module] updating chat state failed', error);
     notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_status_change_failed), type: 'error' });
@@ -242,6 +275,8 @@ watch(() => props.feedbackId, load);
           :can-write="canWrite"
           :empty-text="canWrite ? translate(BackendTranslationKeys.rocket_meals_module_chat_empty) : translate(BackendTranslationKeys.rocket_meals_module_chat_not_possible)"
           :send="sendMessage"
+          :suggestion="draftReply"
+          :use-suggestion="useDraft"
         />
       </template>
 

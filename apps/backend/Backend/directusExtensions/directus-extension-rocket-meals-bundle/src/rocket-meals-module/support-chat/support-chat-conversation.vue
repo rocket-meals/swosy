@@ -5,12 +5,13 @@
  * and app feedbacks and the page of a chat; loading and sending stay with the page (`send`).
  * Messages of users carry the avatar of their profile, a click on it opens the profile page.
  */
-import { nextTick, ref, useId, watch } from 'vue';
+import { computed, nextTick, ref, useId, watch } from 'vue';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FoodFeedbackChatHelper, type FoodFeedbackChatMessage } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import type { ModuleProfile } from '../../helpers/rocket-meals-module/ProfileDetailsHelper';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
+import { ActionRecommendationModuleHelper } from '../../helpers/rocket-meals-module/ActionRecommendationModuleHelper';
 import ProfileAvatar from '../profiles/profile-avatar.vue';
 
 const props = defineProps<{
@@ -27,6 +28,10 @@ const props = defineProps<{
   userProfile?: ModuleProfile | string | null;
   /** Sends a text; resolves `true` when it was sent, so the input is cleared. */
   send: (text: string) => Promise<boolean>;
+  /** A suggested answer (e.g. the draft reply of an AI recommendation): shown as placeholder and insertable with a button. */
+  suggestion?: string | null;
+  /** Puts the suggestion into the input as soon as it is there, e.g. after "Chat mit Vorschlag starten". */
+  useSuggestion?: boolean;
 }>();
 
 const { translate, formatDateTime } = useAppExtensionTranslate();
@@ -47,6 +52,30 @@ const newMessage = ref('');
 const sending = ref(false);
 const messagesContainer = ref<HTMLElement>();
 const composerInput = ref<HTMLTextAreaElement>();
+
+/** The placeholder of the input: the suggestion when there is one, the usual text otherwise. */
+const composerPlaceholder = computed(() => props.suggestion || props.placeholder || translate(BackendTranslationKeys.rocket_meals_module_message_placeholder));
+const canInsertSuggestion = computed(() => !!props.suggestion && props.canWrite && newMessage.value !== props.suggestion);
+
+function insertSuggestion() {
+  if (props.suggestion) {
+    newMessage.value = props.suggestion;
+    nextTick(() => composerInput.value?.focus());
+  }
+}
+
+/** Only once: a suggestion that arrives later must not overwrite what was typed in the meantime. */
+let suggestionUsed = false;
+watch(
+  () => props.suggestion,
+  suggestion => {
+    if (props.useSuggestion && suggestion && !suggestionUsed && !newMessage.value) {
+      suggestionUsed = true;
+      insertSuggestion();
+    }
+  },
+  { immediate: true }
+);
 
 async function sendMessage() {
   const text = newMessage.value.trim();
@@ -139,9 +168,13 @@ watch(() => props.messages.length, scrollToBottom, { immediate: true });
   <!-- A click anywhere in the box focuses the input. Only a mouse shortcut: keyboard users reach the textarea directly, so the box itself is presentational. -->
   <div class="composer" role="presentation" :class="{ disabled: !canWrite }" @click="composerInput?.focus()"><!-- Web:MouseEventWithoutKeyboardEquivalentCheck is suppressed for this file in sonar-project.properties (NOSONAR does not work in templates/CSS): mouse-only shortcut, see comment above: keyboard users focus the textarea directly, no keyboard equivalent is needed -->
     <label class="visually-hidden" :for="composerInputId">{{ placeholder ?? translate(BackendTranslationKeys.rocket_meals_module_message_placeholder) }}</label>
-    <textarea :id="composerInputId" ref="composerInput" v-model="newMessage" class="composer-input" rows="1" :placeholder="placeholder ?? translate(BackendTranslationKeys.rocket_meals_module_message_placeholder)" :disabled="!canWrite || sending" @keydown="onKeydown" />
+    <textarea :id="composerInputId" ref="composerInput" v-model="newMessage" class="composer-input" rows="1" :placeholder="composerPlaceholder" :disabled="!canWrite || sending" @keydown="onKeydown" />
     <div class="composer-actions">
       <span class="composer-hint type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_send_hint) }}</span>
+      <v-button v-if="canInsertSuggestion" small secondary :disabled="sending" @click.stop="insertSuggestion">
+        <v-icon :name="ActionRecommendationModuleHelper.ICON" left small />
+        {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_insert_draft) }}
+      </v-button>
       <button v-tooltip.top="translate(BackendTranslationKeys.send)" class="send-button" :disabled="!canWrite || sending || newMessage.trim().length === 0" :aria-label="translate(BackendTranslationKeys.send)" @click.stop="sendMessage">
         <v-progress-circular v-if="sending" indeterminate x-small />
         <v-icon v-else name="arrow_upward" small />

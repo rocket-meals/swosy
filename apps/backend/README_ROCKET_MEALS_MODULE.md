@@ -140,6 +140,41 @@ Die gemeinsamen Teile beider Feedback-Seiten liegen in `src/rocket-meals-module/
 (Verlauf + Eingabe, Status-Menü) und `src/helpers/rocket-meals-module/SupportChatActions.ts`
 (Status setzen, mehrere als erledigt markieren).
 
+### KI-Handlungsempfehlungen
+
+Für neue Speise-Feedbacks mit Kommentar fragt der `action-recommendations-hook` die KI, was zu tun ist:
+antworten (mit Antwortvorschlag für den Chat) oder als erledigt markieren. Die Antwort landet in
+`action_recommendations` (`collection`, `item`, `action`, `reason`, `draft_reply`, `status = draft`,
+`recommended_by_ai` = Anbieter und Modell, z. B. `OpenRouter · gpt-4o`). Die KI schlägt nur vor, am
+Feedback selbst ändert sich nichts.
+
+- **Einschalten:** `app_settings.ai_action_recommendations_enabled` (Standard aus) und ein
+  OpenAI-kompatibler Anbieter unter Einstellungen > KI. Fehlt eins davon, passiert nichts.
+- **Was an die KI geht**, steht fest im Code (`src/helpers/action-recommendations/ActionRecommendationDefinitions.ts`):
+  pro Collection eine Allowlist der Felder (bei Speise-Feedbacks nur `comment` und `rating`, nie das
+  Profil) und die erlaubten Handlungen. Die Antwort wird streng geprüft
+  (`ActionRecommendationPrompt.parseRecommendations`): unbekannte Einträge, nicht erlaubte Handlungen
+  und Antworten ohne Begründung werden verworfen. Einen Antwortvorschlag gibt es nur bei `reply`.
+- **Sprache des Antwortvorschlags:** aus `profiles.language` des Autors. Ohne Sprache oder bei Deutsch
+  schreibt die KI in der Standardsprache des Servers (`directus_settings.default_language`, Einstellungen >
+  Projekt), sonst auf Englisch. Das Profil selbst geht nicht an die KI, nur der Sprachcode.
+- **In der Liste** markiert ✨ (`auto_awesome`) den empfohlenen Button. Unter dem Kommentar stehen
+  Begründung und Antwortvorschlag, mit „Chat mit Vorschlag starten“ (öffnet den Chat mit dem
+  Vorschlag in der Eingabe) und „Vorschlag verwerfen“.
+- **Im Chat** steht der Vorschlag als Platzhalter in der Eingabe, „Vorschlag einfügen“ übernimmt ihn.
+- **Erledigt:** Antworten, „Als erledigt markieren“ oder Verwerfen setzt die Empfehlung auf
+  `archived`.
+- **Gelöschte Einträge:** Der Hook löscht für jede Collection die Empfehlungen gelöschter Einträge mit,
+  `action_recommendations` hat keinen Fremdschlüssel auf den Eintrag.
+- **Auf Anfrage:** `POST /action-recommendations/recommend` (`{ collection, ids, language }`) und
+  `POST /action-recommendations/summarize` (`{ collection, group_value?, language }`, z. B. alle
+  Kommentare zu einer Speise) für angemeldete Nutzer; die Einträge werden mit deren Rechten gelesen.
+- **Rollen ohne Admin-Rechte** brauchen Lese- und Schreibrechte auf `action_recommendations`, um die
+  Empfehlungen im Modul zu sehen und zu archivieren.
+- **Neue Collection:** Eintrag in `ActionRecommendationDefinitions.DEFINITIONS`; eine neue Handlung
+  braucht zusätzlich eine Auswahl im Dropdown `action_recommendations.action` (ein Test vergleicht
+  beides) und ein Label im Backend-Katalog.
+
 ## Gemeinsame Logik in `repo-depkit-common`
 
 Die Regeln hinter den Chats stehen nicht im Modul, sondern in `packages/common` – so rechnen App,

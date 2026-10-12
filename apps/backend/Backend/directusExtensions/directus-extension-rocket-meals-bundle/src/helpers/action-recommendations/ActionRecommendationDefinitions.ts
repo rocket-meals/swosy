@@ -1,0 +1,160 @@
+/**
+ * ActionRecommendationDefinitions.ts – which collections can get action recommendations, and what
+ * each of them offers.
+ *
+ * Fixed in code on purpose: a collection says itself which fields may be sent to the AI (an allowlist,
+ * personal data such as `profile` or `contact_email` never leaves the server) and which actions make
+ * sense for it. A new collection only needs an entry here (plus the labels of new actions in the
+ * backend catalog), the endpoint, the prompt and the table `action_recommendations` are shared.
+ *
+ * No Vue and no Directus imports: the endpoint and the module pages both use it.
+ */
+
+import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
+import { isSameBaseLanguage } from 'repo-depkit-common/src/translations/TranslationLanguage';
+import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
+
+/** Everything that can be recommended. The value is stored in `action_recommendations.action`. */
+export enum ActionRecommendationAction {
+  REPLY = 'reply',
+  MARK_RESOLVED = 'mark_resolved',
+}
+
+/**
+ * The status of a recommendation, stored in `action_recommendations.status` (the archive field of the
+ * collection): a new one is a `draft`, once someone took it over or turned it down it is `archived`.
+ */
+export enum ActionRecommendationStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+  ARCHIVED = 'archived',
+}
+
+export type ActionRecommendationActionInfo = {
+  /** What the AI is told the action means (prompt text, never shown in the UI). */
+  promptDescription: string;
+  labelKey: BackendTranslationKeys;
+  icon: string;
+};
+
+export const ACTION_RECOMMENDATION_ACTIONS: Record<ActionRecommendationAction, ActionRecommendationActionInfo> = {
+  [ActionRecommendationAction.REPLY]: {
+    promptDescription: 'Antworten: der Eintrag enthält eine Frage, ein konkretes Problem oder Kritik, auf die eine Antwort hilft. Schreibe dann einen kurzen, freundlichen Antwortvorschlag, den der Support so als erste Chat-Nachricht an die Person schicken würde.',
+    labelKey: BackendTranslationKeys.rocket_meals_module_action_recommendation_action_reply,
+    icon: 'reply',
+  },
+  [ActionRecommendationAction.MARK_RESOLVED]: {
+    promptDescription: 'Als erledigt markieren, ohne zu antworten: kein konkreter Inhalt, reines Lob, Unsinn, Spam oder Beleidigung, eine Antwort bringt niemandem etwas.',
+    labelKey: BackendTranslationKeys.rocket_meals_module_mark_resolved,
+    icon: 'task_alt',
+  },
+};
+
+export type ActionRecommendationDefinition = {
+  collection: CollectionNames;
+  /** What an item of the collection is, for the AI (prompt text). */
+  promptContext: string;
+  /** The only fields of an item that are sent to the AI, besides `id`. */
+  fields: readonly string[];
+  /** The actions the AI may recommend for an item of this collection. */
+  actions: readonly ActionRecommendationAction[];
+  /** Only items with text in one of these fields are worth a recommendation or a summary. */
+  textFields: readonly string[];
+  /** A field the items of a summary can be grouped by, e.g. all feedbacks of one food. */
+  summaryGroupField?: string;
+  /** The relation to the author's profile: its `language` decides the language of a draft reply. Never sent to the AI. */
+  authorProfileField?: string;
+};
+
+export class ActionRecommendationDefinitions {
+  static readonly DEFINITIONS: readonly ActionRecommendationDefinition[] = [
+    {
+      collection: CollectionNames.FOODS_FEEDBACKS,
+      promptContext: 'Rückmeldungen von Gästen einer Mensa zu einer Speise: ein Kommentar und eine Bewertung von 1 (schlecht) bis 5 (gut).',
+      fields: ['comment', 'rating'],
+      textFields: ['comment'],
+      actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.MARK_RESOLVED],
+      summaryGroupField: 'food',
+      authorProfileField: 'profile',
+    },
+    {
+      collection: CollectionNames.APP_FEEDBACKS,
+      promptContext: 'Rückmeldungen zur Mensa- und Campus-App, aus dem Feedback-Formular der App oder als Bewertung im App Store bzw. Google Play. "positive" sagt, ob die Rückmeldung positiv gemeint ist.',
+      fields: ['title', 'content', 'positive'],
+      textFields: ['title', 'content'],
+      actions: [ActionRecommendationAction.REPLY, ActionRecommendationAction.MARK_RESOLVED],
+      authorProfileField: 'profile',
+    },
+  ];
+
+  /** The language of a draft reply when the server has no default language. */
+  static readonly FALLBACK_REPLY_LANGUAGE = 'de';
+  /** The language of a draft reply to an author with another language than German. */
+  static readonly FOREIGN_REPLY_LANGUAGE = 'en';
+
+  /** At most this many items are sent for recommendations in one request. */
+  static readonly MAX_ITEMS_PER_RECOMMENDATION = 25;
+  /** At most this many items, the newest first, go into one summary. */
+  static readonly MAX_ITEMS_PER_SUMMARY = 200;
+
+  static getDefinition(collection: unknown): ActionRecommendationDefinition | null {
+    return ActionRecommendationDefinitions.DEFINITIONS.find(definition => definition.collection === collection) ?? null;
+  }
+
+  static isAction(value: unknown): value is ActionRecommendationAction {
+    return Object.values(ActionRecommendationAction).includes(value as ActionRecommendationAction);
+  }
+
+  static getActionInfo(action: unknown): ActionRecommendationActionInfo | null {
+    return ActionRecommendationDefinitions.isAction(action) ? ACTION_RECOMMENDATION_ACTIONS[action] : null;
+  }
+
+  /** The fields to read for an item: the id and the allowlist. */
+  static getReadFields(definition: ActionRecommendationDefinition): string[] {
+    return ['id', ...definition.fields];
+  }
+
+  /**
+   * The language a draft reply is written in: authors without a language or with German get the
+   * default language of the server (`directus_settings.default_language`), everybody else English.
+   */
+  static getReplyLanguage(authorLanguage: string | null | undefined, defaultLanguage: string | null | undefined): string {
+    if (!authorLanguage?.trim() || isSameBaseLanguage(authorLanguage, 'de')) {
+      return defaultLanguage?.trim() || ActionRecommendationDefinitions.FALLBACK_REPLY_LANGUAGE;
+    }
+    return ActionRecommendationDefinitions.FOREIGN_REPLY_LANGUAGE;
+  }
+
+  /** The language code of the author, read as `<authorProfileField>.language` (a code or a `languages` row). */
+  static getAuthorLanguage(definition: ActionRecommendationDefinition, row: Record<string, unknown> | null | undefined): string | null {
+    const profile = definition.authorProfileField ? row?.[definition.authorProfileField] : null;
+    if (!profile || typeof profile !== 'object') {
+      return null;
+    }
+    const language = (profile as { language?: unknown }).language;
+    if (typeof language === 'string') {
+      return language;
+    }
+    const code = (language as { code?: unknown } | null | undefined)?.code;
+    return typeof code === 'string' ? code : null;
+  }
+
+  /** The item ids of a request: strings or numbers, without duplicates and empty ones, at most `max`. */
+  static parseItemIds(value: unknown, max: number = ActionRecommendationDefinitions.MAX_ITEMS_PER_RECOMMENDATION): string[] {
+    if (!Array.isArray(value)) {
+      return [];
+    }
+    const ids = value.filter(id => typeof id === 'string' || typeof id === 'number').map(id => String(id).trim());
+    return [...new Set(ids.filter(id => id.length > 0))].slice(0, max);
+  }
+
+  /** The language the AI writes in: a short code like `de` or `en-US`, German otherwise. */
+  static parseLanguage(value: unknown): string {
+    return typeof value === 'string' && /^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})?$/.test(value) ? value : 'de';
+  }
+
+  /** A Directus filter for items that have text in at least one text field. */
+  static buildHasTextFilter(definition: ActionRecommendationDefinition): Record<string, unknown> {
+    return { _or: definition.textFields.map(field => ({ [field]: { _nempty: true } })) };
+  }
+}
