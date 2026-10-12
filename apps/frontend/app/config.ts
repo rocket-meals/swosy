@@ -250,7 +250,8 @@ export function getVersionPatch() {
         // 131: feature wishes: app_settings.feature_wishes_mode (off, vote only, vote and
         //      submit, submit only) replaces the on/off switch
         // 132: debug switch "simulate feature wishes" in the settings
-        return 132;
+        // 133: own feature wishes that are not public yet show their review state and an edit icon on the right instead of likes
+        return 133;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

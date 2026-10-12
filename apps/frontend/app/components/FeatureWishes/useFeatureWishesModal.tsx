@@ -175,6 +175,22 @@ const useWishTexts = () => {
 	return { getStateLabel, getExtraLines };
 };
 
+/** Whether a wish is not public yet: it shows its review state instead of likes, nobody can like it yet. */
+function isUnpublished(view: WishView): boolean {
+	return view.status !== FeatureWishStatus.PUBLISHED && view.status !== FeatureWishStatus.MERGED;
+}
+
+/** The review state of an own wish that is not public yet, with an edit icon while it can still be changed. */
+const ReviewState: React.FC<{ label: string; editable: boolean }> = ({ label, editable }) => {
+	const { theme } = useTheme();
+	return (
+		<View style={styles.reviewState}>
+			<Text style={[styles.reviewStateText, { color: theme.screen.text }]}>{label}</Text>
+			{editable ? <MaterialCommunityIcons name="pencil" size={18} color={theme.screen.icon} /> : null}
+		</View>
+	);
+};
+
 /** The number of likes of a wish, shown next to own wishes instead of a like button. */
 const LikesCount: React.FC<{ amount: number }> = ({ amount }) => {
 	const { theme } = useTheme();
@@ -531,6 +547,12 @@ const FeatureWishesList: React.FC<FeatureWishesListProps> = ({ openForm, openDet
 	const popularOthers = useMemo(() => popular.filter(view => !ownIds.has(view.id)), [popular, ownIds]);
 
 	const describe = useCallback((view: WishView) => [getStateLabel(view), ...getExtraLines(view)].join('\n'), [getStateLabel, getExtraLines]);
+	// An own wish that is not public yet shows its state on the right, so only the extra lines stay below the title.
+	const describeOwn = useCallback((view: WishView) => (isUnpublished(view) ? getExtraLines(view).join('\n') : describe(view)), [getExtraLines, describe]);
+	const ownRightElement = useCallback(
+		(view: WishView) => (isUnpublished(view) ? <ReviewState label={getStateLabel(view)} editable={view.editable} /> : <LikesCount amount={view.original?.likes_amount ?? view.likesAmount} />),
+		[getStateLabel]
+	);
 
 	return (
 		<View style={styles.list}>
@@ -540,7 +562,7 @@ const FeatureWishesList: React.FC<FeatureWishesListProps> = ({ openForm, openDet
 				<View>
 					<SettingsGroupTitle>{translate(TranslationKeys.feature_wishes_own)}</SettingsGroupTitle>
 					{ownViews.map((view, index) => (
-						<WishRow key={view.id} view={view} value={describe(view)} groupPosition={getGroupPosition(index, ownViews.length)} onPress={() => openDetails(view, null)} rightElement={<LikesCount amount={view.original?.likes_amount ?? view.likesAmount} />} />
+						<WishRow key={view.id} view={view} value={describeOwn(view)} groupPosition={getGroupPosition(index, ownViews.length)} onPress={() => openDetails(view, null)} rightElement={ownRightElement(view)} />
 					))}
 				</View>
 			) : null}
@@ -726,6 +748,15 @@ const styles = StyleSheet.create({
 	detailText: {
 		fontSize: 15,
 		lineHeight: 22,
+	},
+	reviewState: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+		paddingHorizontal: 8,
+	},
+	reviewStateText: {
+		fontSize: 14,
 	},
 	likesCount: {
 		flexDirection: 'row',
