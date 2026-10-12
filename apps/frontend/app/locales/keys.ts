@@ -923,6 +923,16 @@ export const TranslationKeys = {
 	housing_free_apartments_notification: 'housing_free_apartments_notification',
 	housing_free_apartments_notification_hint: 'housing_free_apartments_notification_hint',
 	housing_free_apartments_notification_enabled: 'housing_free_apartments_notification_enabled',
+	store_versions: 'store_versions',
+	store_versions_installed: 'store_versions_installed',
+	store_versions_store_version: 'store_versions_store_version',
+	store_versions_status: 'store_versions_status',
+	store_versions_newer_in_store: 'store_versions_newer_in_store',
+	store_versions_up_to_date: 'store_versions_up_to_date',
+	store_versions_older_in_store: 'store_versions_older_in_store',
+	store_versions_open_store: 'store_versions_open_store',
+	store_versions_reload: 'store_versions_reload',
+	store_versions_hint: 'store_versions_hint',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];

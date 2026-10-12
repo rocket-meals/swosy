@@ -93,6 +93,12 @@ const Index = () => {
 			onPress: () => router.push('/experimentell/rate-app'),
 		},
 		{
+			key: 'store-versions',
+			label: translate(TranslationKeys.store_versions),
+			leftIcon: <MaterialCommunityIcons name="store-search-outline" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/store-versions'),
+		},
+		{
 			key: 'app-download',
 			label: translate(TranslationKeys.app_download_selection),
 			leftIcon: <MaterialCommunityIcons name="download" size={24} color={theme.screen.icon} />,

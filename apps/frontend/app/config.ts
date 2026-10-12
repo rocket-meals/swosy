@@ -259,7 +259,9 @@ export function getVersionPatch() {
         // 138: maintenance modal: project color side bar, offline hint when no own message is set
         // 139: maintenance modal: one line "from ... to ... some features unavailable", below only the own markdown text
         // 140: maintenance modal: "Server-Update: Wir spielen neue Funktionen ein." above the own text
-        return 140;
+        // 141: experimental screen "Store-Versionen" compares the installed version with the
+        //      App Store and Google Play versions (major and build number only)
+        return 141;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
