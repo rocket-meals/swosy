@@ -168,6 +168,12 @@ async function archiveRecommendations(feedbacksDone: readonly FoodFeedbackListIt
 
 const dismissingIds = ref<string[]>([]);
 
+/** Feedbacks whose recommendation shows its reason; folded away by default. */
+const expandedReasonIds = ref<string[]>([]);
+function toggleReason(feedback: FoodFeedbackListItem) {
+  expandedReasonIds.value = expandedReasonIds.value.includes(feedback.id) ? expandedReasonIds.value.filter(id => id !== feedback.id) : [...expandedReasonIds.value, feedback.id];
+}
+
 async function dismissRecommendation(feedback: FoodFeedbackListItem) {
   dismissingIds.value = [...dismissingIds.value, feedback.id];
   try {
@@ -361,7 +367,14 @@ watch(feedbacks, loadRecommendations);
                   · {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_recommended_by, { by: ActionRecommendationModuleHelper.getRecommendedBy(getRecommendation(feedback)) ?? '' }) }}
                 </span>
               </div>
-              <div v-if="getRecommendation(feedback)?.reason" class="recommendation-reason">{{ getRecommendation(feedback)?.reason }}</div>
+              <!-- The reason stays folded away, the recommended action and the draft are what matter at a glance. -->
+              <div v-if="getRecommendation(feedback)?.reason" class="recommendation-reason-toggle">
+                <v-button x-small secondary :aria-expanded="expandedReasonIds.includes(feedback.id)" @click.stop="toggleReason(feedback)">
+                <v-icon :name="expandedReasonIds.includes(feedback.id) ? 'expand_less' : 'expand_more'" left x-small />
+                {{ expandedReasonIds.includes(feedback.id) ? translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_hide_reason) : translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_show_reason) }}
+              </v-button>
+              </div>
+              <div v-if="getRecommendation(feedback)?.reason && expandedReasonIds.includes(feedback.id)" class="recommendation-reason">{{ getRecommendation(feedback)?.reason }}</div>
               <div v-if="ActionRecommendationModuleHelper.getDraftReply(getRecommendation(feedback))" class="recommendation-draft">{{ ActionRecommendationModuleHelper.getDraftReply(getRecommendation(feedback)) }}</div>
               <div class="recommendation-actions">
                 <v-button small secondary :loading="dismissingIds.includes(feedback.id)" @click.stop="dismissRecommendation(feedback)">
@@ -509,6 +522,10 @@ watch(feedbacks, loadRecommendations);
 
 .recommendation-by {
   color: var(--theme--foreground-subdued);
+}
+
+.recommendation-reason-toggle {
+  display: flex;
 }
 
 .recommendation-reason {

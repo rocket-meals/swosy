@@ -4475,4 +4475,26 @@ export const backendTranslations: TranslationResources = {
     tr: 'Hepsi yeniden açılamadı.',
     zh: '未能全部重新打开。',
   },
+  /** Rocket-Meals-Modul: klappt die Begründung einer KI-Empfehlung auf. */
+  rocket_meals_module_action_recommendation_show_reason: {
+    de: 'Erklärung anzeigen',
+    en: 'Show explanation',
+    ar: 'عرض التوضيح',
+    es: 'Mostrar explicación',
+    fr: 'Afficher l’explication',
+    ru: 'Показать объяснение',
+    tr: 'Açıklamayı göster',
+    zh: '显示说明',
+  },
+  /** Rocket-Meals-Modul: klappt die Begründung einer KI-Empfehlung zu. */
+  rocket_meals_module_action_recommendation_hide_reason: {
+    de: 'Erklärung ausblenden',
+    en: 'Hide explanation',
+    ar: 'إخفاء التوضيح',
+    es: 'Ocultar explicación',
+    fr: 'Masquer l’explication',
+    ru: 'Скрыть объяснение',
+    tr: 'Açıklamayı gizle',
+    zh: '隐藏说明',
+  },
 };

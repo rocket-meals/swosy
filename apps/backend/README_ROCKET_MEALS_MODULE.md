@@ -173,7 +173,7 @@ desselben Eintrags.
   schreibt die KI in der Standardsprache des Servers (`directus_settings.default_language`, Einstellungen >
   Projekt), sonst auf Englisch. Das Profil selbst geht nicht an die KI, nur der Sprachcode.
 - **In der Liste** markiert ✨ (`auto_awesome`) den empfohlenen Button. Unter dem Kommentar stehen
-  Begründung und Antwortvorschlag, mit „Chat mit Vorschlag starten“ (öffnet den Chat mit dem
+  Begründung (eingeklappt, „Erklärung anzeigen“) und Antwortvorschlag, mit „Chat mit Vorschlag starten“ (öffnet den Chat mit dem
   Vorschlag in der Eingabe) und „Vorschlag verwerfen“.
 - **Im Chat** steht der Vorschlag vollständig in einer Karte „Vorschlag der KI“ über der Eingabe,
   „In Eingabe übernehmen“ übernimmt ihn. Die Karte verschwindet, solange die Eingabe genau diesen Text enthält.

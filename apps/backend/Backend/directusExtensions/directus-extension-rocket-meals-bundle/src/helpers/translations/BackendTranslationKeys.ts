@@ -456,6 +456,8 @@ export const BackendTranslationKeys = {
   rocket_meals_module_action_recommendation_suggestion_title: 'rocket_meals_module_action_recommendation_suggestion_title',
   rocket_meals_module_action_recommendation_dismiss: 'rocket_meals_module_action_recommendation_dismiss',
   rocket_meals_module_action_recommendation_update_failed: 'rocket_meals_module_action_recommendation_update_failed',
+  rocket_meals_module_action_recommendation_hide_reason: 'rocket_meals_module_action_recommendation_hide_reason',
+  rocket_meals_module_action_recommendation_show_reason: 'rocket_meals_module_action_recommendation_show_reason',
   rocket_meals_module_reopen_failed: 'rocket_meals_module_reopen_failed',
   rocket_meals_module_reopen_selected: 'rocket_meals_module_reopen_selected',
   rocket_meals_module_reopen: 'rocket_meals_module_reopen',

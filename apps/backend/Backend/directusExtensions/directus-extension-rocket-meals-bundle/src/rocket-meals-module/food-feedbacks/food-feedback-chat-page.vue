@@ -124,6 +124,9 @@ watch(recommendation, current => {
 });
 onBeforeUnmount(() => clearTimeout(processingRefresh));
 
+/** Whether the reason of the recommendation is shown; folded away by default. */
+const reasonExpanded = ref(false);
+
 /** Turned down: the recommendation no longer shows up. */
 async function dismissRecommendation() {
   await archiveRecommendation();
@@ -352,7 +355,16 @@ watch(() => props.feedbackId, load);
             </v-button>
           </div>
           <div v-if="ActionRecommendationModuleHelper.isFailed(recommendation)" class="recommendation-log type-note">{{ ActionRecommendationModuleHelper.getLastLogLine(recommendation) }}</div>
-          <div v-else-if="recommendation.reason">{{ recommendation.reason }}</div>
+          <template v-else-if="recommendation.reason">
+            <!-- The reason stays folded away, the recommended action is what matters at a glance. -->
+            <div class="recommendation-reason-toggle">
+              <v-button x-small secondary :aria-expanded="reasonExpanded" @click.stop="reasonExpanded = !reasonExpanded">
+                <v-icon :name="reasonExpanded ? 'expand_less' : 'expand_more'" left x-small />
+                {{ reasonExpanded ? translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_hide_reason) : translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_show_reason) }}
+              </v-button>
+            </div>
+            <div v-if="reasonExpanded">{{ recommendation.reason }}</div>
+          </template>
         </div>
 
         <support-chat-conversation
@@ -442,6 +454,10 @@ watch(() => props.feedbackId, load);
 
 .recommendation-failed .recommendation-header {
   color: var(--theme--danger);
+}
+
+.recommendation-reason-toggle {
+  display: flex;
 }
 
 .recommendation-log {
