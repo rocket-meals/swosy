@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 5 | 5 |
-| 🔧 Maintainability | 6 | 6 |
+| 🔧 Maintainability | 7 | 7 |
 
-**Total issues:** 13
+**Total issues:** 14
 
 ---
 
@@ -44,11 +44,15 @@
   apps/maintenance-server/server.mjs:303
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L303
 
-## 🔧 Maintainability (6/6)
+## 🔧 Maintainability (7/7)
 
 - **Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts:76
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts#L76
+
+- **'raw.id' will use Object's default stringification format ('[object Object]') when stringified.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts:84
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts#L84
 
 - **Extract this nested ternary operation into an independent statement.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts:810

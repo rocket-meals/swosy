@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-12T12:24:03.973Z",
+  "report_timestamp": "2026-10-12T14:53:01.774Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
-          "maximum": 136,
-          "average": 1.4960085151676423,
-          "amountSavedValuesForKeys": 5622,
-          "amountKeys": 31
+          "median": 1,
+          "maximum": 138,
+          "average": 1.4988148538319725,
+          "amountSavedValuesForKeys": 5691,
+          "amountKeys": 32
         },
         "invertedParameterToMethods": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 80,
-          "average": 2.2318339100346023,
-          "amountSavedValuesForKeys": 2580,
+          "average": 2.2429906542056073,
+          "amountSavedValuesForKeys": 2640,
           "amountKeys": 25
         },
         "invertedParameterToClasses": {
-          "median": 1,
-          "maximum": 136,
-          "average": 1.5084518379393614,
-          "amountSavedValuesForKeys": 5622,
+          "median": 1.5,
+          "maximum": 138,
+          "average": 1.5111524163568772,
+          "amountSavedValuesForKeys": 5691,
           "amountKeys": 31
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 6151,
-        "detection_time_ms": 137,
+        "ast_generation_time_ms": 4780,
+        "detection_time_ms": 115,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 146.53,
-          "os_memory_free": 14767738880,
-          "os_memory_total": 16766410752,
+          "os_uptime": 216.95,
+          "os_memory_free": 14746472448,
+          "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 0,
-    "amount_files_with_data_clumps": 0,
-    "amount_methods_with_data_clumps": 0,
+    "amount_classes_or_interfaces_with_data_clumps": 2,
+    "amount_files_with_data_clumps": 2,
+    "amount_methods_with_data_clumps": 4,
     "fields_to_fields_data_clump": 0,
     "parameters_to_fields_data_clump": 0,
-    "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 0
+    "parameters_to_parameters_data_clump": 4,
+    "amount_data_clumps": 4
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "2d0068a1bdb9e8ece4c18eaa148fb333f0f08145",
-    "project_commit_hash": "2d0068a1bdb9e8ece4c18eaa148fb333f0f08145",
+    "project_version": "5e3eec1fc1e7afe4d59dc9f730d4a6349b0750d3",
+    "project_commit_hash": "5e3eec1fc1e7afe4d59dc9f730d4a6349b0750d3",
     "project_tag": null,
-    "project_commit_date": "1791807702",
+    "project_commit_date": "1791816656",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 794,
-    "number_of_classes_or_interfaces": 1822,
-    "number_of_methods": 2222,
-    "number_of_data_fields": 5622,
-    "number_of_method_parameters": 2580
+    "number_of_files": 799,
+    "number_of_classes_or_interfaces": 1839,
+    "number_of_methods": 2254,
+    "number_of_data_fields": 5691,
+    "number_of_method_parameters": 2640
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -90,5 +90,394 @@
       "ignoredVariableNames": []
     }
   },
-  "data_clumps": {}
+  "data_clumps": {
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt-definitionitemslanguage": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt-definitionitemslanguage",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts",
+      "from_class_or_interface_name": "ActionRecommendationPrompt",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt",
+      "from_method_name": "buildRecommendationPrompt",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts",
+      "to_class_or_interface_name": "ActionRecommendationPrompt",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt",
+      "to_method_name": "buildSummaryPrompt",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt/parameter/definition": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt/parameter/definition",
+          "name": "definition",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationDefinitions\").ActionRecommendationDefinition",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt/parameter/definition",
+            "name": "definition",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationDefinitions\").ActionRecommendationDefinition",
+            "modifiers": [],
+            "position": {
+              "startLine": 109,
+              "startColumn": 29,
+              "endLine": 109,
+              "endColumn": 71
+            }
+          },
+          "position": {
+            "startLine": 57,
+            "startColumn": 36,
+            "endLine": 57,
+            "endColumn": 78
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt/parameter/items": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt/parameter/items",
+          "name": "items",
+          "type": "readonly import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt\").ActionRecommendationSourceItem[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt/parameter/items",
+            "name": "items",
+            "type": "readonly import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt\").ActionRecommendationSourceItem[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 109,
+              "startColumn": 73,
+              "endLine": 109,
+              "endColumn": 121
+            }
+          },
+          "position": {
+            "startLine": 57,
+            "startColumn": 80,
+            "endLine": 57,
+            "endColumn": 128
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt/parameter/language": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt/parameter/language",
+          "name": "language",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt/parameter/language",
+            "name": "language",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 109,
+              "startColumn": 123,
+              "endLine": 109,
+              "endColumn": 139
+            }
+          },
+          "position": {
+            "startLine": 57,
+            "startColumn": 130,
+            "endLine": 57,
+            "endColumn": 146
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 1
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt-definitionitemslanguage": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt-definitionitemslanguage",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts",
+      "from_class_or_interface_name": "ActionRecommendationPrompt",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt",
+      "from_method_name": "buildSummaryPrompt",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts",
+      "to_class_or_interface_name": "ActionRecommendationPrompt",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt",
+      "to_method_name": "buildRecommendationPrompt",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt/parameter/definition": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt/parameter/definition",
+          "name": "definition",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationDefinitions\").ActionRecommendationDefinition",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt/parameter/definition",
+            "name": "definition",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationDefinitions\").ActionRecommendationDefinition",
+            "modifiers": [],
+            "position": {
+              "startLine": 57,
+              "startColumn": 36,
+              "endLine": 57,
+              "endColumn": 78
+            }
+          },
+          "position": {
+            "startLine": 109,
+            "startColumn": 29,
+            "endLine": 109,
+            "endColumn": 71
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt/parameter/items": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt/parameter/items",
+          "name": "items",
+          "type": "readonly import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt\").ActionRecommendationSourceItem[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt/parameter/items",
+            "name": "items",
+            "type": "readonly import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt\").ActionRecommendationSourceItem[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 57,
+              "startColumn": 80,
+              "endLine": 57,
+              "endColumn": 128
+            }
+          },
+          "position": {
+            "startLine": 109,
+            "startColumn": 73,
+            "endLine": 109,
+            "endColumn": 121
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt/parameter/language": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildSummaryPrompt/parameter/language",
+          "name": "language",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts/class/ActionRecommendationPrompt/method/buildRecommendationPrompt/parameter/language",
+            "name": "language",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 57,
+              "startColumn": 130,
+              "endLine": 57,
+              "endColumn": 146
+            }
+          },
+          "position": {
+            "startLine": 109,
+            "startColumn": 123,
+            "endLine": 109,
+            "endColumn": 139
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 1
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize-definitionlanguageaccountability": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize-definitionlanguageaccountability",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts",
+      "from_class_or_interface_name": "ActionRecommendationService",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService",
+      "from_method_name": "recommend",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts",
+      "to_class_or_interface_name": "ActionRecommendationService",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService",
+      "to_method_name": "summarize",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend/parameter/definition": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend/parameter/definition",
+          "name": "definition",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationDefinitions\").ActionRecommendationDefinition",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize/parameter/definition",
+            "name": "definition",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationDefinitions\").ActionRecommendationDefinition",
+            "modifiers": [],
+            "position": {
+              "startLine": 102,
+              "startColumn": 19,
+              "endLine": 102,
+              "endColumn": 61
+            }
+          },
+          "position": {
+            "startLine": 53,
+            "startColumn": 19,
+            "endLine": 53,
+            "endColumn": 61
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend/parameter/language": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend/parameter/language",
+          "name": "language",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize/parameter/language",
+            "name": "language",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 102,
+              "startColumn": 84,
+              "endLine": 102,
+              "endColumn": 100
+            }
+          },
+          "position": {
+            "startLine": 53,
+            "startColumn": 87,
+            "endLine": 53,
+            "endColumn": 103
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend/parameter/accountability": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend/parameter/accountability",
+          "name": "accountability",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize/parameter/accountability",
+            "name": "accountability",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 102,
+              "startColumn": 102,
+              "endLine": 102,
+              "endColumn": 139
+            }
+          },
+          "position": {
+            "startLine": 53,
+            "startColumn": 105,
+            "endLine": 53,
+            "endColumn": 142
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 1
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend-definitionlanguageaccountability": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend-definitionlanguageaccountability",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts",
+      "from_class_or_interface_name": "ActionRecommendationService",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService",
+      "from_method_name": "summarize",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts",
+      "to_class_or_interface_name": "ActionRecommendationService",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService",
+      "to_method_name": "recommend",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize/parameter/definition": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize/parameter/definition",
+          "name": "definition",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationDefinitions\").ActionRecommendationDefinition",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend/parameter/definition",
+            "name": "definition",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationDefinitions\").ActionRecommendationDefinition",
+            "modifiers": [],
+            "position": {
+              "startLine": 53,
+              "startColumn": 19,
+              "endLine": 53,
+              "endColumn": 61
+            }
+          },
+          "position": {
+            "startLine": 102,
+            "startColumn": 19,
+            "endLine": 102,
+            "endColumn": 61
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize/parameter/language": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize/parameter/language",
+          "name": "language",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend/parameter/language",
+            "name": "language",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 53,
+              "startColumn": 87,
+              "endLine": 53,
+              "endColumn": 103
+            }
+          },
+          "position": {
+            "startLine": 102,
+            "startColumn": 84,
+            "endLine": 102,
+            "endColumn": 100
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize/parameter/accountability": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/summarize/parameter/accountability",
+          "name": "accountability",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts/class/ActionRecommendationService/method/recommend/parameter/accountability",
+            "name": "accountability",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 53,
+              "startColumn": 105,
+              "endLine": 53,
+              "endColumn": 142
+            }
+          },
+          "position": {
+            "startLine": 102,
+            "startColumn": 102,
+            "endLine": 102,
+            "endColumn": 139
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 1
+      }
+    }
+  }
 }

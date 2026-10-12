@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AaEwnROCIic5AvfqTpHf","'raw.id' will use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts",84
 "AaEvT3gd58487nkWXLQ0","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",810
 "AaEvELAX1sx8SGAkwjzX","Replace this union type with a type alias.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts",689
 "AaEuxwbKjYRKOPrCbcLx","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts",76
