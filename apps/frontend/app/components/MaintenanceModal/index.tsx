@@ -38,6 +38,10 @@ const MaintenanceModalContent: React.FC<MaintenanceModalContentProps> = ({ notic
 				<MaterialCommunityIcons name="wrench-clock" size={28} color={primaryColor} />
 				<Text style={[styles.noticeText, { color: theme.screen.text }]}>{noticeText}</Text>
 			</View>
+			<Text style={[styles.updateText, { color: theme.screen.text }]}>
+				<Text style={styles.updateTitle}>{translate(TranslationKeys.maintenance_server_update_title)}: </Text>
+				{translate(TranslationKeys.maintenance_server_update_text)}
+			</Text>
 			{message ? <MyMarkdownProjectColored content={message} /> : null}
 		</View>
 	);
@@ -137,6 +141,13 @@ const styles = StyleSheet.create({
 		gap: 12,
 		borderLeftWidth: 4,
 		paddingLeft: 12,
+	},
+	updateText: {
+		fontSize: 16,
+		fontFamily: 'Poppins_400Regular',
+	},
+	updateTitle: {
+		fontFamily: 'Poppins_700Bold',
 	},
 	noticeText: {
 		flex: 1,
