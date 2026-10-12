@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshControl, SafeAreaView, useWindowDimensions, View, unstable_batchedUpdates } from 'react-native';
-import { CollectionNames, DatabaseTypes, shouldApplyLastOpenedBoost } from 'repo-depkit-common';
+import { AppUsageEventNames, CollectionNames, DatabaseTypes, shouldApplyLastOpenedBoost } from 'repo-depkit-common';
 import { FlashList } from '@shopify/flash-list';
 import * as Location from 'expo-location';
 import { useDispatch, shallowEqual } from 'react-redux';
@@ -19,6 +19,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import useToast from '@/hooks/useToast';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import useTrackScreenOpened from '@/hooks/useTrackScreenOpened';
 import useHousingOptionsModal from '@/hooks/useHousingOptionsModal';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import useLastOpenedBuildings from '@/hooks/useLastOpenedBuildings';
@@ -40,6 +41,7 @@ const buildingsHelper = new BuildingsHelper();
 
 const Index: React.FC = () => {
 	useSetPageTitle(TranslationKeys.housing);
+	useTrackScreenOpened(AppUsageEventNames.HOUSING_SCREEN_OPENED, 'housing');
 	const toast = useToast();
 	const { translate } = useLanguage();
 	const { theme } = useTheme();

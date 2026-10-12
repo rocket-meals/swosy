@@ -5,16 +5,18 @@ import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import NewsItem from '@/components/NewsItem/NewsItem';
 import { NewsHelper } from '@/redux/actions/News/News';
-import { DatabaseTypes, CollectibleAt } from 'repo-depkit-common';
+import { AppUsageEventNames, DatabaseTypes, CollectibleAt } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { SET_NEWS } from '@/redux/Types/types';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import useTrackScreenOpened from '@/hooks/useTrackScreenOpened';
 import { TranslationKeys } from '@/locales/keys';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.news);
+	useTrackScreenOpened(AppUsageEventNames.NEWS_SCREEN_OPENED, 'news');
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const newsHelper = new NewsHelper();

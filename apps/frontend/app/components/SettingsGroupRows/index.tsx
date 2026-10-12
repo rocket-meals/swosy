@@ -5,6 +5,8 @@ export type SettingsGroupPosition = 'single' | 'top' | 'middle' | 'bottom';
 /** One row of a settings group. It is rendered with the position it ends up at, so rows can be shared and reordered freely. */
 export type SettingsGroupRow = {
 	key: string;
+	/** What a search in the settings screen matches against (the visible label, translated). Rows without it are hidden while searching. */
+	searchText?: string;
 	render: (groupPosition: SettingsGroupPosition, showSeparator: boolean) => React.ReactNode;
 };
 

@@ -58,6 +58,7 @@ export const TranslationKeys = {
 	software_name: 'software_name',
 	project_name: 'project_name',
 	search_campus_here: 'search_campus_here',
+	search_settings_here: 'search_settings_here',
 	search_apartment_here: 'search_apartment_here',
 	scroll_to_bottom: 'scroll_to_bottom',
 	enter_custom_value: 'enter_custom_value',

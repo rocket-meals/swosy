@@ -6,7 +6,7 @@ import {
 	useWindowDimensions,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { CampusSortOption, CollectionNames, DatabaseTypes, shouldApplyLastOpenedBoost } from 'repo-depkit-common';
+import { AppUsageEventNames, CampusSortOption, CollectionNames, DatabaseTypes, shouldApplyLastOpenedBoost } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DrawerNavigationProp } from 'expo-router/drawer';
@@ -25,6 +25,7 @@ import useToast from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import useTrackScreenOpened from '@/hooks/useTrackScreenOpened';
 import useCampusSortingModal from '@/hooks/useCampusSortingModal';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import useLastOpenedBuildings from '@/hooks/useLastOpenedBuildings';
@@ -41,6 +42,7 @@ type BuildingWithDistance = DatabaseTypes.Buildings & { distance?: number };
 
 const Index: React.FC = () => {
 	useSetPageTitle(TranslationKeys.campus);
+	useTrackScreenOpened(AppUsageEventNames.CAMPUS_SCREEN_OPENED, 'campus');
 	const { theme } = useTheme();
 	const toast = useToast();
 	const dispatch = useDispatch();

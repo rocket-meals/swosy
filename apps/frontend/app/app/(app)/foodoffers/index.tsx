@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { AppUsageEventNames, DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DrawerContentComponentProps } from 'expo-router/drawer';
@@ -21,6 +21,7 @@ import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours
 import { TranslationKeys } from '@/locales/keys';
 
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import useTrackScreenOpened from '@/hooks/useTrackScreenOpened';
 import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 
@@ -49,6 +50,7 @@ export const SHEET_COMPONENTS = {
 };
 
 const Index: React.FC<DrawerContentComponentProps> = () => {
+	useTrackScreenOpened(AppUsageEventNames.FOODOFFERS_SCREEN_OPENED, 'foodoffers');
 	const dispatch = useDispatch();
 	const { theme } = useTheme();
 	const { translate } = useLanguage();

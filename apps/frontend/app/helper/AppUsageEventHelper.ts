@@ -1,17 +1,21 @@
 import { Platform } from 'react-native';
-import { UuidHelper } from 'repo-depkit-common';
+import { AppUsageEventName, AppUsageEventNames, AppUsageEventTypes, isAppUsageEventEnabled, UuidHelper } from 'repo-depkit-common';
 
 import { getVersion, getVersionInternalForAppsettingsScreen } from '@/config';
 import { AppUsageEvents } from '@/redux/actions/AppUsageEvents/AppUsageEvents';
+import { configureStore } from '@/redux/store';
 
 /**
  * Reporting of anonymous app usage events to the `app_usage_events` collection.
  *
  * Events carry no user reference: they are grouped by a session id that is
  * created once per app start and only lives in memory.
+ *
+ * Which events are sent is decided by `app_settings.app_usage_events_enabled`
+ * (see `isAppUsageEventEnabled` in `repo-depkit-common`).
  */
 
-export const APP_USAGE_EVENT_TYPE_APP_RATING = 'app_rating';
+export const APP_USAGE_EVENT_TYPE_APP_RATING = AppUsageEventTypes.APP_RATING;
 
 /**
  * Sent directly before the native store review dialog is requested.
@@ -22,7 +26,7 @@ export const APP_USAGE_EVENT_TYPE_APP_RATING = 'app_rating';
  * because the score threshold was not reached, because the user was already
  * asked for this app version or because the platform offers no native dialog.
  */
-export const APP_USAGE_EVENT_NAME_NATIVE_REVIEW_PROMPT_REQUESTED = 'native_review_prompt_requested';
+export const APP_USAGE_EVENT_NAME_NATIVE_REVIEW_PROMPT_REQUESTED = AppUsageEventNames.NATIVE_REVIEW_PROMPT_REQUESTED;
 
 /**
  * Where a native review prompt was triggered from. Sources prefixed with
@@ -80,6 +84,17 @@ export const getAppUsageSessionId = () => {
 	return sessionId;
 };
 
+const getEnabledEventsSetting = (): unknown => {
+	try {
+		return configureStore.getState().settings.appSettings?.app_usage_events_enabled;
+	} catch {
+		return null;
+	}
+};
+
+/** Whether `app_settings` allows sending the event. */
+export const isAppUsageEventNameEnabled = (eventName: string) => isAppUsageEventEnabled(getEnabledEventsSetting(), eventName);
+
 const getCollectionHelper = () => {
 	collectionHelper ??= new AppUsageEvents();
 	return collectionHelper;
@@ -89,9 +104,15 @@ const getCollectionHelper = () => {
  * Reports a single usage event. Never throws and never rejects: usage reporting
  * must not influence the flow it is measuring, so callers can fire and forget.
  *
+ * Events switched off in `app_settings.app_usage_events_enabled` are dropped
+ * without a request.
+ *
  * @returns whether the event reached the server
  */
 export const trackAppUsageEvent = async (event: AppUsageEventInput): Promise<boolean> => {
+	if (!isAppUsageEventNameEnabled(event.event_name)) {
+		return false;
+	}
 	sequenceNumber += 1;
 	const now = new Date();
 	try {
@@ -135,6 +156,47 @@ export const trackNativeReviewPromptRequested = (params: { source: AppRatingProm
 		payload: {
 			source: params.source,
 			score: params.score ?? null,
+		},
+	});
+
+/**
+ * Reports that a screen was opened. `eventName` is one of the `*_SCREEN_OPENED`
+ * names, `screenName` the route of the screen.
+ */
+export const trackScreenOpened = (params: { eventName: AppUsageEventName; screenName: string }) =>
+	trackAppUsageEvent({
+		event_type: AppUsageEventTypes.SCREEN_VIEW,
+		event_name: params.eventName,
+		screen_name: params.screenName,
+	});
+
+/**
+ * Reports that the details of a building were opened. The id lets the page
+ * "Live-Puls" link to the building.
+ */
+export const trackBuildingDetailsOpened = (params: { buildingId: string; buildingName?: string | null; screenName?: string | null }) =>
+	trackAppUsageEvent({
+		event_type: AppUsageEventTypes.BUILDING,
+		event_name: AppUsageEventNames.BUILDING_DETAILS_OPENED,
+		screen_name: params.screenName ?? null,
+		payload: {
+			building_id: params.buildingId,
+			building_name: params.buildingName ?? null,
+		},
+	});
+
+/**
+ * Reports that the details of a marking were opened. The id lets the page
+ * "Live-Puls" link to the marking.
+ */
+export const trackMarkingDetailsOpened = (params: { markingId: string; markingName?: string | null; screenName?: string | null }) =>
+	trackAppUsageEvent({
+		event_type: AppUsageEventTypes.MARKING,
+		event_name: AppUsageEventNames.MARKING_DETAILS_OPENED,
+		screen_name: params.screenName ?? null,
+		payload: {
+			marking_id: params.markingId,
+			marking_name: params.markingName ?? null,
 		},
 	});
 

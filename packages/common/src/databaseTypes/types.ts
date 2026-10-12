@@ -81,6 +81,8 @@ export type AppSettings = {
   app_stores: string;
   app_stores_url_to_apple?: string | null;
   app_stores_url_to_google?: string | null;
+  app_usage_events_enabled?: unknown | null;
+  app_usage_events_settings: string;
   balance_area_color?: string | null;
   balance_enabled?: boolean | null;
   balance_settings: string;

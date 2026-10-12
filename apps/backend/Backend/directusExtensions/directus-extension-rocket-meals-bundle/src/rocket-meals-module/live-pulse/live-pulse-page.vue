@@ -211,23 +211,39 @@ function formatVisitDate(date: string | null | undefined): string {
   return new Intl.DateTimeFormat(language.value, { weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(year, month - 1, day));
 }
 
-/** Stands in for the food name while translating, so the name can be cut out and rendered as a link. */
-const FOOD_MARKER = '\uE000';
+/** Stands in for the linked name (food, building, marking) while translating, so it can be cut out and rendered as a link. */
+const LINK_MARKER = '\uE000';
 
-function foodName(item: LivePulseFeedItem): string {
-  return item.foodName ?? translate(BackendTranslationKeys.rocket_meals_module_live_pulse_unknown_food);
+/** Anonymous usage events of a single action: shown as "someone", not as an anonymous session. */
+const ANONYMOUS_FEED_TYPES: ReadonlySet<LivePulseFeedType> = new Set([LivePulseFeedType.FOOD_OPENED, LivePulseFeedType.SCREEN_OPENED, LivePulseFeedType.BUILDING_OPENED, LivePulseFeedType.MARKING_OPENED]);
+
+/** The name rendered as link: the building or marking of the entry, else its food. */
+function linkName(item: LivePulseFeedItem): string {
+  switch (item.type) {
+    case LivePulseFeedType.BUILDING_OPENED:
+      return item.buildingName ?? translate(BackendTranslationKeys.rocket_meals_module_live_pulse_unknown_building);
+    case LivePulseFeedType.MARKING_OPENED:
+      return item.markingName ?? translate(BackendTranslationKeys.rocket_meals_module_live_pulse_unknown_marking);
+    default:
+      return item.foodName ?? translate(BackendTranslationKeys.rocket_meals_module_live_pulse_unknown_food);
+  }
 }
 
 function foodRoute(item: LivePulseFeedItem): string | undefined {
   return LivePulseHelper.getFoodRoute(item, existingFoodofferIds.value);
 }
 
-/** The ticker text around the food name; `found` is false for entries without a food. */
+function linkRoute(item: LivePulseFeedItem): string | undefined {
+  return LivePulseHelper.getLinkRoute(item, existingFoodofferIds.value);
+}
+
+/** The ticker text around the linked name; `found` is false for entries without one. */
 function feedTextParts(item: LivePulseFeedItem): { before: string; after: string; found: boolean } {
-  return LivePulseHelper.splitAtMarker(feedText(item, FOOD_MARKER), FOOD_MARKER);
+  return LivePulseHelper.splitAtMarker(feedText(item, LINK_MARKER), LINK_MARKER);
 }
 
 function feedText(item: LivePulseFeedItem, food: string): string {
+  const screenLabelKey = LivePulseHelper.getScreenLabelKey(item.eventName);
   switch (item.type) {
     case LivePulseFeedType.RATING:
       return translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_rated, { food });
@@ -241,6 +257,15 @@ function feedText(item: LivePulseFeedItem, food: string): string {
       return translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_new_profile);
     case LivePulseFeedType.FOOD_OPENED:
       return translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_food_opened, { food });
+    case LivePulseFeedType.BUILDING_OPENED:
+      return translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_building_opened, { building: food });
+    case LivePulseFeedType.MARKING_OPENED:
+      return translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_marking_opened, { marking: food });
+    case LivePulseFeedType.SCREEN_OPENED:
+      if (screenLabelKey) {
+        return translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_screen_opened, { screen: translate(screenLabelKey) });
+      }
+      return translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_usage_event, { event: [item.eventName, item.screenName].filter(Boolean).join(' · ') });
     default:
       return translate(BackendTranslationKeys.rocket_meals_module_live_pulse_feed_usage_event, { event: [item.eventName, item.screenName].filter(Boolean).join(' · ') });
   }
@@ -258,6 +283,12 @@ function feedIcon(item: LivePulseFeedItem): string {
       return 'waving_hand';
     case LivePulseFeedType.FOOD_OPENED:
       return 'visibility';
+    case LivePulseFeedType.SCREEN_OPENED:
+      return 'smartphone';
+    case LivePulseFeedType.BUILDING_OPENED:
+      return 'apartment';
+    case LivePulseFeedType.MARKING_OPENED:
+      return 'label';
     default:
       return 'touch_app';
   }
@@ -402,11 +433,11 @@ onBeforeUnmount(() => {
                 <div class="feed-body">
                   <div class="feed-line">
                     <strong v-if="item.type === LivePulseFeedType.USAGE_EVENT">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_anonymous_session) }}</strong>
-                    <strong v-else-if="item.type === LivePulseFeedType.FOOD_OPENED">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_someone) }}</strong>
+                    <strong v-else-if="ANONYMOUS_FEED_TYPES.has(item.type)">{{ translate(BackendTranslationKeys.rocket_meals_module_live_pulse_someone) }}</strong>
                     <router-link v-else-if="LivePulseHelper.getProfileRoute(item.profile)" class="feed-link" :to="LivePulseHelper.getProfileRoute(item.profile)"><strong>{{ getNickname(item.profile) }}</strong></router-link>
                     <strong v-else>{{ getNickname(item.profile) }}</strong>
                     <!-- The line break after the name is dropped by the template compiler, so the space is explicit. -->
-                    {{ ' ' }}<template v-if="feedTextParts(item).found">{{ feedTextParts(item).before }}<router-link v-if="foodRoute(item)" class="feed-link food-link" :to="foodRoute(item)">{{ foodName(item) }}</router-link><template v-else>{{ foodName(item) }}</template>{{ feedTextParts(item).after }}</template><template v-else>{{ feedTextParts(item).before }}</template>
+                    {{ ' ' }}<template v-if="feedTextParts(item).found">{{ feedTextParts(item).before }}<router-link v-if="linkRoute(item)" class="feed-link food-link" :to="linkRoute(item)">{{ linkName(item) }}</router-link><template v-else>{{ linkName(item) }}</template>{{ feedTextParts(item).after }}</template><template v-else>{{ feedTextParts(item).before }}</template>
                     <food-feedback-rating v-if="item.type === LivePulseFeedType.RATING || item.type === LivePulseFeedType.COMMENT" :rating="item.rating" />
                   </div>
                   <q v-if="item.comment" class="feed-comment">{{ item.comment }}</q>
