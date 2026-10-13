@@ -269,7 +269,9 @@ export function getVersionPatch() {
         // 150: onboarding waits (max 2s) for the user count, no 0 to 999 placeholder anymore
         // 151: user count request moved into UserHelper (extends CollectionHelper)
         // 152: user count cache as UserCountHelper class with static fields instead of let variables
-        return 152;
+        // 153: user count request in helper/UserHelper (now extends CollectionHelper), onboarding
+        //      cache renamed to OnboardingUserCountCache
+        return 153;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

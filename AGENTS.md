@@ -199,7 +199,7 @@ Gilt für **alle Apps** (`apps/frontend`, `apps/geonexia`, `apps/score-tracker`)
 ## Keine `let`-Variablen
 
 - **Niemals `let` verwenden**, sondern immer `const`. Ausgenommen sind nur Vendor-Dateien (fremder, eingebundener Code wie `node_modules`, generierte oder kopierte Bibliotheken).
-- Veränderlicher Zustand auf Modulebene (Cache, laufender Request, Zähler) gehört in eine **Klasse mit `static`-Feldern**, z. B. `UserCountHelper` in `apps/frontend/app/helper/UserCountHelper.ts`.
+- Veränderlicher Zustand auf Modulebene (Cache, laufender Request, Zähler) gehört in eine **Klasse mit `static`-Feldern**, z. B. `OnboardingUserCountCache` in `apps/frontend/app/helper/OnboardingUserCountCache.ts`.
 - In React-Komponenten: `useState` bzw. `useRef`. Innerhalb einer Funktion: ein `const`-Objekt mit Feldern (`const state = { done: false }`) statt einer neu zugewiesenen Variablen.
 - Statt Neuzuweisung: Ausdrücke (`const x = cond ? a : b`), Hilfsfunktionen mit frühem `return`, `for...of` oder Array-Methoden (`map`, `filter`, `reduce`, `find`).
 
