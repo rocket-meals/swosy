@@ -31,10 +31,12 @@ import ProfileAvatar from '../profiles/profile-avatar.vue';
 import SupportChatConversation from '../support-chat/support-chat-conversation.vue';
 import SupportChatStatusMenu from '../support-chat/support-chat-status-menu.vue';
 import FoodFeedbackRating from './food-feedback-rating.vue';
+import FoodImageLink from './food-image-link.vue';
 
 const props = defineProps<{ feedbackId: string }>();
 
 const api = useApi();
+const apiRoot = String(api.defaults?.baseURL ?? '/');
 const { useNotificationsStore } = useStores();
 const notificationsStore = useNotificationsStore();
 const router = useRouter();
@@ -309,6 +311,7 @@ watch(() => props.feedbackId, load);
 
       <template v-else-if="feedback">
         <div class="feedback-info">
+          <food-image-link :feedback="feedback" :api-root="apiRoot" />
           <support-chat-status-menu :status="status" :can-write="canWrite" :updating="updatingState" @change="changeStatus" />
           <span class="type-label">{{ foodName }}</span>
           <food-feedback-rating :rating="feedback.rating" />

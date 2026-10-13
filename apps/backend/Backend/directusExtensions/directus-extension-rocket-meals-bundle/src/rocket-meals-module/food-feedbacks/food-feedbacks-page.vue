@@ -36,6 +36,7 @@ import DeleteConfirmDialog from '../module-list/delete-confirm-dialog.vue';
 import StatusFilterChips from '../module-list/status-filter-chips.vue';
 import FoodFeedbackRating from './food-feedback-rating.vue';
 import FoodFeedbackStatusChip from './food-feedback-status-chip.vue';
+import FoodImageLink from './food-image-link.vue';
 
 const api = useApi();
 const router = useRouter();
@@ -337,10 +338,7 @@ watch(feedbacks, loadRecommendations);
 
       <list-content :loading="loading" :load-error="loadError" :empty="feedbacks.length === 0">
         <list-row v-for="feedback in feedbacks" :key="feedback.id" selectable :selected="isSelected(feedback)" @open="openChat(feedback)" @update:selected="toggleSelected(feedback, $event)">
-          <div class="food-image">
-            <img v-if="FoodFeedbackChatHelper.getFoodImageUrl(feedback, apiRoot)" :src="FoodFeedbackChatHelper.getFoodImageUrl(feedback, apiRoot)" :alt="FoodFeedbackChatHelper.getFoodName(feedback) ?? ''" loading="lazy" />
-            <v-icon v-else name="restaurant" />
-          </div>
+          <food-image-link :feedback="feedback" :api-root="apiRoot" />
           <div class="feedback-content">
             <div class="feedback-header">
               <food-feedback-status-chip :status="FoodFeedbackChatStatusHelper.getStatus(feedback)" />
@@ -448,25 +446,6 @@ watch(feedbacks, loadRecommendations);
 
 .toolbar-wide {
   flex-basis: 13rem;
-}
-
-.food-image {
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  inline-size: 4rem;
-  block-size: 4rem;
-  overflow: hidden;
-  color: var(--theme--foreground-subdued);
-  background: var(--theme--background-normal);
-  border-radius: var(--theme--border-radius);
-}
-
-.food-image img {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: cover;
 }
 
 .feedback-content {
