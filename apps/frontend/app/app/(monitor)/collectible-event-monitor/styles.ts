@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { FontHelper } from 'repo-depkit-common-ui';
 
 const styles = StyleSheet.create({
 	safeArea: {
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 	},
 	code: {
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 		fontSize: 14,
 	},
 	actionButton: {

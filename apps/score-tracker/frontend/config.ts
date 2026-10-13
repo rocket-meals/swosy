@@ -94,7 +94,8 @@ export function getVersionPatch() {
 	// 64: common: app_settings.maintenance_message type
 	// 70: common: ChatHelper read status helpers, chats.date_last_message and chats_participants.read_until types
 	// 71: common: NumberHelper.formatZeroPadded
-	return 71;
+	// 72: common-ui: FontHelper.getMonospaceFontFamily (Menlo on iOS, monospace elsewhere)
+	return 72;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

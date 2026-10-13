@@ -273,7 +273,8 @@ export function getVersionPatch() {
         //      cache renamed to OnboardingUserCountCache
         // 154: named Intl limits instead of magic numbers for the zero-padded user count
         // 155: zero-padded user count via NumberHelper.formatZeroPadded (repo-depkit-common)
-        return 155;
+        // 156: monospace font from FontHelper.getMonospaceFontFamily (common-ui) everywhere
+        return 156;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

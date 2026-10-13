@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import { DimensionValue, Image, Linking, Platform, Text, View, useWindowDimensions } from 'react-native';
+import { DimensionValue, Image, Linking, Text, View, useWindowDimensions } from 'react-native';
 import RenderHtml, { CustomBlockRenderer, HTMLContentModel, HTMLElementModel, defaultSystemFonts } from 'react-native-render-html';
 import { MarkdownBlockNode, parseMarkdownToBlocks } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
+import { FontHelper } from '../../helpers/FontHelper';
 import CollapsibleSection from '../Collapsible/CollapsibleSection';
 import MarkdownRedirectButton from './MarkdownRedirectButton';
 import { resolveLocationHref } from './MarkdownLinkHelper';
@@ -118,10 +119,9 @@ function makeSupRenderer(fontSize: number, textColor: string) {
 
 /**
  * Font for `code` (inline `backticks` and code blocks). react-native-render-html drops every
- * font that is not in `systemFonts`, and the generic `monospace` only exists on Android and web -
- * on iOS inline code would fall back to the normal text font. Menlo ships with every iOS.
+ * font that is not in `systemFonts`, so the monospace font has to be registered there.
  */
-const MONOSPACE_FONT = Platform.select({ ios: 'Menlo', default: 'monospace' });
+const MONOSPACE_FONT = FontHelper.getMonospaceFontFamily();
 const SYSTEM_FONTS = [...defaultSystemFonts, MONOSPACE_FONT];
 
 const HTML_ELEMENT_MODELS = {

@@ -16,6 +16,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useDebugMode from '@/hooks/useDebugMode';
 import MyImage from '@/components/MyImage';
+import { FontHelper } from 'repo-depkit-common-ui';
 
 function resolveImageExtension(highResUri: unknown, isDebugMode: boolean): string {
 	let extension = 'jpg';
@@ -83,7 +84,7 @@ function showDownloadErrorDebugModal(params: {
 	showScrollViewModal({
 		title: 'Debug: Download Error',
 		children: (
-			<Text selectable style={{ fontFamily: 'monospace', fontSize: 12, color: theme.screen.text }}>
+			<Text selectable style={{ fontFamily: FontHelper.getMonospaceFontFamily(), fontSize: 12, color: theme.screen.text }}>
 				{debugText}
 			</Text>
 		),

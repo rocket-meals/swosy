@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Dimensions, Platform, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Animated, Dimensions, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { router } from 'expo-router';
@@ -38,6 +38,7 @@ import SettingsListSelectOption from '@/components/SettingsListSelectOption/Sett
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsListNickname from '@/components/SettingsListNickname';
 import { getScientistFactKey } from '@/helper/scientistFactHelper';
+import { FontHelper } from 'repo-depkit-common-ui';
 
 // The own avatar comes last: by then the app is set up and customizing the avatar is the fun part at the end.
 const STEPS = ['welcome', 'canteen', 'pricegroup', 'preferences', 'profile'] as const;
@@ -61,8 +62,8 @@ const COUNT_SLOW_TICK_MS = 100;          // tick rate for slow phase (last 5 uni
 const COUNT_SLOW_THRESHOLD = 5;          // last N units use slow phase
 const COUNT_REFRESH_INTERVAL_MS = 5000; // re-fetch count every 5 seconds
 const COUNT_BADGE_WIDTH = '70%' as const;
-// System monospace font (no bundled/CDN font): keeps the digits at a fixed width while counting.
-const COUNT_FONT_FAMILY = Platform.select({ ios: 'Menlo', default: 'monospace' });
+// Monospace font keeps the digits at a fixed width while counting.
+const COUNT_FONT_FAMILY = FontHelper.getMonospaceFontFamily();
 const profileHelper = new ProfileHelper();
 
 // Precomputed quickstart configs – AvatarSize.SMALL is stored in the config, but the
