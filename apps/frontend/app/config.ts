@@ -265,7 +265,8 @@ export function getVersionPatch() {
         //      App Store and Google Play versions (major and build number only)
         // 148: onboarding user count prefetched on the login screen, counter starts zero-padded
         //      ("00.000") and renders in the system monospace font
-        return 148;
+        // 149: onboarding waits (max 2s) for the user count, no 0 to 999 placeholder anymore
+        return 149;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

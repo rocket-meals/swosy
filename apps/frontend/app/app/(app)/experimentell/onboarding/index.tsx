@@ -55,9 +55,6 @@ const AVATAR_SLOT_INTERVAL = 800;
 // carousel out to the full screen edge via negative margin.
 const STEP_CONTENT_PADDING = 20;
 // User count animation constants
-const COUNT_PLACEHOLDER_TARGET = 999;
-const COUNT_INITIAL_TICK_MS = 30;        // tick rate for 0→999 phase
-const COUNT_INITIAL_STEP = 10;           // 10/tick * 100 ticks * 30ms ≈ 3s
 const COUNT_FALLBACK_DELAY_MS = 3000;    // show "viele andere" after 3s without server response
 const COUNT_FAST_TICK_MS = 30;           // tick rate for fast phase (approaching server count)
 const COUNT_SLOW_TICK_MS = 100;          // tick rate for slow phase (last 5 units)
@@ -326,7 +323,13 @@ const OnboardingScreen = () => {
 		const tick = () => {
 			const current = displayCountRef.current;
 			const distance = target - current;
-			if (distance <= 0) return;
+			if (distance === 0) return;
+			if (distance < 0) {
+				// Count went down (e.g. deleted accounts): jump instead of counting backwards
+				displayCountRef.current = target;
+				setDisplayCount(target);
+				return;
+			}
 			let step: number;
 			let delay: number;
 			if (distance > COUNT_SLOW_THRESHOLD) {
@@ -348,7 +351,11 @@ const OnboardingScreen = () => {
 		tick();
 	}, []);
 
-	// Initial count animation: 0 → 999 over ~3 seconds, then "viele andere" fallback.
+	// The count is normally prefetched before this screen opens (login screen, (app)/index), so
+	// the counter starts right away at a zero-padded value with the real digit count
+	// ("000" for 345, "00.000" for 12.345). Without it the counter waits at 0 for the server
+	// instead of counting up a placeholder whose digits would not match, and falls back to
+	// "viele andere" after COUNT_FALLBACK_DELAY_MS.
 	// Deps are all refs (never change identity) so the empty array is intentional.
 	useEffect(() => {
 		if (initialUserCount) {
@@ -359,18 +366,6 @@ const OnboardingScreen = () => {
 				if (countAnimTimerRef.current) clearTimeout(countAnimTimerRef.current);
 			};
 		}
-		const tick = () => {
-			if (serverRespondedRef.current) return; // server arrived, hand off to animateToTarget
-			const next = Math.min(displayCountRef.current + COUNT_INITIAL_STEP, COUNT_PLACEHOLDER_TARGET);
-			displayCountRef.current = next;
-			setDisplayCount(next);
-			if (next < COUNT_PLACEHOLDER_TARGET) {
-				countAnimTimerRef.current = setTimeout(tick, COUNT_INITIAL_TICK_MS);
-			}
-		};
-		// Start immediately so the first increment is visible without delay
-		tick();
-
 		// If no server response after COUNT_FALLBACK_DELAY_MS, show "viele andere"
 		fallbackTimerRef.current = setTimeout(() => {
 			if (!serverRespondedRef.current) {
