@@ -271,7 +271,8 @@ export function getVersionPatch() {
         // 152: user count cache as UserCountHelper class with static fields instead of let variables
         // 153: user count request in helper/UserHelper (now extends CollectionHelper), onboarding
         //      cache renamed to OnboardingUserCountCache
-        return 153;
+        // 154: named Intl limits instead of magic numbers for the zero-padded user count
+        return 154;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
