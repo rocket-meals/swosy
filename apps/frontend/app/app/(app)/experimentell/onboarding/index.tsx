@@ -17,7 +17,7 @@ import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { fetchUserCount as fetchUserCountFromServer, formatPaddedCount, getCachedUserCount } from '@/helper/userCountHelper';
+import { UserCountHelper } from '@/helper/UserCountHelper';
 import LottieView from 'lottie-react-native';
 import animation from '@/assets/animations/priceGroup.json';
 import { replaceLottieColors } from '@/helper/animationHelper';
@@ -91,7 +91,7 @@ const OnboardingScreen = () => {
 	// User count display state
 	const [displayCount, setDisplayCount] = useState(0);
 	// Prefetched on the login screen - when known, the counter starts zero-padded ("00.000").
-	const [initialUserCount] = useState(() => getCachedUserCount());
+	const [initialUserCount] = useState(() => UserCountHelper.getCachedUserCount());
 	const [countDigits, setCountDigits] = useState(() => (initialUserCount ? String(initialUserCount).length : 1));
 	const [showVieleAndere, setShowVieleAndere] = useState(false);
 	const [isLoadingCanteens, setIsLoadingCanteens] = useState(true);
@@ -384,7 +384,7 @@ const OnboardingScreen = () => {
 	// Fetch user count from server; on success animate to actual value; refresh every 5 seconds
 	const fetchUserCount = useCallback(async () => {
 		// On error the helper resolves to null: keep current display value unchanged
-		const count = await fetchUserCountFromServer();
+		const count = await UserCountHelper.fetchUserCount();
 		if (count) {
 			serverRespondedRef.current = true;
 			if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
@@ -520,7 +520,7 @@ const OnboardingScreen = () => {
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
 	// Format the animated display count locale-aware, zero-padded to the target's digit count
-	const formattedCount = useMemo(() => formatPaddedCount(displayCount, countDigits), [displayCount, countDigits]);
+	const formattedCount = useMemo(() => UserCountHelper.formatPaddedCount(displayCount, countDigits), [displayCount, countDigits]);
 
 	// ── Eating habits / preferences step helpers ─────────────────────────────
 	const customerConfigValueLabel = useMemo(

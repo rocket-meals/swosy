@@ -5,7 +5,7 @@ import { AppScreens } from 'repo-depkit-common';
 import { useAppSelector } from '@/redux/hooks';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { consumeShouldShowOnboardingAfterLogin } from '@/helper/onboardingIntentHelper';
-import { fetchUserCount, getCachedUserCount } from '@/helper/userCountHelper';
+import { UserCountHelper } from '@/helper/UserCountHelper';
 
 // Upper bound for holding back the onboarding while its user count is still loading.
 const USER_COUNT_WAIT_MS = 2000;
@@ -32,20 +32,20 @@ const Home = () => {
 	// The onboarding counter starts zero-padded to the real digit count, so it needs the user
 	// count before it opens. Usually the login screen has prefetched it already; otherwise wait
 	// for it here (bounded, the onboarding falls back to "viele andere" if it never arrives).
-	const [userCountReady, setUserCountReady] = useState(() => getCachedUserCount() !== null);
+	const [userCountReady, setUserCountReady] = useState(() => UserCountHelper.getCachedUserCount() !== null);
 	useEffect(() => {
 		if (!willShowOnboarding || userCountReady) return;
-		let done = false;
+		const waiting = { done: false };
 		const finish = () => {
-			if (!done) {
-				done = true;
+			if (!waiting.done) {
+				waiting.done = true;
 				setUserCountReady(true);
 			}
 		};
 		const timeout = setTimeout(finish, USER_COUNT_WAIT_MS);
-		void fetchUserCount().finally(finish);
+		void UserCountHelper.fetchUserCount().finally(finish);
 		return () => {
-			done = true;
+			waiting.done = true;
 			clearTimeout(timeout);
 		};
 	}, [willShowOnboarding, userCountReady]);
