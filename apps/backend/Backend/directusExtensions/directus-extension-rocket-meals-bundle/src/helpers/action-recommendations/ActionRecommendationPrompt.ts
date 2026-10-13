@@ -42,7 +42,7 @@ const KEY_POINT_MAX_LENGTH = 300;
 const ITEM_TEXT_MAX_LENGTH = 2000;
 
 /** Replies read like a short chat message, not like a letter. */
-const REPLY_LENGTH_RULE = 'Halte die Antwort kurz wie eine Chat-Nachricht: höchstens zwei kurze Sätze und höchstens 250 Zeichen, ohne Anrede-Floskeln, ohne Aufzählungen oder Beispiele, höchstens eine Rückfrage.';
+const REPLY_LENGTH_RULE = 'Halte die Antwort kurz wie eine Chat-Nachricht: höchstens zwei kurze Sätze und höchstens 250 Zeichen, ohne Anrede-Floskeln, ohne Aufzählungen oder Beispiele, höchstens eine Rückfrage. Frage nie nach Angaben, die schon im Eintrag oder im Chat stehen (z. B. welche Speise, welche Mensa, welcher Tag), sondern nur, wenn die Antwort wirklich weiterhilft.';
 
 const WRITING_RULE = 'Verwende keine Gedankenstriche und keine Semikolons, sondern Kommas, Doppelpunkte oder neue Sätze.';
 
