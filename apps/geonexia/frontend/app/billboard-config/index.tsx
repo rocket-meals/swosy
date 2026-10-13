@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SettingsListGroupTitle, SettingsListSelectOption, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { SettingsListGroupTitle, SettingsListSelectOption, useMyScrollViewModal, useTheme, FontHelper } from 'repo-depkit-common-ui';
 import { Asset } from 'expo-asset';
 import * as Clipboard from 'expo-clipboard';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -763,7 +763,7 @@ const styles = StyleSheet.create({
 	},
 	valueLabel: {
 		fontSize: 12,
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 		fontWeight: '500',
 	},
 	bottomSpacer: {
@@ -812,7 +812,7 @@ const styles = StyleSheet.create({
 	},
 	scaleValue: {
 		fontSize: 15,
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 		fontWeight: '700',
 		minWidth: 44,
 		textAlign: 'center',

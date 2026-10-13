@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { SettingsList, SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { SettingsList, SettingsListGroupTitle, useMyScrollViewModal, useTheme, FontHelper } from 'repo-depkit-common-ui';
 
 import ModalTextInput from '../../components/ModalTextInput';
 import SettingsListActivity from '../../components/SettingsListActivity';
@@ -960,7 +960,7 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		padding: 10,
 		fontSize: 12,
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 		minHeight: 100,
 		textAlignVertical: 'top',
 	},

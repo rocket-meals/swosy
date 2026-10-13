@@ -12,6 +12,7 @@ export type { SettingsContextType } from './src/context/SettingsContext';
 // Helpers
 export { myContrastColor, getContrastRatio, getColorAsHex, mixColors } from './src/helpers/ColorHelper';
 export { accountRequiredStyles } from './src/helpers/accountRequiredStyles';
+export { FontHelper } from './src/helpers/FontHelper';
 export {
 	DEFAULT_DB_NAME,
 	getKvDatabase,

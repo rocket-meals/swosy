@@ -28,6 +28,7 @@ import { completeLoginFromDeepLinkCode } from '@/helper/authHelper';
 import LoginDebugPanel from '@/components/Login/LoginDebugPanel';
 import { createAndStoreGuestAccount, getStoredGuestAccountCredentials } from '@/helper/guestAccountHelper';
 import { useLanguage } from '@/hooks/useLanguage';
+import { OnboardingUserCountCache } from '@/helper/OnboardingUserCountCache';
 
 export default function Login() {
 	useSetPageTitle(TranslationKeys.sign_in);
@@ -71,6 +72,8 @@ export default function Login() {
 	useEffect(() => {
 		void getAppSettings();
 		void getProviders();
+		// Prefetch for the onboarding after login, so its user counter can start as "00.000"
+		void OnboardingUserCountCache.fetchUserCount();
 	}, []);
 
 	// Fallback for the native SSO flow: when the auth redirect opens the app as

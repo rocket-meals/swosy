@@ -264,7 +264,17 @@ export function getVersionPatch() {
         // 142: experimental screen "Store-Versionen" compares the installed version with the
         //      App Store and Google Play versions (major and build number only)
         // 148: chats: read status per participant (read_until) synced with the server, chats refetched on foreground
-        return 148;
+        // 149: onboarding user count prefetched on the login screen, counter starts zero-padded
+        //      ("00.000") and renders in the system monospace font
+        // 150: onboarding waits (max 2s) for the user count, no 0 to 999 placeholder anymore
+        // 151: user count request moved into UserHelper (extends CollectionHelper)
+        // 152: user count cache as UserCountHelper class with static fields instead of let variables
+        // 153: user count request in helper/UserHelper (now extends CollectionHelper), onboarding
+        //      cache renamed to OnboardingUserCountCache
+        // 154: named Intl limits instead of magic numbers for the zero-padded user count
+        // 155: zero-padded user count via NumberHelper.formatZeroPadded (repo-depkit-common)
+        // 156: monospace font from FontHelper.getMonospaceFontFamily (common-ui) everywhere
+        return 156;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

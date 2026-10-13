@@ -144,6 +144,7 @@ import { useTheme } from '../../context/ThemeContext';
 import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/SettingsListSelectOptionSingle';
 import SettingsListNumberInput from '../SettingsListNumberInput/SettingsListNumberInput';
 import SettingsListBoolean from '../SettingsListBoolean/SettingsListBoolean';
+import { FontHelper } from '../../helpers/FontHelper';
 
 export type { AvatarConfig } from '../MyAvatar';
 
@@ -3027,7 +3028,7 @@ const styles = StyleSheet.create({
 	},
 	hexLabel: {
 		fontSize: 11,
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 	},
 	previewAvatarWrapper: {
 		marginRight: 10,
@@ -3051,12 +3052,12 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 	},
 	debugJson: {
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 		fontSize: 12,
 		padding: 12,
 	},
 	debugJsonInput: {
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 		fontSize: 12,
 		padding: 12,
 		marginHorizontal: 12,

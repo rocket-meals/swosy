@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { FontHelper } from 'repo-depkit-common-ui';
 
 const styles = StyleSheet.create({
         container: {
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
         },
         logText: {
                 fontSize: 13,
-                fontFamily: 'monospace',
+                fontFamily: FontHelper.getMonospaceFontFamily(),
                 marginBottom: 4,
         },
 });

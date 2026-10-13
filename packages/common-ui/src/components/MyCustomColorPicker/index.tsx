@@ -3,6 +3,7 @@ import { GestureResponderEvent, LayoutChangeEvent, PanResponder, Platform, Style
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useTheme } from '../../context/ThemeContext';
+import { FontHelper } from '../../helpers/FontHelper';
 
 // Text inputs inside the bottom-sheet modal must use BottomSheetTextInput so the
 // sheet lifts above the keyboard (plain TextInputs are invisible to the sheet's
@@ -386,7 +387,7 @@ const styles = StyleSheet.create({
 	},
 	hexInput: {
 		flex: 1,
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 		fontSize: 14,
 		paddingHorizontal: 12,
 		paddingVertical: 10,

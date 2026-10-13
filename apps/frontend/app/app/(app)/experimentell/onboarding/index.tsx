@@ -12,12 +12,12 @@ import CanteenSelection from '@/components/CanteenSelection/CanteenSelection';
 import SettingsListMarkingLabelsFast from '@/components/SettingsListMarkingLabelsFast';
 import PriceGroupSettingsList from '@/components/PriceGroupSettingsList';
 import { SET_SELECTED_CANTEEN, SET_BUILDINGS_DICT, SET_CANTEENS, SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, UPDATE_PROFILE } from '@/redux/Types/types';
-import { AppScreens, DatabaseTypes, DefaultProfileHelper } from 'repo-depkit-common';
+import { AppScreens, DatabaseTypes, DefaultProfileHelper, NumberHelper } from 'repo-depkit-common';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { CollectionHelper } from '@/helper/collectionHelper';
+import { OnboardingUserCountCache } from '@/helper/OnboardingUserCountCache';
 import LottieView from 'lottie-react-native';
 import animation from '@/assets/animations/priceGroup.json';
 import { replaceLottieColors } from '@/helper/animationHelper';
@@ -38,6 +38,7 @@ import SettingsListSelectOption from '@/components/SettingsListSelectOption/Sett
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsListNickname from '@/components/SettingsListNickname';
 import { getScientistFactKey } from '@/helper/scientistFactHelper';
+import { FontHelper } from 'repo-depkit-common-ui';
 
 // The own avatar comes last: by then the app is set up and customizing the avatar is the fun part at the end.
 const STEPS = ['welcome', 'canteen', 'pricegroup', 'preferences', 'profile'] as const;
@@ -55,15 +56,14 @@ const AVATAR_SLOT_INTERVAL = 800;
 // carousel out to the full screen edge via negative margin.
 const STEP_CONTENT_PADDING = 20;
 // User count animation constants
-const COUNT_PLACEHOLDER_TARGET = 999;
-const COUNT_INITIAL_TICK_MS = 30;        // tick rate for 0→999 phase
-const COUNT_INITIAL_STEP = 10;           // 10/tick * 100 ticks * 30ms ≈ 3s
 const COUNT_FALLBACK_DELAY_MS = 3000;    // show "viele andere" after 3s without server response
 const COUNT_FAST_TICK_MS = 30;           // tick rate for fast phase (approaching server count)
 const COUNT_SLOW_TICK_MS = 100;          // tick rate for slow phase (last 5 units)
 const COUNT_SLOW_THRESHOLD = 5;          // last N units use slow phase
 const COUNT_REFRESH_INTERVAL_MS = 5000; // re-fetch count every 5 seconds
 const COUNT_BADGE_WIDTH = '70%' as const;
+// Monospace font keeps the digits at a fixed width while counting.
+const COUNT_FONT_FAMILY = FontHelper.getMonospaceFontFamily();
 const profileHelper = new ProfileHelper();
 
 // Precomputed quickstart configs – AvatarSize.SMALL is stored in the config, but the
@@ -91,6 +91,9 @@ const OnboardingScreen = () => {
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	// User count display state
 	const [displayCount, setDisplayCount] = useState(0);
+	// Prefetched on the login screen - when known, the counter starts zero-padded ("00.000").
+	const [initialUserCount] = useState(() => OnboardingUserCountCache.getCachedUserCount());
+	const [countDigits, setCountDigits] = useState(() => (initialUserCount ? String(initialUserCount).length : 1));
 	const [showVieleAndere, setShowVieleAndere] = useState(false);
 	const [isLoadingCanteens, setIsLoadingCanteens] = useState(true);
 	// Track which steps have been mounted for lazy loading
@@ -321,7 +324,13 @@ const OnboardingScreen = () => {
 		const tick = () => {
 			const current = displayCountRef.current;
 			const distance = target - current;
-			if (distance <= 0) return;
+			if (distance === 0) return;
+			if (distance < 0) {
+				// Count went down (e.g. deleted accounts): jump instead of counting backwards
+				displayCountRef.current = target;
+				setDisplayCount(target);
+				return;
+			}
 			let step: number;
 			let delay: number;
 			if (distance > COUNT_SLOW_THRESHOLD) {
@@ -343,21 +352,21 @@ const OnboardingScreen = () => {
 		tick();
 	}, []);
 
-	// Initial count animation: 0 → 999 over ~3 seconds, then "viele andere" fallback.
+	// The count is normally prefetched before this screen opens (login screen, (app)/index), so
+	// the counter starts right away at a zero-padded value with the real digit count
+	// ("000" for 345, "00.000" for 12.345). Without it the counter waits at 0 for the server
+	// instead of counting up a placeholder whose digits would not match, and falls back to
+	// "viele andere" after COUNT_FALLBACK_DELAY_MS.
 	// Deps are all refs (never change identity) so the empty array is intentional.
 	useEffect(() => {
-		const tick = () => {
-			if (serverRespondedRef.current) return; // server arrived, hand off to animateToTarget
-			const next = Math.min(displayCountRef.current + COUNT_INITIAL_STEP, COUNT_PLACEHOLDER_TARGET);
-			displayCountRef.current = next;
-			setDisplayCount(next);
-			if (next < COUNT_PLACEHOLDER_TARGET) {
-				countAnimTimerRef.current = setTimeout(tick, COUNT_INITIAL_TICK_MS);
-			}
-		};
-		// Start immediately so the first increment is visible without delay
-		tick();
-
+		if (initialUserCount) {
+			// Count already known (prefetched): count up from the zero-padded start right away.
+			serverRespondedRef.current = true;
+			animateToTarget(initialUserCount);
+			return () => {
+				if (countAnimTimerRef.current) clearTimeout(countAnimTimerRef.current);
+			};
+		}
 		// If no server response after COUNT_FALLBACK_DELAY_MS, show "viele andere"
 		fallbackTimerRef.current = setTimeout(() => {
 			if (!serverRespondedRef.current) {
@@ -375,21 +384,13 @@ const OnboardingScreen = () => {
 
 	// Fetch user count from server; on success animate to actual value; refresh every 5 seconds
 	const fetchUserCount = useCallback(async () => {
-		try {
-			const usersHelper = new CollectionHelper<DatabaseTypes.DirectusUsers>('directus_users');
-			const result: { count: string | number }[] = await usersHelper.aggregateItems({
-				aggregate: { count: '*' },
-			}) as { count: string | number }[];
-			const rawCount = result?.[0]?.count;
-			const count = typeof rawCount === 'number' ? rawCount : Number.parseInt(rawCount as string, 10);
-			if (Number.isFinite(count) && !Number.isNaN(count) && count > 0) {
-				serverRespondedRef.current = true;
-				if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
-				animateToTarget(count);
-			}
-		} catch (error) {
-			console.error('Error fetching user count:', error);
-			// On error: keep current display value unchanged
+		// On error the helper resolves to null: keep current display value unchanged
+		const count = await OnboardingUserCountCache.fetchUserCount();
+		if (count) {
+			serverRespondedRef.current = true;
+			if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+			setCountDigits(String(count).length);
+			animateToTarget(count);
 		}
 	}, [animateToTarget]);
 
@@ -519,8 +520,8 @@ const OnboardingScreen = () => {
 
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
-	// Format the animated display count locale-aware
-	const formattedCount = useMemo(() => displayCount.toLocaleString(), [displayCount]);
+	// Format the animated display count locale-aware, zero-padded to the target's digit count
+	const formattedCount = useMemo(() => NumberHelper.formatZeroPadded(displayCount, countDigits), [displayCount, countDigits]);
 
 	// ── Eating habits / preferences step helpers ─────────────────────────────
 	const customerConfigValueLabel = useMemo(
@@ -1190,7 +1191,9 @@ const styles = StyleSheet.create({
 	},
 	userCountNumber: {
 		fontSize: 48,
-		fontFamily: 'Poppins_700Bold',
+		fontFamily: COUNT_FONT_FAMILY,
+		fontWeight: '700',
+		fontVariant: ['tabular-nums'],
 	},
 	navigationContainer: {
 		flexDirection: 'row',

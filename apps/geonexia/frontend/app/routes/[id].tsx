@@ -14,6 +14,7 @@ import {
 	type SettingsListTextInputSuggestion,
 	useMyScrollViewModal,
 	useTheme,
+	FontHelper,
 } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -1423,7 +1424,7 @@ export default function RouteDetailScreen() {
 													{features.length === 0 ? (
 														<Text style={{ color: theme.screen.icon, textAlign: 'center', marginTop: 16, fontSize: 14 }}>Keine Features</Text>
 													) : (
-														<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+														<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: FontHelper.getMonospaceFontFamily() }} selectable>
 															{JSON.stringify(features, null, 2)}
 														</Text>
 													)}
@@ -1456,7 +1457,7 @@ export default function RouteDetailScreen() {
 										title: `📊 ${key}`,
 										children: (
 											<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
-												<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+												<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: FontHelper.getMonospaceFontFamily() }} selectable>
 													{JSON.stringify(entry.feature, null, 2)}
 												</Text>
 											</View>
@@ -1494,7 +1495,7 @@ export default function RouteDetailScreen() {
 										title: `📊 ${key}`,
 										children: (
 											<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
-												<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+												<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: FontHelper.getMonospaceFontFamily() }} selectable>
 													{JSON.stringify(entry.feature, null, 2)}
 												</Text>
 											</View>

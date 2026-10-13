@@ -1,5 +1,5 @@
 import React, { useState, useSyncExternalStore } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { useTheme } from '@/hooks/useTheme';
@@ -9,6 +9,7 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import { getSelectedLoginBrowserStrategy, LOGIN_BROWSER_STRATEGY_LABELS, LoginBrowserStrategy, setSelectedLoginBrowserStrategy } from '@/helper/authHelper';
 import { clearLoginLog, getLoginLogEntries, getLoginLogText, subscribeLoginLog } from '@/helper/loginDebug';
 import { useAppSelector } from '@/redux/hooks';
+import { FontHelper } from 'repo-depkit-common-ui';
 
 /** Position of the item at `index` inside a settings group of `total` items. */
 const getGroupPosition = (index: number, total: number): 'top' | 'bottom' | 'middle' => {
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
 	},
 	logText: {
 		fontSize: 11,
-		fontFamily: Platform.select({ ios: 'Courier', default: 'monospace' }),
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 		marginBottom: 2,
 	},
 	buttonRow: {

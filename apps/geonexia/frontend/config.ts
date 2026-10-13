@@ -96,7 +96,10 @@ export function getVersionPatch() {
 	// 69: common-ui: silhouette avatar config (SilhouetteAvatar), used by the Live-Puls page
 	// 70: common: app_settings.maintenance_message type
 	// 76: common: ChatHelper read status helpers, chats.date_last_message and chats_participants.read_until types
-	return 76;
+	// 77: common: NumberHelper.formatZeroPadded
+	// 78: common-ui: FontHelper.getMonospaceFontFamily (Menlo on iOS, monospace elsewhere)
+	// 79: monospace texts use FontHelper.getMonospaceFontFamily (Menlo on iOS)
+	return 79;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

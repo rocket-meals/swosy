@@ -11,7 +11,7 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListBoolean, SettingsListBoxplot, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListBoolean, SettingsListBoxplot, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme, FontHelper } from 'repo-depkit-common-ui';
 import { computeBoxplotStats, DateHelper } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -1988,7 +1988,7 @@ export default function ActivityDetailScreen() {
 									title: '🐛 Activity Store',
 									children: (
 										<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
-											<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+											<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: FontHelper.getMonospaceFontFamily() }} selectable>
 												{JSON.stringify(activity, null, 2)}
 											</Text>
 										</View>
@@ -2022,7 +2022,7 @@ export default function ActivityDetailScreen() {
 									title: '🐛 World Store',
 									children: (
 										<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
-											<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+											<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: FontHelper.getMonospaceFontFamily() }} selectable>
 												{JSON.stringify(worldStoreData, null, 2)}
 											</Text>
 										</View>
@@ -2042,7 +2042,7 @@ export default function ActivityDetailScreen() {
 									title: '🐛 Routes Store',
 									children: (
 										<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
-											<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+											<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: FontHelper.getMonospaceFontFamily() }} selectable>
 												{JSON.stringify(savedRoutes, null, 2)}
 											</Text>
 										</View>
@@ -2061,7 +2061,7 @@ export default function ActivityDetailScreen() {
 									title: '🐛 Computed Values',
 									children: (
 										<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
-											<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+											<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: FontHelper.getMonospaceFontFamily() }} selectable>
 												{JSON.stringify(activity.computed ?? null, null, 2)}
 											</Text>
 										</View>
@@ -2216,7 +2216,7 @@ const styles = StyleSheet.create({
 		paddingBottom: 8,
 	},
 	shareCodeText: {
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 		fontSize: 12,
 	},
 	shareQrContainer: {

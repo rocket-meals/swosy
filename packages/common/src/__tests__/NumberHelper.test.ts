@@ -91,3 +91,24 @@ describe('NumberHelper.formatCompact', () => {
     expect(NumberHelper.formatCompact(1_990_000)).toBe('1.9m');
   });
 });
+
+describe('NumberHelper.formatZeroPadded', () => {
+  it('pads with zeros up to minDigits, grouped per locale', () => {
+    expect(NumberHelper.formatZeroPadded(0, 5, 'de-DE')).toBe('00.000');
+    expect(NumberHelper.formatZeroPadded(1234, 5, 'de-DE')).toBe('01.234');
+    expect(NumberHelper.formatZeroPadded(12345, 5, 'en-US')).toBe('12,345');
+    expect(NumberHelper.formatZeroPadded(7, 3, 'de-DE')).toBe('007');
+  });
+
+  it('does not cut numbers longer than minDigits', () => {
+    expect(NumberHelper.formatZeroPadded(12345, 2, 'de-DE')).toBe('12.345');
+  });
+
+  it('clamps minDigits to the range Intl.NumberFormat accepts', () => {
+    expect(NumberHelper.formatZeroPadded(5, 0, 'de-DE')).toBe('5');
+    expect(NumberHelper.formatZeroPadded(5, -3, 'de-DE')).toBe('5');
+    expect(() => NumberHelper.formatZeroPadded(5, 100, 'en-US')).not.toThrow();
+    const digitsOnly = StringHelper.replaceAllLiteralWithOptions({ str: NumberHelper.formatZeroPadded(5, 100, 'en-US'), find: ',', replace: '' });
+    expect(digitsOnly).toHaveLength(NumberHelper.MIN_INTEGER_DIGITS_UPPER_LIMIT);
+  });
+});

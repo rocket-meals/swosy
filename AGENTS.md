@@ -196,6 +196,13 @@ Gilt für **alle Apps** (`apps/frontend`, `apps/geonexia`, `apps/score-tracker`)
 - **Niemals `node:crypto` (bzw. `crypto`) importieren.** Für zufällige IDs und Tokens unseren `NanoidHelper` (`apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/NanoidHelper.ts`) oder den Directus-Endpoint `GET <PUBLIC_URL>/utils/random/string` verwenden.
 - Die vollständige Liste steht in `apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/README.md` unter „Verbotene Pakete“.
 
+## Keine `let`-Variablen
+
+- **Niemals `let` verwenden**, sondern immer `const`. Ausgenommen sind nur Vendor-Dateien (fremder, eingebundener Code wie `node_modules`, generierte oder kopierte Bibliotheken).
+- Veränderlicher Zustand auf Modulebene (Cache, laufender Request, Zähler) gehört in eine **Klasse mit `static`-Feldern**, z. B. `OnboardingUserCountCache` in `apps/frontend/app/helper/OnboardingUserCountCache.ts`.
+- In React-Komponenten: `useState` bzw. `useRef`. Innerhalb einer Funktion: ein `const`-Objekt mit Feldern (`const state = { done: false }`) statt einer neu zugewiesenen Variablen.
+- Statt Neuzuweisung: Ausdrücke (`const x = cond ? a : b`), Hilfsfunktionen mit frühem `return`, `for...of` oder Array-Methoden (`map`, `filter`, `reduce`, `find`).
+
 ## String replacement
 
 - **Never use `String.prototype.replaceAll()` or `String.prototype.replace()` for simple substitutions.** Use `StringHelper` from `repo-depkit-common` instead:

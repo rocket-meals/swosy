@@ -86,7 +86,8 @@ export function getVersionPatch() {
 	// 56: common: app_settings.app_usage_events_enabled is a checkbox tree ("Alle" on top), nothing ticked collects nothing
 	// 57: common: app_settings.maintenance_message type
 	// 63: common: ChatHelper read status helpers, chats.date_last_message and chats_participants.read_until types
-	return 63;
+	// 64: common: NumberHelper.formatZeroPadded
+	return 64;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

@@ -19,6 +19,7 @@ import { buildDirectusUploadFormData } from '@/helper/fileUploadHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import { CollectionNames } from 'repo-depkit-common';
+import { FontHelper } from 'repo-depkit-common-ui';
 
 type DirectusImageEditModalBase = {
 	field: string;
@@ -242,7 +243,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 							<Text style={{ color: theme.screen.text }}>
 								Fehler beim Hochladen: {errorMessage}
 							</Text>
-							<Text style={{ color: theme.screen.text, fontFamily: 'monospace' }}>{errorDetails}</Text>
+							<Text style={{ color: theme.screen.text, fontFamily: FontHelper.getMonospaceFontFamily() }}>{errorDetails}</Text>
 						</View>
 					),
 				});
