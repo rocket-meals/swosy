@@ -1,5 +1,4 @@
-import { DatabaseTypes } from 'repo-depkit-common';
-import { CollectionHelper } from '@/helper/collectionHelper';
+import { UserHelper } from '@/redux/actions/User/UserHelper';
 
 // In-memory cache of the total user count shown in the onboarding ("Du und 12.345 andere").
 // The login screen prefetches it, so the onboarding already knows how many digits the number
@@ -17,17 +16,11 @@ export function fetchUserCount(): Promise<number | null> {
 	if (pendingFetch) return pendingFetch;
 	pendingFetch = (async () => {
 		try {
-			const usersHelper = new CollectionHelper<DatabaseTypes.DirectusUsers>('directus_users');
-			const result = (await usersHelper.aggregateItems({
-				aggregate: { count: '*' },
-			})) as { count: string | number }[];
-			const rawCount = result?.[0]?.count;
-			const count = typeof rawCount === 'number' ? rawCount : Number.parseInt(rawCount as string, 10);
-			if (Number.isFinite(count) && count > 0) {
+			const count = await new UserHelper().fetchUserCount();
+			if (count !== null) {
 				cachedUserCount = count;
-				return count;
 			}
-			return null;
+			return count;
 		} catch (error) {
 			console.error('Error fetching user count:', error);
 			return null;

@@ -267,7 +267,8 @@ export function getVersionPatch() {
         // 149: onboarding user count prefetched on the login screen, counter starts zero-padded
         //      ("00.000") and renders in the system monospace font
         // 150: onboarding waits (max 2s) for the user count, no 0 to 999 placeholder anymore
-        return 150;
+        // 151: user count request moved into UserHelper (extends CollectionHelper)
+        return 151;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
