@@ -272,7 +272,8 @@ export function getVersionPatch() {
         // 153: user count request in helper/UserHelper (now extends CollectionHelper), onboarding
         //      cache renamed to OnboardingUserCountCache
         // 154: named Intl limits instead of magic numbers for the zero-padded user count
-        return 154;
+        // 155: zero-padded user count via NumberHelper.formatZeroPadded (repo-depkit-common)
+        return 155;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

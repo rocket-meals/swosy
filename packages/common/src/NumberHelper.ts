@@ -1,6 +1,18 @@
 import { StringHelper } from './StringHelper';
 
 export class NumberHelper {
+  // Allowed range of Intl.NumberFormat's minimumIntegerDigits (ECMA-402): values outside throw a RangeError.
+  static readonly MIN_INTEGER_DIGITS_LOWER_LIMIT = 1;
+  static readonly MIN_INTEGER_DIGITS_UPPER_LIMIT = 21;
+
+  // Formats an integer locale-aware, left-padded with zeros to at least minDigits digits
+  // (e.g. 0 with minDigits 5 -> "00.000" in de-DE), so a counter keeps its width while counting up.
+  // minDigits is clamped to the range Intl.NumberFormat accepts. locale undefined = runtime default.
+  static formatZeroPadded(value: number, minDigits: number, locale?: string): string {
+    const minimumIntegerDigits = Math.max(NumberHelper.MIN_INTEGER_DIGITS_LOWER_LIMIT, Math.min(NumberHelper.MIN_INTEGER_DIGITS_UPPER_LIMIT, minDigits));
+    return value.toLocaleString(locale, { minimumIntegerDigits });
+  }
+
   // Improved version of toFixedNoRounding
   static toFixedNoRounding(number: number, fractions: number): string {
     const strNumber = number.toString();

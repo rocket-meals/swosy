@@ -96,7 +96,8 @@ export function getVersionPatch() {
 	// 69: common-ui: silhouette avatar config (SilhouetteAvatar), used by the Live-Puls page
 	// 70: common: app_settings.maintenance_message type
 	// 76: common: ChatHelper read status helpers, chats.date_last_message and chats_participants.read_until types
-	return 76;
+	// 77: common: NumberHelper.formatZeroPadded
+	return 77;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

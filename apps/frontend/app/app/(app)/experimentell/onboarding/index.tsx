@@ -12,7 +12,7 @@ import CanteenSelection from '@/components/CanteenSelection/CanteenSelection';
 import SettingsListMarkingLabelsFast from '@/components/SettingsListMarkingLabelsFast';
 import PriceGroupSettingsList from '@/components/PriceGroupSettingsList';
 import { SET_SELECTED_CANTEEN, SET_BUILDINGS_DICT, SET_CANTEENS, SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, UPDATE_PROFILE } from '@/redux/Types/types';
-import { AppScreens, DatabaseTypes, DefaultProfileHelper } from 'repo-depkit-common';
+import { AppScreens, DatabaseTypes, DefaultProfileHelper, NumberHelper } from 'repo-depkit-common';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
@@ -520,7 +520,7 @@ const OnboardingScreen = () => {
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
 	// Format the animated display count locale-aware, zero-padded to the target's digit count
-	const formattedCount = useMemo(() => OnboardingUserCountCache.formatPaddedCount(displayCount, countDigits), [displayCount, countDigits]);
+	const formattedCount = useMemo(() => NumberHelper.formatZeroPadded(displayCount, countDigits), [displayCount, countDigits]);
 
 	// ── Eating habits / preferences step helpers ─────────────────────────────
 	const customerConfigValueLabel = useMemo(
