@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle, SettingsList, SettingsListGroupTitle, useTheme } from 'repo-depkit-common-ui';
+import { MyMap, MyMapHandle, SettingsList, SettingsListGroupTitle, useTheme, FontHelper } from 'repo-depkit-common-ui';
 import * as Clipboard from 'expo-clipboard';
 
 import { isAvailable as isH3Available, cellToLatLng, cellToBoundary, getResolution, isValidCell } from '../../../helpers/H3Helper';
@@ -437,6 +437,6 @@ const styles = StyleSheet.create({
 	},
 	jsonText: {
 		fontSize: 11,
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 	},
 });

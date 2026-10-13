@@ -18,6 +18,7 @@ import {
 	SettingsListNumberInput,
 	useMyScrollViewModal,
 	useTheme,
+	FontHelper,
 } from 'repo-depkit-common-ui';
 import { useFocusEffect } from 'expo-router';
 
@@ -533,7 +534,7 @@ const debugStyles = StyleSheet.create({
 	},
 	statusText: {
 		fontSize: 13,
-		fontFamily: Platform.select({ ios: 'Courier New', android: 'monospace', default: 'monospace' }),
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 	},
 	logsScroll: {
 		maxHeight: 200,
@@ -541,7 +542,7 @@ const debugStyles = StyleSheet.create({
 	},
 	logLine: {
 		fontSize: 11,
-		fontFamily: Platform.select({ ios: 'Courier New', android: 'monospace', default: 'monospace' }),
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 		paddingVertical: 1,
 	},
 });

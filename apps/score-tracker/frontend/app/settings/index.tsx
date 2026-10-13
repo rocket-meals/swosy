@@ -15,6 +15,7 @@ import {
 	SettingsListSqliteStorage,
 	useMyScrollViewModal,
 	useTheme,
+	FontHelper,
 } from 'repo-depkit-common-ui';
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
@@ -319,7 +320,7 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 	},
 	logLine: {
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 		fontSize: 11,
 	},
 	// Footer: app logo + name/version, pressing it reveals the hidden Debug

@@ -4,7 +4,7 @@ import { Drawer, type DrawerContentComponentProps } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, useTheme } from 'repo-depkit-common-ui';
+import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, useTheme, FontHelper } from 'repo-depkit-common-ui';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet, KeyboardAvoidingView, Platform, type ColorValue } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
@@ -747,7 +747,7 @@ const styles = StyleSheet.create({
 	errorStack: {
 		fontSize: 11,
 		color: '#6b7280',
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 	},
 	errorButton: {
 		backgroundColor: '#2563eb',

@@ -21,7 +21,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean, SettingsListNumberInput, MapStyleKey } from 'repo-depkit-common-ui';
+import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean, SettingsListNumberInput, MapStyleKey, FontHelper } from 'repo-depkit-common-ui';
 import { MathHelper, fetchWeatherAtCoordinates } from 'repo-depkit-common';
 import type { MapOverlayIdentity } from 'repo-depkit-common';
 
@@ -6519,7 +6519,7 @@ const styles = StyleSheet.create({
 		padding: 12,
 	},
 	shareCodeText: {
-		fontFamily: 'monospace',
+		fontFamily: FontHelper.getMonospaceFontFamily(),
 		fontSize: 12,
 	},
 	shareQrContainer: {
