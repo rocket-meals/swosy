@@ -263,10 +263,11 @@ export function getVersionPatch() {
         //      project logo and color kept when the server info cannot be loaded
         // 142: experimental screen "Store-Versionen" compares the installed version with the
         //      App Store and Google Play versions (major and build number only)
-        // 148: onboarding user count prefetched on the login screen, counter starts zero-padded
+        // 148: chats: read status per participant (read_until) synced with the server, chats refetched on foreground
+        // 149: onboarding user count prefetched on the login screen, counter starts zero-padded
         //      ("00.000") and renders in the system monospace font
-        // 149: onboarding waits (max 2s) for the user count, no 0 to 999 placeholder anymore
-        return 149;
+        // 150: onboarding waits (max 2s) for the user count, no 0 to 999 placeholder anymore
+        return 150;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
