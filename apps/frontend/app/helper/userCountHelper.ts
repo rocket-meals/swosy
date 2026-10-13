@@ -1,0 +1,45 @@
+import { DatabaseTypes } from 'repo-depkit-common';
+import { CollectionHelper } from '@/helper/collectionHelper';
+
+// In-memory cache of the total user count shown in the onboarding ("Du und 12.345 andere").
+// The login screen prefetches it, so the onboarding already knows how many digits the number
+// has on its first render and can start its counter at a zero-padded value ("00.000").
+let cachedUserCount: number | null = null;
+let pendingFetch: Promise<number | null> | null = null;
+
+export function getCachedUserCount(): number | null {
+	return cachedUserCount;
+}
+
+// Fetches the user count from the server and updates the cache. Concurrent calls share one
+// request. Resolves to null (and keeps the previous cache value) when the request fails.
+export function fetchUserCount(): Promise<number | null> {
+	if (pendingFetch) return pendingFetch;
+	pendingFetch = (async () => {
+		try {
+			const usersHelper = new CollectionHelper<DatabaseTypes.DirectusUsers>('directus_users');
+			const result = (await usersHelper.aggregateItems({
+				aggregate: { count: '*' },
+			})) as { count: string | number }[];
+			const rawCount = result?.[0]?.count;
+			const count = typeof rawCount === 'number' ? rawCount : Number.parseInt(rawCount as string, 10);
+			if (Number.isFinite(count) && count > 0) {
+				cachedUserCount = count;
+				return count;
+			}
+			return null;
+		} catch (error) {
+			console.error('Error fetching user count:', error);
+			return null;
+		} finally {
+			pendingFetch = null;
+		}
+	})();
+	return pendingFetch;
+}
+
+// Formats a count locale-aware, left-padded with zeros to at least minDigits digits
+// (e.g. 0 with minDigits 5 -> "00.000" in German), so the number keeps its width while counting up.
+export function formatPaddedCount(count: number, minDigits: number): string {
+	return count.toLocaleString(undefined, { minimumIntegerDigits: Math.max(1, Math.min(21, minDigits)) });
+}

@@ -263,7 +263,9 @@ export function getVersionPatch() {
         //      project logo and color kept when the server info cannot be loaded
         // 142: experimental screen "Store-Versionen" compares the installed version with the
         //      App Store and Google Play versions (major and build number only)
-        return 147;
+        // 148: onboarding user count prefetched on the login screen, counter starts zero-padded
+        //      ("00.000") and renders in the system monospace font
+        return 148;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

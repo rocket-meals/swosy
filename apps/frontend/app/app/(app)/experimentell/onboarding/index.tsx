@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Dimensions, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Animated, Dimensions, Platform, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { router } from 'expo-router';
@@ -17,7 +17,7 @@ import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { CollectionHelper } from '@/helper/collectionHelper';
+import { fetchUserCount as fetchUserCountFromServer, formatPaddedCount, getCachedUserCount } from '@/helper/userCountHelper';
 import LottieView from 'lottie-react-native';
 import animation from '@/assets/animations/priceGroup.json';
 import { replaceLottieColors } from '@/helper/animationHelper';
@@ -64,6 +64,8 @@ const COUNT_SLOW_TICK_MS = 100;          // tick rate for slow phase (last 5 uni
 const COUNT_SLOW_THRESHOLD = 5;          // last N units use slow phase
 const COUNT_REFRESH_INTERVAL_MS = 5000; // re-fetch count every 5 seconds
 const COUNT_BADGE_WIDTH = '70%' as const;
+// System monospace font (no bundled/CDN font): keeps the digits at a fixed width while counting.
+const COUNT_FONT_FAMILY = Platform.select({ ios: 'Menlo', default: 'monospace' });
 const profileHelper = new ProfileHelper();
 
 // Precomputed quickstart configs – AvatarSize.SMALL is stored in the config, but the
@@ -91,6 +93,9 @@ const OnboardingScreen = () => {
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	// User count display state
 	const [displayCount, setDisplayCount] = useState(0);
+	// Prefetched on the login screen - when known, the counter starts zero-padded ("00.000").
+	const [initialUserCount] = useState(() => getCachedUserCount());
+	const [countDigits, setCountDigits] = useState(() => (initialUserCount ? String(initialUserCount).length : 1));
 	const [showVieleAndere, setShowVieleAndere] = useState(false);
 	const [isLoadingCanteens, setIsLoadingCanteens] = useState(true);
 	// Track which steps have been mounted for lazy loading
@@ -346,6 +351,14 @@ const OnboardingScreen = () => {
 	// Initial count animation: 0 → 999 over ~3 seconds, then "viele andere" fallback.
 	// Deps are all refs (never change identity) so the empty array is intentional.
 	useEffect(() => {
+		if (initialUserCount) {
+			// Count already known (prefetched): count up from the zero-padded start right away.
+			serverRespondedRef.current = true;
+			animateToTarget(initialUserCount);
+			return () => {
+				if (countAnimTimerRef.current) clearTimeout(countAnimTimerRef.current);
+			};
+		}
 		const tick = () => {
 			if (serverRespondedRef.current) return; // server arrived, hand off to animateToTarget
 			const next = Math.min(displayCountRef.current + COUNT_INITIAL_STEP, COUNT_PLACEHOLDER_TARGET);
@@ -375,21 +388,13 @@ const OnboardingScreen = () => {
 
 	// Fetch user count from server; on success animate to actual value; refresh every 5 seconds
 	const fetchUserCount = useCallback(async () => {
-		try {
-			const usersHelper = new CollectionHelper<DatabaseTypes.DirectusUsers>('directus_users');
-			const result: { count: string | number }[] = await usersHelper.aggregateItems({
-				aggregate: { count: '*' },
-			}) as { count: string | number }[];
-			const rawCount = result?.[0]?.count;
-			const count = typeof rawCount === 'number' ? rawCount : Number.parseInt(rawCount as string, 10);
-			if (Number.isFinite(count) && !Number.isNaN(count) && count > 0) {
-				serverRespondedRef.current = true;
-				if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
-				animateToTarget(count);
-			}
-		} catch (error) {
-			console.error('Error fetching user count:', error);
-			// On error: keep current display value unchanged
+		// On error the helper resolves to null: keep current display value unchanged
+		const count = await fetchUserCountFromServer();
+		if (count) {
+			serverRespondedRef.current = true;
+			if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+			setCountDigits(String(count).length);
+			animateToTarget(count);
 		}
 	}, [animateToTarget]);
 
@@ -519,8 +524,8 @@ const OnboardingScreen = () => {
 
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
-	// Format the animated display count locale-aware
-	const formattedCount = useMemo(() => displayCount.toLocaleString(), [displayCount]);
+	// Format the animated display count locale-aware, zero-padded to the target's digit count
+	const formattedCount = useMemo(() => formatPaddedCount(displayCount, countDigits), [displayCount, countDigits]);
 
 	// ── Eating habits / preferences step helpers ─────────────────────────────
 	const customerConfigValueLabel = useMemo(
@@ -1190,7 +1195,9 @@ const styles = StyleSheet.create({
 	},
 	userCountNumber: {
 		fontSize: 48,
-		fontFamily: 'Poppins_700Bold',
+		fontFamily: COUNT_FONT_FAMILY,
+		fontWeight: '700',
+		fontVariant: ['tabular-nums'],
 	},
 	navigationContainer: {
 		flexDirection: 'row',
