@@ -96,7 +96,8 @@ export function getVersionPatch() {
 	// 71: common: NumberHelper.formatZeroPadded
 	// 72: common-ui: FontHelper.getMonospaceFontFamily (Menlo on iOS, monospace elsewhere)
 	// 73: monospace texts use FontHelper.getMonospaceFontFamily (Menlo on iOS)
-	return 73;
+	// 74: common: LegalEntities (company data for imprints and legal documents)
+	return 74;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

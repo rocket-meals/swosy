@@ -1,10 +1,9 @@
 import { describe, expect, it } from '@jest/globals';
-import { ALL_TRANSLATION_LANGUAGES } from 'repo-depkit-common';
-import { LEGAL_DOCUMENTS } from '../LegalDocuments';
+import { ALL_TRANSLATION_LANGUAGES, CustomerLegalEntity, OPERATOR_LEGAL_ENTITY } from 'repo-depkit-common';
+import { LEGAL_DOCUMENTS, type LegalDocument } from '../LegalDocuments';
 import { LegalDocumentRenderer } from '../LegalDocumentRenderer';
-import { CUSTOMER_LEGAL_ENTITIES, CustomerLegalEntity, LegalEntities, OPERATOR_LEGAL_ENTITY } from '../LegalEntities';
+import { CUSTOMER_LEGAL_ENTITIES, LegalEntities } from '../LegalEntities';
 import { LEGACY_CUSTOM_ID_PREFIX, LEGAL_WIKI_SETTINGS, LegalDocumentsDatabase, LegalDocumentsSync, LegalWiki, LegalWikiTranslation } from '../LegalDocumentsSync';
-import type { LegalDocument } from '../LegalDocumentTypes';
 import { LegalWikiProtection } from '../LegalWikiProtection';
 import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 
@@ -18,7 +17,7 @@ const CUSTOMER: CustomerLegalEntity = {
 const VALUES = LegalEntities.buildPlaceholderValues(OPERATOR_LEGAL_ENTITY, CUSTOMER);
 
 /** Company data that must only reach a text through a placeholder. */
-const COMPANY_LITERALS = ['Baumgartner', 'Bernhardstraße', 'Dinklage', '2215430', '362633044', '68/213/02808', 'Osnabrück', 'osnabrueck', 'sw-os.de', '331070'];
+const COMPANY_LITERALS = ['Baumgartner', 'Bernhardstraße', 'Dinklage', '2215430', '362633044', '68/213/02808', 'Osnabrück', 'osnabrueck', 'sw-os.de', '331070', 'studentenwerk-hannover', '76-88022'];
 
 class InMemoryDatabase implements LegalDocumentsDatabase {
   wikis: LegalWiki[] = [];

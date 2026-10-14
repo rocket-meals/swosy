@@ -15,10 +15,10 @@
  * Writes never emit events: no auto translation, no other hooks.
  */
 
-import { isSameLanguageCode, normalizeTranslationLanguage } from 'repo-depkit-common';
-import { CustomerLegalEntity, LegalEntities, OPERATOR_LEGAL_ENTITY, OperatorLegalEntity } from './LegalEntities';
+import { CustomerLegalEntity, isSameLanguageCode, normalizeTranslationLanguage, OPERATOR_LEGAL_ENTITY, OperatorLegalEntity } from 'repo-depkit-common';
+import { LegalEntities } from './LegalEntities';
 import { LegalDocumentRenderer } from './LegalDocumentRenderer';
-import type { LegalDocument, LegalDocumentText } from './LegalDocumentTypes';
+import type { LegalDocument, LegalDocumentText } from './LegalDocuments';
 
 export const LEGACY_CUSTOM_ID_PREFIX = 'legacy-';
 const STATUS_ARCHIVED = 'archived';

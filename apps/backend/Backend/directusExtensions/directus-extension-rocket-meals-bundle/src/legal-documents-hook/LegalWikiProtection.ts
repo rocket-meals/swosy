@@ -10,9 +10,8 @@
  */
 
 import { BackendTranslationKeys } from '../helpers/translations/BackendTranslationKeys';
-import { LEGAL_DOCUMENTS } from './LegalDocuments';
+import { LEGAL_DOCUMENTS, type LegalDocument } from './LegalDocuments';
 import { WIKI_DISPLAY_FIELDS } from './LegalDocumentsSync';
-import type { LegalDocument } from './LegalDocumentTypes';
 
 export type LegalWikiViolation = { key: BackendTranslationKeys; params?: Record<string, string> };
 

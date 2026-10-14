@@ -1,4 +1,4 @@
-import type { LegalDocumentText } from '../../LegalDocumentTypes';
+import type { LegalDocumentText } from '../../LegalDocuments';
 
 export const PRIVACY_POLICY_ZH: LegalDocumentText = {
   title: '隐私政策',

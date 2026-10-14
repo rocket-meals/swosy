@@ -6,7 +6,7 @@ import { ACCESSIBILITY_FR } from './fr';
 import { ACCESSIBILITY_RU } from './ru';
 import { ACCESSIBILITY_TR } from './tr';
 import { ACCESSIBILITY_ZH } from './zh';
-import type { LegalDocumentTexts } from '../../LegalDocumentTypes';
+import type { LegalDocumentTexts } from '../../LegalDocuments';
 
 export const ACCESSIBILITY_TEXTS: LegalDocumentTexts = {
   de: ACCESSIBILITY_DE,

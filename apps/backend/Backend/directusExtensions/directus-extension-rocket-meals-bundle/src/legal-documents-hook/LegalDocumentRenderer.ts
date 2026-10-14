@@ -1,5 +1,5 @@
 import { interpolateTranslation } from 'repo-depkit-common';
-import type { LegalDocumentText } from './LegalDocumentTypes';
+import type { LegalDocumentText } from './LegalDocuments';
 
 /** Same syntax as `interpolateTranslation`: `{{name}}`, optionally padded with spaces. */
 const PLACEHOLDER_PATTERN = /\{\{\s*([A-Za-z0-9_.-]+)\s*\}\}/g;

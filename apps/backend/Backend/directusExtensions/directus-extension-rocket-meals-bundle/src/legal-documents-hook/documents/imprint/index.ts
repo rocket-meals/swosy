@@ -6,7 +6,7 @@ import { IMPRINT_FR } from './fr';
 import { IMPRINT_RU } from './ru';
 import { IMPRINT_TR } from './tr';
 import { IMPRINT_ZH } from './zh';
-import type { LegalDocumentTexts } from '../../LegalDocumentTypes';
+import type { LegalDocumentTexts } from '../../LegalDocuments';
 
 export const IMPRINT_TEXTS: LegalDocumentTexts = {
   de: IMPRINT_DE,

@@ -126,7 +126,8 @@ document. An edit in Directus is overwritten on the next start.
 
 - Texts: `directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/documents/<document>/<language>.ts`
 - Company data: only as placeholders (`{{operator.email}}`, `{{customer.name}}`, ...). The values are in
-  `src/legal-documents-hook/LegalEntities.ts`: the operator once, the customer per `SYNC_FOR_CUSTOMER`.
+  `packages/common/src/LegalEntities.ts` (operator and customers), which customer a server uses is
+  mapped per `SYNC_FOR_CUSTOMER` in `src/legal-documents-hook/LegalEntities.ts`.
 - A customer without an entry there (`null`) keeps the legal documents it has in Directus.
 - An older wiki with the same `custom_id` is archived once and renamed to `legacy-<custom_id>`, the new
   wiki takes over its position and icon.

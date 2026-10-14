@@ -1,4 +1,4 @@
-import type { LegalDocumentText } from '../../LegalDocumentTypes';
+import type { LegalDocumentText } from '../../LegalDocuments';
 
 export const IMPRINT_RU: LegalDocumentText = {
   title: 'О нас',

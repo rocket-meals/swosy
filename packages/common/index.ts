@@ -37,6 +37,7 @@ export * from './src/LanguageCodes';
 export * from './src/CollectibleEvents';
 export * from './src/MailAdresses';
 export * from './src/ImpressumHelper';
+export * from './src/LegalEntities';
 export * from './src/MarkdownSectionHelper';
 export * from './src/FriendshipStatus';
 export * from './src/AppFeedbackSourceIdentifier';

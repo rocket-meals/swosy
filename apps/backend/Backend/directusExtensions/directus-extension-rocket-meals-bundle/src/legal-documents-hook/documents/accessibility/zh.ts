@@ -1,4 +1,4 @@
-import type { LegalDocumentText } from '../../LegalDocumentTypes';
+import type { LegalDocumentText } from '../../LegalDocuments';
 
 export const ACCESSIBILITY_ZH: LegalDocumentText = {
   title: '无障碍环境',

@@ -1,68 +1,12 @@
 /**
- * LegalEntities.ts – the companies named in the legal documents (privacy policy, imprint,
- * accessibility statement).
+ * LegalEntities.ts – which customer the legal documents of this server name, and the placeholder
+ * values. The company data itself lives in `repo-depkit-common` (`LegalEntities.ts`).
  *
- * The operator publishes the app on every server. The customer (the Studierendenwerk) is
- * responsible for the content and differs per server, selected by `SYNC_FOR_CUSTOMER`. A server
- * whose customer has no entry here keeps the legal documents it already has in Directus.
+ * A server whose customer has no entry here keeps the legal documents it already has in Directus.
  */
 
+import { CustomerLegalEntity, OperatorLegalEntity, STUDENTENWERK_HANNOVER_LEGAL_ENTITY, STUDIERENDENWERK_OSNABRUECK_LEGAL_ENTITY } from 'repo-depkit-common';
 import { SyncForCustomerEnum } from '../helpers/EnvVariableHelper';
-
-export type OperatorLegalEntity = {
-  /** Full legal name including the legal form, e.g. `Example GmbH`. */
-  name: string;
-  /** Name used in running text, e.g. `Example`. */
-  shortName: string;
-  street: string;
-  postalCode: string;
-  city: string;
-  phone: string;
-  email: string;
-  website: string;
-  managingDirector: string;
-  taxNumber: string;
-  vatId: string;
-};
-
-export type CustomerLegalEntity = {
-  name: string;
-  /** e.g. `Anstalt des öffentlichen Rechts`. Kept in German in every language, it is a legal designation. */
-  legalForm: string;
-  phone: string;
-  email: string;
-  privacyPolicyUrl: string;
-};
-
-export const OPERATOR_LEGAL_ENTITY: OperatorLegalEntity = {
-  name: 'Baumgartner Software UG (haftungsbeschränkt)',
-  shortName: 'Baumgartner Software',
-  street: 'Bernhardstraße 20',
-  postalCode: '49413',
-  city: 'Dinklage',
-  phone: '+49 170 2215430',
-  email: 'info@baumgartner-software.de',
-  website: 'https://baumgartner-software.de',
-  managingDirector: 'Nils Baumgartner',
-  taxNumber: '68/213/02808',
-  vatId: 'DE 362633044',
-};
-
-const STUDIERENDENWERK_OSNABRUECK: CustomerLegalEntity = {
-  name: 'Studierendenwerk Osnabrück',
-  legalForm: 'Anstalt des öffentlichen Rechts',
-  phone: '(0541) 331070',
-  email: 'info@sw-os.de',
-  privacyPolicyUrl: 'https://www.studentenwerk-osnabrueck.de/de/datenschutzerklaerung.html',
-};
-
-const STUDENTENWERK_HANNOVER: CustomerLegalEntity = {
-  name: 'Studentenwerk Hannover',
-  legalForm: 'Anstalt des öffentlichen Rechts',
-  phone: '(0511) 76-88022',
-  email: 'info@studentenwerk-hannover.de',
-  privacyPolicyUrl: 'https://www.studentenwerk-hannover.de/datenschutz',
-};
 
 /**
  * The customer per server. A `Record` so a new customer in `SyncForCustomerEnum` has to be added
@@ -70,9 +14,9 @@ const STUDENTENWERK_HANNOVER: CustomerLegalEntity = {
  */
 export const CUSTOMER_LEGAL_ENTITIES: Record<SyncForCustomerEnum, CustomerLegalEntity | null> = {
   // The test system mirrors the Osnabrück app.
-  [SyncForCustomerEnum.TEST]: STUDIERENDENWERK_OSNABRUECK,
-  [SyncForCustomerEnum.OSNABRUECK]: STUDIERENDENWERK_OSNABRUECK,
-  [SyncForCustomerEnum.HANNOVER]: STUDENTENWERK_HANNOVER,
+  [SyncForCustomerEnum.TEST]: STUDIERENDENWERK_OSNABRUECK_LEGAL_ENTITY,
+  [SyncForCustomerEnum.OSNABRUECK]: STUDIERENDENWERK_OSNABRUECK_LEGAL_ENTITY,
+  [SyncForCustomerEnum.HANNOVER]: STUDENTENWERK_HANNOVER_LEGAL_ENTITY,
   [SyncForCustomerEnum.AACHEN]: null,
   [SyncForCustomerEnum.MUENSTER]: null,
 };
@@ -96,6 +40,8 @@ export class LegalEntities {
       'operator.managing_director': operator.managingDirector,
       'operator.tax_number': operator.taxNumber,
       'operator.vat_id': operator.vatId,
+      'operator.register_court': operator.registerCourt,
+      'operator.register_number': operator.registerNumber,
       'customer.name': customer.name,
       'customer.legal_form': customer.legalForm,
       'customer.phone': customer.phone,

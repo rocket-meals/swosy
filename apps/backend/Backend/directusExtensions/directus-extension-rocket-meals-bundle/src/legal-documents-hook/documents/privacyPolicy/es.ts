@@ -1,4 +1,4 @@
-import type { LegalDocumentText } from '../../LegalDocumentTypes';
+import type { LegalDocumentText } from '../../LegalDocuments';
 
 export const PRIVACY_POLICY_ES: LegalDocumentText = {
   title: 'Política de privacidad',

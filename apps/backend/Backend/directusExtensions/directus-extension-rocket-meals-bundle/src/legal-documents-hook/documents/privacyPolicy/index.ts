@@ -6,7 +6,7 @@ import { PRIVACY_POLICY_FR } from './fr';
 import { PRIVACY_POLICY_RU } from './ru';
 import { PRIVACY_POLICY_TR } from './tr';
 import { PRIVACY_POLICY_ZH } from './zh';
-import type { LegalDocumentTexts } from '../../LegalDocumentTypes';
+import type { LegalDocumentTexts } from '../../LegalDocuments';
 
 export const PRIVACY_POLICY_TEXTS: LegalDocumentTexts = {
   de: PRIVACY_POLICY_DE,

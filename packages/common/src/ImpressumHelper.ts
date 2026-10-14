@@ -1,29 +1,31 @@
+import { OPERATOR_LEGAL_ENTITY } from './LegalEntities';
+
 export function getFirmenname(): string {
-	return 'Baumgartner Software UG (haftungsbeschränkt)';
+	return OPERATOR_LEGAL_ENTITY.name;
 }
 
 export function getGeschaeftsfuehrer(): string {
-	return 'Nils Baumgartner';
+	return OPERATOR_LEGAL_ENTITY.managingDirector;
 }
 
 export function getAdresse(): string {
-	return 'Bernhardstraße 20, 49413 Dinklage';
+	return `${OPERATOR_LEGAL_ENTITY.street}, ${OPERATOR_LEGAL_ENTITY.postalCode} ${OPERATOR_LEGAL_ENTITY.city}`;
 }
 
 export function getTelefon(): string {
-	return '+49 170 2215430';
+	return OPERATOR_LEGAL_ENTITY.phone;
 }
 
 export function getEmail(): string {
-	return 'info@baumgartner-software.de';
+	return OPERATOR_LEGAL_ENTITY.email;
 }
 
 export function getRegistergericht(): string {
-	return 'Oldenburg';
+	return OPERATOR_LEGAL_ENTITY.registerCourt;
 }
 
 export function getRegisternummer(): string {
-	return 'HRB 219785';
+	return OPERATOR_LEGAL_ENTITY.registerNumber;
 }
 
 export function getHandelsregister(): string {
@@ -31,7 +33,7 @@ export function getHandelsregister(): string {
 }
 
 export function getUstIdNr(): string {
-	return 'DE362633044';
+	return OPERATOR_LEGAL_ENTITY.vatId;
 }
 
 export function getImpressumMarkdown(): string {
