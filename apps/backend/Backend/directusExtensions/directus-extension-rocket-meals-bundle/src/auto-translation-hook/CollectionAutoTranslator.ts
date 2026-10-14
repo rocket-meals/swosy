@@ -19,15 +19,13 @@ export type TranslationSchemaContext = {
   translation_field: string;
 };
 
-export type TranslationEntryOptions = {
-  isSourceTranslation: boolean;
-  sourceTranslation: any;
+/** What happens with the `*_translations` row of one language. */
+type LanguageTranslationPlan = {
   language_code: string;
-  autoTranslator: AutoTranslator;
-  autoTranslatorSettings: AutoTranslatorSettings;
-  fieldsToTranslate: string[];
-  FIELD_LANGUAGES_ID_OR_CODE: string;
-  context: TranslationSchemaContext;
+  existingTranslation: any;
+  translationInPayload: any;
+  isSourceTranslation: boolean;
+  letBeTranslated: boolean;
 };
 
 export class CollectionAutoTranslator {
@@ -149,40 +147,30 @@ export class CollectionAutoTranslator {
     }
 
     const fieldsToTranslate = CollectionAutoTranslator.getFieldsToTranslate(context);
+    const plans: LanguageTranslationPlan[] = languages.map(language =>
+      CollectionAutoTranslator.planLanguage({
+        language_code: language?.code,
+        existingTranslation: existingTranslations[language?.code],
+        isSourceTranslation: language?.code === sourceTranslationLanguageCode,
+        newTranslationsCreateLanguageDict,
+        newTranslationsUpdateLanguageDict,
+        context,
+      })
+    );
+
+    // All languages of a text go to the translator at once, it decides itself whether one by one or in one request.
+    const languagesToTranslate = plans.filter(plan => !plan.isSourceTranslation && plan.letBeTranslated).map(plan => plan.language_code);
+    const translatedItems = await CollectionAutoTranslator.translateTranslationItems({ autoTranslator, fieldsToTranslate, sourceTranslation, FIELD_LANGUAGES_ID_OR_CODE, languageCodes: languagesToTranslate });
+
     const translationsToCreate = [];
     const translationsToUpdate = [];
     const translationsToDelete: any[] = [];
-
-    for (const language of languages) {
-      const language_code = language?.code;
-      const existingTranslation = existingTranslations[language_code];
-      const isSourceTranslation = language_code === sourceTranslationLanguageCode;
-
-      const entryOptions: TranslationEntryOptions = {
-        isSourceTranslation,
-        sourceTranslation,
-        language_code,
-        autoTranslator,
-        autoTranslatorSettings,
-        fieldsToTranslate,
-        FIELD_LANGUAGES_ID_OR_CODE,
-        context,
-      };
-
-      if (existingTranslation) {
-        const updateEntry = await CollectionAutoTranslator.buildUpdateEntry( // NOSONAR S9382 - sequential on purpose: every entry calls the DeepL API (rate limits, quota)
-          entryOptions, existingTranslation, newTranslationsUpdateLanguageDict
-        );
-        if (updateEntry) {
-          translationsToUpdate.push(updateEntry);
-        }
-      } else {
-        const createEntry = await CollectionAutoTranslator.buildCreateEntry( // NOSONAR S9382 - sequential on purpose: every entry calls the DeepL API (rate limits, quota)
-          entryOptions, newTranslationsCreateLanguageDict
-        );
-        if (createEntry) {
-          translationsToCreate.push(createEntry);
-        }
+    for (const plan of plans) {
+      const entry = CollectionAutoTranslator.buildEntry(plan, sourceTranslation, translatedItems[plan.language_code], context);
+      if (entry && plan.existingTranslation) {
+        translationsToUpdate.push(entry);
+      } else if (entry) {
+        translationsToCreate.push(entry);
       }
     }
 
@@ -208,42 +196,30 @@ export class CollectionAutoTranslator {
     return existingTranslations;
   }
 
-  private static async buildUpdateEntry(
-    options: TranslationEntryOptions,
-    existingTranslation: any,
-    newTranslationsUpdateLanguageDict: Record<string, any>
-  ): Promise<any> {
-    const { isSourceTranslation, sourceTranslation, language_code, context } = options;
-    if (isSourceTranslation) {
-      return { ...sourceTranslation };
-    }
-
-    const translationInPayload = newTranslationsUpdateLanguageDict[language_code];
-    const letBeTranslatedInExisting = existingTranslation?.[CollectionAutoTranslator.FIELD_LET_BE_TRANSLATED];
-    let createTranslation = letBeTranslatedInExisting;
+  /** Whether the row of a language gets translated: on create unless the payload says no, on update as the payload or else the existing row says. */
+  private static planLanguage(options: {
+    language_code: string;
+    existingTranslation: any;
+    isSourceTranslation: boolean;
+    newTranslationsCreateLanguageDict: Record<string, any>;
+    newTranslationsUpdateLanguageDict: Record<string, any>;
+    context: TranslationSchemaContext;
+  }): LanguageTranslationPlan {
+    const { language_code, existingTranslation, isSourceTranslation, context } = options;
+    const languageDict = existingTranslation ? options.newTranslationsUpdateLanguageDict : options.newTranslationsCreateLanguageDict;
+    const translationInPayload = languageDict[language_code];
     const letBeTranslatedInPayload = CollectionAutoTranslator.getValueFromPayloadOrDefaultValue(translationInPayload, CollectionAutoTranslator.FIELD_LET_BE_TRANSLATED, context);
-    if (CollectionAutoTranslator.isValueDefined(letBeTranslatedInPayload)) {
-      createTranslation = letBeTranslatedInPayload;
-    }
-
-    if (createTranslation) {
-      const translatedItem = await CollectionAutoTranslator.translateTranslationItem(options);
-      return { ...existingTranslation, ...translatedItem };
-    } else if (translationInPayload) {
-      return {
-        ...translationInPayload,
-        [CollectionAutoTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION]: false,
-      };
-    }
-
-    return null;
+    // On create only an explicit false in the payload prevents the translation.
+    const letBeTranslatedWithoutPayload = existingTranslation ? existingTranslation?.[CollectionAutoTranslator.FIELD_LET_BE_TRANSLATED] : true;
+    const letBeTranslated = CollectionAutoTranslator.isValueDefined(letBeTranslatedInPayload) ? letBeTranslatedInPayload : letBeTranslatedWithoutPayload;
+    return { language_code, existingTranslation, translationInPayload, isSourceTranslation, letBeTranslated: !!letBeTranslated };
   }
 
-  private static async buildCreateEntry(
-    options: TranslationEntryOptions,
-    newTranslationsCreateLanguageDict: Record<string, any>
-  ): Promise<any> {
-    const { isSourceTranslation, sourceTranslation, language_code, context } = options;
+  private static buildEntry(plan: LanguageTranslationPlan, sourceTranslation: any, translatedItem: any, context: TranslationSchemaContext): any {
+    const { existingTranslation, translationInPayload, isSourceTranslation, letBeTranslated } = plan;
+    if (isSourceTranslation && existingTranslation) {
+      return { ...sourceTranslation };
+    }
     if (isSourceTranslation) {
       return {
         ...sourceTranslation,
@@ -251,24 +227,15 @@ export class CollectionAutoTranslator {
         [CollectionAutoTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION]: true,
       };
     }
-
-    const translationInPayload = newTranslationsCreateLanguageDict[language_code];
-    const letBeTranslatedInPayload = CollectionAutoTranslator.getValueFromPayloadOrDefaultValue(translationInPayload, CollectionAutoTranslator.FIELD_LET_BE_TRANSLATED, context);
-    let letBeTranslated = true; //only if the user explicitly set it to false, we don't create the translation
-    if (CollectionAutoTranslator.isValueDefined(letBeTranslatedInPayload)) {
-      letBeTranslated = letBeTranslatedInPayload;
-    }
-
     if (letBeTranslated) {
-      const translatedItem = await CollectionAutoTranslator.translateTranslationItem(options);
-      return { ...translatedItem };
-    } else if (translationInPayload) {
+      return { ...existingTranslation, ...translatedItem };
+    }
+    if (translationInPayload) {
       return {
         ...translationInPayload,
         [CollectionAutoTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION]: false,
       };
     }
-
     return null;
   }
 
@@ -304,53 +271,63 @@ export class CollectionAutoTranslator {
   }
 
   /**
-   * Translates each field in fieldsToTranslate from sourceTranslation using the given autoTranslator,
-   * for the given destination language_code. Logs and skips fields that fail to translate.
+   * Translates each field of the source translation into all given languages with one call to the
+   * autoTranslator per field. Logs and skips fields that fail to translate.
    */
   private static async translateFields(options: {
     autoTranslator: AutoTranslator;
     fieldsToTranslate: string[];
     sourceTranslation: any;
     sourceLanguageCode: string | undefined;
-    language_code: string;
-  }): Promise<any> {
-    const { autoTranslator, fieldsToTranslate, sourceTranslation, sourceLanguageCode, language_code } = options;
-    const translatedItem: any = {};
+    languageCodes: string[];
+  }): Promise<Record<string, any>> {
+    const { autoTranslator, fieldsToTranslate, sourceTranslation, sourceLanguageCode, languageCodes } = options;
+    const translatedItems: Record<string, any> = Object.fromEntries(languageCodes.map(language_code => [language_code, {}]));
     for (const field of fieldsToTranslate) {
       const fieldValue = sourceTranslation[field];
       if (fieldValue) {
         try {
-          const translatedValue = await autoTranslator.translate({ text: fieldValue, source_language: sourceLanguageCode, destination_language: language_code }); // NOSONAR S9382 - sequential on purpose: one DeepL API call per field (rate limits, quota)
-          if (translatedValue) {
-            translatedItem[field] = translatedValue;
+          const translations = await autoTranslator.translateToLanguages({ text: fieldValue, source_language: sourceLanguageCode, destination_languages: languageCodes }); // NOSONAR S9382 - sequential on purpose: translation API calls per field (rate limits, quota)
+          for (const [language_code, translatedValue] of Object.entries(translations)) {
+            if (translatedValue && translatedItems[language_code]) {
+              translatedItems[language_code][field] = translatedValue;
+            }
           }
         } catch (err) {
-          console.error('Translation error for field "' + field + '" to language "' + language_code + '":', err);
+          console.error('Translation error for field "' + field + '" to languages "' + languageCodes.join(', ') + '":', err);
         }
       }
     }
-    return translatedItem;
+    return translatedItems;
   }
 
-  static async translateTranslationItem(options: TranslationEntryOptions) {
-    const { sourceTranslation, language_code, autoTranslator, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE } = options;
-    let translatedItem: any = {};
-    if (fieldsToTranslate && fieldsToTranslate.length > 0) {
-      const sourceLanguageCode = CollectionAutoTranslator.extractLanguageCode(sourceTranslation?.[FIELD_LANGUAGES_ID_OR_CODE]);
-      if (!autoTranslator.isReady()) {
-        console.warn('AutoTranslator is not ready - skipping translation for language: ' + language_code);
-        // Skip translation attempts since autoTranslator cannot translate
-      } else {
-        translatedItem = await CollectionAutoTranslator.translateFields({autoTranslator, fieldsToTranslate, sourceTranslation, sourceLanguageCode, language_code});
-      }
+  /** The translated `*_translations` row per language, also without fields to translate (then only the language and the flags). */
+  static async translateTranslationItems(options: {
+    autoTranslator: AutoTranslator;
+    fieldsToTranslate: string[];
+    sourceTranslation: any;
+    FIELD_LANGUAGES_ID_OR_CODE: string;
+    languageCodes: string[];
+  }): Promise<Record<string, any>> {
+    const { sourceTranslation, languageCodes, autoTranslator, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE } = options;
+    const sourceLanguageCode = CollectionAutoTranslator.extractLanguageCode(sourceTranslation?.[FIELD_LANGUAGES_ID_OR_CODE]);
+    const canTranslate = fieldsToTranslate.length > 0 && languageCodes.length > 0 && autoTranslator.isReady();
+    if (fieldsToTranslate.length > 0 && !autoTranslator.isReady()) {
+      console.warn('AutoTranslator is not ready - skipping translation for languages: ' + languageCodes.join(', '));
     }
+    const translatedItems = canTranslate
+      ? await CollectionAutoTranslator.translateFields({ autoTranslator, fieldsToTranslate, sourceTranslation, sourceLanguageCode, languageCodes })
+      : Object.fromEntries(languageCodes.map(language_code => [language_code, {}]));
 
-    translatedItem[FIELD_LANGUAGES_ID_OR_CODE] = {
-      code: language_code,
-    };
-    translatedItem[CollectionAutoTranslator.FIELD_LET_BE_TRANSLATED] = true; //if we create a translation, we want it in the future also
-    translatedItem[CollectionAutoTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION] = false; //if translated it wont be the source translation anymore
-    return translatedItem;
+    for (const language_code of languageCodes) {
+      translatedItems[language_code] = {
+        ...translatedItems[language_code],
+        [FIELD_LANGUAGES_ID_OR_CODE]: { code: language_code },
+        [CollectionAutoTranslator.FIELD_LET_BE_TRANSLATED]: true, //if we create a translation, we want it in the future also
+        [CollectionAutoTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION]: false, //if translated it wont be the source translation anymore
+      };
+    }
+    return translatedItems;
   }
 
   static getTranslationCollectionName(context: TranslationSchemaContext): string | null {

@@ -100,6 +100,14 @@ export class EnvVariableHelper {
     return this.getEnvVariable(EnvVariableHelper.getEnvFieldNameForAutoTranslateApiKey());
   }
 
+  static getAutoTranslateProvider() {
+    return this.getEnvVariable('AUTO_TRANSLATE_PROVIDER'); // Options: "ai" (default, provider from Directus Settings → AI), "deepl"
+  }
+
+  static getAutoTranslateModel() {
+    return this.getEnvVariable('AUTO_TRANSLATE_MODEL'); // Optional, overrides the first model of the Directus AI settings
+  }
+
   static getAdminEmail() {
     return this.getEnvVariable('ADMIN_EMAIL');
   }

@@ -97,7 +97,9 @@ services:
 
       EMAIL_TEMPLATES_PATH: "/directus/extensions/templates" # https://docs.directus.io/self-hosted/email-templates.html
 
-      AUTO_TRANSLATE_API_KEY: "${AUTO_TRANSLATE_API_KEY}" # Required for the auto translation plugin
+      AUTO_TRANSLATE_PROVIDER: "${AUTO_TRANSLATE_PROVIDER}" # "ai" (default): provider from Directus Settings → AI, falls back to DeepL when none is configured. "deepl": always DeepL
+      AUTO_TRANSLATE_MODEL: "${AUTO_TRANSLATE_MODEL}" # Optional: model for the auto translation, default is the first model of Directus Settings → AI
+      AUTO_TRANSLATE_API_KEY: "${AUTO_TRANSLATE_API_KEY}" # DeepL key for the auto translation plugin (provider "deepl" or fallback)
 
       SYNC_FOR_CUSTOMER: "${SYNC_FOR_CUSTOMER}" # For which customer the sync is for
 
