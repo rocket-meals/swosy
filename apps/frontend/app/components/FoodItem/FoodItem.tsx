@@ -8,8 +8,8 @@ import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/
 import { FoodItemProps } from './types';
 import { excerpt, getImageUrl, getpreviousFeedback, numToOneDecimal, showPrice } from '@/constants/HelperFunctions';
 import { getDescriptionFromTranslation, getFoodOfferName } from '@/helper/resourceHelper';
-import { applyFunModeTransformation, applyPirateTransformation } from '@/hooks/useLanguage';
-import { DatabaseTypes, FoodFeedbackPermissionHelper, RatingHelper, type TranslationLanguage } from 'repo-depkit-common';
+import { applyFunModeTransformation, applyPirateTransformation, getTranslationLanguage } from '@/hooks/useLanguage';
+import { DatabaseTypes, FoodFeedbackPermissionHelper, RatingHelper } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { SET_MARKING_DETAILS } from '@/redux/Types/types';
@@ -76,7 +76,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     // Fallback translate function if language prop is provided, to avoid useLanguage hook subscription
     const translate = useCallback((key: string) => {
         if (language) {
-            return translationResources[key]?.[language as TranslationLanguage] || key;
+            return translationResources[key]?.[getTranslationLanguage(language)] || key;
         }
         // Fallback to hook if language not provided (should not happen in optimized path)
         return key; 

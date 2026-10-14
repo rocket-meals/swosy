@@ -90,7 +90,7 @@ Auch das Directus-Backend schickt Texte an Nutzer — Push-Nachrichten, generier
 - **Das Ergebnis hat zwei Felder, weil zwei verschiedene Lookups daran hängen:**
   - `languageCode` — der volle `languages.code`, mit dem *Inhalte aus der Datenbank* (Speisenamen, News) in den `*_translations`-Tabellen gefunden werden.
   - `translationLanguage` — der Kurzcode, auf den der *Textkatalog* geschlüsselt ist. Dazu gibt es `translate`, schon an die Sprache gebunden.
-- **Default ist Deutsch** (`BACKEND_DEFAULT_TRANSLATION_LANGUAGE`), genau wie in den Apps, deren `settingsReducer` auf `'de'` startet. Kein Profil, keine Sprache gesetzt, Sprache nicht in der Tabelle oder Tabelle nicht lesbar → Deutsch.
+- **Default ist Deutsch** (`BACKEND_DEFAULT_TRANSLATION_LANGUAGE`), genau wie in den Apps, deren `settingsReducer` auf `'de-DE'` (`DEFAULT_LANGUAGE_CODE`) startet. Kein Profil, keine Sprache gesetzt, Sprache nicht in der Tabelle oder Tabelle nicht lesbar → Deutsch.
 - Aufruf mit Datenbank (ein Resolver pro Lauf, er cacht die `languages`-Tabelle):
   ```ts
   const languageResolver = new BackendLanguageResolver(myDatabaseHelper);
@@ -100,6 +100,7 @@ Auch das Directus-Backend schickt Texte an Nutzer — Push-Nachrichten, generier
   ContentTranslationHelper.getTranslation(food.translations, language.languageCode ?? '', 'name');
   ```
   Für einen einzelnen Text ohne Nutzerbezug (z. B. das deutsche Formular-PDF) reicht `BackendTranslator.translate(key)`.
+- **Die App speichert und sendet den vollen Code** (`"de-DE"`), denselben Wert wie `profiles.language` und `languages.code`. Der Kurzcode (`"de"`) ist nur der Schlüssel des Textkatalogs: `useLanguage().translationLanguage` bzw. `getTranslationLanguage(language)`. Helfer in `repo-depkit-common` (`translations/LanguageCodeHelper.ts`): `toFullLanguageCode` (`"de"` → `"de-DE"`), `findMatchingLanguageCode` / `findBestMatchingLanguageCode` (dieselbe Auswahl wie `BackendLanguageResolver`). `profiles.language` schreibt nur `useLanguageProfileSync` (beim Start und nach jedem Sprachwechsel, App-Wert gewinnt), `ProfileHelper.updateProfile` schickt das Feld nie mit.
 - **Sprachcodes immer über die geteilten Matcher vergleichen**, nie mit `===`: `isSameLanguageCode(a, b)` (case-insensitiv, Region zählt) und `isSameBaseLanguage(a, b)` (case-insensitiv, Region egal) aus `repo-depkit-common`. `languages.code` wird pro Kunde von Hand gepflegt — `de-DE`, `DE-de` und `de` meinen dasselbe, ein strikter String-Vergleich lässt Nutzer still in die Fallback-Sprache rutschen. Gilt genauso in der App (`helper/resourceHelper.tsx`).
 - **Drei Dinge heißen „Übersetzung", verwechsle sie nicht** (Details unten in „Drei Sorten Übersetzung"): `helpers/translations/` (statischer Katalog, arbeitet mit `translationLanguage`), `helpers/ContentTranslationHelper.ts` (DB-Inhalte, arbeitet mit `languageCode`; `getTranslation` matcht erst den exakten Code, dann dieselbe Sprache in einer anderen Region) und `auto-translation-hook/` (KI-Anbieter aus Directus „Einstellungen → KI“ oder DeepL).
 - Datum und Uhrzeit in einer Nutzersprache: `BackendTranslator.formatDate(date, language.translationLanguage)`. Die `DateHelper.getHumanReadable*`-Funktionen sind fest auf `de-DE` und damit nur für interne Reports gedacht.

@@ -1,4 +1,5 @@
 export * from './TranslationLanguage';
+export * from './LanguageCodeHelper';
 export * from './TranslationTypes';
 export * from './CommonTranslationKeys';
 export * from './commonTranslations';

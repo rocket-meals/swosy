@@ -54,6 +54,9 @@ export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 		// Has its own writer below. The profile in Redux can be older than the server (another device,
 		// or not fetched yet), and sending it back with the rest reset it to null again and again.
 		delete profileData.food_feedback_reactions_seen_until;
+		// Same for `language`: written only by `useLanguageProfileSync`. Sent along here, a profile
+		// fetched before that write (e.g. syncing the canteen on app start) would put the old value back.
+		delete profileData.language;
 		// `display_group` is only a field group in the Directus layout, not a column. Tenants whose
 		// User policy does not list it reject the whole update with 403 (seen on SWOSY).
 		if (Array.isArray(profileData.devices)) {

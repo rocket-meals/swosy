@@ -288,7 +288,8 @@ export function getVersionPatch() {
         //      contrast color on the chat button
         // 167: back from a food feedback chat goes to the own ratings, dev button resets seen reactions
         // 168: common: a support reaction alone no longer marks a food feedback as done
-        return 168;
+        // 169: the language is stored as full code ("de-DE") and saved in the profile
+        return 169;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

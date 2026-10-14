@@ -45,6 +45,7 @@ import MaintenanceBanner from '@/components/MaintenanceBanner';
 import TextRecognitionWebViewHost from '@/components/TextRecognitionWebView';
 import { ConfigCustomerEnum, getCompanyLogoLocalSaved, getCustomerConfig, getCustomerConfigsDict, getCustomerEnumForConfig } from '@/config';
 import { SET_SELECTED_CUSTOMER } from '@/redux/Types/types';
+import { useLanguageProfileSync } from '@/hooks/useLanguageProfileSync';
 import { SettingsProvider } from 'repo-depkit-common-ui';
 import { useAppSelector } from '@/redux/hooks';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
@@ -82,6 +83,13 @@ function AppSettingsProvider({ children }: Readonly<{ children: React.ReactNode 
 // redux-driven theme selection (`@/hooks/useTheme`, still the source of truth for the
 // rest of the app's chrome) - otherwise it would default to following the OS scheme
 // only, ignoring an explicit light/dark override the user made in Settings.
+// Keeps the app language and profiles.language in line (see useLanguageProfileSync). Mounted
+// inside the PersistGate, so it sees the language stored on the device, also before the login.
+function LanguageProfileSyncBridge() {
+	useLanguageProfileSync();
+	return null;
+}
+
 function ThemeSyncBridge() {
 	const selectedTheme = useAppSelector((state) => state.settings.selectedTheme);
 	const { setThemeMode } = useCommonUiTheme();
@@ -205,6 +213,7 @@ export default function Layout() {
 							<RootSiblingParent>
 								<ThemeProvider>
 									<ThemeSyncBridge />
+									<LanguageProfileSyncBridge />
 									<ModalContextProvider>
 										<AppSettingsProvider>
 											<ModalRenderer>

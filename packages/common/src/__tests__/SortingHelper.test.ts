@@ -7,6 +7,18 @@ describe('SortingHelper', () => {
     expect(sorted[0].food.translations[0].name).toBe('Apple');
   });
 
+  test('sortByFoodName finds the "de-DE" rows for a short and a full code alike', () => {
+    // The aliases sort the other way round: falling back to them would fail the test.
+    const offers: any = [
+      { food: { alias: 'a', translations: [{ languages_code: 'de-DE', name: 'Zwiebel' }] } },
+      { food: { alias: 'z', translations: [{ languages_code: 'de-DE', name: 'Apfel' }] } },
+    ];
+    for (const languageCode of ['de', 'de-DE', 'DE-de']) {
+      const sorted = sortByFoodName([...offers], languageCode);
+      expect(sorted[0].food.translations[0].name).toBe('Apfel');
+    }
+  });
+
   test('sortByFoodCategoryOnly sorts by category sort value', () => {
     const categories: any = [
       { id: 'c1', sort: 2 },

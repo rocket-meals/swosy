@@ -17,7 +17,7 @@
  * accepted, exactly like in the app.
  */
 
-import { DatabaseTypes, isSameBaseLanguage, isSameLanguageCode, normalizeTranslationLanguage, TranslationLanguage, type Translator } from 'repo-depkit-common';
+import { DatabaseTypes, findBestMatchingLanguageCode, normalizeTranslationLanguage, TranslationLanguage, type Translator } from 'repo-depkit-common';
 
 import { BackendTranslationKeys } from './BackendTranslationKeys';
 import { BACKEND_DEFAULT_TRANSLATION_LANGUAGE, BackendLanguageSource, BackendTranslator, ProfileWithLanguage } from './BackendTranslator';
@@ -110,32 +110,7 @@ export class BackendLanguageResolver {
 
   /** The code from `availableCodes` that fits `requestedCode` best, or undefined for an empty table. */
   static _findBestMatchingCode(requestedCode: string | undefined, availableCodes: readonly string[]): string | undefined {
-    if (availableCodes.length === 0) {
-      return undefined;
-    }
-
-    if (requestedCode) {
-      // The exact code wins, but only ignoring case: nothing keeps a hand-maintained
-      // `languages.code` or a device locale from arriving as "DE-de".
-      const exactMatch = availableCodes.find(code => isSameLanguageCode(code, requestedCode));
-      if (exactMatch) {
-        return exactMatch;
-      }
-
-      // Then the same language in any region – the app stores "de", the table has "de-DE".
-      const baseLanguageMatch = availableCodes.find(code => isSameBaseLanguage(code, requestedCode));
-      if (baseLanguageMatch) {
-        return baseLanguageMatch;
-      }
-    }
-
-    for (const fallbackLanguage of [BACKEND_DEFAULT_TRANSLATION_LANGUAGE, TranslationLanguage.EN]) {
-      const fallbackMatch = availableCodes.find(code => isSameBaseLanguage(code, fallbackLanguage));
-      if (fallbackMatch) {
-        return fallbackMatch;
-      }
-    }
-
-    return availableCodes[0];
+    // Shared with the apps, which pick the code they write to `profiles.language` the same way.
+    return findBestMatchingLanguageCode(requestedCode, availableCodes, [BACKEND_DEFAULT_TRANSLATION_LANGUAGE, TranslationLanguage.EN]);
   }
 }
