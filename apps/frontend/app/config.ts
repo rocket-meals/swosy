@@ -282,7 +282,8 @@ export function getVersionPatch() {
         // 162: responses modal lists feedbacks with a new chat message first
         // 163: own comment in the food feedback card in italics and quotation marks
         // 164: food feedback responses card only announces chats of the last 14 days
-        return 164;
+        // 165: common: LegalEntities (company data for imprints and legal documents)
+        return 165;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
