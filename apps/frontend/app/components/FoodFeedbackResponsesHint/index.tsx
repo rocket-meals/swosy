@@ -28,30 +28,27 @@ function openChats(chats: readonly DatabaseTypes.Chats[]) {
 	router.push('/chats');
 }
 
-function getGroupPosition(index: number, total: number): 'single' | 'top' | 'middle' | 'bottom' {
-	if (total === 1) return 'single';
-	if (index === 0) return 'top';
-	if (index === total - 1) return 'bottom';
-	return 'middle';
-}
-
 /**
- * The details in the modal: only what is new, the chats with a new message and the new reactions, the
- * latter as the same rows as the screen of the own ratings, which the button at the end opens.
+ * The details in the modal: only what is new, as the same cards as the screen of the own ratings (which
+ * the button at the end opens): feedbacks with a new reaction or a new chat message. A chat whose
+ * feedback could not be loaded still gets a row of its own.
  */
 const FoodFeedbackResponsesDetails: React.FC<{
 	feedbacks: readonly DatabaseTypes.FoodsFeedbacks[];
-	chats: readonly DatabaseTypes.Chats[];
-	language: string;
+	chatsWithoutFeedback: readonly DatabaseTypes.Chats[];
 	colors: ThemeColors;
 	openChatLabel: string;
 	newMessageLabel: string;
 	showAllLabel: string;
 	onOpenChats: (chats: readonly DatabaseTypes.Chats[]) => void;
+	onBeforeOpenChat: () => void;
 	onShowAll: () => void;
-}> = ({ feedbacks, chats, language, colors, openChatLabel, newMessageLabel, showAllLabel, onOpenChats, onShowAll }) => (
+}> = ({ feedbacks, chatsWithoutFeedback, colors, openChatLabel, newMessageLabel, showAllLabel, onOpenChats, onBeforeOpenChat, onShowAll }) => (
 	<View style={styles.details}>
-		{chats.map(chat => (
+		{feedbacks.map(feedback => (
+			<OwnFoodFeedbackItem key={feedback.id} feedback={feedback} onBeforeOpenChat={onBeforeOpenChat} />
+		))}
+		{chatsWithoutFeedback.map(chat => (
 			<TouchableOpacity key={chat.id} style={[styles.detailRow, { backgroundColor: colors.iconBg }]} onPress={() => onOpenChats([chat])} accessibilityRole="button" accessibilityLabel={openChatLabel}>
 				<MaterialCommunityIcons name="chat-processing-outline" size={26} color={colors.icon} />
 				<View style={styles.detailText}>
@@ -63,11 +60,6 @@ const FoodFeedbackResponsesDetails: React.FC<{
 				<Octicons name="chevron-right" size={20} color={colors.icon} />
 			</TouchableOpacity>
 		))}
-		<View>
-			{feedbacks.map((feedback, index) => (
-				<OwnFoodFeedbackItem key={feedback.id} feedback={feedback} language={language} groupPosition={getGroupPosition(index, feedbacks.length)} />
-			))}
-		</View>
 		<TouchableOpacity style={styles.showAll} onPress={onShowAll} accessibilityRole="button">
 			<Text style={[styles.showAllText, { color: colors.text }]}>{showAllLabel}</Text>
 			<Octicons name="chevron-right" size={18} color={colors.icon} />
@@ -97,6 +89,10 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 	const profileId = profile?.id;
 	const seenUntil = profile?.food_feedback_reactions_seen_until ?? null;
 	const [feedbacks, setFeedbacks] = useState<DatabaseTypes.FoodsFeedbacks[]>([]);
+	const unreadChats = useMemo(() => (isAnonymousUser ? [] : chats.filter(chat => ChatHelper.isFoodFeedbackChat(chat) && isChatUnread(chat))), [chats, isChatUnread, isAnonymousUser]);
+	/** The feedbacks of the chats with a new message, loaded with the new reactions so the modal can show them as cards. */
+	const unreadChatFeedbackIds = useMemo(() => unreadChats.flatMap(chat => (chat.food_feedbacks ?? []).map(entry => String(typeof entry === 'object' && entry !== null ? (entry as { id: string }).id : entry))), [unreadChats]);
+	const unreadChatFeedbackKey = unreadChatFeedbackIds.join(',');
 
 	const load = useCallback(async () => {
 		if (!profileId || isAnonymousUser) {
@@ -105,8 +101,11 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 		}
 		try {
 			const result = (await new FoodFeedbackHelper().fetchFoodFeedbacks(profileId, {
-				fields: ['id', 'comment', 'rating', 'notify', 'support_reaction', 'support_reaction_date', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'food.translations.*'],
-				filter: FoodFeedbackReactionHelper.buildNewReactionsFilter(profileId, seenUntil),
+				fields: ['id', 'comment', 'rating', 'notify', 'chat', 'support_reaction', 'support_reaction_date', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'food.translations.*'],
+				filter:
+					unreadChatFeedbackKey.length > 0
+						? { _or: [FoodFeedbackReactionHelper.buildNewReactionsFilter(profileId, seenUntil), { _and: [{ profile: { _eq: profileId } }, { id: { _in: unreadChatFeedbackKey.split(',') } }] }] }
+						: FoodFeedbackReactionHelper.buildNewReactionsFilter(profileId, seenUntil),
 				sort: ['-support_reaction_date'],
 				limit: 50,
 			})) as DatabaseTypes.FoodsFeedbacks[];
@@ -114,7 +113,7 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 		} catch (error) {
 			console.error('Loading the reactions to food feedbacks failed:', error);
 		}
-	}, [profileId, seenUntil, isAnonymousUser]);
+	}, [profileId, seenUntil, isAnonymousUser, unreadChatFeedbackKey]);
 
 	useEffect(() => {
 		load();
@@ -129,7 +128,9 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 
 	const newFeedbacks = useMemo(() => feedbacks.filter(feedback => FoodFeedbackReactionHelper.isNewReaction(feedback, seenUntil)), [feedbacks, seenUntil]);
 	const reactionCounts = useMemo(() => FoodFeedbackReactionHelper.groupReactions(newFeedbacks), [newFeedbacks]);
-	const unreadChats = useMemo(() => (isAnonymousUser ? [] : chats.filter(chat => ChatHelper.isFoodFeedbackChat(chat) && isChatUnread(chat))), [chats, isChatUnread, isAnonymousUser]);
+	const chatsWithoutFeedback = useMemo(() => unreadChats.filter(chat => !feedbacks.some(feedback => String(feedback.chat) === String(chat.id))), [unreadChats, feedbacks]);
+	/** In the modal: the new reactions first, then the feedbacks that only have a new chat message. */
+	const modalFeedbacks = useMemo(() => [...newFeedbacks, ...feedbacks.filter(feedback => !newFeedbacks.includes(feedback) && unreadChatFeedbackIds.includes(String(feedback.id)))], [newFeedbacks, feedbacks, unreadChatFeedbackIds]);
 	const latestFoodName = newFeedbacks[0] ? getFoodName(newFeedbacks[0].food as DatabaseTypes.Foods | null | undefined, language) : null;
 
 	const markReactionsSeen = useCallback(async () => {
@@ -185,20 +186,20 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 			title: translate(TranslationKeys.food_feedback_responses_modal_title),
 			children: (
 				<FoodFeedbackResponsesDetails
-					feedbacks={newFeedbacks}
-					chats={unreadChats}
-					language={language}
+					feedbacks={modalFeedbacks}
+					chatsWithoutFeedback={chatsWithoutFeedback}
 					colors={theme.screen}
 					openChatLabel={translate(TranslationKeys.food_feedback_responses_open_chat)}
 					newMessageLabel={translate(TranslationKeys.food_feedback_responses_new_message)}
 					showAllLabel={translate(TranslationKeys.own_food_feedbacks_show_all)}
 					onOpenChats={openFromModal}
+					onBeforeOpenChat={closeModal}
 					onShowAll={showAllFromModal}
 				/>
 			),
 		});
 		void markReactionsSeen();
-	}, [showModal, translate, newFeedbacks, unreadChats, language, theme.screen, openFromModal, showAllFromModal, markReactionsSeen]);
+	}, [showModal, translate, modalFeedbacks, chatsWithoutFeedback, theme.screen, openFromModal, closeModal, showAllFromModal, markReactionsSeen]);
 
 	if (reactionCounts.length === 0 && unreadChats.length === 0) {
 		return null;
@@ -302,7 +303,7 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 	},
 	details: {
-		gap: 10,
+		gap: 12,
 		paddingBottom: 16,
 	},
 	detailRow: {

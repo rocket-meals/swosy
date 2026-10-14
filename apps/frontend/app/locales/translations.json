@@ -9178,5 +9178,35 @@
     "ru": "Показать все мои оценки",
     "tr": "Tüm değerlendirmelerimi göster",
     "zh": "查看我的全部评分"
+  },
+  "own_food_feedback_from_you": {
+    "de": "Von dir",
+    "en": "From you",
+    "ar": "منك",
+    "es": "De ti",
+    "fr": "De toi",
+    "ru": "От тебя",
+    "tr": "Senden",
+    "zh": "你的"
+  },
+  "own_food_feedback_from_canteen": {
+    "de": "Von der Mensa",
+    "en": "From the canteen",
+    "ar": "من المطعم",
+    "es": "Del comedor",
+    "fr": "Du restaurant universitaire",
+    "ru": "От столовой",
+    "tr": "Yemekhaneden",
+    "zh": "食堂的"
+  },
+  "own_food_feedback_no_response": {
+    "de": "Noch keine Rückmeldung der Mensa",
+    "en": "No response from the canteen yet",
+    "ar": "لا يوجد ردّ من المطعم بعد",
+    "es": "Aún no hay respuesta del comedor",
+    "fr": "Pas encore de réponse du restaurant universitaire",
+    "ru": "Столовая пока не ответила",
+    "tr": "Yemekhaneden henüz yanıt yok",
+    "zh": "食堂尚未回复"
   }
 }

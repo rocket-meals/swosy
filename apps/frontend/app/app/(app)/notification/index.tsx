@@ -46,13 +46,6 @@ function matchesTab(feedback: DatabaseTypes.FoodsFeedbacks, tab: OwnFoodFeedback
 	}
 }
 
-function getGroupPosition(index: number, total: number): 'single' | 'top' | 'middle' | 'bottom' {
-	if (total === 1) return 'single';
-	if (index === 0) return 'top';
-	if (index === total - 1) return 'bottom';
-	return 'middle';
-}
-
 /**
  * "Favoriten, Bewertungen & Benachrichtigungen": every food the user rated, commented on or wants to be
  * notified about, with the canteen's reaction to it. Tabs narrow it down, the search looks at the food
@@ -169,19 +162,16 @@ const OwnFoodFeedbacksScreen = () => {
 
 			{activeTab === OwnFoodFeedbackTab.NOTIFICATIONS && <Text style={[styles.intro, { color: theme.screen.text }]}>{translate(TranslationKeys.notification_index_introduction)}</Text>}
 
-			<View>
-				{visible.map((feedback, index) => (
+			<View style={styles.list}>
+				{visible.map(feedback => (
 					<OwnFoodFeedbackItem
 						key={feedback.id}
 						feedback={feedback}
-						language={language}
-						groupPosition={getGroupPosition(index, visible.length)}
 						onPress={() => {
 							const foodId = typeof feedback.food === 'object' && feedback.food !== null ? (feedback.food as DatabaseTypes.Foods).id : feedback.food;
 							if (foodId) router.push({ pathname: '/(app)/foodoffers/details', params: { foodId: String(foodId) } });
 						}}
 						onToggleNotify={() => void toggleNotify(feedback)}
-						toggleNotifyLabel={translate(TranslationKeys.notification)}
 					/>
 				))}
 				{loaded && visible.length === 0 && <Text style={[styles.empty, { color: theme.screen.placeholder }]}>{translate(TranslationKeys.nothing_found)}</Text>}
@@ -230,6 +220,9 @@ const styles = StyleSheet.create({
 	searchInputWeb: {
 		outlineStyle: 'none',
 	} as object,
+	list: {
+		gap: 12,
+	},
 	intro: {
 		fontSize: 14,
 	},

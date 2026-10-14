@@ -278,7 +278,8 @@ export function getVersionPatch() {
         // 158: hint above the food offers when the canteen reacted to a food feedback
         // 159: food feedback responses card: reactions bundled, chat messages, details modal
         // 160: notification screen becomes favorites, ratings & notifications with tabs and search
-        return 160;
+        // 161: own food feedbacks as cards: from you / from the canteen, chat button
+        return 161;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
