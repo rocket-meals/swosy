@@ -83,7 +83,7 @@ const OwnFoodFeedbackItem: React.FC<OwnFoodFeedbackItemProps> = ({ feedback, onP
 								))}
 							</View>
 						)}
-						{comment ? <Text style={[styles.comment, { color: theme.screen.text }]}>{comment}</Text> : null}
+						{comment ? <Text style={[styles.comment, { color: theme.screen.text }]}>{`„${comment}“`}</Text> : null}
 					</View>
 				</View>
 			)}
@@ -189,6 +189,7 @@ const styles = StyleSheet.create({
 	comment: {
 		fontSize: 15,
 		lineHeight: 21,
+		fontStyle: 'italic',
 	},
 	reaction: {
 		fontSize: 30,
