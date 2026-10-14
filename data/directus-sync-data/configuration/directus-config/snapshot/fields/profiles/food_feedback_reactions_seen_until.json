@@ -1,0 +1,46 @@
+{
+  "collection": "profiles",
+  "field": "food_feedback_reactions_seen_until",
+  "type": "timestamp",
+  "meta": {
+    "collection": "profiles",
+    "conditions": null,
+    "display": "datetime",
+    "display_options": {
+      "relative": true
+    },
+    "field": "food_feedback_reactions_seen_until",
+    "group": null,
+    "hidden": false,
+    "interface": "datetime",
+    "note": "Until when the user has seen the reactions of support to their food feedbacks (foods_feedbacks.support_reaction_date). Set by the app when the user closes the hint, so it does not show again after a new login or on another device.",
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "searchable": true,
+    "sort": 28,
+    "special": null,
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "half"
+  },
+  "schema": {
+    "name": "food_feedback_reactions_seen_until",
+    "table": "profiles",
+    "data_type": "timestamp with time zone",
+    "default_value": null,
+    "max_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}

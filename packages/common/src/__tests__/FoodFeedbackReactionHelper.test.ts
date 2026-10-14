@@ -35,4 +35,36 @@ describe('FoodFeedbackReactionHelper', () => {
     expect(FoodFeedbackReactionHelper.buildUpdate(FoodFeedbackReaction.THANKS, now)).toEqual({ support_reaction: '🙏', support_reaction_date: '2026-10-14T10:00:00.000Z' });
     expect(FoodFeedbackReactionHelper.buildUpdate(null, now)).toEqual({ support_reaction: null, support_reaction_date: null });
   });
+
+  describe('new reactions for the author', () => {
+    const now = new Date('2026-10-14T12:00:00.000Z');
+
+    it('counts reactions after seen-until as new, but never older than the max age', () => {
+      expect(FoodFeedbackReactionHelper.getNewSince('2026-10-13T08:00:00.000Z', now)).toBe('2026-10-13T08:00:00.000Z');
+      expect(FoodFeedbackReactionHelper.getNewSince(null, now)).toBe('2026-09-30T12:00:00.000Z');
+      expect(FoodFeedbackReactionHelper.getNewSince('2026-01-01T00:00:00.000Z', now)).toBe('2026-09-30T12:00:00.000Z');
+      expect(FoodFeedbackReactionHelper.getNewSince('not a date', now)).toBe('2026-09-30T12:00:00.000Z');
+    });
+
+    it('filters the own feedbacks with a reaction after that date', () => {
+      expect(FoodFeedbackReactionHelper.buildNewReactionsFilter('p1', '2026-10-13T08:00:00.000Z', now)).toEqual({
+        _and: [{ profile: { _eq: 'p1' } }, { support_reaction: { _nempty: true } }, { support_reaction_date: { _gt: '2026-10-13T08:00:00.000Z' } }],
+      });
+    });
+
+    it('agrees in memory', () => {
+      const seen = '2026-10-13T08:00:00.000Z';
+      expect(FoodFeedbackReactionHelper.isNewReaction({ support_reaction: '👍', support_reaction_date: '2026-10-14T09:00:00.000Z' }, seen, now)).toBe(true);
+      expect(FoodFeedbackReactionHelper.isNewReaction({ support_reaction: '👍', support_reaction_date: seen }, seen, now)).toBe(false);
+      expect(FoodFeedbackReactionHelper.isNewReaction({ support_reaction: null, support_reaction_date: '2026-10-14T09:00:00.000Z' }, seen, now)).toBe(false);
+      expect(FoodFeedbackReactionHelper.isNewReaction({ support_reaction: '👍', support_reaction_date: null }, seen, now)).toBe(false);
+    });
+
+    it('remembers the newest reaction shown as seen, never going back', () => {
+      const shown = [{ support_reaction_date: '2026-10-14T09:00:00.000Z' }, { support_reaction_date: '2026-10-14T10:00:00.000Z' }];
+      expect(FoodFeedbackReactionHelper.getSeenUntilAfterClosing(shown, '2026-10-13T08:00:00.000Z')).toBe('2026-10-14T10:00:00.000Z');
+      expect(FoodFeedbackReactionHelper.getSeenUntilAfterClosing([{ support_reaction_date: '2026-10-01T00:00:00.000Z' }], '2026-10-13T08:00:00.000Z')).toBe('2026-10-13T08:00:00.000Z');
+      expect(FoodFeedbackReactionHelper.getSeenUntilAfterClosing([], null)).toBeNull();
+    });
+  });
 });

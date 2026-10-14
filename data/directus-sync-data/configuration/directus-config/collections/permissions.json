@@ -2497,7 +2497,8 @@
       "avatar",
       "credit_balance_last_transaction",
       "credit_balance_date_updated",
-      "verified"
+      "verified",
+      "food_feedback_reactions_seen_until"
     ],
     "presets": null,
     "validation": null,
@@ -2547,7 +2548,8 @@
       "notifiy_on_free_apartments",
       "avatar",
       "credit_balance_last_transaction",
-      "credit_balance_date_updated"
+      "credit_balance_date_updated",
+      "food_feedback_reactions_seen_until"
     ],
     "presets": null,
     "validation": {

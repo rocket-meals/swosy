@@ -275,7 +275,8 @@ export function getVersionPatch() {
         // 155: zero-padded user count via NumberHelper.formatZeroPadded (repo-depkit-common)
         // 156: monospace font from FontHelper.getMonospaceFontFamily (common-ui) everywhere
         // 157: common: FoodFeedbackReactionHelper, foods_feedbacks.support_reaction types
-        return 157;
+        // 158: hint above the food offers when the canteen reacted to a food feedback
+        return 158;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

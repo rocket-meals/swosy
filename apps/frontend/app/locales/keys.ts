@@ -933,6 +933,12 @@ export const TranslationKeys = {
 	store_versions_open_store: 'store_versions_open_store',
 	store_versions_reload: 'store_versions_reload',
 	store_versions_hint: 'store_versions_hint',
+	food_feedback_reactions_title: 'food_feedback_reactions_title',
+	food_feedback_reaction_thumbs_up: 'food_feedback_reaction_thumbs_up',
+	food_feedback_reaction_heart: 'food_feedback_reaction_heart',
+	food_feedback_reaction_thanks: 'food_feedback_reaction_thanks',
+	food_feedback_reaction_yummy: 'food_feedback_reaction_yummy',
+	food_feedback_reaction_good_idea: 'food_feedback_reaction_good_idea',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];

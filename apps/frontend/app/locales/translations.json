@@ -9088,5 +9088,65 @@
     "ru": "Сравниваются только основная версия и номер сборки. Номер патча приходит через OTA-обновление и никогда не попадает в магазин.",
     "tr": "Yalnızca ana sürüm ve derleme numarası karşılaştırılır. Yama numarası OTA güncellemesiyle gelir ve hiçbir zaman mağazada yer almaz.",
     "zh": "只比较主版本号和构建号。补丁号通过 OTA 更新提供，从不出现在商店中。"
+  },
+  "food_feedback_reactions_title": {
+    "de": "Die Mensa hat auf dein Feedback reagiert",
+    "en": "The canteen reacted to your feedback",
+    "ar": "تفاعل المطعم مع ملاحظاتك",
+    "es": "El comedor ha reaccionado a tu opinión",
+    "fr": "Le restaurant universitaire a réagi à ton avis",
+    "ru": "Столовая отреагировала на твой отзыв",
+    "tr": "Yemekhane geri bildirimine tepki verdi",
+    "zh": "食堂回应了你的反馈"
+  },
+  "food_feedback_reaction_thumbs_up": {
+    "de": "Daumen hoch",
+    "en": "Thumbs up",
+    "ar": "إعجاب",
+    "es": "Pulgar arriba",
+    "fr": "Pouce levé",
+    "ru": "Палец вверх",
+    "tr": "Beğeni",
+    "zh": "点赞"
+  },
+  "food_feedback_reaction_heart": {
+    "de": "Herz",
+    "en": "Heart",
+    "ar": "قلب",
+    "es": "Corazón",
+    "fr": "Cœur",
+    "ru": "Сердце",
+    "tr": "Kalp",
+    "zh": "爱心"
+  },
+  "food_feedback_reaction_thanks": {
+    "de": "Danke",
+    "en": "Thanks",
+    "ar": "شكرًا",
+    "es": "Gracias",
+    "fr": "Merci",
+    "ru": "Спасибо",
+    "tr": "Teşekkürler",
+    "zh": "谢谢"
+  },
+  "food_feedback_reaction_yummy": {
+    "de": "Lecker",
+    "en": "Yummy",
+    "ar": "لذيذ",
+    "es": "Delicioso",
+    "fr": "Délicieux",
+    "ru": "Вкусно",
+    "tr": "Lezzetli",
+    "zh": "好吃"
+  },
+  "food_feedback_reaction_good_idea": {
+    "de": "Gute Idee",
+    "en": "Good idea",
+    "ar": "فكرة جيدة",
+    "es": "Buena idea",
+    "fr": "Bonne idée",
+    "ru": "Хорошая идея",
+    "tr": "İyi fikir",
+    "zh": "好主意"
   }
 }
