@@ -5,6 +5,8 @@ import { LegalDocumentRenderer } from '../LegalDocumentRenderer';
 import { CUSTOMER_LEGAL_ENTITIES, CustomerLegalEntity, LegalEntities, OPERATOR_LEGAL_ENTITY } from '../LegalEntities';
 import { LEGACY_CUSTOM_ID_PREFIX, LEGAL_WIKI_SETTINGS, LegalDocumentsDatabase, LegalDocumentsSync, LegalWiki, LegalWikiTranslation } from '../LegalDocumentsSync';
 import type { LegalDocument } from '../LegalDocumentTypes';
+import { LegalWikiProtection } from '../LegalWikiProtection';
+import { BackendTranslationKeys } from '../../helpers/translations/BackendTranslationKeys';
 
 const CUSTOMER: CustomerLegalEntity = {
   name: 'Studierendenwerk Beispielstadt',
@@ -174,5 +176,37 @@ describe('LegalDocumentsSync', () => {
 
     expect(database.writes).toEqual([]);
     expect(result.log[0]).toContain('customer.fax');
+  });
+});
+
+describe('LegalWikiProtection', () => {
+  const protection = new LegalWikiProtection();
+  const legalId = PRIVACY_POLICY.wikiId;
+
+  it('lets people move a legal wiki and change its icon', () => {
+    expect(protection.checkWikiUpdate([legalId], { position: 2, icon: 'star', color: '#fff', date_updated: 'now' })).toBeNull();
+  });
+
+  it('rejects changes to the texts, the visibility or the custom_id of a legal wiki', () => {
+    const forbidden = { key: BackendTranslationKeys.legal_document_edit_forbidden };
+    expect(protection.checkWikiUpdate([legalId], { translations: { update: [] } })).toEqual(forbidden);
+    expect(protection.checkWikiUpdate(['other', legalId], { public: false })).toEqual(forbidden);
+    expect(protection.checkWikiUpdate([legalId], { custom_id: 'x' })).toEqual(forbidden);
+    expect(protection.checkWikiDelete([legalId])).toEqual(forbidden);
+    expect(protection.checkWikiCreate({ id: legalId })).toEqual(forbidden);
+    expect(protection.checkTranslationWrite([legalId])).toEqual(forbidden);
+  });
+
+  it('reserves the custom_ids of the legal documents', () => {
+    const reserved = { key: BackendTranslationKeys.legal_document_custom_id_reserved, params: { custom_id: 'privacy-policy' } };
+    expect(protection.checkWikiCreate({ custom_id: 'privacy-policy' })).toEqual(reserved);
+    expect(protection.checkWikiUpdate(['other'], { custom_id: 'privacy-policy' })).toEqual(reserved);
+  });
+
+  it('leaves other wikis alone', () => {
+    expect(protection.checkWikiCreate({ custom_id: 'faq' })).toBeNull();
+    expect(protection.checkWikiUpdate(['other'], { translations: { update: [] } })).toBeNull();
+    expect(protection.checkWikiDelete(['other'])).toBeNull();
+    expect(protection.checkTranslationWrite(['other', null])).toBeNull();
   });
 });

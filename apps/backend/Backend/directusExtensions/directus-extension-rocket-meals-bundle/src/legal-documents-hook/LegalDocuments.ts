@@ -12,21 +12,25 @@ import { IMPRINT_TEXTS } from './documents/imprint';
 import { PRIVACY_POLICY_TEXTS } from './documents/privacyPolicy';
 import type { LegalDocument } from './LegalDocumentTypes';
 
+/**
+ * The wiki ids start with `1e6a1d0c`, "LEGALDOC" in hex speak (`wikis.id` is a uuid column, so only
+ * 0-9 and a-f are possible), and count up per document.
+ */
 export const LEGAL_DOCUMENTS: readonly LegalDocument[] = [
   {
-    wikiId: '16288be8-7cf7-4fb9-a7a4-a6a14b20cbb1',
+    wikiId: '1e6a1d0c-0000-4000-8000-000000000001',
     customId: 'privacy-policy',
     alias: 'Datenschutzerklärung',
     texts: PRIVACY_POLICY_TEXTS,
   },
   {
-    wikiId: '96dcf188-ff3c-47ba-82dc-25f7b8e4f348',
+    wikiId: '1e6a1d0c-0000-4000-8000-000000000002',
     customId: 'about-us',
     alias: 'Impressum',
     texts: IMPRINT_TEXTS,
   },
   {
-    wikiId: '22175c4f-7caa-4ffb-b1e9-871b29f5cdfb',
+    wikiId: '1e6a1d0c-0000-4000-8000-000000000003',
     customId: 'accessibility',
     alias: 'Barrierefreiheit',
     texts: ACCESSIBILITY_TEXTS,

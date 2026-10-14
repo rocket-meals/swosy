@@ -132,6 +132,10 @@ document. An edit in Directus is overwritten on the next start.
   wiki takes over its position and icon.
 - Visibility is enforced on every start: published, public (readable without an account), at the bottom
   of the drawer (`show_in_drawer_as_bottom_item`), not in its main list.
+- Fixed wiki ids `1e6a1d0c-0000-4000-8000-00000000000N` ("LEGALDOC" in hex speak).
+- Manual changes are rejected: texts, translations, visibility and `custom_id` of these wikis cannot be
+  edited or deleted in Directus, only position, sort, icon and color. No other wiki may take one of
+  their `custom_id`s.
 
 ## Configure SSO
 
