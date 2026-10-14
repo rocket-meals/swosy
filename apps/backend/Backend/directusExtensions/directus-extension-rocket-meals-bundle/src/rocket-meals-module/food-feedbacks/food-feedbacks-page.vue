@@ -9,12 +9,17 @@
  * marks the recommended button with ✨ and shows its reason and draft reply below the comment; the
  * draft can be taken straight into the chat, and only the recommended button is highlighted. Marking as
  * done or answering closes it: accepted when that was recommended, rejected otherwise or when dismissed.
+ *
+ * Every row can also get a reaction of support (thumbs up by default, others behind the chevron). Without
+ * chat the reaction is the answer and the feedback is done, no chat is opened. A reaction the AI
+ * recommends is preselected and, when it is the way to mark the feedback as done, highlighted.
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
+import type { FoodFeedbackReaction } from 'repo-depkit-common/src/FoodFeedbackReactionHelper';
 import { FoodFeedbackChatActions } from '../../helpers/rocket-meals-module/FoodFeedbackChatActions';
 import { FoodFeedbackChatHelper, FoodFeedbackContentFilter, FoodFeedbackListSort, FoodFeedbackRatingFilter, type FoodFeedbackCanteenOption, type FoodFeedbackListItem, type FoodFeedbackListOptions } from '../../helpers/rocket-meals-module/FoodFeedbackChatHelper';
 import { ModuleDeleteActions } from '../../helpers/rocket-meals-module/ModuleDeleteActions';
@@ -35,6 +40,7 @@ import ListSelectionBar from '../module-list/list-selection-bar.vue';
 import DeleteConfirmDialog from '../module-list/delete-confirm-dialog.vue';
 import StatusFilterChips from '../module-list/status-filter-chips.vue';
 import FoodFeedbackRating from './food-feedback-rating.vue';
+import FoodFeedbackReactionButton from './food-feedback-reaction-button.vue';
 import FoodFeedbackStatusChip from './food-feedback-status-chip.vue';
 import FoodImageLink from './food-image-link.vue';
 import ProfileAvatar from '../profiles/profile-avatar.vue';
@@ -209,6 +215,32 @@ function markResolved(feedbacksToResolve: readonly FoodFeedbackListItem[]) {
       return result;
     },
     BackendTranslationKeys.rocket_meals_module_mark_resolved_failed
+  );
+}
+
+/** "Empfohlene Reaktion: 👍 Daumen hoch" below the recommendation, `null` without recommended reaction. */
+function getRecommendedReactionText(feedback: FoodFeedbackListItem): string | null {
+  const reaction = ActionRecommendationModuleHelper.getReaction(getRecommendation(feedback));
+  return reaction ? translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_reaction, { reaction: `${reaction} ${translate(FoodFeedbackChatHelper.getReactionLabelKey(reaction))}` }) : null;
+}
+
+/** Sets or removes the reaction; a recommendation to mark as done is used up when that resolves the feedback. */
+function react(feedback: FoodFeedbackListItem, reaction: FoodFeedbackReaction | null) {
+  return runUpdate(
+    [feedback],
+    async () => {
+      try {
+        await FoodFeedbackChatActions.setReaction(api, feedback, reaction);
+      } catch (error) {
+        console.error('[rocket-meals-module] setting the reaction failed', error);
+        return { failedIds: [feedback.id] };
+      }
+      if (reaction && FoodFeedbackChatHelper.isResolvedByReaction(feedback, getRecommendation(feedback))) {
+        await closeRecommendations([feedback], ActionRecommendationAction.MARK_RESOLVED);
+      }
+      return { failedIds: [] };
+    },
+    BackendTranslationKeys.rocket_meals_module_reaction_failed
   );
 }
 
@@ -393,6 +425,7 @@ watch(feedbacks, loadRecommendations);
               </div>
               <div v-if="getRecommendation(feedback)?.reason && expandedReasonIds.includes(feedback.id)" class="recommendation-reason">{{ getRecommendation(feedback)?.reason }}</div>
               <div v-if="ActionRecommendationModuleHelper.getDraftReply(getRecommendation(feedback))" class="recommendation-draft">{{ ActionRecommendationModuleHelper.getDraftReply(getRecommendation(feedback)) }}</div>
+              <div v-if="getRecommendedReactionText(feedback)" class="type-note">{{ getRecommendedReactionText(feedback) }}</div>
               <div class="recommendation-actions">
                 <v-button small secondary :loading="dismissingIds.includes(feedback.id)" @click.stop="dismissRecommendation(feedback)">
                   <v-icon name="close" left small />
@@ -405,11 +438,18 @@ watch(feedbacks, loadRecommendations);
               </div>
             </div>
             <div class="feedback-actions">
+              <food-feedback-reaction-button
+                :reaction="feedback.support_reaction"
+                :recommended-reaction="ActionRecommendationModuleHelper.getReaction(getRecommendation(feedback))"
+                :highlighted="FoodFeedbackChatHelper.isReactionHighlighted(feedback, getRecommendation(feedback))"
+                :loading="isUpdating(feedback)"
+                @react="react(feedback, $event)"
+              />
               <v-button v-if="FoodFeedbackChatHelper.canReopen(feedback)" small secondary :loading="isUpdating(feedback)" @click.stop="reopen([feedback])">
                 <v-icon name="undo" left small />
                 {{ translate(BackendTranslationKeys.rocket_meals_module_reopen) }}
               </v-button>
-              <v-button v-if="FoodFeedbackChatHelper.canMarkResolved(feedback)" small :secondary="!isHighlighted(feedback, ActionRecommendationAction.MARK_RESOLVED)" :loading="isUpdating(feedback)" @click.stop="markResolved([feedback])">
+              <v-button v-if="FoodFeedbackChatHelper.canMarkResolved(feedback)" small :secondary="!isHighlighted(feedback, ActionRecommendationAction.MARK_RESOLVED) || FoodFeedbackChatHelper.isReactionHighlighted(feedback, getRecommendation(feedback))" :loading="isUpdating(feedback)" @click.stop="markResolved([feedback])">
                 <v-icon name="task_alt" left small />
                 {{ translate(BackendTranslationKeys.rocket_meals_module_mark_resolved) }}
                 <v-icon v-if="isRecommended(feedback, ActionRecommendationAction.MARK_RESOLVED)" v-tooltip="translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_recommended)" class="recommended-badge" :name="ActionRecommendationModuleHelper.ICON" right small />

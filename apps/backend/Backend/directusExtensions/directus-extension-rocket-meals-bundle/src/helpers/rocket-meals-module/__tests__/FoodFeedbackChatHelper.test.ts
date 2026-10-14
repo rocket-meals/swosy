@@ -1,5 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common';
+import { FoodFeedbackReaction, FoodFeedbackReactionHelper } from 'repo-depkit-common/src/FoodFeedbackReactionHelper';
 import { FoodFeedbackChatHelper, FoodFeedbackContentFilter, FoodFeedbackListSort, FoodFeedbackRatingFilter } from '../FoodFeedbackChatHelper';
 import { ChatQueryHelper } from '../ChatQueryHelper';
 import { FoodFeedbackChatActions } from '../FoodFeedbackChatActions';
@@ -267,5 +268,58 @@ describe('FoodFeedbackChatHelper.getNickname', () => {
 
   it('labels the author as "Nutzer: <Nickname>"', () => {
     expect(AppExtensionLanguageHelper.translate(BackendTranslationKeys.rocket_meals_module_user_with_nickname, 'de-DE', { nickname: 'Mensafan' })).toBe('Nutzer: Mensafan');
+  });
+});
+
+describe('reactions of support', () => {
+  const answered = { id: 'r', status: 'draft', action: 'mark_resolved', action_payload: { reaction: '👍' } };
+  const reply = { id: 'r', status: 'draft', action: 'reply', action_payload: { reaction: '🙏' } };
+
+  it('reads the reaction with the list', () => {
+    expect(FoodFeedbackChatHelper.LIST_FIELDS).toContain('support_reaction');
+  });
+
+  it('has a label for every reaction', () => {
+    for (const reaction of FoodFeedbackReactionHelper.REACTIONS) {
+      expect(Object.values(BackendTranslationKeys)).toContain(FoodFeedbackChatHelper.getReactionLabelKey(reaction));
+    }
+  });
+
+  it('does not offer to reopen a feedback that is only done by a reaction', () => {
+    expect(FoodFeedbackChatHelper.canReopen({ id: 'f', chat: null, support_reaction: '👍' })).toBe(false);
+    expect(FoodFeedbackChatHelper.canReopen({ id: 'f', chat: { id: 'c', conversation_state: 'resolved' } })).toBe(true);
+    expect(FoodFeedbackChatHelper.canMarkResolved({ id: 'f', chat: null, support_reaction: '👍', profile: 'p' })).toBe(false);
+  });
+
+  it('a reaction without chat uses up a recommendation to mark as done, not one to reply', () => {
+    expect(FoodFeedbackChatHelper.isResolvedByReaction({ chat: null }, answered)).toBe(true);
+    expect(FoodFeedbackChatHelper.isResolvedByReaction({ chat: 'c' }, answered)).toBe(false);
+    expect(FoodFeedbackChatHelper.isResolvedByReaction({ chat: null }, reply)).toBe(false);
+    expect(FoodFeedbackChatHelper.isResolvedByReaction({ chat: null }, null)).toBe(false);
+  });
+
+  it('highlights the reaction instead of "mark as done" when the AI recommends it as answer', () => {
+    expect(FoodFeedbackChatHelper.isReactionHighlighted({ chat: null }, answered)).toBe(true);
+    expect(FoodFeedbackChatHelper.isReactionHighlighted({ chat: null, support_reaction: '👍' }, answered)).toBe(false);
+    expect(FoodFeedbackChatHelper.isReactionHighlighted({ chat: null }, { ...answered, action_payload: null })).toBe(false);
+    expect(FoodFeedbackChatHelper.isReactionHighlighted({ chat: null }, reply)).toBe(false);
+  });
+
+  it('sets the reaction with its date and no chat', async () => {
+    const calls: { url: string; data: unknown }[] = [];
+    const api = {
+      get: async () => ({}),
+      post: async () => ({}),
+      patch: async (url: string, data?: unknown) => {
+        calls.push({ url, data });
+        return {};
+      },
+    };
+    await FoodFeedbackChatActions.setReaction(api as never, { id: 'f1' }, FoodFeedbackReaction.HEART);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]!.url).toBe('/items/foods_feedbacks/f1');
+    expect(calls[0]!.data).toMatchObject({ support_reaction: '❤️' });
+    await FoodFeedbackChatActions.setReaction(api as never, { id: 'f1' }, null);
+    expect(calls[1]!.data).toEqual({ support_reaction: null, support_reaction_date: null });
   });
 });

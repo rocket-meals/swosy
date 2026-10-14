@@ -274,7 +274,8 @@ export function getVersionPatch() {
         // 154: named Intl limits instead of magic numbers for the zero-padded user count
         // 155: zero-padded user count via NumberHelper.formatZeroPadded (repo-depkit-common)
         // 156: monospace font from FontHelper.getMonospaceFontFamily (common-ui) everywhere
-        return 156;
+        // 157: common: FoodFeedbackReactionHelper, foods_feedbacks.support_reaction types
+        return 157;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -7,7 +7,8 @@
  * dropped and reported in `ignored`.
  */
 
-import { ACTION_RECOMMENDATION_ACTIONS, ActionRecommendationAction, ActionRecommendationDefinitions, type ActionRecommendationDefinition } from './ActionRecommendationDefinitions';
+import type { FoodFeedbackReaction } from 'repo-depkit-common/src/FoodFeedbackReactionHelper';
+import { ACTION_RECOMMENDATION_ACTIONS, ACTION_RECOMMENDATION_REACTIONS, ActionRecommendationAction, ActionRecommendationDefinitions, type ActionRecommendationDefinition } from './ActionRecommendationDefinitions';
 
 /** An item as read from the database: `id` plus the allowlisted fields. */
 export type ActionRecommendationSourceItem = { id: string | number } & Record<string, unknown>;
@@ -18,6 +19,8 @@ export type ParsedActionRecommendation = {
   action: ActionRecommendationAction;
   reason: string;
   draft_reply: string | null;
+  /** A reaction of the definition's `reactions`, besides the action; null without. */
+  reaction: FoodFeedbackReaction | null;
 };
 
 export type ActionRecommendationParseResult = { recommendations: ParsedActionRecommendation[]; ignored: string[] };
@@ -85,18 +88,26 @@ export class ActionRecommendationPrompt {
       ? `Hat ein Eintrag schon einen Chat mit dem Support, stehen dessen Nachrichten in "messages", jeweils mit der Rolle "${ChatReplyRole.GUEST}" (der Gast) oder "${ChatReplyRole.SUPPORT}" (der Support), ohne Namen. Berücksichtige den Verlauf: der Antwortvorschlag ist dann die nächste Nachricht des Supports, und ist das Anliegen geklärt, empfiehl "${ActionRecommendationAction.MARK_RESOLVED}".\n`
       : '';
     const actionLines = definition.actions.map(action => `- "${action}": ${ACTION_RECOMMENDATION_ACTIONS[action].promptDescription}`).join('\n');
+    const reactions = definition.reactions ?? [];
+    const reactionRule =
+      reactions.length > 0
+        ? `Zusätzlich zur Handlung kannst du eine Reaktion ("reaction") empfehlen. Der Support hängt sie an den Eintrag, die Person sieht sie in der App, ohne dass ein Chat geöffnet wird. Eine Reaktion ist eine vollwertige Rückmeldung: bei reinem Lob ohne Bedarf an einem Chat empfiehl "${ActionRecommendationAction.MARK_RESOLVED}" mit einer Reaktion. Sie passt auch zusätzlich zu "${ActionRecommendationAction.REPLY}", wenn sie die Antwort freundlich ergänzt. Bei Spam, Unsinn oder Beleidigung gibt es keine Reaktion. Erlaubt sind nur diese Werte, sonst null:
+${reactions.map(reaction => `- "${reaction}": ${ACTION_RECOMMENDATION_REACTIONS[reaction]}`).join('\n')}
+`
+        : '';
+    const reactionFormat = reactions.length > 0 ? `,"reaction":"${reactions.join('|')}|null"` : '';
     const system = `Du hilfst dem Support einer Mensa- und Campus-App, Einträge abzuarbeiten. Die Einträge sind: ${definition.promptContext}
 Empfiehl für jeden Eintrag genau eine dieser Handlungen:
 ${actionLines}
 
 Ein Mensch entscheidet am Ende, du gibst nur eine Empfehlung.
-${chatRule}Schreibe die Begründung ("reason") kurz in der Sprache mit dem Code "${language}".
+${chatRule}${reactionRule}Schreibe die Begründung ("reason") kurz in der Sprache mit dem Code "${language}".
 Einen Antwortvorschlag ("draft_reply") gibt es nur bei "${ActionRecommendationAction.REPLY}". ${REPLY_LENGTH_RULE}
 Schreibe ihn in der Sprache mit dem Code aus "reply_language" des Eintrags (ohne Angabe: "${ActionRecommendationDefinitions.FALLBACK_REPLY_LANGUAGE}"), auch wenn der Eintrag selbst in einer anderen Sprache geschrieben ist. Sonst ist er null.
 ${WRITING_RULE}
 
 Antworte ausschließlich mit einem JSON-Objekt in genau dieser Form, ohne weiteren Text:
-{"recommendations":[{"id":"<id>","action":"${definition.actions.join('|')}","reason":"<kurze Begründung>","draft_reply":"<Antwortvorschlag oder null>"}]}`;
+{"recommendations":[{"id":"<id>","action":"${definition.actions.join('|')}","reason":"<kurze Begründung>","draft_reply":"<Antwortvorschlag oder null>"${reactionFormat}}]}`;
     const user = JSON.stringify({ items: items.map(item => ActionRecommendationPrompt.toPromptItem(definition, item, replyLanguages[String(item.id)], chatMessages[String(item.id)])) }, null, 2);
     return { system, user };
   }
@@ -110,7 +121,7 @@ Antworte ausschließlich mit einem JSON-Objekt in genau dieser Form, ohne weiter
     }
     const handled = new Set<string>();
     for (const entry of entries) {
-      const raw = entry as { id?: unknown; action?: unknown; reason?: unknown; draft_reply?: unknown };
+      const raw = entry as { id?: unknown; action?: unknown; reason?: unknown; draft_reply?: unknown; reaction?: unknown };
       const item = raw?.id === undefined || raw?.id === null ? '' : String(raw.id);
       if (!itemIds.has(item)) {
         ignored.push(`unknown item "${item}"`);
@@ -130,10 +141,23 @@ Antworte ausschließlich mit einem JSON-Objekt in genau dieser Form, ohne weiter
         continue;
       }
       const draftReply = raw.action === ActionRecommendationAction.REPLY ? trimText(raw.draft_reply, DRAFT_REPLY_MAX_LENGTH) : '';
+      const reaction = ActionRecommendationPrompt.parseReaction(raw.reaction, definition);
+      if (reaction === undefined) {
+        ignored.push(`reaction "${String(raw.reaction)}" is not offered for item "${item}"`);
+      }
       handled.add(item);
-      recommendations.push({ item, action: raw.action, reason, draft_reply: draftReply || null });
+      recommendations.push({ item, action: raw.action, reason, draft_reply: draftReply || null, reaction: reaction ?? null });
     }
     return { recommendations, ignored };
+  }
+
+  /** A reaction the definition offers, null for none, `undefined` for a value it does not offer (dropped, the rest of the recommendation stays). */
+  static parseReaction(value: unknown, definition: ActionRecommendationDefinition): FoodFeedbackReaction | null | undefined {
+    if (value === undefined || value === null || value === '' || value === 'null') {
+      return null;
+    }
+    const reactions = definition.reactions ?? [];
+    return reactions.includes(value as FoodFeedbackReaction) ? (value as FoodFeedbackReaction) : undefined;
   }
 
   static buildSummaryPrompt(definition: ActionRecommendationDefinition, items: readonly ActionRecommendationSourceItem[], language: string): ChatPrompt {

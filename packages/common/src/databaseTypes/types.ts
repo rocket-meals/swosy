@@ -1419,6 +1419,8 @@ export type FoodsFeedbacks = {
   rating?: number | null;
   sort?: number | null;
   status?: string | null;
+  support_reaction?: string | null;
+  support_reaction_date?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };

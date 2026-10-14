@@ -11,6 +11,7 @@
  */
 
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
+import { FoodFeedbackReaction } from 'repo-depkit-common/src/FoodFeedbackReactionHelper';
 import { isSameBaseLanguage } from 'repo-depkit-common/src/translations/TranslationLanguage';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
 
@@ -54,10 +55,19 @@ export const ACTION_RECOMMENDATION_ACTIONS: Record<ActionRecommendationAction, A
     icon: 'reply',
   },
   [ActionRecommendationAction.MARK_RESOLVED]: {
-    promptDescription: 'Als erledigt markieren, ohne zu antworten: kein konkreter Inhalt, reines Lob, Unsinn, Spam oder Beleidigung, eine Antwort bringt niemandem etwas.',
+    promptDescription: 'Als erledigt markieren, ohne zu antworten: kein konkreter Inhalt, reines Lob, Unsinn, Spam oder Beleidigung, eine Antwort bringt niemandem etwas. Passt eine Reaktion (z. B. bei Lob), empfiehl sie zusätzlich: sie ist dann die Rückmeldung an die Person.',
     labelKey: BackendTranslationKeys.rocket_meals_module_mark_resolved,
     icon: 'task_alt',
   },
+};
+
+/** What the AI is told a reaction means (prompt text, never shown in the UI). */
+export const ACTION_RECOMMENDATION_REACTIONS: Record<FoodFeedbackReaction, string> = {
+  [FoodFeedbackReaction.THUMBS_UP]: 'Daumen hoch: Zustimmung oder Lob, die Rückmeldung ist angekommen.',
+  [FoodFeedbackReaction.HEART]: 'Herz: besonders herzliches Lob, große Begeisterung.',
+  [FoodFeedbackReaction.THANKS]: 'Danke: für einen hilfreichen Hinweis oder konstruktive Kritik.',
+  [FoodFeedbackReaction.YUMMY]: 'Lecker: die Person lobt den Geschmack der Speise.',
+  [FoodFeedbackReaction.GOOD_IDEA]: 'Gute Idee: ein Vorschlag, den die Mensa sich merkt.',
 };
 
 export type ActionRecommendationDefinition = {
@@ -76,6 +86,16 @@ export type ActionRecommendationDefinition = {
   authorProfileField?: string;
   /** For items with a support chat: its messages go into the prompt, so the recommendation knows the conversation. */
   chat?: ActionRecommendationChatDefinition;
+  /**
+   * Reactions support can give to an item without a chat (e.g. `foods_feedbacks.support_reaction`). The
+   * AI may recommend one besides any action; it is stored in `action_recommendations.action_payload`.
+   */
+  reactions?: readonly FoodFeedbackReaction[];
+};
+
+/** What `action_recommendations.action_payload` holds. */
+export type ActionRecommendationPayload = {
+  reaction?: FoodFeedbackReaction;
 };
 
 export type ActionRecommendationChatDefinition = {
@@ -94,6 +114,7 @@ export class ActionRecommendationDefinitions {
       summaryGroupField: 'food',
       authorProfileField: 'profile',
       chat: { field: 'chat' },
+      reactions: [FoodFeedbackReaction.THUMBS_UP, FoodFeedbackReaction.HEART, FoodFeedbackReaction.THANKS, FoodFeedbackReaction.YUMMY, FoodFeedbackReaction.GOOD_IDEA],
     },
     {
       collection: CollectionNames.APP_FEEDBACKS,

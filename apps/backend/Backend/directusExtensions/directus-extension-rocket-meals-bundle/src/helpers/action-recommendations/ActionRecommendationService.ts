@@ -171,7 +171,7 @@ export class ActionRecommendationService {
         : ActionRecommendationDefinitions.formatLogLine(new Date(), `No valid recommendation in the answer${parsed.ignored.length > 0 ? ': ' + parsed.ignored.join('; ') : ''}`);
       await service.updateOne(keyByItem.get(item), { // NOSONAR S9382 - sequential on purpose: one row per item, at most MAX_ITEMS_PER_RECOMMENDATION
         ...(recommendation
-          ? { action: recommendation.action, reason: recommendation.reason, draft_reply: recommendation.draft_reply, status: ActionRecommendationStatus.DRAFT }
+          ? { action: recommendation.action, reason: recommendation.reason, draft_reply: recommendation.draft_reply, action_payload: recommendation.reaction ? { reaction: recommendation.reaction } : null, status: ActionRecommendationStatus.DRAFT }
           : { status: ActionRecommendationStatus.FAILED }),
         logs: `${startLog}\n${doneLog}`,
       });
