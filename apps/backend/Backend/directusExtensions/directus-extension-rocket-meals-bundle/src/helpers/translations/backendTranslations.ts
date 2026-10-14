@@ -229,6 +229,29 @@ export const backendTranslations: TranslationResources = {
     zh: '访客无法对菜品发表评论。请使用账户登录后再评论。',
   },
 
+  /** Rejection of a manual change to a legal document (privacy policy, imprint, accessibility statement). */
+  legal_document_edit_forbidden: {
+    de: 'Dieser Rechtstext wird im Code gepflegt und bei jedem Serverstart neu geschrieben. Er kann hier nicht bearbeitet oder gelöscht werden. Nur Position, Sortierung, Icon und Farbe lassen sich ändern.',
+    en: 'This legal text is maintained in code and rewritten on every server start. It cannot be edited or deleted here. Only position, sort order, icon and color can be changed.',
+    ar: 'يُدار هذا النص القانوني في الكود ويُعاد كتابته عند كل تشغيل للخادم. لا يمكن تعديله أو حذفه هنا. يمكن فقط تغيير الموضع والترتيب والأيقونة واللون.',
+    es: 'Este texto legal se mantiene en el código y se vuelve a escribir en cada inicio del servidor. No se puede editar ni eliminar aquí. Solo se pueden cambiar la posición, el orden, el icono y el color.',
+    fr: 'Ce texte juridique est géré dans le code et réécrit à chaque démarrage du serveur. Il ne peut pas être modifié ni supprimé ici. Seuls la position, l’ordre, l’icône et la couleur peuvent être changés.',
+    ru: 'Этот юридический текст ведётся в коде и перезаписывается при каждом запуске сервера. Его нельзя изменить или удалить здесь. Можно менять только позицию, порядок, значок и цвет.',
+    tr: 'Bu yasal metin kodda tutulur ve her sunucu başlangıcında yeniden yazılır. Burada düzenlenemez veya silinemez. Yalnızca konum, sıralama, simge ve renk değiştirilebilir.',
+    zh: '此法律文本在代码中维护，并在每次服务器启动时重新写入。无法在此编辑或删除。只能更改位置、排序、图标和颜色。',
+  },
+  /** Rejection of a wiki that would take the custom_id of a legal document. */
+  legal_document_custom_id_reserved: {
+    de: 'Die Kennung "{{custom_id}}" ist für einen Rechtstext reserviert, der im Code gepflegt wird. Bitte wähle eine andere Kennung.',
+    en: 'The identifier "{{custom_id}}" is reserved for a legal text that is maintained in code. Please choose a different identifier.',
+    ar: 'المعرّف "{{custom_id}}" محجوز لنص قانوني يُدار في الكود. يرجى اختيار معرّف آخر.',
+    es: 'El identificador "{{custom_id}}" está reservado para un texto legal que se mantiene en el código. Elige otro identificador.',
+    fr: 'L’identifiant « {{custom_id}} » est réservé à un texte juridique géré dans le code. Veuillez choisir un autre identifiant.',
+    ru: 'Идентификатор «{{custom_id}}» зарезервирован для юридического текста, который ведётся в коде. Пожалуйста, выберите другой идентификатор.',
+    tr: '"{{custom_id}}" tanımlayıcısı kodda tutulan bir yasal metin için ayrılmıştır. Lütfen başka bir tanımlayıcı seçin.',
+    zh: '标识符"{{custom_id}}"已保留给在代码中维护的法律文本。请选择其他标识符。',
+  },
+
   /**
    * Mails to the contact email of an app feedback when support answers it – by mail
    * (`app-feedbacks-hook`) or in its chat (`chat-conversation-state-hook`) – and the push to the
@@ -324,6 +347,80 @@ export const backendTranslations: TranslationResources = {
     ru: 'Новый ответ от поддержки',
     tr: 'Destekten yeni yanıt',
     zh: '客服有新回复',
+  },
+
+  /** Push to the author when the canteen reacted to their food feedback: the food is the title, the body is the reaction emoji and one of the texts below. */
+  /** Fallback title of the push about a reaction of the canteen, when the food has no name. */
+  notification_food_feedback_reaction_title: {
+    de: 'Rückmeldung der Mensa',
+    en: 'Reply from the canteen',
+    ar: 'رد من المطعم',
+    es: 'Respuesta del comedor',
+    fr: 'Réponse de la cantine',
+    ru: 'Ответ столовой',
+    tr: 'Yemekhaneden yanıt',
+    zh: '食堂的回复',
+  },
+  notification_food_feedback_reaction_thumbs_up: {
+    de: 'Der Mensa gefällt dein Kommentar.',
+    en: 'The canteen likes your comment.',
+    ar: 'أعجب المطعم تعليقك.',
+    es: 'Al comedor le gusta tu comentario.',
+    fr: 'La cantine aime ton commentaire.',
+    ru: 'Столовой понравился твой комментарий.',
+    tr: 'Yemekhane yorumunu beğendi.',
+    zh: '食堂赞了你的评论。',
+  },
+  notification_food_feedback_reaction_heart: {
+    de: 'Die Mensa freut sich sehr über deinen Kommentar.',
+    en: 'The canteen loves your comment.',
+    ar: 'أحب المطعم تعليقك كثيرًا.',
+    es: 'Al comedor le encanta tu comentario.',
+    fr: 'La cantine adore ton commentaire.',
+    ru: 'Столовой очень понравился твой комментарий.',
+    tr: 'Yemekhane yorumuna çok sevindi.',
+    zh: '食堂非常喜欢你的评论。',
+  },
+  notification_food_feedback_reaction_thanks: {
+    de: 'Die Mensa bedankt sich für deinen Kommentar.',
+    en: 'The canteen thanks you for your comment.',
+    ar: 'يشكرك المطعم على تعليقك.',
+    es: 'El comedor te agradece tu comentario.',
+    fr: 'La cantine te remercie pour ton commentaire.',
+    ru: 'Столовая благодарит тебя за комментарий.',
+    tr: 'Yemekhane yorumun için teşekkür ediyor.',
+    zh: '食堂感谢你的评论。',
+  },
+  notification_food_feedback_reaction_yummy: {
+    de: 'Die Mensa freut sich, dass es dir geschmeckt hat.',
+    en: 'The canteen is glad you enjoyed it.',
+    ar: 'يسعد المطعم أن الطعام أعجبك.',
+    es: 'Al comedor le alegra que te haya gustado.',
+    fr: 'La cantine est ravie que ça t\'ait plu.',
+    ru: 'Столовая рада, что тебе было вкусно.',
+    tr: 'Yemekhane beğenmene sevindi.',
+    zh: '食堂很高兴你吃得开心。',
+  },
+  notification_food_feedback_reaction_good_idea: {
+    de: 'Die Mensa findet deine Idee gut.',
+    en: 'The canteen likes your idea.',
+    ar: 'يرى المطعم أن فكرتك جيدة.',
+    es: 'Al comedor le parece buena tu idea.',
+    fr: 'La cantine trouve ton idée bonne.',
+    ru: 'Столовой понравилась твоя идея.',
+    tr: 'Yemekhane fikrini beğendi.',
+    zh: '食堂觉得你的想法很好。',
+  },
+  /** A reaction that was set by hand in Directus and has no text of its own. */
+  notification_food_feedback_reaction_other: {
+    de: 'Die Mensa hat auf deinen Kommentar reagiert.',
+    en: 'The canteen reacted to your comment.',
+    ar: 'تفاعل المطعم مع تعليقك.',
+    es: 'El comedor ha reaccionado a tu comentario.',
+    fr: 'La cantine a réagi à ton commentaire.',
+    ru: 'Столовая отреагировала на твой комментарий.',
+    tr: 'Yemekhane yorumuna tepki verdi.',
+    zh: '食堂回应了你的评论。',
   },
 
   /** Push to the author when their feature wish was published, `title` is the wish. */
@@ -1041,6 +1138,59 @@ export const backendTranslations: TranslationResources = {
     ru: 'Записей: {{count}}. Они будут удалены навсегда вместе со всеми сообщениями чата. Это действие нельзя отменить.',
     tr: 'Kayıt: {{count}}. Tüm sohbet mesajlarıyla birlikte kalıcı olarak silinecek. Bu işlem geri alınamaz.',
     zh: '条目：{{count}}。它们将连同所有聊天消息被永久删除。此操作无法撤销。',
+  },
+  /** Delete button on the chat page of a food feedback: it is the whole feedback that goes, not only the chat. */
+  rocket_meals_module_food_feedback_delete: {
+    de: 'Feedback und Chat löschen',
+    en: 'Delete feedback and chat',
+    ar: 'حذف التقييم والمحادثة',
+    es: 'Eliminar valoración y chat',
+    fr: 'Supprimer l\'avis et la discussion',
+    ru: 'Удалить отзыв и чат',
+    tr: 'Geri bildirimi ve sohbeti sil',
+    zh: '删除反馈和聊天',
+  },
+  /** Asks before deleting food feedbacks: says what goes with them, see `ModuleDeleteActions`. */
+  rocket_meals_module_food_feedback_delete_confirm_text: {
+    de: 'Speise-Feedbacks: {{count}}. Gelöscht wird jeweils das ganze Feedback der Person: Bewertung, Kommentar und Reaktion der Mensa, zusammen mit dem Chat und allen Nachrichten. Die Person sieht es danach nicht mehr in der App. Das lässt sich nicht rückgängig machen.',
+    en: 'Food feedbacks: {{count}}. Each whole feedback of the person is deleted: rating, comment and the reaction of the canteen, together with the chat and all its messages. The person no longer sees it in the app. This cannot be undone.',
+    ar: 'تقييمات الأطباق: {{count}}. يُحذف التقييم بالكامل لكل شخص: التقييم والتعليق وتفاعل المطعم، مع المحادثة وجميع رسائلها. لن يراه الشخص بعد ذلك في التطبيق. لا يمكن التراجع عن ذلك.',
+    es: 'Valoraciones de platos: {{count}}. Se elimina la valoración completa de la persona: puntuación, comentario y la reacción del comedor, junto con el chat y todos sus mensajes. La persona ya no la verá en la app. No se puede deshacer.',
+    fr: 'Avis sur les plats : {{count}}. L\'avis complet de la personne est supprimé : note, commentaire et réaction de la cantine, avec la discussion et tous ses messages. La personne ne le verra plus dans l\'application. Cette action est irréversible.',
+    ru: 'Отзывов о блюдах: {{count}}. Удаляется весь отзыв человека: оценка, комментарий и реакция столовой, вместе с чатом и всеми сообщениями. Человек больше не увидит его в приложении. Это действие нельзя отменить.',
+    tr: 'Yemek geri bildirimleri: {{count}}. Kişinin geri bildiriminin tamamı silinir: puan, yorum ve yemekhanenin tepkisi, sohbet ve tüm mesajlarıyla birlikte. Kişi bunu artık uygulamada görmez. Bu işlem geri alınamaz.',
+    zh: '菜品反馈：{{count}}。将删除此人的整条反馈：评分、评论和食堂的回应，连同聊天及其所有消息。此人之后在应用中将不再看到它。此操作无法撤销。',
+  },
+  /** Button on the chat page of a food feedback that deletes the chat and keeps the feedback. */
+  rocket_meals_module_food_feedback_delete_chat: {
+    de: 'Nur Chat löschen',
+    en: 'Delete chat only',
+    ar: 'حذف المحادثة فقط',
+    es: 'Eliminar solo el chat',
+    fr: 'Supprimer uniquement la discussion',
+    ru: 'Удалить только чат',
+    tr: 'Yalnızca sohbeti sil',
+    zh: '仅删除聊天',
+  },
+  rocket_meals_module_food_feedback_delete_chat_confirm_text: {
+    de: 'Gelöscht werden der Chat und alle Nachrichten darin. Das Feedback der Person bleibt: Bewertung, Kommentar und Reaktion der Mensa. In der App ist es danach wieder ein Feedback ohne Chat. Das lässt sich nicht rückgängig machen.',
+    en: 'The chat and all its messages are deleted. The feedback of the person stays: rating, comment and the reaction of the canteen. In the app it is a feedback without chat again. This cannot be undone.',
+    ar: 'ستُحذف المحادثة وجميع رسائلها. يبقى تقييم الشخص: التقييم والتعليق وتفاعل المطعم. في التطبيق يصبح تقييمًا بدون محادثة مرة أخرى. لا يمكن التراجع عن ذلك.',
+    es: 'Se eliminan el chat y todos sus mensajes. La valoración de la persona se mantiene: puntuación, comentario y la reacción del comedor. En la app vuelve a ser una valoración sin chat. No se puede deshacer.',
+    fr: 'La discussion et tous ses messages sont supprimés. L\'avis de la personne reste : note, commentaire et réaction de la cantine. Dans l\'application, c\'est de nouveau un avis sans discussion. Cette action est irréversible.',
+    ru: 'Чат и все его сообщения будут удалены. Отзыв человека останется: оценка, комментарий и реакция столовой. В приложении это снова отзыв без чата. Это действие нельзя отменить.',
+    tr: 'Sohbet ve içindeki tüm mesajlar silinir. Kişinin geri bildirimi kalır: puan, yorum ve yemekhanenin tepkisi. Uygulamada yeniden sohbetsiz bir geri bildirim olur. Bu işlem geri alınamaz.',
+    zh: '将删除聊天及其中的所有消息。此人的反馈会保留：评分、评论和食堂的回应。在应用中它将重新成为没有聊天的反馈。此操作无法撤销。',
+  },
+  rocket_meals_module_food_feedback_chat_deleted: {
+    de: 'Chat gelöscht',
+    en: 'Chat deleted',
+    ar: 'تم حذف المحادثة',
+    es: 'Chat eliminado',
+    fr: 'Discussion supprimée',
+    ru: 'Чат удалён',
+    tr: 'Sohbet silindi',
+    zh: '聊天已删除',
   },
   rocket_meals_module_delete_failed: {
     de: 'Löschen fehlgeschlagen',

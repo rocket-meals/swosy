@@ -160,6 +160,11 @@
       },
       {
         "type": "hook",
+        "name": "food-feedback-reaction-push-hook",
+        "source": "src/food-feedback-reaction-push-hook/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "food-feedback-report-schedule",
         "source": "src/food-feedback-report-schedule/index.ts"
       },
@@ -202,6 +207,11 @@
         "type": "hook",
         "name": "housing-sync-hook",
         "source": "src/housing-sync-hook/index.ts"
+      },
+      {
+        "type": "hook",
+        "name": "legal-documents-hook",
+        "source": "src/legal-documents-hook/index.ts"
       },
       {
         "type": "hook",

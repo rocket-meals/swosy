@@ -282,8 +282,13 @@ export function getVersionPatch() {
         // 162: responses modal lists feedbacks with a new chat message first
         // 163: own comment in the food feedback card in italics and quotation marks
         // 164: food feedback responses card only announces chats of the last 14 days
-        // 165: machine-translated food names get a translate icon with a hint modal
-        return 165;
+        // 165: common: LegalEntities (company data for imprints and legal documents)
+        // 166: chats without a message are not unread, food feedback chats only at the own ratings
+        //      (dev setting to list them in chats), seen reactions no longer reset by profile writes,
+        //      contrast color on the chat button
+        // 167: back from a food feedback chat goes to the own ratings, dev button resets seen reactions
+        // 168: machine-translated food names get a translate icon with a hint modal
+        return 168;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

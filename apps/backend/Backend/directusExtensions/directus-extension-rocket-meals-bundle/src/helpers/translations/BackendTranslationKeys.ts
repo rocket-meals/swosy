@@ -45,6 +45,10 @@ export const BackendTranslationKeys = {
   food_feedback_guest_rating_forbidden: 'food_feedback_guest_rating_forbidden',
   food_feedback_guest_comment_forbidden: 'food_feedback_guest_comment_forbidden',
 
+  // Protection of the legal documents maintained in code (legal-documents-hook)
+  legal_document_edit_forbidden: 'legal_document_edit_forbidden',
+  legal_document_custom_id_reserved: 'legal_document_custom_id_reserved',
+
   // Mails to the contact email of an app feedback and pushes when support answers
   app_feedback_answer_mail_subject: 'app_feedback_answer_mail_subject',
   app_feedback_answer_mail_intro: 'app_feedback_answer_mail_intro',
@@ -55,6 +59,13 @@ export const BackendTranslationKeys = {
   chat_answer_mail_subject: 'chat_answer_mail_subject',
   chat_answer_mail_intro: 'chat_answer_mail_intro',
   notification_support_answer_title: 'notification_support_answer_title',
+  notification_food_feedback_reaction_title: 'notification_food_feedback_reaction_title',
+  notification_food_feedback_reaction_thumbs_up: 'notification_food_feedback_reaction_thumbs_up',
+  notification_food_feedback_reaction_heart: 'notification_food_feedback_reaction_heart',
+  notification_food_feedback_reaction_thanks: 'notification_food_feedback_reaction_thanks',
+  notification_food_feedback_reaction_yummy: 'notification_food_feedback_reaction_yummy',
+  notification_food_feedback_reaction_good_idea: 'notification_food_feedback_reaction_good_idea',
+  notification_food_feedback_reaction_other: 'notification_food_feedback_reaction_other',
   notification_feature_wish_published_title: 'notification_feature_wish_published_title',
   notification_feature_wish_published_body: 'notification_feature_wish_published_body',
   notification_free_apartments_title: 'notification_free_apartments_title',
@@ -130,6 +141,11 @@ export const BackendTranslationKeys = {
   rocket_meals_module_delete_selected: 'rocket_meals_module_delete_selected',
   rocket_meals_module_delete_confirm_title: 'rocket_meals_module_delete_confirm_title',
   rocket_meals_module_delete_confirm_text: 'rocket_meals_module_delete_confirm_text',
+  rocket_meals_module_food_feedback_delete: 'rocket_meals_module_food_feedback_delete',
+  rocket_meals_module_food_feedback_delete_confirm_text: 'rocket_meals_module_food_feedback_delete_confirm_text',
+  rocket_meals_module_food_feedback_delete_chat: 'rocket_meals_module_food_feedback_delete_chat',
+  rocket_meals_module_food_feedback_delete_chat_confirm_text: 'rocket_meals_module_food_feedback_delete_chat_confirm_text',
+  rocket_meals_module_food_feedback_chat_deleted: 'rocket_meals_module_food_feedback_chat_deleted',
   rocket_meals_module_delete_failed: 'rocket_meals_module_delete_failed',
   rocket_meals_module_deleted: 'rocket_meals_module_deleted',
   rocket_meals_module_mark_resolved_failed: 'rocket_meals_module_mark_resolved_failed',

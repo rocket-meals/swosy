@@ -51,6 +51,9 @@ export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 		// "verified" is readable but not writable for users (set by the server/admins);
 		// sending it back would reject the whole update with 403
 		delete profileData.verified;
+		// Has its own writer below. The profile in Redux can be older than the server (another device,
+		// or not fetched yet), and sending it back with the rest reset it to null again and again.
+		delete profileData.food_feedback_reactions_seen_until;
 		// `display_group` is only a field group in the Directus layout, not a column. Tenants whose
 		// User policy does not list it reject the whole update with 403 (seen on SWOSY).
 		if (Array.isArray(profileData.devices)) {
@@ -67,6 +70,14 @@ export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 		const updatedProfile = await this.fetchProfileById(profileData?.id);
 		return updatedProfile;
 		// return profileData;
+	}
+
+	/**
+	 * Writes only `food_feedback_reactions_seen_until`, see `FoodFeedbackResponsesHint`; {@link updateProfile}
+	 * never sends it, so a full write with an older profile cannot reset it.
+	 */
+	async updateFoodFeedbackReactionsSeenUntil(profileId: string, seenUntil: string | null) {
+		await this.updateItem(profileId, { food_feedback_reactions_seen_until: seenUntil });
 	}
 }
 

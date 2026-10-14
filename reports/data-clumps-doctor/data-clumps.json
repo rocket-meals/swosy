@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-14T15:53:46.326Z",
+  "report_timestamp": "2026-10-14T17:17:49.602Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 138,
-          "average": 1.4986945169712793,
-          "amountSavedValuesForKeys": 5740,
-          "amountKeys": 32
+          "average": 1.4996104907816152,
+          "amountSavedValuesForKeys": 5775,
+          "amountKeys": 31
         },
         "invertedParameterToMethods": {
-          "median": 1,
-          "maximum": 80,
-          "average": 2.2572135201978565,
-          "amountSavedValuesForKeys": 2738,
+          "median": 1.5,
+          "maximum": 84,
+          "average": 2.2577235772357724,
+          "amountSavedValuesForKeys": 2777,
           "amountKeys": 28
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 138,
-          "average": 1.5109239273493025,
-          "amountSavedValuesForKeys": 5740,
+          "average": 1.5117801047120418,
+          "amountSavedValuesForKeys": 5775,
           "amountKeys": 31
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 6070,
-        "detection_time_ms": 139,
+        "ast_generation_time_ms": 6301,
+        "detection_time_ms": 141,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 349.85,
-          "os_memory_free": 14751617024,
-          "os_memory_total": 16766402560,
+          "os_uptime": 323.94,
+          "os_memory_free": 14668292096,
+          "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 2,
-    "amount_files_with_data_clumps": 2,
-    "amount_methods_with_data_clumps": 6,
-    "fields_to_fields_data_clump": 0,
+    "amount_classes_or_interfaces_with_data_clumps": 5,
+    "amount_files_with_data_clumps": 4,
+    "amount_methods_with_data_clumps": 8,
+    "fields_to_fields_data_clump": 2,
     "parameters_to_fields_data_clump": 0,
-    "parameters_to_parameters_data_clump": 14,
-    "amount_data_clumps": 14
+    "parameters_to_parameters_data_clump": 16,
+    "amount_data_clumps": 18
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "9117bf0037973f8b7363310f16c098b8105621d0",
-    "project_commit_hash": "9117bf0037973f8b7363310f16c098b8105621d0",
+    "project_version": "d293033b380a711106115c0ef5eaf9876b2f46d3",
+    "project_commit_hash": "d293033b380a711106115c0ef5eaf9876b2f46d3",
     "project_tag": null,
-    "project_commit_date": "1791993027",
+    "project_commit_date": "1791998137",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 807,
-    "number_of_classes_or_interfaces": 1855,
-    "number_of_methods": 2307,
-    "number_of_data_fields": 5740,
-    "number_of_method_parameters": 2738
+    "number_of_files": 814,
+    "number_of_classes_or_interfaces": 1870,
+    "number_of_methods": 2332,
+    "number_of_data_fields": 5775,
+    "number_of_method_parameters": 2777
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -1446,6 +1446,394 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 1,
+        "cluster_type": 2
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument-documentvalueslanguageCodes": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument-documentvalueslanguageCodes",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts",
+      "from_class_or_interface_name": "LegalDocumentsSync",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync",
+      "from_method_name": "renderForLanguages",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts",
+      "to_class_or_interface_name": "LegalDocumentsSync",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync",
+      "to_method_name": "syncDocument",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages/parameter/document": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages/parameter/document",
+          "name": "document",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocuments\").LegalDocument",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument/parameter/document",
+            "name": "document",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocuments\").LegalDocument",
+            "modifiers": [],
+            "position": {
+              "startLine": 86,
+              "startColumn": 30,
+              "endLine": 86,
+              "endColumn": 53
+            }
+          },
+          "position": {
+            "startLine": 79,
+            "startColumn": 29,
+            "endLine": 79,
+            "endColumn": 52
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages/parameter/values": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages/parameter/values",
+          "name": "values",
+          "type": "Readonly<Record<string, string>>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument/parameter/values",
+            "name": "values",
+            "type": "Readonly<Record<string, string>>",
+            "modifiers": [],
+            "position": {
+              "startLine": 86,
+              "startColumn": 55,
+              "endLine": 86,
+              "endColumn": 95
+            }
+          },
+          "position": {
+            "startLine": 79,
+            "startColumn": 54,
+            "endLine": 79,
+            "endColumn": 94
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages/parameter/languageCodes": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages/parameter/languageCodes",
+          "name": "languageCodes",
+          "type": "readonly string[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument/parameter/languageCodes",
+            "name": "languageCodes",
+            "type": "readonly string[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 86,
+              "startColumn": 97,
+              "endLine": 86,
+              "endColumn": 129
+            }
+          },
+          "position": {
+            "startLine": 79,
+            "startColumn": 96,
+            "endLine": 79,
+            "endColumn": 128
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 1
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages-documentvalueslanguageCodes": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages-documentvalueslanguageCodes",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts",
+      "from_class_or_interface_name": "LegalDocumentsSync",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync",
+      "from_method_name": "syncDocument",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts",
+      "to_class_or_interface_name": "LegalDocumentsSync",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync",
+      "to_method_name": "renderForLanguages",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument/parameter/document": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument/parameter/document",
+          "name": "document",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocuments\").LegalDocument",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages/parameter/document",
+            "name": "document",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocuments\").LegalDocument",
+            "modifiers": [],
+            "position": {
+              "startLine": 79,
+              "startColumn": 29,
+              "endLine": 79,
+              "endColumn": 52
+            }
+          },
+          "position": {
+            "startLine": 86,
+            "startColumn": 30,
+            "endLine": 86,
+            "endColumn": 53
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument/parameter/values": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument/parameter/values",
+          "name": "values",
+          "type": "Readonly<Record<string, string>>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages/parameter/values",
+            "name": "values",
+            "type": "Readonly<Record<string, string>>",
+            "modifiers": [],
+            "position": {
+              "startLine": 79,
+              "startColumn": 54,
+              "endLine": 79,
+              "endColumn": 94
+            }
+          },
+          "position": {
+            "startLine": 86,
+            "startColumn": 55,
+            "endLine": 86,
+            "endColumn": 95
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument/parameter/languageCodes": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/syncDocument/parameter/languageCodes",
+          "name": "languageCodes",
+          "type": "readonly string[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocumentsSync.ts/class/LegalDocumentsSync/method/renderForLanguages/parameter/languageCodes",
+            "name": "languageCodes",
+            "type": "readonly string[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 79,
+              "startColumn": 96,
+              "endLine": 79,
+              "endColumn": 128
+            }
+          },
+          "position": {
+            "startLine": 86,
+            "startColumn": 97,
+            "endLine": 86,
+            "endColumn": 129
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 1
+      }
+    },
+    "fields_to_fields_data_clump-packages/common/src/LegalEntities.ts-packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity-packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity-namephoneemail": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common/src/LegalEntities.ts-packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity-packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity-namephoneemail",
+      "probability": 1,
+      "from_file_path": "packages/common/src/LegalEntities.ts",
+      "from_class_or_interface_key": "packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity",
+      "from_class_or_interface_name": "CustomerLegalEntity",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common/src/LegalEntities.ts",
+      "to_class_or_interface_key": "packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity",
+      "to_class_or_interface_name": "OperatorLegalEntity",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity/memberField/name": {
+          "key": "packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity/memberField/name",
+          "name": "name",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity/memberField/name",
+            "name": "name",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 3,
+              "endLine": 12,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 16
+          }
+        },
+        "packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity/memberField/phone": {
+          "key": "packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity/memberField/phone",
+          "name": "phone",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity/memberField/phone",
+            "name": "phone",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 18,
+              "startColumn": 3,
+              "endLine": 18,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 32,
+            "startColumn": 3,
+            "endLine": 32,
+            "endColumn": 17
+          }
+        },
+        "packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity/memberField/email": {
+          "key": "packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity/memberField/email",
+          "name": "email",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity/memberField/email",
+            "name": "email",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 19,
+              "startColumn": 3,
+              "endLine": 19,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 33,
+            "startColumn": 3,
+            "endLine": 33,
+            "endColumn": 17
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common/src/LegalEntities.ts-packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity-packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity-namephoneemail": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common/src/LegalEntities.ts-packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity-packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity-namephoneemail",
+      "probability": 1,
+      "from_file_path": "packages/common/src/LegalEntities.ts",
+      "from_class_or_interface_key": "packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity",
+      "from_class_or_interface_name": "OperatorLegalEntity",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common/src/LegalEntities.ts",
+      "to_class_or_interface_key": "packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity",
+      "to_class_or_interface_name": "CustomerLegalEntity",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity/memberField/name": {
+          "key": "packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity/memberField/name",
+          "name": "name",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity/memberField/name",
+            "name": "name",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 3,
+              "endLine": 29,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 3,
+            "endLine": 12,
+            "endColumn": 16
+          }
+        },
+        "packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity/memberField/phone": {
+          "key": "packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity/memberField/phone",
+          "name": "phone",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity/memberField/phone",
+            "name": "phone",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 32,
+              "startColumn": 3,
+              "endLine": 32,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 18,
+            "startColumn": 3,
+            "endLine": 18,
+            "endColumn": 17
+          }
+        },
+        "packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity/memberField/email": {
+          "key": "packages/common/src/LegalEntities.ts/interface/OperatorLegalEntity/memberField/email",
+          "name": "email",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/LegalEntities.ts/interface/CustomerLegalEntity/memberField/email",
+            "name": "email",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 33,
+              "startColumn": 3,
+              "endLine": 33,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 19,
+            "startColumn": 3,
+            "endLine": 19,
+            "endColumn": 17
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
         "cluster_type": 2
       }
     }

@@ -1,26 +1,31 @@
-Unsere Website und unsere spezielle App (nachfolgend „App“) können ohne Preisgabe personenbezogener Daten verwendet werden, mit Ausnahme von kurzfristiger Speicherung von Log Dateien (wie. z. B. IP-Adressen, Zugriffszeiten) zur Wahrung der Sicherheit. Solltest du jedoch bestimmte personenbezogene Daten zur Verfügung stellen (zum Beispiel im Zuge einer E-Mail-Kontaktaufnahme oder Login mit externen Anbietern wie Google, Apple und andere), wie Name, Wohnort oder E-Mail-Adresse, geschieht dies immer auf freiwilliger Basis und mit dem ausdrücklichen Einverständnis von dir.
+import type { LegalDocumentText } from '../../LegalDocuments';
+
+export const PRIVACY_POLICY_DE: LegalDocumentText = {
+  title: 'Datenschutzerklärung',
+  content: `Unsere Website und unsere spezielle App (nachfolgend „App“) können ohne Preisgabe personenbezogener Daten verwendet werden, mit Ausnahme von kurzfristiger Speicherung von Log Dateien (wie. z. B. IP-Adressen, Zugriffszeiten) zur Wahrung der Sicherheit. Solltest du jedoch bestimmte personenbezogene Daten zur Verfügung stellen (zum Beispiel im Zuge einer E-Mail-Kontaktaufnahme oder Login mit externen Anbietern wie Google, Apple und andere), wie Name, Wohnort oder E-Mail-Adresse, geschieht dies immer auf freiwilliger Basis und mit dem ausdrücklichen Einverständnis von dir.
 
 Name und Anschrift des Verantwortlichen:
 
 Der Verantwortliche im Sinne der Datenschutz-Grundverordnung (DSGVO) und anderer nationaler Datenschutzgesetze der Mitgliedstaaten sowie sonstiger datenschutzrechtlicher Bestimmungen ist:
 
 
-Baumgartner Software UG (haftungsbeschränkt)
-Bernhardstraße 20,
-49413 Dinklage
-Tel.: +49 170 2215430
-E-Mail: info@baumgartner-software.de
-Geschäftsführer: Nils Baumgartner
-Steuernummer: 68/213/02808
-Umsatzsteuer-Identifikations-Nummer: DE 362633044
+{{operator.name}}
+{{operator.street}},
+{{operator.postal_code}} {{operator.city}}
+Tel.: {{operator.phone}}
+E-Mail: {{operator.email}}
+Geschäftsführer: {{operator.managing_director}}
+Steuernummer: {{operator.tax_number}}
+Umsatzsteuer-Identifikations-Nummer: {{operator.vat_id}}
+Registergericht: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
 E-Mail:
 
-[info@baumgartner-software.de](mailto:info@baumgartner-software)
+[{{operator.email}}](mailto:{{operator.email}})
 
 Website:
 
- [https://baumgartner-software.de](https://baumgartner-software.de)
+ [{{operator.website}}]({{operator.website}})
 
 
 
@@ -95,11 +100,9 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 
 		Die Sitzungskennung wird bei jedem Start der App neu und zufällig erzeugt. Sie wird nur im Arbeitsspeicher gehalten, nicht auf deinem Gerät gespeichert und ist nach dem Schließen der App verloren. Die Ereignisse enthalten weder deine Benutzer-ID noch deine Profil-ID, Gerätekennung, Push-Token oder IP-Adresse, und wir verknüpfen sie nicht mit deinem Account. Die bei der Übertragung technisch notwendige IP-Adresse landet nur, wie oben beschrieben, kurzfristig in den Server-Logs.
 
-		Einige Ereignisse legt unser Server selbst an, ohne dass die App etwas sendet: Wenn die App die Details eines Speiseangebots lädt, speichern wir, welches Speiseangebot, welches Gericht und welche Mensa es war. Statt einer Sitzungskennung steht bei diesen Ereignissen nur der Tag. Auch hier speichern wir weder Benutzer-ID, Profil-ID noch IP-Adresse.
+		Wir werten die Ereignisse ausschließlich zusammengefasst aus, zum Beispiel als Anzahl gerade geöffneter Sitzungen, als Verlauf über den Tag oder als Liste der am häufigsten geöffneten Bereiche und Inhalte.
 
-		Wir werten die Ereignisse ausschließlich zusammengefasst aus, zum Beispiel als Anzahl angesehener Gerichte, als Verlauf über den Tag oder als Liste der am häufigsten geöffneten Bereiche und Inhalte.
-
-		Rechtsgrundlage ist unser berechtigtes Interesse nach Art. 6 Abs. 1 lit. f DSGVO, die App zu betreiben, Störungen früh zu erkennen und das Angebot an der tatsächlichen Nutzung auszurichten.
+		Rechtsgrundlage ist unser berechtigtes Interesse nach Art. 6 Abs. 1 lit. f DSGVO, die App zu betreiben, Störungen früh zu erkennen und das Angebot an der tatsächlichen Nutzung auszurichten. Die Ereignisse werden nach spätestens 12 Monaten gelöscht.
 
 	### Informationen von Nutzern mit einem Account
 
@@ -170,11 +173,11 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 
 			- date_created - Das Erstelldatum deines Kontos. Dadurch können wir den Zuwachs von Benutzern verfolgen.
 
-			- date_updated - Das letzte Änderungsdatum deines Profils. Es wird bei Änderungen an deinem Profil aktualisiert und zusätzlich, wenn du die App öffnest oder in den Vordergrund holst. Dadurch können wir nachvollziehen, wann Änderungen getätigt wurden, und wann du zuletzt aktiv warst. Den Zeitpunkt der letzten Aktivität nutzen wir für die Betriebsübersicht für Administratoren (siehe Abschnitt „Betriebsübersicht für Administratoren“).
+			- date_updated - Das letzte Änderungsdatum deines Profils. Es wird bei Änderungen an deinem Profil aktualisiert und zusätzlich, wenn du die App öffnest oder in den Vordergrund holst (höchstens alle paar Minuten). Dadurch können wir nachvollziehen, wann Änderungen getätigt wurden, und wann du zuletzt aktiv warst. Den Zeitpunkt der letzten Aktivität nutzen wir für die Betriebsübersicht für Administratoren (siehe Abschnitt „Betriebsübersicht für Administratoren“).
 
 		#### Informationen zu deinem Gerät
 
-			- id - Eine vom Server generierte Nummer für dein Gerät. Da es Personen gibt, welche mehrere Geräte haben, unterscheiden wir zwischen diesen angemeldeten Geräten. Dieser Nummer ordnen wir weitere Informationen zu: PushNotificationToken, DeviceOS und DeviceID.
+			- id - Eine vom Server generierte Nummer für dein Gerät. Da es Personen gibt, welche mehrere Geräte haben, unterscheiden wir zwischen diesen angemeldeten Geräten. Dieser Nummer ordnen wir weitere Informationen zu: PushNotificationToken, DeviceOS, DeviceID und StreamViews.
 
 			- DeviceOS - Das Betriebssystem und die Version deines Smartphones. Anhand dieser Informationen können wir Fehlerabstürze und die zu testenden Geräte überblicken.
 
@@ -208,24 +211,23 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 	Damit wir dir die App zur Verfügung stellen können, arbeiten wir mit verschiedenen Dienstleistern zusammen, die uns bei der Bereitstellung der App unterstützen. Diese Dienstleister sind sorgfältig ausgewählt und beauftragt, sind an unsere Weisungen gebunden und werden regelmäßig kontrolliert. Sie verarbeiten personenbezogene Daten nur in unserem Auftrag und strikt nach unseren Weisungen. Die Dienstleister werden von uns nur dann beauftragt, wenn sie hinreichend Garantien dafür bieten, dass geeignete technische und organisatorische Maßnahmen so durchgeführt werden, dass die Verarbeitung im Einklang mit den Anforderungen der DSGVO erfolgt und der Schutz deiner Rechte gewährleistet ist.
 
 
-	### Zusätzliche Weitergabe an das Studierendenwerk Osnabrück
+	### Zusätzliche Weitergabe an das {{customer.name}}
 
-		Die App und die Webseite wurden in Zusammenarbeit mit dem Studierendenwerk entwickelt. Wir als Baumgartner Software UG fungieren zwar als Herausgeber der App, jedoch stammen die Inhalte hauptsächlich vom Studierendenwerk. Um die Services des Studierendenwerks, wie z.B. das Speiseangebot durch Speiserückmeldungen, zu verbessern, teilen wir die hier gelisteten Daten mit dem Studierendenwerk. Das Studierendenwerk hat somit Zugriff auf diese Daten, um deren Angebote und Dienstleistungen besser auf die Bedürfnisse der Studierenden anzupassen.
+		Die App und die Webseite wurden in Zusammenarbeit mit dem Studierendenwerk entwickelt. Wir als {{operator.name}} fungieren zwar als Herausgeber der App, jedoch stammen die Inhalte hauptsächlich vom Studierendenwerk. Um die Services des Studierendenwerks, wie z.B. das Speiseangebot durch Speiserückmeldungen, zu verbessern, teilen wir die hier gelisteten Daten mit dem Studierendenwerk. Das Studierendenwerk hat somit Zugriff auf diese Daten, um deren Angebote und Dienstleistungen besser auf die Bedürfnisse der Studierenden anzupassen.
 
 		Die Verarbeitung und Nutzung der Daten durch das Studierendenwerk erfolgt stets in Übereinstimmung mit den geltenden Datenschutzgesetzen und ausschließlich zu den in dieser Datenschutzerklärung beschriebenen Zwecken. Weitere Informationen dazu findest du in der Datenschutzerklärung des Studierendenwerks 
 
-		[https://www.studentenwerk-osnabrueck.de/de/datenschutzerklaerung.html](https://www.studentenwerk-osnabrueck.de/de/datenschutzerklaerung.html).
-
+		[{{customer.privacy_policy_url}}]({{customer.privacy_policy_url}}).
 
 	### Betriebsübersicht für Administratoren
 
-		Administratoren von Baumgartner Software und des Studierendenwerks können in der App eine Betriebsübersicht öffnen. Sie zeigt, welche Nutzer mit einem Account zuletzt aktiv waren, und welche Aktivitäten gerade in der App stattfinden.
+		Administratoren von {{operator.short_name}} und des Studierendenwerks können in der App eine Betriebsübersicht öffnen. Sie zeigt, welche Nutzer mit einem Account zuletzt aktiv waren, und welche Aktivitäten gerade in der App stattfinden.
 
 		Angezeigt werden dabei:
 		- dein Nickname und dein Avatar
 		- der Zeitpunkt deiner letzten Aktivität (aus last_access bzw. date_updated, siehe oben)
 		- Aktivitäten, die du ohnehin an uns übermittelst, z. B. abgegebene Bewertungen von Gerichten, angekündigte Mensa-Besuche oder das Anlegen deines Accounts
-		- zusammengefasste Zahlen aus der anonymen Nutzungsstatistik, z. B. wie oft heute Gerichte angesehen wurden. Diese Zahlen lassen sich keiner Person zuordnen.
+		- zusammengefasste Zahlen aus der anonymen Nutzungsstatistik, z. B. die Anzahl gerade geöffneter Sitzungen. Diese Zahlen lassen sich keiner Person zuordnen.
 
 		Deine E-Mail-Adresse, dein echter Name, dein Guthaben, deine Chat-Nachrichten oder dein Standort werden dort nicht angezeigt. Für die Übersicht werden keine zusätzlichen Daten erhoben oder gespeichert. Sie zeigt nur den aktuellen Stand der oben beschriebenen Daten, einen eigenen Verlauf deiner Aktivität legen wir dafür nicht an. Gäste erscheinen in der Übersicht nur in den anonymen Zahlen.
 
@@ -266,6 +268,22 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 
 		Auf Wunsch können bereits vorhandene Termine und Veranstaltungen von Drittanbietern wie z. B. aus Stud.IP importiert werden. Diese Daten werden ebenfalls lokal abgespeichert und an unseren Server weitergeleitet. Gegebenenfalls werden die IP-Adresse des verwendeten Endgeräts und die entsprechenden REST-Zugriffe für den Datenexport von Drittanbietern wie z. B. Stud.IP selbst geloggt.
 
+
+	### Einsatz von KI
+
+		Um Rückmeldungen schneller und besser bearbeiten zu können, setzen wir einen KI-Dienst ein. Die KI wird für folgende Funktionen genutzt:
+
+		- Speise-Feedbacks: Die KI schlägt vor, ob und wie wir auf einen Kommentar antworten, und fasst die Rückmeldungen zu einer Speise zusammen.
+		- App-Feedback: Die KI schlägt vor, ob und wie wir auf eine Rückmeldung antworten, und fasst Rückmeldungen zusammen.
+		- Feature-Wünsche: Die KI prüft neue Wünsche vor, z. B. ob es den Wunsch schon gibt.
+
+		An den KI-Dienst übermitteln wir dabei nur den Text deiner Rückmeldung und die zugehörigen Angaben wie Bewertung, Speise, Mensa und Datum. Gibt es zu einer Rückmeldung bereits einen Chat mit dem Support, übermitteln wir auch dessen Nachrichten, jedoch ohne Namen. Deine Benutzer-ID, deine Profil-ID, deine E-Mail-Adresse, deinen Namen oder andere Profildaten übermitteln wir nicht. Die KI macht nur Vorschläge. Jede Antwort und jede Entscheidung wird von einem Menschen geprüft und freigegeben.
+
+		Anbieter des KI-Dienstes ist Anthropic Ireland, Limited, der für uns als Auftragsverarbeiter tätig ist. Die Verarbeitung kann auch außerhalb des Europäischen Wirtschaftsraums (EWR), insbesondere in den USA, stattfinden. Dieser Schutz wird durch die Standardvertragsklauseln abgesichert (Art. 46 Abs. 2 lit. c DSGVO). Weitere Informationen findest du unter [https://www.anthropic.com/legal/privacy](https://www.anthropic.com/legal/privacy) und [https://www.anthropic.com/legal/data-processing-addendum](https://www.anthropic.com/legal/data-processing-addendum).
+
+		Rechtsgrundlage ist unser berechtigtes Interesse an einer schnellen und guten Bearbeitung deiner Rückmeldungen gemäß Art. 6 Abs. 1 lit. f DSGVO. Du kannst dieser Verarbeitung nach Art. 21 DSGVO jederzeit über die unten genannten Kontaktdaten widersprechen.
+
+		Bitte gib in deinen Rückmeldungen keine persönlichen Daten wie Namen oder Kontaktdaten an, da der Text der Rückmeldung an den KI-Dienst übermittelt wird.
 
 
 	### Einsatz von KI
@@ -396,26 +414,28 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 
 
 
-	Baumgartner Software UG (haftungsbeschränkt)
-	Bernhardstraße 20,
-	49413 Dinklage
-	Tel.: +49 170 2215430
-	E-Mail: info@baumgartner-software.de
-	Geschäftsführer: Nils Baumgartner
-	Steuernummer: 68/213/02808
-	Umsatzsteuer-Identifikations-Nummer: DE 362633044
+	{{operator.name}}
+	{{operator.street}},
+	{{operator.postal_code}} {{operator.city}}
+	Tel.: {{operator.phone}}
+	E-Mail: {{operator.email}}
+	Geschäftsführer: {{operator.managing_director}}
+	Steuernummer: {{operator.tax_number}}
+	Umsatzsteuer-Identifikations-Nummer: {{operator.vat_id}}
+	Registergericht: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
 	E-Mail:
 
-	[info@baumgartner-software.de](mailto:info@baumgartner-software.de)
+	[{{operator.email}}](mailto:{{operator.email}})
 
 	Website:
 
-	[https://baumgartner-software.de](https://baumgartner-software.de)
+	[{{operator.website}}]({{operator.website}})
 
 
 ## Änderungen dieser Datenschutzerklärung
 
 Wir halten diese Datenschutzerklärung immer auf dem neuesten Stand. Deshalb behalten wir uns vor, sie von Zeit zu Zeit zu ändern und Änderungen bei der Erhebung, Verarbeitung oder Nutzung deiner Daten nachzupflegen. Die aktuelle Fassung der Datenschutzerklärung ist stets unter „Datenschutzbestimmungen“ innerhalb der App abrufbar.
 
-Stand: 16.09.2024
+Stand: 16.09.2024`,
+};
