@@ -936,6 +936,8 @@ export const TranslationKeys = {
 	own_food_feedback_from_you: 'own_food_feedback_from_you',
 	own_food_feedback_from_canteen: 'own_food_feedback_from_canteen',
 	own_food_feedback_no_response: 'own_food_feedback_no_response',
+	auto_translated: 'auto_translated',
+	auto_translated_hint: 'auto_translated_hint',
 	own_food_feedbacks_title: 'own_food_feedbacks_title',
 	own_food_feedbacks_tab_all: 'own_food_feedbacks_tab_all',
 	own_food_feedbacks_tab_ratings: 'own_food_feedbacks_tab_ratings',

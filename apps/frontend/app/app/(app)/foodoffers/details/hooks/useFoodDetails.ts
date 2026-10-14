@@ -6,6 +6,7 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
+import { isAutoTranslatedTranslation } from '@/helper/autoTranslationHelper';
 
 interface UseFoodDetailsProps {
     offerId?: string | string[];
@@ -22,6 +23,8 @@ interface UseFoodDetailsProps {
 type TranslationWithName = {
     languages_code?: unknown;
     name?: string | null;
+    let_be_translated?: boolean | null;
+    be_source_for_translations?: boolean | null;
 };
 
 const findTranslationForLanguage = <T extends TranslationWithName>(
@@ -53,11 +56,14 @@ const applyFoodOfferDetailsResponse = (
         food?.translations as DatabaseTypes.FoodsTranslations[] | undefined,
         languageCode
     );
-    const name = foodofferTranslation?.name || foodTranslation?.name || null;
+    // The row the name is taken from tells whether it was translated by machine
+    const nameTranslation = foodofferTranslation?.name ? foodofferTranslation : foodTranslation;
+    const name = nameTranslation?.name || null;
     setFoodDetails({
         ...food,
         foodoffer_category,
         name: name ? translateDynamic(name) : null,
+        isNameAutoTranslated: Boolean(name) && isAutoTranslatedTranslation(nameTranslation),
     });
     if (attribute_values) {
         setFoodAttributes(attribute_values);
@@ -79,6 +85,7 @@ const applyFoodDetailsResponse = (
     setFoodDetails({
         ...food,
         name: rawName ? translateDynamic(rawName) : null,
+        isNameAutoTranslated: Boolean(translation?.name) && isAutoTranslatedTranslation(translation),
     });
 
     const attributes = food?.attribute_values || food?.foods_attributes_values;
