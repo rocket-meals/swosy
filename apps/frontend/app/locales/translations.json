@@ -9228,25 +9228,5 @@
     "ru": "Столовая пока не ответила",
     "tr": "Yemekhaneden henüz yanıt yok",
     "zh": "食堂尚未回复"
-  },
-  "auto_translated": {
-    "de": "Automatisch übersetzt",
-    "en": "Automatically translated",
-    "ar": "مترجم آليًا",
-    "es": "Traducido automáticamente",
-    "fr": "Traduit automatiquement",
-    "ru": "Переведено автоматически",
-    "tr": "Otomatik olarak çevrildi",
-    "zh": "自动翻译"
-  },
-  "auto_translated_hint": {
-    "de": "Dieser Text wurde automatisch übersetzt und kann Fehler enthalten. Verbindlich ist der Originaltext. Das gilt besonders für Angaben zu Allergenen und Zusatzstoffen.",
-    "en": "This text was translated automatically and may contain errors. The original text is binding. This applies in particular to information on allergens and additives.",
-    "ar": "تمت ترجمة هذا النص آليًا وقد يحتوي على أخطاء. النص الأصلي هو المُلزم. ينطبق هذا بشكل خاص على المعلومات المتعلقة بمسببات الحساسية والمواد المضافة.",
-    "es": "Este texto se ha traducido automáticamente y puede contener errores. El texto original es el vinculante. Esto se aplica especialmente a la información sobre alérgenos y aditivos.",
-    "fr": "Ce texte a été traduit automatiquement et peut contenir des erreurs. Seul le texte original fait foi. Cela vaut en particulier pour les informations sur les allergènes et les additifs.",
-    "ru": "Этот текст переведён автоматически и может содержать ошибки. Обязательным является исходный текст. Это особенно касается сведений об аллергенах и пищевых добавках.",
-    "tr": "Bu metin otomatik olarak çevrilmiştir ve hatalar içerebilir. Bağlayıcı olan orijinal metindir. Bu özellikle alerjenler ve katkı maddeleriyle ilgili bilgiler için geçerlidir.",
-    "zh": "此文本为自动翻译，可能存在错误。以原文为准，尤其是有关过敏原和添加剂的信息。"
   }
 }

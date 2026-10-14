@@ -9,7 +9,6 @@ import styles from '../styles';
 import { isWeb } from '@/constants/Constants';
 import MyImage from '@/components/MyImage';
 import SettingsList from '@/components/SettingsList';
-import AutoTranslatedHint from '@/components/AutoTranslatedHint';
 import type { FoodDetailsSectionBaseProps } from './types';
 
 interface FoodHeaderProps extends FoodDetailsSectionBaseProps {
@@ -238,7 +237,6 @@ const FoodHeader = ({
                 <View style={webLayout.featuredContainerStyle}>
                     <Text style={[...webLayout.foodHeadingStyle, { color: theme.screen.text }]}>
                         {foodDetails?.name}
-                        {foodDetails?.isNameAutoTranslated && <AutoTranslatedHint />}
                     </Text>
                 </View>
             </>
@@ -280,7 +278,6 @@ const FoodHeader = ({
                 ]}
             >
                 {foodDetails?.name}
-                {foodDetails?.isNameAutoTranslated && <AutoTranslatedHint />}
             </Text>
             {showRating && (
             <View style={styles.marginTopMedium}>

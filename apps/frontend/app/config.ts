@@ -287,8 +287,7 @@ export function getVersionPatch() {
         //      (dev setting to list them in chats), seen reactions no longer reset by profile writes,
         //      contrast color on the chat button
         // 167: back from a food feedback chat goes to the own ratings, dev button resets seen reactions
-        // 168: machine-translated food names get a translate icon with a hint modal
-        return 168;
+        return 167;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
