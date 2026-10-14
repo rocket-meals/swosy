@@ -3,8 +3,10 @@
  * collection, with the company data of this server filled in.
  *
  * Per document:
- * - The wiki has a fixed id. If it does not exist yet, it is created and takes over the display
- *   settings (drawer, position, icon, ...) of a wiki that had the same `custom_id` before.
+ * - The wiki has a fixed id. If it does not exist yet, it is created and takes over the position and
+ *   look (position, icon, ...) of a wiki that had the same `custom_id` before.
+ * - The visibility (`LEGAL_WIKI_SETTINGS`: public, at the bottom of the drawer) is enforced on every
+ *   start: a legal document must stay reachable for everybody, also without an account.
  * - Every other wiki with that `custom_id` is archived and renamed (`legacy-<custom_id>`), so the
  *   app only finds the one from code.
  * - Per language of the `languages` collection the translation is created or updated, but only when
@@ -22,10 +24,22 @@ export const LEGACY_CUSTOM_ID_PREFIX = 'legacy-';
 const STATUS_ARCHIVED = 'archived';
 
 /** The fields of a replaced wiki the new one takes over, so it shows up in the same place in the app. */
-export const WIKI_DISPLAY_FIELDS = ['parent', 'position', 'sort', 'icon', 'color', 'public', 'show_in_drawer', 'show_in_drawer_as_bottom_item'] as const;
+export const WIKI_DISPLAY_FIELDS = ['parent', 'position', 'sort', 'icon', 'color'] as const;
+
+/**
+ * Enforced on every start: published, readable without an account, in the footer and at the bottom
+ * of the drawer (not in its main list) and shown as a page, not as a link (`url`).
+ */
+export const LEGAL_WIKI_SETTINGS = {
+  status: 'published',
+  public: true,
+  show_in_drawer: false,
+  show_in_drawer_as_bottom_item: true,
+  url: null,
+} as const;
 
 export type LegalWikiTranslation = { id: number; languages_code: string | null; title: string | null; content: string | null };
-export type LegalWiki = { id: string; custom_id: string | null; status: string | null } & Partial<Record<(typeof WIKI_DISPLAY_FIELDS)[number], unknown>>;
+export type LegalWiki = { id: string; custom_id: string | null } & Partial<Record<(typeof WIKI_DISPLAY_FIELDS)[number] | keyof typeof LEGAL_WIKI_SETTINGS, unknown>>;
 
 /** What the sync needs from the database. Implemented with Directus services in `DirectusLegalDocumentsDatabase`. */
 export interface LegalDocumentsDatabase {
@@ -76,11 +90,18 @@ export class LegalDocumentsSync {
 
     const wikis = await this.database.readWikisByIdOrCustomId(document.wikiId, document.customId);
     const others = wikis.filter(wiki => wiki.id !== document.wikiId);
-    if (!wikis.some(wiki => wiki.id === document.wikiId)) {
+    const wiki = wikis.find(candidate => candidate.id === document.wikiId);
+    if (wiki) {
+      const changedSettings = Object.entries(LEGAL_WIKI_SETTINGS).filter(([field, value]) => (wiki[field as keyof LegalWiki] ?? null) !== value);
+      if (changedSettings.length > 0) {
+        await this.database.updateWiki(wiki.id, Object.fromEntries(changedSettings));
+        log.push(`${document.customId}: reset ${changedSettings.map(([field]) => field).join(', ')}`);
+      }
+    } else {
       const replaced = others[0];
       const displaySettings = Object.fromEntries(WIKI_DISPLAY_FIELDS.filter(field => replaced?.[field] !== undefined).map(field => [field, replaced?.[field]]));
-      await this.database.createWiki({ ...displaySettings, id: document.wikiId, custom_id: document.customId, alias: document.alias });
-      log.push(`${document.customId}: created wiki ${document.wikiId}` + (replaced ? ` with the display settings of ${replaced.id}` : ''));
+      await this.database.createWiki({ ...displaySettings, ...LEGAL_WIKI_SETTINGS, id: document.wikiId, custom_id: document.customId, alias: document.alias });
+      log.push(`${document.customId}: created wiki ${document.wikiId}` + (replaced ? ` at the position of ${replaced.id}` : ''));
     }
     for (const other of others) {
       await this.database.updateWiki(other.id, { custom_id: LEGACY_CUSTOM_ID_PREFIX + document.customId, status: STATUS_ARCHIVED }); // NOSONAR S9382 - sequential on purpose: usually one old wiki

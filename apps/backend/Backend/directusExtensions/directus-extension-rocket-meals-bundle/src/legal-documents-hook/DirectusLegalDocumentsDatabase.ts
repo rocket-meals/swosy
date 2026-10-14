@@ -1,7 +1,7 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
-import { LegalDocumentsDatabase, LegalWiki, LegalWikiTranslation, WIKI_DISPLAY_FIELDS } from './LegalDocumentsSync';
+import { LEGAL_WIKI_SETTINGS, LegalDocumentsDatabase, LegalWiki, LegalWikiTranslation, WIKI_DISPLAY_FIELDS } from './LegalDocumentsSync';
 
 const WIKIS = 'wikis';
 const WIKIS_TRANSLATIONS = 'wikis_translations';
@@ -25,7 +25,7 @@ export class DirectusLegalDocumentsDatabase implements LegalDocumentsDatabase {
   async readWikisByIdOrCustomId(id: string, customId: string): Promise<LegalWiki[]> {
     const wikis = await this.wikis.readByQuery({
       filter: { _or: [{ id: { _eq: id } }, { custom_id: { _eq: customId } }] },
-      fields: ['id', 'custom_id', 'status', ...WIKI_DISPLAY_FIELDS],
+      fields: ['id', 'custom_id', ...WIKI_DISPLAY_FIELDS, ...Object.keys(LEGAL_WIKI_SETTINGS)],
       sort: ['date_created'],
       limit: -1,
     });

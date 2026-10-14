@@ -3,7 +3,7 @@ import { ALL_TRANSLATION_LANGUAGES } from 'repo-depkit-common';
 import { LEGAL_DOCUMENTS } from '../LegalDocuments';
 import { LegalDocumentRenderer } from '../LegalDocumentRenderer';
 import { CUSTOMER_LEGAL_ENTITIES, CustomerLegalEntity, LegalEntities, OPERATOR_LEGAL_ENTITY } from '../LegalEntities';
-import { LEGACY_CUSTOM_ID_PREFIX, LegalDocumentsDatabase, LegalDocumentsSync, LegalWiki, LegalWikiTranslation } from '../LegalDocumentsSync';
+import { LEGACY_CUSTOM_ID_PREFIX, LEGAL_WIKI_SETTINGS, LegalDocumentsDatabase, LegalDocumentsSync, LegalWiki, LegalWikiTranslation } from '../LegalDocumentsSync';
 import type { LegalDocument } from '../LegalDocumentTypes';
 
 const CUSTOMER: CustomerLegalEntity = {
@@ -119,7 +119,7 @@ describe('LegalDocumentsSync', () => {
     const result = await new LegalDocumentsSync(database).syncAll([PRIVACY_POLICY], CUSTOMER);
 
     const created = database.wikis.find(wiki => wiki.id === PRIVACY_POLICY.wikiId);
-    expect(created).toMatchObject({ custom_id: 'privacy-policy', show_in_drawer_as_bottom_item: true, position: 3 });
+    expect(created).toMatchObject({ ...LEGAL_WIKI_SETTINGS, custom_id: 'privacy-policy', position: 3 });
     expect(database.wikis.find(wiki => wiki.id === 'old')).toMatchObject({ custom_id: LEGACY_CUSTOM_ID_PREFIX + 'privacy-policy', status: 'archived' });
     expect(database.translations.map(translation => translation.languages_code)).toEqual(['de-DE', 'EN-us']);
     const german = database.translations[0]!;
@@ -139,6 +139,18 @@ describe('LegalDocumentsSync', () => {
 
     expect(database.writes).toEqual([]);
     expect(result.log).toEqual([]);
+  });
+
+  it('makes a hidden legal document visible again', async () => {
+    const database = new InMemoryDatabase(['de-DE']);
+    const sync = new LegalDocumentsSync(database);
+    await sync.syncAll([PRIVACY_POLICY], CUSTOMER);
+    Object.assign(database.wikis[0]!, { public: false, show_in_drawer_as_bottom_item: false, icon: 'star' });
+
+    const result = await sync.syncAll([PRIVACY_POLICY], CUSTOMER);
+
+    expect(result.log).toEqual(['privacy-policy: reset public, show_in_drawer_as_bottom_item']);
+    expect(database.wikis[0]).toMatchObject({ ...LEGAL_WIKI_SETTINGS, icon: 'star' });
   });
 
   it('only updates the language that differs from the code', async () => {

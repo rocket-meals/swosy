@@ -129,7 +129,9 @@ document. An edit in Directus is overwritten on the next start.
   `src/legal-documents-hook/LegalEntities.ts`: the operator once, the customer per `SYNC_FOR_CUSTOMER`.
 - A customer without an entry there (`null`) keeps the legal documents it has in Directus.
 - An older wiki with the same `custom_id` is archived once and renamed to `legacy-<custom_id>`, the new
-  wiki takes over its drawer and position settings.
+  wiki takes over its position and icon.
+- Visibility is enforced on every start: published, public (readable without an account), at the bottom
+  of the drawer (`show_in_drawer_as_bottom_item`), not in its main list.
 
 ## Configure SSO
 
