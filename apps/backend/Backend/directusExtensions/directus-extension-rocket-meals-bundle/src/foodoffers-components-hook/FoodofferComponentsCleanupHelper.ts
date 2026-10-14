@@ -122,7 +122,7 @@ export class FoodofferComponentsCleanupHelper {
    * to keep the database load of a single run bounded. Returns the number of deleted foodoffers.
    * Deleted rows move the following rows forward, so the offset only advances by the candidates that were kept.
    */
-  static async deleteOrphanedComponentFoodoffers(myDatabaseHelper: MyDatabaseHelper, log: (message: string) => void): Promise<number> {
+  static async deleteOrphanedComponentFoodoffers(myDatabaseHelper: MyDatabaseHelper, log: (message: string) => Promise<void>): Promise<number> {
     const foodoffersHelper = myDatabaseHelper.getFoodoffersHelper();
     const state = { deleted: 0, offset: 0 };
     while (state.deleted < FoodofferComponentsCleanupHelper.MAX_DELETES_PER_RUN) {
@@ -134,7 +134,7 @@ export class FoodofferComponentsCleanupHelper {
       if (orphanedIds.length > 0) {
         await foodoffersHelper.deleteMany(orphanedIds); // NOSONAR S9382 - sequential on purpose: one page after another to keep the database load bounded
         state.deleted += orphanedIds.length;
-        log(`deleted ${orphanedIds.length} orphaned component foodoffers (${state.deleted} in this run)`);
+        await log(`Deleted ${orphanedIds.length} orphaned component foodoffers (${state.deleted} in this run)`); // NOSONAR S9382 - sequential on purpose: one page after another to keep the database load bounded
       }
       state.offset += candidateIds.length - orphanedIds.length;
     }

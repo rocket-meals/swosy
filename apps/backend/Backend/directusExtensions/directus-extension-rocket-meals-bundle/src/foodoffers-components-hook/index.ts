@@ -1,12 +1,38 @@
-import {CollectionNames} from 'repo-depkit-common';
+import {CollectionNames, CronHelper, DatabaseTypes} from 'repo-depkit-common';
 import {MyDatabaseHelper} from '../helpers/MyDatabaseHelper';
 import {MyDefineHook} from '../helpers/MyDefineHook';
 import {DeletePermissionHelper} from '../helpers/DeletePermissionHelper';
+import {WorkflowRunContext} from '../helpers/WorkflowRunContext';
+import {WORKFLOW_RUN_STATE} from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
+import {WorkflowScheduleHelper} from '../workflows-runs-hook';
+import {SingleWorkflowRun} from '../workflows-runs-hook/WorkflowRunJobInterface';
 import {FoodofferComponentsCleanupHelper} from './FoodofferComponentsCleanupHelper';
 
 const SCHEDULE_NAME = 'foodoffers-components-hook';
+const CLEANUP_WORKFLOW_ID = 'foodoffers-components-cleanup';
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, ({ filter, schedule }, apiContext) => {
+/**
+ * Deletes component foodoffers that no parent uses anymore - orphaned before the delete filters below existed, or by
+ * a delete that bypassed Directus. Runs are logged in `workflows_runs`, the workflow can be switched off in `workflows`.
+ */
+class FoodofferComponentsCleanupWorkflow extends SingleWorkflowRun {
+  getWorkflowId(): string {
+    return CLEANUP_WORKFLOW_ID;
+  }
+
+  async runJob(context: WorkflowRunContext): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
+    try {
+      const deleted = await FoodofferComponentsCleanupHelper.deleteOrphanedComponentFoodoffers(context.myDatabaseHelper, message => context.logger.appendLog(message));
+      await context.logger.appendLog(`Orphaned component foodoffers deleted: ${deleted}`);
+      return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SUCCESS });
+    } catch (error) {
+      await context.logger.appendLog('Error: ' + (error instanceof Error ? error.message : String(error)));
+      return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.FAILED });
+    }
+  }
+}
+
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ filter, schedule }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
   // Deleting a parent foodoffer removes its junction rows via the database ON DELETE CASCADE, which runs no Directus hook.
@@ -47,15 +73,10 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, ({ fi
     return payloadModifiable;
   });
 
-  // Cleans up component foodoffers that were orphaned before the filter above existed (or by a delete that bypassed Directus).
-  schedule('23 * * * *', async () => {
-    try {
-      const deleted = await FoodofferComponentsCleanupHelper.deleteOrphanedComponentFoodoffers(myDatabaseHelper, message => apiContext.logger.info(SCHEDULE_NAME + ': ' + message));
-      if (deleted > 0) {
-        apiContext.logger.info(SCHEDULE_NAME + ': orphaned component foodoffers cleanup finished, deleted ' + deleted);
-      }
-    } catch (err) {
-      apiContext.logger.error(SCHEDULE_NAME + ': Error during orphaned component foodoffers cleanup: ' + (err instanceof Error ? err.message : String(err)));
-    }
+  await WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+    workflowRunInterface: new FoodofferComponentsCleanupWorkflow(),
+    myDatabaseHelper: myDatabaseHelper,
+    schedule: schedule,
+    cronOject: CronHelper.EVERY_HOUR,
   });
 });

@@ -267,6 +267,7 @@ export const BackendTranslationKeys = {
   workflow_name_apartments_free_notify: 'workflow_name_apartments_free_notify',
   workflow_name_food_notify: 'workflow_name_food_notify',
   workflow_name_food_sync: 'workflow_name_food_sync',
+  workflow_name_foodoffers_components_cleanup: 'workflow_name_foodoffers_components_cleanup',
   workflow_name_foods_translation_fix_missing: 'workflow_name_foods_translation_fix_missing',
   workflow_name_housing_contract_sync_hannover: 'workflow_name_housing_contract_sync_hannover',
   workflow_name_housing_sync: 'workflow_name_housing_sync',

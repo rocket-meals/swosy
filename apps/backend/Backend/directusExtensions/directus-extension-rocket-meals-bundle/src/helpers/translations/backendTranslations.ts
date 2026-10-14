@@ -2404,6 +2404,16 @@ export const backendTranslations: TranslationResources = {
     tr: 'Menüyü senkronize et',
     zh: '同步菜单',
   },
+  workflow_name_foodoffers_components_cleanup: {
+    de: 'Verwaiste Speise-Komponenten aufräumen',
+    en: 'Clean up orphaned food components',
+    ar: 'تنظيف مكونات الوجبات اليتيمة',
+    es: 'Limpiar componentes de platos huérfanos',
+    fr: 'Nettoyer les composants de plats orphelins',
+    ru: 'Очистка осиротевших компонентов блюд',
+    tr: 'Sahipsiz yemek bileşenlerini temizle',
+    zh: '清理孤立的菜品组成部分',
+  },
   workflow_name_foods_translation_fix_missing: {
     de: 'Fehlende Übersetzungen der Speisen nachholen',
     en: 'Add missing food translations',
