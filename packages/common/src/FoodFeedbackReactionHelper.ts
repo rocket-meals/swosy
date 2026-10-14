@@ -47,6 +47,19 @@ export class FoodFeedbackReactionHelper {
    */
   public static readonly NEW_REACTION_MAX_AGE_DAYS = 14;
 
+  /**
+   * Whether something from `date` is recent enough for the hint above the food offers, e.g. the newest
+   * message of a food feedback chat: not older than {@link NEW_REACTION_MAX_AGE_DAYS}. Older things stay
+   * visible on the screen of the own ratings, they are just not announced any more.
+   */
+  static isWithinHintWindow(date: string | null | undefined, now: Date = new Date()): boolean {
+    if (!date) {
+      return false;
+    }
+    const time = new Date(date).getTime();
+    return !Number.isNaN(time) && time > now.getTime() - FoodFeedbackReactionHelper.NEW_REACTION_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+  }
+
   /** From when on a reaction counts as new: after `seenUntil` (profile), but never older than {@link NEW_REACTION_MAX_AGE_DAYS}. */
   static getNewSince(seenUntil: string | null | undefined, now: Date = new Date()): string {
     const oldest = new Date(now.getTime() - FoodFeedbackReactionHelper.NEW_REACTION_MAX_AGE_DAYS * 24 * 60 * 60 * 1000);
