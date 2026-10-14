@@ -264,7 +264,6 @@ type Mutation {
 type Subscription {
   foodoffers_info_items_mutated(event: EventEnum): foodoffers_info_items_mutated
   friendships_mutated(event: EventEnum): friendships_mutated
-  chats_participants_mutated(event: EventEnum): chats_participants_mutated
   form_field_groups_translations_mutated(event: EventEnum): form_field_groups_translations_mutated
   foodoffers_components_mutated(event: EventEnum): foodoffers_components_mutated
   inventory_item_categories_mutated(event: EventEnum): inventory_item_categories_mutated
@@ -390,11 +389,12 @@ type Subscription {
   collectible_events_mutated(event: EventEnum): collectible_events_mutated
   inventory_item_categories_translations_mutated(event: EventEnum): inventory_item_categories_translations_mutated
   directus_deployments_mutated(event: EventEnum): directus_deployments_mutated
-  app_settings_mutated(event: EventEnum): app_settings_mutated
   directus_deployment_projects_mutated(event: EventEnum): directus_deployment_projects_mutated
   directus_settings_mutated(event: EventEnum): directus_settings_mutated
-  action_recommendations_mutated(event: EventEnum): action_recommendations_mutated
+  app_settings_mutated(event: EventEnum): app_settings_mutated
   directus_deployment_runs_mutated(event: EventEnum): directus_deployment_runs_mutated
+  action_recommendations_mutated(event: EventEnum): action_recommendations_mutated
+  chats_participants_mutated(event: EventEnum): chats_participants_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -463,6 +463,11 @@ type action_recommendations {
   sort: Int
   reason: String
   draft_reply: String
+
+  """
+  Was beim Erstellen passiert ist: Anfrage an die KI, Antwort oder Fehler.
+  """
+  logs: String
   action_payload: JSON
   action_payload_func: count_functions
   action: String
@@ -474,9 +479,9 @@ type action_recommendations {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   recommended_by_profile(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
 }
 
@@ -493,10 +498,10 @@ type apartments {
   sort: Int
   status: String
   external_identifier: String
-  available_from: Date
-  available_from_func: datetime_functions
   available_from_notified: Date
   available_from_notified_func: datetime_functions
+  available_from: Date
+  available_from_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
   date_created: Date
@@ -555,24 +560,21 @@ type app_elements_translations_mutated {
 }
 
 type app_feedbacks {
+  response_read_by_user: Boolean
   positive: Boolean
   feedback_read_by_support: Boolean
-  response_read_by_user: Boolean
+  source_rating_raw: Int
   sort: Int
   priority: Int
-  source_rating_raw: Int
-  content: String
   response: String
+  content: String
+  display_fontscale: Float
+  display_pixelratio: Float
+  display_scale: Float
+  display_height: Float
+  display_width: Float
   data: JSON
   data_func: count_functions
-  display_height: Float
-  display_fontscale: Float
-  display_scale: Float
-  display_pixelratio: Float
-  display_width: Float
-  source_identifier: String
-  title: String
-  status: String
   device_system_version: String
   device_platform: String
   device_brand: String
@@ -583,15 +585,18 @@ type app_feedbacks {
   """
   state: String
   external_identifier: String
+  source_identifier: String
+  title: String
+  status: String
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
-  id: ID!
   profile(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
   user_created: ID
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   chat(filter: chats_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): chats
+  id: ID!
 }
 
 type app_feedbacks_mutated {
@@ -601,41 +606,45 @@ type app_feedbacks_mutated {
 }
 
 type app_settings {
-  notifications_ios_enabled: Boolean
-  balance_enabled: Boolean
-  notifications_email_enabled: Boolean
-  notifications_android_enabled: Boolean
-
-  """Soll die Anzahl der Bewertungen angezeigt werden?"""
-  foods_ratings_amount_display: Boolean
-
   """Zeige in der App den Bereich Campus an"""
   campus_enabled: Boolean
 
   """Bereich "Mensa" in der App aktivieren?"""
   foods_enabled: Boolean
-
-  """Zeigt in der App den Bereich News an"""
-  news_enabled: Boolean
-
-  """KI generierte Bilder für Speisen ohne Fotos erstellen?"""
-  foods_image_ai_generation_enabled: Boolean
-  animations_auto_start: Boolean
+  course_timetable_enabled: Boolean
+  balance_enabled: Boolean
 
   """Zeige die Auslastungsprognose in der App"""
   utilization_display_enabled: Boolean
+  guest_profiles_enabled: Boolean
+  animations_auto_start: Boolean
+
+  """KI generierte Bilder für Speisen ohne Fotos erstellen?"""
+  foods_image_ai_generation_enabled: Boolean
+  friends_enabled: Boolean
 
   """Zeige den Lageplan in der App an"""
   map_enabled: Boolean
 
+  """Zeigt in der App den Bereich News an"""
+  news_enabled: Boolean
+
   """Zeigt den Bereich Wohnen in der App an"""
   housing_enabled: Boolean
+  notifications_android_enabled: Boolean
 
   """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
   foods_ratings_average_display: Boolean
-  course_timetable_enabled: Boolean
-  guest_profiles_enabled: Boolean
-  friends_enabled: Boolean
+  notifications_email_enabled: Boolean
+  notifications_ios_enabled: Boolean
+
+  """Soll die Anzahl der Bewertungen angezeigt werden?"""
+  foods_ratings_amount_display: Boolean
+
+  """
+  KI schlägt für neue Speise-Feedbacks vor, ob geantwortet oder als erledigt markiert werden soll (Einstellungen > KI muss eingerichtet sein).
+  """
+  ai_action_recommendations_enabled: Boolean
   id: ID!
 
   """Wird in der App während und kurz vor der Wartung angezeigt"""
@@ -650,6 +659,22 @@ type app_settings {
   """Liste erlaubter Seiten die sich bei der App Anmelden dürfen"""
   redirect_whitelist: JSON
   redirect_whitelist_func: count_functions
+  foods_placeholder_image_remote_url: String
+  foods_feedbacks_labels_type: String
+
+  """
+  URL zu einem externen Forum für Rückmeldungen und Bewertungen von Speisen
+  """
+  foods_feedbacks_custom_url: String
+  foods_feedbacks_comments_type: String
+
+  """Wer ist für die Inhalte der Speiseangebote verantwortlich?"""
+  food_responsible_organization_name: String
+
+  """URL bzw. Link zu der verantwortlichen Stelle"""
+  food_responsible_organization_link: String
+  app_stores_url_to_google: String
+  app_stores_url_to_apple: String
 
   """
   Was die App bei Feature-Wünschen anbietet: Abstimmen über veröffentlichte Wünsche und/oder Einreichen neuer Wünsche.
@@ -672,42 +697,26 @@ type app_settings {
   """Wie sollen die Bewertungen angezeigt werden? Sterne, Daumen, ..."""
   foods_ratings_type: String
   foods_placeholder_image_thumb_hash: String
-  foods_placeholder_image_remote_url: String
-  foods_feedbacks_labels_type: String
-
-  """
-  URL zu einem externen Forum für Rückmeldungen und Bewertungen von Speisen
-  """
-  foods_feedbacks_custom_url: String
-  foods_feedbacks_comments_type: String
-
-  """Wer ist für die Inhalte der Speiseangebote verantwortlich?"""
-  food_responsible_organization_name: String
-
-  """URL bzw. Link zu der verantwortlichen Stelle"""
-  food_responsible_organization_link: String
-  app_stores_url_to_google: String
-  app_stores_url_to_apple: String
+  date_updated: Date
+  date_updated_func: datetime_functions
   date_privacy_policy_updated: Date
   date_privacy_policy_updated_func: datetime_functions
   maintenance_start: Date
   maintenance_start_func: datetime_functions
   maintenance_end: Date
   maintenance_end_func: datetime_functions
-  date_updated: Date
-  date_updated_func: datetime_functions
+  foods_placeholder_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   date_created: Date
   date_created_func: datetime_functions
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  foods_placeholder_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  company_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   news_before_element(filter: app_elements_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_elements
   campus_before_element(filter: app_elements_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_elements
   housing_before_element(filter: app_elements_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_elements
   foodoffers_list_after_element(filter: app_elements_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_elements
   foodoffers_list_before_element(filter: app_elements_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_elements
   placeholder_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
-  company_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   housing_translations(filter: app_settings_housing_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_settings_housing_translations]
   housing_translations_func: count_functions
   balance_translations(filter: app_settings_balance_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_settings_balance_translations]
@@ -717,8 +726,8 @@ type app_settings {
 }
 
 type app_settings_balance_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   app_settings_id(filter: app_settings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_settings
   id: ID!
   content: String
@@ -732,8 +741,8 @@ type app_settings_balance_translations_mutated {
 }
 
 type app_settings_housing_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID!
   app_settings_id(filter: app_settings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_settings
   content: String
@@ -771,19 +780,19 @@ type app_settings_mutated {
 type app_usage_events {
   payload_boolean: Boolean
   sequence_number: Int
-  payload_number: Float
   payload: JSON
   payload_func: count_functions
+  payload_number: Float
   platform: String
   app_version: String
   screen_name: String
   event_name: String
   event_type: String
   session_id: String
-  payload_datetime: Date
-  payload_datetime_func: datetime_functions
   client_timestamp: Date
   client_timestamp_func: datetime_functions
+  payload_datetime: Date
+  payload_datetime_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
   id: ID!
@@ -804,16 +813,16 @@ type auth_tokens {
 type auto_translation_settings {
   valid_auth_key: Boolean
   active: Boolean
+  limit: Int
   id: ID!
-
-  """Informations about errors will be shown here."""
-  extra: String
   used: Int
   percentage: Int
-  limit: Int
 
   """Informations about errors will be shown here."""
   informations: String
+
+  """Informations about errors will be shown here."""
+  extra: String
 
   """
   Authentication - You need an authentication key to access to the API. https://www.deepl.com/de/your-account/keys
@@ -828,8 +837,8 @@ type auto_translation_settings_mutated {
 }
 
 type buildings {
-  map_marker_cluster_exclude: Boolean
   map_marker_is_visible: Boolean
+  map_marker_cluster_exclude: Boolean
   sort: Int
   coordinates: JSON
   coordinates_func: count_functions
@@ -843,16 +852,16 @@ type buildings {
   image_remote_url: String
   external_identifier: String
   alias: String
-  date_of_construction: Date
-  date_of_construction_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  id: ID!
   date_created: Date
   date_created_func: datetime_functions
+  date_of_construction: Date
+  date_of_construction_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  id: ID!
   apartments(filter: apartments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [apartments]
   apartments_func: count_functions
   businesshours(filter: buildings_businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [buildings_businesshours]
@@ -883,8 +892,8 @@ type buildings_attributes_mutated {
 
 type buildings_businesshours {
   id: ID!
-  businesshours_id(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): businesshours
   buildings_id(filter: buildings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): buildings
+  businesshours_id(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): businesshours
 }
 
 type buildings_businesshours_mutated {
@@ -927,12 +936,12 @@ type buildings_translations_mutated {
 }
 
 type businesshours {
-  tuesday: Boolean
-  friday: Boolean
-  saturday: Boolean
   wednesday: Boolean
+  friday: Boolean
   monday: Boolean
+  tuesday: Boolean
   thursday: Boolean
+  saturday: Boolean
   sunday: Boolean
   sort: Int
   status: String
@@ -952,10 +961,10 @@ type businesshours {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   group(filter: businesshours_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): businesshours_groups
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
 }
 
 type businesshours_groups {
@@ -966,9 +975,9 @@ type businesshours_groups {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   translations(filter: businesshours_groups_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [businesshours_groups_translations]
   translations_func: count_functions
 }
@@ -1001,13 +1010,12 @@ type businesshours_mutated {
 }
 
 type canteen_food_feedback_report_schedules {
-  send_on_tuesdays: Boolean
-  send_on_mondays: Boolean
-
-  """Zeige Bilder der Speisen"""
-  show_images: Boolean
-  send_on_thursdays: Boolean
   send_on_wednesdays: Boolean
+  send_on_fridays: Boolean
+  send_on_thursdays: Boolean
+  report_send_successfully: Boolean
+  send_on_sundays: Boolean
+  send_on_saturdays: Boolean
 
   """Zeige Speise Kommentare insgesammt"""
   show_food_comments_for_all_time: Boolean
@@ -1029,11 +1037,12 @@ type canteen_food_feedback_report_schedules {
 
   """Zeige Rückmeldungen zu den Mensen pro Mensa: Labels"""
   show_canteen_feedbacks_also_per_canteen: Boolean
-  report_send_successfully: Boolean
-  send_on_sundays: Boolean
-  send_on_saturdays: Boolean
-  send_on_fridays: Boolean
   enabled: Boolean
+  send_on_tuesdays: Boolean
+  send_on_mondays: Boolean
+
+  """Zeige Bilder der Speisen"""
+  show_images: Boolean
 
   """
   Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
@@ -1048,14 +1057,14 @@ type canteen_food_feedback_report_schedules {
   report_status_log: String
   alias: String
   status: String
+  date_next_report_is_due: Date
+  date_next_report_is_due_func: datetime_functions
   send_report_at_hh_mm: Date
   send_report_at_hh_mm_func: time_functions
 
   """Bericht einmalig senden, als wäre es Tag X"""
   send_once_now_for_reference_date: Date
   send_once_now_for_reference_date_func: date_functions
-  date_next_report_is_due: Date
-  date_next_report_is_due_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
@@ -1132,9 +1141,9 @@ type canteens {
   """
   foodoffers_import_delete_all_without_dates: Boolean
   sort: Int
+  alias: String
   status: String
   external_identifier: String
-  alias: String
   date_updated: Date
   date_updated_func: datetime_functions
   date_created: Date
@@ -1157,10 +1166,10 @@ type canteens_feedbacks_labels {
   status: String
   date_created: Date
   date_created_func: datetime_functions
-  date_updated: Date
-  date_updated_func: datetime_functions
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_updated: Date
+  date_updated_func: datetime_functions
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   translations(filter: canteens_feedbacks_labels_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteens_feedbacks_labels_translations]
@@ -1174,10 +1183,10 @@ type canteens_feedbacks_labels_entries {
   status: String
   date: Date
   date_func: date_functions
-  date_created: Date
-  date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  date_created: Date
+  date_created_func: datetime_functions
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -1215,8 +1224,8 @@ type canteens_feedbacks_labels_translations_mutated {
 
 type canteens_foodservice_hours {
   id: ID!
-  businesshours_id(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): businesshours
   canteens_id(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
+  businesshours_id(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): businesshours
 }
 
 type canteens_foodservice_hours_during_semester_break {
@@ -1267,8 +1276,8 @@ type cashregisters_mutated {
 }
 
 type cashregisters_transactions {
-  weekday_index_calculated: Int
   sort: Int
+  weekday_index_calculated: Int
   quantity: Float
   status: String
   name: String
@@ -1279,9 +1288,9 @@ type cashregisters_transactions {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  cashregister(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): cashregisters
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  cashregister(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): cashregisters
 }
 
 type cashregisters_transactions_mutated {
@@ -1294,10 +1303,10 @@ type chat_messages {
   message: String
   sort: Int
   status: String
-  date_created: Date
-  date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  date_created: Date
+  date_created_func: datetime_functions
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -1319,19 +1328,25 @@ type chats {
   conversation_state: String
   alias: String
   status: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
 
   """
   Date of the first message not mailed yet. Set by the chat-conversation-state-hook, cleared by the timer of the last message once the chat was quiet for 5 minutes.
   """
   mail_pending_since: Date
   mail_pending_since_func: datetime_functions
-  date_updated: Date
-  date_updated_func: datetime_functions
-  date_created: Date
-  date_created_func: datetime_functions
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+
+  """
+  Date of the newest message. Set by the chat-conversation-state-hook on every message; a participant whose read_until is older has unread messages.
+  """
+  date_last_message: Date
+  date_last_message_func: datetime_functions
   id: ID!
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   food_feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
   food_feedbacks_func: count_functions
   app_feedbacks(filter: app_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_feedbacks]
@@ -1352,8 +1367,14 @@ type chats_mutated {
 
 type chats_participants {
   id: ID!
-  chats_id(filter: chats_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): chats
+
+  """
+  Up to which date this participant has read the chat. Set by the app when the chat is opened and by the chat-conversation-state-hook for the own messages of the participant.
+  """
+  read_until: Date
+  read_until_func: datetime_functions
   profiles_id(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
+  chats_id(filter: chats_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): chats
 }
 
 type chats_participants_mutated {
@@ -1386,35 +1407,35 @@ type collectible_event_participants_mutated {
 }
 
 type collectible_events {
-  collectible_at_settings: Boolean
-  monitor_display_number_of_collected_items: Boolean
-  monitor_display_number_of_participants: Boolean
-  ask_for_contact_details: Boolean
   collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
   collectible_at_card_balance: Boolean
-  collectible_at_price_group_selection: Boolean
   collectible_at_course_timetable: Boolean
-  collectible_at_markings_details: Boolean
-  collectible_at_notification: Boolean
-  collectible_at_news: Boolean
-  collectible_at_foodoffers_details: Boolean
-  collectible_at_foodoffers_details_markings: Boolean
-  collectible_at_foodoffers_details_nutritions: Boolean
-  collectible_at_foodoffers_select_date: Boolean
+  collectible_at_data_access: Boolean
+  collectible_at_settings_first_day_of_week: Boolean
+  monitor_display_number_of_collected_items: Boolean
+  monitor_display_number_of_participants: Boolean
+  ask_for_contact_details: Boolean
+  collectible_at_price_group_selection: Boolean
+  collectible_at_settings: Boolean
+  collectible_at_settings_amount_column: Boolean
+  collectible_at_settings_theme: Boolean
   repeat_every_year: Boolean
+  collectible_at_notification: Boolean
   collectible_at_foodoffers_sort: Boolean
   collectible_at_housing: Boolean
   collectible_at_license_information: Boolean
   collectible_at_markings: Boolean
-  collectible_at_data_access: Boolean
-  collectible_at_settings_amount_column: Boolean
+  collectible_at_markings_details: Boolean
+  collectible_at_news: Boolean
   collectible_at_drawer: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
-  collectible_at_settings_first_day_of_week: Boolean
+  collectible_at_foodoffers_details: Boolean
+  collectible_at_foodoffers_details_markings: Boolean
+  collectible_at_foodoffers_details_nutritions: Boolean
   collectible_at_settings_menuposition: Boolean
-  collectible_at_settings_theme: Boolean
+  collectible_at_foodoffers_select_date: Boolean
   sort: Int
   points_minimum: Int
   points_maximum: Int
@@ -1429,10 +1450,10 @@ type collectible_events {
   date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
-  id: ID!
-  monitor_background_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  id: ID!
+  monitor_background_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   collectible_item_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   translations(filter: collectible_events_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [collectible_events_translations]
   translations_func: count_functions
@@ -1533,21 +1554,21 @@ type devices {
   is_ios: Boolean
   is_android: Boolean
   sort: Int
+  display_pixelratio: Float
+  display_scale: Float
+  display_width: Float
+  display_height: Float
+  display_fontscale: Float
   pushTokenObj: JSON
   pushTokenObj_func: count_functions
   custom_data: JSON
   custom_data_func: count_functions
-  display_pixelratio: Float
-  display_width: Float
-  display_scale: Float
-  display_fontscale: Float
-  display_height: Float
-  app_version: String
-  system_version: String
   status: String
   platform: String
   brand: String
   alias: String
+  app_version: String
+  system_version: String
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
@@ -1661,10 +1682,10 @@ type directus_collections {
 }
 
 type directus_collections_meta {
-  versioning: Boolean!
   hidden: Boolean!
   singleton: Boolean!
   archive_app_filter: Boolean!
+  versioning: Boolean!
   sort: Int
   note: String
   item_duplication_fields: JSON
@@ -1814,13 +1835,13 @@ type directus_deployment_runs {
   external_id: String!
   completed_at: Date
   completed_at_func: datetime_functions
-  date_created: Date
-  date_created_func: datetime_functions
-  project(filter: directus_deployment_projects_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_deployment_projects
   started_at: Date
   started_at_func: datetime_functions
+  date_created: Date
+  date_created_func: datetime_functions
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  project(filter: directus_deployment_projects_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_deployment_projects
 }
 
 type directus_deployment_runs_aggregated {
@@ -1836,11 +1857,11 @@ type directus_deployment_runs_aggregated_count {
   target: Int
   external_id: Int
   completed_at: Int
-  date_created: Int
-  project: Int
   started_at: Int
+  date_created: Int
   id: Int
   user_created: Int
+  project: Int
 }
 
 type directus_deployment_runs_mutated {
@@ -1918,14 +1939,14 @@ type directus_fields {
 }
 
 type directus_fields_meta {
-  searchable: Boolean!
   readonly: Boolean!
   hidden: Boolean!
   required: Boolean
+  searchable: Boolean!
   sort: Int
   id: Int!
-  validation_message: String
   note: String
+  validation_message: String
   validation: JSON
   conditions: JSON
   translations: JSON
@@ -1961,8 +1982,8 @@ type directus_fields_schema {
 }
 
 type directus_files {
-  is_unreferenced: Boolean
   filesize: GraphQLBigInt
+  is_unreferenced: Boolean
   focal_point_y: Int
   focal_point_x: Int
   duration: Int
@@ -1970,12 +1991,12 @@ type directus_files {
   width: Int
   tags: JSON
   tags_func: count_functions
-  description: String
   location: String
-  tus_data: JSON
-  tus_data_func: count_functions
+  description: String
   metadata: JSON
   metadata_func: count_functions
+  tus_data: JSON
+  tus_data_func: count_functions
   tus_id: String
   embed: String
   charset: String
@@ -2010,18 +2031,18 @@ type directus_files_aggregated {
 }
 
 type directus_files_aggregated_count {
-  is_unreferenced: Int
   filesize: Int
+  is_unreferenced: Int
   focal_point_y: Int
   focal_point_x: Int
   duration: Int
   height: Int
   width: Int
   tags: Int
-  description: Int
   location: Int
-  tus_data: Int
+  description: Int
   metadata: Int
+  tus_data: Int
   tus_id: Int
   embed: Int
   charset: Int
@@ -2055,9 +2076,9 @@ type directus_files_mutated {
 }
 
 type directus_flows {
-  description: String
   options: JSON
   options_func: count_functions
+  description: String
   accountability: String
   trigger: String
   status: String
@@ -2066,9 +2087,9 @@ type directus_flows {
   name: String!
   date_created: Date
   date_created_func: datetime_functions
+  id: ID!
   operation(filter: directus_operations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_operations
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  id: ID!
   operations(filter: directus_operations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_operations]
   operations_func: count_functions
 }
@@ -2081,8 +2102,8 @@ type directus_flows_aggregated {
 }
 
 type directus_flows_aggregated_count {
-  description: Int
   options: Int
+  description: Int
   accountability: Int
   trigger: Int
   status: Int
@@ -2090,9 +2111,9 @@ type directus_flows_aggregated_count {
   icon: Int
   name: Int
   date_created: Int
+  id: Int
   operation: Int
   user_created: Int
-  id: Int
   operations: Int
 }
 
@@ -2185,11 +2206,11 @@ type directus_operations {
   name: String
   date_created: Date
   date_created_func: datetime_functions
+  flow(filter: directus_flows_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_flows
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
   resolve(filter: directus_operations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_operations
   reject(filter: directus_operations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_operations
-  flow(filter: directus_flows_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_flows
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
 }
 
 type directus_operations_aggregated {
@@ -2213,11 +2234,11 @@ type directus_operations_aggregated_count {
   key: Int
   name: Int
   date_created: Int
+  flow: Int
+  user_created: Int
   id: Int
   resolve: Int
   reject: Int
-  flow: Int
-  user_created: Int
 }
 
 type directus_operations_aggregated_fields {
@@ -2240,10 +2261,10 @@ type directus_panels {
   note: String
   options: JSON
   options_func: count_functions
-  color: String
-  type: String!
-  icon: String
   name: String
+  type: String!
+  color: String
+  icon: String
   date_created: Date
   date_created_func: datetime_functions
   id: ID!
@@ -2272,10 +2293,10 @@ type directus_panels_aggregated_count {
   position_x: Int
   note: Int
   options: Int
-  color: Int
-  type: Int
-  icon: Int
   name: Int
+  type: Int
+  color: Int
+  icon: Int
   date_created: Int
   id: Int
   dashboard: Int
@@ -2348,8 +2369,8 @@ type directus_policies {
   enforce_tfa: Boolean!
   admin_access: Boolean!
   app_access: Boolean!
-  description: String
   ip_access: [String]
+  description: String
   icon: String
   name: String!
   id: ID!
@@ -2373,8 +2394,8 @@ type directus_policies_aggregated_count {
   enforce_tfa: Int
   admin_access: Int
   app_access: Int
-  description: Int
   ip_access: Int
+  description: Int
   icon: Int
   name: Int
   id: Int
@@ -2398,12 +2419,12 @@ type directus_presets {
   filter_func: count_functions
   layout_options: JSON
   layout_options_func: count_functions
-  bookmark: String
   color: String
   icon: String
   layout: String
   search: String
   collection: String
+  bookmark: String
   user(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   role(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_roles
 }
@@ -2427,12 +2448,12 @@ type directus_presets_aggregated_count {
   layout_query: Int
   filter: Int
   layout_options: Int
-  bookmark: Int
   color: Int
   icon: Int
   layout: Int
   search: Int
   collection: Int
+  bookmark: Int
   user: Int
   role: Int
 }
@@ -2532,8 +2553,8 @@ type directus_roles {
   description: String
   icon: String
   name: String!
-  id: ID!
   parent(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_roles
+  id: ID!
   children(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_roles]
   children_func: count_functions
   policies(filter: directus_access_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_access]
@@ -2553,10 +2574,10 @@ type directus_roles_aggregated_count {
   description: Int
   icon: Int
   name: Int
-  id: Int
 
   """$t:field_options.directus_roles.parent_note"""
   parent: Int
+  id: Int
 
   """$t:field_options.directus_roles.children_note"""
   children: Int
@@ -2571,74 +2592,68 @@ type directus_roles_mutated {
 }
 
 type directus_settings {
+  """$t:fields.directus_settings.mcp_system_prompt_enabled_note"""
+  mcp_system_prompt_enabled: Boolean
+
   """$t:fields.directus_settings.public_registration_note"""
   public_registration: Boolean!
+  product_updates: Boolean
+
+  """$t:fields.directus_settings.public_registration_verify_email_note"""
+  public_registration_verify_email: Boolean
+  id: ID!
+  auth_login_attempts: Int
+
+  """$t:fields.directus_settings.collaborative_editing_note"""
+  collaborative_editing_enabled: Boolean!
 
   """$t:fields.directus_settings.mcp_allow_deletes_note"""
   mcp_allow_deletes: Boolean!
 
-  """$t:fields.directus_settings.mcp_system_prompt_enabled_note"""
-  mcp_system_prompt_enabled: Boolean
-
   """$t:fields.directus_settings.mcp_enabled_note"""
   mcp_enabled: Boolean!
-
-  """$t:fields.directus_settings.public_registration_verify_email_note"""
-  public_registration_verify_email: Boolean
-  product_updates: Boolean
-
-  """$t:fields.directus_settings.collaborative_editing_note"""
-  collaborative_editing_enabled: Boolean!
-  id: ID!
-  auth_login_attempts: Int
+  ai_openai_compatible_name: String
   public_note: String
+  custom_css: String
 
   """$t:fields.directus_settings.mcp_system_prompt_note"""
   mcp_system_prompt: String
-  ai_google_api_key: String
-  ai_openai_compatible_api_key: String
-  custom_css: String
-  ai_openai_compatible_base_url: String
-  ai_openai_compatible_name: String
+  ai_openai_api_key: String
+  ai_anthropic_api_key: String
 
   """$t:fields.directus_settings.ai_system_prompt_note"""
   ai_system_prompt: String
-  ai_anthropic_api_key: String
-  ai_openai_api_key: String
+  ai_google_api_key: String
+  ai_openai_compatible_api_key: String
+  ai_anthropic_allowed_models: JSON
+  ai_anthropic_allowed_models_func: count_functions
+  ai_google_allowed_models: JSON
+  ai_google_allowed_models_func: count_functions
+  storage_asset_presets: JSON
+  storage_asset_presets_func: count_functions
   basemaps: JSON
   basemaps_func: count_functions
   module_bar: JSON
   module_bar_func: count_functions
   custom_aspect_ratios: JSON
   custom_aspect_ratios_func: count_functions
+  ai_openai_compatible_models: JSON
+  ai_openai_compatible_models_func: count_functions
   theme_light_overrides: JSON
   theme_light_overrides_func: count_functions
   theme_dark_overrides: JSON
   theme_dark_overrides_func: count_functions
+  ai_openai_compatible_headers: JSON
+  ai_openai_compatible_headers_func: count_functions
+  visual_editor_urls: JSON
+  visual_editor_urls_func: count_functions
+  ai_openai_allowed_models: JSON
+  ai_openai_allowed_models_func: count_functions
 
   """$t:fields.directus_settings.public_registration_email_filter_note"""
   public_registration_email_filter: JSON
   public_registration_email_filter_func: count_functions
-  visual_editor_urls: JSON
-  visual_editor_urls_func: count_functions
-  ai_anthropic_allowed_models: JSON
-  ai_anthropic_allowed_models_func: count_functions
-  ai_openai_allowed_models: JSON
-  ai_openai_allowed_models_func: count_functions
-  ai_google_allowed_models: JSON
-  ai_google_allowed_models_func: count_functions
-  ai_openai_compatible_headers: JSON
-  ai_openai_compatible_headers_func: count_functions
-  ai_openai_compatible_models: JSON
-  ai_openai_compatible_models_func: count_functions
-  storage_asset_presets: JSON
-  storage_asset_presets_func: count_functions
-  auth_password_policy: String
-
-  """$t:field_options.directus_settings.project_color_note"""
-  project_color: String
-  project_url: String
-  project_name: String
+  ai_openai_compatible_base_url: String
   project_status: String
   org_name: String
   project_usage: String
@@ -2656,13 +2671,19 @@ type directus_settings {
   project_descriptor: String
   mapbox_key: String
   storage_asset_transform: String
-  storage_default_folder(filter: directus_folders_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_folders
-  public_background(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  auth_password_policy: String
+
+  """$t:field_options.directus_settings.project_color_note"""
+  project_color: String
+  project_url: String
+  project_name: String
   public_foreground(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   project_logo(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
-  public_favicon(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
-  project_id: ID
   public_registration_role(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_roles
+  public_favicon(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  storage_default_folder(filter: directus_folders_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_folders
+  public_background(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  project_id: ID
 }
 
 type directus_settings_mutated {
@@ -2672,26 +2693,25 @@ type directus_settings_mutated {
 }
 
 type directus_shares {
-  times_used: Int
-
   """$t:shared_leave_blank_for_unlimited"""
   max_uses: Int
+  times_used: Int
 
   """$t:shared_leave_blank_for_passwordless_access"""
   password: Hash
   item: String!
   collection: String!
   name: String
+
+  """$t:shared_leave_blank_for_unlimited"""
+  date_end: Date
+  date_end_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
 
   """$t:shared_leave_blank_for_unlimited"""
   date_start: Date
   date_start_func: datetime_functions
-
-  """$t:shared_leave_blank_for_unlimited"""
-  date_end: Date
-  date_end_func: datetime_functions
   id: ID!
   role(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_roles
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -2711,33 +2731,31 @@ type directus_shares_aggregated {
 }
 
 type directus_shares_aggregated_count {
-  times_used: Int
-
   """$t:shared_leave_blank_for_unlimited"""
   max_uses: Int
+  times_used: Int
 
   """$t:shared_leave_blank_for_passwordless_access"""
   password: Int
   item: Int
   collection: Int
   name: Int
+
+  """$t:shared_leave_blank_for_unlimited"""
+  date_end: Int
   date_created: Int
 
   """$t:shared_leave_blank_for_unlimited"""
   date_start: Int
-
-  """$t:shared_leave_blank_for_unlimited"""
-  date_end: Int
   id: Int
   role: Int
   user_created: Int
 }
 
 type directus_shares_aggregated_fields {
-  times_used: Float
-
   """$t:shared_leave_blank_for_unlimited"""
   max_uses: Float
+  times_used: Float
 }
 
 type directus_shares_mutated {
@@ -2793,10 +2811,10 @@ type directus_users {
   description: String
   tags: JSON
   tags_func: count_functions
-  auth_data: JSON
-  auth_data_func: count_functions
   theme_light_overrides: JSON
   theme_light_overrides_func: count_functions
+  auth_data: JSON
+  auth_data_func: count_functions
   theme_dark_overrides: JSON
   theme_dark_overrides_func: count_functions
   text_direction: String
@@ -2837,8 +2855,8 @@ type directus_users_aggregated_count {
   email_notifications: Int
   description: Int
   tags: Int
-  auth_data: Int
   theme_light_overrides: Int
+  auth_data: Int
   theme_dark_overrides: Int
   text_direction: Int
   theme_light: Int
@@ -2874,18 +2892,18 @@ type directus_users_mutated {
 type directus_versions {
   delta: JSON
   delta_func: count_functions
+  name: String
+  key: String!
   hash: String
   item: String!
   collection: String!
-  name: String
-  key: String!
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
-  id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  id: ID!
 }
 
 type directus_versions_aggregated {
@@ -2897,16 +2915,16 @@ type directus_versions_aggregated {
 
 type directus_versions_aggregated_count {
   delta: Int
+  name: Int
+  key: Int
   hash: Int
   item: Int
   collection: Int
-  name: Int
-  key: Int
   date_created: Int
   date_updated: Int
-  id: Int
   user_created: Int
   user_updated: Int
+  id: Int
 }
 
 type directus_versions_mutated {
@@ -2932,12 +2950,12 @@ type feature_whishes {
   date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  id: ID!
   chat(filter: chats_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): chats
   related_to(filter: feature_whishes_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): feature_whishes
   profile(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  id: ID!
 }
 
 type feature_whishes_mutated {
@@ -2949,10 +2967,10 @@ type feature_whishes_mutated {
 type files_shares {
   sort: Int
   status: String
-  date_exires_at: Date
-  date_exires_at_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
+  date_exires_at: Date
+  date_exires_at_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
   file(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
@@ -2976,8 +2994,6 @@ type foodoffers {
   """Pro wieviel? z. B. Preis pro 100 (gramm)"""
   price_reference_amount: Float
   price_student: Float
-  food(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods
-  alias: String
 
   """Pro welche Einheit? z. B. (100)g für Gramm."""
   price_reference_unit: String
@@ -2985,6 +3001,8 @@ type foodoffers {
   redirect_url: String
   category: String
   status: String
+  food(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods
+  alias: String
   date: Date
   date_func: date_functions
   date_created: Date
@@ -3015,9 +3033,9 @@ type foodoffers_categories {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   translations(filter: foodoffers_categories_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers_categories_translations]
   translations_func: count_functions
 }
@@ -3056,30 +3074,30 @@ type foodoffers_components_mutated {
 }
 
 type foodoffers_info_items {
-  show_on_wednesdays: Boolean
+  show_on_mondays: Boolean
   show_only_when_no_foodoffers_found: Boolean
+  show_on_sundays: Boolean
   show_on_saturdays: Boolean
   show_on_tuesdays: Boolean
-  show_on_mondays: Boolean
   show_on_fridays: Boolean
   show_on_thursdays: Boolean
-  show_on_sundays: Boolean
+  show_on_wednesdays: Boolean
   sort: Int
   alias: String
   image_remote_url: String
   link: String
   placement: String
   status: String
-  date_updated: Date
-  date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_updated: Date
+  date_updated_func: datetime_functions
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  id: ID!
   name(filter: app_elements_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_elements
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
-  id: ID!
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
 }
 
 type foodoffers_info_items_mutated {
@@ -3127,8 +3145,8 @@ type foods {
   rating_amount_legacy: Int
   sort: Int
   rating_amount: Int
-  rating_average: Float
   rating_average_legacy: Float
+  rating_average: Float
   result_hash: String
   status: String
   image_thumb_hash: String
@@ -3175,11 +3193,11 @@ type foods_attributes {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   group(filter: foods_attributes_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods_attributes_groups
-  image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   id: ID!
+  image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   translations(filter: foods_attributes_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_attributes_translations]
   translations_func: count_functions
 }
@@ -3235,8 +3253,8 @@ type foods_attributes_mutated {
 }
 
 type foods_attributes_translations {
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
   id: ID!
   description: String
   name: String
@@ -3273,10 +3291,10 @@ type foods_categories {
   status: String
   external_identifier: String
   alias: String
-  date_created: Date
-  date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  date_created: Date
+  date_created_func: datetime_functions
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -3328,8 +3346,8 @@ type foods_feedbacks {
 type foods_feedbacks_foods_feedbacks_labels {
   dislike: Boolean
   id: ID!
-  foods_feedbacks_labels_id(filter: foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods_feedbacks_labels
   foods_feedbacks_id(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods_feedbacks
+  foods_feedbacks_labels_id(filter: foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods_feedbacks_labels
 }
 
 type foods_feedbacks_foods_feedbacks_labels_mutated {
@@ -3340,13 +3358,13 @@ type foods_feedbacks_foods_feedbacks_labels_mutated {
 
 type foods_feedbacks_labels {
   sort: Int
-  status: String
   image_thumb_hash: String
   image_remote_url: String
 
   """Icon from: https://icons.expo.fyi/Index"""
   icon: String
   alias: String
+  status: String
   date_updated: Date
   date_updated_func: datetime_functions
   date_created: Date
@@ -3360,8 +3378,8 @@ type foods_feedbacks_labels {
 }
 
 type foods_feedbacks_labels_entries {
-  like: Boolean
   dislike: Boolean
+  like: Boolean
   sort: Int
   status: String
   food(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods
@@ -3471,8 +3489,8 @@ type form_answers {
 
 type form_answers_files {
   id: ID!
-  directus_files_id(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   form_answers_id(filter: form_answers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): form_answers
+  directus_files_id(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
 }
 
 type form_answers_files_mutated {
@@ -3569,10 +3587,10 @@ type form_extracts_mutated {
 }
 
 type form_field_groups {
-  icon: String
   icon_expo: String
   alias: String
   status: String
+  icon: String
   date_updated: Date
   date_updated_func: datetime_functions
   date_created: Date
@@ -3605,21 +3623,13 @@ type form_field_groups_translations_mutated {
 }
 
 type form_fields {
-  is_required: Boolean
   is_visible_in_form: Boolean
-  is_visible_in_export: Boolean
   is_disabled: Boolean
+  is_required: Boolean
+  is_visible_in_export: Boolean
   sort: Int
   dropdown_values: JSON
   dropdown_values_func: count_functions
-  field_type: String
-  alias: String
-  background_color: String
-  image_thumb_hash: String
-  image_remote_url: String
-
-  """https://icons.expo.fyi/Index"""
-  icon_expo: String
   icon: String
   status: String
   visibility_depends_on_referenced_value_equals: String
@@ -3629,10 +3639,18 @@ type form_fields {
   external_export_field_name: String
   external_export_id: String
   external_import_id: String
-  date_created: Date
-  date_created_func: datetime_functions
+  field_type: String
+  alias: String
+  background_color: String
+  image_thumb_hash: String
+  image_remote_url: String
+
+  """https://icons.expo.fyi/Index"""
+  icon_expo: String
   date_updated: Date
   date_updated_func: datetime_functions
+  date_created: Date
+  date_created_func: datetime_functions
   group(filter: form_field_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): form_field_groups
   visibility_depends_on_referenced_field(filter: form_fields_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): form_fields
   form(filter: forms_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): forms
@@ -3674,6 +3692,8 @@ type form_submissions {
   alias: String
   state: String
   status: String
+  date_created: Date
+  date_created_func: datetime_functions
   date_locked_until: Date
   date_locked_until_func: datetime_functions
   date_submitted: Date
@@ -3682,8 +3702,6 @@ type form_submissions {
   date_started_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
-  date_created: Date
-  date_created_func: datetime_functions
   user_locked_by(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   form(filter: forms_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): forms
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -3751,14 +3769,14 @@ type friendships {
   sort: Int
   friendship_status: String
   status: String
-  date_updated: Date
-  date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_updated: Date
+  date_updated_func: datetime_functions
   requester_profiles_id(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
   receiver_profiles_id(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
 }
 
@@ -3770,17 +3788,17 @@ type friendships_mutated {
 
 type inventory_item_categories {
   sort: Int
-  icon_expo: String
-  icon: String
   alias: String
   status: String
+  icon_expo: String
+  icon: String
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
-  id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  id: ID!
   translations(filter: inventory_item_categories_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [inventory_item_categories_translations]
   translations_func: count_functions
 }
@@ -4031,12 +4049,12 @@ type news_mutated {
 }
 
 type news_translations {
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
   id: ID!
   content: String
-  title: String
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
+  title: String
   news_id(filter: news_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): news
 }
 
@@ -4082,19 +4100,19 @@ type policy_me_globals_type {
 }
 
 type popup_events {
+  show_login_screen_button: Boolean
   show_app_rating_button: Boolean
-  show_on_web: Boolean
+  show_only_anonymous_users: Boolean
   send_notification: Boolean
   show_on_android: Boolean
   show_on_ios: Boolean
-  show_only_anonymous_users: Boolean
-  show_login_screen_button: Boolean
+  show_on_web: Boolean
   sort: Int
   image_remote_url: String
+  alias: String
   show_on_app_version: String
   status: String
   image_thumb_hash: String
-  alias: String
 
   """Falls ein Event nur bis zu einem bestimmten Zeitpunkt gültig ist."""
   date_end: Date
@@ -4103,10 +4121,10 @@ type popup_events {
   """* Muss gesetzt sein"""
   date_start: Date!
   date_start_func: datetime_functions
-  date_created: Date
-  date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  date_created: Date
+  date_created_func: datetime_functions
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
@@ -4136,8 +4154,8 @@ type popup_events_mutated {
 }
 
 type popup_events_translations {
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
   id: ID!
   content: String
   title: String
@@ -4155,20 +4173,20 @@ type profiles {
   verified: Boolean
   notifiy_on_free_apartments: Boolean
   sort: Int
-  course_timetable: JSON
-  course_timetable_func: count_functions
   avatar: JSON
   avatar_func: count_functions
-  credit_balance_last_transaction: Float
+  course_timetable: JSON
+  course_timetable_func: count_functions
   credit_balance: Float
+  credit_balance_last_transaction: Float
   status: String
   price_group: String
   nickname: String
   language(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
-  date_privacy_policy_accepted: Date
-  date_privacy_policy_accepted_func: datetime_functions
   credit_balance_date_updated: Date
   credit_balance_date_updated_func: datetime_functions
+  date_privacy_policy_accepted: Date
+  date_privacy_policy_accepted_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
   date_created: Date
@@ -4337,12 +4355,12 @@ type utilizations_entries {
   value_forecast_current: Int
   value_real: Int
   status: String
+  date_end: Date
+  date_end_func: datetime_functions
   date_start: Date
   date_start_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
-  date_end: Date
-  date_end_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
   utilization_group(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): utilizations_groups
@@ -4390,12 +4408,12 @@ type washingmachines {
   alias: String
   date_finished: Date
   date_finished_func: datetime_functions
-  date_updated: Date
-  date_updated_func: datetime_functions
-  date_started: Date
-  date_started_func: datetime_functions
   date_stated: Date
   date_stated_func: datetime_functions
+  date_started: Date
+  date_started_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -4409,16 +4427,16 @@ type washingmachines_jobs {
   duration_in_minutes_rounded_10min_calculated: Int
   sort: Int
   status: String
-  date_start: Date
-  date_start_func: datetime_functions
-  duration_calculated: Date
-  duration_calculated_func: time_functions
   date_end: Date
   date_end_func: datetime_functions
+  duration_calculated: Date
+  duration_calculated_func: time_functions
   date_updated: Date
   date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
+  date_start: Date
+  date_start_func: datetime_functions
   washingmachine(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): washingmachines
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -4456,10 +4474,10 @@ type wikis {
   date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
-  id: ID!
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   parent(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): wikis
+  id: ID!
   children(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [wikis]
   children_func: count_functions
   translations(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [wikis_translations]
@@ -4487,8 +4505,8 @@ type wikis_mutated {
 }
 
 type wikis_translations {
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
   id: ID!
   content: String
   title: String
@@ -4536,14 +4554,14 @@ type workflows_runs {
   state: String
   workflow(filter: workflows_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): workflows
   status: String
+  date_finished: Date
+  date_finished_func: datetime_functions
   date_started: Date
   date_started_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
-  date_finished: Date
-  date_finished_func: datetime_functions
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
@@ -4562,10 +4580,10 @@ type write_directus_collections {
 }
 
 type write_directus_collections_meta {
-  versioning: Boolean
   hidden: Boolean
   singleton: Boolean
   archive_app_filter: Boolean
+  versioning: Boolean
   sort: Int
   note: String
   item_duplication_fields: JSON
@@ -4602,14 +4620,14 @@ type write_directus_fields {
 }
 
 type write_directus_fields_meta {
-  searchable: Boolean
   readonly: Boolean
   hidden: Boolean
   required: Boolean
+  searchable: Boolean
   sort: Int
   id: Int
-  validation_message: String
   note: String
+  validation_message: String
   validation: JSON
   conditions: JSON
   translations: JSON
@@ -4682,10 +4700,10 @@ input apartments_filter {
   sort: number_filter_operators
   status: string_filter_operators
   external_identifier: string_filter_operators
-  available_from: date_filter_operators
-  available_from_func: datetime_function_filter_operators
   available_from_notified: date_filter_operators
   available_from_notified_func: datetime_function_filter_operators
+  available_from: date_filter_operators
+  available_from_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
@@ -4708,10 +4726,10 @@ input apartments_quantifier_filter {
   sort: number_filter_operators
   status: string_filter_operators
   external_identifier: string_filter_operators
-  available_from: date_filter_operators
-  available_from_func: datetime_function_filter_operators
   available_from_notified: date_filter_operators
   available_from_notified_func: datetime_function_filter_operators
+  available_from: date_filter_operators
+  available_from_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
@@ -4776,78 +4794,78 @@ input app_elements_translations_quantifier_filter {
 }
 
 input app_feedbacks_filter {
+  response_read_by_user: boolean_filter_operators
   positive: boolean_filter_operators
   feedback_read_by_support: boolean_filter_operators
-  response_read_by_user: boolean_filter_operators
+  source_rating_raw: number_filter_operators
   sort: number_filter_operators
   priority: number_filter_operators
-  source_rating_raw: number_filter_operators
-  content: string_filter_operators
   response: string_filter_operators
+  content: string_filter_operators
+  display_fontscale: number_filter_operators
+  display_pixelratio: number_filter_operators
+  display_scale: number_filter_operators
+  display_height: number_filter_operators
+  display_width: number_filter_operators
   data: string_filter_operators
   data_func: count_function_filter_operators
-  display_height: number_filter_operators
-  display_fontscale: number_filter_operators
-  display_scale: number_filter_operators
-  display_pixelratio: number_filter_operators
-  display_width: number_filter_operators
-  source_identifier: string_filter_operators
-  title: string_filter_operators
-  status: string_filter_operators
   device_system_version: string_filter_operators
   device_platform: string_filter_operators
   device_brand: string_filter_operators
   contact_email: string_filter_operators
   state: string_filter_operators
   external_identifier: string_filter_operators
+  source_identifier: string_filter_operators
+  title: string_filter_operators
+  status: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  id: id_filter_operators
   profile: profiles_filter
   user_created: id_filter_operators
   user_updated: directus_users_filter
   chat: chats_filter
+  id: id_filter_operators
   _and: [app_feedbacks_filter]
   _or: [app_feedbacks_filter]
 }
 
 """"""
 input app_feedbacks_quantifier_filter {
+  response_read_by_user: boolean_filter_operators
   positive: boolean_filter_operators
   feedback_read_by_support: boolean_filter_operators
-  response_read_by_user: boolean_filter_operators
+  source_rating_raw: number_filter_operators
   sort: number_filter_operators
   priority: number_filter_operators
-  source_rating_raw: number_filter_operators
-  content: string_filter_operators
   response: string_filter_operators
+  content: string_filter_operators
+  display_fontscale: number_filter_operators
+  display_pixelratio: number_filter_operators
+  display_scale: number_filter_operators
+  display_height: number_filter_operators
+  display_width: number_filter_operators
   data: string_filter_operators
   data_func: count_function_filter_operators
-  display_height: number_filter_operators
-  display_fontscale: number_filter_operators
-  display_scale: number_filter_operators
-  display_pixelratio: number_filter_operators
-  display_width: number_filter_operators
-  source_identifier: string_filter_operators
-  title: string_filter_operators
-  status: string_filter_operators
   device_system_version: string_filter_operators
   device_platform: string_filter_operators
   device_brand: string_filter_operators
   contact_email: string_filter_operators
   state: string_filter_operators
   external_identifier: string_filter_operators
+  source_identifier: string_filter_operators
+  title: string_filter_operators
+  status: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  id: id_filter_operators
   profile: profiles_filter
   user_created: id_filter_operators
   user_updated: directus_users_filter
   chat: chats_filter
+  id: id_filter_operators
   _and: [app_feedbacks_filter]
   _or: [app_feedbacks_filter]
   _some: app_feedbacks_filter
@@ -4855,8 +4873,8 @@ input app_feedbacks_quantifier_filter {
 }
 
 input app_settings_balance_translations_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   app_settings_id: app_settings_filter
   id: number_filter_operators
   content: string_filter_operators
@@ -4867,8 +4885,8 @@ input app_settings_balance_translations_filter {
 
 """"""
 input app_settings_balance_translations_quantifier_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   app_settings_id: app_settings_filter
   id: number_filter_operators
   content: string_filter_operators
@@ -4880,29 +4898,38 @@ input app_settings_balance_translations_quantifier_filter {
 }
 
 input app_settings_filter {
-  notifications_ios_enabled: boolean_filter_operators
-  balance_enabled: boolean_filter_operators
-  notifications_email_enabled: boolean_filter_operators
-  notifications_android_enabled: boolean_filter_operators
-  foods_ratings_amount_display: boolean_filter_operators
   campus_enabled: boolean_filter_operators
   foods_enabled: boolean_filter_operators
-  news_enabled: boolean_filter_operators
-  foods_image_ai_generation_enabled: boolean_filter_operators
-  animations_auto_start: boolean_filter_operators
-  utilization_display_enabled: boolean_filter_operators
-  map_enabled: boolean_filter_operators
-  housing_enabled: boolean_filter_operators
-  foods_ratings_average_display: boolean_filter_operators
   course_timetable_enabled: boolean_filter_operators
+  balance_enabled: boolean_filter_operators
+  utilization_display_enabled: boolean_filter_operators
   guest_profiles_enabled: boolean_filter_operators
+  animations_auto_start: boolean_filter_operators
+  foods_image_ai_generation_enabled: boolean_filter_operators
   friends_enabled: boolean_filter_operators
+  map_enabled: boolean_filter_operators
+  news_enabled: boolean_filter_operators
+  housing_enabled: boolean_filter_operators
+  notifications_android_enabled: boolean_filter_operators
+  foods_ratings_average_display: boolean_filter_operators
+  notifications_email_enabled: boolean_filter_operators
+  notifications_ios_enabled: boolean_filter_operators
+  foods_ratings_amount_display: boolean_filter_operators
+  ai_action_recommendations_enabled: boolean_filter_operators
   id: number_filter_operators
   maintenance_message: string_filter_operators
   app_usage_events_enabled: string_filter_operators
   app_usage_events_enabled_func: count_function_filter_operators
   redirect_whitelist: string_filter_operators
   redirect_whitelist_func: count_function_filter_operators
+  foods_placeholder_image_remote_url: string_filter_operators
+  foods_feedbacks_labels_type: string_filter_operators
+  foods_feedbacks_custom_url: string_filter_operators
+  foods_feedbacks_comments_type: string_filter_operators
+  food_responsible_organization_name: string_filter_operators
+  food_responsible_organization_link: string_filter_operators
+  app_stores_url_to_google: string_filter_operators
+  app_stores_url_to_apple: string_filter_operators
   feature_wishes_mode: string_filter_operators
   foods_ratings_type_for_unverified: string_filter_operators
   foods_feedbacks_comments_type_for_unverified: string_filter_operators
@@ -4915,34 +4942,26 @@ input app_settings_filter {
   status: string_filter_operators
   foods_ratings_type: string_filter_operators
   foods_placeholder_image_thumb_hash: string_filter_operators
-  foods_placeholder_image_remote_url: string_filter_operators
-  foods_feedbacks_labels_type: string_filter_operators
-  foods_feedbacks_custom_url: string_filter_operators
-  foods_feedbacks_comments_type: string_filter_operators
-  food_responsible_organization_name: string_filter_operators
-  food_responsible_organization_link: string_filter_operators
-  app_stores_url_to_google: string_filter_operators
-  app_stores_url_to_apple: string_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
   date_privacy_policy_updated: date_filter_operators
   date_privacy_policy_updated_func: datetime_function_filter_operators
   maintenance_start: date_filter_operators
   maintenance_start_func: datetime_function_filter_operators
   maintenance_end: date_filter_operators
   maintenance_end_func: datetime_function_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
+  foods_placeholder_image: directus_files_filter
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_updated: directus_users_filter
   user_created: directus_users_filter
-  foods_placeholder_image: directus_files_filter
+  user_updated: directus_users_filter
+  company_image: directus_files_filter
   news_before_element: app_elements_filter
   campus_before_element: app_elements_filter
   housing_before_element: app_elements_filter
   foodoffers_list_after_element: app_elements_filter
   foodoffers_list_before_element: app_elements_filter
   placeholder_image: directus_files_filter
-  company_image: directus_files_filter
   housing_translations: app_settings_housing_translations_quantifier_filter
   housing_translations_func: count_function_filter_operators
   balance_translations: app_settings_balance_translations_quantifier_filter
@@ -4954,8 +4973,8 @@ input app_settings_filter {
 }
 
 input app_settings_housing_translations_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   app_settings_id: app_settings_filter
   content: string_filter_operators
@@ -4966,8 +4985,8 @@ input app_settings_housing_translations_filter {
 
 """"""
 input app_settings_housing_translations_quantifier_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   app_settings_id: app_settings_filter
   content: string_filter_operators
@@ -5029,8 +5048,8 @@ input boolean_filter_operators {
 
 input buildings_businesshours_filter {
   id: number_filter_operators
-  businesshours_id: businesshours_filter
   buildings_id: buildings_filter
+  businesshours_id: businesshours_filter
   _and: [buildings_businesshours_filter]
   _or: [buildings_businesshours_filter]
 }
@@ -5038,8 +5057,8 @@ input buildings_businesshours_filter {
 """"""
 input buildings_businesshours_quantifier_filter {
   id: number_filter_operators
-  businesshours_id: businesshours_filter
   buildings_id: buildings_filter
+  businesshours_id: businesshours_filter
   _and: [buildings_businesshours_filter]
   _or: [buildings_businesshours_filter]
   _some: buildings_businesshours_filter
@@ -5047,8 +5066,8 @@ input buildings_businesshours_quantifier_filter {
 }
 
 input buildings_filter {
-  map_marker_cluster_exclude: boolean_filter_operators
   map_marker_is_visible: boolean_filter_operators
+  map_marker_cluster_exclude: boolean_filter_operators
   sort: number_filter_operators
   coordinates: string_filter_operators
   coordinates_func: count_function_filter_operators
@@ -5062,16 +5081,16 @@ input buildings_filter {
   image_remote_url: string_filter_operators
   external_identifier: string_filter_operators
   alias: string_filter_operators
-  date_of_construction: date_filter_operators
-  date_of_construction_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  user_updated: directus_users_filter
-  user_created: directus_users_filter
-  id: id_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  date_of_construction: date_filter_operators
+  date_of_construction_func: datetime_function_filter_operators
+  user_updated: directus_users_filter
+  user_created: directus_users_filter
   image: directus_files_filter
+  id: id_filter_operators
   apartments: apartments_quantifier_filter
   apartments_func: count_function_filter_operators
   businesshours: buildings_businesshours_quantifier_filter
@@ -5129,12 +5148,12 @@ input buildings_translations_quantifier_filter {
 }
 
 input businesshours_filter {
-  tuesday: boolean_filter_operators
-  friday: boolean_filter_operators
-  saturday: boolean_filter_operators
   wednesday: boolean_filter_operators
+  friday: boolean_filter_operators
   monday: boolean_filter_operators
+  tuesday: boolean_filter_operators
   thursday: boolean_filter_operators
+  saturday: boolean_filter_operators
   sunday: boolean_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
@@ -5150,10 +5169,10 @@ input businesshours_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  user_updated: directus_users_filter
   group: businesshours_groups_filter
   id: id_filter_operators
   user_created: directus_users_filter
-  user_updated: directus_users_filter
   _and: [businesshours_filter]
   _or: [businesshours_filter]
 }
@@ -5166,9 +5185,9 @@ input businesshours_groups_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  user_updated: directus_users_filter
   id: id_filter_operators
   user_created: directus_users_filter
-  user_updated: directus_users_filter
   translations: businesshours_groups_translations_quantifier_filter
   translations_func: count_function_filter_operators
   _and: [businesshours_groups_filter]
@@ -5220,11 +5239,12 @@ input canteen_food_feedback_report_schedules_canteens_quantifier_filter {
 }
 
 input canteen_food_feedback_report_schedules_filter {
-  send_on_tuesdays: boolean_filter_operators
-  send_on_mondays: boolean_filter_operators
-  show_images: boolean_filter_operators
-  send_on_thursdays: boolean_filter_operators
   send_on_wednesdays: boolean_filter_operators
+  send_on_fridays: boolean_filter_operators
+  send_on_thursdays: boolean_filter_operators
+  report_send_successfully: boolean_filter_operators
+  send_on_sundays: boolean_filter_operators
+  send_on_saturdays: boolean_filter_operators
   show_food_comments_for_all_time: boolean_filter_operators
   show_food_comments_for_selected_period: boolean_filter_operators
   show_food_feedback_labels_for_selected_period: boolean_filter_operators
@@ -5232,23 +5252,22 @@ input canteen_food_feedback_report_schedules_filter {
   show_canteen_feedbacks_for_all_time: boolean_filter_operators
   show_canteen_feedbacks_for_selected_period: boolean_filter_operators
   show_canteen_feedbacks_also_per_canteen: boolean_filter_operators
-  report_send_successfully: boolean_filter_operators
-  send_on_sundays: boolean_filter_operators
-  send_on_saturdays: boolean_filter_operators
-  send_on_fridays: boolean_filter_operators
   enabled: boolean_filter_operators
+  send_on_tuesdays: boolean_filter_operators
+  send_on_mondays: boolean_filter_operators
+  show_images: boolean_filter_operators
   period_days_offset: number_filter_operators
   period_days_amount: number_filter_operators
   sort: number_filter_operators
   report_status_log: string_filter_operators
   alias: string_filter_operators
   status: string_filter_operators
+  date_next_report_is_due: date_filter_operators
+  date_next_report_is_due_func: datetime_function_filter_operators
   send_report_at_hh_mm: date_filter_operators
   send_report_at_hh_mm_func: time_function_filter_operators
   send_once_now_for_reference_date: date_filter_operators
   send_once_now_for_reference_date_func: date_function_filter_operators
-  date_next_report_is_due: date_filter_operators
-  date_next_report_is_due_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
@@ -5292,10 +5311,10 @@ input canteens_feedbacks_labels_filter {
   status: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
   id: id_filter_operators
   user_created: directus_users_filter
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
   user_updated: directus_users_filter
   image: directus_files_filter
   translations: canteens_feedbacks_labels_translations_quantifier_filter
@@ -5333,9 +5352,9 @@ input canteens_filter {
   foodoffers_import_without_date: boolean_filter_operators
   foodoffers_import_delete_all_without_dates: boolean_filter_operators
   sort: number_filter_operators
+  alias: string_filter_operators
   status: string_filter_operators
   external_identifier: string_filter_operators
-  alias: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
@@ -5369,8 +5388,8 @@ input cashregisters_filter {
 }
 
 input cashregisters_transactions_filter {
-  weekday_index_calculated: number_filter_operators
   sort: number_filter_operators
+  weekday_index_calculated: number_filter_operators
   quantity: number_filter_operators
   status: string_filter_operators
   name: string_filter_operators
@@ -5381,17 +5400,17 @@ input cashregisters_transactions_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  cashregister: cashregisters_filter
   user_created: directus_users_filter
   user_updated: directus_users_filter
-  cashregister: cashregisters_filter
   _and: [cashregisters_transactions_filter]
   _or: [cashregisters_transactions_filter]
 }
 
 """"""
 input cashregisters_transactions_quantifier_filter {
-  weekday_index_calculated: number_filter_operators
   sort: number_filter_operators
+  weekday_index_calculated: number_filter_operators
   quantity: number_filter_operators
   status: string_filter_operators
   name: string_filter_operators
@@ -5402,9 +5421,9 @@ input cashregisters_transactions_quantifier_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  cashregister: cashregisters_filter
   user_created: directus_users_filter
   user_updated: directus_users_filter
-  cashregister: cashregisters_filter
   _and: [cashregisters_transactions_filter]
   _or: [cashregisters_transactions_filter]
   _some: cashregisters_transactions_filter
@@ -5415,10 +5434,10 @@ input chat_messages_filter {
   message: string_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   id: id_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
@@ -5435,10 +5454,10 @@ input chat_messages_quantifier_filter {
   message: string_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   id: id_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
@@ -5458,15 +5477,17 @@ input chats_filter {
   conversation_state: string_filter_operators
   alias: string_filter_operators
   status: string_filter_operators
-  mail_pending_since: date_filter_operators
-  mail_pending_since_func: datetime_function_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_updated: directus_users_filter
-  user_created: directus_users_filter
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  mail_pending_since: date_filter_operators
+  mail_pending_since_func: datetime_function_filter_operators
+  date_last_message: date_filter_operators
+  date_last_message_func: datetime_function_filter_operators
   id: id_filter_operators
+  user_created: directus_users_filter
+  user_updated: directus_users_filter
   food_feedbacks: foods_feedbacks_quantifier_filter
   food_feedbacks_func: count_function_filter_operators
   app_feedbacks: app_feedbacks_quantifier_filter
@@ -5483,8 +5504,10 @@ input chats_filter {
 
 input chats_participants_filter {
   id: number_filter_operators
-  chats_id: chats_filter
+  read_until: date_filter_operators
+  read_until_func: datetime_function_filter_operators
   profiles_id: profiles_filter
+  chats_id: chats_filter
   _and: [chats_participants_filter]
   _or: [chats_participants_filter]
 }
@@ -5492,8 +5515,10 @@ input chats_participants_filter {
 """"""
 input chats_participants_quantifier_filter {
   id: number_filter_operators
-  chats_id: chats_filter
+  read_until: date_filter_operators
+  read_until_func: datetime_function_filter_operators
   profiles_id: profiles_filter
+  chats_id: chats_filter
   _and: [chats_participants_filter]
   _or: [chats_participants_filter]
   _some: chats_participants_filter
@@ -5542,35 +5567,35 @@ input collectible_event_participants_quantifier_filter {
 }
 
 input collectible_events_filter {
-  collectible_at_settings: boolean_filter_operators
-  monitor_display_number_of_collected_items: boolean_filter_operators
-  monitor_display_number_of_participants: boolean_filter_operators
-  ask_for_contact_details: boolean_filter_operators
   collectible_at_campus: boolean_filter_operators
   collectible_at_canteen_selection: boolean_filter_operators
   collectible_at_card_balance: boolean_filter_operators
-  collectible_at_price_group_selection: boolean_filter_operators
   collectible_at_course_timetable: boolean_filter_operators
-  collectible_at_markings_details: boolean_filter_operators
-  collectible_at_notification: boolean_filter_operators
-  collectible_at_news: boolean_filter_operators
-  collectible_at_foodoffers_details: boolean_filter_operators
-  collectible_at_foodoffers_details_markings: boolean_filter_operators
-  collectible_at_foodoffers_details_nutritions: boolean_filter_operators
-  collectible_at_foodoffers_select_date: boolean_filter_operators
+  collectible_at_data_access: boolean_filter_operators
+  collectible_at_settings_first_day_of_week: boolean_filter_operators
+  monitor_display_number_of_collected_items: boolean_filter_operators
+  monitor_display_number_of_participants: boolean_filter_operators
+  ask_for_contact_details: boolean_filter_operators
+  collectible_at_price_group_selection: boolean_filter_operators
+  collectible_at_settings: boolean_filter_operators
+  collectible_at_settings_amount_column: boolean_filter_operators
+  collectible_at_settings_theme: boolean_filter_operators
   repeat_every_year: boolean_filter_operators
+  collectible_at_notification: boolean_filter_operators
   collectible_at_foodoffers_sort: boolean_filter_operators
   collectible_at_housing: boolean_filter_operators
   collectible_at_license_information: boolean_filter_operators
   collectible_at_markings: boolean_filter_operators
-  collectible_at_data_access: boolean_filter_operators
-  collectible_at_settings_amount_column: boolean_filter_operators
+  collectible_at_markings_details: boolean_filter_operators
+  collectible_at_news: boolean_filter_operators
   collectible_at_drawer: boolean_filter_operators
   collectible_at_faq: boolean_filter_operators
   collectible_at_foodoffers: boolean_filter_operators
-  collectible_at_settings_first_day_of_week: boolean_filter_operators
+  collectible_at_foodoffers_details: boolean_filter_operators
+  collectible_at_foodoffers_details_markings: boolean_filter_operators
+  collectible_at_foodoffers_details_nutritions: boolean_filter_operators
   collectible_at_settings_menuposition: boolean_filter_operators
-  collectible_at_settings_theme: boolean_filter_operators
+  collectible_at_foodoffers_select_date: boolean_filter_operators
   sort: number_filter_operators
   points_minimum: number_filter_operators
   points_maximum: number_filter_operators
@@ -5585,10 +5610,10 @@ input collectible_events_filter {
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  id: id_filter_operators
-  monitor_background_image: directus_files_filter
   user_updated: directus_users_filter
   user_created: directus_users_filter
+  id: id_filter_operators
+  monitor_background_image: directus_files_filter
   collectible_item_image: directus_files_filter
   translations: collectible_events_translations_quantifier_filter
   translations_func: count_function_filter_operators
@@ -5636,8 +5661,8 @@ input create_apartments_input {
   sort: Int
   status: String
   external_identifier: String
-  available_from: Date
   available_from_notified: Date
+  available_from: Date
   date_updated: Date
   date_created: Date
   user_updated: create_directus_users_input
@@ -5648,23 +5673,20 @@ input create_apartments_input {
 }
 
 input create_app_feedbacks_input {
+  response_read_by_user: Boolean
   positive: Boolean
   feedback_read_by_support: Boolean
-  response_read_by_user: Boolean
+  source_rating_raw: Int
   sort: Int
   priority: Int
-  source_rating_raw: Int
-  content: String
   response: String
-  data: JSON
-  display_height: Float
+  content: String
   display_fontscale: Float
-  display_scale: Float
   display_pixelratio: Float
+  display_scale: Float
+  display_height: Float
   display_width: Float
-  source_identifier: String
-  title: String
-  status: String
+  data: JSON
   device_system_version: String
   device_platform: String
   device_brand: String
@@ -5675,24 +5697,27 @@ input create_app_feedbacks_input {
   """
   state: String
   external_identifier: String
+  source_identifier: String
+  title: String
+  status: String
   date_created: Date
   date_updated: Date
-  id: ID
   profile: create_profiles_input
   user_created: ID
   user_updated: create_directus_users_input
   chat: create_chats_input
+  id: ID
 }
 
 input create_buildings_businesshours_input {
   id: ID
-  businesshours_id: create_businesshours_input
   buildings_id: create_buildings_input
+  businesshours_id: create_businesshours_input
 }
 
 input create_buildings_input {
-  map_marker_cluster_exclude: Boolean
   map_marker_is_visible: Boolean
+  map_marker_cluster_exclude: Boolean
   sort: Int
   coordinates: JSON
   map_marker_label_color: String
@@ -5705,13 +5730,13 @@ input create_buildings_input {
   image_remote_url: String
   external_identifier: String
   alias: String
-  date_of_construction: Date
   date_updated: Date
+  date_created: Date
+  date_of_construction: Date
   user_updated: create_directus_users_input
   user_created: create_directus_users_input
-  id: ID
-  date_created: Date
   image: create_directus_files_input
+  id: ID
   apartments: [create_apartments_input]
   businesshours: [create_buildings_businesshours_input]
   translations: [create_buildings_translations_input]
@@ -5739,9 +5764,9 @@ input create_businesshours_groups_input {
   status: String
   date_created: Date
   date_updated: Date
+  user_updated: create_directus_users_input
   id: ID
   user_created: create_directus_users_input
-  user_updated: create_directus_users_input
   translations: [create_businesshours_groups_translations_input]
 }
 
@@ -5755,12 +5780,12 @@ input create_businesshours_groups_translations_input {
 }
 
 input create_businesshours_input {
-  tuesday: Boolean
-  friday: Boolean
-  saturday: Boolean
   wednesday: Boolean
+  friday: Boolean
   monday: Boolean
+  tuesday: Boolean
   thursday: Boolean
+  saturday: Boolean
   sunday: Boolean
   sort: Int
   status: String
@@ -5774,10 +5799,10 @@ input create_businesshours_input {
   date_valid_till: Date
   date_created: Date
   date_updated: Date
+  user_updated: create_directus_users_input
   group: create_businesshours_groups_input
   id: ID
   user_created: create_directus_users_input
-  user_updated: create_directus_users_input
 }
 
 input create_canteens_input {
@@ -5791,9 +5816,9 @@ input create_canteens_input {
   """
   foodoffers_import_delete_all_without_dates: Boolean
   sort: Int
+  alias: String
   status: String
   external_identifier: String
-  alias: String
   date_updated: Date
   date_created: Date
   utilization_group: create_utilizations_groups_input
@@ -5807,8 +5832,8 @@ input create_chat_messages_input {
   message: String
   sort: Int
   status: String
-  date_created: Date
   date_updated: Date
+  date_created: Date
   id: ID
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
@@ -5824,16 +5849,21 @@ input create_chats_input {
   conversation_state: String
   alias: String
   status: String
+  date_created: Date
+  date_updated: Date
 
   """
   Date of the first message not mailed yet. Set by the chat-conversation-state-hook, cleared by the timer of the last message once the chat was quiet for 5 minutes.
   """
   mail_pending_since: Date
-  date_updated: Date
-  date_created: Date
-  user_updated: create_directus_users_input
-  user_created: create_directus_users_input
+
+  """
+  Date of the newest message. Set by the chat-conversation-state-hook on every message; a participant whose read_until is older has unread messages.
+  """
+  date_last_message: Date
   id: ID
+  user_created: create_directus_users_input
+  user_updated: create_directus_users_input
   food_feedbacks: [create_foods_feedbacks_input]
   app_feedbacks: [create_app_feedbacks_input]
   participants: [create_chats_participants_input]
@@ -5843,8 +5873,13 @@ input create_chats_input {
 
 input create_chats_participants_input {
   id: ID
-  chats_id: create_chats_input
+
+  """
+  Up to which date this participant has read the chat. Set by the app when the chat is opened and by the chat-conversation-state-hook for the own messages of the participant.
+  """
+  read_until: Date
   profiles_id: create_profiles_input
+  chats_id: create_chats_input
 }
 
 input create_devices_input {
@@ -5855,19 +5890,19 @@ input create_devices_input {
   is_ios: Boolean
   is_android: Boolean
   sort: Int
+  display_pixelratio: Float
+  display_scale: Float
+  display_width: Float
+  display_height: Float
+  display_fontscale: Float
   pushTokenObj: JSON
   custom_data: JSON
-  display_pixelratio: Float
-  display_width: Float
-  display_scale: Float
-  display_fontscale: Float
-  display_height: Float
-  app_version: String
-  system_version: String
   status: String
   platform: String
   brand: String
   alias: String
+  app_version: String
+  system_version: String
   date_created: Date
   date_updated: Date
   id: ID
@@ -5925,11 +5960,11 @@ input create_directus_deployment_runs_input {
   target: String!
   external_id: String!
   completed_at: Date
-  date_created: Date
-  project: create_directus_deployment_projects_input
   started_at: Date
+  date_created: Date
   id: ID
   user_created: create_directus_users_input
+  project: create_directus_deployment_projects_input
 }
 
 input create_directus_deployments_input {
@@ -5946,18 +5981,18 @@ input create_directus_deployments_input {
 }
 
 input create_directus_files_input {
-  is_unreferenced: Boolean
   filesize: GraphQLBigInt
+  is_unreferenced: Boolean
   focal_point_y: Int
   focal_point_x: Int
   duration: Int
   height: Int
   width: Int
   tags: JSON
-  description: String
   location: String
-  tus_data: JSON
+  description: String
   metadata: JSON
+  tus_data: JSON
   tus_id: String
   embed: String
   charset: String
@@ -5976,8 +6011,8 @@ input create_directus_files_input {
 }
 
 input create_directus_flows_input {
-  description: String
   options: JSON
+  description: String
   accountability: String
   trigger: String
   status: String
@@ -5985,9 +6020,9 @@ input create_directus_flows_input {
   icon: String
   name: String!
   date_created: Date
+  id: ID
   operation: create_directus_operations_input
   user_created: create_directus_users_input
-  id: ID
   operations: [create_directus_operations_input]
 }
 
@@ -6017,11 +6052,11 @@ input create_directus_operations_input {
   key: String!
   name: String
   date_created: Date
+  flow: create_directus_flows_input
+  user_created: create_directus_users_input
   id: ID
   resolve: create_directus_operations_input
   reject: create_directus_operations_input
-  flow: create_directus_flows_input
-  user_created: create_directus_users_input
 }
 
 input create_directus_panels_input {
@@ -6032,10 +6067,10 @@ input create_directus_panels_input {
   position_x: Int!
   note: String
   options: JSON
-  color: String
-  type: String!
-  icon: String
   name: String
+  type: String!
+  color: String
+  icon: String
   date_created: Date
   id: ID
   dashboard: create_directus_dashboards_input
@@ -6058,8 +6093,8 @@ input create_directus_policies_input {
   enforce_tfa: Boolean!
   admin_access: Boolean!
   app_access: Boolean!
-  description: String
   ip_access: [String]
+  description: String
   icon: String
   name: String!
   id: ID
@@ -6074,12 +6109,12 @@ input create_directus_presets_input {
   layout_query: JSON
   filter: JSON
   layout_options: JSON
-  bookmark: String
   color: String
   icon: String
   layout: String
   search: String
   collection: String
+  bookmark: String
   user: create_directus_users_input
   role: create_directus_roles_input
 }
@@ -6088,31 +6123,30 @@ input create_directus_roles_input {
   description: String
   icon: String
   name: String!
-  id: ID
   parent: create_directus_roles_input
+  id: ID
   children: [create_directus_roles_input]
   policies: [create_directus_access_input]
   users: [create_directus_users_input]
 }
 
 input create_directus_shares_input {
-  times_used: Int
-
   """$t:shared_leave_blank_for_unlimited"""
   max_uses: Int
+  times_used: Int
 
   """$t:shared_leave_blank_for_passwordless_access"""
   password: Hash
   item: String!
   collection: String!
   name: String
+
+  """$t:shared_leave_blank_for_unlimited"""
+  date_end: Date
   date_created: Date
 
   """$t:shared_leave_blank_for_unlimited"""
   date_start: Date
-
-  """$t:shared_leave_blank_for_unlimited"""
-  date_end: Date
   id: ID
   role: create_directus_roles_input
   user_created: create_directus_users_input
@@ -6129,8 +6163,8 @@ input create_directus_users_input {
   email_notifications: Boolean
   description: String
   tags: JSON
-  auth_data: JSON
   theme_light_overrides: JSON
+  auth_data: JSON
   theme_dark_overrides: JSON
   text_direction: String
   theme_light: String
@@ -6159,16 +6193,16 @@ input create_directus_users_input {
 
 input create_directus_versions_input {
   delta: JSON
+  name: String
+  key: String!
   hash: String
   item: String!
   collection: String!
-  name: String
-  key: String!
   date_created: Date
   date_updated: Date
-  id: ID
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  id: ID
 }
 
 input create_feature_whishes_input {
@@ -6185,12 +6219,12 @@ input create_feature_whishes_input {
   status: String
   date_updated: Date
   date_created: Date
-  user_updated: create_directus_users_input
-  user_created: create_directus_users_input
-  id: ID
   chat: create_chats_input
   related_to: create_feature_whishes_input
   profile: create_profiles_input
+  user_updated: create_directus_users_input
+  user_created: create_directus_users_input
+  id: ID
 }
 
 input create_foodoffers_categories_input {
@@ -6200,9 +6234,9 @@ input create_foodoffers_categories_input {
   alias: String
   date_created: Date
   date_updated: Date
+  user_updated: create_directus_users_input
   id: ID
   user_created: create_directus_users_input
-  user_updated: create_directus_users_input
   translations: [create_foodoffers_categories_translations_input]
 }
 
@@ -6230,8 +6264,6 @@ input create_foodoffers_input {
   """Pro wieviel? z. B. Preis pro 100 (gramm)"""
   price_reference_amount: Float
   price_student: Float
-  food: create_foods_input
-  alias: String
 
   """Pro welche Einheit? z. B. (100)g für Gramm."""
   price_reference_unit: String
@@ -6239,6 +6271,8 @@ input create_foodoffers_input {
   redirect_url: String
   category: String
   status: String
+  food: create_foods_input
+  alias: String
   date: Date
   date_created: Date
   date_updated: Date
@@ -6314,17 +6348,17 @@ input create_foods_attributes_input {
   alias: String
   date_created: Date
   date_updated: Date
-  user_updated: create_directus_users_input
-  user_created: create_directus_users_input
   group: create_foods_attributes_groups_input
-  image: create_directus_files_input
   id: ID
+  image: create_directus_files_input
+  user_created: create_directus_users_input
+  user_updated: create_directus_users_input
   translations: [create_foods_attributes_translations_input]
 }
 
 input create_foods_attributes_translations_input {
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
   id: ID
   description: String
   name: String
@@ -6349,8 +6383,8 @@ input create_foods_categories_input {
   status: String
   external_identifier: String
   alias: String
-  date_created: Date
   date_updated: Date
+  date_created: Date
   id: ID
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
@@ -6390,8 +6424,8 @@ input create_foods_input {
   rating_amount_legacy: Int
   sort: Int
   rating_amount: Int
-  rating_average: Float
   rating_average_legacy: Float
+  rating_average: Float
   result_hash: String
   status: String
   image_thumb_hash: String
@@ -6432,12 +6466,12 @@ input create_friendships_input {
   sort: Int
   friendship_status: String
   status: String
-  date_updated: Date
   date_created: Date
-  user_created: create_directus_users_input
-  user_updated: create_directus_users_input
+  date_updated: Date
   requester_profiles_id: create_profiles_input
   receiver_profiles_id: create_profiles_input
+  user_created: create_directus_users_input
+  user_updated: create_directus_users_input
   id: ID
 }
 
@@ -6565,16 +6599,16 @@ input create_profiles_input {
   verified: Boolean
   notifiy_on_free_apartments: Boolean
   sort: Int
-  course_timetable: JSON
   avatar: JSON
-  credit_balance_last_transaction: Float
+  course_timetable: JSON
   credit_balance: Float
+  credit_balance_last_transaction: Float
   status: String
   price_group: String
   nickname: String
   language: create_languages_input
-  date_privacy_policy_accepted: Date
   credit_balance_date_updated: Date
+  date_privacy_policy_accepted: Date
   date_updated: Date
   date_created: Date
   user_updated: create_directus_users_input
@@ -6603,9 +6637,9 @@ input create_utilizations_entries_input {
   value_forecast_current: Int
   value_real: Int
   status: String
+  date_end: Date
   date_start: Date
   date_created: Date
-  date_end: Date
   date_updated: Date
   utilization_group: create_utilizations_groups_input
   user_updated: create_directus_users_input
@@ -6636,9 +6670,9 @@ input create_washingmachines_input {
   external_identifier: String
   alias: String
   date_finished: Date
-  date_updated: Date
-  date_started: Date
   date_stated: Date
+  date_started: Date
+  date_updated: Date
   date_created: Date
   user_updated: create_directus_users_input
   user_created: create_directus_users_input
@@ -6688,21 +6722,21 @@ input devices_filter {
   is_ios: boolean_filter_operators
   is_android: boolean_filter_operators
   sort: number_filter_operators
+  display_pixelratio: number_filter_operators
+  display_scale: number_filter_operators
+  display_width: number_filter_operators
+  display_height: number_filter_operators
+  display_fontscale: number_filter_operators
   pushTokenObj: string_filter_operators
   pushTokenObj_func: count_function_filter_operators
   custom_data: string_filter_operators
   custom_data_func: count_function_filter_operators
-  display_pixelratio: number_filter_operators
-  display_width: number_filter_operators
-  display_scale: number_filter_operators
-  display_fontscale: number_filter_operators
-  display_height: number_filter_operators
-  app_version: string_filter_operators
-  system_version: string_filter_operators
   status: string_filter_operators
   platform: string_filter_operators
   brand: string_filter_operators
   alias: string_filter_operators
+  app_version: string_filter_operators
+  system_version: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
@@ -6724,21 +6758,21 @@ input devices_quantifier_filter {
   is_ios: boolean_filter_operators
   is_android: boolean_filter_operators
   sort: number_filter_operators
+  display_pixelratio: number_filter_operators
+  display_scale: number_filter_operators
+  display_width: number_filter_operators
+  display_height: number_filter_operators
+  display_fontscale: number_filter_operators
   pushTokenObj: string_filter_operators
   pushTokenObj_func: count_function_filter_operators
   custom_data: string_filter_operators
   custom_data_func: count_function_filter_operators
-  display_pixelratio: number_filter_operators
-  display_width: number_filter_operators
-  display_scale: number_filter_operators
-  display_fontscale: number_filter_operators
-  display_height: number_filter_operators
-  app_version: string_filter_operators
-  system_version: string_filter_operators
   status: string_filter_operators
   platform: string_filter_operators
   brand: string_filter_operators
   alias: string_filter_operators
+  app_version: string_filter_operators
+  system_version: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
@@ -6867,13 +6901,13 @@ input directus_deployment_runs_filter {
   external_id: string_filter_operators
   completed_at: date_filter_operators
   completed_at_func: datetime_function_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
-  project: directus_deployment_projects_filter
   started_at: date_filter_operators
   started_at_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   id: id_filter_operators
   user_created: directus_users_filter
+  project: directus_deployment_projects_filter
   _and: [directus_deployment_runs_filter]
   _or: [directus_deployment_runs_filter]
 }
@@ -6886,13 +6920,13 @@ input directus_deployment_runs_quantifier_filter {
   external_id: string_filter_operators
   completed_at: date_filter_operators
   completed_at_func: datetime_function_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
-  project: directus_deployment_projects_filter
   started_at: date_filter_operators
   started_at_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   id: id_filter_operators
   user_created: directus_users_filter
+  project: directus_deployment_projects_filter
   _and: [directus_deployment_runs_filter]
   _or: [directus_deployment_runs_filter]
   _some: directus_deployment_runs_filter
@@ -6920,8 +6954,8 @@ input directus_deployments_filter {
 }
 
 input directus_files_filter {
-  is_unreferenced: boolean_filter_operators
   filesize: big_int_filter_operators
+  is_unreferenced: boolean_filter_operators
   focal_point_y: number_filter_operators
   focal_point_x: number_filter_operators
   duration: number_filter_operators
@@ -6929,12 +6963,12 @@ input directus_files_filter {
   width: number_filter_operators
   tags: string_filter_operators
   tags_func: count_function_filter_operators
-  description: string_filter_operators
   location: string_filter_operators
-  tus_data: string_filter_operators
-  tus_data_func: count_function_filter_operators
+  description: string_filter_operators
   metadata: string_filter_operators
   metadata_func: count_function_filter_operators
+  tus_data: string_filter_operators
+  tus_data_func: count_function_filter_operators
   tus_id: string_filter_operators
   embed: string_filter_operators
   charset: string_filter_operators
@@ -6958,9 +6992,9 @@ input directus_files_filter {
 }
 
 input directus_flows_filter {
-  description: string_filter_operators
   options: string_filter_operators
   options_func: count_function_filter_operators
+  description: string_filter_operators
   accountability: string_filter_operators
   trigger: string_filter_operators
   status: string_filter_operators
@@ -6969,9 +7003,9 @@ input directus_flows_filter {
   name: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  id: id_filter_operators
   operation: directus_operations_filter
   user_created: directus_users_filter
-  id: id_filter_operators
   operations: directus_operations_quantifier_filter
   operations_func: count_function_filter_operators
   _and: [directus_flows_filter]
@@ -7011,11 +7045,11 @@ input directus_operations_filter {
   name: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  flow: directus_flows_filter
+  user_created: directus_users_filter
   id: id_filter_operators
   resolve: directus_operations_filter
   reject: directus_operations_filter
-  flow: directus_flows_filter
-  user_created: directus_users_filter
   _and: [directus_operations_filter]
   _or: [directus_operations_filter]
 }
@@ -7031,11 +7065,11 @@ input directus_operations_quantifier_filter {
   name: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  flow: directus_flows_filter
+  user_created: directus_users_filter
   id: id_filter_operators
   resolve: directus_operations_filter
   reject: directus_operations_filter
-  flow: directus_flows_filter
-  user_created: directus_users_filter
   _and: [directus_operations_filter]
   _or: [directus_operations_filter]
   _some: directus_operations_filter
@@ -7051,10 +7085,10 @@ input directus_panels_filter {
   note: string_filter_operators
   options: string_filter_operators
   options_func: count_function_filter_operators
-  color: string_filter_operators
-  type: string_filter_operators
-  icon: string_filter_operators
   name: string_filter_operators
+  type: string_filter_operators
+  color: string_filter_operators
+  icon: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   id: id_filter_operators
@@ -7074,10 +7108,10 @@ input directus_panels_quantifier_filter {
   note: string_filter_operators
   options: string_filter_operators
   options_func: count_function_filter_operators
-  color: string_filter_operators
-  type: string_filter_operators
-  icon: string_filter_operators
   name: string_filter_operators
+  type: string_filter_operators
+  color: string_filter_operators
+  icon: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   id: id_filter_operators
@@ -7128,8 +7162,8 @@ input directus_policies_filter {
   enforce_tfa: boolean_filter_operators
   admin_access: boolean_filter_operators
   app_access: boolean_filter_operators
-  description: string_filter_operators
   ip_access: string_filter_operators
+  description: string_filter_operators
   icon: string_filter_operators
   name: string_filter_operators
   id: id_filter_operators
@@ -7152,12 +7186,12 @@ input directus_presets_filter {
   filter_func: count_function_filter_operators
   layout_options: string_filter_operators
   layout_options_func: count_function_filter_operators
-  bookmark: string_filter_operators
   color: string_filter_operators
   icon: string_filter_operators
   layout: string_filter_operators
   search: string_filter_operators
   collection: string_filter_operators
+  bookmark: string_filter_operators
   user: directus_users_filter
   role: directus_roles_filter
   _and: [directus_presets_filter]
@@ -7201,8 +7235,8 @@ input directus_roles_filter {
   description: string_filter_operators
   icon: string_filter_operators
   name: string_filter_operators
-  id: id_filter_operators
   parent: directus_roles_filter
+  id: id_filter_operators
   children: directus_roles_quantifier_filter
   children_func: count_function_filter_operators
   policies: directus_access_quantifier_filter
@@ -7218,8 +7252,8 @@ input directus_roles_quantifier_filter {
   description: string_filter_operators
   icon: string_filter_operators
   name: string_filter_operators
-  id: id_filter_operators
   parent: directus_roles_filter
+  id: id_filter_operators
   children: directus_roles_quantifier_filter
   children_func: count_function_filter_operators
   policies: directus_access_quantifier_filter
@@ -7233,18 +7267,18 @@ input directus_roles_quantifier_filter {
 }
 
 input directus_shares_filter {
-  times_used: number_filter_operators
   max_uses: number_filter_operators
+  times_used: number_filter_operators
   password: hash_filter_operators
   item: string_filter_operators
   collection: string_filter_operators
   name: string_filter_operators
+  date_end: date_filter_operators
+  date_end_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_start: date_filter_operators
   date_start_func: datetime_function_filter_operators
-  date_end: date_filter_operators
-  date_end_func: datetime_function_filter_operators
   id: id_filter_operators
   role: directus_roles_filter
   user_created: directus_users_filter
@@ -7266,10 +7300,10 @@ input directus_users_filter {
   description: string_filter_operators
   tags: string_filter_operators
   tags_func: count_function_filter_operators
-  auth_data: string_filter_operators
-  auth_data_func: count_function_filter_operators
   theme_light_overrides: string_filter_operators
   theme_light_overrides_func: count_function_filter_operators
+  auth_data: string_filter_operators
+  auth_data_func: count_function_filter_operators
   theme_dark_overrides: string_filter_operators
   theme_dark_overrides_func: count_function_filter_operators
   text_direction: string_filter_operators
@@ -7307,10 +7341,10 @@ input directus_users_quantifier_filter {
   description: string_filter_operators
   tags: string_filter_operators
   tags_func: count_function_filter_operators
-  auth_data: string_filter_operators
-  auth_data_func: count_function_filter_operators
   theme_light_overrides: string_filter_operators
   theme_light_overrides_func: count_function_filter_operators
+  auth_data: string_filter_operators
+  auth_data_func: count_function_filter_operators
   theme_dark_overrides: string_filter_operators
   theme_dark_overrides_func: count_function_filter_operators
   text_direction: string_filter_operators
@@ -7347,18 +7381,18 @@ input directus_users_quantifier_filter {
 input directus_versions_filter {
   delta: string_filter_operators
   delta_func: count_function_filter_operators
+  name: string_filter_operators
+  key: string_filter_operators
   hash: string_filter_operators
   item: string_filter_operators
   collection: string_filter_operators
-  name: string_filter_operators
-  key: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  id: id_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  id: id_filter_operators
   _and: [directus_versions_filter]
   _or: [directus_versions_filter]
 }
@@ -7380,12 +7414,12 @@ input feature_whishes_filter {
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_updated: directus_users_filter
-  user_created: directus_users_filter
-  id: id_filter_operators
   chat: chats_filter
   related_to: feature_whishes_filter
   profile: profiles_filter
+  user_updated: directus_users_filter
+  user_created: directus_users_filter
+  id: id_filter_operators
   _and: [feature_whishes_filter]
   _or: [feature_whishes_filter]
 }
@@ -7408,12 +7442,12 @@ input feature_whishes_quantifier_filter {
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_updated: directus_users_filter
-  user_created: directus_users_filter
-  id: id_filter_operators
   chat: chats_filter
   related_to: feature_whishes_filter
   profile: profiles_filter
+  user_updated: directus_users_filter
+  user_created: directus_users_filter
+  id: id_filter_operators
   _and: [feature_whishes_filter]
   _or: [feature_whishes_filter]
   _some: feature_whishes_filter
@@ -7429,9 +7463,9 @@ input foodoffers_categories_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  user_updated: directus_users_filter
   id: id_filter_operators
   user_created: directus_users_filter
-  user_updated: directus_users_filter
   translations: foodoffers_categories_translations_quantifier_filter
   translations_func: count_function_filter_operators
   _and: [foodoffers_categories_filter]
@@ -7489,13 +7523,13 @@ input foodoffers_filter {
   price_employee: number_filter_operators
   price_reference_amount: number_filter_operators
   price_student: number_filter_operators
-  food: foods_filter
-  alias: string_filter_operators
   price_reference_unit: string_filter_operators
   result_hash: string_filter_operators
   redirect_url: string_filter_operators
   category: string_filter_operators
   status: string_filter_operators
+  food: foods_filter
+  alias: string_filter_operators
   date: date_filter_operators
   date_func: date_function_filter_operators
   date_created: date_filter_operators
@@ -7581,11 +7615,11 @@ input foods_attributes_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  user_updated: directus_users_filter
-  user_created: directus_users_filter
   group: foods_attributes_groups_filter
-  image: directus_files_filter
   id: id_filter_operators
+  image: directus_files_filter
+  user_created: directus_users_filter
+  user_updated: directus_users_filter
   translations: foods_attributes_translations_quantifier_filter
   translations_func: count_function_filter_operators
   _and: [foods_attributes_filter]
@@ -7661,11 +7695,11 @@ input foods_attributes_quantifier_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  user_updated: directus_users_filter
-  user_created: directus_users_filter
   group: foods_attributes_groups_filter
-  image: directus_files_filter
   id: id_filter_operators
+  image: directus_files_filter
+  user_created: directus_users_filter
+  user_updated: directus_users_filter
   translations: foods_attributes_translations_quantifier_filter
   translations_func: count_function_filter_operators
   _and: [foods_attributes_filter]
@@ -7675,8 +7709,8 @@ input foods_attributes_quantifier_filter {
 }
 
 input foods_attributes_translations_filter {
-  let_be_translated: boolean_filter_operators
   be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
   id: number_filter_operators
   description: string_filter_operators
   name: string_filter_operators
@@ -7688,8 +7722,8 @@ input foods_attributes_translations_filter {
 
 """"""
 input foods_attributes_translations_quantifier_filter {
-  let_be_translated: boolean_filter_operators
   be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
   id: number_filter_operators
   description: string_filter_operators
   name: string_filter_operators
@@ -7737,10 +7771,10 @@ input foods_categories_filter {
   status: string_filter_operators
   external_identifier: string_filter_operators
   alias: string_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   id: id_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
@@ -7799,11 +7833,11 @@ input foods_feedbacks_filter {
 
 input foods_feedbacks_labels_filter {
   sort: number_filter_operators
-  status: string_filter_operators
   image_thumb_hash: string_filter_operators
   image_remote_url: string_filter_operators
   icon: string_filter_operators
   alias: string_filter_operators
+  status: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
@@ -7874,8 +7908,8 @@ input foods_filter {
   rating_amount_legacy: number_filter_operators
   sort: number_filter_operators
   rating_amount: number_filter_operators
-  rating_average: number_filter_operators
   rating_average_legacy: number_filter_operators
+  rating_average: number_filter_operators
   result_hash: string_filter_operators
   status: string_filter_operators
   image_thumb_hash: string_filter_operators
@@ -7952,8 +7986,8 @@ input foods_translations_quantifier_filter {
 
 input form_answers_files_filter {
   id: number_filter_operators
-  directus_files_id: directus_files_filter
   form_answers_id: form_answers_filter
+  directus_files_id: directus_files_filter
   _and: [form_answers_files_filter]
   _or: [form_answers_files_filter]
 }
@@ -7961,8 +7995,8 @@ input form_answers_files_filter {
 """"""
 input form_answers_files_quantifier_filter {
   id: number_filter_operators
-  directus_files_id: directus_files_filter
   form_answers_id: form_answers_filter
+  directus_files_id: directus_files_filter
   _and: [form_answers_files_filter]
   _or: [form_answers_files_filter]
   _some: form_answers_files_filter
@@ -8113,10 +8147,10 @@ input form_extracts_form_fields_quantifier_filter {
 }
 
 input form_field_groups_filter {
-  icon: string_filter_operators
   icon_expo: string_filter_operators
   alias: string_filter_operators
   status: string_filter_operators
+  icon: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
@@ -8154,19 +8188,13 @@ input form_field_groups_translations_quantifier_filter {
 }
 
 input form_fields_filter {
-  is_required: boolean_filter_operators
   is_visible_in_form: boolean_filter_operators
-  is_visible_in_export: boolean_filter_operators
   is_disabled: boolean_filter_operators
+  is_required: boolean_filter_operators
+  is_visible_in_export: boolean_filter_operators
   sort: number_filter_operators
   dropdown_values: string_filter_operators
   dropdown_values_func: count_function_filter_operators
-  field_type: string_filter_operators
-  alias: string_filter_operators
-  background_color: string_filter_operators
-  image_thumb_hash: string_filter_operators
-  image_remote_url: string_filter_operators
-  icon_expo: string_filter_operators
   icon: string_filter_operators
   status: string_filter_operators
   visibility_depends_on_referenced_value_equals: string_filter_operators
@@ -8176,10 +8204,16 @@ input form_fields_filter {
   external_export_field_name: string_filter_operators
   external_export_id: string_filter_operators
   external_import_id: string_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
+  field_type: string_filter_operators
+  alias: string_filter_operators
+  background_color: string_filter_operators
+  image_thumb_hash: string_filter_operators
+  image_remote_url: string_filter_operators
+  icon_expo: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   group: form_field_groups_filter
   visibility_depends_on_referenced_field: form_fields_filter
   form: forms_filter
@@ -8195,19 +8229,13 @@ input form_fields_filter {
 
 """"""
 input form_fields_quantifier_filter {
-  is_required: boolean_filter_operators
   is_visible_in_form: boolean_filter_operators
-  is_visible_in_export: boolean_filter_operators
   is_disabled: boolean_filter_operators
+  is_required: boolean_filter_operators
+  is_visible_in_export: boolean_filter_operators
   sort: number_filter_operators
   dropdown_values: string_filter_operators
   dropdown_values_func: count_function_filter_operators
-  field_type: string_filter_operators
-  alias: string_filter_operators
-  background_color: string_filter_operators
-  image_thumb_hash: string_filter_operators
-  image_remote_url: string_filter_operators
-  icon_expo: string_filter_operators
   icon: string_filter_operators
   status: string_filter_operators
   visibility_depends_on_referenced_value_equals: string_filter_operators
@@ -8217,10 +8245,16 @@ input form_fields_quantifier_filter {
   external_export_field_name: string_filter_operators
   external_export_id: string_filter_operators
   external_import_id: string_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
+  field_type: string_filter_operators
+  alias: string_filter_operators
+  background_color: string_filter_operators
+  image_thumb_hash: string_filter_operators
+  image_remote_url: string_filter_operators
+  icon_expo: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   group: form_field_groups_filter
   visibility_depends_on_referenced_field: form_fields_filter
   form: forms_filter
@@ -8271,6 +8305,8 @@ input form_submissions_filter {
   alias: string_filter_operators
   state: string_filter_operators
   status: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   date_locked_until: date_filter_operators
   date_locked_until_func: datetime_function_filter_operators
   date_submitted: date_filter_operators
@@ -8279,8 +8315,6 @@ input form_submissions_filter {
   date_started_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
   user_locked_by: directus_users_filter
   form: forms_filter
   user_updated: directus_users_filter
@@ -8303,6 +8337,8 @@ input form_submissions_quantifier_filter {
   alias: string_filter_operators
   state: string_filter_operators
   status: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   date_locked_until: date_filter_operators
   date_locked_until_func: datetime_function_filter_operators
   date_submitted: date_filter_operators
@@ -8311,8 +8347,6 @@ input form_submissions_quantifier_filter {
   date_started_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
   user_locked_by: directus_users_filter
   form: forms_filter
   user_updated: directus_users_filter
@@ -8410,14 +8444,14 @@ input friendships_filter {
   sort: number_filter_operators
   friendship_status: string_filter_operators
   status: string_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_created: directus_users_filter
-  user_updated: directus_users_filter
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
   requester_profiles_id: profiles_filter
   receiver_profiles_id: profiles_filter
+  user_created: directus_users_filter
+  user_updated: directus_users_filter
   id: id_filter_operators
   _and: [friendships_filter]
   _or: [friendships_filter]
@@ -8428,14 +8462,14 @@ input friendships_quantifier_filter {
   sort: number_filter_operators
   friendship_status: string_filter_operators
   status: string_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_created: directus_users_filter
-  user_updated: directus_users_filter
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
   requester_profiles_id: profiles_filter
   receiver_profiles_id: profiles_filter
+  user_created: directus_users_filter
+  user_updated: directus_users_filter
   id: id_filter_operators
   _and: [friendships_filter]
   _or: [friendships_filter]
@@ -8474,17 +8508,17 @@ input id_filter_operators {
 
 input inventory_item_categories_filter {
   sort: number_filter_operators
-  icon_expo: string_filter_operators
-  icon: string_filter_operators
   alias: string_filter_operators
   status: string_filter_operators
+  icon_expo: string_filter_operators
+  icon: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  id: id_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  id: id_filter_operators
   translations: inventory_item_categories_translations_quantifier_filter
   translations_func: count_function_filter_operators
   _and: [inventory_item_categories_filter]
@@ -8776,12 +8810,12 @@ input news_filter {
 }
 
 input news_translations_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   content: string_filter_operators
-  title: string_filter_operators
   languages_code: languages_filter
+  title: string_filter_operators
   news_id: news_filter
   _and: [news_translations_filter]
   _or: [news_translations_filter]
@@ -8789,12 +8823,12 @@ input news_translations_filter {
 
 """"""
 input news_translations_quantifier_filter {
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   id: number_filter_operators
   content: string_filter_operators
-  title: string_filter_operators
   languages_code: languages_filter
+  title: string_filter_operators
   news_id: news_filter
   _and: [news_translations_filter]
   _or: [news_translations_filter]
@@ -8890,27 +8924,27 @@ input popup_events_canteens_quantifier_filter {
 }
 
 input popup_events_filter {
+  show_login_screen_button: boolean_filter_operators
   show_app_rating_button: boolean_filter_operators
-  show_on_web: boolean_filter_operators
+  show_only_anonymous_users: boolean_filter_operators
   send_notification: boolean_filter_operators
   show_on_android: boolean_filter_operators
   show_on_ios: boolean_filter_operators
-  show_only_anonymous_users: boolean_filter_operators
-  show_login_screen_button: boolean_filter_operators
+  show_on_web: boolean_filter_operators
   sort: number_filter_operators
   image_remote_url: string_filter_operators
+  alias: string_filter_operators
   show_on_app_version: string_filter_operators
   status: string_filter_operators
   image_thumb_hash: string_filter_operators
-  alias: string_filter_operators
   date_end: date_filter_operators
   date_end_func: datetime_function_filter_operators
   date_start: date_filter_operators
   date_start_func: datetime_function_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   user_updated: directus_users_filter
   user_created: directus_users_filter
   image: directus_files_filter
@@ -8924,8 +8958,8 @@ input popup_events_filter {
 }
 
 input popup_events_translations_filter {
-  let_be_translated: boolean_filter_operators
   be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
   id: number_filter_operators
   content: string_filter_operators
   title: string_filter_operators
@@ -8937,8 +8971,8 @@ input popup_events_translations_filter {
 
 """"""
 input popup_events_translations_quantifier_filter {
-  let_be_translated: boolean_filter_operators
   be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
   id: number_filter_operators
   content: string_filter_operators
   title: string_filter_operators
@@ -8992,20 +9026,20 @@ input profiles_filter {
   verified: boolean_filter_operators
   notifiy_on_free_apartments: boolean_filter_operators
   sort: number_filter_operators
-  course_timetable: string_filter_operators
-  course_timetable_func: count_function_filter_operators
   avatar: string_filter_operators
   avatar_func: count_function_filter_operators
-  credit_balance_last_transaction: number_filter_operators
+  course_timetable: string_filter_operators
+  course_timetable_func: count_function_filter_operators
   credit_balance: number_filter_operators
+  credit_balance_last_transaction: number_filter_operators
   status: string_filter_operators
   price_group: string_filter_operators
   nickname: string_filter_operators
   language: languages_filter
-  date_privacy_policy_accepted: date_filter_operators
-  date_privacy_policy_accepted_func: datetime_function_filter_operators
   credit_balance_date_updated: date_filter_operators
   credit_balance_date_updated_func: datetime_function_filter_operators
+  date_privacy_policy_accepted: date_filter_operators
+  date_privacy_policy_accepted_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
@@ -9106,8 +9140,8 @@ input update_apartments_input {
   sort: Int
   status: String
   external_identifier: String
-  available_from: Date
   available_from_notified: Date
+  available_from: Date
   date_updated: Date
   date_created: Date
   user_updated: update_directus_users_input
@@ -9118,23 +9152,20 @@ input update_apartments_input {
 }
 
 input update_app_feedbacks_input {
+  response_read_by_user: Boolean
   positive: Boolean
   feedback_read_by_support: Boolean
-  response_read_by_user: Boolean
+  source_rating_raw: Int
   sort: Int
   priority: Int
-  source_rating_raw: Int
-  content: String
   response: String
-  data: JSON
-  display_height: Float
+  content: String
   display_fontscale: Float
-  display_scale: Float
   display_pixelratio: Float
+  display_scale: Float
+  display_height: Float
   display_width: Float
-  source_identifier: String
-  title: String
-  status: String
+  data: JSON
   device_system_version: String
   device_platform: String
   device_brand: String
@@ -9145,24 +9176,27 @@ input update_app_feedbacks_input {
   """
   state: String
   external_identifier: String
+  source_identifier: String
+  title: String
+  status: String
   date_created: Date
   date_updated: Date
-  id: ID
   profile: update_profiles_input
   user_created: ID
   user_updated: update_directus_users_input
   chat: update_chats_input
+  id: ID
 }
 
 input update_buildings_businesshours_input {
   id: ID
-  businesshours_id: update_businesshours_input
   buildings_id: update_buildings_input
+  businesshours_id: update_businesshours_input
 }
 
 input update_buildings_input {
-  map_marker_cluster_exclude: Boolean
   map_marker_is_visible: Boolean
+  map_marker_cluster_exclude: Boolean
   sort: Int
   coordinates: JSON
   map_marker_label_color: String
@@ -9175,13 +9209,13 @@ input update_buildings_input {
   image_remote_url: String
   external_identifier: String
   alias: String
-  date_of_construction: Date
   date_updated: Date
+  date_created: Date
+  date_of_construction: Date
   user_updated: update_directus_users_input
   user_created: update_directus_users_input
-  id: ID
-  date_created: Date
   image: update_directus_files_input
+  id: ID
   apartments: [update_apartments_input]
   businesshours: [update_buildings_businesshours_input]
   translations: [update_buildings_translations_input]
@@ -9209,9 +9243,9 @@ input update_businesshours_groups_input {
   status: String
   date_created: Date
   date_updated: Date
+  user_updated: update_directus_users_input
   id: ID
   user_created: update_directus_users_input
-  user_updated: update_directus_users_input
   translations: [update_businesshours_groups_translations_input]
 }
 
@@ -9225,12 +9259,12 @@ input update_businesshours_groups_translations_input {
 }
 
 input update_businesshours_input {
-  tuesday: Boolean
-  friday: Boolean
-  saturday: Boolean
   wednesday: Boolean
+  friday: Boolean
   monday: Boolean
+  tuesday: Boolean
   thursday: Boolean
+  saturday: Boolean
   sunday: Boolean
   sort: Int
   status: String
@@ -9244,10 +9278,10 @@ input update_businesshours_input {
   date_valid_till: Date
   date_created: Date
   date_updated: Date
+  user_updated: update_directus_users_input
   group: update_businesshours_groups_input
   id: ID
   user_created: update_directus_users_input
-  user_updated: update_directus_users_input
 }
 
 input update_canteens_input {
@@ -9261,9 +9295,9 @@ input update_canteens_input {
   """
   foodoffers_import_delete_all_without_dates: Boolean
   sort: Int
+  alias: String
   status: String
   external_identifier: String
-  alias: String
   date_updated: Date
   date_created: Date
   utilization_group: update_utilizations_groups_input
@@ -9277,8 +9311,8 @@ input update_chat_messages_input {
   message: String
   sort: Int
   status: String
-  date_created: Date
   date_updated: Date
+  date_created: Date
   id: ID
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
@@ -9294,16 +9328,21 @@ input update_chats_input {
   conversation_state: String
   alias: String
   status: String
+  date_created: Date
+  date_updated: Date
 
   """
   Date of the first message not mailed yet. Set by the chat-conversation-state-hook, cleared by the timer of the last message once the chat was quiet for 5 minutes.
   """
   mail_pending_since: Date
-  date_updated: Date
-  date_created: Date
-  user_updated: update_directus_users_input
-  user_created: update_directus_users_input
+
+  """
+  Date of the newest message. Set by the chat-conversation-state-hook on every message; a participant whose read_until is older has unread messages.
+  """
+  date_last_message: Date
   id: ID
+  user_created: update_directus_users_input
+  user_updated: update_directus_users_input
   food_feedbacks: [update_foods_feedbacks_input]
   app_feedbacks: [update_app_feedbacks_input]
   participants: [update_chats_participants_input]
@@ -9313,8 +9352,13 @@ input update_chats_input {
 
 input update_chats_participants_input {
   id: ID
-  chats_id: update_chats_input
+
+  """
+  Up to which date this participant has read the chat. Set by the app when the chat is opened and by the chat-conversation-state-hook for the own messages of the participant.
+  """
+  read_until: Date
   profiles_id: update_profiles_input
+  chats_id: update_chats_input
 }
 
 input update_devices_input {
@@ -9325,19 +9369,19 @@ input update_devices_input {
   is_ios: Boolean
   is_android: Boolean
   sort: Int
+  display_pixelratio: Float
+  display_scale: Float
+  display_width: Float
+  display_height: Float
+  display_fontscale: Float
   pushTokenObj: JSON
   custom_data: JSON
-  display_pixelratio: Float
-  display_width: Float
-  display_scale: Float
-  display_fontscale: Float
-  display_height: Float
-  app_version: String
-  system_version: String
   status: String
   platform: String
   brand: String
   alias: String
+  app_version: String
+  system_version: String
   date_created: Date
   date_updated: Date
   id: ID
@@ -9395,11 +9439,11 @@ input update_directus_deployment_runs_input {
   target: String
   external_id: String
   completed_at: Date
-  date_created: Date
-  project: update_directus_deployment_projects_input
   started_at: Date
+  date_created: Date
   id: ID
   user_created: update_directus_users_input
+  project: update_directus_deployment_projects_input
 }
 
 input update_directus_deployments_input {
@@ -9424,18 +9468,18 @@ input update_directus_extensions_inputInput {
 }
 
 input update_directus_files_input {
-  is_unreferenced: Boolean
   filesize: GraphQLBigInt
+  is_unreferenced: Boolean
   focal_point_y: Int
   focal_point_x: Int
   duration: Int
   height: Int
   width: Int
   tags: JSON
-  description: String
   location: String
-  tus_data: JSON
+  description: String
   metadata: JSON
+  tus_data: JSON
   tus_id: String
   embed: String
   charset: String
@@ -9454,8 +9498,8 @@ input update_directus_files_input {
 }
 
 input update_directus_flows_input {
-  description: String
   options: JSON
+  description: String
   accountability: String
   trigger: String
   status: String
@@ -9463,9 +9507,9 @@ input update_directus_flows_input {
   icon: String
   name: String
   date_created: Date
+  id: ID
   operation: update_directus_operations_input
   user_created: update_directus_users_input
-  id: ID
   operations: [update_directus_operations_input]
 }
 
@@ -9495,11 +9539,11 @@ input update_directus_operations_input {
   key: String
   name: String
   date_created: Date
+  flow: update_directus_flows_input
+  user_created: update_directus_users_input
   id: ID
   resolve: update_directus_operations_input
   reject: update_directus_operations_input
-  flow: update_directus_flows_input
-  user_created: update_directus_users_input
 }
 
 input update_directus_panels_input {
@@ -9510,10 +9554,10 @@ input update_directus_panels_input {
   position_x: Int
   note: String
   options: JSON
-  color: String
-  type: String
-  icon: String
   name: String
+  type: String
+  color: String
+  icon: String
   date_created: Date
   id: ID
   dashboard: update_directus_dashboards_input
@@ -9536,8 +9580,8 @@ input update_directus_policies_input {
   enforce_tfa: Boolean
   admin_access: Boolean
   app_access: Boolean
-  description: String
   ip_access: [String]
+  description: String
   icon: String
   name: String
   id: ID
@@ -9552,12 +9596,12 @@ input update_directus_presets_input {
   layout_query: JSON
   filter: JSON
   layout_options: JSON
-  bookmark: String
   color: String
   icon: String
   layout: String
   search: String
   collection: String
+  bookmark: String
   user: update_directus_users_input
   role: update_directus_roles_input
 }
@@ -9566,69 +9610,63 @@ input update_directus_roles_input {
   description: String
   icon: String
   name: String
-  id: ID
   parent: update_directus_roles_input
+  id: ID
   children: [update_directus_roles_input]
   policies: [update_directus_access_input]
   users: [update_directus_users_input]
 }
 
 input update_directus_settings_input {
+  """$t:fields.directus_settings.mcp_system_prompt_enabled_note"""
+  mcp_system_prompt_enabled: Boolean
+
   """$t:fields.directus_settings.public_registration_note"""
   public_registration: Boolean
+  product_updates: Boolean
+
+  """$t:fields.directus_settings.public_registration_verify_email_note"""
+  public_registration_verify_email: Boolean
+  id: ID
+  auth_login_attempts: Int
+
+  """$t:fields.directus_settings.collaborative_editing_note"""
+  collaborative_editing_enabled: Boolean
 
   """$t:fields.directus_settings.mcp_allow_deletes_note"""
   mcp_allow_deletes: Boolean
 
-  """$t:fields.directus_settings.mcp_system_prompt_enabled_note"""
-  mcp_system_prompt_enabled: Boolean
-
   """$t:fields.directus_settings.mcp_enabled_note"""
   mcp_enabled: Boolean
-
-  """$t:fields.directus_settings.public_registration_verify_email_note"""
-  public_registration_verify_email: Boolean
-  product_updates: Boolean
-
-  """$t:fields.directus_settings.collaborative_editing_note"""
-  collaborative_editing_enabled: Boolean
-  id: ID
-  auth_login_attempts: Int
+  ai_openai_compatible_name: String
   public_note: String
+  custom_css: String
 
   """$t:fields.directus_settings.mcp_system_prompt_note"""
   mcp_system_prompt: String
-  ai_google_api_key: String
-  ai_openai_compatible_api_key: String
-  custom_css: String
-  ai_openai_compatible_base_url: String
-  ai_openai_compatible_name: String
+  ai_openai_api_key: String
+  ai_anthropic_api_key: String
 
   """$t:fields.directus_settings.ai_system_prompt_note"""
   ai_system_prompt: String
-  ai_anthropic_api_key: String
-  ai_openai_api_key: String
+  ai_google_api_key: String
+  ai_openai_compatible_api_key: String
+  ai_anthropic_allowed_models: JSON
+  ai_google_allowed_models: JSON
+  storage_asset_presets: JSON
   basemaps: JSON
   module_bar: JSON
   custom_aspect_ratios: JSON
+  ai_openai_compatible_models: JSON
   theme_light_overrides: JSON
   theme_dark_overrides: JSON
+  ai_openai_compatible_headers: JSON
+  visual_editor_urls: JSON
+  ai_openai_allowed_models: JSON
 
   """$t:fields.directus_settings.public_registration_email_filter_note"""
   public_registration_email_filter: JSON
-  visual_editor_urls: JSON
-  ai_anthropic_allowed_models: JSON
-  ai_openai_allowed_models: JSON
-  ai_google_allowed_models: JSON
-  ai_openai_compatible_headers: JSON
-  ai_openai_compatible_models: JSON
-  storage_asset_presets: JSON
-  auth_password_policy: String
-
-  """$t:field_options.directus_settings.project_color_note"""
-  project_color: String
-  project_url: String
-  project_name: String
+  ai_openai_compatible_base_url: String
   project_status: String
   org_name: String
   project_usage: String
@@ -9646,33 +9684,38 @@ input update_directus_settings_input {
   project_descriptor: String
   mapbox_key: String
   storage_asset_transform: String
-  storage_default_folder: update_directus_folders_input
-  public_background: update_directus_files_input
+  auth_password_policy: String
+
+  """$t:field_options.directus_settings.project_color_note"""
+  project_color: String
+  project_url: String
+  project_name: String
   public_foreground: update_directus_files_input
   project_logo: update_directus_files_input
-  public_favicon: update_directus_files_input
-  project_id: ID
   public_registration_role: update_directus_roles_input
+  public_favicon: update_directus_files_input
+  storage_default_folder: update_directus_folders_input
+  public_background: update_directus_files_input
+  project_id: ID
 }
 
 input update_directus_shares_input {
-  times_used: Int
-
   """$t:shared_leave_blank_for_unlimited"""
   max_uses: Int
+  times_used: Int
 
   """$t:shared_leave_blank_for_passwordless_access"""
   password: Hash
   item: String
   collection: String
   name: String
+
+  """$t:shared_leave_blank_for_unlimited"""
+  date_end: Date
   date_created: Date
 
   """$t:shared_leave_blank_for_unlimited"""
   date_start: Date
-
-  """$t:shared_leave_blank_for_unlimited"""
-  date_end: Date
   id: ID
   role: update_directus_roles_input
   user_created: update_directus_users_input
@@ -9689,8 +9732,8 @@ input update_directus_users_input {
   email_notifications: Boolean
   description: String
   tags: JSON
-  auth_data: JSON
   theme_light_overrides: JSON
+  auth_data: JSON
   theme_dark_overrides: JSON
   text_direction: String
   theme_light: String
@@ -9719,16 +9762,16 @@ input update_directus_users_input {
 
 input update_directus_versions_input {
   delta: JSON
+  name: String
+  key: String
   hash: String
   item: String
   collection: String
-  name: String
-  key: String
   date_created: Date
   date_updated: Date
-  id: ID
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  id: ID
 }
 
 input update_feature_whishes_input {
@@ -9745,12 +9788,12 @@ input update_feature_whishes_input {
   status: String
   date_updated: Date
   date_created: Date
-  user_updated: update_directus_users_input
-  user_created: update_directus_users_input
-  id: ID
   chat: update_chats_input
   related_to: update_feature_whishes_input
   profile: update_profiles_input
+  user_updated: update_directus_users_input
+  user_created: update_directus_users_input
+  id: ID
 }
 
 input update_foodoffers_categories_input {
@@ -9760,9 +9803,9 @@ input update_foodoffers_categories_input {
   alias: String
   date_created: Date
   date_updated: Date
+  user_updated: update_directus_users_input
   id: ID
   user_created: update_directus_users_input
-  user_updated: update_directus_users_input
   translations: [update_foodoffers_categories_translations_input]
 }
 
@@ -9790,8 +9833,6 @@ input update_foodoffers_input {
   """Pro wieviel? z. B. Preis pro 100 (gramm)"""
   price_reference_amount: Float
   price_student: Float
-  food: update_foods_input
-  alias: String
 
   """Pro welche Einheit? z. B. (100)g für Gramm."""
   price_reference_unit: String
@@ -9799,6 +9840,8 @@ input update_foodoffers_input {
   redirect_url: String
   category: String
   status: String
+  food: update_foods_input
+  alias: String
   date: Date
   date_created: Date
   date_updated: Date
@@ -9874,17 +9917,17 @@ input update_foods_attributes_input {
   alias: String
   date_created: Date
   date_updated: Date
-  user_updated: update_directus_users_input
-  user_created: update_directus_users_input
   group: update_foods_attributes_groups_input
-  image: update_directus_files_input
   id: ID
+  image: update_directus_files_input
+  user_created: update_directus_users_input
+  user_updated: update_directus_users_input
   translations: [update_foods_attributes_translations_input]
 }
 
 input update_foods_attributes_translations_input {
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
   id: ID
   description: String
   name: String
@@ -9909,8 +9952,8 @@ input update_foods_categories_input {
   status: String
   external_identifier: String
   alias: String
-  date_created: Date
   date_updated: Date
+  date_created: Date
   id: ID
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
@@ -9950,8 +9993,8 @@ input update_foods_input {
   rating_amount_legacy: Int
   sort: Int
   rating_amount: Int
-  rating_average: Float
   rating_average_legacy: Float
+  rating_average: Float
   result_hash: String
   status: String
   image_thumb_hash: String
@@ -9992,12 +10035,12 @@ input update_friendships_input {
   sort: Int
   friendship_status: String
   status: String
-  date_updated: Date
   date_created: Date
-  user_created: update_directus_users_input
-  user_updated: update_directus_users_input
+  date_updated: Date
   requester_profiles_id: update_profiles_input
   receiver_profiles_id: update_profiles_input
+  user_created: update_directus_users_input
+  user_updated: update_directus_users_input
   id: ID
 }
 
@@ -10125,16 +10168,16 @@ input update_profiles_input {
   verified: Boolean
   notifiy_on_free_apartments: Boolean
   sort: Int
-  course_timetable: JSON
   avatar: JSON
-  credit_balance_last_transaction: Float
+  course_timetable: JSON
   credit_balance: Float
+  credit_balance_last_transaction: Float
   status: String
   price_group: String
   nickname: String
   language: update_languages_input
-  date_privacy_policy_accepted: Date
   credit_balance_date_updated: Date
+  date_privacy_policy_accepted: Date
   date_updated: Date
   date_created: Date
   user_updated: update_directus_users_input
@@ -10163,9 +10206,9 @@ input update_utilizations_entries_input {
   value_forecast_current: Int
   value_real: Int
   status: String
+  date_end: Date
   date_start: Date
   date_created: Date
-  date_end: Date
   date_updated: Date
   utilization_group: update_utilizations_groups_input
   user_updated: update_directus_users_input
@@ -10196,9 +10239,9 @@ input update_washingmachines_input {
   external_identifier: String
   alias: String
   date_finished: Date
-  date_updated: Date
-  date_started: Date
   date_stated: Date
+  date_started: Date
+  date_updated: Date
   date_created: Date
   user_updated: update_directus_users_input
   user_created: update_directus_users_input
@@ -10211,12 +10254,12 @@ input utilizations_entries_filter {
   value_forecast_current: number_filter_operators
   value_real: number_filter_operators
   status: string_filter_operators
+  date_end: date_filter_operators
+  date_end_func: datetime_function_filter_operators
   date_start: date_filter_operators
   date_start_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  date_end: date_filter_operators
-  date_end_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   utilization_group: utilizations_groups_filter
@@ -10233,12 +10276,12 @@ input utilizations_entries_quantifier_filter {
   value_forecast_current: number_filter_operators
   value_real: number_filter_operators
   status: string_filter_operators
+  date_end: date_filter_operators
+  date_end_func: datetime_function_filter_operators
   date_start: date_filter_operators
   date_start_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  date_end: date_filter_operators
-  date_end_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   utilization_group: utilizations_groups_filter
@@ -10280,12 +10323,12 @@ input washingmachines_filter {
   alias: string_filter_operators
   date_finished: date_filter_operators
   date_finished_func: datetime_function_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
-  date_started: date_filter_operators
-  date_started_func: datetime_function_filter_operators
   date_stated: date_filter_operators
   date_stated_func: datetime_function_filter_operators
+  date_started: date_filter_operators
+  date_started_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   user_updated: directus_users_filter
@@ -10304,12 +10347,12 @@ input washingmachines_quantifier_filter {
   alias: string_filter_operators
   date_finished: date_filter_operators
   date_finished_func: datetime_function_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
-  date_started: date_filter_operators
-  date_started_func: datetime_function_filter_operators
   date_stated: date_filter_operators
   date_stated_func: datetime_function_filter_operators
+  date_started: date_filter_operators
+  date_started_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   user_updated: directus_users_filter
@@ -10357,10 +10400,10 @@ input wikis_filter {
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  id: id_filter_operators
   user_updated: directus_users_filter
   user_created: directus_users_filter
   parent: wikis_filter
+  id: id_filter_operators
   children: wikis_quantifier_filter
   children_func: count_function_filter_operators
   translations: wikis_translations_quantifier_filter
@@ -10388,10 +10431,10 @@ input wikis_quantifier_filter {
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  id: id_filter_operators
   user_updated: directus_users_filter
   user_created: directus_users_filter
   parent: wikis_filter
+  id: id_filter_operators
   children: wikis_quantifier_filter
   children_func: count_function_filter_operators
   translations: wikis_translations_quantifier_filter
@@ -10405,8 +10448,8 @@ input wikis_quantifier_filter {
 }
 
 input wikis_translations_filter {
-  let_be_translated: boolean_filter_operators
   be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
   id: number_filter_operators
   content: string_filter_operators
   title: string_filter_operators
@@ -10418,8 +10461,8 @@ input wikis_translations_filter {
 
 """"""
 input wikis_translations_quantifier_filter {
-  let_be_translated: boolean_filter_operators
   be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
   id: number_filter_operators
   content: string_filter_operators
   title: string_filter_operators
@@ -10461,14 +10504,14 @@ input workflows_runs_filter {
   state: string_filter_operators
   workflow: workflows_filter
   status: string_filter_operators
+  date_finished: date_filter_operators
+  date_finished_func: datetime_function_filter_operators
   date_started: date_filter_operators
   date_started_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  date_finished: date_filter_operators
-  date_finished_func: datetime_function_filter_operators
   user_updated: directus_users_filter
   user_created: directus_users_filter
   id: id_filter_operators
@@ -10489,14 +10532,14 @@ input workflows_runs_quantifier_filter {
   state: string_filter_operators
   workflow: workflows_filter
   status: string_filter_operators
+  date_finished: date_filter_operators
+  date_finished_func: datetime_function_filter_operators
   date_started: date_filter_operators
   date_started_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  date_finished: date_filter_operators
-  date_finished_func: datetime_function_filter_operators
   user_updated: directus_users_filter
   user_created: directus_users_filter
   id: id_filter_operators
@@ -10512,10 +10555,10 @@ input write_directus_collections_input {
 }
 
 input write_directus_collections_meta_input {
-  versioning: Boolean
   hidden: Boolean
   singleton: Boolean
   archive_app_filter: Boolean
+  versioning: Boolean
   sort: Int
   note: String
   item_duplication_fields: JSON
@@ -10547,14 +10590,14 @@ input write_directus_fields_input {
 }
 
 input write_directus_fields_meta_input {
-  searchable: Boolean
   readonly: Boolean
   hidden: Boolean
   required: Boolean
+  searchable: Boolean
   sort: Int
   id: Int
-  validation_message: String
   note: String
+  validation_message: String
   validation: JSON
   conditions: JSON
   translations: JSON
