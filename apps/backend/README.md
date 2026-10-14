@@ -117,6 +117,27 @@ ROCKET_MEALS_AI_OPENAI_COMPATIBLE_MODELS="model-a,model-b"
 ROCKET_MEALS_AI_OPENAI_COMPATIBLE_HEADERS='{"X-Custom-Header":"value"}'
 ```
 
+### Legal documents (privacy policy, imprint, accessibility)
+
+The privacy policy (`privacy-policy`), the imprint (`about-us`) and the accessibility statement
+(`accessibility`) live in code, not in Directus. On every start the `legal-documents-hook` writes them
+into `wikis`, one translation per language of the `languages` collection, with a fixed wiki id per
+document. An edit in Directus is overwritten on the next start.
+
+- Texts: `directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/documents/<document>/<language>.ts`
+- Company data: only as placeholders (`{{operator.email}}`, `{{customer.name}}`, ...). The values are in
+  `packages/common/src/LegalEntities.ts` (operator and customers), which customer a server uses is
+  mapped per `SYNC_FOR_CUSTOMER` in `src/legal-documents-hook/LegalEntities.ts`.
+- A customer without an entry there (`null`) keeps the legal documents it has in Directus.
+- An older wiki with the same `custom_id` is archived once and renamed to `legacy-<custom_id>`, the new
+  wiki takes over its position and icon.
+- Visibility is enforced on every start: published, public (readable without an account), at the bottom
+  of the drawer (`show_in_drawer_as_bottom_item`), not in its main list.
+- Fixed wiki ids `1e6a1d0c-0000-4000-8000-00000000000N` ("LEGALDOC" in hex speak).
+- Manual changes are rejected: texts, translations, visibility and `custom_id` of these wikis cannot be
+  edited or deleted in Directus, only position, sort, icon and color. No other wiki may take one of
+  their `custom_id`s.
+
 ## Configure SSO
 
 - Check that a role for "User" exists

@@ -229,6 +229,29 @@ export const backendTranslations: TranslationResources = {
     zh: '访客无法对菜品发表评论。请使用账户登录后再评论。',
   },
 
+  /** Rejection of a manual change to a legal document (privacy policy, imprint, accessibility statement). */
+  legal_document_edit_forbidden: {
+    de: 'Dieser Rechtstext wird im Code gepflegt und bei jedem Serverstart neu geschrieben. Er kann hier nicht bearbeitet oder gelöscht werden. Nur Position, Sortierung, Icon und Farbe lassen sich ändern.',
+    en: 'This legal text is maintained in code and rewritten on every server start. It cannot be edited or deleted here. Only position, sort order, icon and color can be changed.',
+    ar: 'يُدار هذا النص القانوني في الكود ويُعاد كتابته عند كل تشغيل للخادم. لا يمكن تعديله أو حذفه هنا. يمكن فقط تغيير الموضع والترتيب والأيقونة واللون.',
+    es: 'Este texto legal se mantiene en el código y se vuelve a escribir en cada inicio del servidor. No se puede editar ni eliminar aquí. Solo se pueden cambiar la posición, el orden, el icono y el color.',
+    fr: 'Ce texte juridique est géré dans le code et réécrit à chaque démarrage du serveur. Il ne peut pas être modifié ni supprimé ici. Seuls la position, l’ordre, l’icône et la couleur peuvent être changés.',
+    ru: 'Этот юридический текст ведётся в коде и перезаписывается при каждом запуске сервера. Его нельзя изменить или удалить здесь. Можно менять только позицию, порядок, значок и цвет.',
+    tr: 'Bu yasal metin kodda tutulur ve her sunucu başlangıcında yeniden yazılır. Burada düzenlenemez veya silinemez. Yalnızca konum, sıralama, simge ve renk değiştirilebilir.',
+    zh: '此法律文本在代码中维护，并在每次服务器启动时重新写入。无法在此编辑或删除。只能更改位置、排序、图标和颜色。',
+  },
+  /** Rejection of a wiki that would take the custom_id of a legal document. */
+  legal_document_custom_id_reserved: {
+    de: 'Die Kennung "{{custom_id}}" ist für einen Rechtstext reserviert, der im Code gepflegt wird. Bitte wähle eine andere Kennung.',
+    en: 'The identifier "{{custom_id}}" is reserved for a legal text that is maintained in code. Please choose a different identifier.',
+    ar: 'المعرّف "{{custom_id}}" محجوز لنص قانوني يُدار في الكود. يرجى اختيار معرّف آخر.',
+    es: 'El identificador "{{custom_id}}" está reservado para un texto legal que se mantiene en el código. Elige otro identificador.',
+    fr: 'L’identifiant « {{custom_id}} » est réservé à un texte juridique géré dans le code. Veuillez choisir un autre identifiant.',
+    ru: 'Идентификатор «{{custom_id}}» зарезервирован для юридического текста, который ведётся в коде. Пожалуйста, выберите другой идентификатор.',
+    tr: '"{{custom_id}}" tanımlayıcısı kodda tutulan bir yasal metin için ayrılmıştır. Lütfen başka bir tanımlayıcı seçin.',
+    zh: '标识符"{{custom_id}}"已保留给在代码中维护的法律文本。请选择其他标识符。',
+  },
+
   /**
    * Mails to the contact email of an app feedback when support answers it – by mail
    * (`app-feedbacks-hook`) or in its chat (`chat-conversation-state-hook`) – and the push to the

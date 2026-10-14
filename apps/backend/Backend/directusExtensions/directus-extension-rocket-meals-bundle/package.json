@@ -210,6 +210,11 @@
       },
       {
         "type": "hook",
+        "name": "legal-documents-hook",
+        "source": "src/legal-documents-hook/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "washingmachines-sync-hook",
         "source": "src/washingmachines-sync-hook/index.ts"
       },

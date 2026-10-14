@@ -45,6 +45,10 @@ export const BackendTranslationKeys = {
   food_feedback_guest_rating_forbidden: 'food_feedback_guest_rating_forbidden',
   food_feedback_guest_comment_forbidden: 'food_feedback_guest_comment_forbidden',
 
+  // Protection of the legal documents maintained in code (legal-documents-hook)
+  legal_document_edit_forbidden: 'legal_document_edit_forbidden',
+  legal_document_custom_id_reserved: 'legal_document_custom_id_reserved',
+
   // Mails to the contact email of an app feedback and pushes when support answers
   app_feedback_answer_mail_subject: 'app_feedback_answer_mail_subject',
   app_feedback_answer_mail_intro: 'app_feedback_answer_mail_intro',
