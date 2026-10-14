@@ -77,6 +77,6 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
     workflowRunInterface: new FoodofferComponentsCleanupWorkflow(),
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,
-    cronOject: CronHelper.EVERY_HOUR,
+    cronOject: CronHelper.EVERY_DAY_AT_20,
   });
 });
