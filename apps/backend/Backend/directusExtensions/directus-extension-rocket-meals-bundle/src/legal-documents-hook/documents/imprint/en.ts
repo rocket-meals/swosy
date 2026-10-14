@@ -62,6 +62,10 @@ The following information contains the legally required information on provider 
 
 		{{operator.short_name}} as the operator of this app and website assumes no liability for the topicality, correctness, completeness or quality of the information provided. Liability claims against {{operator.short_name}} relating to material or immaterial damage caused by the use or non-use of the information provided or by the use of incorrect or incomplete information are fundamentally excluded, unless {{operator.short_name}} can be proven to have acted with intent or gross negligence. All offers are subject to change and non-binding. {{operator.short_name}} expressly reserves the right to change, supplement or delete parts of the pages or the entire offer without prior notice or to cease publication temporarily or permanently.
 
+	### Translations
+
+		Content such as menus, dish descriptions and news is created in German. Translations into other languages are partly generated automatically and offered as a service. Translation errors cannot be ruled out. The German version is binding. This applies in particular to information on allergens and additives.
+
 	### References and links
 
 		In the case of direct or indirect references to external websites ("links") that lie outside the area of responsibility of the operator, a liability obligation would only come into force in the event that the operator is aware of the content and it would be technically possible and reasonable for him to prevent use in the event of illegal content.

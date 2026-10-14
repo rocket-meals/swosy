@@ -62,6 +62,10 @@ Aşağıdaki bilgiler, sağlayıcı etiketlemesine ilişkin yasal olarak gerekli
 
 		Bu uygulamanın ve web sitesinin operatörü olarak {{operator.short_name}}, sağlanan bilgilerin güncelliği, doğruluğu, eksiksizliği veya kalitesi konusunda hiçbir sorumluluk kabul etmez. {{operator.short_name}}'e karşı, sağlanan bilgilerin kullanılması veya kullanılmaması ya da yanlış veya eksik bilgilerin kullanılmasından kaynaklanan maddi veya manevi zararlarla ilgili sorumluluk talepleri, {{operator.short_name}}'in kasıtlı veya ağır ihmalle hareket ettiği kanıtlanmadıkça, temelde hariç tutulur. Tüm teklifler değişikliğe tabidir ve bağlayıcı değildir. {{operator.short_name}}, önceden haber vermeksizin sayfaların bazı bölümlerini veya teklifin tamamını değiştirme, tamamlama veya silme ya da yayını geçici veya kalıcı olarak durdurma hakkını açıkça saklı tutar.
 
+	### Çeviriler
+
+		Yemek planları, yemek açıklamaları ve haberler gibi içerikler Almanca hazırlanır. Diğer dillere yapılan çeviriler kısmen otomatik olarak oluşturulur ve bir hizmet olarak sunulur. Çeviri hataları bu nedenle göz ardı edilemez. Bağlayıcı olan Almanca versiyondur. Bu durum özellikle alerjenler ve katkı maddelerine ilişkin bilgiler için geçerlidir.
+
 	### Referanslar ve bağlantılar
 
 		İşletmecinin sorumluluk alanı dışında kalan harici web sitelerine ("bağlantılar") doğrudan veya dolaylı referanslar söz konusu olduğunda, bir sorumluluk yükümlülüğü yalnızca işletmecinin içerikten haberdar olması ve yasa dışı içerik durumunda kullanımı engellemesinin teknik olarak mümkün ve makul olması durumunda yürürlüğe girecektir.

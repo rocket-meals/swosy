@@ -62,6 +62,10 @@ Die nachstehenden Informationen enthalten die gesetzlich vorgesehenen Pflichtang
 
 		{{operator.short_name}} als Betreiber dieser App und Webseite übernimmt keinerlei Gewähr für die Aktualität, Korrektheit, Vollständigkeit oder Qualität der bereitgestellten Informationen. Haftungsansprüche gegen {{operator.short_name}}, welche sich auf Schäden materieller oder ideeller Art beziehen, die durch die Nutzung oder Nichtnutzung der dargebotenen Informationen bzw. durch die Nutzung fehlerhafter und unvollständiger Informationen verursacht wurden sind grundsätzlich ausgeschlossen, sofern seitens von {{operator.short_name}} kein nachweislich vorsätzliches oder grob fahrlässiges Verschulden vorliegt. Alle Angebote sind freibleibend und unverbindlich. {{operator.short_name}} behält es sich ausdrücklich vor, Teile der Seiten oder das gesamte Angebot ohne gesonderte Ankündigung zu verändern, zu ergänzen, zu löschen oder die Veröffentlichung zeitweise oder endgültig einzustellen.
 
+	### Übersetzungen
+
+		Inhalte wie Speisepläne, Speisenbeschreibungen und Neuigkeiten werden in deutscher Sprache erstellt. Übersetzungen in andere Sprachen werden teilweise automatisch erzeugt und als Service angeboten. Übersetzungsfehler können dabei nicht ausgeschlossen werden. Verbindlich ist die deutsche Fassung. Das gilt insbesondere für Angaben zu Allergenen und Zusatzstoffen.
+
 	### Verweise und Links
 
 		Bei direkten oder indirekten Verweisen auf fremde Internetseiten ("Links"), die außerhalb des Verantwortungsbereiches des Betreibers liegen, würde eine Haftungsverpflichtung ausschließlich in dem Fall in Kraft treten, in dem der Betreiber von den Inhalten Kenntnis hat und es ihm technisch möglich und zumutbar wäre, die Nutzung im Falle rechtswidriger Inhalte zu verhindern.

@@ -62,6 +62,10 @@ La siguiente información contiene la información legalmente requerida sobre el
 
 		{{operator.short_name}}, como operador de esta aplicación y sitio web, no asume ninguna responsabilidad por la actualidad, exactitud, integridad o calidad de la información proporcionada. Las reclamaciones de responsabilidad contra {{operator.short_name}} relativas a daños materiales o inmateriales causados por el uso o no uso de la información proporcionada o por el uso de información incorrecta o incompleta quedan fundamentalmente excluidas, a menos que se pueda demostrar que {{operator.short_name}} ha actuado con dolo o negligencia grave. Todas las ofertas son sin compromiso y no vinculantes. {{operator.short_name}} se reserva expresamente el derecho a modificar, completar o eliminar partes de las páginas o la oferta completa sin previo aviso o a interrumpir la publicación temporal o definitivamente.
 
+	### Traducciones
+
+		Los contenidos como los menús, las descripciones de los platos y las noticias se elaboran en alemán. Las traducciones a otros idiomas se generan en parte de forma automática y se ofrecen como servicio. No se pueden descartar errores de traducción. La versión alemana es la vinculante. Esto se aplica en particular a la información sobre alérgenos y aditivos.
+
 	### Referencias y enlaces
 
 		En el caso de referencias directas o indirectas a páginas web externas ("enlaces") que se encuentren fuera del ámbito de responsabilidad del operador, sólo entraría en vigor una obligación de responsabilidad en el caso de que el operador tuviera conocimiento de los contenidos y le fuera técnicamente posible y razonable impedir el uso en caso de contenidos ilegales.
