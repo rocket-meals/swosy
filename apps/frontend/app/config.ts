@@ -285,7 +285,8 @@ export function getVersionPatch() {
         // 165: chats without a message are not unread, food feedback chats only at the own ratings
         //      (dev setting to list them in chats), seen reactions no longer reset by profile writes,
         //      contrast color on the chat button
-        return 165;
+        // 166: back from a food feedback chat goes to the own ratings, dev button resets seen reactions
+        return 166;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

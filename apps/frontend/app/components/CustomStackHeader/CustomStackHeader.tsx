@@ -70,7 +70,7 @@ function resolveGoBackTarget(pathname: string, loggedIn: boolean, canGoBack: boo
 	return loggedIn ? `/${AppScreens.FOOD_OFFERS}` : `/${AppScreens.LOGIN}`;
 }
 
-const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {
+const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement, goBackTarget }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const router = useRouter();
@@ -79,7 +79,7 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	const handleGoback = () => {
-		const target = resolveGoBackTarget(pathname, loggedIn, router.canGoBack());
+		const target = goBackTarget ?? resolveGoBackTarget(pathname, loggedIn, router.canGoBack());
 		if (target) {
 			router.navigate(target);
 		} else {

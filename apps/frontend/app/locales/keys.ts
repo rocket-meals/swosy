@@ -47,6 +47,7 @@ export const TranslationKeys = {
 	simulate_expo_update_available: 'simulate_expo_update_available',
 	simulate_feature_wishes_enabled: 'simulate_feature_wishes_enabled',
 	show_food_feedback_chats_in_chats: 'show_food_feedback_chats_in_chats',
+	reset_food_feedback_reactions_seen: 'reset_food_feedback_reactions_seen',
 	cached_foodoffers_days: 'cached_foodoffers_days',
 	cached_foodoffers_days_empty: 'cached_foodoffers_days_empty',
 	foodoffers_next_day_time: 'foodoffers_next_day_time',

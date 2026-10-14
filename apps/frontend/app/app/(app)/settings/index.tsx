@@ -517,6 +517,22 @@ const Settings = () => {
                 });
         };
 
+        /** Debug: forgets which reactions to food feedbacks were seen, so the hint above the food offers shows them again. */
+        const foodFeedbackReactionsSeenUntil = (profile as DatabaseTypes.Profiles | undefined)?.food_feedback_reactions_seen_until ?? null;
+        const handleResetFoodFeedbackReactionsSeen = useCallback(async () => {
+                if (!profile?.id) {
+                        return;
+                }
+                dispatch({ type: UPDATE_PROFILE, payload: { ...profile, food_feedback_reactions_seen_until: null } });
+                try {
+                        await profileHelper.updateFoodFeedbackReactionsSeenUntil(profile.id, null);
+                        toast(translate(TranslationKeys.reset), 'success');
+                } catch (error) {
+                        console.error('Resetting the seen reactions to food feedbacks failed:', error);
+                        toast(translate(TranslationKeys.error), 'error');
+                }
+        }, [dispatch, profile, profileHelper, toast, translate]);
+
         const handleResetCollectibles = useCallback(() => {
                 dispatch({ type: RESET_ALL_COLLECTIBLE_EVENT_DICTS });
                 toast(translate(TranslationKeys.reset), 'success');
@@ -969,6 +985,15 @@ const Settings = () => {
 							onToggle={toggleShowFoodFeedbackChatsInChats}
 							groupPosition="middle"
 						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="eye-off-outline" size={24} color={theme.screen.icon} />}
+							label={translate(TranslationKeys.reset_food_feedback_reactions_seen)}
+							value={foodFeedbackReactionsSeenUntil ? new Date(foodFeedbackReactionsSeenUntil).toLocaleString() : '-'}
+							rightIcon={<MaterialCommunityIcons name="restore" size={24} color={theme.screen.icon} />}
+							handleFunction={() => void handleResetFoodFeedbackReactionsSeen()}
+							groupPosition="middle"
+						/>
 						<SettingsListEditable
 							key={String(appRatingScore)}
 							iconBgColor={primaryColor}
@@ -1097,7 +1122,7 @@ const Settings = () => {
 		campus_area_color, campusSortingLabel, openCampusSortingModal, handleCheckForUpdates,
 		openCollectibleSettingsModal, termsAndPrivacyConsentAcceptedDate, isManagement, dispatch,
 		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,
-		debugMode, simulateExpoUpdateAvailable, simulateFeatureWishesEnabled, showFoodFeedbackChatsInChats, openServerSheet, openFoodOffersTimeSheet,
+		debugMode, simulateExpoUpdateAvailable, simulateFeatureWishesEnabled, showFoodFeedbackChatsInChats, foodFeedbackReactionsSeenUntil, handleResetFoodFeedbackReactionsSeen, openServerSheet, openFoodOffersTimeSheet,
 		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, toggleSimulateFeatureWishes, toggleShowFoodFeedbackChatsInChats, osmVectorMapStyleKey, osmConsent,
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal, openAccountRequiredModal,
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
