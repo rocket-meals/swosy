@@ -71,6 +71,32 @@ async function deleteCurrent() {
 }
 const { language, translate, formatDateTime } = useAppExtensionTranslate();
 
+const deleteChatDialogOpen = ref(false);
+const deletingChat = ref(false);
+
+/**
+ * Deletes only the chat with its messages; the feedback (rating, comment, reaction) stays and shows as
+ * without chat again, both here and in the app. `foods_feedbacks.chat` is emptied by the database.
+ */
+async function deleteChatOnly() {
+  if (!chatId.value) {
+    return;
+  }
+  deletingChat.value = true;
+  try {
+    const result = await ModuleDeleteActions.deleteChats(api, [String(chatId.value)]);
+    if (result.failedIds.length > 0) {
+      notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_delete_failed), type: 'error' });
+      return;
+    }
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_food_feedback_chat_deleted), type: 'success' });
+    deleteChatDialogOpen.value = false;
+    await load();
+  } finally {
+    deletingChat.value = false;
+  }
+}
+
 const page = RocketMealsModulePages.FOOD_FEEDBACKS;
 
 /** New messages of the user show up without reloading the page. */
@@ -328,7 +354,10 @@ watch(() => props.feedbackId, load);
     </template>
 
     <template #actions>
-      <v-button v-if="feedback" v-tooltip.bottom="translate(BackendTranslationKeys.delete)" rounded icon secondary kind="danger" :loading="deleting" :aria-label="translate(BackendTranslationKeys.delete)" @click="deleteDialogOpen = true">
+      <v-button v-if="chatId" v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_food_feedback_delete_chat)" rounded icon secondary kind="warning" :loading="deletingChat" :aria-label="translate(BackendTranslationKeys.rocket_meals_module_food_feedback_delete_chat)" @click="deleteChatDialogOpen = true">
+        <v-icon name="speaker_notes_off" />
+      </v-button>
+      <v-button v-if="feedback" v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_food_feedback_delete)" rounded icon secondary kind="danger" :loading="deleting" :aria-label="translate(BackendTranslationKeys.rocket_meals_module_food_feedback_delete)" @click="deleteDialogOpen = true">
         <v-icon name="delete" />
       </v-button>
       <v-button v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_open_feedback_item)" rounded icon secondary :to="`/content/foods_feedbacks/${feedbackId}`">
@@ -422,7 +451,8 @@ watch(() => props.feedbackId, load);
 
       <v-progress-circular v-else-if="loading" indeterminate />
     </div>
-    <delete-confirm-dialog v-model="deleteDialogOpen" :count="1" :loading="deleting" @confirm="deleteCurrent" />
+    <delete-confirm-dialog v-model="deleteChatDialogOpen" :count="1" :text="translate(BackendTranslationKeys.rocket_meals_module_food_feedback_delete_chat_confirm_text)" :loading="deletingChat" @confirm="deleteChatOnly" />
+    <delete-confirm-dialog v-model="deleteDialogOpen" :count="1" :text="translate(BackendTranslationKeys.rocket_meals_module_food_feedback_delete_confirm_text, { count: 1 })" :loading="deleting" @confirm="deleteCurrent" />
   </private-view>
 </template>
 

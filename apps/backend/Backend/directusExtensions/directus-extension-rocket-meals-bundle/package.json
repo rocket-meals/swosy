@@ -160,6 +160,11 @@
       },
       {
         "type": "hook",
+        "name": "food-feedback-reaction-push-hook",
+        "source": "src/food-feedback-reaction-push-hook/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "food-feedback-report-schedule",
         "source": "src/food-feedback-report-schedule/index.ts"
       },

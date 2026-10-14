@@ -26,7 +26,7 @@ const ChatsScreen = () => {
         const { translate } = useLanguage();
         const dispatch = useDispatch();
 
-        const { chats, readStatus, hasUnreadChats, isChatUnread } = useChatUnreadStatus();
+        const { visibleChats: chats, readStatus, hasUnreadChats, isChatUnread } = useChatUnreadStatus();
         const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
         const { user, profile } = useAppSelector((state) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);

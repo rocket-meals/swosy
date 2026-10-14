@@ -189,6 +189,26 @@
     "tr": "Özellik isteklerini simüle et",
     "zh": "模拟功能建议"
   },
+  "show_food_feedback_chats_in_chats": {
+    "de": "Speise-Feedback-Chats unter Chats anzeigen",
+    "en": "Show food feedback chats in chats",
+    "ar": "عرض محادثات تقييم الأطباق في المحادثات",
+    "es": "Mostrar chats de valoraciones de platos en chats",
+    "fr": "Afficher les discussions sur les avis de plats dans les discussions",
+    "ru": "Показывать чаты отзывов о блюдах в чатах",
+    "tr": "Yemek geri bildirimi sohbetlerini sohbetlerde göster",
+    "zh": "在聊天中显示菜品反馈聊天"
+  },
+  "reset_food_feedback_reactions_seen": {
+    "de": "Gesehene Reaktionen auf Speise-Feedbacks zurücksetzen",
+    "en": "Reset seen reactions to food feedbacks",
+    "ar": "إعادة تعيين التفاعلات المشاهدة على تقييمات الأطباق",
+    "es": "Restablecer reacciones vistas a valoraciones de platos",
+    "fr": "Réinitialiser les réactions vues aux avis de plats",
+    "ru": "Сбросить просмотренные реакции на отзывы о блюдах",
+    "tr": "Yemek geri bildirimlerine görülen tepkileri sıfırla",
+    "zh": "重置已查看的菜品反馈回应"
+  },
   "simulate_expo_update_available": {
     "de": "Expo-Update verfügbar simulieren",
     "en": "Simulate Expo update available",

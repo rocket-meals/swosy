@@ -367,7 +367,7 @@ watch(feedbacks, loadRecommendations);
           {{ translate(BackendTranslationKeys.rocket_meals_module_delete_selected) }}
         </v-button>
       </list-selection-bar>
-      <delete-confirm-dialog v-model="deleteDialogOpen" :count="selectedFeedbacks.length" :loading="selectedFeedbacks.some(isUpdating)" @confirm="deleteSelected" />
+      <delete-confirm-dialog v-model="deleteDialogOpen" :count="selectedFeedbacks.length" :text="translate(BackendTranslationKeys.rocket_meals_module_food_feedback_delete_confirm_text, { count: selectedFeedbacks.length })" :loading="selectedFeedbacks.some(isUpdating)" @confirm="deleteSelected" />
 
       <list-content :loading="loading" :load-error="loadError" :empty="feedbacks.length === 0">
         <list-row v-for="feedback in feedbacks" :key="feedback.id" selectable :selected="isSelected(feedback)" @open="openChat(feedback)" @update:selected="toggleSelected(feedback, $event)">
