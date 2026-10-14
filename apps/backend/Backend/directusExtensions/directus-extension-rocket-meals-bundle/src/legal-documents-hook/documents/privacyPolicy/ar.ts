@@ -17,6 +17,7 @@ export const PRIVACY_POLICY_AR: LegalDocumentText = {
 المدير التنفيذي: {{operator.managing_director}}
 رقم الضريبة: {{operator.tax_number}}
 رقم التعريف الضريبي: {{operator.vat_id}}
+محكمة السجل التجاري: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
 البريد الإلكتروني:
 
@@ -402,6 +403,7 @@ export const PRIVACY_POLICY_AR: LegalDocumentText = {
   المدير التنفيذي: {{operator.managing_director}}
 	رقم الضريبة: {{operator.tax_number}}
   رقم التعريف الضريبي: {{operator.vat_id}}
+  محكمة السجل التجاري: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
   البريد الإلكتروني:
 

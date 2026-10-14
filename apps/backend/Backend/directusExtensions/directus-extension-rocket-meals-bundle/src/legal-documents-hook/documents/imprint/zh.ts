@@ -16,6 +16,7 @@ export const IMPRINT_ZH: LegalDocumentText = {
 	总经理：{{operator.managing_director}}
 	税号：{{operator.tax_number}}
 	营业税识别号：{{operator.vat_id}}
+	商业登记法院：Amtsgericht {{operator.register_court}}，{{operator.register_number}}
 	
 	电子邮件
 

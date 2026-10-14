@@ -16,6 +16,7 @@ export const IMPRINT_RU: LegalDocumentText = {
 	Управляющий директор: {{operator.managing_director}}
 	Налоговый номер: {{operator.tax_number}}
 	Идентификационный номер налога с продаж: {{operator.vat_id}}
+	Регистрационный суд: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 	
 	E-Mail:
 

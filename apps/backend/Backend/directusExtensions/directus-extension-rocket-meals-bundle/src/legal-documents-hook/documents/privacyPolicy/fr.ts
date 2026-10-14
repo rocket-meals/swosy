@@ -17,6 +17,7 @@ E-mail : {{operator.email}}
 Gérant : {{operator.managing_director}}
 Numéro d'identification fiscale : {{operator.tax_number}}
 Numéro d'identification TVA : {{operator.vat_id}}
+Registre du commerce : Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
 E-mail :
 
@@ -402,6 +403,7 @@ Afin de te fournir le plus rapidement possible les mises à jour techniquement n
   Gérant : {{operator.managing_director}}
 	Numéro d'identification fiscale : {{operator.tax_number}}
   Numéro d'identification TVA : {{operator.vat_id}}
+  Registre du commerce : Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
   E-mail :
 

@@ -16,6 +16,7 @@ export const IMPRINT_AR: LegalDocumentText = {
 	العضو المنتدب: {{operator.managing_director}}
 	الرقم الضريبي: {{operator.tax_number}}
 	رقم التعريف الضريبي للمبيعات: {{operator.vat_id}}
+	محكمة السجل التجاري: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 	
 	البريد الإلكتروني:
 

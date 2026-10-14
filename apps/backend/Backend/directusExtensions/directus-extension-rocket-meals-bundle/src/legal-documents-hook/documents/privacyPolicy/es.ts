@@ -17,6 +17,7 @@ Correo electrónico: {{operator.email}}
 Director general: {{operator.managing_director}}
 Número de identificación fiscal: {{operator.tax_number}}
 Número de identificación a efectos del IVA: {{operator.vat_id}}
+Registro mercantil: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
 Correo electrónico:
 
@@ -402,6 +403,7 @@ No recibimos ningún dato de carácter personal de Google Firebase ni realizamos
   Director general: {{operator.managing_director}}
 	Número de identificación fiscal: {{operator.tax_number}}
   Número de identificación a efectos del IVA: {{operator.vat_id}}
+  Registro mercantil: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
   Correo electrónico:
 

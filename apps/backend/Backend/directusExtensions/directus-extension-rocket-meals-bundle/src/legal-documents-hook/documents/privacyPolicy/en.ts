@@ -17,6 +17,7 @@ Email: {{operator.email}}
 Managing Director: {{operator.managing_director}}
 Tax ID: {{operator.tax_number}}
 VAT ID: {{operator.vat_id}}
+Register court: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
 Email:
 
@@ -402,6 +403,7 @@ We do not receive any personal data from Google Firebase, nor do we make any eff
   Managing Director: {{operator.managing_director}}
 	Tax ID: {{operator.tax_number}}
   VAT ID: {{operator.vat_id}}
+  Register court: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
   Email:
 

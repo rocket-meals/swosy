@@ -17,6 +17,7 @@ E-Mail: {{operator.email}}
 Geschäftsführer: {{operator.managing_director}}
 Steuernummer: {{operator.tax_number}}
 Umsatzsteuer-Identifikations-Nummer: {{operator.vat_id}}
+Registergericht: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
 E-Mail:
 
@@ -403,6 +404,7 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 	Geschäftsführer: {{operator.managing_director}}
 	Steuernummer: {{operator.tax_number}}
 	Umsatzsteuer-Identifikations-Nummer: {{operator.vat_id}}
+	Registergericht: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
 	E-Mail:
 

@@ -17,6 +17,7 @@ export const PRIVACY_POLICY_ZH: LegalDocumentText = {
 总经理：{{operator.managing_director}}
 税务编号：{{operator.tax_number}}
 增值税识别号： {{operator.vat_id}}
+商业登记法院：Amtsgericht {{operator.register_court}}，{{operator.register_number}}
 
 电子邮件：
 
@@ -402,6 +403,7 @@ export const PRIVACY_POLICY_ZH: LegalDocumentText = {
   总经理：{{operator.managing_director}}
 	税务编号：{{operator.tax_number}}
   增值税识别号：{{operator.vat_id}}
+  商业登记法院：Amtsgericht {{operator.register_court}}，{{operator.register_number}}
 
   电子邮件：
 

@@ -16,6 +16,7 @@ Les informations suivantes contiennent les données obligatoires prévues par la
 	Gérant : {{operator.managing_director}}
 	Numéro d'identification fiscale : {{operator.tax_number}}
 	Numéro d'identification de la taxe sur le chiffre d'affaires : {{operator.vat_id}}
+	Registre du commerce : Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 	
 	Courrier électronique :
 

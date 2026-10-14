@@ -17,6 +17,7 @@ export const PRIVACY_POLICY_RU: LegalDocumentText = {
 Управляющий: {{operator.managing_director}}
 Налоговый номер: {{operator.tax_number}}
 Идентификационный номер плательщика НДС: {{operator.vat_id}}
+Регистрационный суд: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
 Электронная почта:
 
@@ -402,6 +403,7 @@ export const PRIVACY_POLICY_RU: LegalDocumentText = {
   Управляющий: {{operator.managing_director}}
 	Налоговый номер: {{operator.tax_number}}
   Идентификационный номер плательщика НДС: {{operator.vat_id}}
+  Регистрационный суд: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
   Электронная почта:
 

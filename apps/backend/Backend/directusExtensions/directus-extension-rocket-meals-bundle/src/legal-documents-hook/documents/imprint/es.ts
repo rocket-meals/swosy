@@ -16,6 +16,7 @@ La siguiente información contiene la información legalmente requerida sobre el
 	Director general: {{operator.managing_director}}
 	Número de identificación fiscal: {{operator.tax_number}}
 	Número de identificación fiscal: {{operator.vat_id}}
+	Registro mercantil: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 	
 	Correo electrónico:
 

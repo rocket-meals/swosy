@@ -16,6 +16,7 @@ Die nachstehenden Informationen enthalten die gesetzlich vorgesehenen Pflichtang
 	Geschäftsführer: {{operator.managing_director}}
 	Steuernummer: {{operator.tax_number}}
 	Umsatzsteuer-Identifikations-Nummer: {{operator.vat_id}}
+	Registergericht: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 	
 	E-Mail:
 

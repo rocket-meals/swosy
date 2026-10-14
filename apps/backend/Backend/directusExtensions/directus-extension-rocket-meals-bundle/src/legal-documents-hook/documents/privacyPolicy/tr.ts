@@ -17,6 +17,7 @@ E-posta: {{operator.email}}
 Genel Müdür: {{operator.managing_director}}
 Vergi numarası: {{operator.tax_number}}
 KDV Kimlik Numarası: {{operator.vat_id}}
+Ticaret sicili: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
 E-posta:
 
@@ -402,6 +403,7 @@ Google Firebase'den hiçbir kişisel veri almıyoruz ve bu verileri sonradan ki�
   Genel Müdür: {{operator.managing_director}}
 	Vergi numarası: {{operator.tax_number}}
   KDV Kimlik Numarası: {{operator.vat_id}}
+  Ticaret sicili: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 
   E-posta:
 

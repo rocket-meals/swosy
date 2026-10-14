@@ -16,6 +16,7 @@ The following information contains the legally required information on provider 
 	Managing director: {{operator.managing_director}}
 	Tax number: {{operator.tax_number}}
 	Sales tax identification number: {{operator.vat_id}}
+	Register court: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 	
 	E-Mail:
 

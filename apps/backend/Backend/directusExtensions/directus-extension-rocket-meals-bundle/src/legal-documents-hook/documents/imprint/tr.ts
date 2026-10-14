@@ -16,6 +16,7 @@ Aşağıdaki bilgiler, sağlayıcı etiketlemesine ilişkin yasal olarak gerekli
 	Genel Müdür: {{operator.managing_director}}
 	Vergi numarası: {{operator.tax_number}}
 	Satış vergisi kimlik numarası: {{operator.vat_id}}
+	Ticaret sicili: Amtsgericht {{operator.register_court}}, {{operator.register_number}}
 	
 	E-Mail:
 
