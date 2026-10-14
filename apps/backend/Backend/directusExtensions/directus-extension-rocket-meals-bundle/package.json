@@ -134,6 +134,11 @@
         "source": "src/feature-wishes-endpoint/index.ts"
       },
       {
+        "type": "endpoint",
+        "name": "app-store-ratings-endpoint",
+        "source": "src/app-store-ratings-endpoint/index.ts"
+      },
+      {
         "type": "hook",
         "name": "users-inactive-cleanup-workflow",
         "source": "src/users-inactive-cleanup-workflow/index.ts"

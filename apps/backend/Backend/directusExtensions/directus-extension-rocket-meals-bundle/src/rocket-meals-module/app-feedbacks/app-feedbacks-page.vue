@@ -6,6 +6,11 @@
  * can be marked as done right from the list – one by one or several selected at once, without answering (also store reviews and anonymous ones,
  * e.g. positive feedback). Every row leads to the chat with the author
  * (`app-feedback-chat-page.vue`), store reviews to their public answer.
+ *
+ * Next to the list: the current rating of the app in both stores (`app-store-ratings.vue`). It is
+ * context, not work, so on a narrow page it does not take a column of its own but sits as a slim
+ * row of tiles above the filters – decided by the width of the page content (container query), not
+ * of the window, since the Directus navigation and sidebar take their share.
  */
 import { useApi } from '@directus/extensions-sdk';
 import { computed, ref, watch } from 'vue';
@@ -30,6 +35,7 @@ import ListSearchActions from '../module-list/list-search-actions.vue';
 import ListSelectionBar from '../module-list/list-selection-bar.vue';
 import DeleteConfirmDialog from '../module-list/delete-confirm-dialog.vue';
 import StatusFilterChips from '../module-list/status-filter-chips.vue';
+import AppStoreRatings from './app-store-ratings.vue';
 import FoodFeedbackRating from '../food-feedbacks/food-feedback-rating.vue';
 import FoodFeedbackStatusChip from '../food-feedbacks/food-feedback-status-chip.vue';
 
@@ -159,79 +165,113 @@ watch([activeFilter, sources, types, sort, pageSize], () =>
       <list-search-actions v-model="search" :loading="loading" @refresh="reload" />
     </template>
 
-    <div class="app-feedbacks">
-      <status-filter-chips :model-value="activeFilter" :filters="statusChips" @update:model-value="selectFilter" />
+    <div class="app-feedbacks-page">
+      <div class="app-feedbacks-layout">
+        <app-store-ratings class="store-ratings" />
 
-      <div class="toolbar">
-        <div class="toolbar-item">
-          <filter-select v-model="sources" :items="sourceItems" multiple :placeholder="translate(BackendTranslationKeys.rocket_meals_module_source_all)" :placeholder-icon="AppFeedbackChatHelper.getSourceFilterIcon(AppFeedbackSourceFilter.ALL)" />
-        </div>
-        <div class="toolbar-item">
-          <filter-select v-model="types" :items="typeItems" multiple :placeholder="translate(BackendTranslationKeys.rocket_meals_module_feedback_type_all)" :placeholder-icon="AppFeedbackChatHelper.getTypeFilterIcon(AppFeedbackTypeFilter.ALL)" />
-        </div>
-        <div class="toolbar-item">
-          <filter-select v-model="sort" :items="sortItems" />
+        <div class="app-feedbacks">
+          <status-filter-chips :model-value="activeFilter" :filters="statusChips" @update:model-value="selectFilter" />
+
+          <div class="toolbar">
+            <div class="toolbar-item">
+              <filter-select v-model="sources" :items="sourceItems" multiple :placeholder="translate(BackendTranslationKeys.rocket_meals_module_source_all)" :placeholder-icon="AppFeedbackChatHelper.getSourceFilterIcon(AppFeedbackSourceFilter.ALL)" />
+            </div>
+            <div class="toolbar-item">
+              <filter-select v-model="types" :items="typeItems" multiple :placeholder="translate(BackendTranslationKeys.rocket_meals_module_feedback_type_all)" :placeholder-icon="AppFeedbackChatHelper.getTypeFilterIcon(AppFeedbackTypeFilter.ALL)" />
+            </div>
+            <div class="toolbar-item">
+              <filter-select v-model="sort" :items="sortItems" />
+            </div>
+          </div>
+
+          <list-selection-bar v-if="selectableFeedbacks.length > 0" :selected-count="selectedFeedbacks.length" :all-selected="allSelected" :some-selected="someSelected" @toggle-all="toggleSelectAll">
+            <v-button v-if="selectedToResolve.length > 0" small :loading="selectedToResolve.some(isUpdating)" @click="markResolved(selectedToResolve)">
+              <v-icon name="task_alt" left small />
+              {{ translate(BackendTranslationKeys.rocket_meals_module_mark_selected_resolved) }}
+            </v-button>
+            <v-button v-if="selectedFeedbacks.length > 0" small secondary kind="danger" :loading="selectedFeedbacks.some(isUpdating)" @click="deleteDialogOpen = true">
+              <v-icon name="delete" left small />
+              {{ translate(BackendTranslationKeys.rocket_meals_module_delete_selected) }}
+            </v-button>
+          </list-selection-bar>
+          <delete-confirm-dialog v-model="deleteDialogOpen" :count="selectedFeedbacks.length" :loading="selectedFeedbacks.some(isUpdating)" @confirm="deleteSelected" />
+
+          <list-content :loading="loading" :load-error="loadError" :empty="feedbacks.length === 0">
+            <list-row v-for="feedback in feedbacks" :key="feedback.id" selectable :selected="isSelected(feedback)" @open="openChat(feedback)" @update:selected="toggleSelected(feedback, $event)">
+              <div class="source-icon" :class="{ positive: AppFeedbackChatHelper.isPositive(feedback) === true, negative: AppFeedbackChatHelper.isPositive(feedback) === false }">
+                <v-icon v-tooltip.bottom="translate(AppFeedbackChatHelper.getSourceLabelKey(feedback))" :name="AppFeedbackChatHelper.getTypeIcon(feedback) ?? AppFeedbackChatHelper.getSourceIcon(feedback)" />
+              </div>
+              <div class="feedback-content">
+                <div class="feedback-header">
+                  <food-feedback-status-chip :status="AppFeedbackChatStatusHelper.getStatus(feedback)" />
+                  <span class="title type-label">{{ AppFeedbackChatHelper.getTitle(feedback) ?? translate(BackendTranslationKeys.rocket_meals_module_no_title) }}</span>
+                  <food-feedback-rating :rating="feedback.source_rating_raw" />
+                  <span class="spacer" />
+                  <span class="meta type-note">
+                    <v-icon :name="AppFeedbackChatHelper.getSourceIcon(feedback)" x-small />
+                    {{ translate(AppFeedbackChatHelper.getSourceLabelKey(feedback)) }}
+                    <template v-if="AppFeedbackChatHelper.getDeviceDescription(feedback)"> · {{ AppFeedbackChatHelper.getDeviceDescription(feedback) }}</template>
+                    · {{ formatDateTime(feedback.date_created) }}
+                  </span>
+                </div>
+                <q v-if="AppFeedbackChatHelper.getContent(feedback)" class="content">{{ AppFeedbackChatHelper.getContent(feedback) }}</q>
+                <div class="feedback-actions">
+                  <v-button v-if="AppFeedbackChatHelper.canMarkResolved(feedback)" small secondary :loading="isUpdating(feedback)" @click.stop="markResolved([feedback])">
+                    <v-icon name="task_alt" left small />
+                    {{ translate(BackendTranslationKeys.rocket_meals_module_mark_resolved) }}
+                  </v-button>
+                  <v-button small :secondary="AppFeedbackChatStatusHelper.getStatus(feedback) !== FoodFeedbackChatStatus.NEW" @click.stop="openChat(feedback)">
+                    <v-icon :name="getOpenIcon(feedback)" left small />
+                    {{ getOpenLabel(feedback) }}
+                  </v-button>
+                </div>
+              </div>
+            </list-row>
+          </list-content>
+
+          <list-pagination v-model:page="currentPage" v-model:page-size="pageSize" :page-count="pageCount" :total="total" />
         </div>
       </div>
-
-      <list-selection-bar v-if="selectableFeedbacks.length > 0" :selected-count="selectedFeedbacks.length" :all-selected="allSelected" :some-selected="someSelected" @toggle-all="toggleSelectAll">
-        <v-button v-if="selectedToResolve.length > 0" small :loading="selectedToResolve.some(isUpdating)" @click="markResolved(selectedToResolve)">
-          <v-icon name="task_alt" left small />
-          {{ translate(BackendTranslationKeys.rocket_meals_module_mark_selected_resolved) }}
-        </v-button>
-        <v-button v-if="selectedFeedbacks.length > 0" small secondary kind="danger" :loading="selectedFeedbacks.some(isUpdating)" @click="deleteDialogOpen = true">
-          <v-icon name="delete" left small />
-          {{ translate(BackendTranslationKeys.rocket_meals_module_delete_selected) }}
-        </v-button>
-      </list-selection-bar>
-      <delete-confirm-dialog v-model="deleteDialogOpen" :count="selectedFeedbacks.length" :loading="selectedFeedbacks.some(isUpdating)" @confirm="deleteSelected" />
-
-      <list-content :loading="loading" :load-error="loadError" :empty="feedbacks.length === 0">
-        <list-row v-for="feedback in feedbacks" :key="feedback.id" selectable :selected="isSelected(feedback)" @open="openChat(feedback)" @update:selected="toggleSelected(feedback, $event)">
-          <div class="source-icon" :class="{ positive: AppFeedbackChatHelper.isPositive(feedback) === true, negative: AppFeedbackChatHelper.isPositive(feedback) === false }">
-            <v-icon v-tooltip.bottom="translate(AppFeedbackChatHelper.getSourceLabelKey(feedback))" :name="AppFeedbackChatHelper.getTypeIcon(feedback) ?? AppFeedbackChatHelper.getSourceIcon(feedback)" />
-          </div>
-          <div class="feedback-content">
-            <div class="feedback-header">
-              <food-feedback-status-chip :status="AppFeedbackChatStatusHelper.getStatus(feedback)" />
-              <span class="title type-label">{{ AppFeedbackChatHelper.getTitle(feedback) ?? translate(BackendTranslationKeys.rocket_meals_module_no_title) }}</span>
-              <food-feedback-rating :rating="feedback.source_rating_raw" />
-              <span class="spacer" />
-              <span class="meta type-note">
-                <v-icon :name="AppFeedbackChatHelper.getSourceIcon(feedback)" x-small />
-                {{ translate(AppFeedbackChatHelper.getSourceLabelKey(feedback)) }}
-                <template v-if="AppFeedbackChatHelper.getDeviceDescription(feedback)"> · {{ AppFeedbackChatHelper.getDeviceDescription(feedback) }}</template>
-                · {{ formatDateTime(feedback.date_created) }}
-              </span>
-            </div>
-            <q v-if="AppFeedbackChatHelper.getContent(feedback)" class="content">{{ AppFeedbackChatHelper.getContent(feedback) }}</q>
-            <div class="feedback-actions">
-              <v-button v-if="AppFeedbackChatHelper.canMarkResolved(feedback)" small secondary :loading="isUpdating(feedback)" @click.stop="markResolved([feedback])">
-                <v-icon name="task_alt" left small />
-                {{ translate(BackendTranslationKeys.rocket_meals_module_mark_resolved) }}
-              </v-button>
-              <v-button small :secondary="AppFeedbackChatStatusHelper.getStatus(feedback) !== FoodFeedbackChatStatus.NEW" @click.stop="openChat(feedback)">
-                <v-icon :name="getOpenIcon(feedback)" left small />
-                {{ getOpenLabel(feedback) }}
-              </v-button>
-            </div>
-          </div>
-        </list-row>
-      </list-content>
-
-      <list-pagination v-model:page="currentPage" v-model:page-size="pageSize" :page-count="pageCount" :total="total" />
     </div>
   </private-view>
 </template>
 
 <style scoped>
-.app-feedbacks {
+.app-feedbacks-page {
+  container-type: inline-size;
+  padding: var(--content-padding);
+  padding-block-start: 0;
+}
+
+/* Narrow: the store ratings as a row above the list. */
+.app-feedbacks-layout {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   max-inline-size: 64rem;
-  padding: var(--content-padding);
-  padding-block-start: 0;
+}
+
+/* Wide enough for the list (at least ~42rem) and a column of 16rem: the store ratings move to the right. */
+@container (min-width: 60rem) {
+  .app-feedbacks-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 64rem) 16rem;
+    gap: 1.5rem;
+    align-items: start;
+    max-inline-size: none;
+  }
+
+  .store-ratings {
+    grid-row: 1;
+    grid-column: 2;
+  }
+}
+
+.app-feedbacks {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-inline-size: 0;
 }
 
 .toolbar {
