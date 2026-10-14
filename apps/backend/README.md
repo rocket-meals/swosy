@@ -117,6 +117,20 @@ ROCKET_MEALS_AI_OPENAI_COMPATIBLE_MODELS="model-a,model-b"
 ROCKET_MEALS_AI_OPENAI_COMPATIBLE_HEADERS='{"X-Custom-Header":"value"}'
 ```
 
+### Legal documents (privacy policy, imprint, accessibility)
+
+The privacy policy (`privacy-policy`), the imprint (`about-us`) and the accessibility statement
+(`accessibility`) live in code, not in Directus. On every start the `legal-documents-hook` writes them
+into `wikis`, one translation per language of the `languages` collection, with a fixed wiki id per
+document. An edit in Directus is overwritten on the next start.
+
+- Texts: `directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/documents/<document>/<language>.ts`
+- Company data: only as placeholders (`{{operator.email}}`, `{{customer.name}}`, ...). The values are in
+  `src/legal-documents-hook/LegalEntities.ts`: the operator once, the customer per `SYNC_FOR_CUSTOMER`.
+- A customer without an entry there (`null`) keeps the legal documents it has in Directus.
+- An older wiki with the same `custom_id` is archived once and renamed to `legacy-<custom_id>`, the new
+  wiki takes over its drawer and position settings.
+
 ## Configure SSO
 
 - Check that a role for "User" exists
