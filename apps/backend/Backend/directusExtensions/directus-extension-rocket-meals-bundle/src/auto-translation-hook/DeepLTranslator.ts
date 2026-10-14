@@ -1,8 +1,11 @@
 import deepl, { SourceLanguageCode, TargetLanguageCode, Translator } from 'deepl-node';
-import { AutoTranslatorInterface, TranslationRequest } from './AutoTranslatorInterface';
+import { AutoTranslatorInterface, MultiTranslationRequest, MultiTranslationResult, TranslationRequest } from './AutoTranslatorInterface';
 import { ReplaceOptions, StringHelper } from "repo-depkit-common";
 
 export class DeepLTranslator implements AutoTranslatorInterface {
+  /** DeepL accepts at most 128 KiB per request, umlauts take two bytes in UTF-8. */
+  static readonly MAX_TEXT_LENGTH = 60_000;
+
   private readonly translator: Translator;
 
   constructor(auth_key: string) {
@@ -11,6 +14,22 @@ export class DeepLTranslator implements AutoTranslatorInterface {
 
   init(): Promise<void> {
     return Promise.resolve();
+  }
+
+  getMaxTextLength(): number | null {
+    return DeepLTranslator.MAX_TEXT_LENGTH;
+  }
+
+  /** DeepL translates into one language per request, so the languages are translated one by one. */
+  async translateToLanguages(request: MultiTranslationRequest): Promise<MultiTranslationResult> {
+    const result: MultiTranslationResult = {};
+    for (const destination_language of request.destination_languages) {
+      const translation = await this.translate({ text: request.text, source_language: request.source_language, destination_language }); // NOSONAR S9382 - sequential on purpose: one DeepL API call per language (rate limits, quota)
+      if (translation) {
+        result[destination_language] = translation;
+      }
+    }
+    return result;
   }
 
   async translate(request: TranslationRequest) {

@@ -40,7 +40,7 @@ function getTranslationNullReason(languageCode: string): string {
     );
   }
   return (
-    'Unknown reason - check server console logs for DeepL API errors. ' +
+    'Unknown reason - check server console logs for translation API errors (AI provider or DeepL). ' +
     'Possible causes: API character quota exceeded, network error, or unsupported language variant "' + languageCode + '".'
   );
 }
@@ -60,7 +60,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
 
       if (!autoTranslator.isReady()) {
         await context.logger.appendLog(
-          'AutoTranslator is not ready. Please check that the AUTO_TRANSLATE_API_KEY environment variable is set and valid. Aborting.'
+          'AutoTranslator is not ready. Please check the AI provider in the Directus settings (Settings → AI) or, for DeepL, that the AUTO_TRANSLATE_API_KEY environment variable is set and valid. Aborting.'
         );
         return context.logger.getFinalLogWithStateAndParams({state: WORKFLOW_RUN_STATE.FAILED});
       }
