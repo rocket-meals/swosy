@@ -128,9 +128,7 @@ const FoodFeedbackReactionsHint: React.FC = () => {
 
 const styles = StyleSheet.create({
 	container: {
-		width: '100%',
-		maxWidth: 560,
-		alignSelf: 'center',
+		marginHorizontal: 10,
 		marginTop: 12,
 		marginBottom: 4,
 		paddingVertical: 10,
