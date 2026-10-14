@@ -96,7 +96,9 @@ export function getVersionPatch() {
 	// 71: common: NumberHelper.formatZeroPadded
 	// 72: common-ui: FontHelper.getMonospaceFontFamily (Menlo on iOS, monospace elsewhere)
 	// 73: monospace texts use FontHelper.getMonospaceFontFamily (Menlo on iOS)
-	return 73;
+	// 74: common: FoodFeedbackReactionHelper, foods_feedbacks.support_reaction types
+	// 75: common: FoodFeedbackReactionHelper.groupReactions, ChatHelper.isFoodFeedbackChat
+	return 75;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

@@ -933,6 +933,18 @@ export const TranslationKeys = {
 	store_versions_open_store: 'store_versions_open_store',
 	store_versions_reload: 'store_versions_reload',
 	store_versions_hint: 'store_versions_hint',
+	own_food_feedback_from_you: 'own_food_feedback_from_you',
+	own_food_feedback_from_canteen: 'own_food_feedback_from_canteen',
+	own_food_feedback_no_response: 'own_food_feedback_no_response',
+	own_food_feedbacks_title: 'own_food_feedbacks_title',
+	own_food_feedbacks_tab_all: 'own_food_feedbacks_tab_all',
+	own_food_feedbacks_tab_ratings: 'own_food_feedbacks_tab_ratings',
+	own_food_feedbacks_tab_notifications: 'own_food_feedbacks_tab_notifications',
+	own_food_feedbacks_show_all: 'own_food_feedbacks_show_all',
+	food_feedback_responses_title: 'food_feedback_responses_title',
+	food_feedback_responses_new_message: 'food_feedback_responses_new_message',
+	food_feedback_responses_modal_title: 'food_feedback_responses_modal_title',
+	food_feedback_responses_open_chat: 'food_feedback_responses_open_chat',
 } as const;
 
 export type TranslationKeys = (typeof TranslationKeys)[keyof typeof TranslationKeys];

@@ -902,8 +902,8 @@ export default function Layout() {
 				<Drawer.Screen
 					name="notification/index"
 					options={{
-						header: makeTranslatedStackHeader(TranslationKeys.notification, 'notification'),
-						title: translate(TranslationKeys.notification),
+						header: makeTranslatedStackHeader(TranslationKeys.own_food_feedbacks_title, 'notification'),
+						title: translate(TranslationKeys.own_food_feedbacks_title),
 					}}
 				/>
                                 <Drawer.Screen

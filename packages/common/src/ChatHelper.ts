@@ -84,6 +84,11 @@ export class ChatHelper {
     return new Date(b).getTime() > new Date(a).getTime() ? b : a;
   }
 
+  /** Whether a chat belongs to a food feedback (`chats.food_feedbacks`, ids or loaded rows). */
+  static isFoodFeedbackChat(chat: { food_feedbacks?: unknown } | null | undefined): boolean {
+    return Array.isArray(chat?.food_feedbacks) && chat.food_feedbacks.length > 0;
+  }
+
   /**
    * Whether a chat has a message newer than what the participant read (`chats_participants.read_until`).
    * Without any message there is nothing to read; without `readUntil` everything is unread.

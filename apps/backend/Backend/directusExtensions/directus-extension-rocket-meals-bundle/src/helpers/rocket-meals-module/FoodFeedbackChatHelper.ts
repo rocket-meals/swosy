@@ -12,7 +12,11 @@
 // Not the package index: this file is bundled into the Directus app, see BackendTranslator.ts.
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
 import { FoodFeedbackChatFilter, FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
+import { FoodFeedbackReaction, FoodFeedbackReactionHelper } from 'repo-depkit-common/src/FoodFeedbackReactionHelper';
+import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
+import { ActionRecommendationAction } from '../action-recommendations/ActionRecommendationDefinitions';
+import { ActionRecommendationModuleHelper, type ModuleActionRecommendation } from './ActionRecommendationModuleHelper';
 import { ModuleListHelper, type ModuleStatusCountRequest, type ModuleStatusListRequest } from './ModuleListHelper';
 import type { ModuleChatMessage } from './ChatQueryHelper';
 import type { ModuleCanteenRelation, ModuleChatRelation, ModuleImageItem, ModuleItem, ModuleItemWithImage, ModuleProfileSummary, ModuleStatusPresentation } from './ModuleItemTypes';
@@ -31,6 +35,8 @@ export type ModuleFoodFeedback = ModuleItem & {
 export type FoodFeedbackListItem = ModuleFoodFeedback & {
   profile?: (ModuleProfileSummary & { date_updated?: string | null; language?: string | { code?: string | null } | null }) | string | null;
   chat?: ModuleChatRelation;
+  /** The reaction of support, see `FoodFeedbackReactionHelper`. */
+  support_reaction?: string | null;
 };
 
 /** A message of a support chat – the same shape for every chat of the module, see `ChatQueryHelper`. */
@@ -90,7 +96,7 @@ export class FoodFeedbackChatHelper {
   public static readonly CANTEEN_IMAGE_SIZE = 24;
 
   /** Fields of the list. */
-  public static readonly LIST_FIELDS = ['id', 'comment', 'rating', 'date_created', 'date_updated', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'canteen.id', 'canteen.alias', 'profile.id', 'profile.nickname', 'profile.avatar', 'profile.date_updated', 'profile.language', 'chat.id', 'chat.conversation_state', 'chat.date_updated'];
+  public static readonly LIST_FIELDS = ['id', 'comment', 'rating', 'date_created', 'date_updated', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'canteen.id', 'canteen.alias', 'profile.id', 'profile.nickname', 'profile.avatar', 'profile.date_updated', 'profile.language', 'chat.id', 'chat.conversation_state', 'chat.date_updated', 'support_reaction'];
 
   static readonly CANTEENS_ENDPOINT = `/items/${CollectionNames.CANTEENS}`;
   static readonly FOOD_FEEDBACKS_ENDPOINT = `/items/${CollectionNames.FOODS_FEEDBACKS}`;
@@ -343,14 +349,49 @@ export class FoodFeedbackChatHelper {
     return item.image_remote_url || undefined;
   }
 
-  /** Whether a feedback can be marked as done from the list: not done yet, and someone to show the chat to. */
-  /** Only a done feedback can be opened again; it always has a chat, the status lives there. */
+  /**
+   * Only a done feedback with chat can be opened again, the status lives there. One that is only done by
+   * a reaction is opened again by removing the reaction.
+   */
   static canReopen(feedback: FoodFeedbackListItem): boolean {
-    return FoodFeedbackChatStatusHelper.getStatus(feedback) === FoodFeedbackChatStatus.RESOLVED;
+    return FoodFeedbackChatStatusHelper.getStatus(feedback) === FoodFeedbackChatStatus.RESOLVED && RelationHelper.isSet(feedback.chat);
   }
 
+  /** Whether a feedback can be marked as done from the list: not done yet, and someone to show the chat to. */
   static canMarkResolved(feedback: FoodFeedbackListItem): boolean {
     return FoodFeedbackChatStatusHelper.getStatus(feedback) !== FoodFeedbackChatStatus.RESOLVED && FoodFeedbackChatStatusHelper.canStartChat(feedback);
+  }
+
+  /** The label of a reaction in the menu of the reaction button. */
+  static getReactionLabelKey(reaction: FoodFeedbackReaction): BackendTranslationKeys {
+    switch (reaction) {
+      case FoodFeedbackReaction.THUMBS_UP:
+        return BackendTranslationKeys.rocket_meals_module_reaction_thumbs_up;
+      case FoodFeedbackReaction.HEART:
+        return BackendTranslationKeys.rocket_meals_module_reaction_heart;
+      case FoodFeedbackReaction.THANKS:
+        return BackendTranslationKeys.rocket_meals_module_reaction_thanks;
+      case FoodFeedbackReaction.YUMMY:
+        return BackendTranslationKeys.rocket_meals_module_reaction_yummy;
+      case FoodFeedbackReaction.GOOD_IDEA:
+        return BackendTranslationKeys.rocket_meals_module_reaction_good_idea;
+    }
+  }
+
+  /**
+   * Whether reacting deals with the recommendation: it recommends to mark as done, and without chat a
+   * reaction does exactly that (accepted). A recommended reply stays open, a reaction only adds to it.
+   */
+  static isResolvedByReaction(feedback: Pick<FoodFeedbackListItem, 'chat'>, recommendation: ModuleActionRecommendation | null | undefined): boolean {
+    return !RelationHelper.isSet(feedback.chat) && ActionRecommendationModuleHelper.getRecommendedAction(recommendation) === ActionRecommendationAction.MARK_RESOLVED;
+  }
+
+  /**
+   * Whether the reaction button is the highlighted one instead of "Als erledigt markieren": the AI
+   * recommends a reaction as the way to mark the feedback as done, and there is no reaction yet.
+   */
+  static isReactionHighlighted(feedback: Pick<FoodFeedbackListItem, 'chat' | 'support_reaction'>, recommendation: ModuleActionRecommendation | null | undefined): boolean {
+    return FoodFeedbackChatHelper.isResolvedByReaction(feedback, recommendation) && !!ActionRecommendationModuleHelper.getReaction(recommendation) && !FoodFeedbackReactionHelper.hasReaction(feedback);
   }
 
   static getFoodName(feedback: Pick<FoodFeedbackListItem, 'food'>): string | undefined {

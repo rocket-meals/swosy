@@ -8,7 +8,8 @@
  * the Node tests.
  */
 
-import { ActionRecommendationAction, ActionRecommendationDefinitions, ActionRecommendationStatus, OPEN_ACTION_RECOMMENDATION_STATUSES } from '../action-recommendations/ActionRecommendationDefinitions';
+import { FoodFeedbackReactionHelper, type FoodFeedbackReaction } from 'repo-depkit-common/src/FoodFeedbackReactionHelper';
+import { ActionRecommendationAction, ActionRecommendationDefinitions, ActionRecommendationStatus, OPEN_ACTION_RECOMMENDATION_STATUSES, type ActionRecommendationPayload } from '../action-recommendations/ActionRecommendationDefinitions';
 
 /** Why a request to the endpoint failed, sent as `code` next to `error`. */
 export enum ActionRecommendationErrorCode {
@@ -25,6 +26,8 @@ export type ModuleActionRecommendation = {
   action?: string | null;
   reason?: string | null;
   draft_reply?: string | null;
+  /** Holds the recommended reaction, see `ActionRecommendationPayload`. */
+  action_payload?: unknown;
   status?: string | null;
   logs?: string | null;
   recommended_by_ai?: string | null;
@@ -85,7 +88,7 @@ export class ActionRecommendationModuleHelper {
   static readonly ITEMS_ENDPOINT = '/items/action_recommendations';
 
   /** The fields of `action_recommendations` the module shows. */
-  static readonly FIELDS = ['id', 'collection', 'item', 'action', 'reason', 'draft_reply', 'status', 'logs', 'recommended_by_ai', 'recommended_by_profile', 'user_created', 'date_created'];
+  static readonly FIELDS = ['id', 'collection', 'item', 'action', 'reason', 'draft_reply', 'action_payload', 'status', 'logs', 'recommended_by_ai', 'recommended_by_profile', 'user_created', 'date_created'];
 
   /** The icon of recommendations everywhere in the module. */
   static readonly ICON = 'auto_awesome';
@@ -208,6 +211,15 @@ export class ActionRecommendationModuleHelper {
     }
     const draft = recommendation?.draft_reply?.trim();
     return draft || null;
+  }
+
+  /** The reaction an answered recommendation suggests besides its action, otherwise null. */
+  static getReaction(recommendation: ModuleActionRecommendation | null | undefined): FoodFeedbackReaction | null {
+    if (!ActionRecommendationModuleHelper.getRecommendedAction(recommendation)) {
+      return null;
+    }
+    const payload = recommendation?.action_payload as ActionRecommendationPayload | null | undefined;
+    return FoodFeedbackReactionHelper.isReaction(payload?.reaction) ? payload.reaction : null;
   }
 
   /** Who recommended it: provider and model of the AI, or the nickname of the profile. */

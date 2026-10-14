@@ -8,6 +8,7 @@
 
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
+import { FoodFeedbackReactionHelper, type FoodFeedbackReaction } from 'repo-depkit-common/src/FoodFeedbackReactionHelper';
 import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
 import { AppExtensionLanguageHelper } from '../app-extensions/AppExtensionLanguageHelper';
 import { BackendTranslationKeys } from '../translations/BackendTranslationKeys';
@@ -44,6 +45,14 @@ export class FoodFeedbackChatActions {
     await api.post(ChatQueryHelper.CHATS_PARTICIPANTS_ENDPOINT, ChatHelper.buildParticipant(createdChatId, profileId));
     await api.patch(`${FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT}/${feedback.id}`, { chat: createdChatId });
     return createdChatId;
+  }
+
+  /**
+   * Sets the reaction of support (`null` removes it). No chat is created: without chat the reaction is
+   * the answer and the feedback counts as done, see `FoodFeedbackChatStatusHelper.getStatus`.
+   */
+  static async setReaction(api: FoodFeedbackApiClient, feedback: Pick<FoodFeedbackListItem, 'id'>, reaction: FoodFeedbackReaction | null): Promise<void> {
+    await api.patch(`${FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT}/${feedback.id}`, FoodFeedbackReactionHelper.buildUpdate(reaction));
   }
 
   /** Opens done feedbacks again ("Wartet auf Antwort"), see {@link SupportChatActions.reopen}. */
