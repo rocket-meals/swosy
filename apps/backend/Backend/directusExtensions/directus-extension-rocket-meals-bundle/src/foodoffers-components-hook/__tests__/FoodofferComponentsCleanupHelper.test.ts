@@ -117,3 +117,54 @@ describe('FoodofferComponentsCleanupHelper.filterUnreferencedIds', () => {
     expect(queries).toHaveLength(0);
   });
 });
+
+describe('FoodofferComponentsCleanupHelper.deleteOrphanedComponentFoodoffers', () => {
+  // Candidate foodoffers sorted by id; the foodoffers helper applies the keyset filter (id > afterId) and the limit
+  function createCleanupDatabaseHelper(candidateIds: string[], junctionRows: JunctionRow[]) {
+    const remainingIds = [...candidateIds].sort();
+    const candidateQueries: any[] = [];
+    const deleteCalls: string[][] = [];
+    const helper = {
+      getFoodoffersHelper: () => ({
+        readByQuery: async (query: any) => {
+          candidateQueries.push(query);
+          const afterCondition = query.filter._and.find((condition: any) => condition.id);
+          const afterId: string | null = afterCondition ? afterCondition.id._gt : null;
+          return remainingIds
+            .filter(id => afterId === null || id > afterId)
+            .slice(0, query.limit)
+            .map(id => ({ id }));
+        },
+        deleteMany: async (ids: string[]) => {
+          deleteCalls.push(ids);
+          for (const id of ids) {
+            remainingIds.splice(remainingIds.indexOf(id), 1);
+          }
+        },
+      }),
+      getFoodofferComponentsHelper: () => ({
+        readByQuery: async (query: any) => junctionRows.filter(row => matches(row, query.filter)),
+      }),
+    } as unknown as MyDatabaseHelper;
+    return { helper, candidateQueries, deleteCalls };
+  }
+
+  it('walks all pages via the last id of the previous page and deletes only the orphans', async () => {
+    const batchSize = FoodofferComponentsCleanupHelper.DELETE_BATCH_SIZE;
+    const candidateIds = Array.from({ length: batchSize * 2 + 5 }, (_, index) => 'c-' + String(index).padStart(6, '0'));
+    // Every third candidate is still linked to a parent and has to stay
+    const junctionRows: JunctionRow[] = candidateIds.filter((_, index) => index % 3 === 0).map((id, index) => ({ id: index, parent_foodoffers_id: 'parent', component_foodoffers_id: id }));
+    const { helper, candidateQueries, deleteCalls } = createCleanupDatabaseHelper(candidateIds, junctionRows);
+
+    const deleted = await FoodofferComponentsCleanupHelper.deleteOrphanedComponentFoodoffers(helper, async () => {});
+
+    const linkedIds = new Set(junctionRows.map(row => row.component_foodoffers_id));
+    const expectedDeleted = candidateIds.filter(id => !linkedIds.has(id));
+    expect(deleted).toBe(expectedDeleted.length);
+    expect(deleteCalls.flat().sort()).toEqual(expectedDeleted);
+    expect(candidateQueries).toHaveLength(3);
+    expect(candidateQueries[0].offset).toBeUndefined();
+    expect(candidateQueries[1].filter._and).toContainEqual({ id: { _gt: candidateIds[batchSize - 1] } });
+    expect(candidateQueries[2].filter._and).toContainEqual({ id: { _gt: candidateIds[batchSize * 2 - 1] } });
+  });
+});

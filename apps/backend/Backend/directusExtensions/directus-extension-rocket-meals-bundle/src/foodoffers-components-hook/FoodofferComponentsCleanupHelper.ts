@@ -78,16 +78,20 @@ export class FoodofferComponentsCleanupHelper {
 
   /**
    * One page of candidates: foodoffers without canteen, date and food (exactly how the food sync creates components),
-   * created more than MIN_AGE_MS ago, sorted by id.
+   * created more than MIN_AGE_MS ago, sorted by id and starting after `afterId` (keyset paging, so a page costs the same
+   * no matter how far the walk already is - an offset would skip all previous rows again on every page).
    * Foodoffers without date but with a canteen (offers that are valid all the time) are never candidates.
    */
-  static async readCandidateIds(myDatabaseHelper: MyDatabaseHelper, offset: number, limit: number): Promise<string[]> {
+  static async readCandidateIds(myDatabaseHelper: MyDatabaseHelper, afterId: string | null, limit: number): Promise<string[]> {
     const createdBefore = new Date(Date.now() - FoodofferComponentsCleanupHelper.MIN_AGE_MS).toISOString();
+    const conditions: any[] = [{ canteen: { _null: true } }, { date: { _null: true } }, { food: { _null: true } }, { date_created: { _lt: createdBefore } }];
+    if (afterId !== null) {
+      conditions.push({ id: { _gt: afterId } });
+    }
     const rows = await myDatabaseHelper.getFoodoffersHelper().readByQuery({
-      filter: { _and: [{ canteen: { _null: true } }, { date: { _null: true } }, { food: { _null: true } }, { date_created: { _lt: createdBefore } }] } as any,
+      filter: { _and: conditions } as any,
       fields: ['id'],
       sort: ['id'],
-      offset: offset,
       limit: limit,
     });
     return rows.map(row => String(row.id));
@@ -120,13 +124,13 @@ export class FoodofferComponentsCleanupHelper {
   /**
    * Walks through all candidates page by page and deletes the unreferenced ones, at most MAX_DELETES_PER_RUN per call
    * to keep the database load of a single run bounded. Returns the number of deleted foodoffers.
-   * Deleted rows move the following rows forward, so the offset only advances by the candidates that were kept.
+   * The next page starts after the last id of the current page, so deleted rows do not shift the following pages.
    */
   static async deleteOrphanedComponentFoodoffers(myDatabaseHelper: MyDatabaseHelper, log: (message: string) => Promise<void>): Promise<number> {
     const foodoffersHelper = myDatabaseHelper.getFoodoffersHelper();
-    const state = { deleted: 0, offset: 0 };
+    const state: { deleted: number; afterId: string | null } = { deleted: 0, afterId: null };
     while (state.deleted < FoodofferComponentsCleanupHelper.MAX_DELETES_PER_RUN) {
-      const candidateIds = await FoodofferComponentsCleanupHelper.readCandidateIds(myDatabaseHelper, state.offset, FoodofferComponentsCleanupHelper.DELETE_BATCH_SIZE); // NOSONAR S9382 - sequential on purpose: one page after another to keep the database load bounded
+      const candidateIds = await FoodofferComponentsCleanupHelper.readCandidateIds(myDatabaseHelper, state.afterId, FoodofferComponentsCleanupHelper.DELETE_BATCH_SIZE); // NOSONAR S9382 - sequential on purpose: one page after another to keep the database load bounded
       if (candidateIds.length === 0) {
         break;
       }
@@ -136,7 +140,10 @@ export class FoodofferComponentsCleanupHelper {
         state.deleted += orphanedIds.length;
         await log(`Deleted ${orphanedIds.length} orphaned component foodoffers (${state.deleted} in this run)`); // NOSONAR S9382 - sequential on purpose: one page after another to keep the database load bounded
       }
-      state.offset += candidateIds.length - orphanedIds.length;
+      if (candidateIds.length < FoodofferComponentsCleanupHelper.DELETE_BATCH_SIZE) {
+        break;
+      }
+      state.afterId = candidateIds[candidateIds.length - 1]!;
     }
     return state.deleted;
   }
