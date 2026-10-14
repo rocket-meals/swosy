@@ -11,6 +11,7 @@ import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL } from '@/redux/
 import { getFoodName } from '@/helper/resourceHelper';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
+import { isWeb } from '@/constants/Constants';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import OwnFoodFeedbackItem from '@/components/OwnFoodFeedbackItem';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
@@ -156,7 +157,7 @@ const OwnFoodFeedbacksScreen = () => {
 					onChangeText={setSearch}
 					placeholder={translate(TranslationKeys.search)}
 					placeholderTextColor={theme.screen.placeholder}
-					style={[styles.searchInput, { color: theme.screen.text }]}
+					style={[styles.searchInput, { color: theme.screen.text }, isWeb && styles.searchInputWeb]}
 					accessibilityLabel={translate(TranslationKeys.search)}
 				/>
 				{search.length > 0 && (
@@ -225,6 +226,10 @@ const styles = StyleSheet.create({
 		paddingVertical: 10,
 		fontSize: 15,
 	},
+	// The surrounding field already shows where to type; the browser's focus outline would draw a second box.
+	searchInputWeb: {
+		outlineStyle: 'none',
+	} as object,
 	intro: {
 		fontSize: 14,
 	},
