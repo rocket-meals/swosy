@@ -1116,6 +1116,28 @@ export const backendTranslations: TranslationResources = {
     tr: 'Kayıt: {{count}}. Tüm sohbet mesajlarıyla birlikte kalıcı olarak silinecek. Bu işlem geri alınamaz.',
     zh: '条目：{{count}}。它们将连同所有聊天消息被永久删除。此操作无法撤销。',
   },
+  /** Delete button on the chat page of a food feedback: it is the whole feedback that goes, not only the chat. */
+  rocket_meals_module_food_feedback_delete: {
+    de: 'Feedback und Chat löschen',
+    en: 'Delete feedback and chat',
+    ar: 'حذف التقييم والمحادثة',
+    es: 'Eliminar valoración y chat',
+    fr: 'Supprimer l\'avis et la discussion',
+    ru: 'Удалить отзыв и чат',
+    tr: 'Geri bildirimi ve sohbeti sil',
+    zh: '删除反馈和聊天',
+  },
+  /** Asks before deleting food feedbacks: says what goes with them, see `ModuleDeleteActions`. */
+  rocket_meals_module_food_feedback_delete_confirm_text: {
+    de: 'Speise-Feedbacks: {{count}}. Gelöscht wird jeweils das ganze Feedback der Person: Bewertung, Kommentar und Reaktion der Mensa, zusammen mit dem Chat und allen Nachrichten. Die Person sieht es danach nicht mehr in der App. Das lässt sich nicht rückgängig machen.',
+    en: 'Food feedbacks: {{count}}. Each whole feedback of the person is deleted: rating, comment and the reaction of the canteen, together with the chat and all its messages. The person no longer sees it in the app. This cannot be undone.',
+    ar: 'تقييمات الأطباق: {{count}}. يُحذف التقييم بالكامل لكل شخص: التقييم والتعليق وتفاعل المطعم، مع المحادثة وجميع رسائلها. لن يراه الشخص بعد ذلك في التطبيق. لا يمكن التراجع عن ذلك.',
+    es: 'Valoraciones de platos: {{count}}. Se elimina la valoración completa de la persona: puntuación, comentario y la reacción del comedor, junto con el chat y todos sus mensajes. La persona ya no la verá en la app. No se puede deshacer.',
+    fr: 'Avis sur les plats : {{count}}. L\'avis complet de la personne est supprimé : note, commentaire et réaction de la cantine, avec la discussion et tous ses messages. La personne ne le verra plus dans l\'application. Cette action est irréversible.',
+    ru: 'Отзывов о блюдах: {{count}}. Удаляется весь отзыв человека: оценка, комментарий и реакция столовой, вместе с чатом и всеми сообщениями. Человек больше не увидит его в приложении. Это действие нельзя отменить.',
+    tr: 'Yemek geri bildirimleri: {{count}}. Kişinin geri bildiriminin tamamı silinir: puan, yorum ve yemekhanenin tepkisi, sohbet ve tüm mesajlarıyla birlikte. Kişi bunu artık uygulamada görmez. Bu işlem geri alınamaz.',
+    zh: '菜品反馈：{{count}}。将删除此人的整条反馈：评分、评论和食堂的回应，连同聊天及其所有消息。此人之后在应用中将不再看到它。此操作无法撤销。',
+  },
   rocket_meals_module_delete_failed: {
     de: 'Löschen fehlgeschlagen',
     en: 'Deleting failed',

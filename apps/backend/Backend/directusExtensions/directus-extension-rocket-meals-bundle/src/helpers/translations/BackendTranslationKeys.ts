@@ -137,6 +137,8 @@ export const BackendTranslationKeys = {
   rocket_meals_module_delete_selected: 'rocket_meals_module_delete_selected',
   rocket_meals_module_delete_confirm_title: 'rocket_meals_module_delete_confirm_title',
   rocket_meals_module_delete_confirm_text: 'rocket_meals_module_delete_confirm_text',
+  rocket_meals_module_food_feedback_delete: 'rocket_meals_module_food_feedback_delete',
+  rocket_meals_module_food_feedback_delete_confirm_text: 'rocket_meals_module_food_feedback_delete_confirm_text',
   rocket_meals_module_delete_failed: 'rocket_meals_module_delete_failed',
   rocket_meals_module_deleted: 'rocket_meals_module_deleted',
   rocket_meals_module_mark_resolved_failed: 'rocket_meals_module_mark_resolved_failed',

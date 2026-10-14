@@ -328,7 +328,7 @@ watch(() => props.feedbackId, load);
     </template>
 
     <template #actions>
-      <v-button v-if="feedback" v-tooltip.bottom="translate(BackendTranslationKeys.delete)" rounded icon secondary kind="danger" :loading="deleting" :aria-label="translate(BackendTranslationKeys.delete)" @click="deleteDialogOpen = true">
+      <v-button v-if="feedback" v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_food_feedback_delete)" rounded icon secondary kind="danger" :loading="deleting" :aria-label="translate(BackendTranslationKeys.rocket_meals_module_food_feedback_delete)" @click="deleteDialogOpen = true">
         <v-icon name="delete" />
       </v-button>
       <v-button v-tooltip.bottom="translate(BackendTranslationKeys.rocket_meals_module_open_feedback_item)" rounded icon secondary :to="`/content/foods_feedbacks/${feedbackId}`">
@@ -422,7 +422,7 @@ watch(() => props.feedbackId, load);
 
       <v-progress-circular v-else-if="loading" indeterminate />
     </div>
-    <delete-confirm-dialog v-model="deleteDialogOpen" :count="1" :loading="deleting" @confirm="deleteCurrent" />
+    <delete-confirm-dialog v-model="deleteDialogOpen" :count="1" :text="translate(BackendTranslationKeys.rocket_meals_module_food_feedback_delete_confirm_text, { count: 1 })" :loading="deleting" @confirm="deleteCurrent" />
   </private-view>
 </template>
 
