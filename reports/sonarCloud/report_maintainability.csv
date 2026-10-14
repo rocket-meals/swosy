@@ -1,5 +1,6 @@
 Key,Message,Component,Line
-"AaE7Gk2CsZyonQJhyVHn","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/OwnFoodFeedbackItem/index.tsx",35
+"AaE7dCZQiXm7DYT7WjxE","`editable` should be a `Set`, and use `editable.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalWikiProtection.ts",45
+"AaE7Gk2CsZyonQJhyVHn","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/OwnFoodFeedbackItem/index.tsx",36
 "AaE7Gkh2sZyonQJhyVHm","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts",115
 "AaE1lSmzTIntY0cLRjeH","'repo-depkit-common-ui' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",41
 "AaE0snQ2reFZwbJUSfQv","Unexpected `await` inside a loop.","rocket-meals_rocket-meals:apps/frontend/app/helper/chatReadStatus.ts",90
@@ -14,4 +15,5 @@ Key,Message,Component,Line
 "AaEtF6PLQhOcqS1tBB_n","Async method 'handleNotification' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/helper/NotificationHelper.ts",87
 "AaEv5PHqBIquHGRjEP34","Move function 'setCorsHeaders' to the outer scope.","rocket-meals_rocket-meals:apps/maintenance-server/server.mjs",193
 "AaEv5PHqBIquHGRjEP35","Move function 'sendJson' to the outer scope.","rocket-meals_rocket-meals:apps/maintenance-server/server.mjs",205
+"AaE7dCjWiXm7DYT7WjxF","Remove this ""!important"" and resolve the specificity conflict instead.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue",706
 "AaE1lSmzTIntY0cLRjeG","'repo-depkit-common-ui' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",25

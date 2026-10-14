@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 5 | 5 |
-| 🔧 Maintainability | 16 | 16 |
+| 🔧 Maintainability | 18 | 18 |
 
-**Total issues:** 23
+**Total issues:** 25
 
 ---
 
@@ -44,7 +44,7 @@
   apps/maintenance-server/server.mjs:303
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L303
 
-## 🔧 Maintainability (16/16)
+## 🔧 Maintainability (18/18)
 
 - **Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts:76
@@ -82,6 +82,14 @@
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts:689
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts#L689
 
+- **`editable` should be a `Set`, and use `editable.has()` to check existence or non-existence.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalWikiProtection.ts:45
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalWikiProtection.ts#L45
+
+- **Remove this "!important" and resolve the specificity conflict instead.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue:706
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue#L706
+
 - **'repo-depkit-common-ui' imported multiple times.**
   apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx:41
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx#L41
@@ -91,8 +99,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx#L25
 
 - **Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.**
-  apps/frontend/app/components/OwnFoodFeedbackItem/index.tsx:35
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/OwnFoodFeedbackItem/index.tsx#L35
+  apps/frontend/app/components/OwnFoodFeedbackItem/index.tsx:36
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/OwnFoodFeedbackItem/index.tsx#L36
 
 - **Unexpected `await` inside a loop.**
   apps/frontend/app/helper/chatReadStatus.ts:90
