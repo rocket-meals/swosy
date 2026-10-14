@@ -287,7 +287,8 @@ export function getVersionPatch() {
         //      (dev setting to list them in chats), seen reactions no longer reset by profile writes,
         //      contrast color on the chat button
         // 167: back from a food feedback chat goes to the own ratings, dev button resets seen reactions
-        return 167;
+        // 168: common: a support reaction alone no longer marks a food feedback as done
+        return 168;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

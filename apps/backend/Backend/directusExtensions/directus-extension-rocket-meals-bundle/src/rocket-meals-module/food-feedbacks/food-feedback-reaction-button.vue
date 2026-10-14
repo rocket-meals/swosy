@@ -2,7 +2,7 @@
 /**
  * The reaction of support to a food feedback, as split button: the main part reacts with one click
  * (thumbs up, or the reaction the AI recommends), the chevron opens a menu with every reaction and
- * "Reaktion entfernen". Without chat the reaction is the answer and the feedback counts as done.
+ * "Reaktion entfernen". A reaction does not close the feedback.
  */
 import { computed } from 'vue';
 import { FoodFeedbackReactionHelper, type FoodFeedbackReaction } from 'repo-depkit-common/src/FoodFeedbackReactionHelper';

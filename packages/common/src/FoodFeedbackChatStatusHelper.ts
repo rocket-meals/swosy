@@ -1,11 +1,10 @@
 import { ChatConversationState } from './ChatConversationState';
 import { ChatHelper } from './ChatHelper';
-import { FoodFeedbackReactionHelper } from './FoodFeedbackReactionHelper';
 import { RelationHelper, type RelationValue } from './RelationHelper';
 
 /** The state of a food feedback with a comment, from the point of view of support. */
 export enum FoodFeedbackChatStatus {
-  /** Commented, nobody has answered or reacted yet – there is no chat. */
+  /** Commented, nobody has answered or marked it as done yet – there is no chat. A reaction alone does not change that. */
   NEW = 'new',
   WAITING_FOR_SUPPORT = 'waiting_for_support',
   WAITING_FOR_USER = 'waiting_for_user',
@@ -27,7 +26,7 @@ export type FoodFeedbackWithChat = {
   comment?: string | null;
   profile?: { id: string | number; language?: string | { code?: string | null } | null } | string | number | null;
   chat?: { id: string | number; conversation_state?: string | null } | string | number | null;
-  /** A reaction of support (see `FoodFeedbackReactionHelper`): without chat it is the answer. */
+  /** A reaction of support (see `FoodFeedbackReactionHelper`). It does not change the status. */
   support_reaction?: string | null;
 };
 
@@ -40,8 +39,8 @@ export type DirectusFilterObject = Record<string, unknown>;
  * A feedback with a comment starts without chat. When support answers, a chat is created for it
  * (same shape as for app feedbacks, see {@link ChatHelper.buildSupportChat}) and linked via
  * `foods_feedbacks.chat`; from then on the chat's `conversation_state` tells where it stands.
- * Support can also just react (`foods_feedbacks.support_reaction`, e.g. a thumbs up for praise): a
- * feedback without chat but with a reaction is done, no chat is opened for it.
+ * Support can also react (`foods_feedbacks.support_reaction`, e.g. a thumbs up for praise). A reaction
+ * does not close the feedback: afterwards support still decides whether to answer or to mark it as done.
  * Used by the backend module "Rocket Meals" and available to the apps for the same view.
  */
 export class FoodFeedbackChatStatusHelper {
@@ -75,12 +74,12 @@ export class FoodFeedbackChatStatusHelper {
 
   /**
    * The status of a feedback; a chat in an unknown state counts as waiting for support. Without chat
-   * a reaction of support is the answer, so the feedback is done.
+   * the feedback is new, whether support already reacted or not.
    */
-  static getStatus(feedback: Pick<FoodFeedbackWithChat, 'chat' | 'support_reaction'>): FoodFeedbackChatStatus {
+  static getStatus(feedback: Pick<FoodFeedbackWithChat, 'chat'>): FoodFeedbackChatStatus {
     const chat = feedback.chat;
     if (!RelationHelper.isSet(chat as RelationValue)) {
-      return FoodFeedbackReactionHelper.hasReaction(feedback) ? FoodFeedbackChatStatus.RESOLVED : FoodFeedbackChatStatus.NEW;
+      return FoodFeedbackChatStatus.NEW;
     }
     const state = typeof chat === 'object' && chat !== null ? chat.conversation_state : undefined;
     switch (state) {
@@ -126,13 +125,11 @@ export class FoodFeedbackChatStatusHelper {
 
   /**
    * The Directus filter of a status filter alone, on `foods_feedbacks` – `undefined` for
-   * {@link FoodFeedbackChatFilter.ALL}. Like {@link getStatus}, a feedback without chat is new until
-   * support reacts, and done afterwards.
+   * {@link FoodFeedbackChatFilter.ALL}. Like {@link getStatus}, a feedback without chat is new, a
+   * reaction does not change that.
    */
   static buildStatusFilter(filter: FoodFeedbackChatFilter): DirectusFilterObject | undefined {
-    const withoutChat: DirectusFilterObject = { chat: { _null: true } };
-    const isNew: DirectusFilterObject = { _and: [withoutChat, { support_reaction: { _empty: true } }] };
-    const reactedWithoutChat: DirectusFilterObject = { _and: [withoutChat, { support_reaction: { _nempty: true } }] };
+    const isNew: DirectusFilterObject = { chat: { _null: true } };
     const inState = (state: ChatConversationState): DirectusFilterObject => ({ chat: { conversation_state: { _eq: state } } });
 
     switch (filter) {
@@ -145,7 +142,7 @@ export class FoodFeedbackChatStatusHelper {
       case FoodFeedbackChatFilter.WAITING_FOR_USER:
         return inState(ChatConversationState.WAITING_FOR_USER);
       case FoodFeedbackChatFilter.RESOLVED:
-        return { _or: [inState(ChatConversationState.RESOLVED), reactedWithoutChat] };
+        return inState(ChatConversationState.RESOLVED);
       case FoodFeedbackChatFilter.ALL:
         return undefined;
     }
