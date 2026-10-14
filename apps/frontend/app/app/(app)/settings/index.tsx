@@ -722,8 +722,8 @@ const Settings = () => {
 							showSeparator={showSeparator}
 						/>
 					)),
-				settingsRow('notification', translate(TranslationKeys.notification), (groupPosition, showSeparator) => (
-					<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={chevron} handleFunction={() => router.navigate('/notification')} groupPosition={groupPosition} showSeparator={showSeparator} />
+				settingsRow('notification', translate(TranslationKeys.own_food_feedbacks_title), (groupPosition, showSeparator) => (
+					<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="star" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.own_food_feedbacks_title)} rightIcon={chevron} handleFunction={() => router.navigate('/notification')} groupPosition={groupPosition} showSeparator={showSeparator} />
 				)),
 			],
 		};

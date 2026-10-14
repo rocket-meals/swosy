@@ -277,7 +277,8 @@ export function getVersionPatch() {
         // 157: common: FoodFeedbackReactionHelper, foods_feedbacks.support_reaction types
         // 158: hint above the food offers when the canteen reacted to a food feedback
         // 159: food feedback responses card: reactions bundled, chat messages, details modal
-        return 159;
+        // 160: notification screen becomes favorites, ratings & notifications with tabs and search
+        return 160;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

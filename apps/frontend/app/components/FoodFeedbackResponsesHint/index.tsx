@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { ChatHelper, DatabaseTypes, FoodFeedbackReactionHelper } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import OwnFoodFeedbackItem from '@/components/OwnFoodFeedbackItem';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UserHelper } from '@/helper/UserHelper';
@@ -16,9 +17,6 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { MARK_CHAT_AS_READ, UPDATE_PROFILE } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
 
-/** Comments are cut to this length in the details. */
-const COMMENT_EXCERPT_LENGTH = 120;
-
 type ThemeColors = { text: string; icon: string; placeholder: string; iconBg: string };
 
 /** Opens a chat, or the list of chats when there are several. */
@@ -30,15 +28,17 @@ function openChats(chats: readonly DatabaseTypes.Chats[]) {
 	router.push('/chats');
 }
 
-function excerptOf(text: string | null | undefined): string | null {
-	const trimmed = text?.trim();
-	if (!trimmed) {
-		return null;
-	}
-	return trimmed.length > COMMENT_EXCERPT_LENGTH ? `${trimmed.slice(0, COMMENT_EXCERPT_LENGTH).trimEnd()}…` : trimmed;
+function getGroupPosition(index: number, total: number): 'single' | 'top' | 'middle' | 'bottom' {
+	if (total === 1) return 'single';
+	if (index === 0) return 'top';
+	if (index === total - 1) return 'bottom';
+	return 'middle';
 }
 
-/** The details in the modal: every reaction with food and own comment, and the chats with a new message. */
+/**
+ * The details in the modal: only what is new, the chats with a new message and the new reactions, the
+ * latter as the same rows as the screen of the own ratings, which the button at the end opens.
+ */
 const FoodFeedbackResponsesDetails: React.FC<{
 	feedbacks: readonly DatabaseTypes.FoodsFeedbacks[];
 	chats: readonly DatabaseTypes.Chats[];
@@ -46,8 +46,10 @@ const FoodFeedbackResponsesDetails: React.FC<{
 	colors: ThemeColors;
 	openChatLabel: string;
 	newMessageLabel: string;
+	showAllLabel: string;
 	onOpenChats: (chats: readonly DatabaseTypes.Chats[]) => void;
-}> = ({ feedbacks, chats, language, colors, openChatLabel, newMessageLabel, onOpenChats }) => (
+	onShowAll: () => void;
+}> = ({ feedbacks, chats, language, colors, openChatLabel, newMessageLabel, showAllLabel, onOpenChats, onShowAll }) => (
 	<View style={styles.details}>
 		{chats.map(chat => (
 			<TouchableOpacity key={chat.id} style={[styles.detailRow, { backgroundColor: colors.iconBg }]} onPress={() => onOpenChats([chat])} accessibilityRole="button" accessibilityLabel={openChatLabel}>
@@ -61,22 +63,15 @@ const FoodFeedbackResponsesDetails: React.FC<{
 				<Octicons name="chevron-right" size={20} color={colors.icon} />
 			</TouchableOpacity>
 		))}
-		{feedbacks.map(feedback => {
-			const comment = excerptOf(feedback.comment);
-			return (
-				<View key={feedback.id} style={[styles.detailRow, { backgroundColor: colors.iconBg }]}>
-					<Text style={styles.detailEmoji} accessibilityElementsHidden importantForAccessibility="no">
-						{feedback.support_reaction}
-					</Text>
-					<View style={styles.detailText}>
-						<Text style={[styles.detailTitle, { color: colors.text }]} numberOfLines={2}>
-							{getFoodName(feedback.food as DatabaseTypes.Foods | null | undefined, language) ?? ''}
-						</Text>
-						{comment ? <Text style={[styles.detailSubtitle, { color: colors.placeholder }]}>{`„${comment}“`}</Text> : null}
-					</View>
-				</View>
-			);
-		})}
+		<View>
+			{feedbacks.map((feedback, index) => (
+				<OwnFoodFeedbackItem key={feedback.id} feedback={feedback} language={language} groupPosition={getGroupPosition(index, feedbacks.length)} />
+			))}
+		</View>
+		<TouchableOpacity style={styles.showAll} onPress={onShowAll} accessibilityRole="button">
+			<Text style={[styles.showAllText, { color: colors.text }]}>{showAllLabel}</Text>
+			<Octicons name="chevron-right" size={18} color={colors.icon} />
+		</TouchableOpacity>
 	</View>
 );
 
@@ -110,7 +105,7 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 		}
 		try {
 			const result = (await new FoodFeedbackHelper().fetchFoodFeedbacks(profileId, {
-				fields: ['id', 'comment', 'support_reaction', 'support_reaction_date', 'food.id', 'food.alias', 'food.translations.*'],
+				fields: ['id', 'comment', 'rating', 'notify', 'support_reaction', 'support_reaction_date', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'food.translations.*'],
 				filter: FoodFeedbackReactionHelper.buildNewReactionsFilter(profileId, seenUntil),
 				sort: ['-support_reaction_date'],
 				limit: 50,
@@ -171,6 +166,11 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 		void markReactionsSeen();
 	}, [markChatsRead, markReactionsSeen]);
 
+	const showAllFromModal = useCallback(() => {
+		closeModal();
+		router.push('/notification');
+	}, [closeModal]);
+
 	const openFromModal = useCallback(
 		(chatsToOpen: readonly DatabaseTypes.Chats[]) => {
 			closeModal();
@@ -191,12 +191,14 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 					colors={theme.screen}
 					openChatLabel={translate(TranslationKeys.food_feedback_responses_open_chat)}
 					newMessageLabel={translate(TranslationKeys.food_feedback_responses_new_message)}
+					showAllLabel={translate(TranslationKeys.own_food_feedbacks_show_all)}
 					onOpenChats={openFromModal}
+					onShowAll={showAllFromModal}
 				/>
 			),
 		});
 		void markReactionsSeen();
-	}, [showModal, translate, newFeedbacks, unreadChats, language, theme.screen, openFromModal, markReactionsSeen]);
+	}, [showModal, translate, newFeedbacks, unreadChats, language, theme.screen, openFromModal, showAllFromModal, markReactionsSeen]);
 
 	if (reactionCounts.length === 0 && unreadChats.length === 0) {
 		return null;
@@ -310,8 +312,16 @@ const styles = StyleSheet.create({
 		padding: 12,
 		borderRadius: 12,
 	},
-	detailEmoji: {
-		fontSize: 26,
+	showAll: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 6,
+		paddingVertical: 10,
+	},
+	showAllText: {
+		fontSize: 15,
+		fontWeight: '600',
 	},
 	detailText: {
 		flex: 1,

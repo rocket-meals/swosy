@@ -1,206 +1,237 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import styles from './styles';
-import { useTheme } from '@/hooks/useTheme';
-import { MaterialIcons } from '@expo/vector-icons';
-import { isWeb } from '@/constants/Constants';
-import { useLanguage } from '@/hooks/useLanguage';
-import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '@/redux/hooks';
-import { fetchFoodDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
-import { excerpt } from '@/constants/HelperFunctions';
-import { getTextFromTranslation } from '@/helper/resourceHelper';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { DatabaseTypes, CollectibleAt } from 'repo-depkit-common';
+import { useTheme } from '@/hooks/useTheme';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL } from '@/redux/Types/types';
-import animation from '@/assets/animations/notificationBell.json';
-import LottieView from 'lottie-react-native';
-import { useFocusEffect } from 'expo-router';
-import { replaceLottieColors } from '@/helper/animationHelper';
+import { getFoodName } from '@/helper/resourceHelper';
+import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import OwnFoodFeedbackItem from '@/components/OwnFoodFeedbackItem';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 
-const NotificationScreen = () => {
-	useSetPageTitle(TranslationKeys.notification);
+/** What the list is narrowed down to. */
+enum OwnFoodFeedbackTab {
+	ALL = 'all',
+	RATINGS = 'ratings',
+	COMMENTS = 'comments',
+	NOTIFICATIONS = 'notifications',
+}
+
+const TABS: readonly { tab: OwnFoodFeedbackTab; icon: React.ComponentProps<typeof MaterialCommunityIcons>['name']; labelKey: TranslationKeys }[] = [
+	{ tab: OwnFoodFeedbackTab.ALL, icon: 'format-list-bulleted', labelKey: TranslationKeys.own_food_feedbacks_tab_all },
+	{ tab: OwnFoodFeedbackTab.RATINGS, icon: 'star', labelKey: TranslationKeys.own_food_feedbacks_tab_ratings },
+	{ tab: OwnFoodFeedbackTab.COMMENTS, icon: 'chat', labelKey: TranslationKeys.comments },
+	{ tab: OwnFoodFeedbackTab.NOTIFICATIONS, icon: 'bell', labelKey: TranslationKeys.own_food_feedbacks_tab_notifications },
+];
+
+const FIELDS = ['*', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'food.translations.*'];
+
+function matchesTab(feedback: DatabaseTypes.FoodsFeedbacks, tab: OwnFoodFeedbackTab): boolean {
+	switch (tab) {
+		case OwnFoodFeedbackTab.RATINGS:
+			return typeof feedback.rating === 'number';
+		case OwnFoodFeedbackTab.COMMENTS:
+			return (feedback.comment ?? '').trim().length > 0;
+		case OwnFoodFeedbackTab.NOTIFICATIONS:
+			return !!feedback.notify;
+		default:
+			return true;
+	}
+}
+
+function getGroupPosition(index: number, total: number): 'single' | 'top' | 'middle' | 'bottom' {
+	if (total === 1) return 'single';
+	if (index === 0) return 'top';
+	if (index === total - 1) return 'bottom';
+	return 'middle';
+}
+
+/**
+ * "Favoriten, Bewertungen & Benachrichtigungen": every food the user rated, commented on or wants to be
+ * notified about, with the canteen's reaction to it. Tabs narrow it down, the search looks at the food
+ * name and the own comment. A tap opens the food, the bell switches the notification.
+ */
+const OwnFoodFeedbacksScreen = () => {
+	useSetPageTitle(TranslationKeys.own_food_feedbacks_title);
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
-	const dispatch = useDispatch();
-	const { language, primaryColor, appSettings } = useAppSelector((state) => state.settings);
-	const { profile } = useAppSelector((state) => state.authReducer);
+	const { translate, language } = useLanguage();
+	const dispatch = useAppDispatch();
+	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector(state => state.settings);
+	const profile = useAppSelector(state => state.authReducer.profile) as DatabaseTypes.Profiles | undefined;
+	const profileId = profile?.id;
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
-	const [foodWithFeedback, setFoodWithFeedback] = useState<any[]>([]);
-	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
-	const animationRef = useRef<LottieView>(null);
-	const [animationJson, setAnimationJson] = useState<any>(null);
-	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
-	const foodFeedbacks = useAppSelector((state) => state.food.ownFoodFeedbacks);
+	const [feedbacks, setFeedbacks] = useState<DatabaseTypes.FoodsFeedbacks[]>([]);
+	const [loaded, setLoaded] = useState(false);
+	const [activeTab, setActiveTab] = useState<OwnFoodFeedbackTab>(OwnFoodFeedbackTab.ALL);
+	const [search, setSearch] = useState('');
+	const tabColor = appSettings?.foods_area_color || primaryColor;
+	const tabTextColor = myContrastColor(tabColor, theme, mode === 'dark');
 
-	useFocusEffect(
-		useCallback(() => {
-			setAnimationJson(replaceLottieColors(animation, primaryColor));
-			return () => {
-				setAnimationJson(null);
-			};
-		}, [])
-	);
-
-	useFocusEffect(
-		useCallback(() => {
-			setAutoPlay(appSettings?.animations_auto_start); // Enable when entering
-
-			return () => {
-				setAutoPlay(false); // Reset when leaving
-				setAnimationJson(null);
-			};
-		}, [appSettings?.animations_auto_start])
-	);
-
-	useEffect(() => {
-		if (animationJson && autoPlay && animationRef.current) {
-			animationRef?.current?.play(); // Reset animation to ensure it starts fresh
+	const load = useCallback(async () => {
+		if (!profileId) {
+			setFeedbacks([]);
+			setLoaded(true);
+			return;
 		}
-	}, [animationJson, autoPlay]);
-
-	const renderLottie = useMemo(() => {
-		if (animationJson) {
-			return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay || false} loop={false} />;
-		}
-	}, [autoPlay, animationJson]);
-
-	// Fetch food details for all feedback
-	const getFoodDetails = async () => {
 		try {
-			const foodDetailsPromises = foodFeedbacks.map((feedback: any) =>
-				fetchFoodDetailsById(feedback.food).then(foodDetails => ({
-					...foodDetails,
-					feedback,
-				}))
-			);
-			let foodDetails = await Promise.all(foodDetailsPromises);
-			foodDetails = foodDetails.filter(food => food.feedback.notify === true);
-
-			setFoodWithFeedback(foodDetails);
+			const result = (await foodFeedbackHelper.fetchFoodFeedbacks(profileId, { fields: FIELDS, sort: ['-date_updated'] })) as DatabaseTypes.FoodsFeedbacks[];
+			setFeedbacks(result ?? []);
 		} catch (error) {
-			console.error('Error fetching food details:', error);
+			console.error('Loading own food feedbacks failed:', error);
+		} finally {
+			setLoaded(true);
 		}
-	};
+	}, [foodFeedbackHelper, profileId]);
 
-	// Update notification status
-	const updateFoodFeedbackNotification = async (feedbackData: DatabaseTypes.FoodsFeedbacks) => {
-		try {
-			const payload = {
-				...feedbackData,
-				notify: feedbackData?.notify ? null : true,
-			};
-			const updateFeedbackResult = (await foodFeedbackHelper.updateFoodFeedback(String(feedbackData?.food), profile?.id, payload)) as DatabaseTypes.FoodsFeedbacks;
-			if (updateFeedbackResult?.id) {
-				dispatch({
-					type: UPDATE_FOOD_FEEDBACK_LOCAL,
-					payload: updateFeedbackResult,
-				});
-			} else {
-				dispatch({
-					type: DELETE_FOOD_FEEDBACK_LOCAL,
-					payload: feedbackData?.id,
-				});
+	useFocusEffect(
+		useCallback(() => {
+			void load();
+		}, [load])
+	);
+
+	const toggleNotify = useCallback(
+		async (feedback: DatabaseTypes.FoodsFeedbacks) => {
+			if (!profileId) return;
+			const foodId = typeof feedback.food === 'object' && feedback.food !== null ? (feedback.food as DatabaseTypes.Foods).id : String(feedback.food);
+			// Sent with the food as id: the loaded food object must not go back to the server.
+			const payload = { ...feedback, food: foodId, notify: feedback.notify ? null : true } as DatabaseTypes.FoodsFeedbacks;
+			try {
+				const result = (await foodFeedbackHelper.updateFoodFeedback(foodId, profileId, payload)) as DatabaseTypes.FoodsFeedbacks | null;
+				if (result?.id) {
+					dispatch({ type: UPDATE_FOOD_FEEDBACK_LOCAL, payload: result });
+					setFeedbacks(current => current.map(entry => (entry.id === feedback.id ? { ...entry, notify: result.notify } : entry)));
+				} else {
+					dispatch({ type: DELETE_FOOD_FEEDBACK_LOCAL, payload: feedback.id });
+					setFeedbacks(current => current.filter(entry => entry.id !== feedback.id));
+				}
+			} catch (error) {
+				console.error('Switching the food notification failed:', error);
 			}
-		} catch (e) {
-			console.error('Error creating feedback:', e);
-		}
-	};
+		},
+		[dispatch, foodFeedbackHelper, profileId]
+	);
 
-	useEffect(() => {
-		if (foodFeedbacks.length > 0) {
-			void getFoodDetails();
-		}
-	}, [foodFeedbacks]);
+	const counts = useMemo(() => Object.fromEntries(TABS.map(({ tab }) => [tab, feedbacks.filter(feedback => matchesTab(feedback, tab)).length])) as Record<OwnFoodFeedbackTab, number>, [feedbacks]);
 
-	useEffect(() => {
-		const onChange = ({ window }: { window: { width: number } }) => setWindowWidth(window.width);
-		const subscription = Dimensions.addEventListener('change', onChange);
-
-		return () => subscription.remove();
-	}, []);
+	const visible = useMemo(() => {
+		const query = search.trim().toLowerCase();
+		return feedbacks.filter(feedback => {
+			if (!matchesTab(feedback, activeTab)) return false;
+			if (!query) return true;
+			const name = getFoodName(feedback.food as DatabaseTypes.Foods | null | undefined, language) ?? '';
+			return name.toLowerCase().includes(query) || (feedback.comment ?? '').toLowerCase().includes(query);
+		});
+	}, [feedbacks, activeTab, search, language]);
 
 	return (
-		<ScrollView style={{ flex: 1, backgroundColor: theme.screen.background }}>
-			<View
-				style={{
-					...styles.container,
-					backgroundColor: theme.screen.background,
-				}}
-			>
-				<View style={styles.imageContainer}>{renderLottie}</View>
-				<View style={[styles.infoContainer, { width: windowWidth > 600 ? '90%' : '100%' }]}>
-					<Text
-						style={{
-							...styles.label,
-							color: theme.header.text,
-							fontSize: windowWidth < 500 ? 16 : 18,
+		<ScrollView style={{ flex: 1, backgroundColor: theme.screen.background }} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+			<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabs}>
+				{TABS.map(({ tab, icon, labelKey }) => {
+					const active = tab === activeTab;
+					return (
+						<TouchableOpacity
+							key={tab}
+							onPress={() => setActiveTab(tab)}
+							style={[styles.tab, { backgroundColor: active ? tabColor : theme.screen.iconBg }]}
+							accessibilityRole="tab"
+							accessibilityState={{ selected: active }}
+						>
+							<MaterialCommunityIcons name={icon} size={18} color={active ? tabTextColor : theme.screen.icon} />
+							<Text style={[styles.tabText, { color: active ? tabTextColor : theme.screen.text }]}>{`${translate(labelKey)} (${counts[tab]})`}</Text>
+						</TouchableOpacity>
+					);
+				})}
+			</ScrollView>
+
+			<View style={[styles.search, { backgroundColor: theme.screen.iconBg }]}>
+				<MaterialCommunityIcons name="magnify" size={20} color={theme.screen.icon} />
+				<TextInput
+					value={search}
+					onChangeText={setSearch}
+					placeholder={translate(TranslationKeys.search)}
+					placeholderTextColor={theme.screen.placeholder}
+					style={[styles.searchInput, { color: theme.screen.text }]}
+					accessibilityLabel={translate(TranslationKeys.search)}
+				/>
+				{search.length > 0 && (
+					<TouchableOpacity onPress={() => setSearch('')} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.hide)} hitSlop={8}>
+						<MaterialCommunityIcons name="close-circle" size={18} color={theme.screen.icon} />
+					</TouchableOpacity>
+				)}
+			</View>
+
+			{activeTab === OwnFoodFeedbackTab.NOTIFICATIONS && <Text style={[styles.intro, { color: theme.screen.text }]}>{translate(TranslationKeys.notification_index_introduction)}</Text>}
+
+			<View>
+				{visible.map((feedback, index) => (
+					<OwnFoodFeedbackItem
+						key={feedback.id}
+						feedback={feedback}
+						language={language}
+						groupPosition={getGroupPosition(index, visible.length)}
+						onPress={() => {
+							const foodId = typeof feedback.food === 'object' && feedback.food !== null ? (feedback.food as DatabaseTypes.Foods).id : feedback.food;
+							if (foodId) router.push({ pathname: '/(app)/foodoffers/details', params: { foodId: String(foodId) } });
 						}}
-					>
-						{translate(TranslationKeys.notification_index_introduction)}
-					</Text>
-					<View style={styles.infoRow}></View>
-					<Text
-						style={{
-							...styles.value,
-							color: theme.header.text,
-							fontSize: windowWidth < 500 ? 16 : 18,
-						}}
-					>
-						{translate(TranslationKeys.foods)}
-					</Text>
-					{foodWithFeedback?.map((item) => (
-							<View
-								style={{
-									...styles.infoRow,
-									backgroundColor: theme.screen.iconBg,
-								}}
-								key={item.id ?? item.feedback?.food}
-							>
-								<View style={styles.iconLabelContainer}>
-									<Text
-										style={{
-											...styles.label,
-											color: theme.screen.text,
-											fontSize: windowWidth < 500 ? 16 : 18,
-										}}
-									>
-										{excerpt(getTextFromTranslation(item.data?.translations, language), 90)}
-									</Text>
-								</View>
-								{item?.feedback?.notify ? (
-									<TouchableOpacity
-										style={{
-											...styles.bellIconAtiveContainer,
-											backgroundColor: primaryColor,
-											padding: isWeb ? 12 : 8,
-										}}
-										onPress={() => updateFoodFeedbackNotification(item.feedback)}
-									>
-										<MaterialIcons name="notifications-active" size={24} color={theme.light} />
-									</TouchableOpacity>
-								) : (
-									<TouchableOpacity
-										style={{
-											...styles.bellIconContainer,
-											borderColor: primaryColor,
-											padding: isWeb ? 12 : 8,
-										}}
-										onPress={() => updateFoodFeedbackNotification(item.feedback)}
-									>
-										<MaterialIcons name="notifications" size={24} color={theme.screen.icon} />
-									</TouchableOpacity>
-								)}
-							</View>
-                                                ))}
-                                </View>
-                                <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_notification} />
-                        </View>
-                </ScrollView>
-        );
+						onToggleNotify={() => void toggleNotify(feedback)}
+						toggleNotifyLabel={translate(TranslationKeys.notification)}
+					/>
+				))}
+				{loaded && visible.length === 0 && <Text style={[styles.empty, { color: theme.screen.placeholder }]}>{translate(TranslationKeys.nothing_found)}</Text>}
+			</View>
+			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_notification} />
+		</ScrollView>
+	);
 };
 
-export default NotificationScreen;
+const styles = StyleSheet.create({
+	content: {
+		width: '100%',
+		maxWidth: 800,
+		alignSelf: 'center',
+		padding: 12,
+		gap: 12,
+	},
+	tabs: {
+		gap: 8,
+	},
+	tab: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+		paddingHorizontal: 12,
+		paddingVertical: 8,
+		borderRadius: 20,
+	},
+	tabText: {
+		fontSize: 14,
+		fontWeight: '600',
+	},
+	search: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		paddingHorizontal: 12,
+		borderRadius: 12,
+	},
+	searchInput: {
+		flex: 1,
+		paddingVertical: 10,
+		fontSize: 15,
+	},
+	intro: {
+		fontSize: 14,
+	},
+	empty: {
+		textAlign: 'center',
+		paddingVertical: 24,
+	},
+});
+
+export default OwnFoodFeedbacksScreen;

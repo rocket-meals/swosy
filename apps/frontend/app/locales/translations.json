@@ -9128,5 +9128,55 @@
     "ru": "Открыть чат",
     "tr": "Sohbeti aç",
     "zh": "打开聊天"
+  },
+  "own_food_feedbacks_title": {
+    "de": "Favoriten, Bewertungen & Benachrichtigungen",
+    "en": "Favorites, ratings & notifications",
+    "ar": "المفضلة والتقييمات والإشعارات",
+    "es": "Favoritos, valoraciones y notificaciones",
+    "fr": "Favoris, notes et notifications",
+    "ru": "Избранное, оценки и уведомления",
+    "tr": "Favoriler, değerlendirmeler ve bildirimler",
+    "zh": "收藏、评分和通知"
+  },
+  "own_food_feedbacks_tab_all": {
+    "de": "Alle",
+    "en": "All",
+    "ar": "الكل",
+    "es": "Todos",
+    "fr": "Tous",
+    "ru": "Все",
+    "tr": "Tümü",
+    "zh": "全部"
+  },
+  "own_food_feedbacks_tab_ratings": {
+    "de": "Bewertungen",
+    "en": "Ratings",
+    "ar": "التقييمات",
+    "es": "Valoraciones",
+    "fr": "Notes",
+    "ru": "Оценки",
+    "tr": "Değerlendirmeler",
+    "zh": "评分"
+  },
+  "own_food_feedbacks_tab_notifications": {
+    "de": "Benachrichtigungen",
+    "en": "Notifications",
+    "ar": "الإشعارات",
+    "es": "Notificaciones",
+    "fr": "Notifications",
+    "ru": "Уведомления",
+    "tr": "Bildirimler",
+    "zh": "通知"
+  },
+  "own_food_feedbacks_show_all": {
+    "de": "Alle meine Bewertungen anzeigen",
+    "en": "Show all my ratings",
+    "ar": "عرض كل تقييماتي",
+    "es": "Ver todas mis valoraciones",
+    "fr": "Voir toutes mes notes",
+    "ru": "Показать все мои оценки",
+    "tr": "Tüm değerlendirmelerimi göster",
+    "zh": "查看我的全部评分"
   }
 }
