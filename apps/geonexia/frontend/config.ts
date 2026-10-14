@@ -103,7 +103,8 @@ export function getVersionPatch() {
 	// 81: common: FoodFeedbackReactionHelper.groupReactions, ChatHelper.isFoodFeedbackChat
 	// 82: common: FoodFeedbackReactionHelper.isWithinHintWindow
 	// 83: common: LegalEntities (company data for imprints and legal documents)
-	return 83;
+	// 84: common: a support reaction alone no longer marks a food feedback as done
+	return 84;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

@@ -48,8 +48,8 @@ export class FoodFeedbackChatActions {
   }
 
   /**
-   * Sets the reaction of support (`null` removes it). No chat is created: without chat the reaction is
-   * the answer and the feedback counts as done, see `FoodFeedbackChatStatusHelper.getStatus`.
+   * Sets the reaction of support (`null` removes it). No chat is created and the status stays as it is:
+   * support still answers or marks the feedback as done, see `FoodFeedbackChatStatusHelper.getStatus`.
    */
   static async setReaction(api: FoodFeedbackApiClient, feedback: Pick<FoodFeedbackListItem, 'id'>, reaction: FoodFeedbackReaction | null): Promise<void> {
     await api.patch(`${FoodFeedbackChatHelper.FOOD_FEEDBACKS_ENDPOINT}/${feedback.id}`, FoodFeedbackReactionHelper.buildUpdate(reaction));

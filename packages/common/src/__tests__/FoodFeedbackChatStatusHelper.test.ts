@@ -15,9 +15,8 @@ describe('FoodFeedbackChatStatusHelper', () => {
       expect(FoodFeedbackChatStatusHelper.getStatus({ chat: { id: 'c', conversation_state: ChatConversationState.WAITING_FOR_SUPPORT } })).toBe(FoodFeedbackChatStatus.WAITING_FOR_SUPPORT);
     });
 
-    it('is done without a chat once support reacted', () => {
-      expect(FoodFeedbackChatStatusHelper.getStatus({ chat: null, support_reaction: '👍' })).toBe(FoodFeedbackChatStatus.RESOLVED);
-      expect(FoodFeedbackChatStatusHelper.getStatus({ chat: null, support_reaction: '  ' })).toBe(FoodFeedbackChatStatus.NEW);
+    it('stays new without a chat when support only reacted', () => {
+      expect(FoodFeedbackChatStatusHelper.getStatus({ chat: null, support_reaction: '👍' })).toBe(FoodFeedbackChatStatus.NEW);
     });
 
     it('follows the chat and not the reaction once there is a chat', () => {
@@ -45,10 +44,9 @@ describe('FoodFeedbackChatStatusHelper', () => {
       }
     });
 
-    const isNew = { _and: [{ chat: { _null: true } }, { support_reaction: { _empty: true } }] };
-    const reactedWithoutChat = { _and: [{ chat: { _null: true } }, { support_reaction: { _nempty: true } }] };
+    const isNew = { chat: { _null: true } };
 
-    it('open means new (no chat, no reaction) or waiting for support', () => {
+    it('open means new (no chat) or waiting for support', () => {
       expect(FoodFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.OPEN)).toEqual({
         _and: [hasComment, { _or: [isNew, { chat: { conversation_state: { _eq: 'waiting_for_support' } } }] }],
       });
@@ -60,7 +58,7 @@ describe('FoodFeedbackChatStatusHelper', () => {
         _and: [hasComment, { chat: { conversation_state: { _eq: 'waiting_for_user' } } }],
       });
       expect(FoodFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.RESOLVED)).toEqual({
-        _and: [hasComment, { _or: [{ chat: { conversation_state: { _eq: 'resolved' } } }, reactedWithoutChat] }],
+        _and: [hasComment, { chat: { conversation_state: { _eq: 'resolved' } } }],
       });
       expect(FoodFeedbackChatStatusHelper.buildFilter(FoodFeedbackChatFilter.ALL)).toEqual({ _and: [hasComment] });
     });
@@ -80,11 +78,11 @@ describe('FoodFeedbackChatStatusHelper', () => {
       expect(FoodFeedbackChatStatusHelper.matchesFilter(answered, FoodFeedbackChatFilter.ALL)).toBe(true);
     });
 
-    it('counts a reaction without chat as done, not as open', () => {
+    it('keeps a reaction without chat open until support answers or marks it as done', () => {
       const reacted = { comment: 'Sehr lecker', chat: null, support_reaction: '👍' };
-      expect(FoodFeedbackChatStatusHelper.matchesFilter(reacted, FoodFeedbackChatFilter.OPEN)).toBe(false);
-      expect(FoodFeedbackChatStatusHelper.matchesFilter(reacted, FoodFeedbackChatFilter.NEW)).toBe(false);
-      expect(FoodFeedbackChatStatusHelper.matchesFilter(reacted, FoodFeedbackChatFilter.RESOLVED)).toBe(true);
+      expect(FoodFeedbackChatStatusHelper.matchesFilter(reacted, FoodFeedbackChatFilter.OPEN)).toBe(true);
+      expect(FoodFeedbackChatStatusHelper.matchesFilter(reacted, FoodFeedbackChatFilter.NEW)).toBe(true);
+      expect(FoodFeedbackChatStatusHelper.matchesFilter(reacted, FoodFeedbackChatFilter.RESOLVED)).toBe(false);
     });
 
     it('never matches a feedback without comment', () => {

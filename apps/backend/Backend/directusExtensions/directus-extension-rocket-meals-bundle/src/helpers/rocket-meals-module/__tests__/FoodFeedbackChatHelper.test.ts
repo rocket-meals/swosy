@@ -285,24 +285,17 @@ describe('reactions of support', () => {
     }
   });
 
-  it('does not offer to reopen a feedback that is only done by a reaction', () => {
+  it('keeps a feedback with only a reaction open: it can still be marked as done, not reopened', () => {
     expect(FoodFeedbackChatHelper.canReopen({ id: 'f', chat: null, support_reaction: '👍' })).toBe(false);
     expect(FoodFeedbackChatHelper.canReopen({ id: 'f', chat: { id: 'c', conversation_state: 'resolved' } })).toBe(true);
-    expect(FoodFeedbackChatHelper.canMarkResolved({ id: 'f', chat: null, support_reaction: '👍', profile: 'p' })).toBe(false);
+    expect(FoodFeedbackChatHelper.canMarkResolved({ id: 'f', chat: null, support_reaction: '👍', profile: 'p' })).toBe(true);
   });
 
-  it('a reaction without chat uses up a recommendation to mark as done, not one to reply', () => {
-    expect(FoodFeedbackChatHelper.isResolvedByReaction({ chat: null }, answered)).toBe(true);
-    expect(FoodFeedbackChatHelper.isResolvedByReaction({ chat: 'c' }, answered)).toBe(false);
-    expect(FoodFeedbackChatHelper.isResolvedByReaction({ chat: null }, reply)).toBe(false);
-    expect(FoodFeedbackChatHelper.isResolvedByReaction({ chat: null }, null)).toBe(false);
-  });
-
-  it('highlights the reaction instead of "mark as done" when the AI recommends it as answer', () => {
-    expect(FoodFeedbackChatHelper.isReactionHighlighted({ chat: null }, answered)).toBe(true);
-    expect(FoodFeedbackChatHelper.isReactionHighlighted({ chat: null, support_reaction: '👍' }, answered)).toBe(false);
-    expect(FoodFeedbackChatHelper.isReactionHighlighted({ chat: null }, { ...answered, action_payload: null })).toBe(false);
-    expect(FoodFeedbackChatHelper.isReactionHighlighted({ chat: null }, reply)).toBe(false);
+  it('highlights the reaction before "mark as done" when the AI recommends both, until the reaction is given', () => {
+    expect(FoodFeedbackChatHelper.isReactionHighlighted({}, answered)).toBe(true);
+    expect(FoodFeedbackChatHelper.isReactionHighlighted({ support_reaction: '👍' }, answered)).toBe(false);
+    expect(FoodFeedbackChatHelper.isReactionHighlighted({}, { ...answered, action_payload: null })).toBe(false);
+    expect(FoodFeedbackChatHelper.isReactionHighlighted({}, reply)).toBe(false);
   });
 
   it('sets the reaction with its date and no chat', async () => {

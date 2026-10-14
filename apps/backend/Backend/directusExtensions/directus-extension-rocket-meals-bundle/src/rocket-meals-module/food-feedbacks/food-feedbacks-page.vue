@@ -10,9 +10,9 @@
  * draft can be taken straight into the chat, and only the recommended button is highlighted. Marking as
  * done or answering closes it: accepted when that was recommended, rejected otherwise or when dismissed.
  *
- * Every row can also get a reaction of support (thumbs up by default, others behind the chevron). Without
- * chat the reaction is the answer and the feedback is done, no chat is opened. A reaction the AI
- * recommends is preselected and, when it is the way to mark the feedback as done, highlighted.
+ * Every row can also get a reaction of support (thumbs up by default, others behind the chevron). A
+ * reaction opens no chat and does not close the feedback: support then answers or marks it as done. A
+ * reaction the AI recommends is preselected and, when the AI recommends to mark as done, highlighted first.
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -224,7 +224,7 @@ function getRecommendedReactionText(feedback: FoodFeedbackListItem): string | nu
   return reaction ? translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_reaction, { reaction: `${reaction} ${translate(FoodFeedbackChatHelper.getReactionLabelKey(reaction))}` }) : null;
 }
 
-/** Sets or removes the reaction; a recommendation to mark as done is used up when that resolves the feedback. */
+/** Sets or removes the reaction; the feedback stays open, so the recommendation stays too. */
 function react(feedback: FoodFeedbackListItem, reaction: FoodFeedbackReaction | null) {
   return runUpdate(
     [feedback],
@@ -234,9 +234,6 @@ function react(feedback: FoodFeedbackListItem, reaction: FoodFeedbackReaction | 
       } catch (error) {
         console.error('[rocket-meals-module] setting the reaction failed', error);
         return { failedIds: [feedback.id] };
-      }
-      if (reaction && FoodFeedbackChatHelper.isResolvedByReaction(feedback, getRecommendation(feedback))) {
-        await closeRecommendations([feedback], ActionRecommendationAction.MARK_RESOLVED);
       }
       return { failedIds: [] };
     },

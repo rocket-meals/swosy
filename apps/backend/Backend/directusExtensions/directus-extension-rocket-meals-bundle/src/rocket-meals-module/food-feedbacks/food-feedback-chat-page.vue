@@ -7,8 +7,8 @@
  * the feedback, so the author finds it in the app. Messages written here carry no profile – that
  * is how the app and `chat-conversation-state-hook` tell support messages from user messages.
  *
- * Besides answering, support can react (thumbs up by default, others behind the chevron). Without chat
- * the reaction is the answer and the feedback is done, no chat is created for it.
+ * Besides answering, support can react (thumbs up by default, others behind the chevron). A reaction
+ * creates no chat and does not close the feedback: support then answers or marks it as done.
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -190,7 +190,7 @@ const recommendedReactionText = computed(() =>
 const reactionHighlighted = computed(() => !!feedback.value && FoodFeedbackChatHelper.isReactionHighlighted(feedback.value, recommendation.value));
 const reacting = ref(false);
 
-/** Sets or removes the reaction; a recommendation to mark as done is used up when that resolves the feedback. */
+/** Sets or removes the reaction; the feedback stays open, so the recommendation stays too. */
 async function react(reaction: FoodFeedbackReaction | null) {
   if (!feedback.value || reacting.value) {
     return;
@@ -198,9 +198,6 @@ async function react(reaction: FoodFeedbackReaction | null) {
   reacting.value = true;
   try {
     await FoodFeedbackChatActions.setReaction(api, feedback.value, reaction);
-    if (reaction && FoodFeedbackChatHelper.isResolvedByReaction(feedback.value, recommendation.value)) {
-      await closeRecommendation(ActionRecommendationAction.MARK_RESOLVED);
-    }
     await loadFeedback();
   } catch (error) {
     console.error('[rocket-meals-module] setting the reaction failed', error);
