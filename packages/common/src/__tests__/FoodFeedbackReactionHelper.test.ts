@@ -84,4 +84,12 @@ describe('FoodFeedbackReactionHelper', () => {
     ]);
     expect(FoodFeedbackReactionHelper.groupReactions([])).toEqual([]);
   });
+
+  it('only announces things of the last days in the hint', () => {
+    const now = new Date('2026-10-14T12:00:00.000Z');
+    expect(FoodFeedbackReactionHelper.isWithinHintWindow('2026-10-13T12:00:00.000Z', now)).toBe(true);
+    expect(FoodFeedbackReactionHelper.isWithinHintWindow('2026-09-30T11:00:00.000Z', now)).toBe(false);
+    expect(FoodFeedbackReactionHelper.isWithinHintWindow(null, now)).toBe(false);
+    expect(FoodFeedbackReactionHelper.isWithinHintWindow('not a date', now)).toBe(false);
+  });
 });

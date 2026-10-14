@@ -281,7 +281,8 @@ export function getVersionPatch() {
         // 161: own food feedbacks as cards: from you / from the canteen, chat button
         // 162: responses modal lists feedbacks with a new chat message first
         // 163: own comment in the food feedback card in italics and quotation marks
-        return 163;
+        // 164: food feedback responses card only announces chats of the last 14 days
+        return 164;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

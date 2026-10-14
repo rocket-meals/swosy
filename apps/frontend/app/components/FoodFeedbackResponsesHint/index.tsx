@@ -72,6 +72,8 @@ const FoodFeedbackResponsesDetails: React.FC<{
  * on the user's food feedbacks since they last looked, which can be days after the comment:
  * - new reactions of the canteen (`foods_feedbacks.support_reaction`) as e.g. 👍 3 😋 1,
  * - chats of food feedbacks with a new message.
+ * Both only of the last 14 days (`FoodFeedbackReactionHelper.NEW_REACTION_MAX_AGE_DAYS`), so an old
+ * unread chat is not announced after an update; everything stays on the screen of the own ratings.
  * A tap opens the details; the "x" hides it. Seen reactions are stored in
  * `profiles.food_feedback_reactions_seen_until` and chats are marked as read, both on the server, so
  * nothing comes back after a new login or on another device. Hidden for guests and when nothing is new.
@@ -89,7 +91,11 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 	const profileId = profile?.id;
 	const seenUntil = profile?.food_feedback_reactions_seen_until ?? null;
 	const [feedbacks, setFeedbacks] = useState<DatabaseTypes.FoodsFeedbacks[]>([]);
-	const unreadChats = useMemo(() => (isAnonymousUser ? [] : chats.filter(chat => ChatHelper.isFoodFeedbackChat(chat) && isChatUnread(chat))), [chats, isChatUnread, isAnonymousUser]);
+	/** Food feedback chats with an unread message of the last days; older ones are only on the screen of the own ratings. */
+	const unreadChats = useMemo(
+		() => (isAnonymousUser ? [] : chats.filter(chat => ChatHelper.isFoodFeedbackChat(chat) && isChatUnread(chat) && FoodFeedbackReactionHelper.isWithinHintWindow(getChatTimestamp(chat)))),
+		[chats, isChatUnread, isAnonymousUser]
+	);
 	/** The feedbacks of the chats with a new message, loaded with the new reactions so the modal can show them as cards. */
 	const unreadChatFeedbackIds = useMemo(() => unreadChats.flatMap(chat => (chat.food_feedbacks ?? []).map(entry => String(typeof entry === 'object' && entry !== null ? (entry as { id: string }).id : entry))), [unreadChats]);
 	const unreadChatFeedbackKey = unreadChatFeedbackIds.join(',');
