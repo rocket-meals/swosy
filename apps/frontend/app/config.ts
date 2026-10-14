@@ -279,7 +279,8 @@ export function getVersionPatch() {
         // 159: food feedback responses card: reactions bundled, chat messages, details modal
         // 160: notification screen becomes favorites, ratings & notifications with tabs and search
         // 161: own food feedbacks as cards: from you / from the canteen, chat button
-        return 161;
+        // 162: responses modal lists feedbacks with a new chat message first
+        return 162;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

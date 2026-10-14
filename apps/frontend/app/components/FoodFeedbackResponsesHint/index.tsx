@@ -129,8 +129,11 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 	const newFeedbacks = useMemo(() => feedbacks.filter(feedback => FoodFeedbackReactionHelper.isNewReaction(feedback, seenUntil)), [feedbacks, seenUntil]);
 	const reactionCounts = useMemo(() => FoodFeedbackReactionHelper.groupReactions(newFeedbacks), [newFeedbacks]);
 	const chatsWithoutFeedback = useMemo(() => unreadChats.filter(chat => !feedbacks.some(feedback => String(feedback.chat) === String(chat.id))), [unreadChats, feedbacks]);
-	/** In the modal: the new reactions first, then the feedbacks that only have a new chat message. */
-	const modalFeedbacks = useMemo(() => [...newFeedbacks, ...feedbacks.filter(feedback => !newFeedbacks.includes(feedback) && unreadChatFeedbackIds.includes(String(feedback.id)))], [newFeedbacks, feedbacks, unreadChatFeedbackIds]);
+	/** In the modal: feedbacks with a new chat message first (the canteen may be waiting for an answer), then the new reactions. */
+	const modalFeedbacks = useMemo(() => {
+		const withNewMessage = feedbacks.filter(feedback => unreadChatFeedbackIds.includes(String(feedback.id)));
+		return [...withNewMessage, ...newFeedbacks.filter(feedback => !withNewMessage.includes(feedback))];
+	}, [newFeedbacks, feedbacks, unreadChatFeedbackIds]);
 	const latestFoodName = newFeedbacks[0] ? getFoodName(newFeedbacks[0].food as DatabaseTypes.Foods | null | undefined, language) : null;
 
 	const markReactionsSeen = useCallback(async () => {
