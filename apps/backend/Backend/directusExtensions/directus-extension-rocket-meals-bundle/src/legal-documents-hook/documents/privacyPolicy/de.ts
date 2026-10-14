@@ -210,7 +210,7 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 	Damit wir dir die App zur Verfügung stellen können, arbeiten wir mit verschiedenen Dienstleistern zusammen, die uns bei der Bereitstellung der App unterstützen. Diese Dienstleister sind sorgfältig ausgewählt und beauftragt, sind an unsere Weisungen gebunden und werden regelmäßig kontrolliert. Sie verarbeiten personenbezogene Daten nur in unserem Auftrag und strikt nach unseren Weisungen. Die Dienstleister werden von uns nur dann beauftragt, wenn sie hinreichend Garantien dafür bieten, dass geeignete technische und organisatorische Maßnahmen so durchgeführt werden, dass die Verarbeitung im Einklang mit den Anforderungen der DSGVO erfolgt und der Schutz deiner Rechte gewährleistet ist.
 
 
-	### Zusätzliche Weitergabe an {{customer.name}}
+	### Zusätzliche Weitergabe an das {{customer.name}}
 
 		Die App und die Webseite wurden in Zusammenarbeit mit dem Studierendenwerk entwickelt. Wir als {{operator.name}} fungieren zwar als Herausgeber der App, jedoch stammen die Inhalte hauptsächlich vom Studierendenwerk. Um die Services des Studierendenwerks, wie z.B. das Speiseangebot durch Speiserückmeldungen, zu verbessern, teilen wir die hier gelisteten Daten mit dem Studierendenwerk. Das Studierendenwerk hat somit Zugriff auf diese Daten, um deren Angebote und Dienstleistungen besser auf die Bedürfnisse der Studierenden anzupassen.
 

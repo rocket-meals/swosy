@@ -56,6 +56,14 @@ const STUDIERENDENWERK_OSNABRUECK: CustomerLegalEntity = {
   privacyPolicyUrl: 'https://www.studentenwerk-osnabrueck.de/de/datenschutzerklaerung.html',
 };
 
+const STUDENTENWERK_HANNOVER: CustomerLegalEntity = {
+  name: 'Studentenwerk Hannover',
+  legalForm: 'Anstalt des öffentlichen Rechts',
+  phone: '(0511) 76-88022',
+  email: 'info@studentenwerk-hannover.de',
+  privacyPolicyUrl: 'https://www.studentenwerk-hannover.de/datenschutz',
+};
+
 /**
  * The customer per server. A `Record` so a new customer in `SyncForCustomerEnum` has to be added
  * here too. `null` means: no data yet, the server keeps its legal documents untouched.
@@ -64,7 +72,7 @@ export const CUSTOMER_LEGAL_ENTITIES: Record<SyncForCustomerEnum, CustomerLegalE
   // The test system mirrors the Osnabrück app.
   [SyncForCustomerEnum.TEST]: STUDIERENDENWERK_OSNABRUECK,
   [SyncForCustomerEnum.OSNABRUECK]: STUDIERENDENWERK_OSNABRUECK,
-  [SyncForCustomerEnum.HANNOVER]: null,
+  [SyncForCustomerEnum.HANNOVER]: STUDENTENWERK_HANNOVER,
   [SyncForCustomerEnum.AACHEN]: null,
   [SyncForCustomerEnum.MUENSTER]: null,
 };
