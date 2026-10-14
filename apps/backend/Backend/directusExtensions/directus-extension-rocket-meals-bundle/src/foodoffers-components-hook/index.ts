@@ -33,17 +33,8 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, ({ fi
     // Since Directus 11.13 this filter runs before the permission check - only delete the component foodoffers if the delete is allowed
     if (junctionIds && Array.isArray(junctionIds) && junctionIds.length > 0 && (await DeletePermissionHelper.canDeleteAll(apiContext, eventContext, CollectionNames.FOODOFFER_COMPONENTS, junctionIds))) {
       try {
-        const componentsHelper = myDatabaseHelper.getFoodofferComponentsHelper();
-        const junctionRows = await componentsHelper.readByQuery({
-          filter: { id: { _in: junctionIds } },
-          fields: ['component_foodoffers_id'],
-          limit: -1,
-        });
-
-        const componentFoodofferIds = junctionRows
-          .map(row => (typeof row.component_foodoffers_id === 'string' ? row.component_foodoffers_id : null))
-          .filter((id): id is string => !!id);
-
+        // Components still used by another parent stay, only the junction row goes
+        const componentFoodofferIds = await FoodofferComponentsCleanupHelper.getComponentFoodofferIdsOfJunctionRows(myDatabaseHelper, junctionIds);
         if (componentFoodofferIds.length > 0) {
           const foodoffersHelper = myDatabaseHelper.getFoodoffersHelper();
           await foodoffersHelper.deleteMany(componentFoodofferIds);

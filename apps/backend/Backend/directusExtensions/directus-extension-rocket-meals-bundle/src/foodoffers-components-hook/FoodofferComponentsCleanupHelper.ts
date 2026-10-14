@@ -18,22 +18,61 @@ export class FoodofferComponentsCleanupHelper {
   static readonly MIN_AGE_MS = 60 * 60 * 1000;
 
   /**
-   * Ids of the component foodoffers linked to the given parent foodoffers. Parents themselves are excluded, so a delete
-   * of a parent together with its components does not delete anything twice.
+   * Ids of the component foodoffers to delete together with the given parent foodoffers: their components that no other
+   * parent uses. A component shared with another parent keeps existing, only its junction row to the deleted parent goes
+   * (via the database cascade). Parents themselves are excluded, so nothing is deleted twice.
    */
   static async getComponentFoodofferIdsOfParents(myDatabaseHelper: MyDatabaseHelper, parentFoodofferIds: (string | number)[]): Promise<string[]> {
     if (parentFoodofferIds.length === 0) {
       return [];
     }
+    const parentIds = parentFoodofferIds.map(String);
     const junctionRows = await myDatabaseHelper.getFoodofferComponentsHelper().readByQuery({
-      filter: { parent_foodoffers_id: { _in: parentFoodofferIds.map(String) } },
+      filter: { parent_foodoffers_id: { _in: parentIds } },
       fields: ['component_foodoffers_id'],
       limit: -1,
     });
-    const parentIdSet = new Set(parentFoodofferIds.map(String));
-    const componentIds = junctionRows
-      .map(row => (typeof row.component_foodoffers_id === 'string' ? row.component_foodoffers_id : null))
-      .filter((id): id is string => !!id && !parentIdSet.has(id));
+    const parentIdSet = new Set(parentIds);
+    const componentIds = FoodofferComponentsCleanupHelper.getComponentIds(junctionRows).filter(id => !parentIdSet.has(id));
+    return FoodofferComponentsCleanupHelper.withoutComponentsStillUsed(myDatabaseHelper, componentIds, { parent_foodoffers_id: { _nin: parentIds } });
+  }
+
+  /**
+   * Ids of the component foodoffers to delete together with the given junction rows (a component deselected from its
+   * parent): their components that are not used by any other junction row.
+   */
+  static async getComponentFoodofferIdsOfJunctionRows(myDatabaseHelper: MyDatabaseHelper, junctionIds: (string | number)[]): Promise<string[]> {
+    if (junctionIds.length === 0) {
+      return [];
+    }
+    const junctionRows = await myDatabaseHelper.getFoodofferComponentsHelper().readByQuery({
+      filter: { id: { _in: junctionIds } },
+      fields: ['component_foodoffers_id'],
+      limit: -1,
+    });
+    const componentIds = FoodofferComponentsCleanupHelper.getComponentIds(junctionRows);
+    return FoodofferComponentsCleanupHelper.withoutComponentsStillUsed(myDatabaseHelper, componentIds, { id: { _nin: junctionIds } });
+  }
+
+  /**
+   * Removes the components that are still referenced by a junction row matching `otherJunctionRowsFilter`, i.e. by a
+   * parent that is not being deleted.
+   */
+  static async withoutComponentsStillUsed(myDatabaseHelper: MyDatabaseHelper, componentIds: string[], otherJunctionRowsFilter: any): Promise<string[]> {
+    if (componentIds.length === 0) {
+      return [];
+    }
+    const otherJunctionRows = await myDatabaseHelper.getFoodofferComponentsHelper().readByQuery({
+      filter: { _and: [{ component_foodoffers_id: { _in: componentIds } }, otherJunctionRowsFilter] } as any,
+      fields: ['component_foodoffers_id'],
+      limit: -1,
+    });
+    const stillUsedIds = new Set(FoodofferComponentsCleanupHelper.getComponentIds(otherJunctionRows));
+    return componentIds.filter(id => !stillUsedIds.has(id));
+  }
+
+  private static getComponentIds(junctionRows: { component_foodoffers_id?: unknown }[]): string[] {
+    const componentIds = junctionRows.map(row => (typeof row.component_foodoffers_id === 'string' ? row.component_foodoffers_id : null)).filter((id): id is string => !!id);
     return Array.from(new Set(componentIds));
   }
 
