@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 5 | 5 |
-| 🔧 Maintainability | 14 | 14 |
+| 🔧 Maintainability | 16 | 16 |
 
-**Total issues:** 21
+**Total issues:** 23
 
 ---
 
@@ -44,15 +44,19 @@
   apps/maintenance-server/server.mjs:303
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L303
 
-## 🔧 Maintainability (14/14)
+## 🔧 Maintainability (16/16)
 
 - **Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts:76
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts#L76
 
+- **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts:115
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts#L115
+
 - **'raw.id' will use Object's default stringification format ('[object Object]') when stringified.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts:114
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts#L114
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts:125
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt.ts#L125
 
 - **Move this array "reverse" operation to a separate statement or replace it with "toReversed".**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationService.ts:209
@@ -85,6 +89,10 @@
 - **'repo-depkit-common-ui' imported multiple times.**
   apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx:25
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx#L25
+
+- **Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.**
+  apps/frontend/app/components/OwnFoodFeedbackItem/index.tsx:35
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/OwnFoodFeedbackItem/index.tsx#L35
 
 - **Unexpected `await` inside a loop.**
   apps/frontend/app/helper/chatReadStatus.ts:90

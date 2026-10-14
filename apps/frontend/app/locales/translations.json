@@ -9088,5 +9088,125 @@
     "ru": "Сравниваются только основная версия и номер сборки. Номер патча приходит через OTA-обновление и никогда не попадает в магазин.",
     "tr": "Yalnızca ana sürüm ve derleme numarası karşılaştırılır. Yama numarası OTA güncellemesiyle gelir ve hiçbir zaman mağazada yer almaz.",
     "zh": "只比较主版本号和构建号。补丁号通过 OTA 更新提供，从不出现在商店中。"
+  },
+  "food_feedback_responses_title": {
+    "de": "Rückmeldung der Mensa zu deinem Kommentar",
+    "en": "The canteen responded to your comment",
+    "ar": "ردّ المطعم على تعليقك",
+    "es": "El comedor ha respondido a tu comentario",
+    "fr": "Le restaurant universitaire a répondu à ton commentaire",
+    "ru": "Столовая ответила на твой комментарий",
+    "tr": "Yemekhane yorumuna yanıt verdi",
+    "zh": "食堂回复了你的评论"
+  },
+  "food_feedback_responses_new_message": {
+    "de": "Neue Nachricht im Chat zu deinem Kommentar",
+    "en": "New chat message about your comment",
+    "ar": "رسالة جديدة في المحادثة حول تعليقك",
+    "es": "Nuevo mensaje en el chat sobre tu comentario",
+    "fr": "Nouveau message dans le chat à propos de ton commentaire",
+    "ru": "Новое сообщение в чате по твоему комментарию",
+    "tr": "Yorumunla ilgili sohbette yeni mesaj",
+    "zh": "关于你评论的新聊天消息"
+  },
+  "food_feedback_responses_modal_title": {
+    "de": "Rückmeldungen der Mensa",
+    "en": "Responses from the canteen",
+    "ar": "ردود المطعم",
+    "es": "Respuestas del comedor",
+    "fr": "Réponses du restaurant universitaire",
+    "ru": "Ответы столовой",
+    "tr": "Yemekhanenin yanıtları",
+    "zh": "食堂的回复"
+  },
+  "food_feedback_responses_open_chat": {
+    "de": "Zum Chat",
+    "en": "Open chat",
+    "ar": "فتح المحادثة",
+    "es": "Abrir chat",
+    "fr": "Ouvrir le chat",
+    "ru": "Открыть чат",
+    "tr": "Sohbeti aç",
+    "zh": "打开聊天"
+  },
+  "own_food_feedbacks_title": {
+    "de": "Favoriten, Bewertungen & Benachrichtigungen",
+    "en": "Favorites, ratings & notifications",
+    "ar": "المفضلة والتقييمات والإشعارات",
+    "es": "Favoritos, valoraciones y notificaciones",
+    "fr": "Favoris, notes et notifications",
+    "ru": "Избранное, оценки и уведомления",
+    "tr": "Favoriler, değerlendirmeler ve bildirimler",
+    "zh": "收藏、评分和通知"
+  },
+  "own_food_feedbacks_tab_all": {
+    "de": "Alle",
+    "en": "All",
+    "ar": "الكل",
+    "es": "Todos",
+    "fr": "Tous",
+    "ru": "Все",
+    "tr": "Tümü",
+    "zh": "全部"
+  },
+  "own_food_feedbacks_tab_ratings": {
+    "de": "Bewertungen",
+    "en": "Ratings",
+    "ar": "التقييمات",
+    "es": "Valoraciones",
+    "fr": "Notes",
+    "ru": "Оценки",
+    "tr": "Değerlendirmeler",
+    "zh": "评分"
+  },
+  "own_food_feedbacks_tab_notifications": {
+    "de": "Benachrichtigungen",
+    "en": "Notifications",
+    "ar": "الإشعارات",
+    "es": "Notificaciones",
+    "fr": "Notifications",
+    "ru": "Уведомления",
+    "tr": "Bildirimler",
+    "zh": "通知"
+  },
+  "own_food_feedbacks_show_all": {
+    "de": "Alle meine Bewertungen anzeigen",
+    "en": "Show all my ratings",
+    "ar": "عرض كل تقييماتي",
+    "es": "Ver todas mis valoraciones",
+    "fr": "Voir toutes mes notes",
+    "ru": "Показать все мои оценки",
+    "tr": "Tüm değerlendirmelerimi göster",
+    "zh": "查看我的全部评分"
+  },
+  "own_food_feedback_from_you": {
+    "de": "Von dir",
+    "en": "From you",
+    "ar": "منك",
+    "es": "De ti",
+    "fr": "De toi",
+    "ru": "От тебя",
+    "tr": "Senden",
+    "zh": "你的"
+  },
+  "own_food_feedback_from_canteen": {
+    "de": "Von der Mensa",
+    "en": "From the canteen",
+    "ar": "من المطعم",
+    "es": "Del comedor",
+    "fr": "Du restaurant universitaire",
+    "ru": "От столовой",
+    "tr": "Yemekhaneden",
+    "zh": "食堂的"
+  },
+  "own_food_feedback_no_response": {
+    "de": "Noch keine Rückmeldung der Mensa",
+    "en": "No response from the canteen yet",
+    "ar": "لا يوجد ردّ من المطعم بعد",
+    "es": "Aún no hay respuesta del comedor",
+    "fr": "Pas encore de réponse du restaurant universitaire",
+    "ru": "Столовая пока не ответила",
+    "tr": "Yemekhaneden henüz yanıt yok",
+    "zh": "食堂尚未回复"
   }
 }

@@ -274,8 +274,16 @@ export function getVersionPatch() {
         // 154: named Intl limits instead of magic numbers for the zero-padded user count
         // 155: zero-padded user count via NumberHelper.formatZeroPadded (repo-depkit-common)
         // 156: monospace font from FontHelper.getMonospaceFontFamily (common-ui) everywhere
-        // 157: common: LegalEntities (company data for imprints and legal documents)
-        return 157;
+        // 157: common: FoodFeedbackReactionHelper, foods_feedbacks.support_reaction types
+        // 158: hint above the food offers when the canteen reacted to a food feedback
+        // 159: food feedback responses card: reactions bundled, chat messages, details modal
+        // 160: notification screen becomes favorites, ratings & notifications with tabs and search
+        // 161: own food feedbacks as cards: from you / from the canteen, chat button
+        // 162: responses modal lists feedbacks with a new chat message first
+        // 163: own comment in the food feedback card in italics and quotation marks
+        // 164: food feedback responses card only announces chats of the last 14 days
+        // 165: common: LegalEntities (company data for imprints and legal documents)
+        return 165;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

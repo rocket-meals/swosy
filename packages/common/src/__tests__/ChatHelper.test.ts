@@ -64,4 +64,11 @@ describe('ChatHelper', () => {
     expect(ChatHelper.isUnread('2026-10-06T10:00:00Z', '2026-10-06T10:00:00Z')).toBe(false);
     expect(ChatHelper.isUnread('2026-10-06T10:00:00.000Z', '2026-10-06T10:00:00Z')).toBe(false);
   });
+
+  it('knows chats of food feedbacks', () => {
+    expect(ChatHelper.isFoodFeedbackChat({ food_feedbacks: ['f1'] })).toBe(true);
+    expect(ChatHelper.isFoodFeedbackChat({ food_feedbacks: [] })).toBe(false);
+    expect(ChatHelper.isFoodFeedbackChat({})).toBe(false);
+    expect(ChatHelper.isFoodFeedbackChat(null)).toBe(false);
+  });
 });

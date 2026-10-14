@@ -1,0 +1,68 @@
+{
+  "collection": "foods_feedbacks",
+  "field": "support_reaction",
+  "type": "string",
+  "meta": {
+    "collection": "foods_feedbacks",
+    "conditions": null,
+    "display": "raw",
+    "display_options": null,
+    "field": "support_reaction",
+    "group": null,
+    "hidden": false,
+    "interface": "select-dropdown",
+    "note": "Reaction of the support to this feedback, shown to the author in the app. A reaction without chat counts as an answer: the feedback is done. Set by the module \"Rocket Meals\" together with support_reaction_date.",
+    "options": {
+      "allowNone": true,
+      "choices": [
+        {
+          "text": "👍 Daumen hoch",
+          "value": "👍"
+        },
+        {
+          "text": "❤️ Herz",
+          "value": "❤️"
+        },
+        {
+          "text": "🙏 Danke",
+          "value": "🙏"
+        },
+        {
+          "text": "😋 Lecker",
+          "value": "😋"
+        },
+        {
+          "text": "💡 Gute Idee",
+          "value": "💡"
+        }
+      ]
+    },
+    "readonly": false,
+    "required": false,
+    "searchable": true,
+    "sort": 17,
+    "special": null,
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "half"
+  },
+  "schema": {
+    "name": "support_reaction",
+    "table": "foods_feedbacks",
+    "data_type": "character varying",
+    "default_value": null,
+    "max_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}

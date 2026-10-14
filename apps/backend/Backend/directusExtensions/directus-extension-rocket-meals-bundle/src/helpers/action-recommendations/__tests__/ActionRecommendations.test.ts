@@ -2,6 +2,7 @@ import { describe, expect, it, jest } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
 import { CollectionNames } from 'repo-depkit-common/src/databaseTypes/CollectionNames';
+import { FoodFeedbackReaction, FoodFeedbackReactionHelper } from 'repo-depkit-common/src/FoodFeedbackReactionHelper';
 import { ActionRecommendationAction, ActionRecommendationDefinitions, ActionRecommendationStatus } from '../ActionRecommendationDefinitions';
 import { ActionRecommendationPrompt, ChatReplyRole } from '../ActionRecommendationPrompt';
 import { ActionRecommendationModuleHelper } from '../../rocket-meals-module/ActionRecommendationModuleHelper';
@@ -64,6 +65,13 @@ describe('ActionRecommendationDefinitions', () => {
     }
   });
 
+  it('offers the reactions of the field foods_feedbacks.support_reaction, only for food feedbacks', () => {
+    const reactionChoices = readSnapshotField(CollectionNames.FOODS_FEEDBACKS, 'support_reaction').meta.options.choices.map((choice: { value: string }) => choice.value);
+    expect(reactionChoices).toEqual([...FoodFeedbackReactionHelper.REACTIONS]);
+    expect(foodFeedbacks.reactions).toEqual(FoodFeedbackReactionHelper.REACTIONS);
+    expect(ActionRecommendationDefinitions.getDefinition(CollectionNames.APP_FEEDBACKS)!.reactions).toBeUndefined();
+  });
+
   it('the switch in the app settings is off by default', () => {
     const field = readSnapshotField(CollectionNames.APP_SETTINGS, 'ai_action_recommendations_enabled');
     expect(field.type).toBe('boolean');
@@ -95,7 +103,7 @@ describe('ActionRecommendationPrompt', () => {
       ],
     };
     const result = ActionRecommendationPrompt.parseRecommendations(answer, foodFeedbacks, new Set(['f1', 'f2']));
-    expect(result.recommendations).toEqual([{ item: 'f1', action: ActionRecommendationAction.REPLY, reason: 'Konkrete Frage', draft_reply: 'Danke, wir geben das an die Küche weiter.' }]);
+    expect(result.recommendations).toEqual([{ item: 'f1', action: ActionRecommendationAction.REPLY, reason: 'Konkrete Frage', draft_reply: 'Danke, wir geben das an die Küche weiter.', reaction: null }]);
     expect(result.ignored).toHaveLength(3);
   });
 
@@ -107,8 +115,35 @@ describe('ActionRecommendationPrompt', () => {
       ],
     };
     const result = ActionRecommendationPrompt.parseRecommendations(answer, foodFeedbacks, new Set(['f1', 'f2']));
-    expect(result.recommendations).toEqual([{ item: 'f1', action: ActionRecommendationAction.MARK_RESOLVED, reason: 'Nur Lob', draft_reply: null }]);
+    expect(result.recommendations).toEqual([{ item: 'f1', action: ActionRecommendationAction.MARK_RESOLVED, reason: 'Nur Lob', draft_reply: null, reaction: null }]);
     expect(result.ignored).toEqual(['no reason for item "f2"']);
+  });
+
+  it('offers reactions in the prompt only where the collection has them', () => {
+    const foodPrompt = ActionRecommendationPrompt.buildRecommendationPrompt(foodFeedbacks, items, 'de');
+    expect(foodPrompt.system).toContain('"reaction"');
+    expect(foodPrompt.system).toContain(`"${FoodFeedbackReaction.THUMBS_UP}"`);
+    const appPrompt = ActionRecommendationPrompt.buildRecommendationPrompt(ActionRecommendationDefinitions.getDefinition(CollectionNames.APP_FEEDBACKS)!, items, 'de');
+    expect(appPrompt.system).not.toContain('"reaction"');
+  });
+
+  it('keeps an offered reaction next to any action and drops an unknown one', () => {
+    const answer = {
+      recommendations: [
+        { id: 'f1', action: 'reply', reason: 'Frage', draft_reply: 'Danke!', reaction: '🙏' },
+        { id: 'f2', action: 'mark_resolved', reason: 'Nur Lob', reaction: '🤡' },
+        { id: 'f3', action: 'mark_resolved', reason: 'Spam', reaction: 'null' },
+      ],
+    };
+    const result = ActionRecommendationPrompt.parseRecommendations(answer, foodFeedbacks, new Set(['f1', 'f2', 'f3']));
+    expect(result.recommendations.map(recommendation => recommendation.reaction)).toEqual([FoodFeedbackReaction.THANKS, null, null]);
+    expect(result.ignored).toEqual(['reaction "🤡" is not offered for item "f2"']);
+  });
+
+  it('never takes a reaction for a collection without reactions', () => {
+    const appFeedbacks = ActionRecommendationDefinitions.getDefinition(CollectionNames.APP_FEEDBACKS)!;
+    const result = ActionRecommendationPrompt.parseRecommendations({ recommendations: [{ id: 'a1', action: 'mark_resolved', reason: 'Lob', reaction: '👍' }] }, appFeedbacks, new Set(['a1']));
+    expect(result.recommendations[0]!.reaction).toBeNull();
   });
 
   it('rejects an answer without list', () => {
@@ -142,6 +177,13 @@ describe('ActionRecommendationModuleHelper', () => {
   it('offers the draft only for a reply and names who recommended it', () => {
     expect(ActionRecommendationModuleHelper.getDraftReply({ id: '1', action: 'reply', draft_reply: ' Hallo ' })).toBe('Hallo');
     expect(ActionRecommendationModuleHelper.getDraftReply({ id: '1', action: 'mark_resolved', draft_reply: 'Hallo' })).toBeNull();
+  });
+
+  it('reads the recommended reaction of an answered recommendation only', () => {
+    expect(ActionRecommendationModuleHelper.getReaction({ id: '1', status: 'draft', action: 'mark_resolved', action_payload: { reaction: '👍' } })).toBe(FoodFeedbackReaction.THUMBS_UP);
+    expect(ActionRecommendationModuleHelper.getReaction({ id: '1', status: 'processing', action_payload: { reaction: '👍' } })).toBeNull();
+    expect(ActionRecommendationModuleHelper.getReaction({ id: '1', status: 'draft', action: 'reply', action_payload: { reaction: 'x' } })).toBeNull();
+    expect(ActionRecommendationModuleHelper.getReaction({ id: '1', status: 'draft', action: 'reply', action_payload: null })).toBeNull();
     expect(ActionRecommendationModuleHelper.getRecommendedBy({ id: '1', recommended_by_ai: 'OpenRouter · gpt-4o' })).toBe('OpenRouter · gpt-4o');
     expect(ActionRecommendationModuleHelper.getRecommendedBy({ id: '1', recommended_by_profile: { id: 'p', nickname: 'Mensa-Team' } })).toBe('Mensa-Team');
     expect(ActionRecommendationModuleHelper.getRecommendedBy({ id: '1' })).toBeNull();

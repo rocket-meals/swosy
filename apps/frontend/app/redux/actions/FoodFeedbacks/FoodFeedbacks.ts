@@ -105,10 +105,9 @@ export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeed
 			return;
 		}
 
-		// remove field "chat" from foodFeedback if exists
-		if ('chat' in foodFeedback) {
-			delete foodFeedback.chat;
-		}
+		// Fields only support or the server write: sending them back is rejected with 403.
+		const { chat, support_reaction, support_reaction_date, ...writableFeedback } = foodFeedback;
+		foodFeedback = writableFeedback as DatabaseTypes.FoodsFeedbacks;
 
 		// Determine if feedback should be deleted
 		const shouldDelete = !foodFeedback.rating && !foodFeedback.comment && !foodFeedback.notify;

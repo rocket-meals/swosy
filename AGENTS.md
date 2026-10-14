@@ -191,6 +191,12 @@ Gilt für **alle Apps** (`apps/frontend`, `apps/geonexia`, `apps/score-tracker`)
   - common-ui: `SettingsListTextInput`, `SettingsListNumberInput`, `SettingsListDate` folgen dem Muster bereits.
 - `TextInput` auf normalen Screens (außerhalb von Sheets) ist in Ordnung. **Achtung umgekehrt:** `BottomSheetTextInput` wirft auf Native außerhalb eines BottomSheet — Komponenten, die sowohl auf Screens als auch in Sheets verwendet werden, brauchen einen Opt-in-Prop (siehe `insideBottomSheet` in `apps/frontend/app/components/SingleLineInput/SingleLineInput.tsx`).
 
+## Backend-`dist` nicht in Pull Requests committen
+
+- **Niemals `apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/dist/` in einem PR mitschicken.** Lokal `yarn app-backend-build` laufen lassen ist zum Prüfen okay, die geänderten `dist`-Dateien danach aber verwerfen (`git checkout -- <pfad>/dist`).
+- **Grund:** Die `dist` ist minifiziert (`api.js`/`app.js` sind praktisch eine einzige Zeile). Jede Änderung daran kollidiert mit jeder anderen, egal ob aus einem anderen PR oder aus CI. Die CI baut die `dist` nach jedem Merge auf `master` selbst (`.github/actions/backend-build`) und veröffentlicht sie im Job `📤 Publish Staged Changes`. Bringt ein PR eine eigene `dist` mit, wird der von CI gestagte Patch nicht mehr sauber angewendet und der Publish-Job schlägt mit `staged patches were dropped because they conflicted: backend-dist` fehl.
+- Wurde der Patch doch einmal verworfen: `master` auschecken, `yarn install`, `yarn app-backend-build`, und nur die `dist` in einem eigenen PR committen.
+
 ## Verbotene Pakete im Backend
 
 - **Niemals `node:crypto` (bzw. `crypto`) importieren.** Für zufällige IDs und Tokens unseren `NanoidHelper` (`apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/NanoidHelper.ts`) oder den Directus-Endpoint `GET <PUBLIC_URL>/utils/random/string` verwenden.

@@ -6,6 +6,9 @@
  * `FoodFeedbackChatStatusHelper.buildChatForFeedback`), adds the author as participant and links it to
  * the feedback, so the author finds it in the app. Messages written here carry no profile – that
  * is how the app and `chat-conversation-state-hook` tell support messages from user messages.
+ *
+ * Besides answering, support can react (thumbs up by default, others behind the chevron). Without chat
+ * the reaction is the answer and the feedback is done, no chat is created for it.
  */
 import { useApi, useStores } from '@directus/extensions-sdk';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -13,6 +16,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { ChatConversationState } from 'repo-depkit-common/src/ChatConversationState';
 import { ChatHelper } from 'repo-depkit-common/src/ChatHelper';
 import { FoodFeedbackChatStatus, FoodFeedbackChatStatusHelper } from 'repo-depkit-common/src/FoodFeedbackChatStatusHelper';
+import type { FoodFeedbackReaction } from 'repo-depkit-common/src/FoodFeedbackReactionHelper';
 import { RelationHelper } from 'repo-depkit-common/src/RelationHelper';
 import { useAppExtensionTranslate } from '../../helpers/app-extensions/useAppExtensionTranslate';
 import { FoodFeedbackChatActions } from '../../helpers/rocket-meals-module/FoodFeedbackChatActions';
@@ -31,6 +35,7 @@ import ProfileAvatar from '../profiles/profile-avatar.vue';
 import SupportChatConversation from '../support-chat/support-chat-conversation.vue';
 import SupportChatStatusMenu from '../support-chat/support-chat-status-menu.vue';
 import FoodFeedbackRating from './food-feedback-rating.vue';
+import FoodFeedbackReactionButton from './food-feedback-reaction-button.vue';
 import FoodImageLink from './food-image-link.vue';
 
 const props = defineProps<{ feedbackId: string }>();
@@ -148,6 +153,34 @@ async function closeRecommendation(takenAction: ActionRecommendationAction | nul
   } catch (error) {
     console.error('[rocket-meals-module] closing the action recommendation failed', error);
     notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_update_failed), type: 'warning' });
+  }
+}
+
+const recommendedReaction = computed(() => ActionRecommendationModuleHelper.getReaction(recommendation.value));
+/** "Empfohlene Reaktion: 👍 Daumen hoch" below the recommendation. */
+const recommendedReactionText = computed(() =>
+  recommendedReaction.value ? translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_reaction, { reaction: `${recommendedReaction.value} ${translate(FoodFeedbackChatHelper.getReactionLabelKey(recommendedReaction.value))}` }) : null
+);
+const reactionHighlighted = computed(() => !!feedback.value && FoodFeedbackChatHelper.isReactionHighlighted(feedback.value, recommendation.value));
+const reacting = ref(false);
+
+/** Sets or removes the reaction; a recommendation to mark as done is used up when that resolves the feedback. */
+async function react(reaction: FoodFeedbackReaction | null) {
+  if (!feedback.value || reacting.value) {
+    return;
+  }
+  reacting.value = true;
+  try {
+    await FoodFeedbackChatActions.setReaction(api, feedback.value, reaction);
+    if (reaction && FoodFeedbackChatHelper.isResolvedByReaction(feedback.value, recommendation.value)) {
+      await closeRecommendation(ActionRecommendationAction.MARK_RESOLVED);
+    }
+    await loadFeedback();
+  } catch (error) {
+    console.error('[rocket-meals-module] setting the reaction failed', error);
+    notificationsStore.add({ title: translate(BackendTranslationKeys.rocket_meals_module_reaction_failed), type: 'error' });
+  } finally {
+    reacting.value = false;
   }
 }
 
@@ -329,11 +362,12 @@ watch(() => props.feedbackId, load);
                 {{ translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_generate) }}
               </v-button>
             </span>
+            <food-feedback-reaction-button :reaction="feedback.support_reaction" :recommended-reaction="recommendedReaction" :highlighted="reactionHighlighted" :loading="reacting" @react="react" />
             <v-button v-if="FoodFeedbackChatHelper.canReopen(feedback)" small secondary :loading="updatingState" @click="changeStatus(FoodFeedbackChatStatus.WAITING_FOR_SUPPORT)">
               <v-icon name="undo" left small />
               {{ translate(BackendTranslationKeys.rocket_meals_module_reopen) }}
             </v-button>
-            <v-button v-else-if="FoodFeedbackChatHelper.canMarkResolved(feedback)" small :secondary="!ActionRecommendationModuleHelper.isHighlighted(recommendation, ActionRecommendationAction.MARK_RESOLVED, null)" :loading="updatingState" @click="changeStatus(FoodFeedbackChatStatus.RESOLVED)">
+            <v-button v-else-if="FoodFeedbackChatHelper.canMarkResolved(feedback)" small :secondary="!ActionRecommendationModuleHelper.isHighlighted(recommendation, ActionRecommendationAction.MARK_RESOLVED, null) || reactionHighlighted" :loading="updatingState" @click="changeStatus(FoodFeedbackChatStatus.RESOLVED)">
               <v-icon name="task_alt" left small />
               {{ translate(BackendTranslationKeys.rocket_meals_module_mark_resolved) }}
               <v-icon v-if="ActionRecommendationModuleHelper.isAction(recommendation, ActionRecommendationAction.MARK_RESOLVED)" v-tooltip="translate(BackendTranslationKeys.rocket_meals_module_action_recommendation_recommended)" :name="ActionRecommendationModuleHelper.ICON" right small />
@@ -371,6 +405,7 @@ watch(() => props.feedbackId, load);
             </div>
             <div v-if="reasonExpanded">{{ recommendation.reason }}</div>
           </template>
+          <div v-if="recommendedReactionText" class="type-note">{{ recommendedReactionText }}</div>
         </div>
 
         <support-chat-conversation

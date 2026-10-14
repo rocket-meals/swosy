@@ -286,6 +286,24 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 		Bitte gib in deinen Rückmeldungen keine persönlichen Daten wie Namen oder Kontaktdaten an, da der Text der Rückmeldung an den KI-Dienst übermittelt wird.
 
 
+	### Einsatz von KI
+
+		Um Rückmeldungen schneller und besser bearbeiten zu können, setzen wir einen KI-Dienst ein. Die KI wird für folgende Funktionen genutzt:
+
+		- Speise-Feedbacks: Die KI schlägt vor, ob und wie wir auf einen Kommentar antworten, und fasst die Rückmeldungen zu einer Speise zusammen.
+		- App-Feedback: Die KI schlägt vor, ob und wie wir auf eine Rückmeldung antworten, und fasst Rückmeldungen zusammen.
+		- Feature-Wünsche: Die KI prüft neue Wünsche vor, z. B. ob es den Wunsch schon gibt.
+
+		An den KI-Dienst übermitteln wir dabei nur den Text deiner Rückmeldung und die zugehörigen Angaben wie Bewertung, Speise, Mensa und Datum. Gibt es zu einer Rückmeldung bereits einen Chat mit dem Support, übermitteln wir auch dessen Nachrichten, jedoch ohne Namen. Deine Benutzer-ID, deine Profil-ID, deine E-Mail-Adresse, deinen Namen oder andere Profildaten übermitteln wir nicht. Die KI macht nur Vorschläge. Jede Antwort und jede Entscheidung wird von einem Menschen geprüft und freigegeben.
+
+		Anbieter des KI-Dienstes ist Anthropic Ireland, Limited, der für uns als Auftragsverarbeiter tätig ist. Die Verarbeitung kann auch außerhalb des Europäischen Wirtschaftsraums (EWR), insbesondere in den USA, stattfinden. Dieser Schutz wird durch die Standardvertragsklauseln abgesichert (Art. 46 Abs. 2 lit. c DSGVO). Weitere Informationen findest du unter [https://www.anthropic.com/legal/privacy](https://www.anthropic.com/legal/privacy) und [https://www.anthropic.com/legal/data-processing-addendum](https://www.anthropic.com/legal/data-processing-addendum).
+
+		Rechtsgrundlage ist unser berechtigtes Interesse an einer schnellen und guten Bearbeitung deiner Rückmeldungen gemäß Art. 6 Abs. 1 lit. f DSGVO. Du kannst dieser Verarbeitung nach Art. 21 DSGVO jederzeit über die unten genannten Kontaktdaten widersprechen.
+
+		Bitte gib in deinen Rückmeldungen keine persönlichen Daten wie Namen oder Kontaktdaten an, da der Text der Rückmeldung an den KI-Dienst übermittelt wird.
+
+
+
 	### Vorschlags-System
 
 		Um den Nutzerflow zu optimieren und innerhalb der App bessere und passende Vorschläge zu erhalten, gibt es ein Vorschlagssystem. Die serverseitige Verarbeitung deiner Daten findet statt, wenn du ein Gast-Profil verwendest. Allgemeine Vorschläge, die nutzerunabhängig sind, werden weiterhin gemacht, wie z. B. die Tagesempfehlung oder nur anhand deiner ausgewählten Mensa oder Filter und Sortiereinstellungen.

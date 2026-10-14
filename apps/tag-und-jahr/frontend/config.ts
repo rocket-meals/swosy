@@ -87,8 +87,11 @@ export function getVersionPatch() {
 	// 57: common: app_settings.maintenance_message type
 	// 63: common: ChatHelper read status helpers, chats.date_last_message and chats_participants.read_until types
 	// 64: common: NumberHelper.formatZeroPadded
-	// 65: common: LegalEntities (company data for imprints and legal documents)
-	return 65;
+	// 65: common: FoodFeedbackReactionHelper, foods_feedbacks.support_reaction types
+	// 66: common: FoodFeedbackReactionHelper.groupReactions, ChatHelper.isFoodFeedbackChat
+	// 67: common: FoodFeedbackReactionHelper.isWithinHintWindow
+	// 68: common: LegalEntities (company data for imprints and legal documents)
+	return 68;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

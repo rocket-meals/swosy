@@ -1,42 +1,42 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-14T13:06:52.890Z",
+  "report_timestamp": "2026-10-14T16:13:11.117Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 138,
-          "average": 1.4985583224115335,
-          "amountSavedValuesForKeys": 5717,
-          "amountKeys": 33
+          "average": 1.4986945169712793,
+          "amountSavedValuesForKeys": 5740,
+          "amountKeys": 32
         },
         "invertedParameterToMethods": {
           "median": 1,
           "maximum": 80,
-          "average": 2.2547876769358868,
-          "amountSavedValuesForKeys": 2708,
-          "amountKeys": 25
+          "average": 2.2572135201978565,
+          "amountSavedValuesForKeys": 2738,
+          "amountKeys": 28
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 138,
-          "average": 1.5108350951374208,
-          "amountSavedValuesForKeys": 5717,
-          "amountKeys": 32
+          "average": 1.5109239273493025,
+          "amountSavedValuesForKeys": 5740,
+          "amountKeys": 31
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 6020,
-        "detection_time_ms": 134,
+        "ast_generation_time_ms": 6219,
+        "detection_time_ms": 144,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 270.22,
-          "os_memory_free": 14701858816,
+          "os_uptime": 162.89,
+          "os_memory_free": 14730829824,
           "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -55,18 +55,18 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "85ab6de1388925f6bd9703181cd94fb8a5629e38",
-    "project_commit_hash": "85ab6de1388925f6bd9703181cd94fb8a5629e38",
+    "project_version": "9593a8cf845982d40ce3bf0ba25bb8a1e2a852ec",
+    "project_commit_hash": "9593a8cf845982d40ce3bf0ba25bb8a1e2a852ec",
     "project_tag": null,
-    "project_commit_date": "1791983078",
+    "project_commit_date": "1791994250",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 804,
-    "number_of_classes_or_interfaces": 1849,
-    "number_of_methods": 2290,
-    "number_of_data_fields": 5717,
-    "number_of_method_parameters": 2708
+    "number_of_files": 807,
+    "number_of_classes_or_interfaces": 1855,
+    "number_of_methods": 2307,
+    "number_of_data_fields": 5740,
+    "number_of_method_parameters": 2738
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -119,16 +119,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationDefinitions\").ActionRecommendationDefinition",
             "modifiers": [],
             "position": {
-              "startLine": 139,
+              "startLine": 163,
               "startColumn": 29,
-              "endLine": 139,
+              "endLine": 163,
               "endColumn": 71
             }
           },
           "position": {
-            "startLine": 78,
+            "startLine": 81,
             "startColumn": 5,
-            "endLine": 78,
+            "endLine": 81,
             "endColumn": 47
           }
         },
@@ -144,16 +144,16 @@
             "type": "readonly import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt\").ActionRecommendationSourceItem[]",
             "modifiers": [],
             "position": {
-              "startLine": 139,
+              "startLine": 163,
               "startColumn": 73,
-              "endLine": 139,
+              "endLine": 163,
               "endColumn": 121
             }
           },
           "position": {
-            "startLine": 79,
+            "startLine": 82,
             "startColumn": 5,
-            "endLine": 79,
+            "endLine": 82,
             "endColumn": 53
           }
         },
@@ -169,16 +169,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 139,
+              "startLine": 163,
               "startColumn": 123,
-              "endLine": 139,
+              "endLine": 163,
               "endColumn": 139
             }
           },
           "position": {
-            "startLine": 80,
+            "startLine": 83,
             "startColumn": 5,
-            "endLine": 80,
+            "endLine": 83,
             "endColumn": 21
           }
         }
@@ -223,9 +223,9 @@
             }
           },
           "position": {
-            "startLine": 78,
+            "startLine": 81,
             "startColumn": 5,
-            "endLine": 78,
+            "endLine": 81,
             "endColumn": 47
           }
         },
@@ -248,9 +248,9 @@
             }
           },
           "position": {
-            "startLine": 79,
+            "startLine": 82,
             "startColumn": 5,
-            "endLine": 79,
+            "endLine": 82,
             "endColumn": 53
           }
         },
@@ -273,9 +273,9 @@
             }
           },
           "position": {
-            "startLine": 80,
+            "startLine": 83,
             "startColumn": 5,
-            "endLine": 80,
+            "endLine": 83,
             "endColumn": 21
           }
         }
@@ -313,16 +313,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationDefinitions\").ActionRecommendationDefinition",
             "modifiers": [],
             "position": {
-              "startLine": 78,
+              "startLine": 81,
               "startColumn": 5,
-              "endLine": 78,
+              "endLine": 81,
               "endColumn": 47
             }
           },
           "position": {
-            "startLine": 139,
+            "startLine": 163,
             "startColumn": 29,
-            "endLine": 139,
+            "endLine": 163,
             "endColumn": 71
           }
         },
@@ -338,16 +338,16 @@
             "type": "readonly import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt\").ActionRecommendationSourceItem[]",
             "modifiers": [],
             "position": {
-              "startLine": 79,
+              "startLine": 82,
               "startColumn": 5,
-              "endLine": 79,
+              "endLine": 82,
               "endColumn": 53
             }
           },
           "position": {
-            "startLine": 139,
+            "startLine": 163,
             "startColumn": 73,
-            "endLine": 139,
+            "endLine": 163,
             "endColumn": 121
           }
         },
@@ -363,16 +363,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 80,
+              "startLine": 83,
               "startColumn": 5,
-              "endLine": 80,
+              "endLine": 83,
               "endColumn": 21
             }
           },
           "position": {
-            "startLine": 139,
+            "startLine": 163,
             "startColumn": 123,
-            "endLine": 139,
+            "endLine": 163,
             "endColumn": 139
           }
         }
@@ -417,9 +417,9 @@
             }
           },
           "position": {
-            "startLine": 139,
+            "startLine": 163,
             "startColumn": 29,
-            "endLine": 139,
+            "endLine": 163,
             "endColumn": 71
           }
         },
@@ -442,9 +442,9 @@
             }
           },
           "position": {
-            "startLine": 139,
+            "startLine": 163,
             "startColumn": 73,
-            "endLine": 139,
+            "endLine": 163,
             "endColumn": 121
           }
         },
@@ -467,9 +467,9 @@
             }
           },
           "position": {
-            "startLine": 139,
+            "startLine": 163,
             "startColumn": 123,
-            "endLine": 139,
+            "endLine": 163,
             "endColumn": 139
           }
         }
@@ -701,9 +701,9 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationDefinitions\").ActionRecommendationDefinition",
             "modifiers": [],
             "position": {
-              "startLine": 78,
+              "startLine": 81,
               "startColumn": 5,
-              "endLine": 78,
+              "endLine": 81,
               "endColumn": 47
             }
           },
@@ -726,9 +726,9 @@
             "type": "readonly import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt\").ActionRecommendationSourceItem[]",
             "modifiers": [],
             "position": {
-              "startLine": 79,
+              "startLine": 82,
               "startColumn": 5,
-              "endLine": 79,
+              "endLine": 82,
               "endColumn": 53
             }
           },
@@ -751,9 +751,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 80,
+              "startLine": 83,
               "startColumn": 5,
-              "endLine": 80,
+              "endLine": 83,
               "endColumn": 21
             }
           },
@@ -798,9 +798,9 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationDefinitions\").ActionRecommendationDefinition",
             "modifiers": [],
             "position": {
-              "startLine": 139,
+              "startLine": 163,
               "startColumn": 29,
-              "endLine": 139,
+              "endLine": 163,
               "endColumn": 71
             }
           },
@@ -823,9 +823,9 @@
             "type": "readonly import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/action-recommendations/ActionRecommendationPrompt\").ActionRecommendationSourceItem[]",
             "modifiers": [],
             "position": {
-              "startLine": 139,
+              "startLine": 163,
               "startColumn": 73,
-              "endLine": 139,
+              "endLine": 163,
               "endColumn": 121
             }
           },
@@ -848,9 +848,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 139,
+              "startLine": 163,
               "startColumn": 123,
-              "endLine": 139,
+              "endLine": 163,
               "endColumn": 139
             }
           },

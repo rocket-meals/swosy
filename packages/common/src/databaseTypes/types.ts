@@ -1419,6 +1419,8 @@ export type FoodsFeedbacks = {
   rating?: number | null;
   sort?: number | null;
   status?: string | null;
+  support_reaction?: string | null;
+  support_reaction_date?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -1938,6 +1940,7 @@ export type Profiles = {
   date_privacy_policy_accepted?: string | null;
   date_updated?: string | null;
   devices: any[] | Devices[];
+  food_feedback_reactions_seen_until?: string | null;
   foods_feedbacks: any[] | FoodsFeedbacks[];
   friendships_received: any[] | Friendships[];
   friendships_requested: any[] | Friendships[];
