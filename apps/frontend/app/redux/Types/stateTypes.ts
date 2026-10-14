@@ -72,6 +72,8 @@ export type SettingsState = {
         simulateExpoUpdateAvailable: boolean;
         /** Debug: feature wishes show as if the server allowed voting and submitting. Only the look, the server still decides. */
         simulateFeatureWishesEnabled: boolean;
+        /** Debug: the screen "Chats" also lists the chats of food feedbacks, which normally are only at the own ratings. */
+        showFoodFeedbackChatsInChats: boolean;
         collectibleItemSize: 'small' | 'medium' | 'large';
         collectibleRandomPosition: boolean;
         mapTileVariantKey: string;

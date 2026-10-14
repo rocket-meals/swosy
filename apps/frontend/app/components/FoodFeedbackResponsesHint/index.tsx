@@ -19,13 +19,16 @@ import { TranslationKeys } from '@/locales/keys';
 
 type ThemeColors = { text: string; icon: string; placeholder: string; iconBg: string };
 
-/** Opens a chat, or the list of chats when there are several. */
-function openChats(chats: readonly DatabaseTypes.Chats[]) {
+/**
+ * Opens a chat, or, when there are several, the own ratings with their chats. The screen "Chats" only
+ * lists chats of food feedbacks with the dev setting `showFoodFeedbackChatsInChats`.
+ */
+function openChats(chats: readonly DatabaseTypes.Chats[], showFoodFeedbackChatsInChats: boolean) {
 	if (chats.length === 1 && chats[0]) {
 		router.push({ pathname: '/chats/details', params: { chat_id: chats[0].id } });
 		return;
 	}
-	router.push('/chats');
+	router.push(showFoodFeedbackChatsInChats ? '/chats' : '/notification');
 }
 
 /**
@@ -86,7 +89,7 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 	const { primaryColor } = useAppSelector(state => state.settings);
 	const user = useAppSelector(state => state.authReducer.user);
 	const profile = useAppSelector(state => state.authReducer.profile) as DatabaseTypes.Profiles | undefined;
-	const { chats, readStatus, isChatUnread } = useChatUnreadStatus();
+	const { chats, readStatus, isChatUnread, showFoodFeedbackChatsInChats } = useChatUnreadStatus();
 	const isAnonymousUser = useMemo(() => UserHelper.isAnonymousUser(user), [user]);
 	const profileId = profile?.id;
 	const seenUntil = profile?.food_feedback_reactions_seen_until ?? null;
@@ -149,7 +152,7 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 		const nextSeenUntil = FoodFeedbackReactionHelper.getSeenUntilAfterClosing(newFeedbacks, seenUntil);
 		dispatch({ type: UPDATE_PROFILE, payload: { ...profile, food_feedback_reactions_seen_until: nextSeenUntil } });
 		try {
-			await new ProfileHelper().updateProfile({ id: profile.id, food_feedback_reactions_seen_until: nextSeenUntil });
+			await new ProfileHelper().updateFoodFeedbackReactionsSeenUntil(profile.id, nextSeenUntil);
 		} catch (error) {
 			// Stays hidden on this device; shows again elsewhere until the next successful close.
 			console.error('Saving the seen reactions to food feedbacks failed:', error);
@@ -184,9 +187,9 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 	const openFromModal = useCallback(
 		(chatsToOpen: readonly DatabaseTypes.Chats[]) => {
 			closeModal();
-			openChats(chatsToOpen);
+			openChats(chatsToOpen, showFoodFeedbackChatsInChats);
 		},
-		[closeModal]
+		[closeModal, showFoodFeedbackChatsInChats]
 	);
 
 	/** The details; the reactions count as seen once they are shown there, the chats once opened. */
@@ -244,7 +247,7 @@ const FoodFeedbackResponsesHint: React.FC = () => {
 				</View>
 			)}
 			{unreadChats.length > 0 && (
-				<TouchableOpacity style={styles.chatRow} onPress={() => openChats(unreadChats)} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.food_feedback_responses_open_chat)}>
+				<TouchableOpacity style={styles.chatRow} onPress={() => openChats(unreadChats, showFoodFeedbackChatsInChats)} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.food_feedback_responses_open_chat)}>
 					<MaterialCommunityIcons name="chat-processing-outline" size={20} color={primaryColor} />
 					<Text style={[styles.chatText, { color: theme.screen.text }]} numberOfLines={1}>
 						{translate(TranslationKeys.food_feedback_responses_new_message)}

@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_SIMULATE_FEATURE_WISHES_ENABLED, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_CONSENT } from '@/redux/Types/types';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_SIMULATE_FEATURE_WISHES_ENABLED, SET_SHOW_FOOD_FEEDBACK_CHATS_IN_CHATS, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_CONSENT } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import { sqliteKeyValueStorage, migrateAsyncStorageToSqlite } from '@/redux/storage/sqliteStorage';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
@@ -175,7 +175,7 @@ const Settings = () => {
                 });
         }, [showScrollViewModal, translate]);
 
-        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, simulateFeatureWishesEnabled, collectibleItemSize, collectibleRandomPosition, selectedCustomer, campusesSortBy } = useAppSelector((state) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, simulateFeatureWishesEnabled, showFoodFeedbackChatsInChats, collectibleItemSize, collectibleRandomPosition, selectedCustomer, campusesSortBy } = useAppSelector((state) => state.settings);
         const featureWishesMode = useFeatureWishesMode();
         const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
         const osmConsent = useAppSelector((state) => ((state.settings as any).osmVectorMapConsent ?? false) as boolean);
@@ -507,6 +507,13 @@ const Settings = () => {
                 dispatch({
                         type: SET_SIMULATE_FEATURE_WISHES_ENABLED,
                         payload: !simulateFeatureWishesEnabled,
+                });
+        };
+
+        const toggleShowFoodFeedbackChatsInChats = () => {
+                dispatch({
+                        type: SET_SHOW_FOOD_FEEDBACK_CHATS_IN_CHATS,
+                        payload: !showFoodFeedbackChatsInChats,
                 });
         };
 
@@ -954,6 +961,14 @@ const Settings = () => {
 							onToggle={toggleSimulateFeatureWishes}
 							groupPosition="middle"
 						/>
+						<SettingsListBoolean
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="chat-processing-outline" size={24} color={theme.screen.icon} />}
+							label={translate(TranslationKeys.show_food_feedback_chats_in_chats)}
+							isEnabled={showFoodFeedbackChatsInChats}
+							onToggle={toggleShowFoodFeedbackChatsInChats}
+							groupPosition="middle"
+						/>
 						<SettingsListEditable
 							key={String(appRatingScore)}
 							iconBgColor={primaryColor}
@@ -1082,8 +1097,8 @@ const Settings = () => {
 		campus_area_color, campusSortingLabel, openCampusSortingModal, handleCheckForUpdates,
 		openCollectibleSettingsModal, termsAndPrivacyConsentAcceptedDate, isManagement, dispatch,
 		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,
-		debugMode, simulateExpoUpdateAvailable, simulateFeatureWishesEnabled, openServerSheet, openFoodOffersTimeSheet,
-		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, toggleSimulateFeatureWishes, osmVectorMapStyleKey, osmConsent,
+		debugMode, simulateExpoUpdateAvailable, simulateFeatureWishesEnabled, showFoodFeedbackChatsInChats, openServerSheet, openFoodOffersTimeSheet,
+		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, toggleSimulateFeatureWishes, toggleShowFoodFeedbackChatsInChats, osmVectorMapStyleKey, osmConsent,
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal, openAccountRequiredModal,
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 		settingsAvatarConfig, openAvatarEditor,

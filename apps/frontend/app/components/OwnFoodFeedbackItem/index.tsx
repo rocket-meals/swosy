@@ -9,6 +9,7 @@ import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppSelector } from '@/redux/hooks';
+import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 
 export type OwnFoodFeedbackItemProps = {
@@ -35,7 +36,9 @@ const STARS = Array.from({ length: RatingHelper.MAX_RATING }, (_, index) => inde
 const OwnFoodFeedbackItem: React.FC<OwnFoodFeedbackItemProps> = ({ feedback, onPress, onToggleNotify, onBeforeOpenChat }) => {
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
-	const { primaryColor } = useAppSelector(state => state.settings);
+	const { primaryColor, selectedTheme } = useAppSelector(state => state.settings);
+	/** Text and icons on the primary color, e.g. the button to the chat and the active bell. */
+	const onPrimaryColor = myContrastColor(primaryColor, theme, selectedTheme === 'dark');
 	const { chats, isChatUnread } = useChatUnreadStatus();
 	const food = typeof feedback.food === 'object' && feedback.food !== null ? (feedback.food as DatabaseTypes.Foods) : null;
 	const imageUrl = food?.image_remote_url || undefined;
@@ -65,7 +68,7 @@ const OwnFoodFeedbackItem: React.FC<OwnFoodFeedbackItemProps> = ({ feedback, onP
 						accessibilityLabel={translate(TranslationKeys.notification)}
 						hitSlop={6}
 					>
-						<MaterialIcons name={feedback.notify ? 'notifications-active' : 'notifications-none'} size={22} color={feedback.notify ? theme.light : theme.screen.icon} />
+						<MaterialIcons name={feedback.notify ? 'notifications-active' : 'notifications-none'} size={22} color={feedback.notify ? onPrimaryColor : theme.screen.icon} />
 					</TouchableOpacity>
 				) : (
 					feedback.notify && <MaterialIcons name="notifications-active" size={22} color={primaryColor} />
@@ -109,10 +112,10 @@ const OwnFoodFeedbackItem: React.FC<OwnFoodFeedbackItemProps> = ({ feedback, onP
 								accessibilityRole="button"
 								accessibilityLabel={translate(TranslationKeys.food_feedback_responses_open_chat)}
 							>
-								<MaterialCommunityIcons name="chat-processing-outline" size={18} color={theme.light} />
-								<Text style={[styles.chatButtonText, { color: theme.light }]}>{translate(TranslationKeys.food_feedback_responses_open_chat)}</Text>
-								{chatUnread && <View style={[styles.unreadDot, { borderColor: theme.light }]} />}
-								<Octicons name="chevron-right" size={16} color={theme.light} />
+								<MaterialCommunityIcons name="chat-processing-outline" size={18} color={onPrimaryColor} />
+								<Text style={[styles.chatButtonText, { color: onPrimaryColor }]}>{translate(TranslationKeys.food_feedback_responses_open_chat)}</Text>
+								{chatUnread && <View style={[styles.unreadDot, { borderColor: onPrimaryColor }]} />}
+								<Octicons name="chevron-right" size={16} color={onPrimaryColor} />
 							</TouchableOpacity>
 						) : null}
 					</View>
