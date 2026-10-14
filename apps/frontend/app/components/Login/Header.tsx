@@ -14,6 +14,7 @@ import { getImageUrl } from '@/constants/HelperFunctions';
 import { useLanguageModal } from '@/hooks/useLanguageModal';
 import { useAppSelector } from '@/redux/hooks';
 import { TranslationKeys } from '@/locales/keys';
+import { isSameBaseLanguage } from 'repo-depkit-common';
 
 type LoginHeaderProps = {
 	// Long-pressing the app logo toggles the hidden login debug options.
@@ -21,7 +22,7 @@ type LoginHeaderProps = {
 };
 
 const LoginHeader = ({ onLogoLongPress }: LoginHeaderProps) => {
-        const { setLanguageMode, language, translate } = useLanguage();
+        const { setLanguageMode, language, translationLanguage, translate } = useLanguage();
         const locales = useLocales();
         const dispatch = useDispatch();
         const { theme } = useTheme();
@@ -57,14 +58,14 @@ const LoginHeader = ({ onLogoLongPress }: LoginHeaderProps) => {
 	useEffect(() => {
 		if (!language) {
 			const langCode = deviceLocale[0]?.split('-')[0];
-			setLanguageMode(langCode as LanguageCode);
-			if (langCode === LanguageCode.AR) {
+			setLanguageMode(langCode);
+			if (isSameBaseLanguage(langCode, LanguageCode.AR)) {
 				dispatch({
 					type: SET_DRAWER_POSITION,
 					payload: 'right',
 				});
 			}
-		} else if (language === LanguageCode.AR) {
+		} else if (isSameBaseLanguage(language, LanguageCode.AR)) {
 			dispatch({
 				type: SET_DRAWER_POSITION,
 				payload: 'right',
@@ -73,7 +74,8 @@ const LoginHeader = ({ onLogoLongPress }: LoginHeaderProps) => {
 	}, []);
 
         const selectedLanguage = language;
-        const selectedLanguageOption = selectedLanguage ? languageDict[selectedLanguage as keyof typeof languageDict] : undefined;
+        // The store holds the full code ("de-DE"), the dictionary is keyed by the language ("de").
+        const selectedLanguageOption = selectedLanguage ? languageDict[translationLanguage as keyof typeof languageDict] : undefined;
 	return (
 		<View style={styles.header}>
 			<TouchableOpacity

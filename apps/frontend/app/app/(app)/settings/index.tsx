@@ -130,7 +130,7 @@ const Settings = () => {
         const { theme, setThemeMode } = useTheme();
         const dispatch = useDispatch();
         const toast = useToast();
-        const { translate, language } = useLanguage();
+        const { translate, translationLanguage } = useLanguage();
         const [searchQuery, setSearchQuery] = useState('');
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
@@ -195,9 +195,8 @@ const Settings = () => {
         const { openCustomerConfigModal } = useCustomerConfigModal();
         const { openTextInputModal } = useMyScrollviewTextInputModal();
 
-        const languageCode = language;
-
-        const languageName = Languages[languageCode as keyof typeof Languages];
+        // The store holds the full code ("de-DE"), the names are keyed by the language ("de").
+        const languageName = Languages[translationLanguage as keyof typeof Languages];
 
         const selectedCustomerDisplayName = useMemo(
                 () => customerConfig.projectName || selectedCustomer || '',

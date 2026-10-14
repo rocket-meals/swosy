@@ -2,13 +2,20 @@ import { useEffect, useMemo, useState } from 'react';
 import { configureStore } from '@/redux/store';
 import { translationResources } from '@/locales/translationResources';
 import { CHANGE_LANGUAGE, SET_FUN_LANGUAGE_MODE, SET_PIRATE_LANGUAGE } from '@/redux/Types/types';
-import { StringHelper, MathHelper, type TranslationLanguage } from 'repo-depkit-common';
-import { LanguageCode } from '@/constants/SettingData';
+import { StringHelper, MathHelper, normalizeTranslationLanguage, toFullLanguageCode, TranslationLanguage } from 'repo-depkit-common';
 
-const changeLanguage = (language: LanguageCode) => ({
+// The store keeps the full language code ("de-DE"), the same value as `profiles.language` and the
+// `languages` collection on the server. A short code ("de") is turned into the full one here.
+const changeLanguage = (language: string) => ({
 	type: CHANGE_LANGUAGE,
-	payload: language,
+	payload: toFullLanguageCode(language) ?? language,
 });
+
+/**
+ * The language the text catalogue is looked up in: the short code (`"de"`) of the stored full code
+ * (`"de-DE"`). Also accepts the short codes older app versions stored, German when nothing fits.
+ */
+export const getTranslationLanguage = (language: string | null | undefined): TranslationLanguage => normalizeTranslationLanguage(language) ?? TranslationLanguage.DE;
 
 const setPirateLanguageAction = (enabled: boolean) => ({
 	type: SET_PIRATE_LANGUAGE,
@@ -122,7 +129,9 @@ export const useLanguage = () => {
 	const [pirateLanguage, setPirateLanguage] = useState(configureStore.getState().settings.pirateLanguage);
 	const [funLanguageMode, setFunLanguageMode] = useState<string | null>(configureStore.getState().settings.funLanguageMode);
 
-	const setLanguageMode = (language: LanguageCode) => {
+	const translationLanguage = getTranslationLanguage(language);
+
+	const setLanguageMode = (language: string) => {
 		configureStore.dispatch(changeLanguage(language));
 	};
 
@@ -136,7 +145,7 @@ export const useLanguage = () => {
 
 	const translate = useMemo(() => {
 		return (key: string) => {
-			const text = translationResources[key]?.[language as TranslationLanguage] || key;
+			const text = translationResources[key]?.[translationLanguage] || key;
 			let result = text;
 			if (pirateLanguage) {
 				result = applyPirateTransformation(result);
@@ -146,7 +155,7 @@ export const useLanguage = () => {
 			}
 			return result;
 		};
-	}, [language, pirateLanguage, funLanguageMode]);
+	}, [translationLanguage, pirateLanguage, funLanguageMode]);
 
 	useEffect(() => {
 		const unsubscribe = configureStore.subscribe(() => {
@@ -177,5 +186,5 @@ export const useLanguage = () => {
 		[pirateLanguage, funLanguageMode]
 	);
 
-	return { language, setLanguageMode, translate, translateDynamic, pirateLanguage, togglePirateLanguage, funLanguageMode, toggleFunLanguageMode, specialLanguageOptions };
+	return { language, translationLanguage, setLanguageMode, translate, translateDynamic, pirateLanguage, togglePirateLanguage, funLanguageMode, toggleFunLanguageMode, specialLanguageOptions };
 };

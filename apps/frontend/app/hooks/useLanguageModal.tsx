@@ -10,6 +10,7 @@ import SettingsList from '@/components/SettingsList';
 import SettingsListBoolean from '@/components/SettingsListBoolean';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import { languageDict, languageOrder, LanguageCode } from '@/constants/SettingData';
+import { isSameBaseLanguage } from 'repo-depkit-common';
 import { TranslationKeys } from '@/locales/keys';
 import { ComponentIds } from '@/constants/ComponentIds';
 
@@ -120,7 +121,8 @@ export const useLanguageModal = () => {
         const LanguageOption = useCallback(
                 ({ languageCode, index }: { languageCode: LanguageCode; index: number }) => {
                         const languageOption = languageDict[languageCode];
-                        const isSelected = language === languageCode;
+                        // The store holds the full code ("de-DE"), the options are the languages ("de").
+                        const isSelected = isSameBaseLanguage(language, languageCode);
                         let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
                         if (languageOrder.length === 1) {
                                 groupPosition = 'single';

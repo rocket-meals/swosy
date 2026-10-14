@@ -50,8 +50,8 @@ const fetchWithRetry = async (url: string, config: any) => {
 
 /**
  * Builds the Directus `deep` parameter that limits the foodoffer's own translations
- * to the selected language (language codes in the database look like 'de-DE', while
- * the app language is e.g. 'de', so we match on the prefix).
+ * to the selected language. Matched on the base language ('de' of 'de-DE'): the app stores
+ * 'de-DE', but a customer may keep the rows as 'de-AT', and the rows must still be found.
  */
 const buildFoodofferTranslationsDeepFilter = (languageCode?: string) => {
 	if (!languageCode) return undefined;

@@ -16,15 +16,23 @@ export function getDirectusTranslation(params: any, translations: TranslationEnt
   const translationDict = translations.reduce(
     (acc, translation) => {
       if (translation.languages_code) {
-        acc[translation.languages_code] = translation;
+        // Lower-cased, and also under the base language: the rows are stored as "de-DE" while a
+        // caller may ask for "de" (or "DE-de"), and both must find the German row.
+        const code = translation.languages_code.toLowerCase();
+        acc[code] = translation;
+        const baseCode = code.split('-')[0];
+        if (baseCode && !acc[baseCode]) {
+          acc[baseCode] = translation;
+        }
       }
       return acc;
     },
     {} as { [key: string]: TranslationEntry }
   );
 
-  const getTranslation = (dict: { [key: string]: TranslationEntry }, langCode: string | null | undefined, params?: any) => {
-    if (!langCode) return null;
+  const getTranslation = (dict: { [key: string]: TranslationEntry }, requestedLangCode: string | null | undefined, params?: any) => {
+    if (!requestedLangCode) return null;
+    const langCode = requestedLangCode.toLowerCase();
     const languageKey = langCode.split('-')[0];
     if (!languageKey) return null;
 
