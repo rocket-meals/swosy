@@ -276,7 +276,8 @@ export function getVersionPatch() {
         // 156: monospace font from FontHelper.getMonospaceFontFamily (common-ui) everywhere
         // 157: common: FoodFeedbackReactionHelper, foods_feedbacks.support_reaction types
         // 158: hint above the food offers when the canteen reacted to a food feedback
-        return 158;
+        // 159: food feedback responses card: reactions bundled, chat messages, details modal
+        return 159;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

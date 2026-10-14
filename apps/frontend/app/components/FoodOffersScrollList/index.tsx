@@ -26,7 +26,7 @@ import { getAppElementTranslation } from '@/helper/resourceHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 import FeatureWishesTile from '@/components/FeatureWishesTile';
-import FoodFeedbackReactionsHint from '@/components/FoodFeedbackReactionsHint';
+import FoodFeedbackResponsesHint from '@/components/FoodFeedbackResponsesHint';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { CanteenVisitsDateRow } from '@/components/CanteenVisitsDateRow';
 import FoodOffersLoadingBar from '@/components/FoodOffersLoadingBar';
@@ -631,7 +631,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				data={displayDays}
 				keyExtractor={item => item.date}
 				renderItem={renderDay}
-				ListHeaderComponent={<FoodFeedbackReactionsHint />}
+				ListHeaderComponent={<FoodFeedbackResponsesHint />}
 				onEndReached={onEndReached}
 				onEndReachedThreshold={0.5}
 				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

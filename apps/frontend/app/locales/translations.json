@@ -9089,64 +9089,44 @@
     "tr": "Yalnızca ana sürüm ve derleme numarası karşılaştırılır. Yama numarası OTA güncellemesiyle gelir ve hiçbir zaman mağazada yer almaz.",
     "zh": "只比较主版本号和构建号。补丁号通过 OTA 更新提供，从不出现在商店中。"
   },
-  "food_feedback_reactions_title": {
-    "de": "Die Mensa hat auf dein Feedback reagiert",
-    "en": "The canteen reacted to your feedback",
-    "ar": "تفاعل المطعم مع ملاحظاتك",
-    "es": "El comedor ha reaccionado a tu opinión",
-    "fr": "Le restaurant universitaire a réagi à ton avis",
-    "ru": "Столовая отреагировала на твой отзыв",
-    "tr": "Yemekhane geri bildirimine tepki verdi",
-    "zh": "食堂回应了你的反馈"
+  "food_feedback_responses_title": {
+    "de": "Rückmeldung der Mensa zu deinem Kommentar",
+    "en": "The canteen responded to your comment",
+    "ar": "ردّ المطعم على تعليقك",
+    "es": "El comedor ha respondido a tu comentario",
+    "fr": "Le restaurant universitaire a répondu à ton commentaire",
+    "ru": "Столовая ответила на твой комментарий",
+    "tr": "Yemekhane yorumuna yanıt verdi",
+    "zh": "食堂回复了你的评论"
   },
-  "food_feedback_reaction_thumbs_up": {
-    "de": "Daumen hoch",
-    "en": "Thumbs up",
-    "ar": "إعجاب",
-    "es": "Pulgar arriba",
-    "fr": "Pouce levé",
-    "ru": "Палец вверх",
-    "tr": "Beğeni",
-    "zh": "点赞"
+  "food_feedback_responses_new_message": {
+    "de": "Neue Nachricht im Chat zu deinem Kommentar",
+    "en": "New chat message about your comment",
+    "ar": "رسالة جديدة في المحادثة حول تعليقك",
+    "es": "Nuevo mensaje en el chat sobre tu comentario",
+    "fr": "Nouveau message dans le chat à propos de ton commentaire",
+    "ru": "Новое сообщение в чате по твоему комментарию",
+    "tr": "Yorumunla ilgili sohbette yeni mesaj",
+    "zh": "关于你评论的新聊天消息"
   },
-  "food_feedback_reaction_heart": {
-    "de": "Herz",
-    "en": "Heart",
-    "ar": "قلب",
-    "es": "Corazón",
-    "fr": "Cœur",
-    "ru": "Сердце",
-    "tr": "Kalp",
-    "zh": "爱心"
+  "food_feedback_responses_modal_title": {
+    "de": "Rückmeldungen der Mensa",
+    "en": "Responses from the canteen",
+    "ar": "ردود المطعم",
+    "es": "Respuestas del comedor",
+    "fr": "Réponses du restaurant universitaire",
+    "ru": "Ответы столовой",
+    "tr": "Yemekhanenin yanıtları",
+    "zh": "食堂的回复"
   },
-  "food_feedback_reaction_thanks": {
-    "de": "Danke",
-    "en": "Thanks",
-    "ar": "شكرًا",
-    "es": "Gracias",
-    "fr": "Merci",
-    "ru": "Спасибо",
-    "tr": "Teşekkürler",
-    "zh": "谢谢"
-  },
-  "food_feedback_reaction_yummy": {
-    "de": "Lecker",
-    "en": "Yummy",
-    "ar": "لذيذ",
-    "es": "Delicioso",
-    "fr": "Délicieux",
-    "ru": "Вкусно",
-    "tr": "Lezzetli",
-    "zh": "好吃"
-  },
-  "food_feedback_reaction_good_idea": {
-    "de": "Gute Idee",
-    "en": "Good idea",
-    "ar": "فكرة جيدة",
-    "es": "Buena idea",
-    "fr": "Bonne idée",
-    "ru": "Хорошая идея",
-    "tr": "İyi fikir",
-    "zh": "好主意"
+  "food_feedback_responses_open_chat": {
+    "de": "Zum Chat",
+    "en": "Open chat",
+    "ar": "فتح المحادثة",
+    "es": "Abrir chat",
+    "fr": "Ouvrir le chat",
+    "ru": "Открыть чат",
+    "tr": "Sohbeti aç",
+    "zh": "打开聊天"
   }
 }

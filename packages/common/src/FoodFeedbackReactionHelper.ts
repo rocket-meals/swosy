@@ -10,6 +10,9 @@ export enum FoodFeedbackReaction {
   GOOD_IDEA = '💡',
 }
 
+/** A reaction with how often it was given, see {@link FoodFeedbackReactionHelper.groupReactions}. */
+export type FoodFeedbackReactionCount = { reaction: string; count: number };
+
 /** What is written to `foods_feedbacks` when the reaction changes. */
 export type FoodFeedbackReactionUpdate = {
   support_reaction: FoodFeedbackReaction | null;
@@ -78,6 +81,24 @@ export class FoodFeedbackReactionHelper {
   static getSeenUntilAfterClosing(shown: readonly { support_reaction_date?: string | null }[], seenUntil: string | null | undefined): string | null {
     const times = [seenUntil, ...shown.map(feedback => feedback.support_reaction_date)].map(value => (value ? new Date(value).getTime() : Number.NaN)).filter(time => !Number.isNaN(time));
     return times.length > 0 ? new Date(Math.max(...times)).toISOString() : null;
+  }
+
+  /**
+   * The reactions of some feedbacks bundled, e.g. 👍 3 and 😋 1: most frequent first, a tie goes to the
+   * reaction given most recently. Unknown values (set by hand) are kept as they are.
+   */
+  static groupReactions(feedbacks: readonly { support_reaction?: string | null; support_reaction_date?: string | null }[]): FoodFeedbackReactionCount[] {
+    const groups = new Map<string, { count: number; latest: number }>();
+    for (const feedback of feedbacks) {
+      const reaction = feedback.support_reaction?.trim();
+      if (!reaction) {
+        continue;
+      }
+      const time = feedback.support_reaction_date ? new Date(feedback.support_reaction_date).getTime() : 0;
+      const group = groups.get(reaction) ?? { count: 0, latest: 0 };
+      groups.set(reaction, { count: group.count + 1, latest: Math.max(group.latest, Number.isNaN(time) ? 0 : time) });
+    }
+    return [...groups.entries()].sort((a, b) => b[1].count - a[1].count || b[1].latest - a[1].latest).map(([reaction, group]) => ({ reaction, count: group.count }));
   }
 
   /** The fields to set a reaction (`null` removes it), with the date the app compares against. */

@@ -67,4 +67,21 @@ describe('FoodFeedbackReactionHelper', () => {
       expect(FoodFeedbackReactionHelper.getSeenUntilAfterClosing([], null)).toBeNull();
     });
   });
+
+  it('bundles reactions, most frequent first, ties by the latest', () => {
+    expect(
+      FoodFeedbackReactionHelper.groupReactions([
+        { support_reaction: '😋', support_reaction_date: '2026-10-14T10:00:00.000Z' },
+        { support_reaction: '👍', support_reaction_date: '2026-10-13T10:00:00.000Z' },
+        { support_reaction: '👍', support_reaction_date: '2026-10-12T10:00:00.000Z' },
+        { support_reaction: '🙏', support_reaction_date: '2026-10-11T10:00:00.000Z' },
+        { support_reaction: null },
+      ])
+    ).toEqual([
+      { reaction: '👍', count: 2 },
+      { reaction: '😋', count: 1 },
+      { reaction: '🙏', count: 1 },
+    ]);
+    expect(FoodFeedbackReactionHelper.groupReactions([])).toEqual([]);
+  });
 });
