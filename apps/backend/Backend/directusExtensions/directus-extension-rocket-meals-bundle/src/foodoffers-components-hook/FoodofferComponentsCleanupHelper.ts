@@ -11,6 +11,9 @@ import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
  * This helper finds the component foodoffers of parents before they are deleted, and cleans up components that are
  * already orphaned.
  */
+type Candidate = { id: string; dateCreated: string };
+type CandidateCursor = { dateCreated: string; idsAtDateCreated: string[] };
+
 export class FoodofferComponentsCleanupHelper {
   static readonly DELETE_BATCH_SIZE = 1000;
   static readonly MAX_DELETES_PER_RUN = 50000;
@@ -78,23 +81,39 @@ export class FoodofferComponentsCleanupHelper {
 
   /**
    * One page of candidates: foodoffers without canteen, date and food (exactly how the food sync creates components),
-   * created more than MIN_AGE_MS ago, sorted by id and starting after `afterId` (keyset paging, so a page costs the same
-   * no matter how far the walk already is - an offset would skip all previous rows again on every page).
+   * created more than MIN_AGE_MS ago, sorted by date_created and id and starting after `cursor` (keyset paging, so a page
+   * costs the same no matter how far the walk already is - an offset would skip all previous rows again on every page).
+   * The cursor uses date_created, because `id` is a uuid and Directus does not allow `_gt` on uuid fields. Rows created
+   * in the same millisecond as the cursor are told apart by the ids already seen with that date_created.
    * Foodoffers without date but with a canteen (offers that are valid all the time) are never candidates.
    */
-  static async readCandidateIds(myDatabaseHelper: MyDatabaseHelper, afterId: string | null, limit: number): Promise<string[]> {
+  static async readCandidates(myDatabaseHelper: MyDatabaseHelper, cursor: CandidateCursor | null, limit: number): Promise<Candidate[]> {
     const createdBefore = new Date(Date.now() - FoodofferComponentsCleanupHelper.MIN_AGE_MS).toISOString();
     const conditions: any[] = [{ canteen: { _null: true } }, { date: { _null: true } }, { food: { _null: true } }, { date_created: { _lt: createdBefore } }];
-    if (afterId !== null) {
-      conditions.push({ id: { _gt: afterId } });
+    if (cursor !== null) {
+      conditions.push({ _or: [{ date_created: { _gt: cursor.dateCreated } }, { _and: [{ date_created: { _eq: cursor.dateCreated } }, { id: { _nin: cursor.idsAtDateCreated } }] }] });
     }
     const rows = await myDatabaseHelper.getFoodoffersHelper().readByQuery({
       filter: { _and: conditions } as any,
-      fields: ['id'],
-      sort: ['id'],
+      fields: ['id', 'date_created'],
+      sort: ['date_created', 'id'],
       limit: limit,
     });
-    return rows.map(row => String(row.id));
+    return rows.map(row => ({ id: String(row.id), dateCreated: String(row.date_created) }));
+  }
+
+  /**
+   * The cursor after `page`: the date_created of its last row plus all ids seen with that date_created, including those
+   * of earlier pages when the whole page shares the date_created of the previous cursor.
+   */
+  static getNextCursor(previous: CandidateCursor | null, page: Candidate[]): CandidateCursor | null {
+    const last = page[page.length - 1];
+    if (last === undefined) {
+      return previous;
+    }
+    const idsOfPage = page.filter(candidate => candidate.dateCreated === last.dateCreated).map(candidate => candidate.id);
+    const idsOfPreviousPages = previous !== null && previous.dateCreated === last.dateCreated ? previous.idsAtDateCreated : [];
+    return { dateCreated: last.dateCreated, idsAtDateCreated: [...idsOfPreviousPages, ...idsOfPage] };
   }
 
   /**
@@ -124,26 +143,27 @@ export class FoodofferComponentsCleanupHelper {
   /**
    * Walks through all candidates page by page and deletes the unreferenced ones, at most MAX_DELETES_PER_RUN per call
    * to keep the database load of a single run bounded. Returns the number of deleted foodoffers.
-   * The next page starts after the last id of the current page, so deleted rows do not shift the following pages.
+   * The next page starts after the last row of the current page, so deleted rows do not shift the following pages.
    */
   static async deleteOrphanedComponentFoodoffers(myDatabaseHelper: MyDatabaseHelper, log: (message: string) => Promise<void>): Promise<number> {
     const foodoffersHelper = myDatabaseHelper.getFoodoffersHelper();
-    const state: { deleted: number; afterId: string | null } = { deleted: 0, afterId: null };
+    const state: { deleted: number; cursor: CandidateCursor | null } = { deleted: 0, cursor: null };
     while (state.deleted < FoodofferComponentsCleanupHelper.MAX_DELETES_PER_RUN) {
-      const candidateIds = await FoodofferComponentsCleanupHelper.readCandidateIds(myDatabaseHelper, state.afterId, FoodofferComponentsCleanupHelper.DELETE_BATCH_SIZE); // NOSONAR S9382 - sequential on purpose: one page after another to keep the database load bounded
-      if (candidateIds.length === 0) {
+      const candidates = await FoodofferComponentsCleanupHelper.readCandidates(myDatabaseHelper, state.cursor, FoodofferComponentsCleanupHelper.DELETE_BATCH_SIZE); // NOSONAR S9382 - sequential on purpose: one page after another to keep the database load bounded
+      if (candidates.length === 0) {
         break;
       }
+      const candidateIds = candidates.map(candidate => candidate.id);
       const orphanedIds = (await FoodofferComponentsCleanupHelper.filterUnreferencedIds(myDatabaseHelper, candidateIds)).slice(0, FoodofferComponentsCleanupHelper.MAX_DELETES_PER_RUN - state.deleted); // NOSONAR S9382 - sequential on purpose: one page after another to keep the database load bounded
       if (orphanedIds.length > 0) {
         await foodoffersHelper.deleteMany(orphanedIds); // NOSONAR S9382 - sequential on purpose: one page after another to keep the database load bounded
         state.deleted += orphanedIds.length;
         await log(`Deleted ${orphanedIds.length} orphaned component foodoffers (${state.deleted} in this run)`); // NOSONAR S9382 - sequential on purpose: one page after another to keep the database load bounded
       }
-      if (candidateIds.length < FoodofferComponentsCleanupHelper.DELETE_BATCH_SIZE) {
+      if (candidates.length < FoodofferComponentsCleanupHelper.DELETE_BATCH_SIZE) {
         break;
       }
-      state.afterId = candidateIds[candidateIds.length - 1]!;
+      state.cursor = FoodofferComponentsCleanupHelper.getNextCursor(state.cursor, candidates);
     }
     return state.deleted;
   }
