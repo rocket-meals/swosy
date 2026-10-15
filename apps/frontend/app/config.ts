@@ -290,7 +290,8 @@ export function getVersionPatch() {
         // 168: common: a support reaction alone no longer marks a food feedback as done
         // 169: the language is stored as full code ("de-DE") and saved in the profile
         // 170: feature wish form says it is about app features (not meals), hint text in contrast color
-        return 170;
+        // 171: the feature wishes tile in the food offers has no "Hide" button anymore
+        return 171;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
