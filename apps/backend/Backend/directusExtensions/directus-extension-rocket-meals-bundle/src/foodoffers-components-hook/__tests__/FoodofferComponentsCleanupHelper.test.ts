@@ -119,26 +119,40 @@ describe('FoodofferComponentsCleanupHelper.filterUnreferencedIds', () => {
 });
 
 describe('FoodofferComponentsCleanupHelper.deleteOrphanedComponentFoodoffers', () => {
-  // Candidate foodoffers sorted by id; the foodoffers helper applies the keyset filter (id > afterId) and the limit
-  function createCleanupDatabaseHelper(candidateIds: string[], junctionRows: JunctionRow[]) {
-    const remainingIds = [...candidateIds].sort();
+  type Candidate = { id: string; date_created: string };
+
+  // Applies the keyset filter (date_created > cursor, or same date_created and id not seen yet) and the limit
+  function isAfterCursor(candidate: Candidate, cursorCondition: any): boolean {
+    if (!cursorCondition) {
+      return true;
+    }
+    const [greater, same] = cursorCondition._or;
+    if (candidate.date_created > greater.date_created._gt) {
+      return true;
+    }
+    const [sameDate, notSeen] = same._and;
+    return candidate.date_created === sameDate.date_created._eq && !notSeen.id._nin.includes(candidate.id);
+  }
+
+  // Candidate foodoffers sorted by date_created and id
+  function createCleanupDatabaseHelper(candidates: Candidate[], junctionRows: JunctionRow[]) {
+    const remaining = [...candidates].sort((a, b) => a.date_created.localeCompare(b.date_created) || a.id.localeCompare(b.id));
     const candidateQueries: any[] = [];
     const deleteCalls: string[][] = [];
     const helper = {
       getFoodoffersHelper: () => ({
         readByQuery: async (query: any) => {
           candidateQueries.push(query);
-          const afterCondition = query.filter._and.find((condition: any) => condition.id);
-          const afterId: string | null = afterCondition ? afterCondition.id._gt : null;
-          return remainingIds
-            .filter(id => afterId === null || id > afterId)
-            .slice(0, query.limit)
-            .map(id => ({ id }));
+          const cursorCondition = query.filter._and.find((condition: any) => condition._or);
+          return remaining.filter(candidate => isAfterCursor(candidate, cursorCondition)).slice(0, query.limit);
         },
         deleteMany: async (ids: string[]) => {
           deleteCalls.push(ids);
           for (const id of ids) {
-            remainingIds.splice(remainingIds.indexOf(id), 1);
+            remaining.splice(
+              remaining.findIndex(candidate => candidate.id === id),
+              1
+            );
           }
         },
       }),
@@ -149,22 +163,44 @@ describe('FoodofferComponentsCleanupHelper.deleteOrphanedComponentFoodoffers', (
     return { helper, candidateQueries, deleteCalls };
   }
 
-  it('walks all pages via the last id of the previous page and deletes only the orphans', async () => {
-    const batchSize = FoodofferComponentsCleanupHelper.DELETE_BATCH_SIZE;
-    const candidateIds = Array.from({ length: batchSize * 2 + 5 }, (_, index) => 'c-' + String(index).padStart(6, '0'));
+  async function runCleanup(candidates: Candidate[]) {
     // Every third candidate is still linked to a parent and has to stay
-    const junctionRows: JunctionRow[] = candidateIds.filter((_, index) => index % 3 === 0).map((id, index) => ({ id: index, parent_foodoffers_id: 'parent', component_foodoffers_id: id }));
-    const { helper, candidateQueries, deleteCalls } = createCleanupDatabaseHelper(candidateIds, junctionRows);
-
+    const junctionRows: JunctionRow[] = candidates.filter((_, index) => index % 3 === 0).map((candidate, index) => ({ id: index, parent_foodoffers_id: 'parent', component_foodoffers_id: candidate.id }));
+    const { helper, candidateQueries, deleteCalls } = createCleanupDatabaseHelper(candidates, junctionRows);
     const deleted = await FoodofferComponentsCleanupHelper.deleteOrphanedComponentFoodoffers(helper, async () => {});
-
     const linkedIds = new Set(junctionRows.map(row => row.component_foodoffers_id));
-    const expectedDeleted = candidateIds.filter(id => !linkedIds.has(id));
+    const expectedDeleted = candidates.map(candidate => candidate.id).filter(id => !linkedIds.has(id));
+    return { deleted, deleteCalls, candidateQueries, expectedDeleted };
+  }
+
+  it('walks all pages via the last row of the previous page and deletes only the orphans', async () => {
+    const batchSize = FoodofferComponentsCleanupHelper.DELETE_BATCH_SIZE;
+    const candidates = Array.from({ length: batchSize * 2 + 5 }, (_, index) => ({ id: 'c-' + String(index).padStart(6, '0'), date_created: new Date(Date.UTC(2026, 0, 1) + index * 1000).toISOString() }));
+    const { deleted, deleteCalls, candidateQueries, expectedDeleted } = await runCleanup(candidates);
+
     expect(deleted).toBe(expectedDeleted.length);
     expect(deleteCalls.flat().sort()).toEqual(expectedDeleted);
     expect(candidateQueries).toHaveLength(3);
     expect(candidateQueries[0].offset).toBeUndefined();
-    expect(candidateQueries[1].filter._and).toContainEqual({ id: { _gt: candidateIds[batchSize - 1] } });
-    expect(candidateQueries[2].filter._and).toContainEqual({ id: { _gt: candidateIds[batchSize * 2 - 1] } });
+    expect(candidateQueries[1].filter._and).toContainEqual({ _or: [{ date_created: { _gt: candidates[batchSize - 1]!.date_created } }, { _and: [{ date_created: { _eq: candidates[batchSize - 1]!.date_created } }, { id: { _nin: [candidates[batchSize - 1]!.id] } }] }] });
+  });
+
+  it('never filters the uuid id with _gt, which Directus rejects', async () => {
+    const batchSize = FoodofferComponentsCleanupHelper.DELETE_BATCH_SIZE;
+    const candidates = Array.from({ length: batchSize + 5 }, (_, index) => ({ id: 'c-' + String(index).padStart(6, '0'), date_created: new Date(Date.UTC(2026, 0, 1) + index).toISOString() }));
+    const { candidateQueries } = await runCleanup(candidates);
+    expect(JSON.stringify(candidateQueries)).not.toMatch(/"id":\{"_gt"/);
+  });
+
+  it('pages through more rows than one page holding the same date_created', async () => {
+    const batchSize = FoodofferComponentsCleanupHelper.DELETE_BATCH_SIZE;
+    const sameDate = new Date(Date.UTC(2026, 0, 1)).toISOString();
+    const laterDate = new Date(Date.UTC(2026, 0, 2)).toISOString();
+    const candidates = Array.from({ length: batchSize * 2 + 5 }, (_, index) => ({ id: 'c-' + String(index).padStart(6, '0'), date_created: index < batchSize * 2 ? sameDate : laterDate }));
+    const { deleted, deleteCalls, candidateQueries, expectedDeleted } = await runCleanup(candidates);
+
+    expect(deleted).toBe(expectedDeleted.length);
+    expect(deleteCalls.flat().sort()).toEqual(expectedDeleted);
+    expect(candidateQueries).toHaveLength(3);
   });
 });
