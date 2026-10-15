@@ -8660,14 +8660,24 @@
     "zh": "还没有已发布的心愿。欢迎提交第一个。"
   },
   "feature_wishes_form_title": {
-    "de": "Dein Wunsch",
-    "en": "Your wish",
-    "ar": "طلبك",
-    "es": "Tu deseo",
-    "fr": "Ton souhait",
-    "ru": "Твоё пожелание",
-    "tr": "İsteğin",
-    "zh": "你的心愿"
+    "de": "Dein Feature-Wunsch für die App",
+    "en": "Your feature wish for the app",
+    "ar": "طلبك لميزة جديدة في التطبيق",
+    "es": "Tu deseo de función para la app",
+    "fr": "Ton souhait de fonctionnalité pour l’app",
+    "ru": "Твоё пожелание функции для приложения",
+    "tr": "Uygulama için özellik isteğin",
+    "zh": "你对应用的功能心愿"
+  },
+  "feature_wishes_form_intro": {
+    "de": "Hier wünschst du dir eine neue Funktion oder Verbesserung für die App. Wünsche zu Speisen oder zum Speiseplan sind hier leider falsch, die kann das App-Team nicht umsetzen.",
+    "en": "Here you can wish for a new feature or improvement for the app. Wishes about meals or the menu do not belong here, the app team cannot make them happen.",
+    "ar": "هنا يمكنك طلب ميزة جديدة أو تحسين للتطبيق. الطلبات المتعلقة بالوجبات أو قائمة الطعام لا مكان لها هنا، فلا يستطيع فريق التطبيق تنفيذها.",
+    "es": "Aquí puedes pedir una nueva función o mejora para la app. Los deseos sobre platos o el menú no van aquí, el equipo de la app no puede hacerlos realidad.",
+    "fr": "Ici, tu peux souhaiter une nouvelle fonctionnalité ou une amélioration de l’app. Les souhaits concernant les plats ou le menu n’ont pas leur place ici, l’équipe de l’app ne peut pas les réaliser.",
+    "ru": "Здесь можно пожелать новую функцию или улучшение для приложения. Пожелания о блюдах или меню сюда не подходят, команда приложения не может их выполнить.",
+    "tr": "Burada uygulama için yeni bir özellik veya iyileştirme dileyebilirsin. Yemeklerle veya menüyle ilgili istekler buraya ait değil, uygulama ekibi bunları gerçekleştiremez.",
+    "zh": "在这里你可以为应用许愿新功能或改进。关于菜品或菜单的心愿不属于这里，应用团队无法实现。"
   },
   "feature_wishes_field_title": {
     "de": "Kurzer Titel",
