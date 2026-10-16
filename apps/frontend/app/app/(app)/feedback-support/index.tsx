@@ -28,6 +28,9 @@ import { excerpt } from '@/constants/HelperFunctions';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 
+// Fields where users write free text. These sheets ask not to enter personal data.
+const FREE_TEXT_FEEDBACK_KEYS = new Set(['title', 'content']);
+
 /**
  * Fill in `title`/`content` on the sanitized feedback input from
  * `defaultValues` when the user hasn't entered their own (non-empty) value.
@@ -217,6 +220,8 @@ const FeedbackScreen = () => {
 				numberOfLines: multiline ? 4 : 1,
 				textAlignVertical: multiline ? 'top' : 'center',
 				inputStyle: multiline ? { height: 150 } : undefined,
+				// Only title and message are free text. The contact email is personal on purpose, the device rows are technical.
+				hint: FREE_TEXT_FEEDBACK_KEYS.has(key) ? translate(TranslationKeys.no_personal_data_hint) : undefined,
 				checkTextInput: isEmailField
 					? value => {
 							const cleanedEmail = StringHelper.replaceAllWithOptions({ str: value, find: String.raw`\s+`, replace: '' });

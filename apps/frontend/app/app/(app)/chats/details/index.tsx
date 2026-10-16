@@ -690,6 +690,7 @@ const ChatDetailsScreen = () => {
 					<SupportFAQ label={translate(TranslationKeys.feedback_support_faq)} onPress={() => router.navigate('/support-FAQ')} />
 				</View>
 			)}
+			<Text style={[styles.noPersonalDataHint, { color: theme.screen.placeholder }]}>{translate(TranslationKeys.no_personal_data_hint)}</Text>
 			<View style={styles.inputContainer}>
 				<TextInput style={[styles.textInput, { color: theme.screen.text, borderColor: theme.screen.placeholder }]} placeholder={translate(TranslationKeys.type_here)} placeholderTextColor={theme.screen.placeholder} multiline value={newMessage} onChangeText={setNewMessage} />
 				<TouchableOpacity

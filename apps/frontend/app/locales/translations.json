@@ -559,6 +559,16 @@
     "tr": "Bir yorum yaz",
     "zh": "写一条评论"
   },
+  "no_personal_data_hint": {
+    "de": "Bitte gib hier keine persönlichen Daten an, zum Beispiel Namen, Adressen oder Telefonnummern.",
+    "en": "Please do not enter any personal data here, for example names, addresses or phone numbers.",
+    "ar": "يرجى عدم إدخال أي بيانات شخصية هنا، مثل الأسماء أو العناوين أو أرقام الهواتف.",
+    "es": "Por favor, no introduzcas datos personales aquí, por ejemplo nombres, direcciones o números de teléfono.",
+    "fr": "Merci de ne pas saisir de données personnelles ici, par exemple des noms, des adresses ou des numéros de téléphone.",
+    "ru": "Пожалуйста, не указывайте здесь персональные данные, например имена, адреса или номера телефонов.",
+    "tr": "Lütfen buraya isim, adres veya telefon numarası gibi kişisel veriler girme.",
+    "zh": "请不要在此填写个人信息，例如姓名、地址或电话号码。"
+  },
   "delete_comment": {
     "de": "Kommentar löschen",
     "en": "Delete Comment",
