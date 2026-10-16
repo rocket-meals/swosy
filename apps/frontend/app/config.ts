@@ -291,7 +291,8 @@ export function getVersionPatch() {
         // 169: the language is stored as full code ("de-DE") and saved in the profile
         // 170: feature wish form says it is about app features (not meals), hint text in contrast color
         // 171: the feature wishes tile in the food offers has no "Hide" button anymore
-        return 171;
+        // 172: back in a chat returns to the screen it was opened from (e.g. the food offers)
+        return 172;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
