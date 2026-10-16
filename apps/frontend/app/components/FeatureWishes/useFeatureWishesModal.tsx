@@ -216,6 +216,7 @@ const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initial
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const showToast = useToast();
+	const { selectedTheme } = useAppSelector(state => state.settings);
 	const [title, setTitle] = useState(initialTitle ?? '');
 	const [description, setDescription] = useState(initialDescription ?? '');
 	const [submitting, setSubmitting] = useState(false);
@@ -244,9 +245,13 @@ const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initial
 	}, [submitting, unchanged, title, description, onSubmit, showToast, translate]);
 
 	const inputStyle = [styles.input, { color: theme.screen.text, borderColor: theme.screen.placeholder }];
+	// The placeholder gray was hardly readable on the hint box, the text takes the contrast color of the box.
+	const hintColor = myContrastColor(theme.screen.iconBg, theme as Parameters<typeof myContrastColor>[1], selectedTheme === 'dark');
+	const hintStyle = [styles.hint, { color: hintColor, backgroundColor: theme.screen.iconBg }];
 
 	return (
 		<View style={styles.form}>
+			{isEdit ? null : <Text style={hintStyle}>{translate(TranslationKeys.feature_wishes_form_intro)}</Text>}
 			<Text style={[styles.label, { color: theme.screen.text }]}>{translate(TranslationKeys.feature_wishes_field_title)}</Text>
 			<ModalTextInput
 				value={title}
@@ -275,9 +280,9 @@ const FeatureWishForm: React.FC<FeatureWishFormProps> = ({ initialTitle, initial
 				placeholderTextColor={theme.screen.placeholder}
 				accessibilityLabel={translate(TranslationKeys.feature_wishes_field_description)}
 			/>
-			<Text style={[styles.hint, { color: theme.screen.placeholder, backgroundColor: theme.screen.iconBg }]}>{translate(TranslationKeys.feature_wishes_hint)}</Text>
+			<Text style={hintStyle}>{translate(TranslationKeys.feature_wishes_hint)}</Text>
 			{showReviewAgainHint ? (
-				<Text style={[styles.hint, { color: theme.screen.placeholder, backgroundColor: theme.screen.iconBg }]}>{translate(TranslationKeys.feature_wishes_edit_published_hint)}</Text>
+				<Text style={hintStyle}>{translate(TranslationKeys.feature_wishes_edit_published_hint)}</Text>
 			) : null}
 			{isEdit ? (
 				<MyUpdateButton onPress={handleSubmit} disabled={unchanged} loading={submitting} style={styles.submit} />

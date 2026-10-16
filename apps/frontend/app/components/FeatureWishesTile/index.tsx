@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { FeatureWishHelper } from 'repo-depkit-common';
 import SettingsList from '@/components/SettingsList';
@@ -7,26 +7,21 @@ import { useFeatureWishesModal } from '@/components/FeatureWishes/useFeatureWish
 import { useFeatureWishesMode } from '@/hooks/useFeatureWishesMode';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { SET_FEATURE_WISHES_LOCAL_DATA } from '@/redux/Types/types';
+import { useAppSelector } from '@/redux/hooks';
 import { TranslationKeys } from '@/locales/keys';
 
 /**
  * "Which feature are you missing?" between the first and the second day of the food offers. Hidden
- * when the app settings do not allow submitting wishes, and for 30 days after "Hide".
+ * when the app settings do not allow submitting wishes, and for 30 days after it was hidden with the
+ * former "Hide" button.
  */
 const FeatureWishesTile: React.FC = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const dispatch = useAppDispatch();
 	const { primaryColor } = useAppSelector(state => state.settings);
 	const mode = useFeatureWishesMode();
 	const tileHiddenAt = useAppSelector(state => state.settings.featureWishesLocal?.tileHiddenAt ?? null);
 	const { openFeatureWishesModal } = useFeatureWishesModal();
-
-	const hide = useCallback(() => {
-		dispatch({ type: SET_FEATURE_WISHES_LOCAL_DATA, payload: { tileHiddenAt: new Date().toISOString() } });
-	}, [dispatch]);
 
 	if (!FeatureWishHelper.maySubmit(mode) || FeatureWishHelper.isTileHidden(tileHiddenAt, new Date())) {
 		return null;
@@ -42,9 +37,6 @@ const FeatureWishesTile: React.FC = () => {
 				handleFunction={openFeatureWishesModal}
 				groupPosition="single"
 			/>
-			<TouchableOpacity style={[styles.hideButton, { borderColor: theme.screen.placeholder }]} onPress={hide} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.hide)}>
-				<Text style={[styles.hideText, { color: theme.screen.text }]}>{translate(TranslationKeys.hide)}</Text>
-			</TouchableOpacity>
 		</View>
 	);
 };
@@ -53,18 +45,6 @@ const styles = StyleSheet.create({
 	container: {
 		width: '100%',
 		marginVertical: 12,
-		gap: 8,
-	},
-	hideButton: {
-		alignSelf: 'flex-start',
-		borderWidth: 1,
-		borderRadius: 8,
-		paddingHorizontal: 12,
-		paddingVertical: 4,
-		marginLeft: 4,
-	},
-	hideText: {
-		fontSize: 13,
 	},
 });
 

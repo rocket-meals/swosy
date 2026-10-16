@@ -892,6 +892,7 @@ export const TranslationKeys = {
 	feature_wishes_popular: 'feature_wishes_popular',
 	feature_wishes_empty: 'feature_wishes_empty',
 	feature_wishes_form_title: 'feature_wishes_form_title',
+	feature_wishes_form_intro: 'feature_wishes_form_intro',
 	feature_wishes_field_title: 'feature_wishes_field_title',
 	feature_wishes_field_description: 'feature_wishes_field_description',
 	feature_wishes_hint: 'feature_wishes_hint',
