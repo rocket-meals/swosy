@@ -10,6 +10,7 @@
 import { ACCESSIBILITY_TEXTS } from './documents/accessibility';
 import { IMPRINT_TEXTS } from './documents/imprint';
 import { PRIVACY_POLICY_TEXTS } from './documents/privacyPolicy';
+import { TERMS_AND_CONDITIONS_TEXTS } from './documents/termsAndConditions';
 import type { TranslationLanguage } from 'repo-depkit-common';
 
 /** One language of a legal document. `content` is Markdown with `{{operator.*}}` / `{{customer.*}}` placeholders. */
@@ -55,5 +56,11 @@ export const LEGAL_DOCUMENTS: readonly LegalDocument[] = [
     customId: 'accessibility',
     alias: 'Barrierefreiheit',
     texts: ACCESSIBILITY_TEXTS,
+  },
+  {
+    wikiId: '1e6a1d0c-0000-4000-8000-000000000004',
+    customId: 'terms-and-conditions',
+    alias: 'AGB',
+    texts: TERMS_AND_CONDITIONS_TEXTS,
   },
 ];

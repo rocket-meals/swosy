@@ -46,7 +46,7 @@ Wir sind bemüht, diese Website und mobile Anwendung im Einklang mit den nationa
 
 
 
-	Falls Sie bei der Verwendung der Webseite auf Barrieren stoßen oder auf Inhalte, die schwer zugänglich sind, Inhalte, die die allgemeinen Empfehlungen für Barrierefreiheit verletzen, wenden Sie sich bitte per Email an: 
+	Falls du bei der Verwendung der Webseite auf Barrieren stößt oder auf Inhalte, die schwer zugänglich sind, Inhalte, die die allgemeinen Empfehlungen für Barrierefreiheit verletzen, wende dich bitte per Email an: 
 
 	
 
