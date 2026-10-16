@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { shallowEqual } from 'react-redux';
 import { DatabaseTypes, doesNewsMatchCanteen, getNewsFoodoffersLocation, isNewsShownAt, NewsFoodoffersPosition } from 'repo-depkit-common';
 import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';
 import MyImage from '@/components/MyImage';
+import SettingsList from '@/components/SettingsList';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { getTitleFromTranslation } from '@/helper/resourceHelper';
@@ -24,7 +25,8 @@ type NewsFoodoffersHintProps = {
  * (`state.food.popupEvents`, loaded in the app layout). Only the news for the shown canteen (a news
  * without canteens is meant for all of them). A tap opens the full news. The cards cannot be hidden:
  * they stay as long as the news is meant for the food offers (no "x", and the opened news has no
- * "do not show again" button, that one is only for popups and their `isOpen` flag).
+ * "do not show again" button, that one is only for popups and their `isOpen` flag). A `SettingsList`
+ * row like the feature wishes tile, with the primary colour as accent on the left.
  */
 const NewsFoodoffersHint: React.FC<NewsFoodoffersHintProps> = ({ canteenId, position }) => {
 	const { theme } = useTheme();
@@ -48,24 +50,29 @@ const NewsFoodoffersHint: React.FC<NewsFoodoffersHintProps> = ({ canteenId, posi
 	}
 
 	return (
-		<View>
+		<View style={styles.container}>
 			{visibleEvents.map(event => {
 				const title = (event.translations ? getTitleFromTranslation(event.translations, language) : '') || event.alias || '';
 				const imageUrl = event.image_remote_url || (event.image ? getImageUrl(String(typeof event.image === 'object' ? event.image.id : event.image)) : null);
 				return (
-					<TouchableOpacity key={event.id} style={[styles.container, { backgroundColor: theme.screen.iconBg, borderLeftColor: primaryColor }]} onPress={() => openDetails(event)} accessibilityRole="button" accessibilityLabel={title}>
-						{imageUrl ? (
-							<View style={styles.imageContainer}>
-								<MyImage style={styles.image} remote_image_url={imageUrl} />
-							</View>
-						) : (
-							<MaterialCommunityIcons name="bullhorn-outline" size={20} color={theme.screen.icon} />
-						)}
-						<Text style={[styles.title, { color: theme.screen.text }]} numberOfLines={2}>
-							{title}
-						</Text>
-						<Octicons name="chevron-right" size={18} color={theme.screen.icon} />
-					</TouchableOpacity>
+					<SettingsList
+						key={event.id}
+						iconBgColor={primaryColor}
+						accentColor={primaryColor}
+						leftIcon={<MaterialCommunityIcons name="bullhorn-outline" size={24} color={theme.screen.icon} />}
+						leftIconComponent={
+							imageUrl ? (
+								<View style={styles.imageContainer}>
+									<MyImage style={styles.image} remote_image_url={imageUrl} />
+								</View>
+							) : undefined
+						}
+						label={title}
+						titleNumberOfLines={2}
+						rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+						handleFunction={() => openDetails(event)}
+						groupPosition="single"
+					/>
 				);
 			})}
 		</View>
@@ -74,31 +81,20 @@ const NewsFoodoffersHint: React.FC<NewsFoodoffersHintProps> = ({ canteenId, posi
 
 const styles = StyleSheet.create({
 	container: {
-		flexDirection: 'row',
-		alignItems: 'center',
+		width: '100%',
 		gap: 8,
-		marginHorizontal: 10,
-		marginTop: 12,
-		marginBottom: 4,
-		paddingVertical: 10,
-		paddingHorizontal: 12,
-		borderRadius: 12,
-		borderLeftWidth: 4,
+		marginVertical: 12,
 	},
 	imageContainer: {
-		width: 40,
-		height: 40,
+		width: 34,
+		height: 34,
 		borderRadius: 8,
 		overflow: 'hidden',
+		marginRight: 10,
 	},
 	image: {
 		width: '100%',
 		height: '100%',
-	},
-	title: {
-		flex: 1,
-		fontSize: 15,
-		fontWeight: '600',
 	},
 });
 

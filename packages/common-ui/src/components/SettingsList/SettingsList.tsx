@@ -12,6 +12,8 @@ import { SettingsListProps } from './types';
 
 const padding = 0;
 const basePaddingVertical = 10;
+/** Width of the bar on the left edge drawn for `accentColor`. */
+const ACCENT_WIDTH = 4;
 
 function computeGroupPositionStyles(
 	groupPosition: SettingsListProps['groupPosition'],
@@ -160,6 +162,7 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	titleColor,
 	valueColor,
 	stackedValue = false,
+	accentColor,
 }) => {
 	const { theme, isDark } = useTheme();
 	const settingsCtx = useSettingsContext();
@@ -181,6 +184,9 @@ const SettingsList: React.FC<SettingsListProps> = ({
 
 	const { groupContainerStyle, wrapperBorderRadius } = computeGroupPositionStyles(groupPosition);
 	const containerStyles = computeContainerStyles(backgroundColor, theme.screen.iconBg, width, borderColor, borderWidth, borderStyle, groupContainerStyle);
+	if (accentColor) {
+		containerStyles.push({ borderLeftWidth: ACCENT_WIDTH, borderLeftColor: accentColor });
+	}
 	const iconWrapperStyles = computeIconWrapperStyles(iconBg);
 	const { valueContainerStyle, valueStackedStyle, valueFontSizeStyle } = computeValueDisplayStyles(stackedValue, valueFontSize);
 

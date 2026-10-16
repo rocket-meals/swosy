@@ -118,6 +118,11 @@ type SettingsListPropsOwn = SettingsListItemBaseProps & {
 	 * same-line-with-wrap-fallback layout.
 	 */
 	stackedValue?: boolean;
+	/**
+	 * Colour of a thick bar on the left edge, to make a row stand out as a hint
+	 * (e.g. a news card above the food offers). No bar when not set.
+	 */
+	accentColor?: string;
 };
 
 export type SettingsListProps = PropsWithChildren<SettingsListPropsOwn>;
