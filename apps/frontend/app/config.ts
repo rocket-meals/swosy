@@ -292,7 +292,8 @@ export function getVersionPatch() {
         // 170: feature wish form says it is about app features (not meals), hint text in contrast color
         // 171: the feature wishes tile in the food offers has no "Hide" button anymore
         // 172: free text inputs (food comments, app feedback, support chat) ask not to enter personal data
-        return 172;
+        // 173: device data note on the feedback screen without a dash
+        return 173;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
