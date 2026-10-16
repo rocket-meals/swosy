@@ -1837,21 +1837,38 @@ export type MarkingsTranslations = {
 
 export type News = {
   alias?: string | null;
+  canteens: any[] | NewsCanteens[];
   categories?: unknown | null;
   date?: string | null;
   date_created?: string | null;
+  date_end?: string | null;
   date_updated?: string | null;
+  display_locations?: string[] | string | null;
+  display_settings?: string | null;
   external_identifier?: string | null;
   id: string;
   image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
+  show_app_rating_button?: boolean | null;
+  show_login_screen_button?: boolean | null;
+  show_on_android?: boolean | null;
+  show_on_app_version?: string | null;
+  show_on_ios?: boolean | null;
+  show_on_web?: boolean | null;
+  show_only_anonymous_users?: boolean | null;
   sort?: number | null;
   status?: string | null;
   translations: any[] | NewsTranslations[];
   url?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+};
+
+export type NewsCanteens = {
+  canteens_id?: string | Canteens | null;
+  id: number;
+  news_id?: string | News | null;
 };
 
 export type NewsTranslations = {
@@ -1891,11 +1908,11 @@ export type PopupEvents = {
   date_end?: string | null;
   date_start: string;
   date_updated?: string | null;
-  display_mode?: string | null;
   id: string;
   image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
+  migrated_news?: string | News | null;
   send_notification?: boolean | null;
   show_app_rating_button?: boolean | null;
   show_login_screen_button?: boolean | null;
@@ -2275,6 +2292,7 @@ export type CustomDirectusTypes = {
   markings_groups_translations: MarkingsGroupsTranslations[];
   markings_translations: MarkingsTranslations[];
   news: News[];
+  news_canteens: NewsCanteens[];
   news_translations: NewsTranslations[];
   organizations: Organizations[];
   popup_events: PopupEvents[];

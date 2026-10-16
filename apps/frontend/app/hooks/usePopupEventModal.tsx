@@ -6,7 +6,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { SET_POPUP_EVENTS } from '@/redux/Types/types';
 import useKioskMode from '@/hooks/useKioskMode';
 import type { ModalCloseReason } from 'repo-depkit-common-ui';
-import { DatabaseTypes, isPopupEventShownAsPopup } from 'repo-depkit-common';
+import { DatabaseTypes, isNewsShownAt, NewsDisplayLocations } from 'repo-depkit-common';
 
 const usePopupEventModal = () => {
 	const dispatch = useDispatch();
@@ -14,7 +14,7 @@ const usePopupEventModal = () => {
 	const popupEvents = useAppSelector((state) => state.food.popupEvents, shallowEqual);
 	const { showAndDiscardOthers: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const popupEventShownIdRef = useRef<string | null>(null);
-	const [currentPopupEvent, setCurrentPopupEvent] = useState<Partial<DatabaseTypes.PopupEvents> | null>(null);
+	const [currentPopupEvent, setCurrentPopupEvent] = useState<Partial<DatabaseTypes.News> | null>(null);
 
 	// Events the user closed only via the header X button, backdrop tap or swipe-down
 	// in THIS app session. Those closes are deliberately NOT persisted as "seen"
@@ -27,10 +27,10 @@ const usePopupEventModal = () => {
 	// from a mere get-me-out-of-here close (X button / backdrop / swipe).
 	const permanentDismissEventIdRef = useRef<string | null>(null);
 
-	// An event is still eligible for the popup queue if it is meant as popup (display_mode,
-	// the others are shown in the food offers by PopupEventFoodoffersHint) and was neither
-	// permanently dismissed (persisted isOpen flag) nor closed earlier in this session.
-	const isEventPending = (e: any) => Boolean(e) && isPopupEventShownAsPopup(e) && !e.isOpen && !sessionClosedIdsRef.current.has(String(e.id ?? ''));
+	// The events are news shown outside the news list. One is still eligible for the popup queue if it
+	// is meant as popup (display_locations, the food offers cards are NewsFoodoffersHint) and was
+	// neither permanently dismissed (persisted isOpen flag) nor closed earlier in this session.
+	const isEventPending = (e: any) => Boolean(e) && isNewsShownAt(e, NewsDisplayLocations.popup) && !e.isOpen && !sessionClosedIdsRef.current.has(String(e.id ?? ''));
 
 	// Kept in sync with the redux value below, but also written to directly inside
 	// markEventAsOpen so handleClosed can read the just-updated list synchronously,

@@ -293,7 +293,8 @@ export function getVersionPatch() {
         // 171: the feature wishes tile in the food offers has no "Hide" button anymore
         // 172: popup events can be shown as a compact card in the food offers instead of a popup
         // 173: popup events in the food offers can be placed above or at the end of the first day
-        return 173;
+        // 174: popup events are news now: popup and food offers cards come from news.display_locations
+        return 174;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

@@ -1,0 +1,55 @@
+{
+  "collection": "popup_events",
+  "field": "migrated_news",
+  "type": "uuid",
+  "meta": {
+    "collection": "popup_events",
+    "conditions": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{alias}}"
+    },
+    "field": "migrated_news",
+    "group": null,
+    "hidden": false,
+    "interface": "select-dropdown-m2o",
+    "note": "Popup Events werden automatisch nach News übernommen. Bitte die News bearbeiten.",
+    "options": {
+      "template": "{{alias}}"
+    },
+    "readonly": true,
+    "required": false,
+    "searchable": true,
+    "sort": 24,
+    "special": [
+      "m2o"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Übernommen nach News"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "migrated_news",
+    "table": "popup_events",
+    "data_type": "uuid",
+    "default_value": null,
+    "max_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": "news",
+    "foreign_key_column": "id"
+  }
+}

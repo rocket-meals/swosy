@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { shallowEqual } from 'react-redux';
-import { DatabaseTypes, doesPopupEventMatchCanteen, isPopupEventShownInFoodoffers, PopupEventFoodoffersPosition } from 'repo-depkit-common';
+import { DatabaseTypes, doesNewsMatchCanteen, getNewsFoodoffersLocation, isNewsShownAt, NewsFoodoffersPosition } from 'repo-depkit-common';
 import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';
 import MyImage from '@/components/MyImage';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
@@ -14,32 +14,32 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { SET_POPUP_EVENTS } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
 
-type FoodoffersPopupEvent = DatabaseTypes.PopupEvents & { isOpen?: boolean };
+type FoodoffersNews = DatabaseTypes.News & { isOpen?: boolean };
 
-type PopupEventFoodoffersHintProps = {
+type NewsFoodoffersHintProps = {
 	canteenId: string;
-	position: PopupEventFoodoffersPosition;
+	position: NewsFoodoffersPosition;
 };
 
 /**
- * Popup events with `display_mode` "foodoffers_top" or "foodoffers_bottom", as compact cards above the food
- * offers or below the first day instead of a sheet that opens on its own (`position` picks which ones).
- * Only the events for the shown canteen (an event without canteens is meant for all of them). A tap
- * opens the full event, the "x" hides it for good, the same way as the
- * "do not show again" button of the popup (persisted `isOpen` flag).
+ * News with `display_locations` "foodoffers_top" or "foodoffers_bottom", as compact cards above the food
+ * offers or below the first day (`position` picks which ones). They come with the popup news
+ * (`state.food.popupEvents`, loaded in the app layout). Only the news for the shown canteen (a news
+ * without canteens is meant for all of them). A tap opens the full news, the "x" hides it for good, the
+ * same way as the "do not show again" button of the popup (persisted `isOpen` flag).
  */
-const PopupEventFoodoffersHint: React.FC<PopupEventFoodoffersHintProps> = ({ canteenId, position }) => {
+const NewsFoodoffersHint: React.FC<NewsFoodoffersHintProps> = ({ canteenId, position }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useAppDispatch();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { primaryColor, language } = useAppSelector(state => state.settings);
-	const popupEvents = useAppSelector(state => state.food.popupEvents, shallowEqual) as FoodoffersPopupEvent[];
+	const popupEvents = useAppSelector(state => state.food.popupEvents, shallowEqual) as FoodoffersNews[];
 
-	const visibleEvents = useMemo(() => (popupEvents ?? []).filter(event => !event?.isOpen && isPopupEventShownInFoodoffers(event, position) && doesPopupEventMatchCanteen(event, canteenId)), [popupEvents, canteenId, position]);
+	const visibleEvents = useMemo(() => (popupEvents ?? []).filter(event => !event?.isOpen && isNewsShownAt(event, getNewsFoodoffersLocation(position)) && doesNewsMatchCanteen(event, canteenId)), [popupEvents, canteenId, position]);
 
 	const dismiss = useCallback(
-		(event: FoodoffersPopupEvent) => {
+		(event: FoodoffersNews) => {
 			const updatedEvents = popupEvents.map(entry => (entry.id === event.id ? { ...entry, isOpen: true } : entry));
 			dispatch({ type: SET_POPUP_EVENTS, payload: updatedEvents });
 		},
@@ -47,7 +47,7 @@ const PopupEventFoodoffersHint: React.FC<PopupEventFoodoffersHintProps> = ({ can
 	);
 
 	const openDetails = useCallback(
-		(event: FoodoffersPopupEvent) => {
+		(event: FoodoffersNews) => {
 			const dismissAndClose = () => {
 				dismiss(event);
 				closeModal();
@@ -121,4 +121,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default PopupEventFoodoffersHint;
+export default NewsFoodoffersHint;

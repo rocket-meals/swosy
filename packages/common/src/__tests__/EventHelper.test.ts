@@ -1,107 +1,124 @@
 import {
   DatabaseTypes,
   doesAppVersionMatchConstraint,
-  doesPopupEventMatchCanteen,
-  filterPopupEvents,
-  getPopupEventCanteenIds,
-  getPopupEventDisplayMode,
-  getPopupEventFoodoffersPosition,
-  isPopupEventActive,
-  isPopupEventShownAsPopup,
-  isPopupEventShownInFoodoffers,
-  PopupEventDisplayModes,
-  PopupEventFoodoffersPositions,
+  doesNewsMatchCanteen,
+  filterNewsShownOutsideNewsList,
+  getNewsCanteenIds,
+  getNewsDisplayLocations,
+  getNewsFoodoffersLocation,
+  isNewsShownAt,
+  isNewsShownInNewsList,
+  isNewsVisibleAtTime,
+  NewsDisplayLocations,
+  NewsFoodoffersPositions,
 } from 'repo-depkit-common';
 
-describe('Popup event helper', () => {
-  const baseEvent: DatabaseTypes.PopupEvents = {
+describe('News display helper', () => {
+  const baseNews = {
     id: '1',
+    canteens: [],
+    translations: [],
+    display_locations: ['popup'],
     show_on_android: true,
     show_on_ios: true,
     show_on_web: true,
-  } as DatabaseTypes.PopupEvents;
+  } as unknown as DatabaseTypes.News;
 
   const referenceDate = new Date('2024-06-15T12:00:00Z');
 
-  it('treats events without date limits as active', () => {
-    expect(isPopupEventActive(baseEvent, referenceDate)).toBe(true);
+  describe('display locations', () => {
+    it('shows news without locations (e.g. imported ones) only in the news list', () => {
+      expect(getNewsDisplayLocations({ display_locations: null })).toEqual([NewsDisplayLocations.news_list]);
+      expect(getNewsDisplayLocations({ display_locations: [] })).toEqual([NewsDisplayLocations.news_list]);
+      expect(getNewsDisplayLocations({ display_locations: ['something'] })).toEqual([NewsDisplayLocations.news_list]);
+    });
+
+    it('reads arrays and csv strings', () => {
+      expect(getNewsDisplayLocations({ display_locations: ['news_list', 'popup'] })).toEqual(['news_list', 'popup']);
+      expect(getNewsDisplayLocations({ display_locations: 'popup,foodoffers_top' })).toEqual(['popup', 'foodoffers_top']);
+    });
+
+    it('checks single locations and maps the food offers positions', () => {
+      const news = { display_locations: ['news_list', 'foodoffers_bottom'] };
+      expect(isNewsShownAt(news, NewsDisplayLocations.news_list)).toBe(true);
+      expect(isNewsShownAt(news, NewsDisplayLocations.popup)).toBe(false);
+      expect(isNewsShownAt(news, getNewsFoodoffersLocation(NewsFoodoffersPositions.bottom))).toBe(true);
+      expect(isNewsShownAt(news, getNewsFoodoffersLocation(NewsFoodoffersPositions.top))).toBe(false);
+    });
   });
 
-  it('checks both start and end dates when provided', () => {
-    const activeEvent = {
-      ...baseEvent,
-      date_start: '2024-06-10T00:00:00Z',
-      date_end: '2024-06-20T23:59:59Z',
-    } as DatabaseTypes.PopupEvents;
+  describe('time range', () => {
+    it('is visible from date until date_end', () => {
+      expect(isNewsVisibleAtTime({ date: null, date_end: null }, referenceDate)).toBe(true);
+      expect(isNewsVisibleAtTime({ date: '2024-06-10T00:00:00Z', date_end: '2024-06-20T00:00:00Z' }, referenceDate)).toBe(true);
+      expect(isNewsVisibleAtTime({ date: '2024-06-16T00:00:00Z', date_end: null }, referenceDate)).toBe(false);
+      expect(isNewsVisibleAtTime({ date: null, date_end: '2024-06-10T00:00:00Z' }, referenceDate)).toBe(false);
+    });
 
-    const expiredEvent = {
-      ...baseEvent,
-      date_start: '2024-06-01T00:00:00Z',
-      date_end: '2024-06-10T00:00:00Z',
-    } as DatabaseTypes.PopupEvents;
+    it('can ignore the start, as the news list does', () => {
+      expect(isNewsVisibleAtTime({ date: '2024-06-16T00:00:00Z', date_end: null }, referenceDate, true)).toBe(true);
+    });
 
-    expect(isPopupEventActive(activeEvent, referenceDate)).toBe(true);
-    expect(isPopupEventActive(expiredEvent, referenceDate)).toBe(false);
+    it('lists news in the news list until their end', () => {
+      expect(isNewsShownInNewsList({ display_locations: null, date: '2024-07-01T00:00:00Z', date_end: null }, referenceDate)).toBe(true);
+      expect(isNewsShownInNewsList({ display_locations: null, date: null, date_end: '2024-06-10T00:00:00Z' }, referenceDate)).toBe(false);
+      expect(isNewsShownInNewsList({ display_locations: ['popup'], date: null, date_end: null }, referenceDate)).toBe(false);
+    });
   });
 
-  it('considers end date when no start date is provided', () => {
-    const eventEndingInFuture = {
-      ...baseEvent,
-      date_end: '2024-06-20T00:00:00Z',
-    } as DatabaseTypes.PopupEvents;
+  describe('filterNewsShownOutsideNewsList', () => {
+    it('keeps popup and food offers news in their time on the platform', () => {
+      const newsList = [
+        { ...baseNews, id: 'popup', date: '2024-06-10T00:00:00Z', date_end: '2024-06-20T00:00:00Z' },
+        { ...baseNews, id: 'card', display_locations: ['foodoffers_top'] },
+        { ...baseNews, id: 'list-only', display_locations: ['news_list'] },
+        { ...baseNews, id: 'imported', display_locations: null },
+        { ...baseNews, id: 'not-on-android', show_on_android: false },
+        { ...baseNews, id: 'no-platform-value', show_on_android: null },
+        { ...baseNews, id: 'ended', date_end: '2024-06-10T00:00:00Z' },
+        { ...baseNews, id: 'future', date: '2024-07-01T00:00:00Z' },
+      ] as DatabaseTypes.News[];
 
-    const eventAlreadyEnded = {
-      ...baseEvent,
-      date_end: '2024-06-10T00:00:00Z',
-    } as DatabaseTypes.PopupEvents;
+      const filtered = filterNewsShownOutsideNewsList(newsList, 'show_on_android', referenceDate);
 
-    expect(isPopupEventActive(eventEndingInFuture, referenceDate)).toBe(true);
-    expect(isPopupEventActive(eventAlreadyEnded, referenceDate)).toBe(false);
+      expect(filtered.map((news) => news.id)).toEqual(['popup', 'card', 'no-platform-value']);
+    });
+
+    it('shows news restricted to anonymous users only to anonymous users', () => {
+      const newsList = [
+        { ...baseNews, id: 'everyone' },
+        { ...baseNews, id: 'anonymous-only', show_only_anonymous_users: true },
+      ] as DatabaseTypes.News[];
+
+      expect(filterNewsShownOutsideNewsList(newsList, 'show_on_web', referenceDate, undefined, true).map((news) => news.id)).toEqual(['everyone', 'anonymous-only']);
+      expect(filterNewsShownOutsideNewsList(newsList, 'show_on_web', referenceDate, undefined, false).map((news) => news.id)).toEqual(['everyone']);
+    });
+
+    it('checks the app version constraint', () => {
+      const newsList = [{ ...baseNews, id: 'old-versions', show_on_app_version: '<20.200.0' }] as DatabaseTypes.News[];
+      expect(filterNewsShownOutsideNewsList(newsList, 'show_on_web', referenceDate, '20.199.0')).toHaveLength(1);
+      expect(filterNewsShownOutsideNewsList(newsList, 'show_on_web', referenceDate, '20.200.0')).toHaveLength(0);
+    });
   });
 
-  it('filters events by platform visibility and active dates', () => {
-    const events: DatabaseTypes.PopupEvents[] = [
-      {
-        ...baseEvent,
-        id: '1',
-        date_start: '2024-06-10T00:00:00Z',
-        date_end: '2024-06-20T23:59:59Z',
-        show_on_android: true,
-      },
-      {
-        ...baseEvent,
-        id: '2',
-        date_start: '2024-06-10T00:00:00Z',
-        date_end: '2024-06-20T23:59:59Z',
-        show_on_android: false,
-      },
-      {
-        ...baseEvent,
-        id: '3',
-        date_end: '2024-06-10T00:00:00Z',
-        show_on_android: true,
-      },
-    ];
+  describe('canteens', () => {
+    it('matches every canteen when no canteen is set', () => {
+      expect(doesNewsMatchCanteen(baseNews, 'a')).toBe(true);
+      expect(doesNewsMatchCanteen(baseNews, null)).toBe(true);
+      expect(doesNewsMatchCanteen({ canteens: undefined as unknown as [] }, 'a')).toBe(true);
+    });
 
-    const filtered = filterPopupEvents(events, 'show_on_android', referenceDate);
+    it('matches only the listed canteens, as ids or resolved objects', () => {
+      const withIds = { canteens: [{ id: 1, canteens_id: 'a' }] } as unknown as DatabaseTypes.News;
+      const withObjects = { canteens: [{ id: 1, canteens_id: { id: 'b' } }] } as unknown as DatabaseTypes.News;
 
-    expect(filtered.map((event) => event.id)).toEqual(['1']);
-  });
-
-  it('shows events restricted to anonymous users only to anonymous users', () => {
-    const events: DatabaseTypes.PopupEvents[] = [
-      { ...baseEvent, id: 'everyone' },
-      { ...baseEvent, id: 'anonymous-only', show_only_anonymous_users: true },
-      { ...baseEvent, id: 'explicitly-everyone', show_only_anonymous_users: false },
-    ];
-
-    const forAnonymousUser = filterPopupEvents(events, 'show_on_web', referenceDate, undefined, true);
-    const forUserWithAccount = filterPopupEvents(events, 'show_on_web', referenceDate, undefined, false);
-    const withoutUserInformation = filterPopupEvents(events, 'show_on_web', referenceDate);
-
-    expect(forAnonymousUser.map((event) => event.id)).toEqual(['everyone', 'anonymous-only', 'explicitly-everyone']);
-    expect(forUserWithAccount.map((event) => event.id)).toEqual(['everyone', 'explicitly-everyone']);
-    expect(withoutUserInformation.map((event) => event.id)).toEqual(['everyone', 'explicitly-everyone']);
+      expect(getNewsCanteenIds(withIds)).toEqual(['a']);
+      expect(getNewsCanteenIds(withObjects)).toEqual(['b']);
+      expect(doesNewsMatchCanteen(withIds, 'a')).toBe(true);
+      expect(doesNewsMatchCanteen(withIds, 'b')).toBe(false);
+      expect(doesNewsMatchCanteen(withObjects, 'b')).toBe(true);
+      expect(doesNewsMatchCanteen(withObjects, undefined)).toBe(false);
+    });
   });
 
   describe('doesAppVersionMatchConstraint', () => {
@@ -140,62 +157,5 @@ describe('Popup event helper', () => {
       expect(doesAppVersionMatchConstraint('20.200.0', '20.200.0')).toBe(true);
       expect(doesAppVersionMatchConstraint('20.200.0', '20.200.1')).toBe(false);
     });
-
-    it('excludes an event from the filtered results once the app is updated past the constraint', () => {
-      const event: DatabaseTypes.PopupEvents = {
-        ...baseEvent,
-        id: '4',
-        show_on_app_version: '<20.200.0',
-      };
-
-      expect(filterPopupEvents([event], 'show_on_android', referenceDate, '19.999.9').map((e) => e.id)).toEqual(['4']);
-      expect(filterPopupEvents([event], 'show_on_android', referenceDate, '20.200.0').map((e) => e.id)).toEqual([]);
-    });
-  });
-});
-
-describe('Popup event display mode and canteens', () => {
-  const event = { id: '1', canteens: [] } as unknown as DatabaseTypes.PopupEvents;
-
-  it('shows events without a display mode as popup', () => {
-    expect(getPopupEventDisplayMode(event)).toBe(PopupEventDisplayModes.popup);
-    expect(isPopupEventShownAsPopup(event)).toBe(true);
-    expect(isPopupEventShownInFoodoffers(event)).toBe(false);
-  });
-
-  it('shows unknown display modes as popup', () => {
-    expect(getPopupEventDisplayMode({ display_mode: 'something' })).toBe(PopupEventDisplayModes.popup);
-  });
-
-  it('shows foodoffers events at their position in the food offers', () => {
-    const topEvent = { ...event, display_mode: 'foodoffers_top' };
-    const bottomEvent = { ...event, display_mode: 'foodoffers_bottom' };
-
-    expect(isPopupEventShownAsPopup(topEvent)).toBe(false);
-    expect(getPopupEventFoodoffersPosition(topEvent)).toBe(PopupEventFoodoffersPositions.top);
-    expect(getPopupEventFoodoffersPosition(bottomEvent)).toBe(PopupEventFoodoffersPositions.bottom);
-    expect(getPopupEventFoodoffersPosition(event)).toBeNull();
-    expect(isPopupEventShownInFoodoffers(topEvent)).toBe(true);
-    expect(isPopupEventShownInFoodoffers(topEvent, PopupEventFoodoffersPositions.top)).toBe(true);
-    expect(isPopupEventShownInFoodoffers(topEvent, PopupEventFoodoffersPositions.bottom)).toBe(false);
-    expect(isPopupEventShownInFoodoffers(bottomEvent, PopupEventFoodoffersPositions.bottom)).toBe(true);
-  });
-
-  it('matches every canteen when no canteen is set', () => {
-    expect(doesPopupEventMatchCanteen(event, 'a')).toBe(true);
-    expect(doesPopupEventMatchCanteen(event, null)).toBe(true);
-    expect(doesPopupEventMatchCanteen({ canteens: undefined as unknown as [] }, 'a')).toBe(true);
-  });
-
-  it('matches only the listed canteens, as ids or resolved objects', () => {
-    const withIds = { canteens: [{ id: 1, canteens_id: 'a' }] } as unknown as DatabaseTypes.PopupEvents;
-    const withObjects = { canteens: [{ id: 1, canteens_id: { id: 'b' } }] } as unknown as DatabaseTypes.PopupEvents;
-
-    expect(getPopupEventCanteenIds(withIds)).toEqual(['a']);
-    expect(getPopupEventCanteenIds(withObjects)).toEqual(['b']);
-    expect(doesPopupEventMatchCanteen(withIds, 'a')).toBe(true);
-    expect(doesPopupEventMatchCanteen(withIds, 'b')).toBe(false);
-    expect(doesPopupEventMatchCanteen(withObjects, 'b')).toBe(true);
-    expect(doesPopupEventMatchCanteen(withObjects, undefined)).toBe(false);
   });
 });

@@ -7,6 +7,7 @@ describe('news rss endpoint', () => {
     const news: DatabaseTypes.News[] = [
       {
         id: '1',
+        canteens: [],
         date: '2024-01-01',
         url: 'https://example.com/news',
         translations: [

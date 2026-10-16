@@ -1,0 +1,25 @@
+{
+  "collection": "popup_events",
+  "field": "migrated_news",
+  "related_collection": "news",
+  "meta": {
+    "junction_field": null,
+    "many_collection": "popup_events",
+    "many_field": "migrated_news",
+    "one_allowed_collections": null,
+    "one_collection": "news",
+    "one_collection_field": null,
+    "one_deselect_action": "nullify",
+    "one_field": null,
+    "sort_field": null
+  },
+  "schema": {
+    "table": "popup_events",
+    "column": "migrated_news",
+    "foreign_key_table": "news",
+    "foreign_key_column": "id",
+    "constraint_name": "popup_events_migrated_news_foreign",
+    "on_update": "NO ACTION",
+    "on_delete": "SET NULL"
+  }
+}

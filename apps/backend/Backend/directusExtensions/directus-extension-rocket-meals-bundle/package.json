@@ -284,6 +284,11 @@
         "source": "src/mcp-public-user-endpoint/index.ts"
       },
       {
+        "type": "hook",
+        "name": "popup-events-to-news-migration-schedule",
+        "source": "src/popup-events-to-news-migration-schedule/index.ts"
+      },
+      {
         "type": "endpoint",
         "name": "profile-avatar-endpoint",
         "source": "src/profile-avatar-endpoint/index.ts"

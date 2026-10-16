@@ -1,40 +1,42 @@
 {
-  "collection": "popup_events",
-  "field": "display_mode",
-  "type": "string",
+  "collection": "news",
+  "field": "display_locations",
+  "type": "csv",
   "meta": {
-    "collection": "popup_events",
+    "collection": "news",
     "conditions": null,
     "display": "labels",
     "display_options": {
       "choices": [
         {
-          "background": "var(--theme--primary-background)",
-          "foreground": "var(--theme--primary)",
+          "text": "News-Liste",
+          "value": "news_list"
+        },
+        {
           "text": "Popup",
           "value": "popup"
         },
         {
-          "background": "var(--theme--background-normal)",
-          "foreground": "var(--theme--foreground)",
           "text": "Im Speiseplan oben",
           "value": "foodoffers_top"
         },
         {
-          "background": "var(--theme--background-normal)",
-          "foreground": "var(--theme--foreground)",
           "text": "Im Speiseplan unten (Ende des ersten Tages)",
           "value": "foodoffers_bottom"
         }
       ]
     },
-    "field": "display_mode",
-    "group": null,
+    "field": "display_locations",
+    "group": "display_settings",
     "hidden": false,
-    "interface": "select-dropdown",
-    "note": "Popup: öffnet sich beim Start als Fenster. Im Speiseplan oben/unten: kleines Feld über den Speisen oder am Ende des ersten Tages, nur für die unter canteens gewählten Standorte (leer: alle Standorte).",
+    "interface": "select-multiple-checkbox",
+    "note": "Wo die News in der App erscheint. Leer: nur in der News-Liste.",
     "options": {
       "choices": [
+        {
+          "text": "News-Liste",
+          "value": "news_list"
+        },
         {
           "text": "Popup",
           "value": "popup"
@@ -52,19 +54,26 @@
     "readonly": false,
     "required": false,
     "searchable": true,
-    "sort": 24,
-    "special": null,
-    "translations": null,
+    "sort": 1,
+    "special": [
+      "cast-csv"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Anzeigen in"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"
   },
   "schema": {
-    "name": "display_mode",
-    "table": "popup_events",
-    "data_type": "character varying",
-    "default_value": "popup",
-    "max_length": 255,
+    "name": "display_locations",
+    "table": "news",
+    "data_type": "text",
+    "default_value": "news_list",
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

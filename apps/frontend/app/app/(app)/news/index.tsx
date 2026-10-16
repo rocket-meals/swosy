@@ -5,7 +5,7 @@ import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import NewsItem from '@/components/NewsItem/NewsItem';
 import { NewsHelper } from '@/redux/actions/News/News';
-import { AppUsageEventNames, DatabaseTypes, CollectibleAt } from 'repo-depkit-common';
+import { AppUsageEventNames, DatabaseTypes, CollectibleAt, isNewsShownInNewsList } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { SET_NEWS } from '@/redux/Types/types';
@@ -63,7 +63,8 @@ const Index = () => {
 	}, []);
 
 	const filteredNews = useMemo(
-		() => (news ?? []).filter((item: DatabaseTypes.News) => (item?.translations?.length ?? 0) > 1),
+		// Only news meant for the list (display_locations) and not ended yet (date_end).
+		() => (news ?? []).filter((item: DatabaseTypes.News) => (item?.translations?.length ?? 0) > 1 && isNewsShownInNewsList(item)),
 		[news]
 	);
 

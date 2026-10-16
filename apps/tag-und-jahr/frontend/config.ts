@@ -95,7 +95,8 @@ export function getVersionPatch() {
 	// 70: common: full language codes ("de-DE"), name sorting finds "de-DE" rows for "de"
 	// 71: common: popup events can be shown in the food offers (display_mode)
 	// 72: common: popup events can be shown above or below the first day of the food offers
-	return 72;
+	// 73: common: popup events merged into news (display_locations, date_end, canteens)
+	return 73;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

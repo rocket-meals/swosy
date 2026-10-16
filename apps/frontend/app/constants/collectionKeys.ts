@@ -120,6 +120,7 @@ export const CollectionKeys = {
 	FOODS_TRANSLATIONS: 'foods_translations',
 	NEWS: 'news',
 	NEWS_TRANSLATIONS: 'news_translations',
+	NEWS_CANTEENS: 'news_canteens',
 	UTILIZATIONS_ENTRIES: 'utilizations_entries',
 	APP_SETTINGS: 'app_settings',
 	UTILIZATIONS_GROUPS: 'utilizations_groups',
