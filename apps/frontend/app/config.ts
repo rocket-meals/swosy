@@ -293,7 +293,9 @@ export function getVersionPatch() {
         // 171: the feature wishes tile in the food offers has no "Hide" button anymore
         // 172: food details show the name again (translation matched on the base language of "de-DE")
         // 173: back in a chat returns to the screen it was opened from (e.g. the food offers)
-        return 173;
+        // 174: free text inputs (food comments, app feedback, support chat) ask not to enter personal data
+        // 175: device data note on the feedback screen without a dash
+        return 175;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

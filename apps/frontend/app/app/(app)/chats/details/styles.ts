@@ -59,6 +59,13 @@ export default StyleSheet.create({
                 fontFamily: 'Poppins_400Regular',
                 marginTop: 2,
         },
+	noPersonalDataHint: {
+		fontSize: 12,
+		lineHeight: 17,
+		fontFamily: 'Poppins_400Regular',
+		paddingHorizontal: 10,
+		paddingTop: 6,
+	},
 	inputContainer: {
 		flexDirection: 'row',
 		alignItems: 'flex-end',

@@ -82,6 +82,7 @@ export const TranslationKeys = {
 	comments: 'comments',
 	save_comment: 'save_comment',
 	write_a_comment: 'write_a_comment',
+	no_personal_data_hint: 'no_personal_data_hint',
 	delete_comment: 'delete_comment',
 	average_rating: 'average_rating',
 	amount_ratings: 'amount_ratings',
