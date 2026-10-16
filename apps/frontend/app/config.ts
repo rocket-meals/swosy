@@ -299,7 +299,8 @@ export function getVersionPatch() {
         // 177: popup events in the food offers can be placed above or at the end of the first day
         // 178: popup events are news now: popup and food offers cards come from news.display_locations
         // 179: popup_events collection removed, popups only come from news
-        return 179;
+        // 180: food offers news cards cannot be hidden (no x, no "do not show again"), only popups can
+        return 180;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

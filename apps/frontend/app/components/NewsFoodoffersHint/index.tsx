@@ -9,12 +9,9 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { getTitleFromTranslation } from '@/helper/resourceHelper';
 import { useTheme } from '@/hooks/useTheme';
-import { useLanguage } from '@/hooks/useLanguage';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { SET_POPUP_EVENTS } from '@/redux/Types/types';
-import { TranslationKeys } from '@/locales/keys';
+import { useAppSelector } from '@/redux/hooks';
 
-type FoodoffersNews = DatabaseTypes.News & { isOpen?: boolean };
+type FoodoffersNews = DatabaseTypes.News;
 
 type NewsFoodoffersHintProps = {
 	canteenId: string;
@@ -25,38 +22,25 @@ type NewsFoodoffersHintProps = {
  * News with `display_locations` "foodoffers_top" or "foodoffers_bottom", as compact cards above the food
  * offers or below the first day (`position` picks which ones). They come with the popup news
  * (`state.food.popupEvents`, loaded in the app layout). Only the news for the shown canteen (a news
- * without canteens is meant for all of them). A tap opens the full news, the "x" hides it for good, the
- * same way as the "do not show again" button of the popup (persisted `isOpen` flag).
+ * without canteens is meant for all of them). A tap opens the full news. The cards cannot be hidden:
+ * they stay as long as the news is meant for the food offers (no "x", and the opened news has no
+ * "do not show again" button, that one is only for popups and their `isOpen` flag).
  */
 const NewsFoodoffersHint: React.FC<NewsFoodoffersHintProps> = ({ canteenId, position }) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
-	const dispatch = useAppDispatch();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { primaryColor, language } = useAppSelector(state => state.settings);
 	const popupEvents = useAppSelector(state => state.food.popupEvents, shallowEqual) as FoodoffersNews[];
 
-	const visibleEvents = useMemo(() => (popupEvents ?? []).filter(event => !event?.isOpen && isNewsShownAt(event, getNewsFoodoffersLocation(position)) && doesNewsMatchCanteen(event, canteenId)), [popupEvents, canteenId, position]);
-
-	const dismiss = useCallback(
-		(event: FoodoffersNews) => {
-			const updatedEvents = popupEvents.map(entry => (entry.id === event.id ? { ...entry, isOpen: true } : entry));
-			dispatch({ type: SET_POPUP_EVENTS, payload: updatedEvents });
-		},
-		[dispatch, popupEvents]
-	);
+	const visibleEvents = useMemo(() => (popupEvents ?? []).filter(event => isNewsShownAt(event, getNewsFoodoffersLocation(position)) && doesNewsMatchCanteen(event, canteenId)), [popupEvents, canteenId, position]);
 
 	const openDetails = useCallback(
 		(event: FoodoffersNews) => {
-			const dismissAndClose = () => {
-				dismiss(event);
-				closeModal();
-			};
 			showModal({
-				children: <PopupEventSheet closeSheet={dismissAndClose} eventData={event} />,
+				children: <PopupEventSheet closeSheet={closeModal} eventData={event} showDismissButton={false} />,
 			});
 		},
-		[showModal, closeModal, dismiss]
+		[showModal, closeModal]
 	);
 
 	if (visibleEvents.length === 0) {
@@ -81,9 +65,6 @@ const NewsFoodoffersHint: React.FC<NewsFoodoffersHintProps> = ({ canteenId, posi
 							{title}
 						</Text>
 						<Octicons name="chevron-right" size={18} color={theme.screen.icon} />
-						<TouchableOpacity onPress={() => dismiss(event)} accessibilityRole="button" accessibilityLabel={translate(TranslationKeys.hide)} hitSlop={12}>
-							<MaterialCommunityIcons name="close" size={20} color={theme.screen.icon} />
-						</TouchableOpacity>
 					</TouchableOpacity>
 				);
 			})}

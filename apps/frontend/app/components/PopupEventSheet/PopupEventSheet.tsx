@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
 	},
 });
 
-const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, eventData }) => {
+const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, eventData, showDismissButton = true }) => {
 	const { theme } = useTheme();
 	const { language } = useAppSelector((state) => state.settings);
 	const { translate } = useLanguage();
@@ -79,16 +79,18 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, eventData
 
 	return (
 		<View style={styles.container}>
-			<View
-				style={{
-					...styles.sheetHeaderClose,
-					paddingRight: isWeb ? 10 : 0,
-					paddingTop: isWeb ? 10 : 0,
-					alignItems: 'center',
-				}}
-			>
-				<ProjectButton text="Schließen und nicht erneut anzeigen" onPress={closeSheet} />
-			</View>
+			{showDismissButton ? (
+				<View
+					style={{
+						...styles.sheetHeaderClose,
+						paddingRight: isWeb ? 10 : 0,
+						paddingTop: isWeb ? 10 : 0,
+						alignItems: 'center',
+					}}
+				>
+					<ProjectButton text="Schließen und nicht erneut anzeigen" onPress={closeSheet} />
+				</View>
+			) : null}
 			<View style={styles.sheetHeaderText}>
 				<View />
 				<Text

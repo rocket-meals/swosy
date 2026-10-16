@@ -68,7 +68,6 @@ const DISH_COUNT = 4;
           <v-icon name="campaign" x-small />
           <span class="hint-title">{{ title }}</span>
           <v-icon name="chevron_right" x-small />
-          <v-icon name="close" x-small />
         </div>
         <template v-if="!showBottomCard">
           <div class="day-header">{{ translate(BackendTranslationKeys.today) }}</div>
@@ -84,7 +83,6 @@ const DISH_COUNT = 4;
             <v-icon name="campaign" x-small />
             <span class="hint-title">{{ title }}</span>
             <v-icon name="chevron_right" x-small />
-            <v-icon name="close" x-small />
           </div>
           <div class="day-divider" />
           <div class="day-header">{{ translate(BackendTranslationKeys.tomorrow) }}</div>
