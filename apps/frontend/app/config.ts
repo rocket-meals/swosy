@@ -302,7 +302,8 @@ export function getVersionPatch() {
         // 180: food offers news cards cannot be hidden (no x, no "do not show again"), only popups can
         // 181: news cards in the food offers are a SettingsList row with accent colour
         // 182: feature wishes tile with accent, both food offers tiles with the side spacing of the food cards
-        return 182;
+        // 183: feedback labels in the food offers with the side spacing of the food cards
+        return 183;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

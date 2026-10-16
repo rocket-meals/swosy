@@ -604,7 +604,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				{index === 0 && <NewsFoodoffersHint canteenId={canteenId} position={NewsFoodoffersPositions.bottom} />}
 				{index === 0 && <FeatureWishesTile />}
 				{feedbacks && feedbacks.length > 0 && (
-					<View style={styles.feebackContainer}>
+					<View style={[styles.feebackContainer, { paddingHorizontal: itemGap }]}>
 						<Text style={[styles.feedbackLabelsTitle, { color: theme.screen.text }]}>
 							{translate(TranslationKeys.feedback_labels)}
 						</Text>
