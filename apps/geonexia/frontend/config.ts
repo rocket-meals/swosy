@@ -109,7 +109,8 @@ export function getVersionPatch() {
 	// 87: common: popup events can be shown above or below the first day of the food offers
 	// 88: common: popup events merged into news (display_locations, date_end, canteens)
 	// 89: common: popup_events types removed
-	return 89;
+	// 90: common-ui: SettingsList accentColor
+	return 90;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

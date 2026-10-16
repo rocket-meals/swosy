@@ -84,6 +84,7 @@ export const playbookRegistryData: PlaybookEntryData[] = [
 			isAccountRequired: { type: 'boolean', defaultValue: false },
 			italic: { type: 'boolean', defaultValue: false },
 			stackedValue: { type: 'boolean', defaultValue: false },
+			accentColor: { type: 'text', defaultValue: '' },
 		},
 	},
 	{

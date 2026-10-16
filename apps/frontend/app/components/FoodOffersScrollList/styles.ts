@@ -40,7 +40,6 @@ export default StyleSheet.create({
 	feedbackLabelsTitle: {
 		fontSize: 24,
 		fontFamily: 'Poppins_700Bold',
-		paddingHorizontal: 10,
 		marginBottom: 6,
 	},
 	elementContainer: {
