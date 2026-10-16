@@ -8,7 +8,7 @@ import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { Redirect, useGlobalSearchParams } from 'expo-router';
 import useKioskMode from '@/hooks/useKioskMode';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
-import {AppScreens, DatabaseTypes, filterPopupEvents, sortBySortField, sortMarkingsByGroup} from 'repo-depkit-common';
+import {AppScreens, DatabaseTypes, filterNewsShownOutsideNewsList, sortBySortField, sortMarkingsByGroup} from 'repo-depkit-common';
 import { SET_APP_ELEMENTS, SET_APP_SETTINGS, SET_BUILDINGS_DICT, SET_BUILDINGS_ORGANIZATIONS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CAMPUSES, SET_CAMPUSES_DICT, SET_CANTEENS, SET_CHATS, SET_CHAT_READ_STATUS, SET_COLLECTION_DATES_LAST_UPDATED, SET_FOOD_ATTRIBUTE_GROUPS, SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_CATEGORIES, SET_FOOD_COLLECTION, SET_FOOD_OFFERS_CATEGORIES, SET_FOODOFFERS_INFO_ITEMS, SET_FRIENDSHIPS, SET_COLLECTIBLE_EVENTS, SET_ORGANISATIONS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_POPUP_EVENTS, SET_POPUP_EVENTS_HASH, SET_SELECTED_CANTEEN, SET_SELECTED_DATE, SET_WIKIS, UPDATE_FOOD_FEEDBACK_LABELS, UPDATE_MARKING_GROUPS, UPDATE_MARKINGS, UPDATE_OWN_FOOD_FEEDBACK, UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES, UPDATE_PRIVACY_POLICY_DATE, UPDATE_PROFILE, CLEAR_PROFILE_BEFORE_SESSION_EXPIRED } from '@/redux/Types/types';
 import { FoodFeedbackLabelHelper } from '@/redux/actions/FoodFeedbacksLabel/FoodFeedbacksLabel';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
@@ -35,7 +35,7 @@ import DeviceMock from '@/components/DeviceMock/DeviceMock';
 import { isWeb } from '@/constants/Constants';
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import { BusinessHoursGroupsHelper } from '@/redux/actions/BusinessHours/BusinessHoursGroups';
-import { PopupEventsHelper } from '@/redux/actions/PopupEvents/PopupEvents';
+import { NewsHelper } from '@/redux/actions/News/News';
 import { AppState, Platform } from 'react-native';
 import { AppElementsHelper } from '@/redux/actions/AppElements/AppElements';
 import { TranslationKeys } from '@/locales/keys';
@@ -104,7 +104,7 @@ export default function Layout() {
 	const wikisHelper = useMemo(() => new WikisHelper(), []);
 	const markingHelper = useMemo(() => new MarkingHelper(), []);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
-	const popupEventsHelper = useMemo(() => new PopupEventsHelper(), []);
+	const newsHelper = useMemo(() => new NewsHelper(), []);
 	const appSettingsHelper = useMemo(() => new AppSettingsHelper(), []);
 	const appElementsHelper = useMemo(() => new AppElementsHelper(), []);
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
@@ -502,7 +502,8 @@ export default function Layout() {
 			return;
 		}
 		try {
-			const response = (await popupEventsHelper.fetchAllPopupEvents()) as DatabaseTypes.PopupEvents[];
+			// Popup events are news shown as popup or as card in the food offers (news.display_locations).
+			const response = (await newsHelper.fetchNewsShownOutsideNewsList()) as DatabaseTypes.News[];
 			// Re-check AFTER the await: a logout may have completed while the fetch was in
 			// flight. Dispatching now would resurrect the popup events - including this
 			// closure's pre-logout isOpen dismiss flags - after performLogout already
@@ -527,7 +528,7 @@ export default function Layout() {
                                 // dismissed, making them pop back up.
                                 const previousIsOpenById = new Map(popupEvents.map((e: any) => [String(e.id), Boolean(e.isOpen)]));
 
-                                const filteredEvents = filterPopupEvents(response, platformKey, new Date(), getVersion(), UserHelper.isAnonymousUser(user)).map((event, index) => ({
+                                const filteredEvents = filterNewsShownOutsideNewsList(response, platformKey, new Date(), getVersion(), UserHelper.isAnonymousUser(user)).map((event, index) => ({
                                         ...event,
                                         isOpen: previousIsOpenById.get(String(event.id)) ?? false,
                                         isCurrent: index === 0,
@@ -654,7 +655,7 @@ export default function Layout() {
 			const result = (await collectionLastUpdateHelper.fetchCollectionDatesLastUpdate({})) as DatabaseTypes.CollectionsDatesLastUpdate[];
 			if (result) {
 				const serverMap = transformUpdateDatesToMap(result);
-				if (!kioskMode && shouldFetch([CollectionKeys.POPUP_EVENTS, CollectionKeys.POPUP_EVENTS_TRANSLATIONS], serverMap, lastUpdatedMap)) {
+				if (!kioskMode && shouldFetch([CollectionKeys.NEWS, CollectionKeys.NEWS_TRANSLATIONS, CollectionKeys.NEWS_CANTEENS], serverMap, lastUpdatedMap)) {
 					void getAllEvents();
 				}
 				await Promise.all(

@@ -1,0 +1,33 @@
+{
+  "collection": "news",
+  "field": "canteens",
+  "type": "alias",
+  "meta": {
+    "collection": "news",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "canteens",
+    "group": "display_settings",
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": "Falls keine Mensa ausgewählt ist, wird es für alle angezeigt.",
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "searchable": true,
+    "sort": 3,
+    "special": [
+      "m2m"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Relevant für Mensen"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

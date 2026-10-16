@@ -102,7 +102,11 @@ export function getVersionPatch() {
 	// 77: common: LegalEntities (company data for imprints and legal documents)
 	// 78: common: a support reaction alone no longer marks a food feedback as done
 	// 79: common: full language codes ("de-DE"), name sorting finds "de-DE" rows for "de"
-	return 79;
+	// 80: common: popup events can be shown in the food offers (display_mode)
+	// 81: common: popup events can be shown above or below the first day of the food offers
+	// 82: common: popup events merged into news (display_locations, date_end, canteens)
+	// 83: common: popup_events types removed
+	return 83;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

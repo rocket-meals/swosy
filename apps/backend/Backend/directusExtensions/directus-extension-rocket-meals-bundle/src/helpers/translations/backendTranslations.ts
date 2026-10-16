@@ -4827,4 +4827,736 @@ export const backendTranslations: TranslationResources = {
     tr: 'Açıklamayı gizle',
     zh: '隐藏说明',
   },
+
+  /** Name der Modul-Seite für News, Popups und Hinweise im Speiseplan. */
+  rocket_meals_module_communication: {
+    de: 'Kommunikation',
+    en: 'Communication',
+    ar: 'التواصل',
+    es: 'Comunicación',
+    fr: 'Communication',
+    ru: 'Коммуникация',
+    tr: 'İletişim',
+    zh: '沟通',
+  },
+
+  /** Beschreibung der Modul-Seite Kommunikation auf der Übersicht. */
+  rocket_meals_module_communication_description: {
+    de: 'News schreiben und festlegen, wo die App sie zeigt: in der News-Liste, als Popup oder im Speiseplan.',
+    en: 'Write news and choose where the app shows them: in the news list, as a popup or in the food offers.',
+    ar: 'اكتب الأخبار واختر أين يعرضها التطبيق: في قائمة الأخبار أو كنافذة منبثقة أو في قائمة الطعام.',
+    es: 'Escribe noticias y elige dónde las muestra la app: en la lista de noticias, como ventana emergente o en el menú.',
+    fr: 'Rédigez des actualités et choisissez où l’app les affiche : dans la liste des actualités, en fenêtre contextuelle ou dans le menu.',
+    ru: 'Пишите новости и выбирайте, где приложение их показывает: в списке новостей, во всплывающем окне или в меню.',
+    tr: 'Haber yazın ve uygulamanın onları nerede göstereceğini seçin: haber listesinde, açılır pencerede veya yemek planında.',
+    zh: '撰写新闻并选择应用在哪里显示：新闻列表、弹窗或菜单中。',
+  },
+
+  /** Button und Titel für eine neue News. */
+  rocket_meals_module_news_new: {
+    de: 'Neue News',
+    en: 'New news',
+    ar: 'خبر جديد',
+    es: 'Nueva noticia',
+    fr: 'Nouvelle actualité',
+    ru: 'Новая новость',
+    tr: 'Yeni haber',
+    zh: '新建新闻',
+  },
+
+  /** Tooltip: die News in der Directus-Inhaltsansicht öffnen. */
+  rocket_meals_module_news_open_item: {
+    de: 'News im Datenmodell öffnen',
+    en: 'Open news in the data model',
+    ar: 'فتح الخبر في نموذج البيانات',
+    es: 'Abrir la noticia en el modelo de datos',
+    fr: 'Ouvrir l’actualité dans le modèle de données',
+    ru: 'Открыть новость в модели данных',
+    tr: 'Haberi veri modelinde aç',
+    zh: '在数据模型中打开新闻',
+  },
+
+  /** Überschrift der News-Seite in der App-Vorschau. */
+  rocket_meals_module_news_app_title: {
+    de: 'News',
+    en: 'News',
+    ar: 'الأخبار',
+    es: 'Noticias',
+    fr: 'Actualités',
+    ru: 'Новости',
+    tr: 'Haberler',
+    zh: '新闻',
+  },
+
+  /** Anzeigeort: in der News-Liste der App. */
+  rocket_meals_module_news_location_news_list: {
+    de: 'News-Liste',
+    en: 'News list',
+    ar: 'قائمة الأخبار',
+    es: 'Lista de noticias',
+    fr: 'Liste des actualités',
+    ru: 'Список новостей',
+    tr: 'Haber listesi',
+    zh: '新闻列表',
+  },
+
+  /** Erklärung zum Anzeigeort News-Liste. */
+  rocket_meals_module_news_location_news_list_hint: {
+    de: 'Im Bereich News der App.',
+    en: 'In the news section of the app.',
+    ar: 'في قسم الأخبار في التطبيق.',
+    es: 'En la sección de noticias de la app.',
+    fr: 'Dans la rubrique actualités de l’app.',
+    ru: 'В разделе новостей приложения.',
+    tr: 'Uygulamanın haberler bölümünde.',
+    zh: '在应用的新闻栏目中。',
+  },
+
+  /** Anzeigeort: als Popup über dem Speiseplan. */
+  rocket_meals_module_news_location_popup: {
+    de: 'Popup',
+    en: 'Popup',
+    ar: 'نافذة منبثقة',
+    es: 'Ventana emergente',
+    fr: 'Fenêtre contextuelle',
+    ru: 'Всплывающее окно',
+    tr: 'Açılır pencere',
+    zh: '弹窗',
+  },
+
+  /** Erklärung zum Anzeigeort Popup. */
+  rocket_meals_module_news_location_popup_hint: {
+    de: 'Öffnet sich als Fenster über dem Speiseplan.',
+    en: 'Opens as a window over the food offers.',
+    ar: 'تفتح كنافذة فوق قائمة الطعام.',
+    es: 'Se abre como ventana sobre el menú.',
+    fr: 'S’ouvre en fenêtre au-dessus du menu.',
+    ru: 'Открывается окном поверх меню.',
+    tr: 'Yemek planının üzerinde pencere olarak açılır.',
+    zh: '以窗口形式在菜单上方打开。',
+  },
+
+  /** Anzeigeort: kleines Feld über den Speisen. */
+  rocket_meals_module_news_location_foodoffers_top: {
+    de: 'Speiseplan oben',
+    en: 'Food offers, top',
+    ar: 'أعلى قائمة الطعام',
+    es: 'Menú, arriba',
+    fr: 'Menu, en haut',
+    ru: 'Меню, сверху',
+    tr: 'Yemek planı, üstte',
+    zh: '菜单顶部',
+  },
+
+  /** Erklärung zum Anzeigeort Speiseplan oben. */
+  rocket_meals_module_news_location_foodoffers_top_hint: {
+    de: 'Kleines Feld über den Speisen.',
+    en: 'Small card above the dishes.',
+    ar: 'بطاقة صغيرة فوق الأطباق.',
+    es: 'Pequeña tarjeta encima de los platos.',
+    fr: 'Petite carte au-dessus des plats.',
+    ru: 'Небольшая карточка над блюдами.',
+    tr: 'Yemeklerin üzerinde küçük bir kart.',
+    zh: '菜品上方的小卡片。',
+  },
+
+  /** Anzeigeort: kleines Feld am Ende des ersten Tages. */
+  rocket_meals_module_news_location_foodoffers_bottom: {
+    de: 'Speiseplan unten',
+    en: 'Food offers, bottom',
+    ar: 'أسفل قائمة الطعام',
+    es: 'Menú, abajo',
+    fr: 'Menu, en bas',
+    ru: 'Меню, снизу',
+    tr: 'Yemek planı, altta',
+    zh: '菜单底部',
+  },
+
+  /** Erklärung zum Anzeigeort Speiseplan unten. */
+  rocket_meals_module_news_location_foodoffers_bottom_hint: {
+    de: 'Kleines Feld am Ende des ersten Tages.',
+    en: 'Small card at the end of the first day.',
+    ar: 'بطاقة صغيرة في نهاية اليوم الأول.',
+    es: 'Pequeña tarjeta al final del primer día.',
+    fr: 'Petite carte à la fin du premier jour.',
+    ru: 'Небольшая карточка в конце первого дня.',
+    tr: 'İlk günün sonunda küçük bir kart.',
+    zh: '第一天末尾的小卡片。',
+  },
+
+  /** Filter und Vorschau: News im Speiseplan (oben oder unten). */
+  rocket_meals_module_news_filter_foodoffers: {
+    de: 'Im Speiseplan',
+    en: 'In the food offers',
+    ar: 'في قائمة الطعام',
+    es: 'En el menú',
+    fr: 'Dans le menu',
+    ru: 'В меню',
+    tr: 'Yemek planında',
+    zh: '在菜单中',
+  },
+
+  /** Status einer News. */
+  rocket_meals_module_news_status_published: {
+    de: 'Veröffentlicht',
+    en: 'Published',
+    ar: 'منشور',
+    es: 'Publicada',
+    fr: 'Publiée',
+    ru: 'Опубликовано',
+    tr: 'Yayında',
+    zh: '已发布',
+  },
+
+  /** Status einer News. */
+  rocket_meals_module_news_status_draft: {
+    de: 'Entwurf',
+    en: 'Draft',
+    ar: 'مسودة',
+    es: 'Borrador',
+    fr: 'Brouillon',
+    ru: 'Черновик',
+    tr: 'Taslak',
+    zh: '草稿',
+  },
+
+  /** Status einer News und Filter. */
+  rocket_meals_module_news_status_archived: {
+    de: 'Archiviert',
+    en: 'Archived',
+    ar: 'مؤرشف',
+    es: 'Archivada',
+    fr: 'Archivée',
+    ru: 'В архиве',
+    tr: 'Arşivlendi',
+    zh: '已归档',
+  },
+
+  /** Kennzeichen einer News, die von einer Website importiert wird. */
+  rocket_meals_module_news_imported: {
+    de: 'Importiert',
+    en: 'Imported',
+    ar: 'مستورد',
+    es: 'Importada',
+    fr: 'Importée',
+    ru: 'Импортировано',
+    tr: 'İçe aktarıldı',
+    zh: '已导入',
+  },
+
+  /** Eine News ohne Auswahl gilt für alle Standorte. */
+  rocket_meals_module_news_all_canteens: {
+    de: 'Alle Standorte',
+    en: 'All locations',
+    ar: 'كل المواقع',
+    es: 'Todas las ubicaciones',
+    fr: 'Tous les sites',
+    ru: 'Все локации',
+    tr: 'Tüm konumlar',
+    zh: '所有地点',
+  },
+
+  /** Zeitraum in der Liste. {{start}} ist der Beginn. */
+  rocket_meals_module_news_period_from: {
+    de: 'ab {{start}}',
+    en: 'from {{start}}',
+    ar: 'من {{start}}',
+    es: 'desde {{start}}',
+    fr: 'à partir du {{start}}',
+    ru: 'с {{start}}',
+    tr: '{{start}} itibarıyla',
+    zh: '自 {{start}} 起',
+  },
+
+  /** Zeitraum in der Liste. {{end}} ist das Ende. */
+  rocket_meals_module_news_period_until: {
+    de: 'bis {{end}}',
+    en: 'until {{end}}',
+    ar: 'حتى {{end}}',
+    es: 'hasta {{end}}',
+    fr: 'jusqu’au {{end}}',
+    ru: 'до {{end}}',
+    tr: '{{end}} tarihine kadar',
+    zh: '至 {{end}}',
+  },
+
+  /** Zeitraum in der Liste mit Beginn {{start}} und Ende {{end}}. */
+  rocket_meals_module_news_period_range: {
+    de: '{{start}} bis {{end}}',
+    en: '{{start}} to {{end}}',
+    ar: 'من {{start}} حتى {{end}}',
+    es: 'de {{start}} a {{end}}',
+    fr: 'du {{start}} au {{end}}',
+    ru: 'с {{start}} до {{end}}',
+    tr: '{{start}} ile {{end}} arası',
+    zh: '{{start}} 至 {{end}}',
+  },
+
+  /** Abschnitt im Editor. */
+  rocket_meals_module_news_section_where: {
+    de: 'Wo soll die News erscheinen?',
+    en: 'Where should the news appear?',
+    ar: 'أين يجب أن يظهر الخبر؟',
+    es: '¿Dónde debe aparecer la noticia?',
+    fr: 'Où l’actualité doit-elle apparaître ?',
+    ru: 'Где должна появиться новость?',
+    tr: 'Haber nerede görünsün?',
+    zh: '新闻应显示在哪里？',
+  },
+
+  /** Hinweis unter den Anzeigeorten. */
+  rocket_meals_module_news_locations_hint: {
+    de: 'Mehrere Orte sind möglich. Importierte News stehen nur in der News-Liste.',
+    en: 'Several places are possible. Imported news only appear in the news list.',
+    ar: 'يمكن اختيار عدة أماكن. الأخبار المستوردة تظهر فقط في قائمة الأخبار.',
+    es: 'Se pueden elegir varios lugares. Las noticias importadas solo aparecen en la lista de noticias.',
+    fr: 'Plusieurs emplacements sont possibles. Les actualités importées n’apparaissent que dans la liste.',
+    ru: 'Можно выбрать несколько мест. Импортированные новости появляются только в списке новостей.',
+    tr: 'Birden fazla yer seçilebilir. İçe aktarılan haberler yalnızca haber listesinde görünür.',
+    zh: '可以选择多个位置。导入的新闻只显示在新闻列表中。',
+  },
+
+  /** Abschnitt im Editor. */
+  rocket_meals_module_news_section_content: {
+    de: 'Inhalt',
+    en: 'Content',
+    ar: 'المحتوى',
+    es: 'Contenido',
+    fr: 'Contenu',
+    ru: 'Содержание',
+    tr: 'İçerik',
+    zh: '内容',
+  },
+
+  /** Feld im Editor: der deutsche Titel, Quelle der Übersetzungen. */
+  rocket_meals_module_news_field_title: {
+    de: 'Titel (Deutsch)',
+    en: 'Title (German)',
+    ar: 'العنوان (بالألمانية)',
+    es: 'Título (alemán)',
+    fr: 'Titre (allemand)',
+    ru: 'Заголовок (немецкий)',
+    tr: 'Başlık (Almanca)',
+    zh: '标题（德语）',
+  },
+
+  /** Feld im Editor: der deutsche Text in Markdown. */
+  rocket_meals_module_news_field_content: {
+    de: 'Text (Deutsch)',
+    en: 'Text (German)',
+    ar: 'النص (بالألمانية)',
+    es: 'Texto (alemán)',
+    fr: 'Texte (allemand)',
+    ru: 'Текст (немецкий)',
+    tr: 'Metin (Almanca)',
+    zh: '正文（德语）',
+  },
+
+  /** Abschnitt im Editor. */
+  rocket_meals_module_news_section_canteens: {
+    de: 'Für welche Standorte?',
+    en: 'For which locations?',
+    ar: 'لأي مواقع؟',
+    es: '¿Para qué ubicaciones?',
+    fr: 'Pour quels sites ?',
+    ru: 'Для каких локаций?',
+    tr: 'Hangi konumlar için?',
+    zh: '适用于哪些地点？',
+  },
+
+  /** Platzhalter der Standortsuche. */
+  rocket_meals_module_news_canteen_search: {
+    de: 'Standort suchen',
+    en: 'Search location',
+    ar: 'ابحث عن موقع',
+    es: 'Buscar ubicación',
+    fr: 'Rechercher un site',
+    ru: 'Найти локацию',
+    tr: 'Konum ara',
+    zh: '搜索地点',
+  },
+
+  /** Hinweis, wenn kein Standort gewählt ist. */
+  rocket_meals_module_news_canteens_all_hint: {
+    de: 'Keine Auswahl: an allen Standorten.',
+    en: 'Nothing selected: at all locations.',
+    ar: 'لا يوجد اختيار: في كل المواقع.',
+    es: 'Sin selección: en todas las ubicaciones.',
+    fr: 'Aucune sélection : sur tous les sites.',
+    ru: 'Ничего не выбрано: во всех локациях.',
+    tr: 'Seçim yok: tüm konumlarda.',
+    zh: '未选择：适用于所有地点。',
+  },
+
+  /** Anzahl gewählter Standorte ({{count}}) von allen ({{total}}). */
+  rocket_meals_module_news_canteens_selected: {
+    de: '{{count}} von {{total}} Standorten gewählt.',
+    en: '{{count}} of {{total}} locations selected.',
+    ar: 'تم اختيار {{count}} من {{total}} مواقع.',
+    es: '{{count}} de {{total}} ubicaciones seleccionadas.',
+    fr: '{{count}} sites sur {{total}} sélectionnés.',
+    ru: 'Выбрано локаций: {{count}} из {{total}}.',
+    tr: '{{total}} konumdan {{count}} tanesi seçildi.',
+    zh: '已选择 {{total}} 个地点中的 {{count}} 个。',
+  },
+
+  /** Die Standorte gelten nicht für die News-Liste. */
+  rocket_meals_module_news_canteens_scope_hint: {
+    de: 'Gilt für Popup und Speiseplan, die News-Liste zeigt alle News.',
+    en: 'Applies to the popup and the food offers, the news list shows all news.',
+    ar: 'ينطبق على النافذة المنبثقة وقائمة الطعام، وتعرض قائمة الأخبار كل الأخبار.',
+    es: 'Se aplica a la ventana emergente y al menú, la lista de noticias muestra todas las noticias.',
+    fr: 'S’applique à la fenêtre contextuelle et au menu, la liste affiche toutes les actualités.',
+    ru: 'Действует для всплывающего окна и меню, список новостей показывает все новости.',
+    tr: 'Açılır pencere ve yemek planı için geçerlidir, haber listesi tüm haberleri gösterir.',
+    zh: '适用于弹窗和菜单，新闻列表显示所有新闻。',
+  },
+
+  /** Die Standortsuche hat nichts gefunden. */
+  rocket_meals_module_news_canteens_none_found: {
+    de: 'Kein Standort gefunden.',
+    en: 'No location found.',
+    ar: 'لم يتم العثور على موقع.',
+    es: 'No se encontró ninguna ubicación.',
+    fr: 'Aucun site trouvé.',
+    ru: 'Локация не найдена.',
+    tr: 'Konum bulunamadı.',
+    zh: '未找到地点。',
+  },
+
+  /** Abschnitt im Editor. */
+  rocket_meals_module_news_section_time: {
+    de: 'Zeitraum',
+    en: 'Time range',
+    ar: 'الفترة الزمنية',
+    es: 'Periodo',
+    fr: 'Période',
+    ru: 'Период',
+    tr: 'Zaman aralığı',
+    zh: '时间范围',
+  },
+
+  /** Feld im Editor: Beginn, zugleich das Datum der News. */
+  rocket_meals_module_news_field_date: {
+    de: 'Sichtbar ab (Datum der News)',
+    en: 'Visible from (date of the news)',
+    ar: 'مرئي من (تاريخ الخبر)',
+    es: 'Visible desde (fecha de la noticia)',
+    fr: 'Visible à partir du (date de l’actualité)',
+    ru: 'Видна с (дата новости)',
+    tr: 'Görünür başlangıcı (haber tarihi)',
+    zh: '显示起始（新闻日期）',
+  },
+
+  /** Feld im Editor: Ende der Sichtbarkeit. */
+  rocket_meals_module_news_field_date_end: {
+    de: 'Sichtbar bis (optional)',
+    en: 'Visible until (optional)',
+    ar: 'مرئي حتى (اختياري)',
+    es: 'Visible hasta (opcional)',
+    fr: 'Visible jusqu’au (facultatif)',
+    ru: 'Видна до (необязательно)',
+    tr: 'Görünür bitişi (isteğe bağlı)',
+    zh: '显示截止（可选）',
+  },
+
+  /** Hinweis bei gesetztem Ende. */
+  rocket_meals_module_news_time_hint_end: {
+    de: 'Nach dem Ende verschwindet die News überall in der App.',
+    en: 'After the end the news disappears everywhere in the app.',
+    ar: 'بعد النهاية يختفي الخبر من كل مكان في التطبيق.',
+    es: 'Después del final, la noticia desaparece de toda la app.',
+    fr: 'Après la fin, l’actualité disparaît partout dans l’app.',
+    ru: 'После окончания новость исчезает из всего приложения.',
+    tr: 'Bitişten sonra haber uygulamanın her yerinden kaybolur.',
+    zh: '结束后，新闻会从应用的所有位置消失。',
+  },
+
+  /** Hinweis ohne Ende. */
+  rocket_meals_module_news_time_hint_open: {
+    de: 'Ohne Ende bleibt die News sichtbar, bis sie archiviert wird.',
+    en: 'Without an end the news stays visible until it is archived.',
+    ar: 'بدون نهاية يبقى الخبر مرئيا حتى تتم أرشفته.',
+    es: 'Sin final, la noticia permanece visible hasta que se archive.',
+    fr: 'Sans fin, l’actualité reste visible jusqu’à son archivage.',
+    ru: 'Без окончания новость остаётся видимой, пока её не отправят в архив.',
+    tr: 'Bitiş olmadan haber arşivlenene kadar görünür kalır.',
+    zh: '没有结束时间时，新闻会一直显示，直到被归档。',
+  },
+
+  /** Feld im Editor: Link zum vollständigen Artikel. */
+  rocket_meals_module_news_field_url: {
+    de: 'Link zum Artikel (optional)',
+    en: 'Link to the article (optional)',
+    ar: 'رابط المقال (اختياري)',
+    es: 'Enlace al artículo (opcional)',
+    fr: 'Lien vers l’article (facultatif)',
+    ru: 'Ссылка на статью (необязательно)',
+    tr: 'Makale bağlantısı (isteğe bağlı)',
+    zh: '文章链接（可选）',
+  },
+
+  /** Abschnitt im Editor, nur beim Popup. */
+  rocket_meals_module_news_section_buttons: {
+    de: 'Buttons im Popup',
+    en: 'Buttons in the popup',
+    ar: 'الأزرار في النافذة المنبثقة',
+    es: 'Botones en la ventana emergente',
+    fr: 'Boutons de la fenêtre contextuelle',
+    ru: 'Кнопки во всплывающем окне',
+    tr: 'Açılır penceredeki düğmeler',
+    zh: '弹窗中的按钮',
+  },
+
+  /** Option: Button zum Bewerten der App im Popup. */
+  rocket_meals_module_news_button_rating: {
+    de: 'Button „App bewerten“ anzeigen',
+    en: 'Show the button “Rate the app”',
+    ar: 'إظهار زر „قيّم التطبيق“',
+    es: 'Mostrar el botón «Valorar la app»',
+    fr: 'Afficher le bouton « Noter l’app »',
+    ru: 'Показать кнопку «Оценить приложение»',
+    tr: '„Uygulamayı değerlendir“ düğmesini göster',
+    zh: '显示“评价应用”按钮',
+  },
+
+  /** Option: Button zum Anmelden im Popup, nur für Nutzer ohne Account. */
+  rocket_meals_module_news_button_login: {
+    de: 'Button „Anmelden“ anzeigen (nur ohne Account)',
+    en: 'Show the button “Sign in” (only without an account)',
+    ar: 'إظهار زر „تسجيل الدخول“ (فقط بدون حساب)',
+    es: 'Mostrar el botón «Iniciar sesión» (solo sin cuenta)',
+    fr: 'Afficher le bouton « Se connecter » (seulement sans compte)',
+    ru: 'Показать кнопку «Войти» (только без аккаунта)',
+    tr: '„Giriş yap“ düğmesini göster (yalnızca hesapsız)',
+    zh: '显示“登录”按钮（仅限无账户时）',
+  },
+
+  /** Aufklappbarer Bereich im Editor. */
+  rocket_meals_module_news_advanced: {
+    de: 'Erweiterte Einstellungen',
+    en: 'Advanced settings',
+    ar: 'إعدادات متقدمة',
+    es: 'Ajustes avanzados',
+    fr: 'Paramètres avancés',
+    ru: 'Расширенные настройки',
+    tr: 'Gelişmiş ayarlar',
+    zh: '高级设置',
+  },
+
+  /** Feld: auf welchen Plattformen die News erscheint. */
+  rocket_meals_module_news_platforms: {
+    de: 'Plattformen',
+    en: 'Platforms',
+    ar: 'المنصات',
+    es: 'Plataformas',
+    fr: 'Plateformes',
+    ru: 'Платформы',
+    tr: 'Platformlar',
+    zh: '平台',
+  },
+
+  /** Feld: Bedingung an die App-Version. */
+  rocket_meals_module_news_app_version: {
+    de: 'App-Version (optional)',
+    en: 'App version (optional)',
+    ar: 'إصدار التطبيق (اختياري)',
+    es: 'Versión de la app (opcional)',
+    fr: 'Version de l’app (facultatif)',
+    ru: 'Версия приложения (необязательно)',
+    tr: 'Uygulama sürümü (isteğe bağlı)',
+    zh: '应用版本（可选）',
+  },
+
+  /** Beispiel einer Versionsbedingung. */
+  rocket_meals_module_news_app_version_placeholder: {
+    de: 'z. B. <21.0.0',
+    en: 'e.g. <21.0.0',
+    ar: 'مثلا <21.0.0',
+    es: 'p. ej. <21.0.0',
+    fr: 'p. ex. <21.0.0',
+    ru: 'напр. <21.0.0',
+    tr: 'örn. <21.0.0',
+    zh: '例如 <21.0.0',
+  },
+
+  /** Option: nur für Nutzer ohne Account. */
+  rocket_meals_module_news_only_anonymous: {
+    de: 'Nur für Nutzer ohne Account',
+    en: 'Only for users without an account',
+    ar: 'فقط للمستخدمين بدون حساب',
+    es: 'Solo para usuarios sin cuenta',
+    fr: 'Seulement pour les utilisateurs sans compte',
+    ru: 'Только для пользователей без аккаунта',
+    tr: 'Yalnızca hesabı olmayan kullanıcılar için',
+    zh: '仅限无账户用户',
+  },
+
+  /** Feld: interner Name der News. */
+  rocket_meals_module_news_alias: {
+    de: 'Alias',
+    en: 'Alias',
+    ar: 'الاسم المستعار',
+    es: 'Alias',
+    fr: 'Alias',
+    ru: 'Псевдоним',
+    tr: 'Takma ad',
+    zh: '别名',
+  },
+
+  /** Hinweis zum Alias. */
+  rocket_meals_module_news_alias_hint: {
+    de: 'Leer lassen: übernimmt automatisch den deutschen Titel.',
+    en: 'Leave empty to use the German title.',
+    ar: 'اتركه فارغا لاستخدام العنوان الألماني.',
+    es: 'Déjalo vacío para usar el título en alemán.',
+    fr: 'Laissez vide pour reprendre le titre allemand.',
+    ru: 'Оставьте пустым, чтобы использовать немецкий заголовок.',
+    tr: 'Almanca başlığı kullanmak için boş bırakın.',
+    zh: '留空则使用德语标题。',
+  },
+
+  /** Bereich mit den Übersetzungen der News. */
+  rocket_meals_module_news_translations: {
+    de: 'Übersetzungen',
+    en: 'Translations',
+    ar: 'الترجمات',
+    es: 'Traducciones',
+    fr: 'Traductions',
+    ru: 'Переводы',
+    tr: 'Çeviriler',
+    zh: '翻译',
+  },
+
+  /** Eine Sprache wird automatisch aus dem Deutschen übersetzt. */
+  rocket_meals_module_news_translation_auto: {
+    de: 'Automatisch aus dem Deutschen',
+    en: 'Automatically from German',
+    ar: 'تلقائيا من الألمانية',
+    es: 'Automáticamente del alemán',
+    fr: 'Automatiquement depuis l’allemand',
+    ru: 'Автоматически с немецкого',
+    tr: 'Almancadan otomatik',
+    zh: '自动从德语翻译',
+  },
+
+  /** Button: eine Übersetzung selbst eingeben. */
+  rocket_meals_module_news_translation_use_manual: {
+    de: 'Selbst eingeben',
+    en: 'Enter yourself',
+    ar: 'أدخلها بنفسك',
+    es: 'Escribirla yo',
+    fr: 'Saisir soi-même',
+    ru: 'Ввести самому',
+    tr: 'Kendim gireyim',
+    zh: '自行输入',
+  },
+
+  /** Button: wieder automatisch übersetzen lassen. */
+  rocket_meals_module_news_translation_use_auto: {
+    de: 'Automatisch',
+    en: 'Automatic',
+    ar: 'تلقائي',
+    es: 'Automática',
+    fr: 'Automatique',
+    ru: 'Автоматически',
+    tr: 'Otomatik',
+    zh: '自动',
+  },
+
+  /** Überschrift der Vorschau. */
+  rocket_meals_module_news_preview: {
+    de: 'Vorschau in der App',
+    en: 'Preview in the app',
+    ar: 'معاينة في التطبيق',
+    es: 'Vista previa en la app',
+    fr: 'Aperçu dans l’app',
+    ru: 'Предпросмотр в приложении',
+    tr: 'Uygulamada önizleme',
+    zh: '应用内预览',
+  },
+
+  /** Vorschau: die geöffnete News. */
+  rocket_meals_module_news_preview_detail: {
+    de: 'Geöffnet',
+    en: 'Opened',
+    ar: 'مفتوح',
+    es: 'Abierta',
+    fr: 'Ouverte',
+    ru: 'Открытая',
+    tr: 'Açık',
+    zh: '打开后',
+  },
+
+  /** Vorschau: der Button im Popup der App. */
+  rocket_meals_module_news_preview_dismiss: {
+    de: 'Schließen und nicht erneut anzeigen',
+    en: 'Close and do not show again',
+    ar: 'إغلاق وعدم العرض مرة أخرى',
+    es: 'Cerrar y no volver a mostrar',
+    fr: 'Fermer et ne plus afficher',
+    ru: 'Закрыть и больше не показывать',
+    tr: 'Kapat ve tekrar gösterme',
+    zh: '关闭且不再显示',
+  },
+
+  /** Vorschau: der Bewerten-Button im Popup. */
+  rocket_meals_module_news_preview_rate_app: {
+    de: 'App bewerten',
+    en: 'Rate the app',
+    ar: 'قيّم التطبيق',
+    es: 'Valorar la app',
+    fr: 'Noter l’app',
+    ru: 'Оценить приложение',
+    tr: 'Uygulamayı değerlendir',
+    zh: '评价应用',
+  },
+
+  /** Vorschau: der Anmelden-Button im Popup. */
+  rocket_meals_module_news_preview_login: {
+    de: 'Anmelden / Account erstellen',
+    en: 'Sign in / create account',
+    ar: 'تسجيل الدخول / إنشاء حساب',
+    es: 'Iniciar sesión / crear cuenta',
+    fr: 'Se connecter / créer un compte',
+    ru: 'Войти / создать аккаунт',
+    tr: 'Giriş yap / hesap oluştur',
+    zh: '登录 / 创建账户',
+  },
+
+  /** Vorschau: Link zum Artikel in der geöffneten News. */
+  rocket_meals_module_news_preview_open_article: {
+    de: 'Zum Artikel',
+    en: 'To the article',
+    ar: 'إلى المقال',
+    es: 'Ir al artículo',
+    fr: 'Vers l’article',
+    ru: 'К статье',
+    tr: 'Makaleye git',
+    zh: '查看文章',
+  },
+
+  /** Meldung nach dem Speichern. */
+  rocket_meals_module_news_saved: {
+    de: 'News gespeichert',
+    en: 'News saved',
+    ar: 'تم حفظ الخبر',
+    es: 'Noticia guardada',
+    fr: 'Actualité enregistrée',
+    ru: 'Новость сохранена',
+    tr: 'Haber kaydedildi',
+    zh: '新闻已保存',
+  },
+
+  /** Meldung, wenn das Speichern fehlschlug. */
+  rocket_meals_module_news_save_failed: {
+    de: 'Die News konnte nicht gespeichert werden.',
+    en: 'The news could not be saved.',
+    ar: 'تعذر حفظ الخبر.',
+    es: 'No se pudo guardar la noticia.',
+    fr: 'L’actualité n’a pas pu être enregistrée.',
+    ru: 'Не удалось сохранить новость.',
+    tr: 'Haber kaydedilemedi.',
+    zh: '无法保存新闻。',
+  },
 };

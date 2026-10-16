@@ -3,7 +3,7 @@ import { ActivityIndicator, AppState, Dimensions, FlatList, RefreshControl, Text
 import { addDays, format } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
-import { CollectibleAt, CollectionNames, DatabaseTypes, sortBySortField } from 'repo-depkit-common';
+import { CollectibleAt, CollectionNames, DatabaseTypes, NewsFoodoffersPositions, sortBySortField } from 'repo-depkit-common';
 import FoodItem from '@/components/FoodItem/FoodItem';
 import CanteenFeedbackLabels from '@/components/CanteenFeedbackLabels/CanteenFeedbackLabels';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -27,6 +27,7 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 import FeatureWishesTile from '@/components/FeatureWishesTile';
 import FoodFeedbackResponsesHint from '@/components/FoodFeedbackResponsesHint';
+import NewsFoodoffersHint from '@/components/NewsFoodoffersHint';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { CanteenVisitsDateRow } from '@/components/CanteenVisitsDateRow';
 import FoodOffersLoadingBar from '@/components/FoodOffersLoadingBar';
@@ -600,6 +601,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						<MyMarkdownProjectColored content={afterElement?.content || ''} accentColor={foods_area_color} imageWidth={440} imageHeight={293} collapsibleSections />
 					</View>
 				)}
+				{index === 0 && <NewsFoodoffersHint canteenId={canteenId} position={NewsFoodoffersPositions.bottom} />}
 				{index === 0 && <FeatureWishesTile />}
 				{feedbacks && feedbacks.length > 0 && (
 					<View style={styles.feebackContainer}>
@@ -631,7 +633,12 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				data={displayDays}
 				keyExtractor={item => item.date}
 				renderItem={renderDay}
-				ListHeaderComponent={<FoodFeedbackResponsesHint />}
+				ListHeaderComponent={
+					<>
+						<NewsFoodoffersHint canteenId={canteenId} position={NewsFoodoffersPositions.top} />
+						<FoodFeedbackResponsesHint />
+					</>
+				}
 				onEndReached={onEndReached}
 				onEndReachedThreshold={0.5}
 				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

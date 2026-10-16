@@ -113,10 +113,11 @@ export type FoodState = {
 	selectedDate: string;
 }
 
+/** News shown as popup or as card in the food offers, with the app's own dismiss state. */
 type ExtendedPopUpEvents = {
 	isOpen: boolean;
 	isCurrent: number;
-} & DatabaseTypes.PopupEvents;
+} & DatabaseTypes.News;
 
 export type FoodAttributesState = {
 	foodAttributeGroups: DatabaseTypes.FoodsAttributesGroups[];

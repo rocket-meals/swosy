@@ -1,0 +1,89 @@
+{
+  "collection": "news",
+  "field": "display_locations",
+  "type": "csv",
+  "meta": {
+    "collection": "news",
+    "conditions": null,
+    "display": "labels",
+    "display_options": {
+      "choices": [
+        {
+          "text": "News-Liste",
+          "value": "news_list"
+        },
+        {
+          "text": "Popup",
+          "value": "popup"
+        },
+        {
+          "text": "Im Speiseplan oben",
+          "value": "foodoffers_top"
+        },
+        {
+          "text": "Im Speiseplan unten (Ende des ersten Tages)",
+          "value": "foodoffers_bottom"
+        }
+      ]
+    },
+    "field": "display_locations",
+    "group": "display_settings",
+    "hidden": false,
+    "interface": "select-multiple-checkbox",
+    "note": "Wo die News in der App erscheint. Leer: nur in der News-Liste.",
+    "options": {
+      "choices": [
+        {
+          "text": "News-Liste",
+          "value": "news_list"
+        },
+        {
+          "text": "Popup",
+          "value": "popup"
+        },
+        {
+          "text": "Im Speiseplan oben",
+          "value": "foodoffers_top"
+        },
+        {
+          "text": "Im Speiseplan unten (Ende des ersten Tages)",
+          "value": "foodoffers_bottom"
+        }
+      ]
+    },
+    "readonly": false,
+    "required": false,
+    "searchable": true,
+    "sort": 1,
+    "special": [
+      "cast-csv"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Anzeigen in"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "display_locations",
+    "table": "news",
+    "data_type": "text",
+    "default_value": "news_list",
+    "max_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}

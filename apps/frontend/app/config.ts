@@ -295,7 +295,11 @@ export function getVersionPatch() {
         // 173: back in a chat returns to the screen it was opened from (e.g. the food offers)
         // 174: free text inputs (food comments, app feedback, support chat) ask not to enter personal data
         // 175: device data note on the feedback screen without a dash
-        return 175;
+        // 176: popup events can be shown as a compact card in the food offers instead of a popup
+        // 177: popup events in the food offers can be placed above or at the end of the first day
+        // 178: popup events are news now: popup and food offers cards come from news.display_locations
+        // 179: popup_events collection removed, popups only come from news
+        return 179;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
