@@ -6,7 +6,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { SET_POPUP_EVENTS } from '@/redux/Types/types';
 import useKioskMode from '@/hooks/useKioskMode';
 import type { ModalCloseReason } from 'repo-depkit-common-ui';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, isPopupEventShownAsPopup } from 'repo-depkit-common';
 
 const usePopupEventModal = () => {
 	const dispatch = useDispatch();
@@ -27,9 +27,10 @@ const usePopupEventModal = () => {
 	// from a mere get-me-out-of-here close (X button / backdrop / swipe).
 	const permanentDismissEventIdRef = useRef<string | null>(null);
 
-	// An event is still eligible for the popup queue if it was neither permanently
-	// dismissed (persisted isOpen flag) nor closed earlier in this session.
-	const isEventPending = (e: any) => !e?.isOpen && !sessionClosedIdsRef.current.has(String(e?.id ?? ''));
+	// An event is still eligible for the popup queue if it is meant as popup (display_mode,
+	// the others are shown in the food offers by PopupEventFoodoffersHint) and was neither
+	// permanently dismissed (persisted isOpen flag) nor closed earlier in this session.
+	const isEventPending = (e: any) => Boolean(e) && isPopupEventShownAsPopup(e) && !e.isOpen && !sessionClosedIdsRef.current.has(String(e.id ?? ''));
 
 	// Kept in sync with the redux value below, but also written to directly inside
 	// markEventAsOpen so handleClosed can read the just-updated list synchronously,

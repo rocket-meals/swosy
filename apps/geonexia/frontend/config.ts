@@ -105,7 +105,8 @@ export function getVersionPatch() {
 	// 83: common: LegalEntities (company data for imprints and legal documents)
 	// 84: common: a support reaction alone no longer marks a food feedback as done
 	// 85: common: full language codes ("de-DE"), name sorting finds "de-DE" rows for "de"
-	return 85;
+	// 86: common: popup events can be shown in the food offers (display_mode)
+	return 86;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

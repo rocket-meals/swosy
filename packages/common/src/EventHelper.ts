@@ -113,3 +113,58 @@ export const filterPopupEvents = (
       doesPopupEventMatchUser(event, isAnonymousUser)
   );
 };
+
+/**
+ * popup_events.display_mode decides where an event is shown:
+ * - popup: as a sheet that opens on its own (default, also for events without a value)
+ * - foodoffers: as a compact card at the top of the food offers
+ */
+export const PopupEventDisplayModes = {
+  popup: 'popup',
+  foodoffers: 'foodoffers',
+} as const;
+export type PopupEventDisplayMode = (typeof PopupEventDisplayModes)[keyof typeof PopupEventDisplayModes];
+
+export const getPopupEventDisplayMode = (event: Pick<DatabaseTypes.PopupEvents, 'display_mode'>): PopupEventDisplayMode => {
+  return event.display_mode === PopupEventDisplayModes.foodoffers ? PopupEventDisplayModes.foodoffers : PopupEventDisplayModes.popup;
+};
+
+export const isPopupEventShownAsPopup = (event: Pick<DatabaseTypes.PopupEvents, 'display_mode'>): boolean => {
+  return getPopupEventDisplayMode(event) === PopupEventDisplayModes.popup;
+};
+
+export const isPopupEventShownInFoodoffers = (event: Pick<DatabaseTypes.PopupEvents, 'display_mode'>): boolean => {
+  return getPopupEventDisplayMode(event) === PopupEventDisplayModes.foodoffers;
+};
+
+/**
+ * The canteen ids of an event's popup_events_canteens junction rows, whether they were loaded as ids
+ * or with the related canteen resolved.
+ */
+export const getPopupEventCanteenIds = (event: Pick<DatabaseTypes.PopupEvents, 'canteens'>): string[] => {
+  const entries = Array.isArray(event.canteens) ? event.canteens : [];
+  return entries
+    .map((entry) => {
+      const canteen = entry && typeof entry === 'object' ? (entry as DatabaseTypes.PopupEventsCanteens).canteens_id : null;
+      if (canteen && typeof canteen === 'object') {
+        return canteen.id;
+      }
+      return canteen;
+    })
+    .filter((id): id is string => id !== null && id !== undefined && String(id).length > 0)
+    .map((id) => String(id));
+};
+
+/**
+ * An event without canteens is meant for every canteen. Otherwise it only matches the canteens it lists.
+ */
+export const doesPopupEventMatchCanteen = (event: Pick<DatabaseTypes.PopupEvents, 'canteens'>, canteenId: string | null | undefined): boolean => {
+  const canteenIds = getPopupEventCanteenIds(event);
+  if (canteenIds.length === 0) {
+    return true;
+  }
+  if (canteenId === null || canteenId === undefined) {
+    return false;
+  }
+  return canteenIds.includes(String(canteenId));
+};

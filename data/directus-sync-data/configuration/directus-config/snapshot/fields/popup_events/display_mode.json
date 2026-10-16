@@ -1,0 +1,70 @@
+{
+  "collection": "popup_events",
+  "field": "display_mode",
+  "type": "string",
+  "meta": {
+    "collection": "popup_events",
+    "conditions": null,
+    "display": "labels",
+    "display_options": {
+      "choices": [
+        {
+          "background": "var(--theme--primary-background)",
+          "foreground": "var(--theme--primary)",
+          "text": "Popup",
+          "value": "popup"
+        },
+        {
+          "background": "var(--theme--background-normal)",
+          "foreground": "var(--theme--foreground)",
+          "text": "Im Speiseplan",
+          "value": "foodoffers"
+        }
+      ]
+    },
+    "field": "display_mode",
+    "group": null,
+    "hidden": false,
+    "interface": "select-dropdown",
+    "note": "Popup: öffnet sich beim Start als Fenster. Im Speiseplan: kleines Feld oben in der Speiseanzeige, nur für die unter canteens gewählten Standorte (leer: alle Standorte).",
+    "options": {
+      "choices": [
+        {
+          "text": "Popup",
+          "value": "popup"
+        },
+        {
+          "text": "Im Speiseplan",
+          "value": "foodoffers"
+        }
+      ]
+    },
+    "readonly": false,
+    "required": false,
+    "searchable": true,
+    "sort": 24,
+    "special": null,
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "display_mode",
+    "table": "popup_events",
+    "data_type": "character varying",
+    "default_value": "popup",
+    "max_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}

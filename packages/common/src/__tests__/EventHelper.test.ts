@@ -1,4 +1,15 @@
-import { DatabaseTypes, doesAppVersionMatchConstraint, filterPopupEvents, isPopupEventActive } from 'repo-depkit-common';
+import {
+  DatabaseTypes,
+  doesAppVersionMatchConstraint,
+  doesPopupEventMatchCanteen,
+  filterPopupEvents,
+  getPopupEventCanteenIds,
+  getPopupEventDisplayMode,
+  isPopupEventActive,
+  isPopupEventShownAsPopup,
+  isPopupEventShownInFoodoffers,
+  PopupEventDisplayModes,
+} from 'repo-depkit-common';
 
 describe('Popup event helper', () => {
   const baseEvent: DatabaseTypes.PopupEvents = {
@@ -138,5 +149,43 @@ describe('Popup event helper', () => {
       expect(filterPopupEvents([event], 'show_on_android', referenceDate, '19.999.9').map((e) => e.id)).toEqual(['4']);
       expect(filterPopupEvents([event], 'show_on_android', referenceDate, '20.200.0').map((e) => e.id)).toEqual([]);
     });
+  });
+});
+
+describe('Popup event display mode and canteens', () => {
+  const event = { id: '1', canteens: [] } as unknown as DatabaseTypes.PopupEvents;
+
+  it('shows events without a display mode as popup', () => {
+    expect(getPopupEventDisplayMode(event)).toBe(PopupEventDisplayModes.popup);
+    expect(isPopupEventShownAsPopup(event)).toBe(true);
+    expect(isPopupEventShownInFoodoffers(event)).toBe(false);
+  });
+
+  it('shows unknown display modes as popup', () => {
+    expect(getPopupEventDisplayMode({ display_mode: 'something' })).toBe(PopupEventDisplayModes.popup);
+  });
+
+  it('shows foodoffers events in the food offers', () => {
+    const foodoffersEvent = { ...event, display_mode: 'foodoffers' };
+    expect(isPopupEventShownInFoodoffers(foodoffersEvent)).toBe(true);
+    expect(isPopupEventShownAsPopup(foodoffersEvent)).toBe(false);
+  });
+
+  it('matches every canteen when no canteen is set', () => {
+    expect(doesPopupEventMatchCanteen(event, 'a')).toBe(true);
+    expect(doesPopupEventMatchCanteen(event, null)).toBe(true);
+    expect(doesPopupEventMatchCanteen({ canteens: undefined as unknown as [] }, 'a')).toBe(true);
+  });
+
+  it('matches only the listed canteens, as ids or resolved objects', () => {
+    const withIds = { canteens: [{ id: 1, canteens_id: 'a' }] } as unknown as DatabaseTypes.PopupEvents;
+    const withObjects = { canteens: [{ id: 1, canteens_id: { id: 'b' } }] } as unknown as DatabaseTypes.PopupEvents;
+
+    expect(getPopupEventCanteenIds(withIds)).toEqual(['a']);
+    expect(getPopupEventCanteenIds(withObjects)).toEqual(['b']);
+    expect(doesPopupEventMatchCanteen(withIds, 'a')).toBe(true);
+    expect(doesPopupEventMatchCanteen(withIds, 'b')).toBe(false);
+    expect(doesPopupEventMatchCanteen(withObjects, 'b')).toBe(true);
+    expect(doesPopupEventMatchCanteen(withObjects, undefined)).toBe(false);
   });
 });

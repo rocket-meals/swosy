@@ -1891,6 +1891,7 @@ export type PopupEvents = {
   date_end?: string | null;
   date_start: string;
   date_updated?: string | null;
+  display_mode?: string | null;
   id: string;
   image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
