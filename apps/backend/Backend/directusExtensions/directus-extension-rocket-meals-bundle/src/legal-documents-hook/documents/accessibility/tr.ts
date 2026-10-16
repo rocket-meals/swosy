@@ -46,7 +46,7 @@ Bu web sitesini ve mobil uygulamayı, kamu sektörü organlarının web siteleri
 
 
 
-	Web sitesini kullanırken engellerle karşılaşırsanız veya erişilmesi zor, erişilebilirlik için genel önerileri ihlal eden bir içerikle karşılaşırsanız, lütfen bizimle e-posta yoluyla iletişime geçin:
+	Web sitesini kullanırken engellerle karşılaşırsan veya erişilmesi zor, erişilebilirlik için genel önerileri ihlal eden bir içerikle karşılaşırsan, lütfen bizimle e-posta yoluyla iletişime geç:
 
 	
 

@@ -2,7 +2,7 @@ import type { LegalDocumentText } from '../../LegalDocuments';
 
 export const PRIVACY_POLICY_FR: LegalDocumentText = {
   title: 'Déclaration de confidentialité',
-  content: `Notre site web et notre application dédiée (ci-après dénommée « l'application ») peuvent être utilisés sans divulgation de données à caractère personnel, à l'exception du stockage temporaire de fichiers journaux (tels que par exemple les adresses IP, les heures d’accès) à des fins de sécurité. Toutefois, si vous fournissez certaines données à caractère personnel (par exemple lors d’une prise de contact par e-mail ou d’une connexion via des prestataires externes tels que Google, Apple et autres), telles que votre nom, lieu de résidence ou adresse e-mail, cela se fait toujours sur une base volontaire et avec votre consentement explicite.
+  content: `Notre site web et notre application dédiée (ci-après dénommée « l'application ») peuvent être utilisés sans divulgation de données à caractère personnel, à l'exception du stockage temporaire de fichiers journaux (tels que par exemple les adresses IP, les heures d’accès) à des fins de sécurité. Toutefois, si tu fournis certaines données à caractère personnel (par exemple lors d’une prise de contact par e-mail ou d’une connexion via des prestataires externes tels que Google, Apple et autres), telles que ton nom, lieu de résidence ou adresse e-mail, cela se fait toujours sur une base volontaire et avec ton consentement explicite.
 
 Nom et adresse du responsable du traitement :
 
@@ -45,9 +45,9 @@ Par la présente déclaration de confidentialité, nous t'informons de notre tra
   - dans le cadre de la mise en balance des intérêts/de l'intérêt public.
 
 
-## Informations relatives au traitement de vos données
+## Informations relatives au traitement de tes données
 
-  Certaines informations sont déjà traitées automatiquement dès que vous utilisez l'application. Nous avons répertorié ci-dessous pour vous les données à caractère personnel qui sont traitées précisément.
+  Certaines informations sont déjà traitées automatiquement dès que tu utilises l'application. Nous avons répertorié ci-dessous pour toi les données à caractère personnel qui sont traitées précisément.
 
   ### Informations collectées lors du téléchargement
 
@@ -55,7 +55,7 @@ Par la présente déclaration de confidentialité, nous t'informons de notre tra
 
 	### Informations collectées automatiquement
 
- Nous accordons une grande importance au droit à l’anonymat, c’est pourquoi vous avez la possibilité, dès le début, de choisir d’utiliser l’application en tant qu’invité. Dans ce cas, aucune donnée personnelle ne nous est transmise, afin que toute personne souhaitant rester anonyme puisse le faire. Nous enregistrons uniquement, pendant une courte période, l’adresse IP et les heures d’accès dans les journaux du serveur afin de garantir notre sécurité. L’utilisation d’un compte invité limite toutefois les fonctionnalités de l’application, car certaines fonctions, telles que la synchronisation des données et l’envoi d’e-mails, ne permettent pas de préserver l’anonymat. Nous n’avons aucune influence sur la conservation des données par le fournisseur d’accès.
+ Nous accordons une grande importance au droit à l’anonymat, c’est pourquoi tu as la possibilité, dès le début, de choisir d’utiliser l’application en tant qu’invité. Dans ce cas, aucune donnée personnelle ne nous est transmise, afin que toute personne souhaitant rester anonyme puisse le faire. Nous enregistrons uniquement, pendant une courte période, l’adresse IP et les heures d’accès dans les journaux du serveur afin de garantir notre sécurité. L’utilisation d’un compte invité limite toutefois les fonctionnalités de l’application, car certaines fonctions, telles que la synchronisation des données et l’envoi d’e-mails, ne permettent pas de préserver l’anonymat. Nous n’avons aucune influence sur la conservation des données par le fournisseur d’accès.
 
 À chaque consultation de notre site Internet et de notre application, notre système collecte automatiquement des données et des informations provenant du système informatique de l’appareil utilisé.
 
@@ -98,7 +98,7 @@ Les données suivantes sont collectées :
     - l’heure locale et le décalage horaire de ton appareil
     - un identifiant de session aléatoire et un numéro séquentiel au sein de cette session
 
-		L'identifiant de session est généré de manière aléatoire à chaque lancement de l'application. Il est conservé uniquement en mémoire vive, n'est pas enregistré sur votre appareil et est perdu dès la fermeture de l'application. Les événements ne contiennent ni ton identifiant utilisateur, ni ton identifiant de profil, ni l’identifiant de ton appareil, ni ton jeton push, ni ton adresse IP, et nous ne les associons pas à ton compte. L’adresse IP, techniquement nécessaire à la transmission, n’apparaît que brièvement dans les journaux du serveur, comme décrit ci-dessus.
+		L'identifiant de session est généré de manière aléatoire à chaque lancement de l'application. Il est conservé uniquement en mémoire vive, n'est pas enregistré sur ton appareil et est perdu dès la fermeture de l'application. Les événements ne contiennent ni ton identifiant utilisateur, ni ton identifiant de profil, ni l’identifiant de ton appareil, ni ton jeton push, ni ton adresse IP, et nous ne les associons pas à ton compte. L’adresse IP, techniquement nécessaire à la transmission, n’apparaît que brièvement dans les journaux du serveur, comme décrit ci-dessus.
 
 		Nous analysons les événements exclusivement sous forme agrégée, par exemple en nombre de sessions actuellement ouvertes, en évolution au cours de la journée ou sous forme de liste des rubriques et contenus les plus fréquemment consultés.
 
@@ -106,10 +106,10 @@ Les données suivantes sont collectées :
 
 	### Informations relatives aux utilisateurs disposant d’un compte
 
-		Si vous n’utilisez pas l’application en tant qu’invité, un identifiant utilisateur (UserID) est créé automatiquement dans le cadre de votre utilisation de l’application ; celui-ci est nécessaire pour bénéficier de l’ensemble des fonctionnalités de l’application. Pour la collecte de l’identifiant utilisateur, nous nous appuyons sur notre intérêt légitime conformément à l’article 6, paragraphe 1, point f) du RGPD, afin de garantir le bon fonctionnement et l’exploitation sans faille de l’application et de pouvoir proposer un service adapté au marché et aux intérêts des utilisateurs.
+		Si tu n’utilises pas l’application en tant qu’invité, un identifiant utilisateur (UserID) est créé automatiquement dans le cadre de ton utilisation de l’application ; celui-ci est nécessaire pour bénéficier de l’ensemble des fonctionnalités de l’application. Pour la collecte de l’identifiant utilisateur, nous nous appuyons sur notre intérêt légitime conformément à l’article 6, paragraphe 1, point f) du RGPD, afin de garantir le bon fonctionnement et l’exploitation sans faille de l’application et de pouvoir proposer un service adapté au marché et aux intérêts des utilisateurs.
 
 
-		Nous collectons les évaluations transmises et, le cas échéant, les commentaires sur la base d’un consentement conformément à l’article 6, paragraphe 1, point a) du RGPD. Vous devez envoyer votre évaluation ou votre commentaire en cliquant activement sur le bouton « Envoyer un retour » ou en l’écrivant, ou bien l’application vous demandera expressément si tu souhaites transmettre cette évaluation et, le cas échéant, ces commentaires. La collecte des données d’utilisation pseudonymisées s’effectue sur la base d’un intérêt légitime conformément à l’article 6, paragraphe 1, point f) du RGPD, en liaison avec le considérant 47 (marketing direct).
+		Nous collectons les évaluations transmises et, le cas échéant, les commentaires sur la base d’un consentement conformément à l’article 6, paragraphe 1, point a) du RGPD. Tu dois envoyer ton évaluation ou ton commentaire en cliquant activement sur le bouton « Envoyer un retour » ou en l’écrivant, ou bien l’application te demandera expressément si tu souhaites transmettre cette évaluation et, le cas échéant, ces commentaires. La collecte des données d’utilisation pseudonymisées s’effectue sur la base d’un intérêt légitime conformément à l’article 6, paragraphe 1, point f) du RGPD, en liaison avec le considérant 47 (marketing direct).
 
 		Dans l’application, à condition que celle-ci ne soit pas utilisée en tant qu’invité, tu as à tout moment la possibilité de consulter toutes les données que nous avons enregistrées à ton sujet. Tu trouveras ci-dessous la liste des autres données à collecter qui sont nécessaires à la fourniture du service conformément à l’article 6, paragraphe 1, points b) et f) RGPD. La suppression de tes données s'effectue automatiquement lorsque tu supprimes ton compte ou après 180 jours d'inactivité.
 
@@ -119,21 +119,21 @@ Les données suivantes sont collectées :
 
  #### Utilisateur
 
- - id - Lors de votre inscription, vous recevez un compte avec un identifiant utilisateur auquel vos données peuvent être associées.
+ - id - Lors de ton inscription, tu reçois un compte avec un identifiant utilisateur auquel tes données peuvent être associées.
 
  - first_name - Lorsque tu te connectes via un fournisseur externe (connexion SSO) tel que Google, nous enregistrons ton prénom afin de t'accueillir de manière personnalisée dans l'application ou dans les adresses.
 
-			- last_name - Lorsque vous vous connectez via un fournisseur externe (connexion SSO) tel que Google, nous enregistrons votre nom de famille afin de vous accueillir de manière personnalisée dans l’application ou lors de la saisie d’adresses.
+			- last_name - Lorsque tu te connectes via un fournisseur externe (connexion SSO) tel que Google, nous enregistrons ton nom de famille afin de t’accueillir de manière personnalisée dans l’application ou lors de la saisie d’adresses.
 
 			- profile - Nous dissocions ton profil de ton identifiant utilisateur. Cela nous permet de pseudonymiser les données lorsque nous les analysons.
 
-			- last_access - Nous enregistrons la date et l'heure de votre dernier accès afin de pouvoir supprimer automatiquement les utilisateurs inactifs. Nous utilisons également cette information pour le tableau de bord destiné aux administrateurs (voir la section « Aperçu opérationnel pour les administrateurs »).
+			- last_access - Nous enregistrons la date et l'heure de ton dernier accès afin de pouvoir supprimer automatiquement les utilisateurs inactifs. Nous utilisons également cette information pour le tableau de bord destiné aux administrateurs (voir la section « Aperçu opérationnel pour les administrateurs »).
 
  - password - Si tu t'es connecté via un fournisseur externe, nous n'enregistrons bien sûr aucun mot de passe. Pour les comptes des collaborateurs, un mot de passe haché est enregistré ici.
 
-			- provider - Si vous vous êtes connecté via un fournisseur externe tel que Google, nous enregistrons le nom de ce fournisseur.
+			- provider - Si tu t’es connecté via un fournisseur externe tel que Google, nous enregistrons le nom de ce fournisseur.
 
-			- external_identifier - Si vous vous êtes connecté via un fournisseur externe tel que Google, nous enregistrons l’identifiant de ce fournisseur afin de pouvoir vous attribuer votre compte.
+			- external_identifier - Si tu t’es connecté via un fournisseur externe tel que Google, nous enregistrons l’identifiant de ce fournisseur afin de pouvoir t’attribuer ton compte.
 
 			- token - Un jeton généré par le serveur, que tu reçois avec ton mot de passe afin de faciliter ton authentification.
 
@@ -159,7 +159,7 @@ Dans ton profil, nous enregistrons toutes les informations pertinentes que tu pe
 
  - buildings_favorites - Tes bâtiments préférés, ceux qui sont importants pour toi.
 
-			- buildings_last_visited - Les bâtiments que vous avez consultés en dernier dans l’application. Nous utilisons notamment ces informations pour trier les résultats.
+			- buildings_last_visited - Les bâtiments que tu as consultés en dernier dans l’application. Nous utilisons notamment ces informations pour trier les résultats.
 
 			- markings - Tes allergènes et les mentions relatives aux plats que tu ne tolères pas ou que tu n'aimes pas. Cela nous permet, d'une part, d'adapter tes notifications à tes habitudes alimentaires et, d'autre part, d'adapter notre offre afin de toucher le plus grand nombre de personnes possible.
 
@@ -175,23 +175,23 @@ Dans ton profil, nous enregistrons toutes les informations pertinentes que tu pe
 
 			- date_updated - La date de la dernière modification de ton profil. Elle est mise à jour lorsque tu modifies ton profil, mais aussi lorsque tu ouvres l’application ou que tu la ramènes au premier plan (au maximum toutes les quelques minutes). Cela nous permet de savoir quand des modifications ont été effectuées et quand tu as été actif pour la dernière fois. Nous utilisons l’heure de la dernière activité pour le tableau de bord destiné aux administrateurs (voir la section « Tableau de bord destiné aux administrateurs »).
 
-		#### Informations sur votre appareil
+		#### Informations sur ton appareil
 
- - id - Un numéro généré par le serveur pour votre appareil. Comme certaines personnes possèdent plusieurs appareils, nous faisons la distinction entre ces appareils connectés. Nous associons d’autres informations à ce numéro : PushNotificationToken, DeviceOS, DeviceID et StreamViews.
+ - id - Un numéro généré par le serveur pour ton appareil. Comme certaines personnes possèdent plusieurs appareils, nous faisons la distinction entre ces appareils connectés. Nous associons d’autres informations à ce numéro : PushNotificationToken, DeviceOS, DeviceID et StreamViews.
 
-			- DeviceOS - Le système d’exploitation et la version de votre smartphone. Ces informations nous permettent d’identifier les plantages et d’avoir une vue d’ensemble des appareils à tester.
+			- DeviceOS - Le système d’exploitation et la version de ton smartphone. Ces informations nous permettent d’identifier les plantages et d’avoir une vue d’ensemble des appareils à tester.
 
 			- PushNotificationToken - Une clé générée par ton fournisseur d’App Store, grâce à laquelle nous pouvons t’envoyer des notifications push. Tu trouveras plus d’informations à ce sujet dans la section « Droits d’accès de l’application mobile ».
 
-			- display - Diverses informations concernant votre écran : taille de police, densité de pixels, largeur, hauteur, marque, etc.
+			- display - Diverses informations concernant ton écran : taille de police, densité de pixels, largeur, hauteur, marque, etc.
 
- - platform - La plateforme sur laquelle fonctionne votre appareil : Web, iOS, Android.
+ - platform - La plateforme sur laquelle fonctionne ton appareil : Web, iOS, Android.
 
- - brand - La marque de votre appareil.
+ - brand - La marque de ton appareil.
 
-			- system_version - Le numéro de version de votre système d’exploitation. Vous n’imaginez pas à quel point cela nous aide à corriger les erreurs sur les appareils Android.
+			- system_version - Le numéro de version de ton système d’exploitation. Tu n’imagines pas à quel point cela nous aide à corriger les erreurs sur les appareils Android.
 
-Vos données à caractère personnel ne sont pas transmises à des tiers à d’autres fins, sauf si vous
+Tes données à caractère personnel ne sont pas transmises à des tiers à d’autres fins, sauf si tu
 
 			- aies donné ton consentement explicite conformément à l’art. 6, al. 1, phrase 1, point a) du RGPD, ainsi que
 
@@ -201,7 +201,7 @@ Vos données à caractère personnel ne sont pas transmises à des tiers à d’
 
 ## Communication et transfert de données
 
-  Outre les cas explicitement mentionnés dans la présente politique de confidentialité, la communication de vos données à caractère personnel sans votre consentement préalable explicite n’a lieu que si la loi l’autorise ou l’exige. Cela peut notamment lorsque le traitement est nécessaire pour protéger les intérêts vitaux de l’utilisateur ou d’une autre personne physique.
+  Outre les cas explicitement mentionnés dans la présente politique de confidentialité, la communication de tes données à caractère personnel sans ton consentement préalable explicite n’a lieu que si la loi l’autorise ou l’exige. Cela peut notamment lorsque le traitement est nécessaire pour protéger les intérêts vitaux de l’utilisateur ou d’une autre personne physique.
 
 	Pour assurer le bon fonctionnement de notre application, nous faisons appel à des prestataires externes qui réalisent pour notre compte des sous-processus ou fournissent des services.
 
@@ -229,7 +229,7 @@ Vos données à caractère personnel ne sont pas transmises à des tiers à d’
     - les activités que tu nous transmets de toute façon, par exemple les notes attribuées aux plats, les visites annoncées au restaurant universitaire ou la création de ton compte
 		- des chiffres agrégés issus des statistiques d’utilisation anonymes, par exemple le nombre de sessions actuellement ouvertes. Ces chiffres ne peuvent être associés à aucune personne en particulier.
 
-		Ton adresse e-mail, ton vrai nom, ton solde, tes messages de chat ou ta localisation n’y apparaissent pas. Aucune donnée supplémentaire n’est collectée ni enregistrée pour cet aperçu. Elle affiche uniquement l’état actuel des données décrites ci-dessus ; nous ne créons pas d’historique spécifique de votre activité à cette fin. Les invités n’apparaissent dans l’aperçu que sous forme de chiffres anonymes.
+		Ton adresse e-mail, ton vrai nom, ton solde, tes messages de chat ou ta localisation n’y apparaissent pas. Aucune donnée supplémentaire n’est collectée ni enregistrée pour cet aperçu. Elle affiche uniquement l’état actuel des données décrites ci-dessus ; nous ne créons pas d’historique spécifique de ton activité à cette fin. Les invités n’apparaissent dans l’aperçu que sous forme de chiffres anonymes.
 
 L’objectif de cet aperçu est de surveiller le fonctionnement de l’application et de détecter rapidement les dysfonctionnements, par exemple lorsque, après une mise à jour, il n’y a soudainement presque plus d’utilisateurs actifs. La base juridique est notre intérêt légitime au sens de l’article 6, paragraphe 1, point f) du RGPD. Tu peux à tout moment t’opposer à ce traitement conformément à l’article 21 du RGPD en utilisant les coordonnées indiquées ci-dessous.
 
@@ -251,7 +251,7 @@ Lors du chargement de la carte, des données cartographiques (appelées « map t
 
 		L’utilisation de la fonctionnalité cartographique repose sur notre intérêt légitime conformément à l’article 6, paragraphe 1, point f) du RGPD, car l’affichage de la carte constitue une fonctionnalité essentielle de l’application pour la visualisation des emplacements.
 
-		Pour plus d’informations sur la protection des données chez OpenStreetMap, consultez : https://wiki.osmfoundation.org/wiki/Privacy_Policy
+		Pour plus d’informations sur la protection des données chez OpenStreetMap, consulte : https://wiki.osmfoundation.org/wiki/Privacy_Policy
 
 
 
@@ -264,9 +264,9 @@ Lors du chargement de la carte, des données cartographiques (appelées « map t
 
 	### Agenda
 
- Tous les rendez-vous et événements figurant dans l’agenda sont enregistrés et traités localement sur votre appareil mobile ainsi que chez nous en ligne. Nous pouvons notamment utiliser vos données pour optimiser le fonctionnement de notre cantine et vous offrir une meilleure expérience.
+ Tous les rendez-vous et événements figurant dans l’agenda sont enregistrés et traités localement sur ton appareil mobile ainsi que chez nous en ligne. Nous pouvons notamment utiliser tes données pour optimiser le fonctionnement de notre cantine et t’offrir une meilleure expérience.
 
-		Si vous le souhaitez, les rendez-vous et événements existants provenant de fournisseurs tiers, tels que Stud.IP, peuvent être importés. Ces données sont également enregistrées localement et transmises à notre serveur. Le cas échéant, l’adresse IP de l’appareil utilisé et les accès REST correspondants pour l’exportation de données depuis des services tiers, tels que Stud.IP, sont enregistrés.
+		Si tu le souhaites, les rendez-vous et événements existants provenant de fournisseurs tiers, tels que Stud.IP, peuvent être importés. Ces données sont également enregistrées localement et transmises à notre serveur. Le cas échéant, l’adresse IP de l’appareil utilisé et les accès REST correspondants pour l’exportation de données depuis des services tiers, tels que Stud.IP, sont enregistrés.
 
 
   ### Utilisation de l’IA
@@ -277,18 +277,18 @@ Lors du chargement de la carte, des données cartographiques (appelées « map t
 		- Commentaires sur l’application : l’IA suggère s’il convient de répondre à un commentaire et de quelle manière, et résume les commentaires.
     - Demandes de fonctionnalités : l’IA examine les nouvelles demandes, par exemple pour vérifier si celle-ci existe déjà.
 
-		Nous ne transmettons au service d’IA que le texte de ton commentaire et les informations associées telles que la note, le plat, la cantine et la date. S’il existe déjà une conversation avec le service d’assistance concernant un commentaire, nous transmettons également les messages de cette conversation, mais sans mentionner de nom. Nous ne transmettons pas votre identifiant utilisateur, votre identifiant de profil, votre adresse e-mail, votre nom ni aucune autre donnée de profil. L’IA ne fait que des suggestions. Chaque réponse et chaque décision sont vérifiées et validées par un être humain.
+		Nous ne transmettons au service d’IA que le texte de ton commentaire et les informations associées telles que la note, le plat, la cantine et la date. S’il existe déjà une conversation avec le service d’assistance concernant un commentaire, nous transmettons également les messages de cette conversation, mais sans mentionner de nom. Nous ne transmettons pas ton identifiant utilisateur, ton identifiant de profil, ton adresse e-mail, ton nom ni aucune autre donnée de profil. L’IA ne fait que des suggestions. Chaque réponse et chaque décision sont vérifiées et validées par un être humain.
 
 		Le prestataire du service d’IA est Anthropic Ireland, Limited, qui agit pour notre compte en tant que sous-traitant. Le traitement peut également avoir lieu en dehors de l’Espace économique européen (EEE), notamment aux États-Unis. Cette protection est garantie par les clauses contractuelles types (art. 46, al. 2, let. c du RGPD). Tu trouveras de plus amples informations sur [https://www.anthropic.com/legal/privacy](https://www.anthropic.com/legal/privacy) et [https://www.anthropic.com/legal/data-processing-addendum](https://www.anthropic.com/legal/data-processing-addendum).
 
-		La base juridique est notre intérêt légitime à un traitement rapide et efficace de vos commentaires, conformément à l’article 6, paragraphe 1, point f) du RGPD. Vous pouvez à tout moment vous opposer à ce traitement conformément à l’article 21 du RGPD en utilisant les coordonnées indiquées ci-dessous.
+		La base juridique est notre intérêt légitime à un traitement rapide et efficace de tes commentaires, conformément à l’article 6, paragraphe 1, point f) du RGPD. Tu peux à tout moment t’opposer à ce traitement conformément à l’article 21 du RGPD en utilisant les coordonnées indiquées ci-dessous.
 
-		Veuillez ne pas indiquer de données à caractère personnel telles que votre nom ou vos coordonnées dans vos commentaires, car le texte de ces derniers est transmis au service d’IA.
+		N’indique pas de données à caractère personnel telles que ton nom ou tes coordonnées dans tes commentaires, car le texte de ces derniers est transmis au service d’IA.
 
 
   ### Système de suggestions
 
- Afin d’optimiser le flux des utilisateurs et d’obtenir des suggestions plus pertinentes au sein de l’application, un système de suggestions a été mis en place. Le traitement de vos données côté serveur a lieu lorsque vous utilisez un profil d’invité. Des suggestions générales, indépendantes de l’utilisateur, continuent d’être proposées, comme par exemple la recommandation du jour ou celles basées uniquement sur la cantine que vous avez sélectionnée ou sur vos paramètres de filtrage et de tri.
+ Afin d’optimiser le flux des utilisateurs et d’obtenir des suggestions plus pertinentes au sein de l’application, un système de suggestions a été mis en place. Le traitement de tes données côté serveur a lieu lorsque tu utilises un profil d’invité. Des suggestions générales, indépendantes de l’utilisateur, continuent d’être proposées, comme par exemple la recommandation du jour ou celles basées uniquement sur la cantine que tu as sélectionnée ou sur tes paramètres de filtrage et de tri.
 
 		Le système de suggestions accède aux données suivantes :
 
@@ -308,15 +308,15 @@ Afin de te fournir le plus rapidement possible les mises à jour techniquement n
 
 		#### Mises à jour EAS
 
- Cela permet de mettre automatiquement à jour votre application et vous pouvez l’utiliser comme d’habitude. Pour pouvoir utiliser ce service, nous devons transmettre à Expo (650 Industries, Inc., 624 University Ave # 1 Palo Alto, CA, 94301-2019 États-Unis) l'identifiant de ton appareil et la version de l'application. Nous ne transmettons aucune autre donnée, telle que ton adresse e-mail. Tu trouveras des informations sur la finalité, l’étendue, la nature et l’utilisation de tes données par l’exploitant du service à l’adresse suivante : [https://docs.expo.dev/regulatory-compliance/privacy-shield/](https://docs.expo.dev/regulatory-compliance/privacy-shield/) et [https://docs.expo.dev/regulatory-compliance/gdpr/](https://docs.expo.dev/regulatory-compliance/gdpr/).
+ Cela permet de mettre automatiquement à jour ton application et tu peux l’utiliser comme d’habitude. Pour pouvoir utiliser ce service, nous devons transmettre à Expo (650 Industries, Inc., 624 University Ave # 1 Palo Alto, CA, 94301-2019 États-Unis) l'identifiant de ton appareil et la version de l'application. Nous ne transmettons aucune autre donnée, telle que ton adresse e-mail. Tu trouveras des informations sur la finalité, l’étendue, la nature et l’utilisation de tes données par l’exploitant du service à l’adresse suivante : [https://docs.expo.dev/regulatory-compliance/privacy-shield/](https://docs.expo.dev/regulatory-compliance/privacy-shield/) et [https://docs.expo.dev/regulatory-compliance/gdpr/](https://docs.expo.dev/regulatory-compliance/gdpr/).
 
 		#### Notifications push Expo
 
- Si vous utilisez un appareil mobile, vous pouvez recevoir des notifications push de notre part. Pour cela, nous utilisons les services d’Expo.
+ Si tu utilises un appareil mobile, tu peux recevoir des notifications push de notre part. Pour cela, nous utilisons les services d’Expo.
 
-			Expo utilise quant à lui Google Firebase pour envoyer des notifications push. Une référence push pseudonymisée est alors transmise à votre appareil afin de vous faire parvenir ces notifications. Vous pouvez à tout moment désactiver ou réactiver ces notifications dans les paramètres de votre appareil.
+			Expo utilise quant à lui Google Firebase pour envoyer des notifications push. Une référence push pseudonymisée est alors transmise à ton appareil afin de te faire parvenir ces notifications. Tu peux à tout moment désactiver ou réactiver ces notifications dans les paramètres de ton appareil.
 
-			Expo utilise les services de Google Firebase. Firebase fait partie de la plateforme Google Cloud et propose aux développeurs de nombreux services que vous pouvez consulter ici : [https://firebase.google.com/terms/](https://firebase.google.com/terms/). Certains services de Firebase traitent des données à caractère personnel vous concernant en tant qu'utilisateur final. Cela est nécessaire à la fourniture des services Google. Vous pouvez consulter quelles données sont traitées et à quelles fins dans la rubrique « Informations sur le traitement des données » (dataprocessing information) :  [https://firebase.google.com/support/privacy/](https://firebase.google.com/support/privacy/). Google Firebase utilise souvent des « identifiants d'instance » (Instance-IDs) qui, selon les informations fournies par Google, sont conservés jusqu’à ce que l’utilisateur final effectue un appel API pour supprimer l’identifiant. Les données sont ensuite supprimées du système de production et du système de sauvegarde 180 jours après cet appel. Pour plus d'informations, consultez :  [firebase.google.com/support/privacy/manage-iids](https://firebase.google.com/support/privacy/manage-iids). Ces identifiants d’instance sont par exemple déterminés afin de savoir à quel appareil les messages doivent être transmis.
+			Expo utilise les services de Google Firebase. Firebase fait partie de la plateforme Google Cloud et propose aux développeurs de nombreux services que tu peux consulter ici : [https://firebase.google.com/terms/](https://firebase.google.com/terms/). Certains services de Firebase traitent des données à caractère personnel te concernant en tant qu'utilisateur final. Cela est nécessaire à la fourniture des services Google. Tu peux consulter quelles données sont traitées et à quelles fins dans la rubrique « Informations sur le traitement des données » (dataprocessing information) :  [https://firebase.google.com/support/privacy/](https://firebase.google.com/support/privacy/). Google Firebase utilise souvent des « identifiants d'instance » (Instance-IDs) qui, selon les informations fournies par Google, sont conservés jusqu’à ce que l’utilisateur final effectue un appel API pour supprimer l’identifiant. Les données sont ensuite supprimées du système de production et du système de sauvegarde 180 jours après cet appel. Pour plus d'informations, consulte :  [firebase.google.com/support/privacy/manage-iids](https://firebase.google.com/support/privacy/manage-iids). Ces identifiants d’instance sont par exemple déterminés afin de savoir à quel appareil les messages doivent être transmis.
 
  Nous ne recevons aucune donnée à caractère personnel de la part de Google Firebase et ne faisons aucun effort pour personnaliser ces données a posteriori. Nous utilisons ces données uniquement pour analyser le comportement d’utilisation.
 
@@ -326,8 +326,8 @@ Afin de te fournir le plus rapidement possible les mises à jour techniquement n
 
   Le champ de commentaires « Feedback » te permet de nous envoyer des messages. Par le biais de ce champ, nous traitons ton identifiant utilisateur, ton identifiant de profil, ainsi que ton adresse e-mail. Pour cela, nous nous appuyons sur ton consentement conformément à l’article 6, paragraphe 1, point a) du RGPD, car l’envoi d’un commentaire est facultatif.
 
-	Si vous nous contactez par e-mail ou via le formulaire de contact pour toute question, vous nous donnez votre consentement volontaire aux fins de la prise de contact. Pour cela, la saisie d’une adresse e-mail valide est nécessaire ou celle-ci figure déjà dans votre compte. Celle-ci sert à attribuer la demande et à y répondre par la suite. La fourniture d’autres données est facultative.
-	Nous attirons expressément votre attention sur le fait que la transmission de ces données à notre adresse s’effectue en partie sans cryptage. C’est pourquoi nous vous prions de ne pas nous transmettre de catégories particulières de données à caractère personnel (par exemple, des données relatives à la santé) via le formulaire de contact ; utilisez pour cela des moyens sécurisés, comme le courrier postal.
+	Si tu nous contactes par e-mail ou via le formulaire de contact pour toute question, tu nous donnes ton consentement volontaire aux fins de la prise de contact. Pour cela, la saisie d’une adresse e-mail valide est nécessaire ou celle-ci figure déjà dans ton compte. Celle-ci sert à attribuer la demande et à y répondre par la suite. La fourniture d’autres données est facultative.
+	Nous attirons expressément ton attention sur le fait que la transmission de ces données à notre adresse s’effectue en partie sans cryptage. C’est pourquoi nous te prions de ne pas nous transmettre de catégories particulières de données à caractère personnel (par exemple, des données relatives à la santé) via le formulaire de contact ; utilise pour cela des moyens sécurisés, comme le courrier postal.
   Tous les e-mails entrants et sortants sont enregistrés dans nos archives centrales d’e-mails et conservés en règle générale pendant 10 ans. Cette conservation vise à respecter les obligations légales en matière de tenue régulière de la comptabilité. Cette obligation d’archivage ne concerne certes que les e-mails ayant valeur de pièces comptables, mais une séparation systématique entre ceux-ci et les autres e-mails n’est pas toujours possible. L’accès aux e-mails archivés a lieu à des fins de comptabilité financière et de gestion comptable, lorsque le contenu des e-mails est nécessaire d’un point de vue technique.
 
 
@@ -340,9 +340,9 @@ Afin de te fournir le plus rapidement possible les mises à jour techniquement n
 
 ## Durée de conservation des données
 
-  Nous conservons généralement tes données jusqu’à 180 jours. Si vous n’avez pas été actif pendant plus de 180 jours (c’est-à-dire que vous n’avez pas utilisé l’application, que vous étiez en séjour d’études à l’étranger pendant une longue période) ou si vous supprimez votre compte (via l’application), toutes les données que nous pouvons vous attribuer seront automatiquement supprimées ou anonymisées.
+  Nous conservons généralement tes données jusqu’à 180 jours. Si tu n’as pas été actif pendant plus de 180 jours (c’est-à-dire que tu n’as pas utilisé l’application, que tu étais en séjour d’études à l’étranger pendant une longue période) ou si tu supprimes ton compte (via l’application), toutes les données que nous pouvons t’attribuer seront automatiquement supprimées ou anonymisées.
 
-	Nous supprimons ou anonymisons tes données à caractère personnel dès qu’elles ne sont plus nécessaires aux fins pour lesquelles nous les avons collectées ou utilisées conformément aux paragraphes précédents, ou dans la mesure où ces données ne sont plus nécessaires à des fins de poursuites pénales ou pour garantir, faire valoir ou faire respecter des droits. Après la suppression de votre compte utilisateur, vos données seront automatiquement supprimées pour toute utilisation ultérieure, à moins que nous ne soyons tenus, en vertu de l’article 6, paragraphe 1, phrase 1, point c) du RGPD, en raison d’obligations de conservation et de documentation prévues par le droit fiscal et le droit commercial (issues du Code de commerce allemand [HGB], du Code pénal allemand [StGB] ou du Code fiscal allemand [AO]), ou si tu as consenti à une conservation prolongée conformément à l’article 6, paragraphe 1, phrase 1, point a) du RGPD.
+	Nous supprimons ou anonymisons tes données à caractère personnel dès qu’elles ne sont plus nécessaires aux fins pour lesquelles nous les avons collectées ou utilisées conformément aux paragraphes précédents, ou dans la mesure où ces données ne sont plus nécessaires à des fins de poursuites pénales ou pour garantir, faire valoir ou faire respecter des droits. Après la suppression de ton compte utilisateur, tes données seront automatiquement supprimées pour toute utilisation ultérieure, à moins que nous ne soyons tenus, en vertu de l’article 6, paragraphe 1, phrase 1, point c) du RGPD, en raison d’obligations de conservation et de documentation prévues par le droit fiscal et le droit commercial (issues du Code de commerce allemand [HGB], du Code pénal allemand [StGB] ou du Code fiscal allemand [AO]), ou si tu as consenti à une conservation prolongée conformément à l’article 6, paragraphe 1, phrase 1, point a) du RGPD.
 
 	En revanche, les évaluations concernant les plats et autres prestations ne sont pas supprimées, même si tu désinstalles l’application ou si ce plat ne figure plus dans les menus. À l’exception de l’identifiant utilisateur (UserID), qui est supprimé ou anonymisé comme indiqué ci-dessus, les évaluations ne contiennent aucune autre donnée à caractère personnel. Nous ne te demanderons pas non plus de fournir des données à caractère personnel supplémentaires en vue de la suppression ou de l’anonymisation de tes données.
 
@@ -351,31 +351,31 @@ Afin de te fournir le plus rapidement possible les mises à jour techniquement n
 
 
 
-## Vos droits en tant que personne concernée
+## Tes droits en tant que personne concernée
 
 	Tu as le droit, à tout moment et sur simple demande, d’obtenir de notre part des informations sur les données à caractère personnel te concernant que nous traitons, dans les limites prévues par l’article 15 du RGPD. Pour ce faire, tu peux adresser une demande par courrier postal ou par e-mail aux adresses indiquées ci-dessous.
 
 	Tu as le droit de nous demander la rectification immédiate des données à caractère personnel te concernant, si celles-ci s’avéraient inexactes. Pour ce faire, merci de t’adresser aux coordonnées indiquées ci-dessous.
 
-	Vous avez le droit de nous demander l'effacement des données à caractère personnel vous concernant, dans les conditions prévues à l'article 17 du RGPD. Ces conditions prévoient notamment un droit à l’effacement lorsque les données à caractère personnel ne sont plus nécessaires au regard des finalités pour lesquelles elles ont été collectées ou traitées d’une autre manière, ainsi qu’en cas de traitement illicite, en cas d’opposition ou d’existence d’une obligation d’effacement en vertu du droit de l’Union ou du droit de l’État membre auquel nous sommes soumis. Concernant la durée de conservation des données, veuillez vous reporter au paragraphe 5 de la présente politique de confidentialité.
+	Tu as le droit de nous demander l'effacement des données à caractère personnel te concernant, dans les conditions prévues à l'article 17 du RGPD. Ces conditions prévoient notamment un droit à l’effacement lorsque les données à caractère personnel ne sont plus nécessaires au regard des finalités pour lesquelles elles ont été collectées ou traitées d’une autre manière, ainsi qu’en cas de traitement illicite, en cas d’opposition ou d’existence d’une obligation d’effacement en vertu du droit de l’Union ou du droit de l’État membre auquel nous sommes soumis. Concernant la durée de conservation des données, reporte-toi au paragraphe 5 de la présente politique de confidentialité.
 
-	Pour faire valoir votre droit à l’effacement, veuillez vous adresser aux coordonnées indiquées ci-dessous ou effacer vous-même vos données via l’application.
+	Pour faire valoir ton droit à l’effacement, adresse-toi aux coordonnées indiquées ci-dessous ou efface toi-même tes données via l’application.
 
-  Vous avez le droit de nous demander la limitation du traitement conformément à l’article 18 du RGPD. Ce droit s’applique notamment lorsque l’exactitude des données à caractère personnel fait l’objet d’un litige entre l’utilisateur et nous, pendant la durée nécessaire à la vérification de cette exactitude, ainsi que dans le cas où l’utilisateur, disposant d’un droit à l’effacement, demande une limitation du traitement à la place de l’effacement ; ainsi que lorsque les données ne sont plus nécessaires aux fins que nous poursuivons, mais que l’utilisateur en a besoin pour faire valoir, exercer ou défendre des droits, et lorsque l’exercice effectif d’une opposition entre nous et l’utilisateur fait encore l’objet d’un litige. Pour faire valoir ton droit à la limitation du traitement, merci de t'adresser aux coordonnées indiquées ci-dessous.
+  Tu as le droit de nous demander la limitation du traitement conformément à l’article 18 du RGPD. Ce droit s’applique notamment lorsque l’exactitude des données à caractère personnel fait l’objet d’un litige entre l’utilisateur et nous, pendant la durée nécessaire à la vérification de cette exactitude, ainsi que dans le cas où l’utilisateur, disposant d’un droit à l’effacement, demande une limitation du traitement à la place de l’effacement ; ainsi que lorsque les données ne sont plus nécessaires aux fins que nous poursuivons, mais que l’utilisateur en a besoin pour faire valoir, exercer ou défendre des droits, et lorsque l’exercice effectif d’une opposition entre nous et l’utilisateur fait encore l’objet d’un litige. Pour faire valoir ton droit à la limitation du traitement, merci de t'adresser aux coordonnées indiquées ci-dessous.
 
-	Vous avez le droit de recevoir de notre part les données à caractère personnel vous concernant que vous nous avez fournies, dans un format structuré, couramment utilisé et lisible par machine, conformément à l’article 20 du RGPD. Pour faire valoir votre droit à la portabilité des données, veuillez vous adresser aux coordonnées indiquées ci-dessous.
+	Tu as le droit de recevoir de notre part les données à caractère personnel te concernant que tu nous as fournies, dans un format structuré, couramment utilisé et lisible par machine, conformément à l’article 20 du RGPD. Pour faire valoir ton droit à la portabilité des données, adresse-toi aux coordonnées indiquées ci-dessous.
 
-	Vous avez le droit, pour des raisons tenant à votre situation particulière, de vous opposer à tout moment, conformément à l’article 21 du RGPD, au traitement des données à caractère personnel vous concernant qui est effectué notamment sur la base de l’article 6, paragraphe 1, points e) ou f) du RGPD. Nous cesserons le traitement de vos données à caractère personnel, à moins que nous ne puissions démontrer qu’il existe des motifs légitimes et impérieux justifiant ce traitement et qui prévalent sur vos intérêts, droits et libertés, ou si le traitement sert à la constatation, de l’exercice ou de la défense de droits en justice.
+	Tu as le droit, pour des raisons tenant à ta situation particulière, de t’opposer à tout moment, conformément à l’article 21 du RGPD, au traitement des données à caractère personnel te concernant qui est effectué notamment sur la base de l’article 6, paragraphe 1, points e) ou f) du RGPD. Nous cesserons le traitement de tes données à caractère personnel, à moins que nous ne puissions démontrer qu’il existe des motifs légitimes et impérieux justifiant ce traitement et qui prévalent sur tes intérêts, droits et libertés, ou si le traitement sert à la constatation, de l’exercice ou de la défense de droits en justice.
 
-  Vous avez le droit de retirer votre consentement au traitement des données concernées sans avoir à justifier votre décision. Cela s’applique au traitement effectué après le retrait du consentement. Le traitement effectué jusqu’à ce moment-là n’est pas affecté.
+  Tu as le droit de retirer ton consentement au traitement des données concernées sans avoir à justifier ta décision. Cela s’applique au traitement effectué après le retrait du consentement. Le traitement effectué jusqu’à ce moment-là n’est pas affecté.
 
-	En cas de réclamation, n’hésitez pas à contacter notre déléguée à la protection des données (coordonnées ci-dessous). Vous disposez en outre d’un droit de recours auprès de l’autorité de contrôle compétente en matière de protection des données, à savoir la déléguée à la protection des données de Basse-Saxe, Prinzenstraße 5, 30159 Hanovre, téléphone : +49 511 120-4500, e-mail : poststelle@lfd.niedersachsen.de
+	En cas de réclamation, n’hésite pas à contacter notre déléguée à la protection des données (coordonnées ci-dessous). Tu disposes en outre d’un droit de recours auprès de l’autorité de contrôle compétente en matière de protection des données, à savoir la déléguée à la protection des données de Basse-Saxe, Prinzenstraße 5, 30159 Hanovre, téléphone : +49 511 120-4500, e-mail : poststelle@lfd.niedersachsen.de
 
 
 
 ## Sécurité des données
 
-	Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles appropriées afin de protéger vos données contre toute manipulation accidentelle ou intentionnelle, contre toute perte partielle ou totale, contre toute destruction ou contre tout accès non autorisé par des tiers. Nos mesures de sécurité sont améliorées en permanence en fonction des évolutions technologiques.
+	Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles appropriées afin de protéger tes données contre toute manipulation accidentelle ou intentionnelle, contre toute perte partielle ou totale, contre toute destruction ou contre tout accès non autorisé par des tiers. Nos mesures de sécurité sont améliorées en permanence en fonction des évolutions technologiques.
 
 
 
@@ -391,7 +391,7 @@ Afin de te fournir le plus rapidement possible les mises à jour techniquement n
 ## Contact
 
 
-	Si vous avez des questions ou des remarques concernant notre traitement de vos données à caractère personnel, ou si vous souhaitez exercer les droits mentionnés aux points 6 et 7 en tant que personne concernée, veuillez vous adresser à notre délégué à la protection des données.
+	Si tu as des questions ou des remarques concernant notre traitement de tes données à caractère personnel, ou si tu souhaites exercer les droits mentionnés aux points 6 et 7 en tant que personne concernée, adresse-toi à notre délégué à la protection des données.
 
 
 
@@ -416,7 +416,7 @@ Afin de te fournir le plus rapidement possible les mises à jour techniquement n
 
 ## Modifications de la présente politique de confidentialité
 
-Nous veillons à ce que la présente politique de confidentialité soit toujours à jour. C’est pourquoi nous nous réservons le droit de la modifier de temps à autre et d’y intégrer les changements concernant la collecte, le traitement ou l’utilisation de vos données. La version actuelle de la politique de confidentialité est toujours disponible sous la rubrique « Politique de confidentialité » au sein de l’application.
+Nous veillons à ce que la présente politique de confidentialité soit toujours à jour. C’est pourquoi nous nous réservons le droit de la modifier de temps à autre et d’y intégrer les changements concernant la collecte, le traitement ou l’utilisation de tes données. La version actuelle de la politique de confidentialité est toujours disponible sous la rubrique « Politique de confidentialité » au sein de l’application.
 
 Mise à jour : 16/09/2024`,
 };

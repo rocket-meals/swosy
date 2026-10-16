@@ -14,6 +14,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { MARK_ALL_CHATS_AS_READ, MARK_ALL_CHATS_AS_UNREAD } from '@/redux/Types/types';
 import { persistChatReadStatus, syncChatReadUntilToServer } from '@/helper/chatReadStatus';
 import styles from './styles';
+import { CHAT_OPENED_FROM_LIST } from './_layout';
 import useChatUnreadStatus, { getChatTimestamp } from '@/hooks/useChatUnreadStatus';
 import { MyAvatar } from 'repo-depkit-common-ui';
 import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
@@ -173,7 +174,7 @@ const ChatsScreen = () => {
                                 leftIcon={<MaterialCommunityIcons name="chat" size={24} color={theme.screen.icon} />}
                                 title={item.alias || item.id}
                                 rightElement={rightElement}
-                                onPress={() => router.push({ pathname: '/chats/details', params: { chat_id: item.id } })}
+                                onPress={() => router.push({ pathname: '/chats/details', params: { chat_id: item.id, opened_from: CHAT_OPENED_FROM_LIST } })}
                                 groupPosition={groupPosition as any}
                         />
                 );

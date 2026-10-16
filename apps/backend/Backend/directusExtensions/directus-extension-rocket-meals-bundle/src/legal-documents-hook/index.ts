@@ -18,7 +18,7 @@ const WIKIS = 'wikis';
 const WIKIS_TRANSLATIONS = 'wikis_translations';
 
 /**
- * Writes the privacy policy, imprint and accessibility statement from code into the wikis on every
+ * Writes the privacy policy, imprint, accessibility statement and terms and conditions from code into the wikis on every
  * start, and rejects manual changes to them (see `LegalWikiProtection`).
  */
 export default defineHook(({ init, filter }, apiContext) => {

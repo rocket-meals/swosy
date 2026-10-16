@@ -46,7 +46,7 @@ Nous nous efforçons de rendre ce site web et cette application mobile accessibl
 
 
 
-	Si vous rencontrez des barrières lors de l'utilisation du site web ou si vous trouvez des contenus difficilement accessibles, des contenus qui violent les recommandations générales en matière d'accessibilité, veuillez nous contacter par e-mail :
+	Si tu rencontres des barrières lors de l'utilisation du site web ou si tu trouves des contenus difficilement accessibles, des contenus qui violent les recommandations générales en matière d'accessibilité, contacte-nous par e-mail :
 
 	
 

@@ -27,7 +27,7 @@ Aşağıdaki bilgiler, sağlayıcı etiketlemesine ilişkin yasal olarak gerekli
 	[{{operator.website}}]({{operator.website}})
 
 ## İletişim seçenekleri
-	Bizimle e-posta yoluyla veya web sitemiz üzerinden iletişime geçebilirsiniz.
+	Bizimle e-posta yoluyla veya web sitemiz üzerinden iletişime geçebilirsin.
 
 	E-posta:
 

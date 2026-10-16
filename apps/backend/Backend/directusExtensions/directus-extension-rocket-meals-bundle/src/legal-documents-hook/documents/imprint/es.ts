@@ -27,7 +27,7 @@ La siguiente información contiene la información legalmente requerida sobre el
 	[{{operator.website}}]({{operator.website}})
 
 ## Opciones de contacto
-	Puede ponerse en contacto con nosotros por correo electrónico o a través de nuestro sitio web.
+	Puedes ponerte en contacto con nosotros por correo electrónico o a través de nuestro sitio web.
 
 	Correo electrónico:
 
