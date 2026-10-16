@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { runAfterInteractions } from '@/helper/interactionHelper';
 import { fetchFoodDetailsById, fetchFoodOffersDetailsById, isFoodOfferNotFoundError } from '@/redux/actions/FoodOffers/FoodOffers';
 import { invalidateFoodOffers } from '@/helper/foodOffersInvalidation';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, isSameBaseLanguage } from 'repo-depkit-common';
 import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
@@ -28,9 +28,11 @@ const findTranslationForLanguage = <T extends TranslationWithName>(
     translations: T[] | undefined | null,
     languageCode: string | undefined
 ) => {
-    return translations?.find(
-        (val: T) => String(val?.languages_code)?.split('-')[0] === languageCode
-    );
+    // The app stores the full code ("de-DE"), rows may be "de-DE", "de-AT" or the expanded relation
+    return translations?.find((val: T) => {
+        const code = typeof val?.languages_code === 'string' ? val.languages_code : (val?.languages_code as DatabaseTypes.Languages | undefined)?.code;
+        return isSameBaseLanguage(code, languageCode);
+    });
 };
 
 const applyFoodOfferDetailsResponse = (
