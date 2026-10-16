@@ -117,24 +117,51 @@ export const filterPopupEvents = (
 /**
  * popup_events.display_mode decides where an event is shown:
  * - popup: as a sheet that opens on its own (default, also for events without a value)
- * - foodoffers: as a compact card at the top of the food offers
+ * - foodoffers_top: as a compact card above the food offers
+ * - foodoffers_bottom: as a compact card below the food offers of the first day
  */
 export const PopupEventDisplayModes = {
   popup: 'popup',
-  foodoffers: 'foodoffers',
+  foodoffers_top: 'foodoffers_top',
+  foodoffers_bottom: 'foodoffers_bottom',
 } as const;
 export type PopupEventDisplayMode = (typeof PopupEventDisplayModes)[keyof typeof PopupEventDisplayModes];
 
+export const PopupEventFoodoffersPositions = {
+  top: 'top',
+  bottom: 'bottom',
+} as const;
+export type PopupEventFoodoffersPosition = (typeof PopupEventFoodoffersPositions)[keyof typeof PopupEventFoodoffersPositions];
+
 export const getPopupEventDisplayMode = (event: Pick<DatabaseTypes.PopupEvents, 'display_mode'>): PopupEventDisplayMode => {
-  return event.display_mode === PopupEventDisplayModes.foodoffers ? PopupEventDisplayModes.foodoffers : PopupEventDisplayModes.popup;
+  const knownModes: readonly string[] = Object.values(PopupEventDisplayModes);
+  return event.display_mode && knownModes.includes(event.display_mode) ? (event.display_mode as PopupEventDisplayMode) : PopupEventDisplayModes.popup;
 };
 
 export const isPopupEventShownAsPopup = (event: Pick<DatabaseTypes.PopupEvents, 'display_mode'>): boolean => {
   return getPopupEventDisplayMode(event) === PopupEventDisplayModes.popup;
 };
 
-export const isPopupEventShownInFoodoffers = (event: Pick<DatabaseTypes.PopupEvents, 'display_mode'>): boolean => {
-  return getPopupEventDisplayMode(event) === PopupEventDisplayModes.foodoffers;
+/**
+ * Where in the food offers the event is shown, or null for an event shown as popup.
+ */
+export const getPopupEventFoodoffersPosition = (event: Pick<DatabaseTypes.PopupEvents, 'display_mode'>): PopupEventFoodoffersPosition | null => {
+  switch (getPopupEventDisplayMode(event)) {
+    case PopupEventDisplayModes.foodoffers_top:
+      return PopupEventFoodoffersPositions.top;
+    case PopupEventDisplayModes.foodoffers_bottom:
+      return PopupEventFoodoffersPositions.bottom;
+    default:
+      return null;
+  }
+};
+
+export const isPopupEventShownInFoodoffers = (event: Pick<DatabaseTypes.PopupEvents, 'display_mode'>, position?: PopupEventFoodoffersPosition): boolean => {
+  const eventPosition = getPopupEventFoodoffersPosition(event);
+  if (eventPosition === null) {
+    return false;
+  }
+  return position === undefined || eventPosition === position;
 };
 
 /**

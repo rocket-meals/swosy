@@ -292,7 +292,8 @@ export function getVersionPatch() {
         // 170: feature wish form says it is about app features (not meals), hint text in contrast color
         // 171: the feature wishes tile in the food offers has no "Hide" button anymore
         // 172: popup events can be shown as a compact card in the food offers instead of a popup
-        return 172;
+        // 173: popup events in the food offers can be placed above or at the end of the first day
+        return 173;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

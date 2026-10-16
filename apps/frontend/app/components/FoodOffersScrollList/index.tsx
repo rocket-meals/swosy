@@ -3,7 +3,7 @@ import { ActivityIndicator, AppState, Dimensions, FlatList, RefreshControl, Text
 import { addDays, format } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
-import { CollectibleAt, CollectionNames, DatabaseTypes, sortBySortField } from 'repo-depkit-common';
+import { CollectibleAt, CollectionNames, DatabaseTypes, PopupEventFoodoffersPositions, sortBySortField } from 'repo-depkit-common';
 import FoodItem from '@/components/FoodItem/FoodItem';
 import CanteenFeedbackLabels from '@/components/CanteenFeedbackLabels/CanteenFeedbackLabels';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -601,6 +601,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						<MyMarkdownProjectColored content={afterElement?.content || ''} accentColor={foods_area_color} imageWidth={440} imageHeight={293} collapsibleSections />
 					</View>
 				)}
+				{index === 0 && <PopupEventFoodoffersHint canteenId={canteenId} position={PopupEventFoodoffersPositions.bottom} />}
 				{index === 0 && <FeatureWishesTile />}
 				{feedbacks && feedbacks.length > 0 && (
 					<View style={styles.feebackContainer}>
@@ -634,7 +635,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				renderItem={renderDay}
 				ListHeaderComponent={
 					<>
-						<PopupEventFoodoffersHint canteenId={canteenId} />
+						<PopupEventFoodoffersHint canteenId={canteenId} position={PopupEventFoodoffersPositions.top} />
 						<FoodFeedbackResponsesHint />
 					</>
 				}

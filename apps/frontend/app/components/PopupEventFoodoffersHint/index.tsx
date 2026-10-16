@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { shallowEqual } from 'react-redux';
-import { DatabaseTypes, doesPopupEventMatchCanteen, isPopupEventShownInFoodoffers } from 'repo-depkit-common';
+import { DatabaseTypes, doesPopupEventMatchCanteen, isPopupEventShownInFoodoffers, PopupEventFoodoffersPosition } from 'repo-depkit-common';
 import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';
 import MyImage from '@/components/MyImage';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
@@ -18,15 +18,17 @@ type FoodoffersPopupEvent = DatabaseTypes.PopupEvents & { isOpen?: boolean };
 
 type PopupEventFoodoffersHintProps = {
 	canteenId: string;
+	position: PopupEventFoodoffersPosition;
 };
 
 /**
- * Popup events with `display_mode` "foodoffers", as compact cards above the food offers instead of a
- * sheet that opens on its own. Only the events for the shown canteen (an event without canteens is
- * meant for all of them). A tap opens the full event, the "x" hides it for good, the same way as the
+ * Popup events with `display_mode` "foodoffers_top" or "foodoffers_bottom", as compact cards above the food
+ * offers or below the first day instead of a sheet that opens on its own (`position` picks which ones).
+ * Only the events for the shown canteen (an event without canteens is meant for all of them). A tap
+ * opens the full event, the "x" hides it for good, the same way as the
  * "do not show again" button of the popup (persisted `isOpen` flag).
  */
-const PopupEventFoodoffersHint: React.FC<PopupEventFoodoffersHintProps> = ({ canteenId }) => {
+const PopupEventFoodoffersHint: React.FC<PopupEventFoodoffersHintProps> = ({ canteenId, position }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useAppDispatch();
@@ -34,7 +36,7 @@ const PopupEventFoodoffersHint: React.FC<PopupEventFoodoffersHintProps> = ({ can
 	const { primaryColor, language } = useAppSelector(state => state.settings);
 	const popupEvents = useAppSelector(state => state.food.popupEvents, shallowEqual) as FoodoffersPopupEvent[];
 
-	const visibleEvents = useMemo(() => (popupEvents ?? []).filter(event => !event?.isOpen && isPopupEventShownInFoodoffers(event) && doesPopupEventMatchCanteen(event, canteenId)), [popupEvents, canteenId]);
+	const visibleEvents = useMemo(() => (popupEvents ?? []).filter(event => !event?.isOpen && isPopupEventShownInFoodoffers(event, position) && doesPopupEventMatchCanteen(event, canteenId)), [popupEvents, canteenId, position]);
 
 	const dismiss = useCallback(
 		(event: FoodoffersPopupEvent) => {

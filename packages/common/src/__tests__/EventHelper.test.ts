@@ -5,10 +5,12 @@ import {
   filterPopupEvents,
   getPopupEventCanteenIds,
   getPopupEventDisplayMode,
+  getPopupEventFoodoffersPosition,
   isPopupEventActive,
   isPopupEventShownAsPopup,
   isPopupEventShownInFoodoffers,
   PopupEventDisplayModes,
+  PopupEventFoodoffersPositions,
 } from 'repo-depkit-common';
 
 describe('Popup event helper', () => {
@@ -165,10 +167,18 @@ describe('Popup event display mode and canteens', () => {
     expect(getPopupEventDisplayMode({ display_mode: 'something' })).toBe(PopupEventDisplayModes.popup);
   });
 
-  it('shows foodoffers events in the food offers', () => {
-    const foodoffersEvent = { ...event, display_mode: 'foodoffers' };
-    expect(isPopupEventShownInFoodoffers(foodoffersEvent)).toBe(true);
-    expect(isPopupEventShownAsPopup(foodoffersEvent)).toBe(false);
+  it('shows foodoffers events at their position in the food offers', () => {
+    const topEvent = { ...event, display_mode: 'foodoffers_top' };
+    const bottomEvent = { ...event, display_mode: 'foodoffers_bottom' };
+
+    expect(isPopupEventShownAsPopup(topEvent)).toBe(false);
+    expect(getPopupEventFoodoffersPosition(topEvent)).toBe(PopupEventFoodoffersPositions.top);
+    expect(getPopupEventFoodoffersPosition(bottomEvent)).toBe(PopupEventFoodoffersPositions.bottom);
+    expect(getPopupEventFoodoffersPosition(event)).toBeNull();
+    expect(isPopupEventShownInFoodoffers(topEvent)).toBe(true);
+    expect(isPopupEventShownInFoodoffers(topEvent, PopupEventFoodoffersPositions.top)).toBe(true);
+    expect(isPopupEventShownInFoodoffers(topEvent, PopupEventFoodoffersPositions.bottom)).toBe(false);
+    expect(isPopupEventShownInFoodoffers(bottomEvent, PopupEventFoodoffersPositions.bottom)).toBe(true);
   });
 
   it('matches every canteen when no canteen is set', () => {

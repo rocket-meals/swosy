@@ -17,8 +17,14 @@
         {
           "background": "var(--theme--background-normal)",
           "foreground": "var(--theme--foreground)",
-          "text": "Im Speiseplan",
-          "value": "foodoffers"
+          "text": "Im Speiseplan oben",
+          "value": "foodoffers_top"
+        },
+        {
+          "background": "var(--theme--background-normal)",
+          "foreground": "var(--theme--foreground)",
+          "text": "Im Speiseplan unten (Ende des ersten Tages)",
+          "value": "foodoffers_bottom"
         }
       ]
     },
@@ -26,7 +32,7 @@
     "group": null,
     "hidden": false,
     "interface": "select-dropdown",
-    "note": "Popup: öffnet sich beim Start als Fenster. Im Speiseplan: kleines Feld oben in der Speiseanzeige, nur für die unter canteens gewählten Standorte (leer: alle Standorte).",
+    "note": "Popup: öffnet sich beim Start als Fenster. Im Speiseplan oben/unten: kleines Feld über den Speisen oder am Ende des ersten Tages, nur für die unter canteens gewählten Standorte (leer: alle Standorte).",
     "options": {
       "choices": [
         {
@@ -34,8 +40,12 @@
           "value": "popup"
         },
         {
-          "text": "Im Speiseplan",
-          "value": "foodoffers"
+          "text": "Im Speiseplan oben",
+          "value": "foodoffers_top"
+        },
+        {
+          "text": "Im Speiseplan unten (Ende des ersten Tages)",
+          "value": "foodoffers_bottom"
         }
       ]
     },
