@@ -17,6 +17,8 @@ import ProfileDetailsPage from './profiles/profile-details-page.vue';
 import ProfilePushPage from './profiles/profile-push-page.vue';
 import ChatsPage from './chats/chats-page.vue';
 import ChatPage from './chats/chat-page.vue';
+import CommunicationPage from './communication/communication-page.vue';
+import NewsEditorPage from './communication/news-editor-page.vue';
 
 /**
  * Module `Rocket Meals` – our own area in the Directus app, with a side navigation like the content
@@ -69,6 +71,15 @@ export default defineModule({
     {
       path: `${RocketMealsModulePages.CHATS.path}/:chatId`,
       component: ChatPage,
+      props: true,
+    },
+    {
+      path: RocketMealsModulePages.COMMUNICATION.path,
+      component: CommunicationPage,
+    },
+    {
+      path: `${RocketMealsModulePages.COMMUNICATION.path}/:newsId`,
+      component: NewsEditorPage,
       props: true,
     },
     {

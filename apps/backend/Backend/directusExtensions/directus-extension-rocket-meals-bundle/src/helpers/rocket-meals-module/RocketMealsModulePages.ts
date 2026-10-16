@@ -2,7 +2,7 @@
  * RocketMealsModulePages.ts – the pages of the `Rocket Meals` module in the Directus app.
  *
  * The module is the place for backend tools that do not fit Directus' generic content views:
- * today the food and app feedback chats, the feature wishes, the other chats, the profiles (with push messages), the MCP instruction, the live pulse, the friendship network and the workflows, later e.g. housing management or top/flop lists of dishes.
+ * today the food and app feedback chats, the feature wishes, the other chats, the news (communication), the profiles (with push messages), the MCP instruction, the live pulse, the friendship network and the workflows, later e.g. housing management or top/flop lists of dishes.
  * A new page is one entry here plus a route in `src/rocket-meals-module/index.ts`; the side
  * navigation and the overview page are built from this list.
  */
@@ -73,6 +73,21 @@ export class RocketMealsModulePages {
     descriptionKey: BackendTranslationKeys.rocket_meals_module_chats_description,
   };
 
+  /**
+   * News and where the app shows them: in the news list, as popup or as card above or below the food
+   * offers, for chosen canteens and a time range. `communication/new` writes a new one,
+   * `communication/<id>` edits one, both with a preview of the app beside the form.
+   */
+  public static readonly COMMUNICATION: RocketMealsModulePage = {
+    path: 'communication',
+    icon: 'campaign',
+    labelKey: BackendTranslationKeys.rocket_meals_module_communication,
+    descriptionKey: BackendTranslationKeys.rocket_meals_module_communication_description,
+  };
+
+  /** Sub path of the communication page that writes a new news. */
+  public static readonly NEW_ITEM_SEGMENT = 'new';
+
   /** Sub path of a profile: start a chat with it. */
   public static readonly PROFILE_CHAT_SEGMENT = 'chat';
 
@@ -112,7 +127,7 @@ export class RocketMealsModulePages {
   };
 
   /** All pages, in the order of the navigation. */
-  public static readonly PAGES: readonly RocketMealsModulePage[] = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.FEATURE_WISHES, RocketMealsModulePages.CHATS, RocketMealsModulePages.PROFILES, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE, RocketMealsModulePages.FRIENDSHIP_NETWORK, RocketMealsModulePages.WORKFLOWS];
+  public static readonly PAGES: readonly RocketMealsModulePage[] = [RocketMealsModulePages.FOOD_FEEDBACKS, RocketMealsModulePages.APP_FEEDBACKS, RocketMealsModulePages.FEATURE_WISHES, RocketMealsModulePages.CHATS, RocketMealsModulePages.COMMUNICATION, RocketMealsModulePages.PROFILES, RocketMealsModulePages.MCP_INSTRUCTION, RocketMealsModulePages.LIVE_PULSE, RocketMealsModulePages.FRIENDSHIP_NETWORK, RocketMealsModulePages.WORKFLOWS];
 
   /**
    * The full URL of a page, e.g. for a link in a mail to support:
