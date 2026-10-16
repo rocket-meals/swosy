@@ -108,7 +108,8 @@ export function getVersionPatch() {
 	// 86: common: popup events can be shown in the food offers (display_mode)
 	// 87: common: popup events can be shown above or below the first day of the food offers
 	// 88: common: popup events merged into news (display_locations, date_end, canteens)
-	return 88;
+	// 89: common: popup_events types removed
+	return 89;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

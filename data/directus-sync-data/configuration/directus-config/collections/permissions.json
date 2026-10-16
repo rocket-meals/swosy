@@ -3867,42 +3867,6 @@
   },
   {
     "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
-    "collection": "popup_events_canteens",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "6bf8bb56-c88d-46ce-bd10-4a358ae91b2f"
-  },
-  {
-    "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
-    "collection": "popup_events_translations",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "10bf125a-6b1a-49a4-857e-3e1b8001e44d"
-  },
-  {
-    "fields": [
-      "*"
-    ],
-    "presets": null,
-    "validation": null,
-    "permissions": null,
-    "action": "read",
-    "collection": "popup_events",
-    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
-    "_syncId": "bb793196-aaec-4f25-a7cf-5994a9bd503b"
-  },
-  {
-    "fields": [
       "id",
       "nickname",
       "date_updated",

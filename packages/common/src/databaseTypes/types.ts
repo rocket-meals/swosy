@@ -1901,50 +1901,6 @@ export type Organizations = {
   user_updated?: string | DirectusUsers | null;
 };
 
-export type PopupEvents = {
-  alias?: string | null;
-  canteens: any[] | PopupEventsCanteens[];
-  date_created?: string | null;
-  date_end?: string | null;
-  date_start: string;
-  date_updated?: string | null;
-  id: string;
-  image?: string | DirectusFiles | null;
-  image_remote_url?: string | null;
-  image_thumb_hash?: string | null;
-  migrated_news?: string | News | null;
-  send_notification?: boolean | null;
-  show_app_rating_button?: boolean | null;
-  show_login_screen_button?: boolean | null;
-  show_on_android?: boolean | null;
-  show_on_app_version?: string | null;
-  show_on_ios?: boolean | null;
-  show_on_web?: boolean | null;
-  show_only_anonymous_users?: boolean | null;
-  sort?: number | null;
-  status?: string | null;
-  translations: any[] | PopupEventsTranslations[];
-  user_created?: string | DirectusUsers | null;
-  user_updated?: string | DirectusUsers | null;
-};
-
-export type PopupEventsCanteens = {
-  canteens_id?: string | Canteens | null;
-  id: number;
-  popup_events_id?: string | PopupEvents | null;
-};
-
-export type PopupEventsTranslations = {
-  be_source_for_translations?: boolean | null;
-  content?: string | null;
-  id: number;
-  languages_code?: string | Languages | null;
-  let_be_translated?: boolean | null;
-  popup_events_id?: string | PopupEvents | null;
-  title?: string | null;
-  translation_settings: string;
-};
-
 export type Profiles = {
   avatar?: unknown | null;
   buildings_favorites: any[] | ProfilesBuildingsFavorites[];
@@ -2295,9 +2251,6 @@ export type CustomDirectusTypes = {
   news_canteens: NewsCanteens[];
   news_translations: NewsTranslations[];
   organizations: Organizations[];
-  popup_events: PopupEvents[];
-  popup_events_canteens: PopupEventsCanteens[];
-  popup_events_translations: PopupEventsTranslations[];
   profiles: Profiles[];
   profiles_buildings_favorites: ProfilesBuildingsFavorites[];
   profiles_buildings_last_opened: ProfilesBuildingsLastOpened[];
