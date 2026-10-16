@@ -897,6 +897,8 @@ export default function Layout() {
 					options={{
 						title: translate(TranslationKeys.chats),
 						headerShown: false,
+						// Leaving the chats pops their stack to its first screen, so earlier chats do not pile up below the next one.
+						popToTopOnBlur: true,
 					}}
 				/>
 

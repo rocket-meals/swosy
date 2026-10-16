@@ -559,6 +559,16 @@
     "tr": "Bir yorum yaz",
     "zh": "写一条评论"
   },
+  "no_personal_data_hint": {
+    "de": "Bitte gib hier keine persönlichen Daten an, zum Beispiel Namen, Adressen oder Telefonnummern.",
+    "en": "Please do not enter any personal data here, for example names, addresses or phone numbers.",
+    "ar": "يرجى عدم إدخال أي بيانات شخصية هنا، مثل الأسماء أو العناوين أو أرقام الهواتف.",
+    "es": "Por favor, no introduzcas datos personales aquí, por ejemplo nombres, direcciones o números de teléfono.",
+    "fr": "Merci de ne pas saisir de données personnelles ici, par exemple des noms, des adresses ou des numéros de téléphone.",
+    "ru": "Пожалуйста, не указывайте здесь персональные данные, например имена, адреса или номера телефонов.",
+    "tr": "Lütfen buraya isim, adres veya telefon numarası gibi kişisel veriler girme.",
+    "zh": "请不要在此填写个人信息，例如姓名、地址或电话号码。"
+  },
   "delete_comment": {
     "de": "Kommentar löschen",
     "en": "Delete Comment",
@@ -5280,14 +5290,14 @@
     "zh": "Offered on"
   },
   "optional_device_data_description": {
-    "de": "Optionale Gerätedaten – können angepasst werden, helfen aber bei der Lösung der Anfrage.",
-    "en": "Optional device data – can be adjusted, but help resolve the request.",
-    "ar": "بيانات الجهاز الاختيارية – يمكن تعديلها، لكنها تساعد في حل الطلب.",
-    "es": "Datos opcionales del dispositivo – pueden ajustarse, pero ayudan a resolver la solicitud.",
-    "fr": "Données optionnelles de l'appareil – modifiables, mais utiles pour résoudre la demande.",
-    "ru": "Необязательные данные устройства – можно изменить, но они помогают решить запрос.",
-    "tr": "İsteğe bağlı cihaz verileri – ayarlanabilir, ancak talebi çözmeye yardımcı olur.",
-    "zh": "可选设备数据 – 可以调整，但有助于解决请求。"
+    "de": "Optionale Gerätedaten: Sie können angepasst werden, helfen aber bei der Lösung der Anfrage.",
+    "en": "Optional device data: It can be adjusted, but helps resolve the request.",
+    "ar": "بيانات الجهاز الاختيارية: يمكن تعديلها، لكنها تساعد في حل الطلب.",
+    "es": "Datos opcionales del dispositivo: pueden ajustarse, pero ayudan a resolver la solicitud.",
+    "fr": "Données optionnelles de l'appareil : modifiables, mais utiles pour résoudre la demande.",
+    "ru": "Необязательные данные устройства: их можно изменить, но они помогают решить запрос.",
+    "tr": "İsteğe bağlı cihaz verileri: Ayarlanabilir, ancak talebi çözmeye yardımcı olur.",
+    "zh": "可选设备数据：可以调整，但有助于解决请求。"
   },
   "account_required_example": {
     "de": "Account Required Beispiel",

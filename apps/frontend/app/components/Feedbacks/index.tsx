@@ -240,6 +240,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 						numberOfLines={3}
 						groupPosition="single"
 						saveLabel={translate(TranslationKeys.save_comment)}
+						hint={translate(TranslationKeys.no_personal_data_hint)}
 						checkTextInput={(value) => ({ isValid: value.length <= 120, value })}
 						isAccountRequired={isCommentInputLocked}
 						onAccountRequired={openCommentLockedModal}

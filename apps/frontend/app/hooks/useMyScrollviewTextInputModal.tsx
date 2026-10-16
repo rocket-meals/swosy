@@ -33,6 +33,7 @@ const ModalTextInputSheet: React.FC<ModalTextInputSheetProps> = ({
 	autoFocus = true,
 	checkTextInput,
 	allowSubmitWhenDisabled,
+	hint,
 }) => {
 	const [value, setValue] = useState(initialValue ?? '');
 
@@ -73,6 +74,7 @@ const ModalTextInputSheet: React.FC<ModalTextInputSheetProps> = ({
 			inputStyle={inputStyle}
 			autoFocus={autoFocus}
 			allowSubmitWhenDisabled={allowSubmitWhenDisabled}
+			hint={hint}
 		/>
 	);
 };
@@ -105,6 +107,7 @@ const useMyScrollviewTextInputModal = () => {
 			autoFocus,
 			checkTextInput,
 			allowSubmitWhenDisabled,
+			hint,
 		}: OpenTextInputOptions) => {
 			show({
 				title,
@@ -126,6 +129,7 @@ const useMyScrollviewTextInputModal = () => {
 						autoFocus={autoFocus}
 						checkTextInput={checkTextInput}
 						allowSubmitWhenDisabled={allowSubmitWhenDisabled ?? true}
+						hint={hint}
 					/>
 				),
 			});

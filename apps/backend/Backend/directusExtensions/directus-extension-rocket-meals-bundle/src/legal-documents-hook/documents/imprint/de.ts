@@ -27,7 +27,7 @@ Die nachstehenden Informationen enthalten die gesetzlich vorgesehenen Pflichtang
 	[{{operator.website}}]({{operator.website}})
 
 ## Kontaktmöglichkeiten
-	Sie können uns per Mail oder über unsere Webseite kontaktieren.
+	Du kannst uns per Mail oder über unsere Webseite kontaktieren.
 
 	E-Mail:
 

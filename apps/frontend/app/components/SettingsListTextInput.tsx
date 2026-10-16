@@ -1,6 +1,6 @@
 // Hinweis: Neue SettingsList-Komponenten bitte in der Playbook-Registry (packages/common-ui/src/playbook) registrieren.
 import React, { useCallback, useMemo } from 'react';
-import { Keyboard, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 
@@ -33,6 +33,8 @@ export interface TextInputSharedProps extends TextInputBaseProps {
 	numberOfLines?: number;
 	textAlignVertical?: 'auto' | 'top' | 'bottom' | 'center';
 	allowSubmitWhenDisabled?: boolean;
+	/** Short note shown directly below the input, e.g. the request not to enter personal data. */
+	hint?: string;
 }
 
 export interface SettingsListTextInputSheetProps extends TextInputSharedProps {
@@ -67,6 +69,7 @@ export interface SettingsListTextInputProps extends Omit<SettingsListProps, 'onP
 	autoFocus?: boolean;
 	checkTextInput?: CheckTextInput;
 	allowSubmitWhenDisabled?: boolean;
+	hint?: string;
 }
 
 export const SettingsListTextInputField: React.FC<SettingsListTextInputFieldProps> = ({
@@ -126,6 +129,7 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 	textAlignVertical,
 	inputStyle,
 	allowSubmitWhenDisabled = false,
+	hint,
 }) => {
 	const { theme } = useTheme();
 	const { primaryColor } = useAppSelector((state) => state.settings);
@@ -172,6 +176,13 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 				onSubmitEditing={handleSubmitEditing}
 			/>
 
+			{hint ? (
+				<View style={styles.hintRow}>
+					<MaterialCommunityIcons name="shield-account-outline" size={16} color={theme.sheet.placeholder} />
+					<Text style={[styles.hintText, { color: theme.sheet.placeholder }]}>{hint}</Text>
+				</View>
+			) : null}
+
 			<View style={styles.buttonContainer}>
 				<ProjectButton
 					text={saveLabel}
@@ -198,6 +209,7 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 	autoFocus = true,
 	checkTextInput,
 	allowSubmitWhenDisabled,
+	hint,
 	rightElement,
 	rightIcon,
 	value,
@@ -234,12 +246,14 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 			autoFocus,
 			checkTextInput,
 			allowSubmitWhenDisabled,
+			hint,
 			saveLabel: resolvedSaveLabel,
 		});
 	}, [
 		allowSubmitWhenDisabled,
 		autoFocus,
 		checkTextInput,
+		hint,
 		inputStyle,
 		keyboardType,
 		multiline,
@@ -295,6 +309,20 @@ const styles = StyleSheet.create({
 		marginTop: 12,
 		fontFamily: 'Poppins_400Regular',
 		fontSize: 14,
+	},
+	hintRow: {
+		width: '100%',
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		gap: 6,
+		marginTop: 8,
+		paddingHorizontal: 4,
+	},
+	hintText: {
+		flex: 1,
+		fontFamily: 'Poppins_400Regular',
+		fontSize: 12,
+		lineHeight: 17,
 	},
 	buttonContainer: {
 		width: '100%',

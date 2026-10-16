@@ -27,7 +27,7 @@ Les informations suivantes contiennent les données obligatoires prévues par la
 	[{{operator.website}}]({{operator.website}})
 
 ## Possibilités de contact
-	Vous pouvez nous contacter par mail ou via notre site web.
+	Tu peux nous contacter par mail ou via notre site web.
 
 	Courrier électronique :
 
