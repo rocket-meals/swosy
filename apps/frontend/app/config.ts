@@ -301,7 +301,8 @@ export function getVersionPatch() {
         // 179: popup_events collection removed, popups only come from news
         // 180: food offers news cards cannot be hidden (no x, no "do not show again"), only popups can
         // 181: news cards in the food offers are a SettingsList row with accent colour
-        return 181;
+        // 182: feature wishes tile with accent, both food offers tiles with the side spacing of the food cards
+        return 182;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

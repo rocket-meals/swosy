@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { shallowEqual } from 'react-redux';
 import { DatabaseTypes, doesNewsMatchCanteen, getNewsFoodoffersLocation, isNewsShownAt, NewsFoodoffersPosition } from 'repo-depkit-common';
@@ -11,6 +11,7 @@ import { getImageUrl } from '@/constants/HelperFunctions';
 import { getTitleFromTranslation } from '@/helper/resourceHelper';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
+import CardDimensionHelper from '@/helper/CardDimensionHelper';
 
 type FoodoffersNews = DatabaseTypes.News;
 
@@ -26,12 +27,14 @@ type NewsFoodoffersHintProps = {
  * without canteens is meant for all of them). A tap opens the full news. The cards cannot be hidden:
  * they stay as long as the news is meant for the food offers (no "x", and the opened news has no
  * "do not show again" button, that one is only for popups and their `isOpen` flag). A `SettingsList`
- * row like the feature wishes tile, with the primary colour as accent on the left.
+ * row like the feature wishes tile, with the primary colour as accent on the left and the side spacing
+ * of the food cards.
  */
 const NewsFoodoffersHint: React.FC<NewsFoodoffersHintProps> = ({ canteenId, position }) => {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { primaryColor, language } = useAppSelector(state => state.settings);
+	const { width: screenWidth } = useWindowDimensions();
 	const popupEvents = useAppSelector(state => state.food.popupEvents, shallowEqual) as FoodoffersNews[];
 
 	const visibleEvents = useMemo(() => (popupEvents ?? []).filter(event => isNewsShownAt(event, getNewsFoodoffersLocation(position)) && doesNewsMatchCanteen(event, canteenId)), [popupEvents, canteenId, position]);
@@ -50,7 +53,7 @@ const NewsFoodoffersHint: React.FC<NewsFoodoffersHintProps> = ({ canteenId, posi
 	}
 
 	return (
-		<View style={styles.container}>
+		<View style={[styles.container, { paddingHorizontal: CardDimensionHelper.getItemGap(screenWidth) }]}>
 			{visibleEvents.map(event => {
 				const title = (event.translations ? getTitleFromTranslation(event.translations, language) : '') || event.alias || '';
 				const imageUrl = event.image_remote_url || (event.image ? getImageUrl(String(typeof event.image === 'object' ? event.image.id : event.image)) : null);
