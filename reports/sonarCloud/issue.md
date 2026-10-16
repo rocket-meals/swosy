@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 5 | 5 |
-| 🔧 Maintainability | 24 | 24 |
+| 🔧 Maintainability | 25 | 25 |
 
-**Total issues:** 31
+**Total issues:** 32
 
 ---
 
@@ -44,7 +44,7 @@
   apps/maintenance-server/server.mjs:303
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L303
 
-## 🔧 Maintainability (24/24)
+## 🔧 Maintainability (25/25)
 
 - **Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts:76
@@ -111,8 +111,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx#L25
 
 - **Extract this nested ternary operation into an independent statement.**
-  apps/frontend/app/components/NewsFoodoffersHint/index.tsx:54
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/NewsFoodoffersHint/index.tsx#L54
+  apps/frontend/app/components/NewsFoodoffersHint/index.tsx:59
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/NewsFoodoffersHint/index.tsx#L59
 
 - **Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.**
   apps/frontend/app/components/OwnFoodFeedbackItem/index.tsx:36
@@ -133,6 +133,10 @@
 - **Move function 'sendJson' to the outer scope.**
   apps/maintenance-server/server.mjs:205
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L205
+
+- **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
+  packages/common-ui/src/components/SettingsList/SettingsList.tsx:166
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/components/SettingsList/SettingsList.tsx#L166
 
 - **Extract this nested ternary operation into an independent statement.**
   packages/common/src/EventHelper.ts:42
