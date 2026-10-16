@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 5 | 5 |
-| 🔧 Maintainability | 18 | 18 |
+| 🔧 Maintainability | 24 | 24 |
 
-**Total issues:** 25
+**Total issues:** 31
 
 ---
 
@@ -44,7 +44,7 @@
   apps/maintenance-server/server.mjs:303
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L303
 
-## 🔧 Maintainability (18/18)
+## 🔧 Maintainability (24/24)
 
 - **Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts:76
@@ -82,9 +82,21 @@
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts:689
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts#L689
 
+- **`keptIds` should be a `Set`, and use `keptIds.has()` to check existence or non-existence.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/NewsModuleHelper.ts:352
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/NewsModuleHelper.ts#L352
+
 - **`editable` should be a `Set`, and use `editable.has()` to check existence or non-existence.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalWikiProtection.ts:45
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalWikiProtection.ts#L45
+
+- **Extract this nested ternary operation into an independent statement.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue:117
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue#L117
+
+- **Use <address> or <details> or <fieldset> or <optgroup> instead of the group role to ensure accessibility across all devices.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue:335
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue#L335
 
 - **Remove this "!important" and resolve the specificity conflict instead.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue:706
@@ -97,6 +109,10 @@
 - **'repo-depkit-common-ui' imported multiple times.**
   apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx:25
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx#L25
+
+- **Extract this nested ternary operation into an independent statement.**
+  apps/frontend/app/components/NewsFoodoffersHint/index.tsx:70
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/NewsFoodoffersHint/index.tsx#L70
 
 - **Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.**
   apps/frontend/app/components/OwnFoodFeedbackItem/index.tsx:36
@@ -117,4 +133,12 @@
 - **Move function 'sendJson' to the outer scope.**
   apps/maintenance-server/server.mjs:205
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L205
+
+- **Extract this nested ternary operation into an independent statement.**
+  packages/common/src/EventHelper.ts:42
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/EventHelper.ts#L42
+
+- **arrow function is equivalent to `String`. Use `String` directly.**
+  packages/common/src/EventHelper.ts:196
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/EventHelper.ts#L196
 
