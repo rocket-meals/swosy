@@ -46,7 +46,7 @@ Nos esforzamos para que este sitio web y esta aplicación móvil sean accesibles
 
 
 
-	Si encuentra barreras al utilizar el sitio web o contenidos de difícil acceso, contenidos que incumplen las recomendaciones generales de accesibilidad, póngase en contacto con nosotros por correo electrónico:
+	Si encuentras barreras al utilizar el sitio web o contenidos de difícil acceso, contenidos que incumplen las recomendaciones generales de accesibilidad, ponte en contacto con nosotros por correo electrónico:
 
 	
 

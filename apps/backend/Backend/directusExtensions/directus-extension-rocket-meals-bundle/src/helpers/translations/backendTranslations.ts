@@ -229,7 +229,7 @@ export const backendTranslations: TranslationResources = {
     zh: '访客无法对菜品发表评论。请使用账户登录后再评论。',
   },
 
-  /** Rejection of a manual change to a legal document (privacy policy, imprint, accessibility statement). */
+  /** Rejection of a manual change to a legal document (privacy policy, imprint, accessibility statement, terms and conditions). */
   legal_document_edit_forbidden: {
     de: 'Dieser Rechtstext wird im Code gepflegt und bei jedem Serverstart neu geschrieben. Er kann hier nicht bearbeitet oder gelöscht werden. Nur Position, Sortierung, Icon und Farbe lassen sich ändern.',
     en: 'This legal text is maintained in code and rewritten on every server start. It cannot be edited or deleted here. Only position, sort order, icon and color can be changed.',

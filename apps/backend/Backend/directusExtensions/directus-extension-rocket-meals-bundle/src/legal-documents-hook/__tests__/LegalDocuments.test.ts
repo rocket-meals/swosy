@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { ALL_TRANSLATION_LANGUAGES, CustomerLegalEntity, OPERATOR_LEGAL_ENTITY } from 'repo-depkit-common';
+import { ALL_TRANSLATION_LANGUAGES, CustomerLegalEntity, OPERATOR_LEGAL_ENTITY, type TranslationLanguage } from 'repo-depkit-common';
 import { LEGAL_DOCUMENTS, type LegalDocument } from '../LegalDocuments';
 import { LegalDocumentRenderer } from '../LegalDocumentRenderer';
 import { CUSTOMER_LEGAL_ENTITIES, LegalEntities } from '../LegalEntities';
@@ -55,6 +55,17 @@ class InMemoryDatabase implements LegalDocumentsDatabase {
   }
 }
 
+/**
+ * The texts address the reader informally, like the rest of the app. Per language the formal forms
+ * that must not appear (German "Sie" in the middle of a sentence, French "vous" except "rendez-vous", ...).
+ */
+const FORMAL_ADDRESS: Partial<Record<TranslationLanguage, RegExp>> = {
+  de: /[a-zäöüß,] (Sie|Ihnen|Ihr|Ihre[mnrs]?)\b|\b(Ihnen|Ihre[mnrs]?)\b/,
+  fr: /(?<!rendez-)\b(vous|votre|vos)\b/i,
+  ru: /(?<![а-яё])(вы|вас|вам|вами|ваш[а-яё]*)(?![а-яё])/i,
+  zh: /您/,
+};
+
 const PRIVACY_POLICY = LEGAL_DOCUMENTS.find(document => document.customId === 'privacy-policy') as LegalDocument;
 
 describe('legal documents', () => {
@@ -77,6 +88,11 @@ describe('legal documents', () => {
       it(`${document.customId} (${language}) only uses known placeholders`, () => {
         const unknown = LegalDocumentRenderer.findPlaceholders(text.title + text.content).filter(name => VALUES[name] === undefined);
         expect(unknown).toEqual([]);
+      });
+
+      it(`${document.customId} (${language}) addresses the reader informally`, () => {
+        const formal = FORMAL_ADDRESS[language];
+        expect(formal ? (text.title + text.content).match(formal)?.[0] : undefined).toBeUndefined();
       });
 
       it(`${document.customId} (${language}) contains company data only as placeholders`, () => {

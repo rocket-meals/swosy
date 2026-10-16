@@ -27,7 +27,7 @@ export const IMPRINT_ZH: LegalDocumentText = {
 	[{{operator.website}}]({{operator.website}})
 
 ## 联系方式
-	您可以通过电子邮件或网站与我们联系。
+	你可以通过电子邮件或网站与我们联系。
 
 	电子邮件：
 

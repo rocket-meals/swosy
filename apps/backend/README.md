@@ -117,10 +117,10 @@ ROCKET_MEALS_AI_OPENAI_COMPATIBLE_MODELS="model-a,model-b"
 ROCKET_MEALS_AI_OPENAI_COMPATIBLE_HEADERS='{"X-Custom-Header":"value"}'
 ```
 
-### Legal documents (privacy policy, imprint, accessibility)
+### Legal documents (privacy policy, imprint, accessibility, terms and conditions)
 
-The privacy policy (`privacy-policy`), the imprint (`about-us`) and the accessibility statement
-(`accessibility`) live in code, not in Directus. On every start the `legal-documents-hook` writes them
+The privacy policy (`privacy-policy`), the imprint (`about-us`), the accessibility statement
+(`accessibility`) and the terms and conditions (`terms-and-conditions`) live in code, not in Directus. On every start the `legal-documents-hook` writes them
 into `wikis`, one translation per language of the `languages` collection, with a fixed wiki id per
 document. An edit in Directus is overwritten on the next start.
 
@@ -134,6 +134,8 @@ document. An edit in Directus is overwritten on the next start.
 - Visibility is enforced on every start: published, public (readable without an account), at the bottom
   of the drawer (`show_in_drawer_as_bottom_item`), not in its main list.
 - Fixed wiki ids `1e6a1d0c-0000-4000-8000-00000000000N` ("LEGALDOC" in hex speak).
+- The texts address the reader informally (German "du", the matching informal form in every other
+  language), like the rest of the app.
 - Manual changes are rejected: texts, translations, visibility and `custom_id` of these wikis cannot be
   edited or deleted in Directus, only position, sort, icon and color. No other wiki may take one of
   their `custom_id`s.
