@@ -111,8 +111,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx#L25
 
 - **Extract this nested ternary operation into an independent statement.**
-  apps/frontend/app/components/NewsFoodoffersHint/index.tsx:70
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/NewsFoodoffersHint/index.tsx#L70
+  apps/frontend/app/components/NewsFoodoffersHint/index.tsx:54
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/NewsFoodoffersHint/index.tsx#L54
 
 - **Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.**
   apps/frontend/app/components/OwnFoodFeedbackItem/index.tsx:36
