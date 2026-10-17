@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import type * as DatabaseTypes from 'repo-depkit-common/src/databaseTypes/types';
-import { NewsListFilter, NewsModuleHelper, NewsPreviewView, NewsStatus } from '../NewsModuleHelper';
+import { NewsArchiveFilter, NewsListFilter, NewsListSort, NewsModuleHelper, NewsPreviewView, NewsStatus } from '../NewsModuleHelper';
 import { RocketMealsModulePages } from '../RocketMealsModulePages';
 
 const existingNews = {
@@ -36,19 +36,36 @@ describe('NewsModuleHelper – list', () => {
     expect(RocketMealsModulePages.getRoute(RocketMealsModulePages.COMMUNICATION, 'n1')).toBe('/rocket-meals/communication/n1');
   });
 
-  it('filters by location, archived news only in their chip', () => {
+  it('filters by location, active news by default', () => {
     expect(NewsModuleHelper.buildFilter(NewsListFilter.ALL)).toEqual({ status: { _neq: 'archived' } });
-    expect(NewsModuleHelper.buildFilter(NewsListFilter.ARCHIVED)).toEqual({ status: { _eq: 'archived' } });
     expect(JSON.stringify(NewsModuleHelper.buildFilter(NewsListFilter.NEWS_LIST))).toContain('"_null":true');
     expect(JSON.stringify(NewsModuleHelper.buildFilter(NewsListFilter.FOODOFFERS))).toContain('foodoffers_bottom');
   });
 
-  it('builds list and count queries', () => {
+  it('combines the location with the archive filter', () => {
+    expect(NewsModuleHelper.buildFilter(NewsListFilter.ALL, NewsArchiveFilter.ARCHIVED)).toEqual({ status: { _eq: 'archived' } });
+    expect(NewsModuleHelper.buildFilter(NewsListFilter.ALL, NewsArchiveFilter.ALL)).toEqual({});
+    expect(NewsModuleHelper.buildFilter(NewsListFilter.POPUP, NewsArchiveFilter.ALL)).toEqual({ display_locations: { _contains: 'popup' } });
+    expect(NewsModuleHelper.buildFilter(NewsListFilter.POPUP, NewsArchiveFilter.ARCHIVED)).toEqual({ _and: [{ status: { _eq: 'archived' } }, { display_locations: { _contains: 'popup' } }] });
+  });
+
+  it('builds list and count queries, newest first by default', () => {
     const query = NewsModuleHelper.buildListQuery({ filter: NewsListFilter.POPUP, page: 2, search: 'grill', options: {} });
     expect(query.sort).toBe('-date');
     expect(query.page).toBe(2);
     expect(String(query.filter)).toContain('popup');
-    expect(NewsModuleHelper.buildCountQuery({ filter: NewsListFilter.ALL }).aggregate).toBeDefined();
+    expect(String(query.fields)).toContain('image_remote_url');
+    expect(NewsModuleHelper.buildListQuery({ filter: NewsListFilter.ALL, page: 1, options: { sort: NewsListSort.OLDEST } }).sort).toBe('date');
+    const count = NewsModuleHelper.buildCountQuery({ filter: NewsListFilter.ALL, options: { archive: NewsArchiveFilter.ARCHIVED } });
+    expect(count.aggregate).toBeDefined();
+    expect(count.filter).toContain('"_eq":"archived"');
+  });
+
+  it('builds the image URL, else the remote image', () => {
+    expect(NewsModuleHelper.getImageUrl({ image: 'file-1' }, '/api', 320, 200)).toBe('/api/assets/file-1?width=640&height=400&fit=cover&quality=80');
+    expect(NewsModuleHelper.getImageUrl({ image: { id: 'file-2' } as DatabaseTypes.DirectusFiles }, '/api/', 10, 10)).toBe('/api/assets/file-2?width=20&height=20&fit=cover&quality=80');
+    expect(NewsModuleHelper.getImageUrl({ image: null, image_remote_url: 'https://example.org/a.jpg' }, '/', 10, 10)).toBe('https://example.org/a.jpg');
+    expect(NewsModuleHelper.getImageUrl({ image: null }, '/', 10, 10)).toBeUndefined();
   });
 
   it('reads the German title, the locations and the canteens', () => {

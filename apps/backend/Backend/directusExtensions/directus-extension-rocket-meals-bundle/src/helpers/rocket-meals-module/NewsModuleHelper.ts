@@ -3,7 +3,7 @@
  * app shows them (`display_locations`: news list, popup, above or below the food offers), for which
  * canteens and in which time.
  *
- * The list (chips by location, search, pages), the draft the editor works on and the payload it
+ * The list (chips by location, archive filter, sort by date, search, pages), the draft the editor works on and the payload it
  * saves: the German text is the source, every other language is translated automatically unless
  * it was entered by hand (`let_be_translated` false). Translations and canteens are sent as full
  * lists, so every existing row keeps its id and nothing is deleted by accident.
@@ -27,7 +27,18 @@ export enum NewsListFilter {
   NEWS_LIST = 'news_list',
   POPUP = 'popup',
   FOODOFFERS = 'foodoffers',
+}
+
+/** Which news the list shows by their status, like the archive filter of Directus' collection view. */
+export enum NewsArchiveFilter {
+  ACTIVE = 'active',
   ARCHIVED = 'archived',
+  ALL = 'all',
+}
+
+export enum NewsListSort {
+  NEWEST = 'newest',
+  OLDEST = 'oldest',
 }
 
 export enum NewsStatus {
@@ -44,9 +55,9 @@ export enum NewsPreviewView {
   FOODOFFERS = 'foodoffers',
 }
 
-export type NewsListOptions = { pageSize?: number | null };
+export type NewsListOptions = { pageSize?: number | null; archive?: NewsArchiveFilter; sort?: NewsListSort };
 
-export type NewsListItem = Pick<DatabaseTypes.News, 'id' | 'alias' | 'status' | 'date' | 'date_end' | 'display_locations' | 'external_identifier'> & {
+export type NewsListItem = Pick<DatabaseTypes.News, 'id' | 'alias' | 'status' | 'date' | 'date_end' | 'display_locations' | 'external_identifier' | 'image' | 'image_remote_url'> & {
   translations?: Partial<DatabaseTypes.NewsTranslations>[] | null;
   canteens?: { id?: number; canteens_id?: { id: string; alias?: string | null } | string | null }[] | null;
 };
@@ -87,39 +98,95 @@ export class NewsModuleHelper {
   /** The language the editor writes in; every other one is translated from it. */
   static readonly SOURCE_LANGUAGE = 'de';
 
-  public static readonly FILTERS: readonly NewsListFilter[] = [NewsListFilter.ALL, NewsListFilter.NEWS_LIST, NewsListFilter.POPUP, NewsListFilter.FOODOFFERS, NewsListFilter.ARCHIVED];
+  public static readonly FILTERS: readonly NewsListFilter[] = [NewsListFilter.ALL, NewsListFilter.NEWS_LIST, NewsListFilter.POPUP, NewsListFilter.FOODOFFERS];
+  public static readonly ARCHIVE_FILTERS: readonly NewsArchiveFilter[] = [NewsArchiveFilter.ACTIVE, NewsArchiveFilter.ARCHIVED, NewsArchiveFilter.ALL];
+  public static readonly SORTS: readonly NewsListSort[] = [NewsListSort.NEWEST, NewsListSort.OLDEST];
   public static readonly STATUSES: readonly NewsStatus[] = [NewsStatus.PUBLISHED, NewsStatus.DRAFT, NewsStatus.ARCHIVED];
   public static readonly LOCATIONS: readonly NewsDisplayLocation[] = [NewsDisplayLocations.news_list, NewsDisplayLocations.popup, NewsDisplayLocations.foodoffers_top, NewsDisplayLocations.foodoffers_bottom];
 
-  public static readonly LIST_FIELDS: readonly string[] = ['id', 'alias', 'status', 'date', 'date_end', 'display_locations', 'external_identifier', 'translations.id', 'translations.languages_code', 'translations.title', 'canteens.id', 'canteens.canteens_id.id', 'canteens.canteens_id.alias'];
+  public static readonly LIST_FIELDS: readonly string[] = ['id', 'alias', 'status', 'date', 'date_end', 'display_locations', 'external_identifier', 'image', 'image_remote_url', 'translations.id', 'translations.languages_code', 'translations.title', 'canteens.id', 'canteens.canteens_id.id', 'canteens.canteens_id.alias'];
   public static readonly DETAIL_FIELDS: readonly string[] = ['*', 'translations.*', 'canteens.id', 'canteens.canteens_id'];
 
   // ---------- list ----------
 
-  static buildFilter(filter: NewsListFilter): DirectusFilter {
-    const notArchived = { status: { _neq: NewsStatus.ARCHIVED } };
-    const contains = (location: NewsDisplayLocation) => ({ display_locations: { _contains: location } });
-    switch (filter) {
-      case NewsListFilter.ALL:
-        return notArchived;
-      case NewsListFilter.NEWS_LIST:
-        // Imported and older news have no locations and stand in the list.
-        return { _and: [notArchived, { _or: [{ display_locations: { _null: true } }, contains(NewsDisplayLocations.news_list)] }] };
-      case NewsListFilter.POPUP:
-        return { _and: [notArchived, contains(NewsDisplayLocations.popup)] };
-      case NewsListFilter.FOODOFFERS:
-        return { _and: [notArchived, { _or: [contains(NewsDisplayLocations.foodoffers_top), contains(NewsDisplayLocations.foodoffers_bottom)] }] };
-      case NewsListFilter.ARCHIVED:
+  static buildArchiveFilter(archive: NewsArchiveFilter = NewsArchiveFilter.ACTIVE): DirectusFilter | null {
+    switch (archive) {
+      case NewsArchiveFilter.ARCHIVED:
         return { status: { _eq: NewsStatus.ARCHIVED } };
+      case NewsArchiveFilter.ALL:
+        return null;
+      default:
+        return { status: { _neq: NewsStatus.ARCHIVED } };
     }
   }
 
+  static buildLocationFilter(filter: NewsListFilter): DirectusFilter | null {
+    const contains = (location: NewsDisplayLocation) => ({ display_locations: { _contains: location } });
+    switch (filter) {
+      case NewsListFilter.ALL:
+        return null;
+      case NewsListFilter.NEWS_LIST:
+        // Imported and older news have no locations and stand in the list.
+        return { _or: [{ display_locations: { _null: true } }, contains(NewsDisplayLocations.news_list)] };
+      case NewsListFilter.POPUP:
+        return contains(NewsDisplayLocations.popup);
+      case NewsListFilter.FOODOFFERS:
+        return { _or: [contains(NewsDisplayLocations.foodoffers_top), contains(NewsDisplayLocations.foodoffers_bottom)] };
+    }
+  }
+
+  /** The location chip and the archive filter together; also the filter of the export. */
+  static buildFilter(filter: NewsListFilter, archive: NewsArchiveFilter = NewsArchiveFilter.ACTIVE): DirectusFilter {
+    const parts = [NewsModuleHelper.buildArchiveFilter(archive), NewsModuleHelper.buildLocationFilter(filter)].filter((part): part is DirectusFilter => part !== null);
+    if (parts.length === 0) {
+      return {};
+    }
+    return parts.length === 1 ? parts[0]! : { _and: parts };
+  }
+
+  static getSort(sort: NewsListSort = NewsListSort.NEWEST): string {
+    return sort === NewsListSort.OLDEST ? 'date' : '-date';
+  }
+
   static buildListQuery(request: ModuleStatusListRequest<NewsListFilter, NewsListOptions>) {
-    return ModuleListHelper.buildListQuery({ fields: NewsModuleHelper.LIST_FIELDS, filter: NewsModuleHelper.buildFilter(request.filter), sort: '-date', page: request.page, pageSize: request.options?.pageSize, search: request.search });
+    return ModuleListHelper.buildListQuery({ fields: NewsModuleHelper.LIST_FIELDS, filter: NewsModuleHelper.buildFilter(request.filter, request.options?.archive), sort: NewsModuleHelper.getSort(request.options?.sort), page: request.page, pageSize: request.options?.pageSize, search: request.search });
   }
 
   static buildCountQuery(request: ModuleStatusCountRequest<NewsListFilter, NewsListOptions>) {
-    return ModuleListHelper.buildCountQuery({ filter: NewsModuleHelper.buildFilter(request.filter), search: request.search });
+    return ModuleListHelper.buildCountQuery({ filter: NewsModuleHelper.buildFilter(request.filter, request.options?.archive), search: request.search });
+  }
+
+  static getArchiveFilterLabelKey(archive: NewsArchiveFilter): BackendTranslationKeys {
+    switch (archive) {
+      case NewsArchiveFilter.ACTIVE:
+        return BackendTranslationKeys.rocket_meals_module_news_archive_active;
+      case NewsArchiveFilter.ARCHIVED:
+        return BackendTranslationKeys.rocket_meals_module_news_archive_archived;
+      case NewsArchiveFilter.ALL:
+        return BackendTranslationKeys.rocket_meals_module_news_archive_all;
+    }
+  }
+
+  static getSortLabelKey(sort: NewsListSort): BackendTranslationKeys {
+    return sort === NewsListSort.OLDEST ? BackendTranslationKeys.rocket_meals_module_sort_oldest : BackendTranslationKeys.rocket_meals_module_sort_newest;
+  }
+
+  static getSortIcon(sort: NewsListSort): string {
+    return sort === NewsListSort.OLDEST ? 'history' : 'update';
+  }
+
+  /**
+   * The image of the news, cropped to `width` × `height` and requested at twice the size (HiDPI),
+   * relative to the app's API root (the session cookie authorises it); else the remote URL of
+   * imported news; else `undefined`.
+   */
+  static getImageUrl(news: Pick<NewsListItem, 'image' | 'image_remote_url'>, apiRoot: string, width: number, height: number): string | undefined {
+    const fileId = typeof news.image === 'object' && news.image !== null ? news.image.id : news.image;
+    if (fileId) {
+      const root = apiRoot.endsWith('/') ? apiRoot : `${apiRoot}/`;
+      return `${root}assets/${encodeURIComponent(fileId)}?width=${width * 2}&height=${height * 2}&fit=cover&quality=80`;
+    }
+    return news.image_remote_url || undefined;
   }
 
   static buildDetailQuery() {
@@ -145,8 +212,6 @@ export class NewsModuleHelper {
         return BackendTranslationKeys.rocket_meals_module_news_location_popup;
       case NewsListFilter.FOODOFFERS:
         return BackendTranslationKeys.rocket_meals_module_news_filter_foodoffers;
-      case NewsListFilter.ARCHIVED:
-        return BackendTranslationKeys.rocket_meals_module_news_status_archived;
     }
   }
 
