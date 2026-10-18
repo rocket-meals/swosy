@@ -23,6 +23,10 @@ class InMemoryDatabase implements LegalDocumentsDatabase {
   wikis: LegalWiki[] = [];
   translations: (LegalWikiTranslation & { wikis_id: string })[] = [];
   writes: string[] = [];
+  /** A clock that ticks on every write, so "newer than" is deterministic. */
+  clock = 0;
+  lastWikiChange: number | null = null;
+  wikisLastUpdateForApps: number | null = null;
   private nextTranslationId = 1;
 
   constructor(private readonly languageCodes: string[]) {}
@@ -36,16 +40,34 @@ class InMemoryDatabase implements LegalDocumentsDatabase {
   async readTranslations(wikiId: string) {
     return this.translations.filter(translation => translation.wikis_id === wikiId);
   }
+  private touchWikis() {
+    this.clock++;
+    this.lastWikiChange = this.clock;
+  }
+  async readLastChangeOfWikis() {
+    return this.lastWikiChange === null ? null : new Date(this.lastWikiChange);
+  }
+  async readWikisLastUpdateForApps() {
+    return this.wikisLastUpdateForApps === null ? null : new Date(this.wikisLastUpdateForApps);
+  }
+  async markWikisChangedForApps() {
+    this.writes.push('markWikisChangedForApps');
+    this.clock++;
+    this.wikisLastUpdateForApps = this.clock;
+  }
   async createWiki(wiki: Record<string, unknown>) {
     this.writes.push('createWiki');
+    this.touchWikis();
     this.wikis.push({ status: 'published', ...wiki } as LegalWiki);
   }
   async updateWiki(id: string, update: Record<string, unknown>) {
     this.writes.push('updateWiki');
+    this.touchWikis();
     Object.assign(this.wikis.find(wiki => wiki.id === id)!, update);
   }
   async writeTranslations(wikiId: string, create: Record<string, unknown>[], update: Record<string, unknown>[]) {
     this.writes.push('writeTranslations');
+    this.touchWikis();
     for (const row of create) {
       this.translations.push({ id: this.nextTranslationId++, wikis_id: wikiId, languages_code: row.languages_code as string, title: row.title as string, content: row.content as string });
     }
@@ -158,6 +180,32 @@ describe('LegalDocumentsSync', () => {
     expect(result.log).toEqual([]);
   });
 
+  it('tells the apps to fetch the wikis again after a change, but not when nothing changed', async () => {
+    const database = new InMemoryDatabase(['de-DE']);
+    const sync = new LegalDocumentsSync(database);
+
+    const first = await sync.syncAll([PRIVACY_POLICY], CUSTOMER);
+    expect(database.writes.at(-1)).toBe('markWikisChangedForApps');
+    expect(first.log.at(-1)).toContain('marked the wikis as changed');
+
+    database.writes = [];
+    await sync.syncAll([PRIVACY_POLICY], CUSTOMER);
+    expect(database.writes).toEqual([]);
+  });
+
+  it('catches up the apps when an earlier sync changed the wikis without telling them', async () => {
+    const database = new InMemoryDatabase(['de-DE']);
+    const sync = new LegalDocumentsSync(database);
+    await sync.syncAll([PRIVACY_POLICY], CUSTOMER);
+    database.wikisLastUpdateForApps = 0;
+    database.writes = [];
+
+    const result = await sync.syncAll([PRIVACY_POLICY], CUSTOMER);
+
+    expect(database.writes).toEqual(['markWikisChangedForApps']);
+    expect(result.log).toEqual(['marked the wikis as changed, the apps fetch them again']);
+  });
+
   it('makes a hidden legal document visible again', async () => {
     const database = new InMemoryDatabase(['de-DE']);
     const sync = new LegalDocumentsSync(database);
@@ -166,7 +214,7 @@ describe('LegalDocumentsSync', () => {
 
     const result = await sync.syncAll([PRIVACY_POLICY], CUSTOMER);
 
-    expect(result.log).toEqual(['privacy-policy: reset public, show_in_drawer_as_bottom_item']);
+    expect(result.log).toEqual(['privacy-policy: reset public, show_in_drawer_as_bottom_item', 'marked the wikis as changed, the apps fetch them again']);
     expect(database.wikis[0]).toMatchObject({ ...LEGAL_WIKI_SETTINGS, icon: 'star' });
   });
 
@@ -178,7 +226,7 @@ describe('LegalDocumentsSync', () => {
 
     const result = await sync.syncAll([PRIVACY_POLICY], CUSTOMER);
 
-    expect(result.log).toEqual(['privacy-policy: updated en-US']);
+    expect(result.log).toEqual(['privacy-policy: updated en-US', 'marked the wikis as changed, the apps fetch them again']);
     expect(database.translations[1]!.content).toContain(CUSTOMER.name);
   });
 

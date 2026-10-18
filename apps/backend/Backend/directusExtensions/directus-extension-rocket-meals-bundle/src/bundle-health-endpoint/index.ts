@@ -6,10 +6,15 @@
  * anderen Endpoints des Bundles. Der Grund steht im Log des Directus-Containers.
  *
  * Absichtlich ohne Anmeldung und ohne Datenbankzugriff: Die Route soll auch dann antworten,
- * wenn sonst nichts funktioniert, und gibt nichts preis außer dem Startzeitpunkt.
+ * wenn sonst nichts funktioniert, und gibt nichts preis außer dem Startzeitpunkt und dem Commit.
+ *
+ * `source_commit` ist der Commit, aus dem die `dist` gebaut wurde (siehe `BuildInfo`). Ist er gleich
+ * `git log -1 --format=%H -- <Bundle ohne dist> packages/common packages/common-ui yarn.lock` auf
+ * `master`, läuft auf dem Server der aktuelle Stand.
  */
 
 import { defineEndpoint } from '@directus/extensions-sdk';
+import { BuildInfo } from './BuildInfo';
 
 const ENDPOINT_ID = 'rocket-meals-bundle-health';
 
@@ -21,7 +26,13 @@ export default defineEndpoint({
   handler: router => {
     router.get('/', (_req: any, res: any) => {
       res.set('Cache-Control', 'no-store');
-      return res.json({ status: 'ok', bundle: 'directus-extension-rocket-meals-bundle', loaded_at: LOADED_AT });
+      return res.json({
+        status: 'ok',
+        bundle: 'directus-extension-rocket-meals-bundle',
+        loaded_at: LOADED_AT,
+        source_commit: BuildInfo.sourceCommit,
+        source_commit_date: BuildInfo.sourceCommitDate,
+      });
     });
   },
 });

@@ -3,6 +3,7 @@
 // Wir haben puppeteer in directus zum laufen gebracht. Allerdings wurde dann beim builden des plugins warnings angezeigt, dass "puppeteer-core" nicht "gut" ist. Es nutzt "this" und das mochte directus nicht.
 // Daher wurden eklige warnings angezeigt. Diese Warnings von "puppeteer-core" und "yargs" werden hiermit gefiltert.
 
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -82,8 +83,45 @@ const jsPdfOptionalDependencies = () => {
   };
 };
 
+/**
+ * Writes the commit the bundle is built from into `src/bundle-health-endpoint/BuildInfo.ts`, so
+ * `GET /rocket-meals-bundle-health` shows which code runs on a server.
+ *
+ * Not the current HEAD, but the last commit that changed the build input: otherwise the `dist`
+ * would change on every push to `master`, also when only an app changed. Needs the full history
+ * (CI checks out with `fetch-depth: 0`). Without git the placeholders stay and the endpoint reports `null`.
+ */
+const buildInfo = () => {
+  const repoRoot = fileURLToPath(new URL('../../../../../', import.meta.url));
+  const bundleFolder = 'apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle';
+  const buildInputs = [bundleFolder, `:(exclude)${bundleFolder}/dist`, 'packages/common', 'packages/common-ui', 'yarn.lock'];
+  const readCommit = () => {
+    try {
+      const [commit = '', date = ''] = execFileSync('git', ['log', '-1', '--format=%H%n%cI', '--', ...buildInputs], { cwd: repoRoot, encoding: 'utf8' }).trim().split('\n');
+      return { commit, date };
+    } catch (error) {
+      originalConsoleWarn(`build-info: could not read the git commit, the health endpoint reports null: ${error}`);
+      return { commit: '', date: '' };
+    }
+  };
+  const info = readCommit();
+  const placeholders = {
+    __ROCKET_MEALS_BUILD_SOURCE_COMMIT__: info.commit,
+    __ROCKET_MEALS_BUILD_SOURCE_COMMIT_DATE__: info.date,
+  };
+  return {
+    name: 'rocket-meals-build-info',
+    transform(code, id) {
+      if (!id.endsWith(path.join('bundle-health-endpoint', 'BuildInfo.ts'))) {
+        return null;
+      }
+      return Object.entries(placeholders).reduce((result, [placeholder, value]) => result.split(placeholder).join(value), code);
+    },
+  };
+};
+
 export default {
-  plugins: [workspaceDeepImports('repo-depkit-common', 'common'), workspaceDeepImports('repo-depkit-common-ui', 'common-ui'), jsPdfOptionalDependencies()],
+  plugins: [buildInfo(), workspaceDeepImports('repo-depkit-common', 'common'), workspaceDeepImports('repo-depkit-common-ui', 'common-ui'), jsPdfOptionalDependencies()],
   onwarn(warning, warn) {
     if (warning.code === 'THIS_IS_UNDEFINED' && warning.loc?.file && (warning.loc.file.includes('puppeteer-core') || warning.loc.file.includes('yargs'))) {
       return; // Suppress Puppeteer & Yargs 'this' warnings
