@@ -52,4 +52,24 @@ export class DirectusLegalDocumentsDatabase implements LegalDocumentsDatabase {
   async writeTranslations(wikiId: string, create: Record<string, unknown>[], update: Record<string, unknown>[]): Promise<void> {
     await this.wikis.updateOne(wikiId, { translations: { create, update, delete: [] } } as unknown as Partial<DatabaseTypes.Wikis>, NO_EVENTS);
   }
+
+  async readLastChangeOfWikis(wikiIds: readonly string[]): Promise<Date | null> {
+    const wikis = await this.wikis.readByQuery({ filter: { id: { _in: [...wikiIds] } }, fields: ['date_created', 'date_updated'], limit: -1 });
+    const times = wikis.flatMap(wiki => [wiki.date_created, wiki.date_updated]).flatMap(date => (date ? [new Date(date).getTime()] : []));
+    return times.length > 0 ? new Date(Math.max(...times)) : null;
+  }
+
+  async readWikisLastUpdateForApps(): Promise<Date | null> {
+    const rows = await this.myDatabaseHelper.getCollectionDatesLastUpdateHelper().readByQuery({ filter: { id: { _eq: WIKIS } }, fields: ['date_updated'], limit: 1 });
+    const date = rows[0]?.date_updated;
+    return date ? new Date(date) : null;
+  }
+
+  async markWikisChangedForApps(): Promise<void> {
+    const lastUpdates = this.myDatabaseHelper.getCollectionDatesLastUpdateHelper();
+    const now = new Date().toISOString();
+    for (const collection of [WIKIS, WIKIS_TRANSLATIONS]) {
+      await lastUpdates.upsertOne({ id: collection, date_updated: now }); // NOSONAR S9382 - sequential on purpose: two rows
+    }
+  }
 }

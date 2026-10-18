@@ -12,7 +12,10 @@
  * - Per language of the `languages` collection the translation is created or updated, but only when
  *   title or content changed. The rows are excluded from the auto translation, the texts come from code.
  *
- * Writes never emit events: no auto translation, no other hooks.
+ * Writes never emit events: no auto translation, no other hooks. That also skips the hook that keeps
+ * `collections_dates_last_update` current, so the apps would keep their cached wikis. The sync
+ * therefore marks the wikis as changed itself whenever a legal wiki is newer than that date, which
+ * also catches up servers that ran an older sync without this step.
  */
 
 import { CustomerLegalEntity, isSameLanguageCode, normalizeTranslationLanguage, OPERATOR_LEGAL_ENTITY, OperatorLegalEntity } from 'repo-depkit-common';
@@ -50,6 +53,12 @@ export interface LegalDocumentsDatabase {
   updateWiki(id: string, update: Record<string, unknown>): Promise<void>;
   /** One nested write on the wiki: `create` rows are new, `update` rows carry their `id`. */
   writeTranslations(wikiId: string, create: Record<string, unknown>[], update: Record<string, unknown>[]): Promise<void>;
+  /** The latest `date_updated` / `date_created` of the given wikis, `null` when none exists. */
+  readLastChangeOfWikis(wikiIds: readonly string[]): Promise<Date | null>;
+  /** When the apps were last told that the wikis changed (`collections_dates_last_update`), `null` when never. */
+  readWikisLastUpdateForApps(): Promise<Date | null>;
+  /** Tells the apps to fetch the wikis again (`collections_dates_last_update` of `wikis` and `wikis_translations`). */
+  markWikisChangedForApps(): Promise<void>;
 }
 
 export type LegalDocumentsSyncResult = { log: string[] };
@@ -72,7 +81,25 @@ export class LegalDocumentsSync {
         log.push(`${document.customId}: failed: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
+    try {
+      if (await this.appsHaveOutdatedWikis(documents)) {
+        await this.database.markWikisChangedForApps();
+        log.push('marked the wikis as changed, the apps fetch them again');
+      }
+    } catch (error) {
+      log.push(`marking the wikis as changed failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
     return { log };
+  }
+
+  /** True when a legal wiki changed after the date the apps compare their cached wikis against. */
+  private async appsHaveOutdatedWikis(documents: readonly LegalDocument[]): Promise<boolean> {
+    const lastChange = await this.database.readLastChangeOfWikis(documents.map(document => document.wikiId));
+    if (!lastChange) {
+      return false;
+    }
+    const lastUpdateForApps = await this.database.readWikisLastUpdateForApps();
+    return !lastUpdateForApps || lastUpdateForApps.getTime() < lastChange.getTime();
   }
 
   /** Per language code of the server the rendered text, languages without a text in code are skipped. */
