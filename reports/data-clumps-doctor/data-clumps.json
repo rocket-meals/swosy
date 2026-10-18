@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-17T14:32:41.771Z",
+  "report_timestamp": "2026-10-18T18:09:01.459Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,36 +8,36 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 139,
-          "average": 1.4957681456783791,
-          "amountSavedValuesForKeys": 5832,
+          "average": 1.495513970776724,
+          "amountSavedValuesForKeys": 5834,
           "amountKeys": 31
         },
         "invertedParameterToMethods": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 83,
-          "average": 2.259493670886076,
-          "amountSavedValuesForKeys": 2856,
-          "amountKeys": 28
+          "average": 2.260869565217391,
+          "amountSavedValuesForKeys": 2860,
+          "amountKeys": 27
         },
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 139,
-          "average": 1.5081458494957332,
-          "amountSavedValuesForKeys": 5832,
+          "average": 1.5078831739467562,
+          "amountSavedValuesForKeys": 5834,
           "amountKeys": 31
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 6129,
-        "detection_time_ms": 138,
+        "ast_generation_time_ms": 6008,
+        "detection_time_ms": 135,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 188.98,
-          "os_memory_free": 14719909888,
-          "os_memory_total": 16766414848,
+          "os_uptime": 147.21,
+          "os_memory_free": 14727061504,
+          "os_memory_total": 16766410752,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
@@ -55,18 +55,18 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "9b2d593ad78ecd8dcfc72acbcda389b3f67bb659",
-    "project_commit_hash": "9b2d593ad78ecd8dcfc72acbcda389b3f67bb659",
+    "project_version": "6c9c5d4e1b8ab36f07f478014de37c58a7a029ae",
+    "project_commit_hash": "6c9c5d4e1b8ab36f07f478014de37c58a7a029ae",
     "project_tag": null,
-    "project_commit_date": "1792247427",
+    "project_commit_date": "1792346807",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 821,
-    "number_of_classes_or_interfaces": 1901,
-    "number_of_methods": 2409,
-    "number_of_data_fields": 5832,
-    "number_of_method_parameters": 2856
+    "number_of_files": 822,
+    "number_of_classes_or_interfaces": 1902,
+    "number_of_methods": 2417,
+    "number_of_data_fields": 5834,
+    "number_of_method_parameters": 2860
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -1477,16 +1477,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocuments\").LegalDocument",
             "modifiers": [],
             "position": {
-              "startLine": 86,
+              "startLine": 113,
               "startColumn": 30,
-              "endLine": 86,
+              "endLine": 113,
               "endColumn": 53
             }
           },
           "position": {
-            "startLine": 79,
+            "startLine": 106,
             "startColumn": 29,
-            "endLine": 79,
+            "endLine": 106,
             "endColumn": 52
           }
         },
@@ -1502,16 +1502,16 @@
             "type": "Readonly<Record<string, string>>",
             "modifiers": [],
             "position": {
-              "startLine": 86,
+              "startLine": 113,
               "startColumn": 55,
-              "endLine": 86,
+              "endLine": 113,
               "endColumn": 95
             }
           },
           "position": {
-            "startLine": 79,
+            "startLine": 106,
             "startColumn": 54,
-            "endLine": 79,
+            "endLine": 106,
             "endColumn": 94
           }
         },
@@ -1527,16 +1527,16 @@
             "type": "readonly string[]",
             "modifiers": [],
             "position": {
-              "startLine": 86,
+              "startLine": 113,
               "startColumn": 97,
-              "endLine": 86,
+              "endLine": 113,
               "endColumn": 129
             }
           },
           "position": {
-            "startLine": 79,
+            "startLine": 106,
             "startColumn": 96,
-            "endLine": 79,
+            "endLine": 106,
             "endColumn": 128
           }
         }
@@ -1574,16 +1574,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalDocuments\").LegalDocument",
             "modifiers": [],
             "position": {
-              "startLine": 79,
+              "startLine": 106,
               "startColumn": 29,
-              "endLine": 79,
+              "endLine": 106,
               "endColumn": 52
             }
           },
           "position": {
-            "startLine": 86,
+            "startLine": 113,
             "startColumn": 30,
-            "endLine": 86,
+            "endLine": 113,
             "endColumn": 53
           }
         },
@@ -1599,16 +1599,16 @@
             "type": "Readonly<Record<string, string>>",
             "modifiers": [],
             "position": {
-              "startLine": 79,
+              "startLine": 106,
               "startColumn": 54,
-              "endLine": 79,
+              "endLine": 106,
               "endColumn": 94
             }
           },
           "position": {
-            "startLine": 86,
+            "startLine": 113,
             "startColumn": 55,
-            "endLine": 86,
+            "endLine": 113,
             "endColumn": 95
           }
         },
@@ -1624,16 +1624,16 @@
             "type": "readonly string[]",
             "modifiers": [],
             "position": {
-              "startLine": 79,
+              "startLine": 106,
               "startColumn": 96,
-              "endLine": 79,
+              "endLine": 106,
               "endColumn": 128
             }
           },
           "position": {
-            "startLine": 86,
+            "startLine": 113,
             "startColumn": 97,
-            "endLine": 86,
+            "endLine": 113,
             "endColumn": 129
           }
         }

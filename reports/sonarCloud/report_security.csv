@@ -1,3 +1,4 @@
 Key,Message,Component,Line
+"AaFQNrSAZ2pN_ZCigmuJ","Make sure the ""PATH"" variable only contains fixed, unwriteable directories.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/extension.config.mjs",100
 "AaEwB48XRXfa2mJa0A5o","Client-Side Request Forgery via unsanitized user input","rocket-meals_rocket-meals:apps/maintenance-server/server.mjs",156
 "AaEv5PHqBIquHGRjEP38","CORS Injection via unsanitized user input","rocket-meals_rocket-meals:apps/maintenance-server/server.mjs",197

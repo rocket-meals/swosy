@@ -4,15 +4,19 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 2 | 2 |
+| 🔒 Security | 3 | 3 |
 | 🐛 Reliability | 5 | 5 |
 | 🔧 Maintainability | 25 | 25 |
 
-**Total issues:** 32
+**Total issues:** 33
 
 ---
 
-## 🔒 Security (2/2)
+## 🔒 Security (3/3)
+
+- **Make sure the "PATH" variable only contains fixed, unwriteable directories.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/extension.config.mjs:100
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/extension.config.mjs#L100
 
 - **Client-Side Request Forgery via unsanitized user input**
   apps/maintenance-server/server.mjs:156
