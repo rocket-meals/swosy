@@ -7,6 +7,7 @@ const existingNews = {
   id: 'n1',
   alias: 'Grillabend',
   image: { id: 'file-1' },
+  image_remote_url: 'https://example.org/remote.jpg',
   status: 'draft',
   date: '2026-10-19T08:00:00',
   date_end: null,
@@ -94,6 +95,7 @@ describe('NewsModuleHelper – editor', () => {
       content: 'Text',
       alias: '',
       image: 'file-1',
+      imageRemoteUrl: 'https://example.org/remote.jpg',
       date: '2026-10-19T08:00',
       dateEnd: '',
       canteenIds: ['c1', 'c2'],
@@ -121,7 +123,7 @@ describe('NewsModuleHelper – editor', () => {
   it('builds a new news with the German source and a hand written language', () => {
     const draft = { ...NewsModuleHelper.createEmptyDraft(new Date(2026, 9, 16, 9, 5)), title: ' Grillabend ', content: 'Text', canteenIds: ['c1'], translations: { 'en-US': { manual: true, title: 'Barbecue', content: 'Text en' }, 'fr-FR': { manual: false, title: '', content: '' } } };
     const payload = NewsModuleHelper.buildPayload(draft, null, 'de-DE');
-    expect(payload).toMatchObject({ status: 'published', alias: 'Grillabend', display_locations: ['news_list'], image: null, date: '2026-10-16T09:05:00', date_end: null, url: null, show_on_app_version: null });
+    expect(payload).toMatchObject({ status: 'published', alias: 'Grillabend', display_locations: ['news_list'], image: null, image_remote_url: null, date: '2026-10-16T09:05:00', date_end: null, url: null, show_on_app_version: null });
     expect(payload.canteens).toEqual([{ canteens_id: 'c1' }]);
     expect(payload.translations).toEqual([
       { languages_code: 'de-DE', title: 'Grillabend', content: 'Text', be_source_for_translations: true, let_be_translated: false },
@@ -134,6 +136,7 @@ describe('NewsModuleHelper – editor', () => {
     draft.translations = { ...draft.translations, 'fr-FR': { manual: false, title: '', content: '' } };
     const payload = NewsModuleHelper.buildPayload(draft, existingNews, 'de-DE');
     expect(payload.alias).toBe('eigener-alias');
+    expect(payload.image_remote_url).toBe('https://example.org/remote.jpg');
     expect(payload.canteens).toEqual([{ id: 12 }, { canteens_id: 'c3' }]);
     expect(payload.translations).toEqual([
       { id: 1, title: 'Grillabend', content: 'Text', be_source_for_translations: true, let_be_translated: false },

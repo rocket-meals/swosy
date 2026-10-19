@@ -5324,6 +5324,30 @@ export const backendTranslations: TranslationResources = {
     zh: '没有结束时间时，新闻会一直显示，直到被归档。',
   },
 
+  /** Feld im Editor: Bild-URL von außen (z. B. bei importierten News). */
+  rocket_meals_module_news_field_image_remote_url: {
+    de: 'Bild-URL (optional)',
+    en: 'Image URL (optional)',
+    ar: 'رابط الصورة (اختياري)',
+    es: 'URL de la imagen (opcional)',
+    fr: 'URL de l’image (facultatif)',
+    ru: 'URL изображения (необязательно)',
+    tr: 'Görsel URL’si (isteğe bağlı)',
+    zh: '图片网址（可选）',
+  },
+
+  /** Hinweis unter der Bild-URL im Editor. */
+  rocket_meals_module_news_image_remote_url_hint: {
+    de: 'Wird angezeigt, solange kein Bild hochgeladen ist.',
+    en: 'Shown as long as no image is uploaded.',
+    ar: 'تُعرض ما دام لم يتم رفع أي صورة.',
+    es: 'Se muestra mientras no se haya subido ninguna imagen.',
+    fr: 'Affichée tant qu’aucune image n’est téléversée.',
+    ru: 'Показывается, пока не загружено изображение.',
+    tr: 'Görsel yüklenmediği sürece gösterilir.',
+    zh: '在未上传图片时显示。',
+  },
+
   /** Feld im Editor: Link zum vollständigen Artikel. */
   rocket_meals_module_news_field_url: {
     de: 'Link zum Artikel (optional)',

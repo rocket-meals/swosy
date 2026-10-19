@@ -3,7 +3,8 @@
  * Write or edit a news (`communication/new`, `communication/<id>`), with the app beside the form.
  *
  * 1. Where: news list, popup, above the food offers, at the end of the first day (several at once).
- * 2. Content: German title and text (Markdown, the Directus interface) and an image. Every other
+ * 2. Content: German title and text (Markdown, the Directus interface) and an image (a file, else
+ *    the remote URL, e.g. of imported news). Every other
  *    language is translated automatically, unless it is entered by hand under "Erweitert".
  * 3. Canteens (only for popup and food offers; none means all), as tiles with a search.
  * 4. Time: visible from `date` until `date_end`.
@@ -72,7 +73,9 @@ function assetUrl(id: string | null | undefined, width: number, height: number):
   return `${root}assets/${encodeURIComponent(id)}?width=${width}&height=${height}&fit=cover&quality=80`;
 }
 
-const imageUrl = computed(() => assetUrl(draft.value.image, 600, 360));
+/** The uploaded image, else the remote URL (like in the app and the list). */
+const imageUrl = computed(() => assetUrl(draft.value.image, 600, 360) ?? (draft.value.imageRemoteUrl.trim() || undefined));
+const remoteImageUrl = computed(() => (draft.value.image ? undefined : draft.value.imageRemoteUrl.trim() || undefined));
 
 const canteenTiles = computed(() => {
   const query = canteenSearch.value.trim().toLowerCase();
@@ -237,6 +240,12 @@ watch(() => props.newsId, load);
               <span class="type-label">{{ translate(BackendTranslationKeys.image) }}</span>
               <interface-file-image :value="draft.image" :disabled="saving" collection="news" field="image" @input="draft.image = $event ?? null" />
             </div>
+            <label class="field" for="news-image-remote-url">
+              <span class="type-label">{{ translate(BackendTranslationKeys.rocket_meals_module_news_field_image_remote_url) }}</span>
+              <v-input id="news-image-remote-url" v-model="draft.imageRemoteUrl" type="url" placeholder="https://" :disabled="saving" />
+              <span class="type-note">{{ translate(BackendTranslationKeys.rocket_meals_module_news_image_remote_url_hint) }}</span>
+              <img v-if="remoteImageUrl" class="remote-image" :src="remoteImageUrl" alt="" />
+            </label>
           </section>
 
           <section v-if="showCanteens" class="section">
@@ -362,6 +371,31 @@ watch(() => props.newsId, load);
   .editor-page {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  /* Below the form the preview scrolls with the page instead of sticking over it. */
+  .preview {
+    position: static;
+  }
+}
+
+@media (max-width: 40rem) {
+  .editor-page {
+    gap: 1.5rem;
+  }
+
+  .status-select {
+    min-inline-size: 7rem;
+  }
+
+  .location-tiles,
+  .canteen-tiles {
+    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  }
+
+  .translation-language {
+    flex-basis: 100%;
+    padding-block-start: 0;
+  }
 }
 
 .status-select {
@@ -398,6 +432,15 @@ watch(() => props.newsId, load);
   flex-direction: column;
   gap: 0.5rem;
   min-inline-size: 0;
+}
+
+.remote-image {
+  inline-size: 100%;
+  max-inline-size: 24rem;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  background: var(--theme--background-normal);
+  border-radius: var(--theme--border-radius);
 }
 
 .field-row,

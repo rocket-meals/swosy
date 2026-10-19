@@ -73,6 +73,8 @@ export type NewsDraft = {
   alias: string;
   /** Id of the image file, or null. */
   image: string | null;
+  /** Remote URL of an image (e.g. of imported news), shown while no file is set. */
+  imageRemoteUrl: string;
   date: string;
   dateEnd: string;
   url: string;
@@ -285,6 +287,7 @@ export class NewsModuleHelper {
       content: '',
       alias: '',
       image: null,
+      imageRemoteUrl: '',
       date,
       dateEnd: '',
       url: '',
@@ -326,6 +329,7 @@ export class NewsModuleHelper {
       content: source?.content ?? '',
       alias: news.alias && news.alias !== source?.title ? news.alias : '',
       image: news.image && typeof news.image === 'object' ? news.image.id : (news.image ?? null),
+      imageRemoteUrl: news.image_remote_url ?? '',
       date: NewsModuleHelper.toInputDateTime(news.date),
       dateEnd: NewsModuleHelper.toInputDateTime(news.date_end),
       url: news.url ?? '',
@@ -422,6 +426,7 @@ export class NewsModuleHelper {
       alias: draft.alias.trim() || title,
       display_locations: draft.locations,
       image: draft.image,
+      image_remote_url: draft.imageRemoteUrl.trim() || null,
       date: NewsModuleHelper.fromInputDateTime(draft.date),
       date_end: NewsModuleHelper.fromInputDateTime(draft.dateEnd),
       url: draft.url.trim() || null,

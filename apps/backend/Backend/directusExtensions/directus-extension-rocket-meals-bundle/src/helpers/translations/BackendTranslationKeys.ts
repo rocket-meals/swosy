@@ -544,6 +544,8 @@ export const BackendTranslationKeys = {
   rocket_meals_module_news_time_hint_end: 'rocket_meals_module_news_time_hint_end',
   rocket_meals_module_news_time_hint_open: 'rocket_meals_module_news_time_hint_open',
   rocket_meals_module_news_field_url: 'rocket_meals_module_news_field_url',
+  rocket_meals_module_news_field_image_remote_url: 'rocket_meals_module_news_field_image_remote_url',
+  rocket_meals_module_news_image_remote_url_hint: 'rocket_meals_module_news_image_remote_url_hint',
   rocket_meals_module_news_section_buttons: 'rocket_meals_module_news_section_buttons',
   rocket_meals_module_news_button_rating: 'rocket_meals_module_news_button_rating',
   rocket_meals_module_news_button_login: 'rocket_meals_module_news_button_login',
