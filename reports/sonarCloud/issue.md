@@ -87,20 +87,20 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/LivePulseHelper.ts#L689
 
 - **`keptIds` should be a `Set`, and use `keptIds.has()` to check existence or non-existence.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/NewsModuleHelper.ts:417
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/NewsModuleHelper.ts#L417
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/NewsModuleHelper.ts:421
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/NewsModuleHelper.ts#L421
 
 - **`editable` should be a `Set`, and use `editable.has()` to check existence or non-existence.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalWikiProtection.ts:45
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/legal-documents-hook/LegalWikiProtection.ts#L45
 
 - **Extract this nested ternary operation into an independent statement.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue:117
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue#L117
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue:120
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue#L120
 
 - **Use <address> or <details> or <fieldset> or <optgroup> instead of the group role to ensure accessibility across all devices.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue:335
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue#L335
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue:344
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue#L344
 
 - **Remove this "!important" and resolve the specificity conflict instead.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue:706
