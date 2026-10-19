@@ -32,12 +32,20 @@ const props = defineProps<{ newsId: string }>();
 
 const api = useApi();
 const router = useRouter();
-const { useNotificationsStore } = useStores();
+const { useFieldsStore, useNotificationsStore } = useStores();
+const fieldsStore = useFieldsStore();
 const notificationsStore = useNotificationsStore();
 const { translate } = useAppExtensionTranslate();
 
 const page = RocketMealsModulePages.COMMUNICATION;
 const apiRoot = String(api.defaults?.baseURL ?? '/');
+
+/**
+ * The upload folder configured on the field `news.image` (the folder "News" below "Public Images").
+ * Without it an upload lands in the root folder, which the app may not read, so the image stays
+ * empty in the app.
+ */
+const imageFolder = computed<string | undefined>(() => fieldsStore.getField(CollectionNames.NEWS, 'image')?.meta?.options?.folder ?? undefined);
 
 const isNew = computed(() => props.newsId === RocketMealsModulePages.NEW_ITEM_SEGMENT);
 const existing = ref<DatabaseTypes.News | null>(null);
@@ -238,7 +246,7 @@ watch(() => props.newsId, load);
             </div>
             <div class="field">
               <span class="type-label">{{ translate(BackendTranslationKeys.image) }}</span>
-              <interface-file-image :value="draft.image" :disabled="saving" collection="news" field="image" @input="draft.image = $event ?? null" />
+              <interface-file-image :value="draft.image" :disabled="saving" :folder="imageFolder" collection="news" field="image" @input="draft.image = $event ?? null" />
             </div>
             <label class="field" for="news-image-remote-url">
               <span class="type-label">{{ translate(BackendTranslationKeys.rocket_meals_module_news_field_image_remote_url) }}</span>
