@@ -130,28 +130,30 @@ watch([activeFilter, pageSize, archive, sort], () => ModuleListHelper.storeSetti
 
       <list-content :loading="loading" :load-error="loadError" :empty="newsItems.length === 0">
         <list-row v-for="news in newsItems" :key="news.id" @open="openNews(news)">
-          <div class="news-item">
-            <div class="news-image" :class="{ empty: !imageUrl(news) }">
-              <img v-if="imageUrl(news)" :src="imageUrl(news)" alt="" loading="lazy" />
-              <v-icon v-else name="image" />
-            </div>
-            <div class="news-content">
-              <div class="news-header">
-                <feature-wish-chip :presentation="NewsModuleHelper.getStatusPresentation(news.status)" />
-                <span class="title type-label">{{ NewsModuleHelper.getTitle(news) ?? translate(BackendTranslationKeys.rocket_meals_module_no_title) }}</span>
-                <span class="spacer" />
-                <span class="meta type-note">{{ periodLabel(news) }}</span>
+          <div class="news-row">
+            <div class="news-item">
+              <div class="news-image" :class="{ empty: !imageUrl(news) }">
+                <img v-if="imageUrl(news)" :src="imageUrl(news)" alt="" loading="lazy" />
+                <v-icon v-else name="image" />
               </div>
-              <div class="locations">
-                <feature-wish-chip v-for="location in NewsModuleHelper.getLocationPresentations(news)" :key="location.location" :presentation="location" />
-                <span v-if="NewsModuleHelper.isImported(news)" class="imported type-note">
-                  <v-icon name="cloud_download" x-small />
-                  {{ translate(BackendTranslationKeys.rocket_meals_module_news_imported) }}
-                </span>
-              </div>
-              <div class="canteens type-note">
-                <v-icon name="restaurant" x-small />
-                {{ canteensLabel(news) }}
+              <div class="news-content">
+                <div class="news-header">
+                  <feature-wish-chip :presentation="NewsModuleHelper.getStatusPresentation(news.status)" />
+                  <span class="title type-label">{{ NewsModuleHelper.getTitle(news) ?? translate(BackendTranslationKeys.rocket_meals_module_no_title) }}</span>
+                  <span class="spacer" />
+                  <span class="meta type-note">{{ periodLabel(news) }}</span>
+                </div>
+                <div class="locations">
+                  <feature-wish-chip v-for="location in NewsModuleHelper.getLocationPresentations(news)" :key="location.location" :presentation="location" />
+                  <span v-if="NewsModuleHelper.isImported(news)" class="imported type-note">
+                    <v-icon name="cloud_download" x-small />
+                    {{ translate(BackendTranslationKeys.rocket_meals_module_news_imported) }}
+                  </span>
+                </div>
+                <div class="canteens type-note">
+                  <v-icon name="restaurant" x-small />
+                  {{ canteensLabel(news) }}
+                </div>
               </div>
             </div>
           </div>
@@ -195,14 +197,29 @@ watch([activeFilter, pageSize, archive, sort], () => ModuleListHelper.storeSetti
   max-inline-size: 100%;
 }
 
-/* The image stands left of the text on wide rows and above it on narrow ones (like in the app). */
+@media (max-width: 40rem) {
+  .sort {
+    inline-size: 100%;
+  }
+}
+
+/*
+ * The image stands left of the text on wide rows and above it on narrow ones (like in the app).
+ * The size container is the wrapper `.news-row`, not `.news-item` itself: a container query never
+ * matches the container element, so `.news-item` would stay a row and squeeze the text into a
+ * one-letter column next to the full-width image on phones.
+ */
+.news-row {
+  flex: 1;
+  min-inline-size: 0;
+  container-type: inline-size;
+}
+
 .news-item {
   display: flex;
-  flex: 1;
   gap: 1rem;
   align-items: flex-start;
   min-inline-size: 0;
-  container-type: inline-size;
 }
 
 .news-image {
@@ -243,6 +260,10 @@ watch([activeFilter, pageSize, archive, sort], () => ModuleListHelper.storeSetti
   }
 
   .news-image.empty {
+    display: none;
+  }
+
+  .spacer {
     display: none;
   }
 }

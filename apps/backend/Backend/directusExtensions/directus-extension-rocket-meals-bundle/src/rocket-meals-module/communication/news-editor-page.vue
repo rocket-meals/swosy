@@ -362,6 +362,31 @@ watch(() => props.newsId, load);
   .editor-page {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  /* Below the form the preview scrolls with the page instead of sticking over it. */
+  .preview {
+    position: static;
+  }
+}
+
+@media (max-width: 40rem) {
+  .editor-page {
+    gap: 1.5rem;
+  }
+
+  .status-select {
+    min-inline-size: 7rem;
+  }
+
+  .location-tiles,
+  .canteen-tiles {
+    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  }
+
+  .translation-language {
+    flex-basis: 100%;
+    padding-block-start: 0;
+  }
 }
 
 .status-select {

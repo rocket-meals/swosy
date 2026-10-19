@@ -115,6 +115,7 @@ const DISH_COUNT = 4;
 /* The colours are the app's (light theme), not Directus' – the preview shows the app. */
 .phone {
   inline-size: 300px;
+  max-inline-size: 100%;
   padding: 0.5rem;
   background: #111;
   border-radius: 2.5rem;
