@@ -46,6 +46,7 @@ import TextRecognitionWebViewHost from '@/components/TextRecognitionWebView';
 import { ConfigCustomerEnum, getCompanyLogoLocalSaved, getCustomerConfig, getCustomerConfigsDict, getCustomerEnumForConfig } from '@/config';
 import { SET_SELECTED_CUSTOMER } from '@/redux/Types/types';
 import { useLanguageProfileSync } from '@/hooks/useLanguageProfileSync';
+import { useUniversityStatusTracking } from '@/hooks/useUniversityStatusTracking';
 import { SettingsProvider } from 'repo-depkit-common-ui';
 import { useAppSelector } from '@/redux/hooks';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
@@ -87,6 +88,7 @@ function AppSettingsProvider({ children }: Readonly<{ children: React.ReactNode 
 // inside the PersistGate, so it sees the language stored on the device, also before the login.
 function LanguageProfileSyncBridge() {
 	useLanguageProfileSync();
+	useUniversityStatusTracking();
 	return null;
 }
 

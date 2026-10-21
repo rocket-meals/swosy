@@ -208,3 +208,14 @@ export const resetAppUsageEventSession = () => {
 	sequenceNumber = 0;
 	collectionHelper = null;
 };
+
+/**
+ * After the app started (or the user logged in) with a login via university (DFN): the answer of
+ * `GET /university-affiliation`, whatever status the university reported.
+ */
+export const trackUniversityStatusChecked = (universityAffiliation: Record<string, unknown>) =>
+	trackAppUsageEvent({
+		event_type: AppUsageEventTypes.ACCOUNT,
+		event_name: AppUsageEventNames.UNIVERSITY_STATUS_CHECKED,
+		payload: universityAffiliation,
+	});
