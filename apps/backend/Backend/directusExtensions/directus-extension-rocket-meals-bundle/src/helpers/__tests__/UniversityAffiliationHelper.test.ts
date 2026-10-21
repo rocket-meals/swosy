@@ -1,4 +1,5 @@
 import { UniversityAffiliationHelper } from '../UniversityAffiliationHelper';
+import { BackendUsageEventHelper } from '../BackendUsageEventHelper';
 import fs from 'fs';
 import path from 'path';
 
@@ -49,4 +50,16 @@ describe('UniversityAffiliationHelper', () => {
     const record = UniversityAffiliationHelper.createRecord('dfn', claims, new Date(dfnWithoutAffiliation.recorded_at));
     expect(UniversityAffiliationHelper.toResponse('dfn', record)).toEqual(dfnWithoutAffiliation);
   });
+
+  it('builds an anonymous usage event from the status', () => {
+    const record = UniversityAffiliationHelper.createRecord('dfn', { sub: 'abc', 'eduperson_scoped_affiliation.0': 'student@uni-hannover.de' });
+    const event = BackendUsageEventHelper.buildUniversityStatusConfirmedEvent(UniversityAffiliationHelper.getStatus(record), new Date(2026, 9, 21, 20, 0));
+    expect(event).toEqual({
+      event_type: 'account',
+      event_name: 'university_status_confirmed',
+      session_id: 'Backend_2026_10_21',
+      payload: { is_student: true, is_employee: false, universities: ['uni-hannover.de'] },
+    });
+  });
 });
+

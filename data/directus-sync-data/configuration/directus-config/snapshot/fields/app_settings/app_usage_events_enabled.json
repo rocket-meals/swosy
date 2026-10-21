@@ -83,6 +83,10 @@
             {
               "text": "App-Bewertung: Store-Bewertungsdialog angefragt",
               "value": "native_review_prompt_requested"
+            },
+            {
+              "text": "Anmeldung: Hochschulstatus bestätigt",
+              "value": "university_status_confirmed"
             }
           ],
           "text": "Alle",
@@ -126,7 +130,8 @@
       "food_details_opened",
       "building_details_opened",
       "marking_details_opened",
-      "native_review_prompt_requested"
+      "native_review_prompt_requested",
+      "university_status_confirmed"
     ],
     "max_length": null,
     "numeric_precision": null,

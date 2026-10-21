@@ -13,9 +13,15 @@
 import { Accountability } from '@directus/types';
 import { AccountabilityHelper } from './AccountabilityHelper';
 import { KeyValueStore, SharedStore } from './RedisHelper';
-import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED, BACKEND_USAGE_EVENT_TYPE_FOOD, BACKEND_USAGE_SESSION_PREFIX } from './BackendUsageEventNames';
+import {
+  BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED,
+  BACKEND_USAGE_EVENT_NAME_UNIVERSITY_STATUS_CONFIRMED,
+  BACKEND_USAGE_EVENT_TYPE_ACCOUNT,
+  BACKEND_USAGE_EVENT_TYPE_FOOD,
+  BACKEND_USAGE_SESSION_PREFIX,
+} from './BackendUsageEventNames';
 
-export { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED, BACKEND_USAGE_EVENT_TYPE_FOOD, BACKEND_USAGE_SESSION_PREFIX };
+export { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED, BACKEND_USAGE_EVENT_NAME_UNIVERSITY_STATUS_CONFIRMED, BACKEND_USAGE_EVENT_TYPE_ACCOUNT, BACKEND_USAGE_EVENT_TYPE_FOOD, BACKEND_USAGE_SESSION_PREFIX };
 
 export type BackendUsageEvent = {
   event_type: string;
@@ -113,6 +119,20 @@ export class BackendUsageEventHelper {
         food_id: getRelatedId(foodoffer?.food) ?? null,
         food_name: getRelatedAlias(foodoffer?.food) ?? foodoffer?.alias ?? null,
         canteen_id: getRelatedId(foodoffer?.canteen) ?? null,
+      },
+    };
+  }
+
+  /** After a university login: which status the university reported, without the user. */
+  static buildUniversityStatusConfirmedEvent(status: { is_student: boolean; is_employee: boolean; universities: string[] }, now: Date): BackendUsageEvent {
+    return {
+      event_type: BACKEND_USAGE_EVENT_TYPE_ACCOUNT,
+      event_name: BACKEND_USAGE_EVENT_NAME_UNIVERSITY_STATUS_CONFIRMED,
+      session_id: BackendUsageEventHelper.getSessionId(now),
+      payload: {
+        is_student: status.is_student,
+        is_employee: status.is_employee,
+        universities: status.universities,
       },
     };
   }
