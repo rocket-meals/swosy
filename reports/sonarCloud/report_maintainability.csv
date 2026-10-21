@@ -1,5 +1,5 @@
 Key,Message,Component,Line
-"AaFe_5tDgjWoea35fev1","`PROVIDERS` should be a `Set`, and use `PROVIDERS.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/university-affiliation-hook/index.ts",16
+"AaFe_5tDgjWoea35fev1","`PROVIDERS` should be a `Set`, and use `PROVIDERS.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/university-affiliation-hook/index.ts",25
 "AaFGIJ91nL1HbyZtk0Nk","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",166
 "AaFFwYr6Z-LBfy4skR39","`keptIds` should be a `Set`, and use `keptIds.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/rocket-meals-module/NewsModuleHelper.ts",421
 "AaFFwYzqZ-LBfy4skR3_","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/communication/news-editor-page.vue",128

@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-10-21T15:31:14.455Z",
+  "report_timestamp": "2026-10-21T19:10:08.544Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -13,11 +13,11 @@
           "amountKeys": 31
         },
         "invertedParameterToMethods": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 83,
-          "average": 2.260424862313139,
-          "amountSavedValuesForKeys": 2873,
-          "amountKeys": 27
+          "average": 2.2617924528301887,
+          "amountSavedValuesForKeys": 2877,
+          "amountKeys": 26
         },
         "invertedParameterToClasses": {
           "median": 1.5,
@@ -28,18 +28,18 @@
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4015,
-        "detection_time_ms": 106,
+        "ast_generation_time_ms": 6036,
+        "detection_time_ms": 138,
         "machine_information": {
           "os": "Linux",
           "os_release": "7.0.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 181.78,
-          "os_memory_free": 14752567296,
-          "os_memory_total": 16760336384,
+          "os_uptime": 154.32,
+          "os_memory_free": 14792626176,
+          "os_memory_total": 16760344576,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 9V45 96-Core Processor",
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
           "os_cpu_speed": 0
         }
       }
@@ -55,18 +55,18 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "fcdb49a204f072d373ab3401034dc09ddc3037c7",
-    "project_commit_hash": "fcdb49a204f072d373ab3401034dc09ddc3037c7",
+    "project_version": "0f543e92a5427220f6ddcb52a04d60d3a8d93e10",
+    "project_commit_hash": "0f543e92a5427220f6ddcb52a04d60d3a8d93e10",
     "project_tag": null,
-    "project_commit_date": "1792596556",
+    "project_commit_date": "1792609665",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 824,
     "number_of_classes_or_interfaces": 1906,
-    "number_of_methods": 2425,
+    "number_of_methods": 2427,
     "number_of_data_fields": 5847,
-    "number_of_method_parameters": 2873
+    "number_of_method_parameters": 2877
   },
   "detector": {
     "name": "data-clumps-doctor",
