@@ -13,9 +13,15 @@
 import { Accountability } from '@directus/types';
 import { AccountabilityHelper } from './AccountabilityHelper';
 import { KeyValueStore, SharedStore } from './RedisHelper';
-import { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED, BACKEND_USAGE_EVENT_TYPE_FOOD, BACKEND_USAGE_SESSION_PREFIX } from './BackendUsageEventNames';
+import {
+  BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED,
+  BACKEND_USAGE_EVENT_NAME_UNIVERSITY_STATUS_CONFIRMED,
+  BACKEND_USAGE_EVENT_TYPE_ACCOUNT,
+  BACKEND_USAGE_EVENT_TYPE_FOOD,
+  BACKEND_USAGE_SESSION_PREFIX,
+} from './BackendUsageEventNames';
 
-export { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED, BACKEND_USAGE_EVENT_TYPE_FOOD, BACKEND_USAGE_SESSION_PREFIX };
+export { BACKEND_USAGE_EVENT_NAME_FOOD_DETAILS_OPENED, BACKEND_USAGE_EVENT_NAME_UNIVERSITY_STATUS_CONFIRMED, BACKEND_USAGE_EVENT_TYPE_ACCOUNT, BACKEND_USAGE_EVENT_TYPE_FOOD, BACKEND_USAGE_SESSION_PREFIX };
 
 export type BackendUsageEvent = {
   event_type: string;
@@ -114,6 +120,16 @@ export class BackendUsageEventHelper {
         food_name: getRelatedAlias(foodoffer?.food) ?? foodoffer?.alias ?? null,
         canteen_id: getRelatedId(foodoffer?.canteen) ?? null,
       },
+    };
+  }
+
+  /** After a university login: the answer of `GET /university-affiliation` as payload, it names no user. */
+  static buildUniversityStatusConfirmedEvent(universityAffiliation: Record<string, unknown>, now: Date): BackendUsageEvent {
+    return {
+      event_type: BACKEND_USAGE_EVENT_TYPE_ACCOUNT,
+      event_name: BACKEND_USAGE_EVENT_NAME_UNIVERSITY_STATUS_CONFIRMED,
+      session_id: BackendUsageEventHelper.getSessionId(now),
+      payload: universityAffiliation,
     };
   }
 }

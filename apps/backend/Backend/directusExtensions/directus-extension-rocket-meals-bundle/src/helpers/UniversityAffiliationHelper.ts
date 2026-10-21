@@ -105,6 +105,19 @@ export class UniversityAffiliationHelper {
     };
   }
 
+  /** The answer of `GET /university-affiliation` for a stored record. */
+  static toResponse(provider: string | null, record: UniversityAffiliationRecord) {
+    return {
+      provider,
+      has_affiliation_data: true,
+      ...UniversityAffiliationHelper.getStatus(record),
+      scoped_affiliations: record.scoped_affiliations,
+      affiliations: record.affiliations,
+      received_claims: record.received_claims,
+      recorded_at: record.recorded_at,
+    };
+  }
+
   private static getKey(provider: string, identifier: string): string {
     return KEY_PREFIX + provider + ':' + identifier;
   }

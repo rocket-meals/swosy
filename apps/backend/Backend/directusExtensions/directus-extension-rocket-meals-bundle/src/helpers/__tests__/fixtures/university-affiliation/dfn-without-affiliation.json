@@ -1,0 +1,11 @@
+{
+  "provider": "dfn",
+  "has_affiliation_data": true,
+  "is_student": false,
+  "is_employee": false,
+  "universities": [],
+  "scoped_affiliations": [],
+  "affiliations": [],
+  "received_claims": ["at_hash", "aud", "auth_time", "eduperson_assurance", "exp", "iat", "iss", "nonce", "sid", "sub"],
+  "recorded_at": "2026-10-21T18:09:45.487Z"
+}
