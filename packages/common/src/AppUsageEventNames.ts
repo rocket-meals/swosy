@@ -41,7 +41,7 @@ export const AppUsageEventNames = {
   SETTINGS_SCREEN_OPENED: 'settings_screen_opened',
   DATA_ACCESS_SCREEN_OPENED: 'data_access_screen_opened',
   EATING_HABITS_SCREEN_OPENED: 'eating_habits_screen_opened',
-  /** After every login via university (DFN), whatever status was reported (written by the backend), payload: the answer of `GET /university-affiliation`. */
+  /** Once per app start of a user logged in via university (DFN), whatever status was reported, payload: the answer of `GET /university-affiliation`. */
   UNIVERSITY_STATUS_CHECKED: 'university_status_checked',
 } as const;
 

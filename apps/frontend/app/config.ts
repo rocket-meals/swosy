@@ -303,7 +303,9 @@ export function getVersionPatch() {
         // 181: news cards in the food offers are a SettingsList row with accent colour
         // 182: feature wishes tile with accent, both food offers tiles with the side spacing of the food cards
         // 183: feedback labels in the food offers with the side spacing of the food cards
-        return 183;
+        // 184: experimental screen "API-Abfrage", usage event university_status_checked sent by the app
+        //      once per start for logins via university (DFN)
+        return 184;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

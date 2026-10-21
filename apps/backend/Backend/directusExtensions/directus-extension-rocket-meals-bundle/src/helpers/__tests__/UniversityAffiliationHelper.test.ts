@@ -1,5 +1,4 @@
 import { UniversityAffiliationHelper } from '../UniversityAffiliationHelper';
-import { BackendUsageEventHelper } from '../BackendUsageEventHelper';
 import fs from 'fs';
 import path from 'path';
 
@@ -49,35 +48,6 @@ describe('UniversityAffiliationHelper', () => {
     const dfnWithoutAffiliation = readFixture('dfn-without-affiliation.json');
     const record = UniversityAffiliationHelper.createRecord('dfn', claims, new Date(dfnWithoutAffiliation.recorded_at));
     expect(UniversityAffiliationHelper.toResponse('dfn', record)).toEqual(dfnWithoutAffiliation);
-  });
-
-  it('builds a usage event with the answer of the route as payload', () => {
-    const recordedAt = new Date(2026, 9, 21, 20, 0);
-    const record = UniversityAffiliationHelper.createRecord('dfn', { sub: 'abc', 'eduperson_scoped_affiliation.0': 'student@uni-hannover.de' }, recordedAt);
-    const event = BackendUsageEventHelper.buildUniversityStatusCheckedEvent(UniversityAffiliationHelper.toResponse('dfn', record), recordedAt);
-    expect(event).toEqual({
-      event_type: 'account',
-      event_name: 'university_status_checked',
-      session_id: 'Backend_2026_10_21',
-      payload: {
-        provider: 'dfn',
-        has_affiliation_data: true,
-        is_student: true,
-        is_employee: false,
-        universities: ['uni-hannover.de'],
-        scoped_affiliations: ['student@uni-hannover.de'],
-        affiliations: [],
-        received_claims: ['eduperson_scoped_affiliation', 'sub'],
-        recorded_at: recordedAt.toISOString(),
-      },
-    });
-  });
-
-  it('builds the usage event also when no status was reported', () => {
-    const dfnWithoutAffiliation = readFixture('dfn-without-affiliation.json');
-    const event = BackendUsageEventHelper.buildUniversityStatusCheckedEvent(dfnWithoutAffiliation, new Date(dfnWithoutAffiliation.recorded_at));
-    expect(event.event_name).toBe('university_status_checked');
-    expect(event.payload).toEqual(dfnWithoutAffiliation);
   });
 
   it('answers with a hint when nothing is stored', () => {
