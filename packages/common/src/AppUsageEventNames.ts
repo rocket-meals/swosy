@@ -41,8 +41,8 @@ export const AppUsageEventNames = {
   SETTINGS_SCREEN_OPENED: 'settings_screen_opened',
   DATA_ACCESS_SCREEN_OPENED: 'data_access_screen_opened',
   EATING_HABITS_SCREEN_OPENED: 'eating_habits_screen_opened',
-  /** A login via university (DFN) reported student or staff status (written by the backend), payload: the answer of `GET /university-affiliation`. */
-  UNIVERSITY_STATUS_CONFIRMED: 'university_status_confirmed',
+  /** After every login via university (DFN), whatever status was reported (written by the backend), payload: the answer of `GET /university-affiliation`. */
+  UNIVERSITY_STATUS_CHECKED: 'university_status_checked',
 } as const;
 
 export type AppUsageEventName = (typeof AppUsageEventNames)[keyof typeof AppUsageEventNames];
@@ -96,7 +96,7 @@ export const APP_USAGE_EVENT_CHOICES: AppUsageEventChoice[] = [
         ],
       },
       { text: 'App-Bewertung: Store-Bewertungsdialog angefragt', value: AppUsageEventNames.NATIVE_REVIEW_PROMPT_REQUESTED },
-      { text: 'Anmeldung: Hochschulstatus bestätigt', value: AppUsageEventNames.UNIVERSITY_STATUS_CONFIRMED },
+      { text: 'Anmeldung: Hochschulstatus geprüft', value: AppUsageEventNames.UNIVERSITY_STATUS_CHECKED },
     ],
   },
 ];

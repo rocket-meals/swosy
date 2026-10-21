@@ -54,10 +54,10 @@ describe('UniversityAffiliationHelper', () => {
   it('builds a usage event with the answer of the route as payload', () => {
     const recordedAt = new Date(2026, 9, 21, 20, 0);
     const record = UniversityAffiliationHelper.createRecord('dfn', { sub: 'abc', 'eduperson_scoped_affiliation.0': 'student@uni-hannover.de' }, recordedAt);
-    const event = BackendUsageEventHelper.buildUniversityStatusConfirmedEvent(UniversityAffiliationHelper.toResponse('dfn', record), recordedAt);
+    const event = BackendUsageEventHelper.buildUniversityStatusCheckedEvent(UniversityAffiliationHelper.toResponse('dfn', record), recordedAt);
     expect(event).toEqual({
       event_type: 'account',
-      event_name: 'university_status_confirmed',
+      event_name: 'university_status_checked',
       session_id: 'Backend_2026_10_21',
       payload: {
         provider: 'dfn',
@@ -72,5 +72,16 @@ describe('UniversityAffiliationHelper', () => {
       },
     });
   });
-});
 
+  it('builds the usage event also when no status was reported', () => {
+    const dfnWithoutAffiliation = readFixture('dfn-without-affiliation.json');
+    const event = BackendUsageEventHelper.buildUniversityStatusCheckedEvent(dfnWithoutAffiliation, new Date(dfnWithoutAffiliation.recorded_at));
+    expect(event.event_name).toBe('university_status_checked');
+    expect(event.payload).toEqual(dfnWithoutAffiliation);
+  });
+
+  it('answers with a hint when nothing is stored', () => {
+    expect(UniversityAffiliationHelper.toResponse('dfn', null)).toEqual({ provider: 'dfn', has_affiliation_data: false, hint: 'No data stored yet. Log in again via "Uni/Hochschule".' });
+    expect(UniversityAffiliationHelper.toResponse('apple', null).has_affiliation_data).toBe(false);
+  });
+});

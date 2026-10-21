@@ -37,15 +37,6 @@ export default defineEndpoint({
         const provider: string | null = user?.provider ?? null;
         const identifier: string | null = user?.external_identifier ?? null;
         const record = provider && identifier ? await UniversityAffiliationHelper.load(provider, identifier) : null;
-
-        if (!record) {
-          return res.json({
-            provider,
-            has_affiliation_data: false,
-            hint: provider === 'dfn' ? 'No data stored yet. Log in again via "Uni/Hochschule".' : 'Only logins via "Uni/Hochschule" (provider dfn) report a status.',
-          });
-        }
-
         return res.json(UniversityAffiliationHelper.toResponse(provider, record));
       } catch (error) {
         console.error(ENDPOINT_ID + ': could not read the affiliation', error);

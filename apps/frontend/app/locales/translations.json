@@ -9248,5 +9248,35 @@
     "ru": "Столовая пока не ответила",
     "tr": "Yemekhaneden henüz yanıt yok",
     "zh": "食堂尚未回复"
+  },
+  "api_request": {
+    "de": "API-Abfrage",
+    "en": "API request",
+    "ar": "طلب API",
+    "es": "Consulta a la API",
+    "fr": "Requête API",
+    "ru": "Запрос к API",
+    "tr": "API isteği",
+    "zh": "API 请求"
+  },
+  "api_request_path": {
+    "de": "Pfad",
+    "en": "Path",
+    "ar": "المسار",
+    "es": "Ruta",
+    "fr": "Chemin",
+    "ru": "Путь",
+    "tr": "Yol",
+    "zh": "路径"
+  },
+  "api_request_send": {
+    "de": "Abrufen",
+    "en": "Fetch",
+    "ar": "جلب",
+    "es": "Consultar",
+    "fr": "Récupérer",
+    "ru": "Запросить",
+    "tr": "Getir",
+    "zh": "获取"
   }
 }

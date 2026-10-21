@@ -85,8 +85,8 @@
               "value": "native_review_prompt_requested"
             },
             {
-              "text": "Anmeldung: Hochschulstatus bestätigt",
-              "value": "university_status_confirmed"
+              "text": "Anmeldung: Hochschulstatus geprüft",
+              "value": "university_status_checked"
             }
           ],
           "text": "Alle",
@@ -131,7 +131,7 @@
       "building_details_opened",
       "marking_details_opened",
       "native_review_prompt_requested",
-      "university_status_confirmed"
+      "university_status_checked"
     ],
     "max_length": null,
     "numeric_precision": null,
