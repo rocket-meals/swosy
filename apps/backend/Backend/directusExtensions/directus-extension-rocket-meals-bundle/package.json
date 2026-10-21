@@ -300,6 +300,16 @@
       },
       {
         "type": "endpoint",
+        "name": "university-affiliation-endpoint",
+        "source": "src/university-affiliation-endpoint/index.ts"
+      },
+      {
+        "type": "hook",
+        "name": "university-affiliation-hook",
+        "source": "src/university-affiliation-hook/index.ts"
+      },
+      {
+        "type": "endpoint",
         "name": "upsert-endpoint",
         "source": "src/upsert-endpoint/index.ts"
       },
