@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AaFe_5p7gjWoea35fev0","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/UniversityAffiliationHelper.ts",80
 "AaEwFN7dB9x1wQHvXWKV","Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/store-versions/index.tsx",92
 "AaEwFN7dB9x1wQHvXWKW","Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/store-versions/index.tsx",93
 "AaEtF6PLQhOcqS1tBB_n","Async method 'handleNotification' has no 'await' expression.","rocket-meals_rocket-meals:apps/frontend/app/helper/NotificationHelper.ts",87

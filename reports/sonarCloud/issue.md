@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 3 | 3 |
-| 🐛 Reliability | 5 | 5 |
-| 🔧 Maintainability | 25 | 25 |
+| 🐛 Reliability | 6 | 6 |
+| 🔧 Maintainability | 26 | 26 |
 
-**Total issues:** 33
+**Total issues:** 35
 
 ---
 
@@ -26,7 +26,11 @@
   apps/maintenance-server/server.mjs:197
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L197
 
-## 🐛 Reliability (5/5)
+## 🐛 Reliability (6/6)
+
+- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/UniversityAffiliationHelper.ts:80
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/UniversityAffiliationHelper.ts#L80
 
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
   apps/frontend/app/app/(app)/experimentell/store-versions/index.tsx:92
@@ -48,7 +52,7 @@
   apps/maintenance-server/server.mjs:303
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L303
 
-## 🔧 Maintainability (25/25)
+## 🔧 Maintainability (26/26)
 
 - **Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts:76
@@ -105,6 +109,10 @@
 - **Remove this "!important" and resolve the specificity conflict instead.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue:706
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue#L706
+
+- **`PROVIDERS` should be a `Set`, and use `PROVIDERS.has()` to check existence or non-existence.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/university-affiliation-hook/index.ts:16
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/university-affiliation-hook/index.ts#L16
 
 - **'repo-depkit-common-ui' imported multiple times.**
   apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx:41
