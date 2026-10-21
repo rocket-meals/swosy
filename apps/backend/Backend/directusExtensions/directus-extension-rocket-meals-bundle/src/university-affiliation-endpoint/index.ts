@@ -6,6 +6,8 @@
  * The values come from the user's last login via DFN-AAI (`university-affiliation-hook`). For
  * testing: after a deploy log in once again, before that there is nothing stored.
  *
+ * Real answers are kept in `src/helpers/__tests__/fixtures/university-affiliation/`.
+ *
  * `received_claims` lists which claims the login delivered. Is `eduperson_scoped_affiliation`
  * missing there, the scope was not requested (`AUTH_DFN_SCOPE`) or the university does not release it.
  */
@@ -44,15 +46,7 @@ export default defineEndpoint({
           });
         }
 
-        return res.json({
-          provider,
-          has_affiliation_data: true,
-          ...UniversityAffiliationHelper.getStatus(record),
-          scoped_affiliations: record.scoped_affiliations,
-          affiliations: record.affiliations,
-          received_claims: record.received_claims,
-          recorded_at: record.recorded_at,
-        });
+        return res.json(UniversityAffiliationHelper.toResponse(provider, record));
       } catch (error) {
         console.error(ENDPOINT_ID + ': could not read the affiliation', error);
         return res.status(500).json({ error: 'The affiliation could not be read.' });
