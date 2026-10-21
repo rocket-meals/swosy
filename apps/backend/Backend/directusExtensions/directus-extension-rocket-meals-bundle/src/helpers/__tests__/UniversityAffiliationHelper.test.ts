@@ -51,14 +51,25 @@ describe('UniversityAffiliationHelper', () => {
     expect(UniversityAffiliationHelper.toResponse('dfn', record)).toEqual(dfnWithoutAffiliation);
   });
 
-  it('builds an anonymous usage event from the status', () => {
-    const record = UniversityAffiliationHelper.createRecord('dfn', { sub: 'abc', 'eduperson_scoped_affiliation.0': 'student@uni-hannover.de' });
-    const event = BackendUsageEventHelper.buildUniversityStatusConfirmedEvent(UniversityAffiliationHelper.getStatus(record), new Date(2026, 9, 21, 20, 0));
+  it('builds a usage event with the answer of the route as payload', () => {
+    const recordedAt = new Date(2026, 9, 21, 20, 0);
+    const record = UniversityAffiliationHelper.createRecord('dfn', { sub: 'abc', 'eduperson_scoped_affiliation.0': 'student@uni-hannover.de' }, recordedAt);
+    const event = BackendUsageEventHelper.buildUniversityStatusConfirmedEvent(UniversityAffiliationHelper.toResponse('dfn', record), recordedAt);
     expect(event).toEqual({
       event_type: 'account',
       event_name: 'university_status_confirmed',
       session_id: 'Backend_2026_10_21',
-      payload: { is_student: true, is_employee: false, universities: ['uni-hannover.de'] },
+      payload: {
+        provider: 'dfn',
+        has_affiliation_data: true,
+        is_student: true,
+        is_employee: false,
+        universities: ['uni-hannover.de'],
+        scoped_affiliations: ['student@uni-hannover.de'],
+        affiliations: [],
+        received_claims: ['eduperson_scoped_affiliation', 'sub'],
+        recorded_at: recordedAt.toISOString(),
+      },
     });
   });
 });

@@ -123,17 +123,13 @@ export class BackendUsageEventHelper {
     };
   }
 
-  /** After a university login: which status the university reported, without the user. */
-  static buildUniversityStatusConfirmedEvent(status: { is_student: boolean; is_employee: boolean; universities: string[] }, now: Date): BackendUsageEvent {
+  /** After a university login: the answer of `GET /university-affiliation` as payload, it names no user. */
+  static buildUniversityStatusConfirmedEvent(universityAffiliation: Record<string, unknown>, now: Date): BackendUsageEvent {
     return {
       event_type: BACKEND_USAGE_EVENT_TYPE_ACCOUNT,
       event_name: BACKEND_USAGE_EVENT_NAME_UNIVERSITY_STATUS_CONFIRMED,
       session_id: BackendUsageEventHelper.getSessionId(now),
-      payload: {
-        is_student: status.is_student,
-        is_employee: status.is_employee,
-        universities: status.universities,
-      },
+      payload: universityAffiliation,
     };
   }
 }

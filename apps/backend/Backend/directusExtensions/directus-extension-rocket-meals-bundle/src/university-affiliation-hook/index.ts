@@ -8,7 +8,7 @@
  *
  * Right after the login (`auth.login`) it writes the anonymous usage event
  * `university_status_confirmed` – only when the university reported student or staff status, once
- * per login, without user or profile. So the backend shows whether the status check works at all,
+ * per login, without user or profile. Its payload is the answer of `GET /university-affiliation`. So the backend shows whether the status check works at all,
  * without an app release. Off when the event is not ticked in `app_settings.app_usage_events_enabled`.
  */
 
@@ -68,8 +68,8 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, ({ filter
       if (!record) {
         return;
       }
-      const status = UniversityAffiliationHelper.getStatus(record);
-      if (!status.is_student && !status.is_employee) {
+      const universityAffiliation = UniversityAffiliationHelper.toResponse(meta.provider, record);
+      if (!universityAffiliation.is_student && !universityAffiliation.is_employee) {
         return;
       }
       const appSettings = await new AppSettingsHelper(apiContext).getAppSettings();
@@ -77,7 +77,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, ({ filter
         return;
       }
       const itemsService = await new ItemsServiceCreator(apiContext).getItemsService(APP_USAGE_EVENTS);
-      await itemsService.createOne(BackendUsageEventHelper.buildUniversityStatusConfirmedEvent(status, new Date()), { emitEvents: false });
+      await itemsService.createOne(BackendUsageEventHelper.buildUniversityStatusConfirmedEvent(universityAffiliation, new Date()), { emitEvents: false });
     } catch (error) {
       // Counting must never disturb the login.
       apiContext.logger.warn(`${HOOK_NAME}: could not write the usage event: ${String(error)}`);
