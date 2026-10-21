@@ -870,6 +870,13 @@ export default function Layout() {
 					}}
 				/>
 				<Drawer.Screen
+					name="experimentell/api-request/index"
+					options={{
+						header: makeTranslatedStackHeader(TranslationKeys.api_request, 'api_request'),
+						title: translate(TranslationKeys.api_request),
+					}}
+				/>
+				<Drawer.Screen
 					name="inventory-items/details/index"
 					options={{
 						header: makeTranslatedStackHeader(TranslationKeys.inventory_item, 'inventory_item'),

@@ -117,6 +117,12 @@ const Index = () => {
 			onPress: () => router.push('/experimentell/text-recognition-test'),
 		},
 		{
+			key: 'api-request',
+			label: translate(TranslationKeys.api_request),
+			leftIcon: <MaterialCommunityIcons name="api" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/api-request'),
+		},
+		{
 			key: 'markdown-test',
 			label: translate(TranslationKeys.markdown_test),
 			leftIcon: <MaterialCommunityIcons name="language-markdown-outline" size={24} color={theme.screen.icon} />,

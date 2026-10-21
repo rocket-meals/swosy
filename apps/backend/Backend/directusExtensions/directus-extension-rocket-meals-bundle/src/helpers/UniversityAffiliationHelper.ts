@@ -105,8 +105,15 @@ export class UniversityAffiliationHelper {
     };
   }
 
-  /** The answer of `GET /university-affiliation` for a stored record. */
-  static toResponse(provider: string | null, record: UniversityAffiliationRecord) {
+  /** The answer of `GET /university-affiliation`: the stored record, or a hint when there is none. */
+  static toResponse(provider: string | null, record: UniversityAffiliationRecord | null): Record<string, unknown> {
+    if (!record) {
+      return {
+        provider,
+        has_affiliation_data: false,
+        hint: provider === 'dfn' ? 'No data stored yet. Log in again via "Uni/Hochschule".' : 'Only logins via "Uni/Hochschule" (provider dfn) report a status.',
+      };
+    }
     return {
       provider,
       has_affiliation_data: true,
