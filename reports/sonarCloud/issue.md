@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 3 | 3 |
-| 🐛 Reliability | 6 | 6 |
-| 🔧 Maintainability | 26 | 26 |
+| 🐛 Reliability | 7 | 7 |
+| 🔧 Maintainability | 27 | 27 |
 
-**Total issues:** 35
+**Total issues:** 37
 
 ---
 
@@ -26,7 +26,7 @@
   apps/maintenance-server/server.mjs:197
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L197
 
-## 🐛 Reliability (6/6)
+## 🐛 Reliability (7/7)
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/UniversityAffiliationHelper.ts:80
@@ -44,6 +44,10 @@
   apps/frontend/app/helper/NotificationHelper.ts:87
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/NotificationHelper.ts#L87
 
+- **Async function 'fetchUniversityAffiliation' has no 'await' expression.**
+  apps/frontend/app/hooks/useUniversityStatusTracking.ts:11
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useUniversityStatusTracking.ts#L11
+
 - **Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.**
   apps/maintenance-server/server.mjs:279
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L279
@@ -52,7 +56,7 @@
   apps/maintenance-server/server.mjs:303
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L303
 
-## 🔧 Maintainability (26/26)
+## 🔧 Maintainability (27/27)
 
 - **Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts:76
@@ -111,8 +115,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/rocket-meals-module/friendship-network/friendship-network-page.vue#L706
 
 - **`PROVIDERS` should be a `Set`, and use `PROVIDERS.has()` to check existence or non-existence.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/university-affiliation-hook/index.ts:25
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/university-affiliation-hook/index.ts#L25
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/university-affiliation-hook/index.ts:19
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/university-affiliation-hook/index.ts#L19
 
 - **'repo-depkit-common-ui' imported multiple times.**
   apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx:41
@@ -137,6 +141,10 @@
 - **Async method 'handleNotification' has no 'await' expression.**
   apps/frontend/app/helper/NotificationHelper.ts:87
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/NotificationHelper.ts#L87
+
+- **Async function 'fetchUniversityAffiliation' has no 'await' expression.**
+  apps/frontend/app/hooks/useUniversityStatusTracking.ts:11
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useUniversityStatusTracking.ts#L11
 
 - **Move function 'setCorsHeaders' to the outer scope.**
   apps/maintenance-server/server.mjs:193
