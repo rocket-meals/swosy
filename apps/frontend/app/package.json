@@ -95,6 +95,7 @@
     "expo-symbols": "~57.0.2",
     "expo-system-ui": "~57.0.2",
     "expo-updates": "~57.0.12",
+    "expo-video": "~57.0.5",
     "expo-web-browser": "~57.0.2",
     "hermes-engine": "^0.11.0",
     "i18n-js": "^4.5.0",

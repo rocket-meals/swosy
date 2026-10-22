@@ -69,7 +69,8 @@ export function getBuildNumber() {
 	//      platforms build again rather than being skipped as already built.
 	// 210: the patch itself was wrong - it compared two Lists, which the Groovy
 	//      in Gradle 9 refuses. Corrected and verified against Gradle 9.3.1.
-	return 210;
+	// 211: expo-video (native module + config plugin) for videos in news popups.
+	return 211;
 }
 
 export function getMajorVersion() {
@@ -306,7 +307,8 @@ export function getVersionPatch() {
         // 184: experimental screen "API-Abfrage", usage event university_status_checked sent by the app
         //      once per start for logins via university (DFN)
         // 185: common: food feedback reaction 😢 (FoodFeedbackReactionHelper)
-        return 185;
+        // 186: news popups play a video (news.video) with expo-video, the image is its still
+        return 186;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
@@ -552,6 +554,7 @@ export function getFinalConfig(config?: any, licenses?: unknown[]) {
 				'expo-localization',
 				'expo-asset',
 				'expo-font',
+				'expo-video',
 			],
 			experiments: {
 				typedRoutes: true,

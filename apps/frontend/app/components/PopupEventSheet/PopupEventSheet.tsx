@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import MyImage from '@/components/MyImage';
+import NewsVideo, { getNewsVideoId } from '@/components/NewsVideo';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
 import { useAppSelector } from '@/redux/hooks';
@@ -76,6 +77,9 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, eventData
 	const showLoginScreenButton = !!eventData?.show_login_screen_button && UserHelper.isAnonymousUser(user);
 	const title = eventData?.translations ? getTitleFromTranslation(eventData?.translations, language) : '';
 	const rawText = eventData?.translations ? getTextFromTranslation(eventData?.translations, language) : '';
+	const imageUrl = eventData?.image_remote_url || (eventData?.image ? getImageUrl(String(eventData.image)) : null);
+	// With a video the image is its still; older app versions only know the image and keep showing it.
+	const videoId = getNewsVideoId(eventData);
 
 	return (
 		<View style={styles.container}>
@@ -104,14 +108,13 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, eventData
 				</Text>
 			</View>
 			<View style={styles.popupContainer}>
-				{(eventData?.image || eventData?.image_remote_url) && (
+				{videoId ? (
+					<NewsVideo videoId={videoId} posterUrl={imageUrl} height={styles.imageContainer.height} />
+				) : imageUrl ? (
 					<View style={styles.imageContainer}>
-						<MyImage
-							style={styles.image}
-							remote_image_url={eventData?.image_remote_url || getImageUrl(String(eventData?.image))}
-						/>
+						<MyImage style={styles.image} remote_image_url={imageUrl} />
 					</View>
-				)}
+				) : null}
 				{rawText ? <MyMarkdownProjectColored content={rawText} textColor={theme.screen.text} /> : null}
 			</View>
 			{eventData?.show_app_rating_button ? (

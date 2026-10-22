@@ -4799,6 +4799,16 @@
     "tr": "Görülen açılır etkinlikleri sıfırla",
     "zh": "重置已查看的弹窗事件"
   },
+  "play_video": {
+    "de": "Video abspielen",
+    "en": "Play video",
+    "ar": "تشغيل الفيديو",
+    "es": "Reproducir vídeo",
+    "fr": "Lire la vidéo",
+    "ru": "Воспроизвести видео",
+    "tr": "Videoyu oynat",
+    "zh": "播放视频"
+  },
   "popup_event_current_app_version": {
     "de": "Aktuelle App-Version",
     "en": "Current app version",
