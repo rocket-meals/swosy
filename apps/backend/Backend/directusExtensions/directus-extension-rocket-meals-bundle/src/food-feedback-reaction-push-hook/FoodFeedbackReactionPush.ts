@@ -15,6 +15,7 @@ const BODY_KEYS: Record<FoodFeedbackReaction, BackendTranslationKeys> = {
   [FoodFeedbackReaction.THANKS]: BackendTranslationKeys.notification_food_feedback_reaction_thanks,
   [FoodFeedbackReaction.YUMMY]: BackendTranslationKeys.notification_food_feedback_reaction_yummy,
   [FoodFeedbackReaction.GOOD_IDEA]: BackendTranslationKeys.notification_food_feedback_reaction_good_idea,
+  [FoodFeedbackReaction.SAD]: BackendTranslationKeys.notification_food_feedback_reaction_sad,
 };
 
 export type FoodFeedbackReactionPushMessage = { title: string; body: string };

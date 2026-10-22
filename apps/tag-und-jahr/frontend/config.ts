@@ -98,7 +98,8 @@ export function getVersionPatch() {
 	// 73: common: popup events merged into news (display_locations, date_end, canteens)
 	// 74: common: popup_events types removed
 	// 75: common-ui: SettingsList accentColor
-	return 75;
+	// 76: common: food feedback reaction 😢 (FoodFeedbackReactionHelper)
+	return 76;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

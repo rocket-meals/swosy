@@ -33,7 +33,8 @@ export type ModuleFoodFeedback = ModuleItem & {
 /** The fields the list needs from a feedback, with the relations it expands. */
 export type FoodFeedbackListItem = ModuleFoodFeedback & {
   profile?: (ModuleProfileSummary & { date_updated?: string | null; language?: string | { code?: string | null } | null }) | string | null;
-  chat?: ModuleChatRelation;
+  /** In the list also with the newest message of the author, see {@link FoodFeedbackChatHelper.getPreviewComment}. */
+  chat?: ModuleChatRelation | (Exclude<ModuleChatRelation, string | null> & { messages?: Pick<ModuleChatMessage, 'message' | 'date_created'>[] | null });
   /** The reaction of support, see `FoodFeedbackReactionHelper`. */
   support_reaction?: string | null;
 };
@@ -96,6 +97,11 @@ export class FoodFeedbackChatHelper {
 
   /** Fields of the list. */
   public static readonly LIST_FIELDS = ['id', 'comment', 'rating', 'date_created', 'date_updated', 'food.id', 'food.alias', 'food.image', 'food.image_remote_url', 'canteen.id', 'canteen.alias', 'profile.id', 'profile.nickname', 'profile.avatar', 'profile.date_updated', 'profile.language', 'chat.id', 'chat.conversation_state', 'chat.date_updated', 'support_reaction'];
+
+  /** Only in the list: the newest message of the author in the chat, the preview of a row instead of the first comment. */
+  public static readonly LIST_LATEST_MESSAGE_FIELDS: readonly string[] = ['chat.messages.message', 'chat.messages.date_created'];
+  /** A message with profile is one of the author, see `ChatHelper.isSupportMessage`. */
+  public static readonly LIST_DEEP = { chat: { messages: { _filter: { profile: { _nnull: true } }, _sort: ['-date_created'], _limit: 1 } } };
 
   static readonly CANTEENS_ENDPOINT = `/items/${CollectionNames.CANTEENS}`;
   static readonly FOOD_FEEDBACKS_ENDPOINT = `/items/${CollectionNames.FOODS_FEEDBACKS}`;
@@ -212,7 +218,26 @@ export class FoodFeedbackChatHelper {
   /** URL parameters of the list request. Newest feedbacks first unless sorted otherwise. */
   static buildListQuery(request: ModuleStatusListRequest<FoodFeedbackChatFilter, FoodFeedbackListOptions>) {
     const options = request.options ?? {};
-    return ModuleListHelper.buildListQuery({ fields: FoodFeedbackChatHelper.LIST_FIELDS, filter: FoodFeedbackChatHelper.buildFilter(request.filter, options), sort: FoodFeedbackChatHelper.getSortParameter(options.sort), page: request.page, pageSize: options.pageSize, search: request.search });
+    return ModuleListHelper.buildListQuery({
+      fields: [...FoodFeedbackChatHelper.LIST_FIELDS, ...FoodFeedbackChatHelper.LIST_LATEST_MESSAGE_FIELDS],
+      deep: FoodFeedbackChatHelper.LIST_DEEP,
+      filter: FoodFeedbackChatHelper.buildFilter(request.filter, options),
+      sort: FoodFeedbackChatHelper.getSortParameter(options.sort),
+      page: request.page,
+      pageSize: options.pageSize,
+      search: request.search,
+    });
+  }
+
+  /**
+   * What a row of the list quotes: the newest message of the author once they wrote in the chat, e.g.
+   * their answer to support, else the comment of the feedback.
+   */
+  static getPreviewComment(feedback: Pick<FoodFeedbackListItem, 'comment' | 'chat'>): string {
+    const chat = feedback.chat;
+    const messages = typeof chat === 'object' && chat !== null && 'messages' in chat ? chat.messages : null;
+    const latest = [...(messages ?? [])].sort((a, b) => (b.date_created ?? '').localeCompare(a.date_created ?? '')).find(message => (message.message ?? '').trim().length > 0);
+    return (latest?.message ?? feedback.comment ?? '').trim();
   }
 
   /** URL parameters to count the feedbacks of one filter chip – with the same canteen, food and rating filter as the list. */
@@ -371,6 +396,8 @@ export class FoodFeedbackChatHelper {
         return BackendTranslationKeys.rocket_meals_module_reaction_yummy;
       case FoodFeedbackReaction.GOOD_IDEA:
         return BackendTranslationKeys.rocket_meals_module_reaction_good_idea;
+      case FoodFeedbackReaction.SAD:
+        return BackendTranslationKeys.rocket_meals_module_reaction_sad;
     }
   }
 

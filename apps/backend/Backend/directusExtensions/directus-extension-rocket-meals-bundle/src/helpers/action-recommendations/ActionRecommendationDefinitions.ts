@@ -68,6 +68,7 @@ export const ACTION_RECOMMENDATION_REACTIONS: Record<FoodFeedbackReaction, strin
   [FoodFeedbackReaction.THANKS]: 'Danke: für einen hilfreichen Hinweis oder konstruktive Kritik.',
   [FoodFeedbackReaction.YUMMY]: 'Lecker: die Person lobt den Geschmack der Speise.',
   [FoodFeedbackReaction.GOOD_IDEA]: 'Gute Idee: ein Vorschlag, den die Mensa sich merkt.',
+  [FoodFeedbackReaction.SAD]: 'Schade: kleine Kritik, die keine Antwort braucht, z. B. etwas hat nicht geschmeckt.',
 };
 
 export type ActionRecommendationDefinition = {
@@ -114,7 +115,7 @@ export class ActionRecommendationDefinitions {
       summaryGroupField: 'food',
       authorProfileField: 'profile',
       chat: { field: 'chat' },
-      reactions: [FoodFeedbackReaction.THUMBS_UP, FoodFeedbackReaction.HEART, FoodFeedbackReaction.THANKS, FoodFeedbackReaction.YUMMY, FoodFeedbackReaction.GOOD_IDEA],
+      reactions: [FoodFeedbackReaction.THUMBS_UP, FoodFeedbackReaction.HEART, FoodFeedbackReaction.THANKS, FoodFeedbackReaction.YUMMY, FoodFeedbackReaction.GOOD_IDEA, FoodFeedbackReaction.SAD],
     },
     {
       collection: CollectionNames.APP_FEEDBACKS,

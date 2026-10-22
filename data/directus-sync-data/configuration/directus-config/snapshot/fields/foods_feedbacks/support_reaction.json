@@ -34,6 +34,10 @@
         {
           "text": "💡 Gute Idee",
           "value": "💡"
+        },
+        {
+          "text": "😢 Schade",
+          "value": "😢"
         }
       ]
     },

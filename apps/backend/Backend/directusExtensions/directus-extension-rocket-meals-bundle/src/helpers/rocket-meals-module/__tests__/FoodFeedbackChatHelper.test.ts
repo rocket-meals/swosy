@@ -279,6 +279,19 @@ describe('reactions of support', () => {
     expect(FoodFeedbackChatHelper.LIST_FIELDS).toContain('support_reaction');
   });
 
+  it('quotes the newest message of the author in a row, else the comment', () => {
+    expect(FoodFeedbackChatHelper.getPreviewComment({ comment: 'Zu salzig', chat: null })).toBe('Zu salzig');
+    expect(FoodFeedbackChatHelper.getPreviewComment({ comment: 'Zu salzig', chat: { id: 'c', messages: [] } })).toBe('Zu salzig');
+    const messages = [
+      { message: 'Danke für die Antwort', date_created: '2026-10-21T10:00:00.000Z' },
+      { message: 'Heute war es besser', date_created: '2026-10-22T10:00:00.000Z' },
+    ];
+    expect(FoodFeedbackChatHelper.getPreviewComment({ comment: 'Zu salzig', chat: { id: 'c', messages } })).toBe('Heute war es besser');
+    const query = FoodFeedbackChatHelper.buildListQuery({ filter: FoodFeedbackChatFilter.ALL, page: 1 });
+    expect(String(query.fields)).toContain('chat.messages.message');
+    expect(JSON.parse(String(query.deep))).toEqual(FoodFeedbackChatHelper.LIST_DEEP);
+  });
+
   it('has a label for every reaction', () => {
     for (const reaction of FoodFeedbackReactionHelper.REACTIONS) {
       expect(Object.values(BackendTranslationKeys)).toContain(FoodFeedbackChatHelper.getReactionLabelKey(reaction));

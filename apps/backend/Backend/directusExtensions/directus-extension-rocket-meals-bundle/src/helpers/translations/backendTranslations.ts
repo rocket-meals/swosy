@@ -411,6 +411,16 @@ export const backendTranslations: TranslationResources = {
     tr: 'Yemekhane fikrini beğendi.',
     zh: '食堂觉得你的想法很好。',
   },
+  notification_food_feedback_reaction_sad: {
+    de: 'Die Mensa nimmt sich deine Kritik zu Herzen.',
+    en: 'The canteen takes your criticism to heart.',
+    ar: 'يأخذ المطعم ملاحظتك على محمل الجد.',
+    es: 'El comedor se toma en serio tu crítica.',
+    fr: 'La cantine prend ta critique à cœur.',
+    ru: 'Столовая принимает твою критику близко к сердцу.',
+    tr: 'Yemekhane eleştirini dikkate alıyor.',
+    zh: '食堂会认真对待你的意见。',
+  },
   /** A reaction that was set by hand in Directus and has no text of its own. */
   notification_food_feedback_reaction_other: {
     de: 'Die Mensa hat auf deinen Kommentar reagiert.',
@@ -1038,6 +1048,16 @@ export const backendTranslations: TranslationResources = {
     ru: 'Хорошая идея',
     tr: 'İyi fikir',
     zh: '好主意',
+  },
+  rocket_meals_module_reaction_sad: {
+    de: 'Schade',
+    en: 'Too bad',
+    ar: 'للأسف',
+    es: 'Qué pena',
+    fr: 'Dommage',
+    ru: 'Жаль',
+    tr: 'Ne yazık',
+    zh: '遗憾',
   },
   rocket_meals_module_reaction_react: {
     de: 'Reagieren',

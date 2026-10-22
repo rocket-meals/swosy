@@ -3,7 +3,8 @@
  * Page "Speise-Feedbacks": the latest food feedbacks, by default those with a comment. Filterable
  * by content (comment and/or rating), chat status, canteen, food and rating, sortable by date or rating. Feedbacks can be marked as done right
  * from the list – one by one or several selected at once. Every row leads to the chat with the
- * author (`food-feedback-chat-page.vue`). The author's nickname follows the comment as a chip.
+ * author (`food-feedback-chat-page.vue`). A row quotes the newest message of the author in the chat
+ * (e.g. their answer to support), else the comment. The author's nickname follows it as a chip.
  *
  * An open AI recommendation of a feedback (`action_recommendations`, see `action-recommendations-hook`)
  * marks the recommended button with ✨ and shows its reason and draft reply below the comment; the
@@ -380,8 +381,8 @@ watch(feedbacks, loadRecommendations);
                 {{ formatDateTime(feedback.date_created) }}
               </span>
             </div>
-            <div v-if="FoodFeedbackChatStatusHelper.hasComment(feedback)" class="comment-line">
-              <q class="comment">{{ feedback.comment }}</q>
+            <div v-if="FoodFeedbackChatHelper.getPreviewComment(feedback)" class="comment-line">
+              <q class="comment">{{ FoodFeedbackChatHelper.getPreviewComment(feedback) }}</q>
               <span v-if="feedback.profile" class="comment-author" @click.stop @keydown.stop>
                 <profile-avatar :profile="feedback.profile" :size="20" with-name />
               </span>

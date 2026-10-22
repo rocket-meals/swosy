@@ -16,6 +16,8 @@ export type ModuleListQueryOptions = {
   page: number;
   pageSize?: number | null;
   search?: string | null;
+  /** A Directus `deep` object for the expanded relations, sent as JSON. */
+  deep?: unknown;
 };
 
 export type ModuleCountQueryOptions = Pick<ModuleListQueryOptions, 'filter' | 'search'>;
@@ -65,6 +67,9 @@ export class ModuleListHelper {
       page: Math.max(1, options.page),
       meta: 'filter_count',
     };
+    if (options.deep) {
+      query.deep = JSON.stringify(options.deep);
+    }
     return ModuleListHelper.withSearch(query, options.search);
   }
 
