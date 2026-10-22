@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useVideoPlayer, VideoView } from 'expo-video';
@@ -57,9 +57,11 @@ function getVideoUrl(videoId: string): string {
 
 /** Only mounted after the tap: creating the player starts loading the video. */
 const NewsVideoPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
-	const player = useVideoPlayer(getVideoUrl(videoId), createdPlayer => {
-		createdPlayer.play();
-	});
+	const player = useVideoPlayer(getVideoUrl(videoId));
+	// Not in the setup of useVideoPlayer: on web that runs before the VideoView registered its <video>, so play() did nothing.
+	useEffect(() => {
+		player.play();
+	}, [player]);
 	return <VideoView player={player} style={styles.fill} nativeControls fullscreenOptions={{ enable: true }} allowsPictureInPicture={false} contentFit="contain" />;
 };
 
