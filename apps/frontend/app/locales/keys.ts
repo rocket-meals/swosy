@@ -532,7 +532,6 @@ export const TranslationKeys = {
 	events: 'events',
 	reset_seen_popup_events: 'reset_seen_popup_events',
 	popup_event_current_app_version: 'popup_event_current_app_version',
-	play_video: 'play_video',
 	popup_event_version_condition: 'popup_event_version_condition',
 	RATE_FOOD: 'RATE_FOOD',
 	GET_NOTIFICATION_ON_AVAILABILITY: 'GET_NOTIFICATION_ON_AVAILABILITY',
