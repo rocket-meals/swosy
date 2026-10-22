@@ -10,6 +10,16 @@ export enum FoodFeedbackReaction {
   GOOD_IDEA = '💡',
   /** For small criticism, so support does not only have praise to react with. */
   SAD = '😢',
+  HAPPY = '😊',
+  APPLAUSE = '👏',
+  CELEBRATE = '🎉',
+  STAR = '🌟',
+  NOTED = '📝',
+  LOOKING_INTO = '👀',
+  WORKING_ON_IT = '🛠️',
+  DONE = '✅',
+  OOPS = '🙈',
+  THINKING = '🤔',
 }
 
 /** A reaction with how often it was given, see {@link FoodFeedbackReactionHelper.groupReactions}. */
@@ -23,7 +33,7 @@ export type FoodFeedbackReactionUpdate = {
 
 export class FoodFeedbackReactionHelper {
   /** Order in which reactions are offered; must match the choices of the field in the Directus snapshot. */
-  public static readonly REACTIONS: readonly FoodFeedbackReaction[] = [FoodFeedbackReaction.THUMBS_UP, FoodFeedbackReaction.HEART, FoodFeedbackReaction.THANKS, FoodFeedbackReaction.YUMMY, FoodFeedbackReaction.GOOD_IDEA, FoodFeedbackReaction.SAD];
+  public static readonly REACTIONS: readonly FoodFeedbackReaction[] = [FoodFeedbackReaction.THUMBS_UP, FoodFeedbackReaction.HEART, FoodFeedbackReaction.THANKS, FoodFeedbackReaction.YUMMY, FoodFeedbackReaction.GOOD_IDEA, FoodFeedbackReaction.SAD, FoodFeedbackReaction.HAPPY, FoodFeedbackReaction.APPLAUSE, FoodFeedbackReaction.CELEBRATE, FoodFeedbackReaction.STAR, FoodFeedbackReaction.NOTED, FoodFeedbackReaction.LOOKING_INTO, FoodFeedbackReaction.WORKING_ON_IT, FoodFeedbackReaction.DONE, FoodFeedbackReaction.OOPS, FoodFeedbackReaction.THINKING];
 
   /** The reaction offered first, without opening the menu. */
   public static readonly DEFAULT_REACTION = FoodFeedbackReaction.THUMBS_UP;

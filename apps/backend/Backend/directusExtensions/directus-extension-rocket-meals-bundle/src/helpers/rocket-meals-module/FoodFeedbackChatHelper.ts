@@ -398,6 +398,26 @@ export class FoodFeedbackChatHelper {
         return BackendTranslationKeys.rocket_meals_module_reaction_good_idea;
       case FoodFeedbackReaction.SAD:
         return BackendTranslationKeys.rocket_meals_module_reaction_sad;
+      case FoodFeedbackReaction.HAPPY:
+        return BackendTranslationKeys.rocket_meals_module_reaction_happy;
+      case FoodFeedbackReaction.APPLAUSE:
+        return BackendTranslationKeys.rocket_meals_module_reaction_applause;
+      case FoodFeedbackReaction.CELEBRATE:
+        return BackendTranslationKeys.rocket_meals_module_reaction_celebrate;
+      case FoodFeedbackReaction.STAR:
+        return BackendTranslationKeys.rocket_meals_module_reaction_star;
+      case FoodFeedbackReaction.NOTED:
+        return BackendTranslationKeys.rocket_meals_module_reaction_noted;
+      case FoodFeedbackReaction.LOOKING_INTO:
+        return BackendTranslationKeys.rocket_meals_module_reaction_looking_into;
+      case FoodFeedbackReaction.WORKING_ON_IT:
+        return BackendTranslationKeys.rocket_meals_module_reaction_working_on_it;
+      case FoodFeedbackReaction.DONE:
+        return BackendTranslationKeys.rocket_meals_module_reaction_done;
+      case FoodFeedbackReaction.OOPS:
+        return BackendTranslationKeys.rocket_meals_module_reaction_oops;
+      case FoodFeedbackReaction.THINKING:
+        return BackendTranslationKeys.rocket_meals_module_reaction_thinking;
     }
   }
 

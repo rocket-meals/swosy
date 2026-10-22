@@ -306,7 +306,8 @@ export function getVersionPatch() {
         // 184: experimental screen "API-Abfrage", usage event university_status_checked sent by the app
         //      once per start for logins via university (DFN)
         // 185: common: food feedback reaction 😢 (FoodFeedbackReactionHelper)
-        return 185;
+        // 186: common: ten more food feedback reactions (FoodFeedbackReactionHelper)
+        return 186;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

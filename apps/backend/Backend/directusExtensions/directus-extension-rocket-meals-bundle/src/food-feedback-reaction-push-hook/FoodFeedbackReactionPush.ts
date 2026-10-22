@@ -16,6 +16,16 @@ const BODY_KEYS: Record<FoodFeedbackReaction, BackendTranslationKeys> = {
   [FoodFeedbackReaction.YUMMY]: BackendTranslationKeys.notification_food_feedback_reaction_yummy,
   [FoodFeedbackReaction.GOOD_IDEA]: BackendTranslationKeys.notification_food_feedback_reaction_good_idea,
   [FoodFeedbackReaction.SAD]: BackendTranslationKeys.notification_food_feedback_reaction_sad,
+  [FoodFeedbackReaction.HAPPY]: BackendTranslationKeys.notification_food_feedback_reaction_happy,
+  [FoodFeedbackReaction.APPLAUSE]: BackendTranslationKeys.notification_food_feedback_reaction_applause,
+  [FoodFeedbackReaction.CELEBRATE]: BackendTranslationKeys.notification_food_feedback_reaction_celebrate,
+  [FoodFeedbackReaction.STAR]: BackendTranslationKeys.notification_food_feedback_reaction_star,
+  [FoodFeedbackReaction.NOTED]: BackendTranslationKeys.notification_food_feedback_reaction_noted,
+  [FoodFeedbackReaction.LOOKING_INTO]: BackendTranslationKeys.notification_food_feedback_reaction_looking_into,
+  [FoodFeedbackReaction.WORKING_ON_IT]: BackendTranslationKeys.notification_food_feedback_reaction_working_on_it,
+  [FoodFeedbackReaction.DONE]: BackendTranslationKeys.notification_food_feedback_reaction_done,
+  [FoodFeedbackReaction.OOPS]: BackendTranslationKeys.notification_food_feedback_reaction_oops,
+  [FoodFeedbackReaction.THINKING]: BackendTranslationKeys.notification_food_feedback_reaction_thinking,
 };
 
 export type FoodFeedbackReactionPushMessage = { title: string; body: string };
