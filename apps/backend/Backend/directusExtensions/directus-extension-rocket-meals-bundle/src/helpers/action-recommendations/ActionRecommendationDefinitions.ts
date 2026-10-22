@@ -68,6 +68,17 @@ export const ACTION_RECOMMENDATION_REACTIONS: Record<FoodFeedbackReaction, strin
   [FoodFeedbackReaction.THANKS]: 'Danke: für einen hilfreichen Hinweis oder konstruktive Kritik.',
   [FoodFeedbackReaction.YUMMY]: 'Lecker: die Person lobt den Geschmack der Speise.',
   [FoodFeedbackReaction.GOOD_IDEA]: 'Gute Idee: ein Vorschlag, den die Mensa sich merkt.',
+  [FoodFeedbackReaction.SAD]: 'Schade: kleine Kritik, die keine Antwort braucht, z. B. etwas hat nicht geschmeckt.',
+  [FoodFeedbackReaction.HAPPY]: 'Freut uns: freundliches Lob, die Mensa freut sich über die Rückmeldung.',
+  [FoodFeedbackReaction.APPLAUSE]: 'Applaus: Anerkennung für eine besonders hilfreiche oder ausführliche Rückmeldung.',
+  [FoodFeedbackReaction.CELEBRATE]: 'Super: große Freude, z. B. über ein besonderes Lob oder einen Glückwunsch.',
+  [FoodFeedbackReaction.STAR]: 'Klasse: ein besonders gelungener Kommentar.',
+  [FoodFeedbackReaction.NOTED]: 'Notiert: ein Hinweis oder Wunsch, den die Mensa aufnimmt, ohne dass gerade etwas passiert.',
+  [FoodFeedbackReaction.LOOKING_INTO]: 'Schauen wir uns an: ein Problem, das die Mensa prüft, z. B. eine falsche Angabe oder eine Beschwerde.',
+  [FoodFeedbackReaction.WORKING_ON_IT]: 'Wir kümmern uns: ein Problem, das die Mensa angeht, z. B. etwas Kaputtes oder ein Ablauf, der geändert wird.',
+  [FoodFeedbackReaction.DONE]: 'Umgesetzt: der Hinweis oder Wunsch ist bereits erledigt.',
+  [FoodFeedbackReaction.OOPS]: 'Hoppla: der Mensa ist ein kleiner Fehler passiert, z. B. eine falsche Angabe im Speiseplan.',
+  [FoodFeedbackReaction.THINKING]: 'Wir denken nach: ein Vorschlag oder eine Frage, über die die Mensa erst nachdenken muss.',
 };
 
 export type ActionRecommendationDefinition = {
@@ -114,7 +125,7 @@ export class ActionRecommendationDefinitions {
       summaryGroupField: 'food',
       authorProfileField: 'profile',
       chat: { field: 'chat' },
-      reactions: [FoodFeedbackReaction.THUMBS_UP, FoodFeedbackReaction.HEART, FoodFeedbackReaction.THANKS, FoodFeedbackReaction.YUMMY, FoodFeedbackReaction.GOOD_IDEA],
+      reactions: [FoodFeedbackReaction.THUMBS_UP, FoodFeedbackReaction.HEART, FoodFeedbackReaction.THANKS, FoodFeedbackReaction.YUMMY, FoodFeedbackReaction.GOOD_IDEA, FoodFeedbackReaction.SAD, FoodFeedbackReaction.HAPPY, FoodFeedbackReaction.APPLAUSE, FoodFeedbackReaction.CELEBRATE, FoodFeedbackReaction.STAR, FoodFeedbackReaction.NOTED, FoodFeedbackReaction.LOOKING_INTO, FoodFeedbackReaction.WORKING_ON_IT, FoodFeedbackReaction.DONE, FoodFeedbackReaction.OOPS, FoodFeedbackReaction.THINKING],
     },
     {
       collection: CollectionNames.APP_FEEDBACKS,

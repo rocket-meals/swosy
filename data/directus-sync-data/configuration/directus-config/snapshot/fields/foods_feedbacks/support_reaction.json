@@ -34,6 +34,50 @@
         {
           "text": "💡 Gute Idee",
           "value": "💡"
+        },
+        {
+          "text": "😢 Schade",
+          "value": "😢"
+        },
+        {
+          "text": "😊 Freut uns",
+          "value": "😊"
+        },
+        {
+          "text": "👏 Applaus",
+          "value": "👏"
+        },
+        {
+          "text": "🎉 Super",
+          "value": "🎉"
+        },
+        {
+          "text": "🌟 Klasse",
+          "value": "🌟"
+        },
+        {
+          "text": "📝 Notiert",
+          "value": "📝"
+        },
+        {
+          "text": "👀 Schauen wir uns an",
+          "value": "👀"
+        },
+        {
+          "text": "🛠️ Wir kümmern uns",
+          "value": "🛠️"
+        },
+        {
+          "text": "✅ Umgesetzt",
+          "value": "✅"
+        },
+        {
+          "text": "🙈 Hoppla",
+          "value": "🙈"
+        },
+        {
+          "text": "🤔 Wir denken nach",
+          "value": "🤔"
         }
       ]
     },

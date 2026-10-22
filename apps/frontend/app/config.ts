@@ -305,7 +305,9 @@ export function getVersionPatch() {
         // 183: feedback labels in the food offers with the side spacing of the food cards
         // 184: experimental screen "API-Abfrage", usage event university_status_checked sent by the app
         //      once per start for logins via university (DFN)
-        return 184;
+        // 185: common: food feedback reaction 😢 (FoodFeedbackReactionHelper)
+        // 186: common: ten more food feedback reactions (FoodFeedbackReactionHelper)
+        return 186;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
