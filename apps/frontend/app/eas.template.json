@@ -10,39 +10,60 @@
         "buildType": "apk"
       },
       "node": "22.16.0",
-      "channel": "development"
+      "channel": "development",
+      "env": {
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
     },
     "preview": {
       "android": {
         "buildType": "apk"
       },
-      "node": "22.16.0"
+      "node": "22.16.0",
+      "env": {
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
     },
     "previewApk": {
       "android": {
         "buildType": "apk"
       },
       "channel": "preview",
-      "node": "22.16.0"
+      "node": "22.16.0",
+      "env": {
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
     },
     "previewIos": {
       "extends": "previewApk",
       "distribution": "internal",
-      "channel": "preview"
+      "channel": "preview",
+      "env": {
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
     },
     "preview2": {
       "android": {
         "gradleCommand": ":app:assembleRelease"
       },
-      "node": "22.16.0"
+      "node": "22.16.0",
+      "env": {
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
     },
     "preview3": {
       "developmentClient": true,
-      "node": "22.16.0"
+      "node": "22.16.0",
+      "env": {
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
     },
     "preview4": {
       "distribution": "internal",
-      "node": "22.16.0"
+      "node": "22.16.0",
+      "env": {
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
     },
     "production": {
       "android": {
@@ -50,7 +71,10 @@
       },
       "autoIncrement": false,
       "channel": "production",
-      "node": "22.16.0"
+      "node": "22.16.0",
+      "env": {
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
     }
   },
   "submit": {
