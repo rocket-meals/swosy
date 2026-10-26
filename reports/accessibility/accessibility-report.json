@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-19T03:13:03.000Z",
+  "generatedAt": "2026-10-26T03:15:13.262Z",
   "baseUrl": "http://localhost:8081/rocket-meals",
   "axeCoreVersion": "4.12.1",
   "tags": [
@@ -340,7 +340,7 @@
             },
             {
               "target": ".r-1i10wst",
-              "html": "<div dir=\"auto\" class=\"css-146c3p1 r-dnmrzs r-1udh08x r-1udbk01 r-3s2u2q r-1iln25a r-xwgrit r-1i10wst r-n7gxbd r-1wbh5a2\" style=\"color: rgb(0, 0, 0);\">19.–23. Okt</div>",
+              "html": "<div dir=\"auto\" class=\"css-146c3p1 r-dnmrzs r-1udh08x r-1udbk01 r-3s2u2q r-1iln25a r-xwgrit r-1i10wst r-n7gxbd r-1wbh5a2\" style=\"color: rgb(0, 0, 0);\">26.–30. Okt</div>",
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             },
             {
@@ -370,7 +370,7 @@
             },
             {
               "target": ".r-1cmwbt1.css-g5y9jx > .r-1cmwbt1.r-18u37iz.r-1awozwy",
-              "html": "<div class=\"css-g5y9jx r-1awozwy r-18u37iz r-1cmwbt1\"><div class=\"css-g5y9jx r-lctmwy r-kdyh1x r-1559e4e r-18c5d7m\"><div dir=\"auto\" class=\"css-146c3p1 r-jwli3a r-iorfl6 r-1enofrn\">Jetzt · 03:10</div></div><div class=\"css-g5y9jx r-lctmwy r-qwd59z r-13awgt0 r-epq5cr\"></div></div>",
+              "html": "<div class=\"css-g5y9jx r-1awozwy r-18u37iz r-1cmwbt1\"><div class=\"css-g5y9jx r-lctmwy r-kdyh1x r-1559e4e r-18c5d7m\"><div dir=\"auto\" class=\"css-146c3p1 r-jwli3a r-iorfl6 r-1enofrn\">Jetzt · 03:12</div></div><div class=\"css-g5y9jx r-lctmwy r-qwd59z r-13awgt0 r-epq5cr\"></div></div>",
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             },
             {
