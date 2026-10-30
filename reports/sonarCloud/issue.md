@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 3 | 3 |
-| 🐛 Reliability | 7 | 7 |
-| 🔧 Maintainability | 27 | 27 |
+| 🐛 Reliability | 10 | 10 |
+| 🔧 Maintainability | 35 | 35 |
 
-**Total issues:** 37
+**Total issues:** 48
 
 ---
 
@@ -26,7 +26,7 @@
   apps/maintenance-server/server.mjs:197
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L197
 
-## 🐛 Reliability (7/7)
+## 🐛 Reliability (10/10)
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/UniversityAffiliationHelper.ts:80
@@ -56,7 +56,51 @@
   apps/maintenance-server/server.mjs:303
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/maintenance-server/server.mjs#L303
 
-## 🔧 Maintainability (27/27)
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  scripts/eas-ios-credentials.sh:24
+  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/eas-ios-credentials.sh#L24
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  scripts/eas-ios-credentials.sh:24
+  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/eas-ios-credentials.sh#L24
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  scripts/eas-ios-credentials.sh:29
+  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/eas-ios-credentials.sh#L29
+
+## 🔧 Maintainability (35/35)
+
+- **Redirect this error message to stderr (>&2).**
+  .github/actions/geonexia-expo-update/action.yml:135
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L135
+
+- **Redirect this error message to stderr (>&2).**
+  .github/actions/geonexia-expo-update/action.yml:143
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L143
+
+- **Redirect this error message to stderr (>&2).**
+  .github/actions/score-tracker-expo-update/action.yml:135
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/score-tracker-expo-update/action.yml#L135
+
+- **Redirect this error message to stderr (>&2).**
+  .github/actions/score-tracker-expo-update/action.yml:143
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/score-tracker-expo-update/action.yml#L143
+
+- **Add a default case (*) to handle unexpected values.**
+  .github/actions/stage-changes/action.yml:48
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/stage-changes/action.yml#L48
+
+- **Redirect this error message to stderr (>&2).**
+  .github/actions/tag-und-jahr-expo-update/action.yml:126
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/tag-und-jahr-expo-update/action.yml#L126
+
+- **Redirect this error message to stderr (>&2).**
+  .github/actions/tag-und-jahr-expo-update/action.yml:134
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/tag-und-jahr-expo-update/action.yml#L134
+
+- **Redirect this error message to stderr (>&2).**
+  .github/workflows/frontend-maestro.yml:92
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/frontend-maestro.yml#L92
 
 - **Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/feature-wishes-hook/index.ts:76
